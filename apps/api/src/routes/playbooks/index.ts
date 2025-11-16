@@ -1,178 +1,517 @@
 /**
- * Playbooks API routes (S3 stub implementation)
+ * Playbook API routes (Sprint S7 - Real Implementation)
+ * CRUD operations and execution for AI playbooks
  */
 
 import type {
-  ListPlaybooksResponse,
-  ValidatePlaybookResponse,
-  PlaybookTemplate,
+  CreatePlaybookResponse,
+  ExecutePlaybookResponse,
+  GetPlaybookResponse,
+  GetPlaybookRunResponse,
+  ListPlaybooksRuntimeResponse,
+  UpdatePlaybookResponse,
 } from '@pravado/types';
-import { validatePlaybookShape } from '@pravado/utils';
-import { validatePlaybookRequestSchema } from '@pravado/validators';
+import {
+  createPlaybookSchema,
+  executePlaybookSchema,
+  listPlaybooksQuerySchema,
+  updatePlaybookSchema,
+  validateEnv,
+  apiEnvSchema,
+} from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
+import { PlaybookExecutionEngine } from '../../services/playbookExecutionEngine';
+import { PlaybookService } from '../../services/playbookService';
+
+/**
+ * Helper to get user's org ID
+ */
+async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
+  const { data: userOrgs } = await supabase
+    .from('user_orgs')
+    .select('org_id')
+    .eq('user_id', userId)
+    .limit(1)
+    .single();
+
+  return userOrgs?.org_id || null;
+}
 
 export async function playbooksRoutes(server: FastifyInstance) {
-  // GET /api/v1/playbooks - List playbook templates
+  const env = validateEnv(apiEnvSchema);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+
+  // Services
+  const playbookService = new PlaybookService(supabase);
+  const executionEngine = new PlaybookExecutionEngine(supabase);
+
+  // ========================================
+  // GET /api/v1/playbooks - List playbooks
+  // ========================================
   server.get<{
-    Reply: ListPlaybooksResponse;
+    Querystring: {
+      status?: string;
+      limit?: string;
+      offset?: string;
+      tags?: string;
+    };
+    Reply: ListPlaybooksRuntimeResponse;
   }>(
     '/',
     {
       preHandler: requireUser,
     },
-    async () => {
-      // S3 Stub: Return static playbook templates
-      const staticPlaybooks: PlaybookTemplate[] = [
-        {
-          id: crypto.randomUUID(),
-          name: 'PR Campaign Launch',
-          description:
-            'Automated workflow for launching a comprehensive PR campaign with media outreach and content distribution',
-          category: 'pr',
-          nodes: [
-            {
-              id: 'research-journalists',
-              agentId: 'journalist-researcher',
-              label: 'Research target journalists',
-              input: { topic: 'tech', tier: 'tier1' },
-            },
-            {
-              id: 'draft-pitch',
-              agentId: 'pitch-writer',
-              label: 'Draft personalized pitch emails',
-              input: '${research-journalists.output.journalists}',
-              dependsOn: ['research-journalists'],
-            },
-            {
-              id: 'send-outreach',
-              agentId: 'email-sender',
-              label: 'Send outreach emails',
-              input: '${draft-pitch.output.pitches}',
-              dependsOn: ['draft-pitch'],
-            },
-          ],
-          expectedOutputs: ['journalist_list', 'pitch_emails', 'outreach_metrics'],
-          estimatedDuration: '15-25 minutes',
-          difficulty: 'intermediate',
-          tags: ['pr', 'outreach', 'automation'],
-          isPublic: true,
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'SEO Content Optimizer',
-          description:
-            'Analyze existing content and generate optimization recommendations based on keyword research and competitor analysis',
-          category: 'seo',
-          nodes: [
-            {
-              id: 'keyword-research',
-              agentId: 'keyword-analyzer',
-              label: 'Research target keywords',
-              input: { seedKeywords: [], competitorUrls: [] },
-            },
-            {
-              id: 'content-audit',
-              agentId: 'content-auditor',
-              label: 'Audit existing content',
-              input: { url: '' },
-            },
-            {
-              id: 'generate-recommendations',
-              agentId: 'seo-strategist',
-              label: 'Generate optimization plan',
-              input: {
-                keywords: '${keyword-research.output.keywords}',
-                auditResults: '${content-audit.output.analysis}',
-              },
-              dependsOn: ['keyword-research', 'content-audit'],
-            },
-          ],
-          expectedOutputs: ['keywords', 'content_gaps', 'optimization_plan'],
-          estimatedDuration: '10-15 minutes',
-          difficulty: 'beginner',
-          tags: ['seo', 'content', 'optimization'],
-          isPublic: true,
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'Content Calendar Generator',
-          description:
-            'Generate a month-long content calendar with topic ideation, briefs, and scheduling',
-          category: 'content',
-          nodes: [
-            {
-              id: 'topic-ideation',
-              agentId: 'topic-generator',
-              label: 'Generate content topics',
-              input: { industry: '', targetAudience: '', count: 20 },
-            },
-            {
-              id: 'create-briefs',
-              agentId: 'brief-creator',
-              label: 'Create content briefs',
-              input: '${topic-ideation.output.topics}',
-              dependsOn: ['topic-ideation'],
-            },
-            {
-              id: 'schedule-calendar',
-              agentId: 'calendar-planner',
-              label: 'Schedule content',
-              input: '${create-briefs.output.briefs}',
-              dependsOn: ['create-briefs'],
-            },
-          ],
-          expectedOutputs: ['topics', 'briefs', 'calendar'],
-          estimatedDuration: '8-12 minutes',
-          difficulty: 'beginner',
-          tags: ['content', 'planning', 'calendar'],
-          isPublic: true,
-        },
-      ];
-
-      return {
-        success: true,
-        data: {
-          playbooks: staticPlaybooks,
-        },
-      };
-    }
-  );
-
-  // POST /api/v1/playbooks/validate - Validate playbook structure
-  server.post<{
-    Body: { playbook: PlaybookTemplate };
-    Reply: ValidatePlaybookResponse;
-  }>(
-    '/validate',
-    {
-      preHandler: requireUser,
-    },
     async (request, reply) => {
-      // Validate request body
-      const validation = validatePlaybookRequestSchema.safeParse(request.body);
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+          },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      // Parse query params
+      const validation = listPlaybooksQuerySchema.safeParse({
+        status: request.query.status,
+        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
+        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        tags: request.query.tags ? request.query.tags.split(',') : undefined,
+      });
 
       if (!validation.success) {
         return reply.code(400).send({
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
-            message: 'Invalid playbook structure',
+            message: 'Invalid query parameters',
           },
         });
       }
 
-      // Validate playbook shape using utility function
-      const validationResult = validatePlaybookShape(validation.data.playbook);
+      try {
+        const playbooks = await playbookService.listPlaybooks(orgId, validation.data);
 
-      return {
-        success: true,
-        data: {
-          valid: validationResult.valid,
-          errors: validationResult.errors,
-        },
-      };
+        return {
+          success: true,
+          data: {
+            items: playbooks,
+          },
+        };
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to list playbooks',
+          },
+        });
+      }
+    }
+  );
+
+  // ========================================
+  // GET /api/v1/playbooks/:id - Get playbook
+  // ========================================
+  server.get<{
+    Params: { id: string };
+    Reply: GetPlaybookResponse;
+  }>(
+    '/:id',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+          },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      try {
+        const playbook = await playbookService.getPlaybookById(orgId, request.params.id);
+
+        if (!playbook) {
+          return reply.code(404).send({
+            success: false,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'Playbook not found',
+            },
+          });
+        }
+
+        return {
+          success: true,
+          data: {
+            item: playbook,
+          },
+        };
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to get playbook',
+          },
+        });
+      }
+    }
+  );
+
+  // ========================================
+  // POST /api/v1/playbooks - Create playbook
+  // ========================================
+  server.post<{
+    Body: unknown;
+    Reply: CreatePlaybookResponse;
+  }>(
+    '/',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+          },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      // Validate request body
+      const validation = createPlaybookSchema.safeParse(request.body);
+
+      if (!validation.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid request body',
+          },
+        });
+      }
+
+      try {
+        const playbook = await playbookService.createPlaybook(
+          orgId,
+          request.user.id,
+          validation.data
+        );
+
+        return reply.code(201).send({
+          success: true,
+          data: {
+            item: playbook,
+          },
+        });
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to create playbook',
+          },
+        });
+      }
+    }
+  );
+
+  // ========================================
+  // PUT /api/v1/playbooks/:id - Update playbook
+  // ========================================
+  server.put<{
+    Params: { id: string };
+    Body: unknown;
+    Reply: UpdatePlaybookResponse;
+  }>(
+    '/:id',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+          },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      // Validate request body
+      const validation = updatePlaybookSchema.safeParse(request.body);
+
+      if (!validation.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid request body',
+          },
+        });
+      }
+
+      try {
+        const playbook = await playbookService.updatePlaybook(
+          orgId,
+          request.params.id,
+          validation.data
+        );
+
+        return {
+          success: true,
+          data: {
+            item: playbook,
+          },
+        };
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to update playbook',
+          },
+        });
+      }
+    }
+  );
+
+  // ========================================
+  // POST /api/v1/playbooks/:id/execute - Execute playbook
+  // ========================================
+  server.post<{
+    Params: { id: string };
+    Body: unknown;
+    Reply: ExecutePlaybookResponse;
+  }>(
+    '/:id/execute',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+          },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      // Validate request body
+      const validation = executePlaybookSchema.safeParse(request.body);
+
+      if (!validation.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid request body',
+          },
+        });
+      }
+
+      try {
+        const run = await executionEngine.startPlaybookRun(
+          orgId,
+          request.params.id,
+          validation.data.input,
+          request.user.id
+        );
+
+        return {
+          success: true,
+          data: {
+            run,
+          },
+        };
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to execute playbook',
+          },
+        });
+      }
+    }
+  );
+
+  // ========================================
+  // GET /api/v1/playbook-runs/:id - Get playbook run
+  // ========================================
+  server.get<{
+    Params: { id: string };
+    Reply: GetPlaybookRunResponse;
+  }>(
+    '/runs/:id',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+          },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      try {
+        // Fetch run directly from database
+        const { data: run, error: runError } = await supabase
+          .from('playbook_runs')
+          .select('*')
+          .eq('id', request.params.id)
+          .eq('org_id', orgId)
+          .single();
+
+        if (runError || !run) {
+          return reply.code(404).send({
+            success: false,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'Playbook run not found',
+            },
+          });
+        }
+
+        // Fetch step runs
+        const { data: stepRuns } = await supabase
+          .from('playbook_step_runs')
+          .select('*')
+          .eq('run_id', request.params.id)
+          .eq('org_id', orgId)
+          .order('created_at', { ascending: true });
+
+        return {
+          success: true,
+          data: {
+            run: {
+              run: {
+                id: run.id,
+                playbookId: run.playbook_id,
+                orgId: run.org_id,
+                status: run.status,
+                triggeredBy: run.triggered_by,
+                input: run.input,
+                output: run.output,
+                error: run.error,
+                startedAt: run.started_at,
+                completedAt: run.completed_at,
+                createdAt: run.created_at,
+                updatedAt: run.updated_at,
+              },
+              steps:
+                stepRuns?.map((sr) => ({
+                  id: sr.id,
+                  runId: sr.run_id,
+                  playbookId: sr.playbook_id,
+                  orgId: sr.org_id,
+                  stepId: sr.step_id,
+                  stepKey: sr.step_key,
+                  status: sr.status,
+                  input: sr.input,
+                  output: sr.output,
+                  error: sr.error,
+                  startedAt: sr.started_at,
+                  completedAt: sr.completed_at,
+                  createdAt: sr.created_at,
+                  updatedAt: sr.updated_at,
+                })) || [],
+            },
+          },
+        };
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to get playbook run',
+          },
+        });
+      }
     }
   );
 }

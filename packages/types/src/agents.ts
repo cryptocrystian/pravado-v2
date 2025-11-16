@@ -176,3 +176,198 @@ export interface ValidatePlaybookResponse {
     message: string;
   };
 }
+
+// ========================================
+// PLAYBOOK RUNTIME TYPES (Sprint S7)
+// ========================================
+
+/**
+ * Playbook status enum
+ */
+export type PlaybookStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED' | 'DEPRECATED';
+
+/**
+ * Playbook run status enum
+ */
+export type PlaybookRunStatus = 'PENDING' | 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED';
+
+/**
+ * Playbook step run status enum
+ */
+export type PlaybookStepRunStatus = 'PENDING' | 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'SKIPPED';
+
+/**
+ * Playbook step type enum
+ */
+export type PlaybookStepType = 'AGENT' | 'DATA' | 'BRANCH' | 'API';
+
+/**
+ * Playbook entity (DB-backed)
+ */
+export interface Playbook {
+  id: string;
+  orgId: string;
+  name: string;
+  version: number;
+  status: PlaybookStatus;
+  inputSchema: unknown | null;
+  outputSchema: unknown | null;
+  timeoutSeconds: number | null;
+  maxRetries: number;
+  tags: string[] | null;
+  createdBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Playbook step entity (DB-backed)
+ */
+export interface PlaybookStep {
+  id: string;
+  orgId: string;
+  playbookId: string;
+  key: string;
+  name: string;
+  type: PlaybookStepType;
+  config: Record<string, unknown>;
+  position: number;
+  nextStepKey: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Playbook run entity (DB-backed execution instance)
+ */
+export interface PlaybookRun {
+  id: string;
+  playbookId: string;
+  orgId: string;
+  status: PlaybookRunStatus;
+  triggeredBy: string | null;
+  input: unknown;
+  output: unknown;
+  error: unknown;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Playbook step run entity (DB-backed step execution instance)
+ */
+export interface PlaybookStepRun {
+  id: string;
+  runId: string;
+  playbookId: string;
+  orgId: string;
+  stepId: string;
+  stepKey: string;
+  status: PlaybookStepRunStatus;
+  input: unknown;
+  output: unknown;
+  error: unknown;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * DTO: Playbook with its steps
+ */
+export interface PlaybookDefinitionDTO {
+  playbook: Playbook;
+  steps: PlaybookStep[];
+}
+
+/**
+ * DTO: Playbook run with step runs
+ */
+export interface PlaybookRunWithStepsDTO {
+  run: PlaybookRun;
+  steps: PlaybookStepRun[];
+}
+
+/**
+ * Step execution context passed to step handlers
+ */
+export interface StepExecutionContext {
+  orgId: string;
+  runId: string;
+  stepRun: PlaybookStepRun;
+  step: PlaybookStep;
+  input: unknown;
+  previousOutputs: Record<string, unknown>; // stepKey -> output mapping
+}
+
+/**
+ * API Response Types for Playbook Runtime
+ */
+export interface ListPlaybooksRuntimeResponse {
+  success: boolean;
+  data?: {
+    items: Playbook[];
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
+export interface GetPlaybookResponse {
+  success: boolean;
+  data?: {
+    item: PlaybookDefinitionDTO;
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
+export interface CreatePlaybookResponse {
+  success: boolean;
+  data?: {
+    item: PlaybookDefinitionDTO;
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
+export interface UpdatePlaybookResponse {
+  success: boolean;
+  data?: {
+    item: PlaybookDefinitionDTO;
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
+export interface ExecutePlaybookResponse {
+  success: boolean;
+  data?: {
+    run: PlaybookRunWithStepsDTO;
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
+export interface GetPlaybookRunResponse {
+  success: boolean;
+  data?: {
+    run: PlaybookRunWithStepsDTO;
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
+}
