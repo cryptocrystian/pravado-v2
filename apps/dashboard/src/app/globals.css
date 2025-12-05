@@ -2,50 +2,138 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Pravado Design System v2 — AI-First Standard
+ * Canonical source: docs/design-system/pravado_design_system_v2_ai_first_standard.md
+ * Dark mode is the authoritative default
+ */
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 199 89% 48%;
-    --radius: 0.5rem;
+    /* Base Neutrals (Slate Scale) */
+    --slate-0: #0B0F14;
+    --slate-1: #0F141A;
+    --slate-2: #121923;
+    --slate-3: #16202C;
+    --slate-4: #1D2A39;
+    --slate-5: #2A3A4E;
+    --slate-6: #3B4E67;
+    --white-0: #EAF2F7;
+
+    /* Brand Accents */
+    --brand-iris: #6A6FF9;
+    --brand-cyan: #38E1FF;
+    --brand-teal: #21B5C5;
+    --brand-magenta: #D66DFF;
+    --brand-amber: #FFB65A;
+
+    /* Semantic Colors */
+    --semantic-info: #5AC8FA;
+    --semantic-success: #37D39B;
+    --semantic-warning: #FFC95A;
+    --semantic-danger: #FF6B6B;
+
+    /* Gradients */
+    --grad-hero: linear-gradient(135deg, #6A6FF9 0%, #38E1FF 50%, #D66DFF 100%);
+    --grad-warm: linear-gradient(145deg, #6A6FF9 0%, #FFB65A 100%);
+
+    /* Page/Panel Semantic Aliases */
+    --page-bg: var(--slate-0);
+    --panel-bg: var(--slate-2);
+    --text: var(--white-0);
+    --muted: var(--slate-6);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+
+    /* Radii */
+    --radius-xs: 6px;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-2xl: 24px;
+    --radius: var(--radius-lg);
+
+    /* Elevation/Shadows */
+    --elev-0: none;
+    --elev-1: 0 1px 0 rgba(0, 0, 0, 0.25);
+    --elev-2: 0 6px 16px rgba(0, 0, 0, 0.35);
+    --elev-3: 0 12px 28px rgba(0, 0, 0, 0.45);
+    --shadow-panel: var(--elev-3);
+
+    /* Motion */
+    --motion-duration-xs: 120ms;
+    --motion-duration-sm: 180ms;
+    --motion-duration-md: 280ms;
+    --motion-duration-lg: 420ms;
+    --motion-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --motion-ease-emphatic: cubic-bezier(0.3, 0, 0.2, 1);
+
+    /* Z-Index Scale */
+    --z-base: 0;
+    --z-nav: 30;
+    --z-modal: 40;
+    --z-popover: 50;
+    --z-toast: 60;
+
+    /* Data Viz Gridlines */
+    --viz-gridline: rgba(234, 242, 247, 0.08);
+    --viz-axis-label: rgba(234, 242, 247, 0.72);
+
+    /* Legacy shadcn compatibility (mapped to Pravado tokens) */
+    --background: 213 39% 6%;
+    --foreground: 206 47% 94%;
+    --card: 215 33% 10%;
+    --card-foreground: 206 47% 94%;
+    --popover: 215 33% 10%;
+    --popover-foreground: 206 47% 94%;
+    --primary: 239 93% 70%;
+    --primary-foreground: 213 39% 6%;
+    --secondary: 213 26% 17%;
+    --secondary-foreground: 206 47% 94%;
+    --muted-hsl: 213 26% 17%;
+    --muted-foreground: 211 24% 32%;
+    --accent: 213 26% 17%;
+    --accent-foreground: 206 47% 94%;
+    --destructive: 0 70% 71%;
+    --destructive-foreground: 206 47% 94%;
+    --border: 213 26% 17%;
+    --input: 213 26% 17%;
+    --ring: 187 100% 61%;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 199 89% 48%;
+  /* Dark mode is default - explicit class for clarity */
+  .dark,
+  [data-theme="dark"] {
+    /* Same as root - dark is default */
+  }
+
+  /* Light mode (optional - auto-derives) */
+  .light,
+  [data-theme="light"] {
+    --page-bg: #F7FAFD;
+    --panel-bg: #FFFFFF;
+    --text: #0B0F14;
+    --muted: #5A6B7D;
+    --border-subtle: rgba(0, 0, 0, 0.08);
+
+    --background: 210 50% 98%;
+    --foreground: 213 39% 6%;
+    --card: 0 0% 100%;
+    --card-foreground: 213 39% 6%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 213 39% 6%;
+    --primary: 239 93% 70%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 213 39% 6%;
+    --muted-hsl: 210 40% 96%;
+    --muted-foreground: 211 24% 45%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 213 39% 6%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 239 93% 70%;
   }
 }
 
@@ -53,7 +141,194 @@
   * {
     @apply border-border;
   }
+
+  html {
+    /* Dark mode default */
+    color-scheme: dark;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-page text-text antialiased;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Focus ring using brand-cyan per DS */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-brand-cyan ring-offset-2 ring-offset-page;
+  }
+}
+
+@layer components {
+  /* AI Presence Dot - Idle */
+  .ai-dot {
+    @apply w-2.5 h-2.5 rounded-full bg-slate-6;
+  }
+
+  /* AI Presence Dot - Analyzing */
+  .ai-dot-analyzing {
+    @apply w-2.5 h-2.5 rounded-full bg-brand-cyan;
+    animation: ai-pulse 1400ms ease-in-out infinite;
+  }
+
+  /* AI Presence Dot - Generating */
+  .ai-dot-generating {
+    @apply w-2.5 h-2.5 rounded-full bg-brand-iris;
+  }
+
+  /* Panel Card */
+  .panel-card {
+    @apply bg-panel border border-border-subtle rounded-2xl shadow-panel;
+  }
+
+  /* Auth Card (special for login/signup) */
+  .auth-card {
+    @apply backdrop-blur-sm border border-border-subtle rounded-2xl shadow-panel;
+    background-color: rgba(18, 25, 35, 0.7); /* --slate-2 with 70% opacity */
+  }
+
+  /* Primary Button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg;
+    @apply bg-brand-iris text-white;
+    @apply transition-all duration-sm ease-standard;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary:hover {
+    background-color: rgba(106, 111, 249, 0.9); /* --brand-iris at 90% */
+  }
+  .btn-primary:active {
+    background-color: rgba(106, 111, 249, 0.8); /* --brand-iris at 80% */
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg;
+    @apply bg-slate-4 text-white border border-border-subtle;
+    @apply hover:bg-slate-5 active:bg-slate-6;
+    @apply transition-all duration-sm ease-standard;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Ghost Button */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg;
+    @apply bg-transparent text-slate-6;
+    @apply hover:text-white active:bg-slate-4;
+    @apply transition-all duration-sm ease-standard;
+  }
+  .btn-ghost:hover {
+    background-color: rgba(29, 42, 57, 0.5); /* --slate-4 at 50% */
+  }
+
+  /* OAuth Button Base */
+  .btn-oauth {
+    @apply inline-flex items-center justify-center gap-3 px-4 py-3 w-full;
+    @apply text-sm font-medium rounded-lg;
+    @apply bg-slate-3 text-white border border-border-subtle;
+    @apply hover:bg-slate-4;
+    @apply transition-all duration-sm ease-standard;
+  }
+  .btn-oauth:hover {
+    border-color: rgba(56, 225, 255, 0.3); /* --brand-cyan at 30% */
+  }
+
+  /* Input Field */
+  .input-field {
+    @apply w-full px-4 py-3 text-sm rounded-lg;
+    @apply bg-slate-3 text-white placeholder-slate-6;
+    @apply border border-border-subtle;
+    @apply focus:border-brand-cyan focus:ring-2;
+    @apply transition-all duration-sm ease-standard;
+    --tw-ring-color: rgba(56, 225, 255, 0.2); /* --brand-cyan at 20% */
+  }
+
+  /* Error Alert */
+  .alert-error {
+    @apply rounded-lg p-4;
+    @apply text-sm text-semantic-danger;
+    background-color: rgba(255, 107, 107, 0.1); /* --semantic-danger at 10% */
+    border: 1px solid rgba(255, 107, 107, 0.2); /* --semantic-danger at 20% */
+  }
+
+  /* Success Alert */
+  .alert-success {
+    @apply rounded-lg p-4;
+    @apply text-sm text-semantic-success;
+    background-color: rgba(55, 211, 155, 0.1); /* --semantic-success at 10% */
+    border: 1px solid rgba(55, 211, 155, 0.2); /* --semantic-success at 20% */
+  }
+
+  /* Info Alert */
+  .alert-info {
+    @apply rounded-lg p-4;
+    @apply text-sm text-brand-cyan;
+    background-color: rgba(56, 225, 255, 0.1); /* --brand-cyan at 10% */
+    border: 1px solid rgba(56, 225, 255, 0.2); /* --brand-cyan at 20% */
+  }
+
+  /* Confidence Badge */
+  .badge-confidence-high {
+    @apply text-xs px-2 py-0.5 rounded-full text-brand-cyan;
+    background-color: rgba(56, 225, 255, 0.1); /* --brand-cyan at 10% */
+  }
+
+  .badge-confidence-medium {
+    @apply text-xs px-2 py-0.5 rounded-full text-brand-magenta;
+    background-color: rgba(214, 109, 255, 0.1); /* --brand-magenta at 10% */
+  }
+
+  .badge-confidence-low {
+    @apply text-xs px-2 py-0.5 rounded-full bg-slate-5 text-slate-6;
+  }
+}
+
+@layer utilities {
+  /* Gradient text utility */
+  .text-gradient-hero {
+    background: var(--grad-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Shimmer animation for AI thinking state */
+  .shimmer {
+    background: linear-gradient(
+      110deg,
+      transparent 0%,
+      var(--brand-cyan) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1600ms infinite;
+  }
+}
+
+/* Keyframes */
+@keyframes ai-pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ai-dot-analyzing,
+  .shimmer {
+    animation: none;
   }
 }
