@@ -1,6 +1,7 @@
 {
   "name": "@pravado/utils",
-  "version": "0.0.0-s0",
+  "version": "1.0.0-rc1",
+  "releaseCandidate": true,
   "description": "Shared utility functions for Pravado v2",
   "type": "module",
   "main": "./dist/index.js",
@@ -16,6 +17,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.4"
   },
   "devDependencies": {
     "@pravado/types": "workspace:*",

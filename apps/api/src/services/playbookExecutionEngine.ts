@@ -1,6 +1,9 @@
 /**
- * Playbook Execution Engine (Sprint S7)
+ * Playbook Execution Engine (Sprint S7 + S9 + S10 + S11)
  * Core runtime for executing AI playbooks step-by-step
+ * S9: Added multi-agent collaboration and escalation support
+ * S10: Added memory system integration (semantic + episodic memory)
+ * S11: Added personality system integration
  */
 
 import type {
@@ -10,27 +13,48 @@ import type {
   PlaybookRunWithStepsDTO,
   PlaybookDefinitionDTO,
   StepExecutionContext,
+  CollaborationContext,
 } from '@pravado/types';
+import { LlmRouter, createLogger } from '@pravado/utils'; // S16
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { CollaborationCoordinator } from './collaborationCoordinator';
+// import { ContextAssembler } from './memory/contextAssembler'; // S10: Reserved for future agent handler integration
+import { MemoryStore } from './memory/memoryStore';
+import { PersonalityStore } from './personality/personalityStore'; // S11
 import { PlaybookService } from './playbookService';
+
+const logger = createLogger('playbook-execution-engine');
 
 export class PlaybookExecutionEngine {
   private playbookService: PlaybookService;
+  // private contextAssembler: ContextAssembler; // S10 (reserved for future agent handler integration)
+  private memoryStore: MemoryStore; // S10
+  private personalityStore: PersonalityStore; // S11
+  private llmRouter: LlmRouter | null = null; // S16
 
-  constructor(private supabase: SupabaseClient) {
+  constructor(
+    private supabase: SupabaseClient,
+    llmRouter?: LlmRouter
+  ) {
     this.playbookService = new PlaybookService(supabase);
+    // this.contextAssembler = new ContextAssembler(supabase, { debugMode: false }); // S10
+    this.memoryStore = new MemoryStore(supabase, { debugMode: false }); // S10
+    this.personalityStore = new PersonalityStore(supabase, { debugMode: false }); // S11
+    this.llmRouter = llmRouter || null; // S16
   }
 
   /**
    * Start a new playbook run
    * Creates the run record and transitions to RUNNING
+   * Sprint S8: Added simulation mode support
    */
   async startPlaybookRun(
     orgId: string,
     playbookId: string,
     input: unknown,
-    userId?: string
+    userId?: string,
+    options?: { isSimulation?: boolean }
   ): Promise<PlaybookRunWithStepsDTO> {
     // Load playbook definition
     const definition = await this.playbookService.getPlaybookById(orgId, playbookId);
@@ -47,6 +71,7 @@ export class PlaybookExecutionEngine {
         status: 'PENDING',
         triggered_by: userId || null,
         input,
+        is_simulation: options?.isSimulation || false,
       })
       .select()
       .single();
@@ -112,6 +137,8 @@ export class PlaybookExecutionEngine {
 
   /**
    * Execute all steps in sequence
+   * S9: Added collaboration coordinator for multi-agent workflows
+   * S10: Added memory context assembly
    */
   private async executeSteps(
     orgId: string,
@@ -123,6 +150,25 @@ export class PlaybookExecutionEngine {
     const stepRuns: PlaybookStepRun[] = [];
     const previousOutputs: Record<string, unknown> = {};
 
+    // S9: Initialize collaboration coordinator
+    const coordinator = new CollaborationCoordinator({
+      initialSharedState: {},
+      debugMode: false,
+    });
+
+    // S10: Fetch the run object for context assembly
+    const { data: runData } = await this.supabase
+      .from('playbook_runs')
+      .select('*')
+      .eq('id', runId)
+      .single();
+
+    if (!runData) {
+      throw new Error('Run not found');
+    }
+
+    const run = this.mapRunFromDb(runData);
+
     // Sort steps by position
     const sortedSteps = [...steps].sort((a, b) => a.position - b.position);
 
@@ -131,20 +177,32 @@ export class PlaybookExecutionEngine {
     let stepInput: unknown = initialInput;
 
     while (currentStep) {
-      // Execute step
+      // Execute step with collaboration context
       const stepRun = await this.executeStep(
         orgId,
         runId,
-        playbook.id,
+        playbook,
+        sortedSteps,
+        run,
         currentStep,
         stepInput,
-        previousOutputs
+        previousOutputs,
+        coordinator // S9: Pass coordinator
       );
 
       stepRuns.push(stepRun);
 
+      // S9: Persist collaboration context to step run
+      await this.persistCollaborationContext(stepRun.id, coordinator.getCollaborationContext());
+
       // Check step status
       if (stepRun.status === 'FAILED') {
+        // S9: Check if human escalation is needed
+        if (coordinator.getEscalationLevel() === 'human') {
+          throw new Error(
+            `Step "${currentStep.key}" requires human intervention: ${JSON.stringify(stepRun.error)}`
+          );
+        }
         throw new Error(`Step "${currentStep.key}" failed: ${JSON.stringify(stepRun.error)}`);
       }
 
@@ -156,8 +214,16 @@ export class PlaybookExecutionEngine {
       // Store output for future steps
       previousOutputs[currentStep.key] = stepRun.output;
 
-      // Determine next step
-      const nextStepKey = await this.determineNextStep(currentStep, stepRun.output);
+      // S9: Update shared state from step output if provided
+      if (stepRun.output && typeof stepRun.output === 'object') {
+        const output = stepRun.output as { sharedState?: Record<string, unknown> };
+        if (output.sharedState) {
+          coordinator.updateSharedState(output.sharedState);
+        }
+      }
+
+      // S9: Determine next step using coordinator (handles delegation/escalation)
+      const nextStepKey = coordinator.determineNextStep(currentStep, stepRun.output);
 
       if (!nextStepKey) {
         // No more steps
@@ -180,21 +246,26 @@ export class PlaybookExecutionEngine {
 
   /**
    * Execute a single step
+   * S9: Added coordinator parameter for collaboration
+   * S10: Added memory context assembly and persistence
    */
   private async executeStep(
     orgId: string,
     runId: string,
-    playbookId: string,
+    playbook: any, // S10: Full playbook object
+    _steps: PlaybookStep[], // S10: All steps for context (reserved for future use)
+    _run: PlaybookRun, // S10: Run object for context (reserved for future use)
     step: PlaybookStep,
     input: unknown,
-    previousOutputs: Record<string, unknown>
+    previousOutputs: Record<string, unknown>,
+    _coordinator?: CollaborationCoordinator // S9: Coordinator for collaboration (reserved for future use)
   ): Promise<PlaybookStepRun> {
     // Create step run record
     const { data: stepRun, error: stepRunError } = await this.supabase
       .from('playbook_step_runs')
       .insert({
         run_id: runId,
-        playbook_id: playbookId,
+        playbook_id: playbook.id,
         org_id: orgId,
         step_id: step.id,
         step_key: step.key,
@@ -214,6 +285,15 @@ export class PlaybookExecutionEngine {
     });
 
     try {
+      // S10: Assemble context for step execution (reserved for future agent handler integration)
+      // Commented out to avoid unused variable warning - will be passed to agent handlers in production
+      // const assembledContext = await this.contextAssembler.assembleContextForStep({
+      //   orgId, playbook, steps, run, step,
+      //   sharedState: coordinator?.getSharedState() || {},
+      //   collaborationContext: coordinator?.getCollaborationContext(),
+      //   stepInput: input,
+      // });
+
       // Execute based on step type
       const context: StepExecutionContext = {
         orgId,
@@ -225,6 +305,31 @@ export class PlaybookExecutionEngine {
       };
 
       const output = await this.executeStepByType(context);
+
+      // S10: Save episodic trace after successful execution
+      const embedding = await this.generateEmbedding(output);
+      await this.memoryStore.saveEpisodicTrace(orgId, runId, step.key, {
+        input,
+        output,
+        stepType: step.type,
+        timestamp: new Date().toISOString(),
+      }, embedding);
+
+      // S10: Save semantic memory if output indicates it should be captured
+      if (output && typeof output === 'object') {
+        const outputData = output as any;
+        if (outputData.memoryWorthy === true || (step.config as any)?.captureMemory === true) {
+          const importance = (outputData.importance as number) || 0.5;
+          await this.memoryStore.saveSemanticMemory(
+            orgId,
+            { stepKey: step.key, output: outputData },
+            embedding,
+            importance,
+            'step',
+            null // No TTL for now
+          );
+        }
+      }
 
       // Update to SUCCEEDED
       await this.updateStepRunStatus(stepRun.id, 'SUCCEEDED', {
@@ -283,8 +388,71 @@ export class PlaybookExecutionEngine {
 
   /**
    * Execute AGENT step (LLM call)
+   * S11: Added personality loading
+   * S16: Added LLM router integration
    */
   private async executeAgentStep(context: StepExecutionContext): Promise<unknown> {
+    const { step, input, orgId } = context;
+    const config = step.config as {
+      agentId: string;
+      prompt?: string;
+      model?: string;
+      temperature?: number;
+      maxTokens?: number;
+      systemMessage?: string;
+    };
+
+    // S11: Load personality for this agent
+    const personality = await this.personalityStore.getPersonalityForAgent(orgId, config.agentId);
+
+    // S16: Try to use LLM router if available
+    if (this.llmRouter) {
+      const llmOutput = await this.executeAgentStepWithLLM(context, personality);
+      if (llmOutput) {
+        return llmOutput;
+      }
+    }
+
+    // Fallback to stub response
+    logger.debug('Using stub agent response as fallback', { agentId: config.agentId });
+
+    const prompt = config.prompt || JSON.stringify(input);
+    const model = config.model || 'gpt-4';
+    const temperature = config.temperature || 0.7;
+
+    const output = {
+      agent: config.agentId,
+      model,
+      temperature,
+      prompt,
+      response: `[Stub] This is a simulated response from ${config.agentId}. Input was: ${JSON.stringify(input)}`,
+      metadata: {
+        executedAt: new Date().toISOString(),
+        stubbed: true,
+        personality: personality ? {
+          id: personality.id,
+          slug: personality.slug,
+          name: personality.name,
+          tone: personality.configuration.tone,
+          style: personality.configuration.style,
+        } : null,
+      },
+    };
+
+    return output;
+  }
+
+  /**
+   * Execute AGENT step with LLM router (S16)
+   */
+  private async executeAgentStepWithLLM(
+    context: StepExecutionContext,
+    personality: any
+  ): Promise<unknown | null> {
+    if (!this.llmRouter) {
+      return null;
+    }
+
     const { step, input } = context;
     const config = step.config as {
       agentId: string;
@@ -295,26 +463,84 @@ export class PlaybookExecutionEngine {
       systemMessage?: string;
     };
 
-    // For S7, we'll stub the LLM call
-    // In future sprints, this will use the actual LLM router
-    const prompt = config.prompt || JSON.stringify(input);
-    const model = config.model || 'gpt-4';
-    const temperature = config.temperature || 0.7;
+    // Build system prompt from personality
+    const systemPrompt = this.buildAgentSystemPrompt(config, personality);
 
-    // Stub: Return a placeholder response
-    const output = {
-      agent: config.agentId,
-      model,
-      temperature,
-      prompt,
-      response: `[Stub] This is a simulated response from ${config.agentId}. Input was: ${JSON.stringify(input)}`,
-      metadata: {
-        executedAt: new Date().toISOString(),
-        stubbed: true,
-      },
-    };
+    // Build user prompt from input and config
+    const userPrompt = config.prompt || JSON.stringify(input, null, 2);
 
-    return output;
+    try {
+      const response = await this.llmRouter.generate({
+        systemPrompt,
+        userPrompt,
+        model: config.model,
+        temperature: config.temperature || 0.7,
+        maxTokens: config.maxTokens,
+      });
+
+      logger.info('Generated agent response using LLM', {
+        agentId: config.agentId,
+        provider: response.provider,
+      });
+
+      return {
+        agent: config.agentId,
+        model: response.model,
+        provider: response.provider,
+        response: response.completion,
+        metadata: {
+          executedAt: new Date().toISOString(),
+          stubbed: false,
+          personality: personality ? {
+            id: personality.id,
+            slug: personality.slug,
+            name: personality.name,
+            tone: personality.configuration.tone,
+            style: personality.configuration.style,
+          } : null,
+          usage: response.usage,
+        },
+      };
+    } catch (error) {
+      logger.warn('Failed to execute agent step with LLM, will use stub', {
+        agentId: config.agentId,
+        error,
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Build system prompt for agent step (S16)
+   */
+  private buildAgentSystemPrompt(config: any, personality: any): string {
+    const baseSystem = config.systemMessage || 'You are a helpful AI assistant.';
+
+    if (!personality) {
+      return baseSystem;
+    }
+
+    const tone = personality.configuration.tone || 'professional';
+    const style = personality.configuration.style || 'clear and concise';
+    const domainSpecialty = personality.configuration.domainSpecialty || null;
+
+    let prompt = baseSystem + '\n\n';
+    prompt += `Personality and Communication Style:\n`;
+    prompt += `- Tone: ${tone}\n`;
+    prompt += `- Style: ${style}\n`;
+
+    if (domainSpecialty) {
+      prompt += `- Domain Expertise: ${domainSpecialty}\n`;
+    }
+
+    if (personality.configuration.constraints) {
+      prompt += `\nConstraints:\n`;
+      for (const constraint of personality.configuration.constraints) {
+        prompt += `- ${constraint}\n`;
+      }
+    }
+
+    return prompt;
   }
 
   /**
@@ -483,25 +709,6 @@ export class PlaybookExecutionEngine {
   }
 
   /**
-   * Determine next step key based on current step and output
-   */
-  private async determineNextStep(
-    currentStep: PlaybookStep,
-    stepOutput: unknown
-  ): Promise<string | null> {
-    // For BRANCH steps, the output contains the nextStepKey
-    if (currentStep.type === 'BRANCH' && stepOutput) {
-      const branchOutput = stepOutput as { nextStepKey?: string };
-      if (branchOutput.nextStepKey) {
-        return branchOutput.nextStepKey;
-      }
-    }
-
-    // For other steps, use nextStepKey from step definition
-    return currentStep.nextStepKey;
-  }
-
-  /**
    * Collect final output from all step runs
    */
   private collectFinalOutput(stepRuns: PlaybookStepRun[]): unknown {
@@ -580,6 +787,32 @@ export class PlaybookExecutionEngine {
   }
 
   /**
+   * Persist collaboration context to step run (S9)
+   */
+  private async persistCollaborationContext(
+    stepRunId: string,
+    context: CollaborationContext
+  ): Promise<void> {
+    await this.supabase
+      .from('playbook_step_runs')
+      .update({
+        collaboration_context: context,
+        escalation_level: context.escalationLevel,
+      })
+      .eq('id', stepRunId);
+  }
+
+  /**
+   * Generate embedding for data (S10)
+   * Stub implementation - in production, call OpenAI/Anthropic embeddings API
+   */
+  private async generateEmbedding(_data: unknown): Promise<number[]> {
+    // Stub: In production, call OpenAI embeddings API or similar
+    // For now, return a random 1536-dimensional vector
+    return new Array(1536).fill(0).map(() => Math.random());
+  }
+
+  /**
    * Map database row to PlaybookRun
    */
   private mapRunFromDb(row: any): PlaybookRun {
@@ -618,6 +851,8 @@ export class PlaybookExecutionEngine {
       completedAt: row.completed_at,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
+      collaborationContext: row.collaboration_context, // S9
+      escalationLevel: row.escalation_level, // S9
     };
   }
 }

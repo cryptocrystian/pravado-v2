@@ -7,6 +7,9 @@ import { redirect } from 'next/navigation';
 
 import { getCurrentUser } from '@/lib/getCurrentUser';
 
+// Force dynamic rendering to avoid SSG errors
+export const dynamic = 'force-dynamic';
+
 export default async function AppLayout({
   children,
 }: {

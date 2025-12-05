@@ -6,6 +6,9 @@ import type { ListAgentsResponse } from '@pravado/types';
 
 import { getCurrentUser } from '@/lib/getCurrentUser';
 
+// Force dynamic rendering to avoid SSG errors
+export const dynamic = 'force-dynamic';
+
 async function getAgents() {
   try {
     const response = await fetch('http://localhost:4000/api/v1/agents', {

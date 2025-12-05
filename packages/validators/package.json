@@ -1,6 +1,7 @@
 {
   "name": "@pravado/validators",
-  "version": "0.0.0-s0",
+  "version": "1.0.0-rc1",
+  "releaseCandidate": true,
   "description": "Zod validation schemas for Pravado v2",
   "type": "module",
   "main": "./dist/index.js",

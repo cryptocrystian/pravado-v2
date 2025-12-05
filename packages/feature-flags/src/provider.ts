@@ -71,3 +71,8 @@ export function getFeatureFlagProvider(): FeatureFlagProvider {
 export function isEnabled(flagName: FlagName): boolean {
   return getFeatureFlagProvider().isEnabled(flagName);
 }
+
+/**
+ * Alias for isEnabled (alternative naming convention)
+ */
+export const isFeatureEnabled = isEnabled;

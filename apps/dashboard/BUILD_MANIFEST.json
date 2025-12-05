@@ -1,0 +1,71 @@
+{
+  "name": "@pravado/dashboard",
+  "version": "1.0.0-rc1",
+  "releaseCandidate": true,
+  "buildInfo": {
+    "gitSha": "${GIT_SHA}",
+    "gitBranch": "${GIT_BRANCH}",
+    "buildTimestamp": "${BUILD_TIMESTAMP}",
+    "buildNumber": "${BUILD_NUMBER}",
+    "nodeVersion": "${NODE_VERSION}"
+  },
+  "packages": {
+    "@pravado/types": "1.0.0-rc1",
+    "@pravado/validators": "1.0.0-rc1",
+    "@pravado/utils": "1.0.0-rc1",
+    "@pravado/feature-flags": "1.0.0-rc1"
+  },
+  "dependencies": {
+    "next": "^14.1.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@supabase/supabase-js": "^2.39.3",
+    "tailwindcss": "^3.4.1",
+    "zod": "^3.22.4"
+  },
+  "featureFlags": {
+    "ENABLE_DARK_MODE": false,
+    "ENABLE_ANALYTICS": false,
+    "ENABLE_ADVANCED_SEARCH": false
+  },
+  "pages": {
+    "core": [
+      "/",
+      "/login",
+      "/onboarding",
+      "/callback"
+    ],
+    "app": [
+      "/app",
+      "/app/playbooks",
+      "/app/content",
+      "/app/pr",
+      "/app/seo",
+      "/app/team",
+      "/app/agents"
+    ],
+    "executive": [
+      "/app/exec/command",
+      "/app/exec/digests",
+      "/app/exec/board-reports",
+      "/app/exec/investors",
+      "/app/exec/strategy"
+    ],
+    "totalPages": 50
+  },
+  "stability": {
+    "errorBoundary": true,
+    "clientLogging": true,
+    "logEndpoint": "/api/v1/logs/client"
+  },
+  "deployment": {
+    "platform": "vercel",
+    "framework": "nextjs",
+    "buildCommand": "next build",
+    "outputDirectory": ".next"
+  },
+  "runtime": {
+    "nodeMinVersion": "20.0.0",
+    "pnpmMinVersion": "9.0.0"
+  }
+}

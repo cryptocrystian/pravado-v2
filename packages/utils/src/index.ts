@@ -9,3 +9,4 @@ export * from './errors';
 export * from './mailer';
 export * from './email-templates';
 export * from './agents';
+export * from './llmRouter'; // S16: LLM router

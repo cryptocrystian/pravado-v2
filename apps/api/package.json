@@ -1,17 +1,21 @@
 {
   "name": "@pravado/api",
-  "version": "0.0.1-s1",
+  "version": "1.0.0-rc1",
+  "releaseCandidate": true,
   "description": "Pravado v2 API - Fastify backend",
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "tsx src/index.ts",
+    "start:prod": "node --import tsx dist/index.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "lint": "eslint src",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "seed:demo": "tsx src/scripts/seedDemoOrg.ts",
+    "configure:render:staging": "tsx src/scripts/configureRenderStaging.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^9.3.1",
@@ -22,11 +26,16 @@
     "@pravado/validators": "workspace:*",
     "@supabase/supabase-js": "^2.39.3",
     "fastify": "^4.25.2",
+    "fastify-plugin": "^5.1.0",
+    "openai": "^6.9.1",
+    "stripe": "^20.0.0",
+    "tsx": "^4.7.0",
+    "uuid": "^9.0.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
-    "tsx": "^4.7.0",
+    "@types/uuid": "^9.0.0",
     "typescript": "^5.3.3",
     "vitest": "^1.2.0"
   }
