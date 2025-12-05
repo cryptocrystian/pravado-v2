@@ -7,7 +7,7 @@ services:
     branch: main
     healthCheckPath: /health/live
     buildCommand: npm install -g pnpm && pnpm install --prod=false && pnpm build
-    startCommand: node apps/api/dist/index.js
+    startCommand: pnpm --filter @pravado/api start:prod
     envVars:
       - key: NODE_VERSION
         value: "20"
