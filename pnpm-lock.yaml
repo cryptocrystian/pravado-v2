@@ -263,13 +263,13 @@ importers:
 
   packages/utils:
     dependencies:
+      '@pravado/types':
+        specifier: workspace:*
+        version: link:../types
       '@supabase/supabase-js':
         specifier: ^2.38.4
         version: 2.81.1
     devDependencies:
-      '@pravado/types':
-        specifier: workspace:*
-        version: link:../types
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
@@ -279,13 +279,13 @@ importers:
 
   packages/validators:
     dependencies:
+      '@pravado/types':
+        specifier: workspace:*
+        version: link:../types
       zod:
         specifier: ^3.22.4
         version: 3.25.76
     devDependencies:
-      '@pravado/types':
-        specifier: workspace:*
-        version: link:../types
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
