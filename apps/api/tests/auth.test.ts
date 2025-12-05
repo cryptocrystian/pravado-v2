@@ -57,8 +57,8 @@ describe('Auth Routes', () => {
 
       expect(response.statusCode).toBe(401);
       const body = JSON.parse(response.body);
-      expect(body.success).toBe(false);
-      expect(body.error.code).toBe('UNAUTHORIZED');
+      expect(body.code).toBe('UNAUTHORIZED');
+      expect(body.message).toBe('Authentication required');
     });
 
     // Note: Authenticated tests require test user setup

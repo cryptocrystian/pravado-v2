@@ -122,20 +122,27 @@ export interface PRListWithMembers {
 }
 
 // ========================================
-// CONTENT INTELLIGENCE TYPES
+// CONTENT INTELLIGENCE TYPES (S3 + S12)
 // ========================================
+
+export type ContentStatus = 'draft' | 'published' | 'archived';
+export type ContentBriefStatus = 'draft' | 'in_progress' | 'completed';
 
 export interface ContentItem extends BaseEntity {
   orgId: UUID;
   title: string;
+  slug: string | null; // URL-friendly identifier
   contentType: 'blog_post' | 'social_post' | 'long_form' | 'video_script' | 'newsletter';
-  status: 'draft' | 'published' | 'archived';
+  status: ContentStatus; // S12: Enhanced with type
   body: string | null;
-  url: string | null;
+  url: string | null; // S12: Added
   publishedAt: string | null;
-  wordCount: number | null;
+  wordCount: number | null; // S12: Enhanced
   readingTimeMinutes: number | null;
   performanceScore: number | null;
+  primaryTopicId: UUID | null; // S12: Added for topic clustering
+  embeddings?: number[] | null; // S12: Added for similarity
+  performance: Record<string, unknown>; // S12: Added for analytics stub
   metadata: Record<string, unknown>;
 }
 
@@ -143,23 +150,65 @@ export interface ContentBrief extends BaseEntity {
   orgId: UUID;
   title: string;
   targetAudience: string | null;
-  targetKeywords: string[];
-  outline: string | null;
+  targetKeywords: string[]; // S3 original
+  targetKeyword: string | null; // S12: Primary keyword
+  targetIntent: string | null; // S12: Added
+  outline: Record<string, unknown> | null; // S12: Changed from string to JSONB
   tone: 'professional' | 'casual' | 'technical' | 'friendly' | null;
   minWordCount: number | null;
   maxWordCount: number | null;
   contentItemId: UUID | null;
-  status: 'pending' | 'in_progress' | 'completed';
+  status: ContentBriefStatus; // S12: Enhanced with new status values
   metadata: Record<string, unknown>;
 }
 
 export interface ContentTopic extends BaseEntity {
   orgId: UUID;
-  topicName: string;
-  embedding: number[] | null;
+  name: string; // Renamed from topicName for consistency
+  topicName?: string; // Kept for backward compatibility
+  description: string | null;
+  embedding?: number[] | null; // S3 original (singular)
+  embeddings?: number[] | null; // S12: Added (plural for consistency)
   contentItemId: UUID | null;
   relevanceScore: number | null;
+  clusterId?: UUID | null; // S12: Added for clustering
   metadata: Record<string, unknown>;
+}
+
+export interface ContentTopicCluster extends BaseEntity {
+  orgId: UUID;
+  name: string;
+  description?: string | null;
+}
+
+// ========================================
+// CONTENT INTELLIGENCE DTOs (S12)
+// ========================================
+
+export interface ContentItemListDTO {
+  items: ContentItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface ContentBriefWithContextDTO {
+  brief: ContentBrief;
+  relatedTopics: ContentTopic[];
+  suggestedKeywords: string[];
+}
+
+export interface ContentClusterDTO {
+  cluster: ContentTopicCluster;
+  topics: ContentTopic[];
+  representativeContent: ContentItem[];
+}
+
+export interface ContentGapDTO {
+  keyword: string;
+  intent: string | null;
+  existingContentCount: number;
+  seoOpportunityScore: number;
 }
 
 // ========================================
@@ -404,11 +453,18 @@ export type GetPRListWithMembersResponse = ApiResponse<{ item: PRListWithMembers
 export type CreatePRListResponse = ApiResponse<{ item: PRList }>;
 export type UpdatePRListMembersResponse = ApiResponse<{ item: PRListWithMembers }>;
 
-// Content API Responses
-export type ListContentItemsResponse = ApiResponse<{ items: ContentItem[] }>;
+// Content API Responses (S3 + S12)
+export type ListContentItemsResponse = ApiResponse<ContentItemListDTO>; // S12: Enhanced with pagination
 export type GetContentItemResponse = ApiResponse<{ item: ContentItem }>;
+export type CreateContentItemResponse = ApiResponse<{ item: ContentItem }>; // S12: Added
+export type UpdateContentItemResponse = ApiResponse<{ item: ContentItem }>; // S12: Added
 export type ListContentBriefsResponse = ApiResponse<{ items: ContentBrief[] }>;
 export type GetContentBriefResponse = ApiResponse<{ item: ContentBrief }>;
+export type GetContentBriefWithContextResponse = ApiResponse<ContentBriefWithContextDTO>; // S12: Added
+export type CreateContentBriefResponse = ApiResponse<{ item: ContentBrief }>; // S12: Added
+export type UpdateContentBriefResponse = ApiResponse<{ item: ContentBrief }>; // S12: Added
+export type ListContentClustersResponse = ApiResponse<{ items: ContentClusterDTO[] }>; // S12: Added
+export type ListContentGapsResponse = ApiResponse<{ items: ContentGapDTO[] }>; // S12: Added
 
 // SEO API Responses
 export type ListSEOKeywordsResponse = ApiResponse<{ items: SEOKeyword[]; total?: number }>;
@@ -432,3 +488,133 @@ export type ListSEOPageAuditsResponse = ApiResponse<{ items: SEOPageAudit[] }>;
 export type GetSEOBacklinkProfileResponse = ApiResponse<{ profile: SEOBacklinkProfile }>;
 export type ListSEOBacklinksResponse = ApiResponse<{ items: SEOBacklink[]; total: number }>;
 export type ListSEOReferringDomainsResponse = ApiResponse<{ items: SEOReferringDomain[]; total: number }>;
+
+// ========================================
+// CONTENT BRIEF GENERATOR TYPES (S13)
+// ========================================
+
+export interface GeneratedBrief extends BaseEntity {
+  orgId: UUID;
+  contentItemId: UUID | null;
+  playbookRunId: UUID | null;
+  brief: Record<string, unknown>;
+  outline: Record<string, unknown> | null;
+  seoContext: Record<string, unknown> | null;
+  personalityUsed: Record<string, unknown> | null;
+}
+
+export interface BriefGenerationInput {
+  contentItemId?: UUID;
+  targetKeyword?: string;
+  targetIntent?: string;
+  personalityId?: UUID; // optional override
+}
+
+export interface BriefGenerationResult {
+  runId: UUID;
+  generatedBriefId: UUID;
+  brief: Record<string, unknown>;
+  outline: Record<string, unknown>;
+  seoContext: Record<string, unknown>;
+}
+
+// ========================================
+// CONTENT BRIEF GENERATOR API RESPONSES (S13)
+// ========================================
+
+export type GenerateBriefResponse = ApiResponse<{ result: BriefGenerationResult }>;
+export type GetGeneratedBriefResponse = ApiResponse<{ item: GeneratedBrief }>;
+export type ListGeneratedBriefsResponse = ApiResponse<{ items: GeneratedBrief[] }>;
+
+// ========================================
+// CONTENT QUALITY SCORING TYPES (S14)
+// ========================================
+
+export interface ContentQualityScore extends BaseEntity {
+  orgId: UUID;
+  contentItemId: UUID;
+  score: number;
+  readability: number | null;
+  topicAlignment: number | null;
+  keywordAlignment: number | null;
+  thinContent: boolean;
+  duplicateFlag: boolean;
+  warnings: Record<string, unknown>;
+}
+
+export interface ContentQualityAnalysisResult {
+  item: ContentItem;
+  score: ContentQualityScore;
+  similarItems: ContentItem[];
+  suggestedImprovements: string[];
+}
+
+// ========================================
+// CONTENT QUALITY API RESPONSES (S14)
+// ========================================
+
+export type AnalyzeContentQualityResponse = ApiResponse<{
+  result: ContentQualityAnalysisResult;
+}>;
+export type GetContentQualityResponse = ApiResponse<{
+  result: ContentQualityAnalysisResult;
+}>;
+
+// ========================================
+// CONTENT REWRITE TYPES (S15)
+// ========================================
+
+export interface ContentRewrite extends BaseEntity {
+  orgId: UUID;
+  contentItemId: UUID;
+  playbookRunId?: UUID | null;
+
+  originalText: string;
+  rewrittenText: string;
+
+  diff: Record<string, unknown>;
+  improvements: string[];
+  reasoning: Record<string, unknown>;
+
+  readabilityBefore: number;
+  readabilityAfter: number;
+
+  qualityBefore: number;
+  qualityAfter: number;
+}
+
+export interface RewriteRequestInput {
+  contentItemId: string;
+  personalityId?: string | null;
+  targetKeyword?: string | null;
+  targetIntent?: string | null;
+}
+
+export interface RewriteResult {
+  rewriteId: string;
+  rewrittenText: string;
+  diff: Record<string, unknown>;
+  improvements: string[];
+  reasoning: Record<string, unknown>;
+  readabilityBefore: number;
+  readabilityAfter: number;
+  qualityBefore: number;
+  qualityAfter: number;
+}
+
+// ========================================
+// CONTENT REWRITE API RESPONSES (S15)
+// ========================================
+
+export type CreateRewriteResponse = ApiResponse<{
+  result: RewriteResult;
+}>;
+
+export type GetRewriteResponse = ApiResponse<{
+  rewrite: ContentRewrite;
+}>;
+
+export type ListRewritesResponse = ApiResponse<{
+  rewrites: ContentRewrite[];
+  total: number;
+}>;

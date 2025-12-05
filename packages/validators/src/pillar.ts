@@ -95,19 +95,101 @@ export const updatePRListMembersSchema = z.object({
 export type UpdatePRListMembersParams = z.infer<typeof updatePRListMembersSchema>;
 
 // ========================================
-// CONTENT PILLAR SCHEMAS (stubs for S3)
+// CONTENT PILLAR SCHEMAS (S3 + S12)
 // ========================================
 
+// S12: Enhanced content item listing with filters
 export const listContentItemsSchema = z.object({
-  limit: z.number().int().positive().max(100).optional(),
-  offset: z.number().int().nonnegative().optional(),
+  status: z.enum(['draft', 'published', 'archived']).optional(),
+  q: z.string().optional(), // Search query for title/body
+  topicId: z.string().uuid().optional(),
+  page: z.number().int().positive().optional().default(1),
+  pageSize: z.number().int().positive().max(100).optional().default(20),
   contentType: z
     .enum(['blog_post', 'social_post', 'long_form', 'video_script', 'newsletter'])
     .optional(),
-  status: z.enum(['draft', 'published', 'archived']).optional(),
 });
 
 export type ListContentItemsParams = z.infer<typeof listContentItemsSchema>;
+
+// S12: Create content item
+export const createContentItemSchema = z.object({
+  title: z.string().min(1).max(500),
+  slug: z.string().min(1).max(200).optional(),
+  contentType: z.enum(['blog_post', 'social_post', 'long_form', 'video_script', 'newsletter']),
+  status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
+  body: z.string().optional(),
+  url: z.string().url().optional(),
+  primaryTopicId: z.string().uuid().optional(),
+  metadata: z.record(z.unknown()).optional().default({}),
+});
+
+export type CreateContentItemParams = z.infer<typeof createContentItemSchema>;
+
+// S12: Update content item
+export const updateContentItemSchema = z.object({
+  title: z.string().min(1).max(500).optional(),
+  slug: z.string().min(1).max(200).optional(),
+  contentType: z.enum(['blog_post', 'social_post', 'long_form', 'video_script', 'newsletter']).optional(),
+  status: z.enum(['draft', 'published', 'archived']).optional(),
+  body: z.string().optional(),
+  url: z.string().url().optional(),
+  primaryTopicId: z.string().uuid().optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export type UpdateContentItemParams = z.infer<typeof updateContentItemSchema>;
+
+// S12: Content brief schemas
+export const listContentBriefsSchema = z.object({
+  status: z.enum(['draft', 'in_progress', 'completed']).optional(),
+  limit: z.number().int().positive().max(100).optional().default(20),
+  offset: z.number().int().nonnegative().optional().default(0),
+});
+
+export type ListContentBriefsParams = z.infer<typeof listContentBriefsSchema>;
+
+export const createContentBriefSchema = z.object({
+  title: z.string().min(1).max(500),
+  targetKeyword: z.string().optional(),
+  targetIntent: z.string().optional(),
+  outline: z.record(z.unknown()).optional(),
+  targetAudience: z.string().optional(),
+  targetKeywords: z.array(z.string()).optional().default([]),
+  tone: z.enum(['professional', 'casual', 'technical', 'friendly']).optional(),
+  minWordCount: z.number().int().positive().optional(),
+  maxWordCount: z.number().int().positive().optional(),
+  status: z.enum(['draft', 'in_progress', 'completed']).optional().default('draft'),
+  metadata: z.record(z.unknown()).optional().default({}),
+});
+
+export type CreateContentBriefParams = z.infer<typeof createContentBriefSchema>;
+
+export const updateContentBriefSchema = z.object({
+  title: z.string().min(1).max(500).optional(),
+  targetKeyword: z.string().optional(),
+  targetIntent: z.string().optional(),
+  outline: z.record(z.unknown()).optional(),
+  targetAudience: z.string().optional(),
+  targetKeywords: z.array(z.string()).optional(),
+  tone: z.enum(['professional', 'casual', 'technical', 'friendly']).optional(),
+  minWordCount: z.number().int().positive().optional(),
+  maxWordCount: z.number().int().positive().optional(),
+  status: z.enum(['draft', 'in_progress', 'completed']).optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export type UpdateContentBriefParams = z.infer<typeof updateContentBriefSchema>;
+
+// S12: Content gaps schema
+export const listContentGapsSchema = z.object({
+  keyword: z.string().optional(),
+  minScore: z.number().min(0).max(100).optional(),
+  topicId: z.string().uuid().optional(),
+  limit: z.number().int().positive().max(100).optional().default(20),
+});
+
+export type ListContentGapsParams = z.infer<typeof listContentGapsSchema>;
 
 // ========================================
 // SEO PILLAR SCHEMAS (S4 - Real Implementation)

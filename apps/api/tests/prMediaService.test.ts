@@ -1,27 +1,20 @@
 /**
  * PRMediaService tests
  * Tests for journalist search, list CRUD, and membership operations
+ * Updated in Sprint S26 to use comprehensive Supabase mock
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { PRMediaService } from '../src/services/prMediaService';
 import type { SupabaseClient } from '@supabase/supabase-js';
-
-// Mock Supabase client
-const createMockSupabase = () => {
-  const mockSupabase = {
-    from: vi.fn(),
-  } as unknown as SupabaseClient;
-
-  return mockSupabase;
-};
+import { createMockSupabaseClient, createMockQueryBuilder, createMockSuccess, createMockError } from './helpers/supabaseMock';
 
 describe('PRMediaService', () => {
   let service: PRMediaService;
   let mockSupabase: SupabaseClient;
 
   beforeEach(() => {
-    mockSupabase = createMockSupabase();
+    mockSupabase = createMockSupabaseClient();
     service = new PRMediaService(mockSupabase);
   });
 
@@ -45,24 +38,8 @@ describe('PRMediaService', () => {
         },
       ];
 
-      const mockQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        or: vi.fn().mockReturnThis(),
-        range: vi.fn().mockReturnThis(),
-      };
-
-      (mockSupabase.from as any).mockReturnValue(mockQuery);
-
-      // First call: journalists query
-      mockQuery.select.mockReturnValueOnce(mockQuery);
-      mockQuery.eq.mockReturnValueOnce(mockQuery);
-      mockQuery.or.mockReturnValueOnce(mockQuery);
-      mockQuery.range.mockResolvedValueOnce({
-        data: mockJournalists,
-        error: null,
-        count: 1,
-      });
+      // First call: journalists query - supports .select().eq().or().range()
+      const mockJournalistsQuery = createMockQueryBuilder(createMockSuccess(mockJournalists, 1));
 
       // Second call: outlets query
       const mockOutlets = [
@@ -74,38 +51,23 @@ describe('PRMediaService', () => {
           country: 'USA',
         },
       ];
-
-      const mockOutletsQuery = {
-        select: vi.fn().mockReturnThis(),
-        in: vi.fn().mockResolvedValue({
-          data: mockOutlets,
-          error: null,
-        }),
-      };
-
-      (mockSupabase.from as any).mockReturnValueOnce(mockOutletsQuery);
+      const mockOutletsQuery = createMockQueryBuilder(createMockSuccess(mockOutlets));
 
       // Third call: journalist_beats query
-      const mockJournalistBeatsQuery = {
-        select: vi.fn().mockReturnThis(),
-        in: vi.fn().mockResolvedValue({
-          data: [{ journalist_id: 'j1', beat_id: 'b1' }],
-          error: null,
-        }),
-      };
-
-      (mockSupabase.from as any).mockReturnValueOnce(mockJournalistBeatsQuery);
+      const mockJournalistBeatsQuery = createMockQueryBuilder(
+        createMockSuccess([{ journalist_id: 'j1', beat_id: 'b1' }])
+      );
 
       // Fourth call: beats query
-      const mockBeatsQuery = {
-        select: vi.fn().mockReturnThis(),
-        in: vi.fn().mockResolvedValue({
-          data: [{ id: 'b1', org_id: orgId, name: 'Technology' }],
-          error: null,
-        }),
-      };
+      const mockBeatsQuery = createMockQueryBuilder(
+        createMockSuccess([{ id: 'b1', org_id: orgId, name: 'Technology' }])
+      );
 
-      (mockSupabase.from as any).mockReturnValueOnce(mockBeatsQuery);
+      (mockSupabase.from as any)
+        .mockReturnValueOnce(mockJournalistsQuery)
+        .mockReturnValueOnce(mockOutletsQuery)
+        .mockReturnValueOnce(mockJournalistBeatsQuery)
+        .mockReturnValueOnce(mockBeatsQuery);
 
       const result = await service.searchJournalists(orgId, {
         q: 'tech',
@@ -194,15 +156,9 @@ describe('PRMediaService', () => {
     it('should throw error on database failure', async () => {
       const orgId = '123e4567-e89b-12d3-a456-426614174000';
 
-      const mockQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        range: vi.fn().mockResolvedValue({
-          data: null,
-          error: { message: 'Database error' },
-          count: null,
-        }),
-      };
+      const mockQuery = createMockQueryBuilder(
+        createMockError('Database error')
+      );
 
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
@@ -316,63 +272,31 @@ describe('PRMediaService', () => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
+      const mockListQuery = createMockQueryBuilder(createMockSuccess(mockList));
 
-      const mockListQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: mockList,
-          error: null,
-        }),
-      };
+      // Mock members query - supports .select().eq().eq()
+      const mockMembersQuery = createMockQueryBuilder(
+        createMockSuccess([{ journalist_id: 'j1' }])
+      );
 
-      // Mock members query
-      const mockMembersQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-      };
-
-      mockMembersQuery.eq.mockReturnThis();
-      mockMembersQuery.eq.mockResolvedValueOnce({
-        data: [{ journalist_id: 'j1' }],
-        error: null,
-      });
-
-      // Mock journalists query
-      const mockJournalistsQuery = {
-        select: vi.fn().mockReturnThis(),
-        in: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockResolvedValue({
-          data: [
-            {
-              id: 'j1',
-              org_id: orgId,
-              full_name: 'Jane Doe',
-              email: 'jane@example.com',
-              primary_outlet_id: null,
-            },
-          ],
-          error: null,
-        }),
-      };
+      // Mock journalists query - supports .select().in().eq()
+      const mockJournalistsQuery = createMockQueryBuilder(
+        createMockSuccess([
+          {
+            id: 'j1',
+            org_id: orgId,
+            full_name: 'Jane Doe',
+            email: 'jane@example.com',
+            primary_outlet_id: null,
+          },
+        ])
+      );
 
       // Mock outlets query (empty since no primary_outlet_id)
-      const mockOutletsQuery = {
-        select: vi.fn().mockReturnThis(),
-        in: vi.fn().mockResolvedValue({
-          data: [],
-          error: null,
-        }),
-      };
+      const mockOutletsQuery = createMockQueryBuilder(createMockSuccess([]));
 
       // Mock journalist_beats query
-      const mockJournalistBeatsQuery = {
-        select: vi.fn().mockReturnThis(),
-        in: vi.fn().mockResolvedValue({
-          data: [],
-          error: null,
-        }),
-      };
+      const mockJournalistBeatsQuery = createMockQueryBuilder(createMockSuccess([]));
 
       (mockSupabase.from as any)
         .mockReturnValueOnce(mockListQuery)
@@ -394,14 +318,9 @@ describe('PRMediaService', () => {
       const orgId = '123e4567-e89b-12d3-a456-426614174000';
       const listId = 'nonexistent';
 
-      const mockQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: null,
-          error: { message: 'Not found' },
-        }),
-      };
+      const mockQuery = createMockQueryBuilder(
+        createMockError('Not found')
+      );
 
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
@@ -424,26 +343,10 @@ describe('PRMediaService', () => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
+      const mockListQuery = createMockQueryBuilder(createMockSuccess(mockList));
 
-      const mockListQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: mockList,
-          error: null,
-        }),
-      };
-
-      const mockMembersQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-      };
-
-      mockMembersQuery.eq.mockReturnThis();
-      mockMembersQuery.eq.mockResolvedValueOnce({
-        data: [],
-        error: null,
-      });
+      // Mock members query - supports .select().eq().eq()
+      const mockMembersQuery = createMockQueryBuilder(createMockSuccess([]));
 
       (mockSupabase.from as any)
         .mockReturnValueOnce(mockListQuery)

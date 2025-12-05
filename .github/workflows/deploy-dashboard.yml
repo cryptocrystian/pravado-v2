@@ -1,0 +1,239 @@
+name: Deploy Dashboard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/dashboard/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  NODE_ENV: production
+  PNPM_VERSION: 9
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript validation - types
+        run: pnpm --filter @pravado/types exec tsc --noEmit
+
+      - name: TypeScript validation - validators
+        run: pnpm --filter @pravado/validators exec tsc --noEmit
+
+      - name: TypeScript validation - utils
+        run: pnpm --filter @pravado/utils exec tsc --noEmit
+
+      - name: TypeScript validation - feature-flags
+        run: pnpm --filter @pravado/feature-flags exec tsc --noEmit
+
+      - name: TypeScript validation - dashboard
+        run: pnpm --filter @pravado/dashboard exec tsc --noEmit
+
+  build:
+    name: Build Dashboard
+    runs-on: ubuntu-latest
+    needs: validate
+    env:
+      # Build-time environment variables (public only)
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+      NEXT_PUBLIC_DASHBOARD_URL: ${{ secrets.NEXT_PUBLIC_DASHBOARD_URL }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: |
+          pnpm --filter @pravado/types build
+          pnpm --filter @pravado/validators build
+          pnpm --filter @pravado/utils build
+          pnpm --filter @pravado/feature-flags build
+          pnpm --filter @pravado/dashboard build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-build
+          path: |
+            apps/dashboard/.next
+            packages/*/dist
+          retention-days: 7
+
+  deploy-staging:
+    name: Deploy to Staging (Vercel Preview)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.inputs.environment == 'staging')
+    environment:
+      name: staging
+      url: ${{ steps.deploy.outputs.preview-url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: apps/dashboard
+
+      - name: Build Project with Vercel
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: apps/dashboard
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL_STAGING }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY_STAGING }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL_STAGING }}
+          NEXT_PUBLIC_DASHBOARD_URL: ${{ secrets.NEXT_PUBLIC_DASHBOARD_URL_STAGING }}
+
+      - name: Deploy to Vercel (Preview)
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "preview-url=$url" >> $GITHUB_OUTPUT
+        working-directory: apps/dashboard
+
+      - name: Output deployment URL
+        run: |
+          echo "Staging deployed to: ${{ steps.deploy.outputs.preview-url }}"
+
+  deploy-production:
+    name: Deploy to Production (Vercel)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_DASHBOARD_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: apps/dashboard
+
+      - name: Build Project with Vercel
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: apps/dashboard
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_DASHBOARD_URL: ${{ secrets.NEXT_PUBLIC_DASHBOARD_URL }}
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+
+      - name: Deploy to Vercel (Production)
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: apps/dashboard
+
+      - name: Output deployment URL
+        run: |
+          echo "Production deployed to: ${{ vars.PRODUCTION_DASHBOARD_URL }}"
+
+  # Alternative: Direct Vercel integration (if using Vercel GitHub App)
+  # This job is for manual override or when not using automatic Vercel integration
+
+  notify:
+    name: Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+    steps:
+      - name: Staging deployment status
+        if: needs.deploy-staging.result != 'skipped'
+        run: |
+          if [ "${{ needs.deploy-staging.result }}" == "success" ]; then
+            echo "Staging deployment successful"
+          else
+            echo "Staging deployment failed or was cancelled"
+          fi
+
+      - name: Production deployment status
+        if: needs.deploy-production.result != 'skipped'
+        run: |
+          if [ "${{ needs.deploy-production.result }}" == "success" ]; then
+            echo "Production deployment successful"
+          else
+            echo "Production deployment failed or was cancelled"
+          fi

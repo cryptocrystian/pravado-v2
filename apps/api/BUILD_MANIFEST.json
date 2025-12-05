@@ -1,0 +1,60 @@
+{
+  "name": "@pravado/api",
+  "version": "1.0.0-rc1",
+  "releaseCandidate": true,
+  "buildInfo": {
+    "gitSha": "${GIT_SHA}",
+    "gitBranch": "${GIT_BRANCH}",
+    "buildTimestamp": "${BUILD_TIMESTAMP}",
+    "buildNumber": "${BUILD_NUMBER}",
+    "nodeVersion": "${NODE_VERSION}"
+  },
+  "packages": {
+    "@pravado/types": "1.0.0-rc1",
+    "@pravado/validators": "1.0.0-rc1",
+    "@pravado/utils": "1.0.0-rc1",
+    "@pravado/feature-flags": "1.0.0-rc1"
+  },
+  "dependencies": {
+    "fastify": "^4.25.2",
+    "@supabase/supabase-js": "^2.39.3",
+    "openai": "^6.9.1",
+    "stripe": "^20.0.0",
+    "zod": "^3.22.4"
+  },
+  "featureFlags": {
+    "ENABLE_LLM": true,
+    "ENABLE_SCHEDULER": true,
+    "ENABLE_BILLING_HARD_LIMITS": true,
+    "ENABLE_STRIPE_BILLING": true,
+    "ENABLE_AUDIT_LOGGING": true,
+    "ENABLE_EXECUTION_STREAMING": true,
+    "ENABLE_PR_GENERATOR": true,
+    "ENABLE_MEDIA_MONITORING": true,
+    "ENABLE_CRISIS_ENGINE": true,
+    "ENABLE_EXECUTIVE_COMMAND_CENTER": true,
+    "ENABLE_AI_SCENARIO_SIMULATIONS": true,
+    "ENABLE_REALITY_MAPS": true,
+    "ENABLE_INSIGHT_CONFLICTS": true,
+    "ENABLE_DEBUG_MODE": false,
+    "ENABLE_MAINTENANCE_MODE": false
+  },
+  "endpoints": {
+    "health": [
+      "/health/live",
+      "/health/ready",
+      "/health/info"
+    ],
+    "apiPrefix": "/api/v1",
+    "totalRouteGroups": 45
+  },
+  "database": {
+    "provider": "supabase",
+    "migrations": 77,
+    "migrationRange": "00-76"
+  },
+  "runtime": {
+    "nodeMinVersion": "20.0.0",
+    "pnpmMinVersion": "9.0.0"
+  }
+}

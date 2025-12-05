@@ -325,4 +325,173 @@ export class PlaybookService {
       updatedAt: row.updated_at,
     };
   }
+
+  // ========================================
+  // Sprint S8: Versioning & Status Management
+  // ========================================
+
+  /**
+   * List all versions of a playbook (by name)
+   */
+  async listPlaybookVersions(
+    orgId: string,
+    playbookId: string
+  ): Promise<import('@pravado/types').PlaybookVersionSummary[]> {
+    // First get the playbook to find its name
+    const { data: playbook, error: playbookError } = await this.supabase
+      .from('playbooks')
+      .select('name')
+      .eq('id', playbookId)
+      .eq('org_id', orgId)
+      .single();
+
+    if (playbookError || !playbook) {
+      return [];
+    }
+
+    // Find all versions with same name
+    const { data: versions, error: versionsError } = await this.supabase
+      .from('playbooks')
+      .select('id, version, status, created_at, updated_at, created_by')
+      .eq('org_id', orgId)
+      .eq('name', playbook.name)
+      .order('version', { ascending: false });
+
+    if (versionsError) {
+      throw new Error(`Failed to list playbook versions: ${versionsError.message}`);
+    }
+
+    return (versions || []).map((v) => ({
+      id: v.id,
+      version: v.version,
+      status: v.status,
+      createdAt: v.created_at,
+      updatedAt: v.updated_at,
+      createdBy: v.created_by,
+    }));
+  }
+
+  /**
+   * Clone a playbook version (create new version)
+   */
+  async clonePlaybookVersion(
+    orgId: string,
+    playbookId: string,
+    userId: string
+  ): Promise<import('@pravado/types').PlaybookDefinitionDTO> {
+    // Fetch the source playbook and its steps
+    const source = await this.getPlaybookById(orgId, playbookId);
+    if (!source) {
+      throw new Error('Source playbook not found');
+    }
+
+    // Find highest version number for this playbook name
+    const { data: versions } = await this.supabase
+      .from('playbooks')
+      .select('version')
+      .eq('org_id', orgId)
+      .eq('name', source.playbook.name)
+      .order('version', { ascending: false })
+      .limit(1);
+
+    const nextVersion = versions && versions.length > 0 ? versions[0].version + 1 : 1;
+
+    // Create new playbook with incremented version
+    const { data: newPlaybook, error: playbookError } = await this.supabase
+      .from('playbooks')
+      .insert({
+        org_id: orgId,
+        name: source.playbook.name,
+        version: nextVersion,
+        status: 'DRAFT', // Always start as DRAFT
+        input_schema: source.playbook.inputSchema,
+        output_schema: source.playbook.outputSchema,
+        timeout_seconds: source.playbook.timeoutSeconds,
+        max_retries: source.playbook.maxRetries,
+        tags: source.playbook.tags,
+        created_by: userId,
+      })
+      .select()
+      .single();
+
+    if (playbookError || !newPlaybook) {
+      throw new Error(`Failed to clone playbook: ${playbookError?.message}`);
+    }
+
+    // Clone all steps
+    const stepsToInsert = source.steps.map((step) => ({
+      playbook_id: newPlaybook.id,
+      org_id: orgId,
+      key: step.key,
+      name: step.name,
+      type: step.type,
+      config: step.config,
+      position: step.position,
+      next_step_key: step.nextStepKey,
+    }));
+
+    const { data: newSteps, error: stepsError } = await this.supabase
+      .from('playbook_steps')
+      .insert(stepsToInsert)
+      .select();
+
+    if (stepsError) {
+      // Rollback: delete the playbook
+      await this.supabase.from('playbooks').delete().eq('id', newPlaybook.id);
+      throw new Error(`Failed to clone playbook steps: ${stepsError.message}`);
+    }
+
+    return {
+      playbook: this.mapPlaybookFromDb(newPlaybook),
+      steps: (newSteps || []).map(this.mapStepFromDb),
+    };
+  }
+
+  /**
+   * Set playbook status
+   * If setting to ACTIVE, optionally deprecate other versions with same name
+   */
+  async setPlaybookStatus(
+    orgId: string,
+    playbookId: string,
+    status: PlaybookStatus
+  ): Promise<Playbook> {
+    // Get playbook name first
+    const { data: playbook } = await this.supabase
+      .from('playbooks')
+      .select('name')
+      .eq('id', playbookId)
+      .eq('org_id', orgId)
+      .single();
+
+    if (!playbook) {
+      throw new Error('Playbook not found');
+    }
+
+    // If setting to ACTIVE, deprecate other ACTIVE versions with same name
+    if (status === 'ACTIVE') {
+      await this.supabase
+        .from('playbooks')
+        .update({ status: 'DEPRECATED' })
+        .eq('org_id', orgId)
+        .eq('name', playbook.name)
+        .eq('status', 'ACTIVE')
+        .neq('id', playbookId);
+    }
+
+    // Update the target playbook status
+    const { data: updated, error } = await this.supabase
+      .from('playbooks')
+      .update({ status })
+      .eq('id', playbookId)
+      .eq('org_id', orgId)
+      .select()
+      .single();
+
+    if (error || !updated) {
+      throw new Error(`Failed to update playbook status: ${error?.message}`);
+    }
+
+    return this.mapPlaybookFromDb(updated);
+  }
 }
