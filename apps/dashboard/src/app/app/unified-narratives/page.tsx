@@ -268,16 +268,18 @@ export default function UnifiedNarrativesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="container mx-auto py-6 px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <BookOpen className="h-8 w-8 text-indigo-600" />
+            <h1 className="text-3xl font-bold flex items-center gap-3 text-white-0">
+              <div className="w-12 h-12 rounded-xl bg-brand-iris/10 flex items-center justify-center">
+                <BookOpen className="h-6 w-6 text-brand-iris" />
+              </div>
               Unified Narratives
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-muted mt-2">
               Cross-domain synthesis engine for multi-layer narrative documents
             </p>
           </div>
@@ -299,49 +301,49 @@ export default function UnifiedNarrativesPage() {
 
         {/* Error Alert */}
         {error && (
-          <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded mb-6">
-            <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-700">{error}</p>
+          <div className="alert-error flex items-start gap-2 mb-6">
+            <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+            <p className="text-sm">{error}</p>
           </div>
         )}
 
         {/* Stats Row */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
-            <Card>
+            <Card className="panel-card">
               <CardContent className="pt-4 pb-3 px-4">
-                <p className="text-2xl font-bold">{stats.totalNarratives}</p>
-                <p className="text-xs text-muted-foreground">Total Narratives</p>
+                <p className="text-2xl font-bold text-white-0">{stats.totalNarratives}</p>
+                <p className="text-xs text-muted">Total Narratives</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="panel-card">
               <CardContent className="pt-4 pb-3 px-4">
-                <p className="text-2xl font-bold text-yellow-600">{stats.byStatus?.draft || 0}</p>
-                <p className="text-xs text-muted-foreground">Drafts</p>
+                <p className="text-2xl font-bold text-brand-amber">{stats.byStatus?.draft || 0}</p>
+                <p className="text-xs text-muted">Drafts</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="panel-card">
               <CardContent className="pt-4 pb-3 px-4">
-                <p className="text-2xl font-bold text-blue-600">{stats.byStatus?.review || 0}</p>
-                <p className="text-xs text-muted-foreground">In Review</p>
+                <p className="text-2xl font-bold text-brand-cyan">{stats.byStatus?.review || 0}</p>
+                <p className="text-xs text-muted">In Review</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="panel-card">
               <CardContent className="pt-4 pb-3 px-4">
-                <p className="text-2xl font-bold text-green-600">{stats.byStatus?.approved || 0}</p>
-                <p className="text-xs text-muted-foreground">Approved</p>
+                <p className="text-2xl font-bold text-semantic-success">{stats.byStatus?.approved || 0}</p>
+                <p className="text-xs text-muted">Approved</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="panel-card">
               <CardContent className="pt-4 pb-3 px-4">
-                <p className="text-2xl font-bold text-purple-600">{stats.byStatus?.published || 0}</p>
-                <p className="text-xs text-muted-foreground">Published</p>
+                <p className="text-2xl font-bold text-brand-magenta">{stats.byStatus?.published || 0}</p>
+                <p className="text-xs text-muted">Published</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="panel-card">
               <CardContent className="pt-4 pb-3 px-4">
-                <p className="text-2xl font-bold text-gray-600">{stats.byStatus?.archived || 0}</p>
-                <p className="text-xs text-muted-foreground">Archived</p>
+                <p className="text-2xl font-bold text-slate-6">{stats.byStatus?.archived || 0}</p>
+                <p className="text-xs text-muted">Archived</p>
               </CardContent>
             </Card>
           </div>
@@ -358,16 +360,18 @@ export default function UnifiedNarrativesPage() {
         {/* Narratives Grid */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-brand-cyan" />
           </div>
         ) : narratives.length === 0 ? (
-          <Card>
+          <Card className="panel-card">
             <CardContent className="py-12 text-center">
-              <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-brand-iris/10 flex items-center justify-center">
+                <BookOpen className="h-8 w-8 text-brand-iris" />
+              </div>
+              <h3 className="text-lg font-semibold text-white-0 mb-2">
                 No Narratives Found
               </h3>
-              <p className="text-gray-500 mb-4">
+              <p className="text-muted mb-4">
                 {filters.search || filters.status || filters.narrativeType
                   ? 'No narratives match your current filters.'
                   : 'Get started by creating your first unified narrative.'}
@@ -381,7 +385,7 @@ export default function UnifiedNarrativesPage() {
         ) : (
           <>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted">
                 Showing {narratives.length} of {total} narratives
               </p>
             </div>
@@ -399,10 +403,10 @@ export default function UnifiedNarrativesPage() {
 
         {/* Generator Form Modal */}
         {showGenerator && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-4 border-b flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Create Unified Narrative</h2>
+          <div className="fixed inset-0 bg-slate-0/80 flex items-center justify-center z-50 p-4">
+            <div className="panel-card max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-4 border-b border-border-subtle flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-white-0">Create Unified Narrative</h2>
                 <Button
                   variant="ghost"
                   size="sm"
