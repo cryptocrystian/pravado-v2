@@ -300,8 +300,8 @@ export default function ExecutiveDigestPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Executive Digests</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-white-0">Executive Digests</h1>
+          <p className="text-sm text-muted mt-1">
             Automated strategic briefs and weekly executive reports
           </p>
         </div>
@@ -313,7 +313,7 @@ export default function ExecutiveDigestPage() {
 
       {/* Error Alert */}
       {error && (
-        <div className="p-4 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-700">
+        <div className="alert-error flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
           <span>{error}</span>
         </div>
@@ -329,18 +329,18 @@ export default function ExecutiveDigestPage() {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
-                <FileText className="h-4 w-4 text-indigo-600" />
+                <FileText className="h-4 w-4 text-brand-iris" />
                 Digests ({digests.length})
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {listLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                  <Loader2 className="h-6 w-6 animate-spin text-slate-6" />
                 </div>
               ) : digests.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <div className="text-center py-8 text-muted">
+                  <FileText className="h-12 w-12 text-slate-6 mx-auto mb-4" />
                   <p>No digests created yet.</p>
                   <Button
                     variant="outline"
@@ -371,13 +371,13 @@ export default function ExecutiveDigestPage() {
           {detailsLoading ? (
             <Card className="p-8">
               <div className="flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                <Loader2 className="h-8 w-8 animate-spin text-brand-cyan" />
               </div>
             </Card>
           ) : !digestDetails ? (
             <Card className="p-8">
-              <div className="text-center text-gray-500">
-                <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <div className="text-center text-muted">
+                <FileText className="h-12 w-12 text-slate-6 mx-auto mb-4" />
                 <p>Select a digest to view details</p>
               </div>
             </Card>

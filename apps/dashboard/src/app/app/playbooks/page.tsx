@@ -1,6 +1,6 @@
 /**
- * Playbooks page (Sprint S8)
- * Lists all playbooks with filtering and template creation
+ * Playbooks page
+ * Styled according to Pravado Design System v2
  */
 
 'use client';
@@ -107,26 +107,26 @@ export default function PlaybooksPage() {
   };
 
   const getStatusBadgeClass = (status: string) => {
-    const baseClass = 'px-2 py-1 rounded text-xs font-medium';
     switch (status) {
       case 'ACTIVE':
-        return `${baseClass} bg-green-100 text-green-800`;
+        return 'bg-semantic-success/10 text-semantic-success';
       case 'DRAFT':
-        return `${baseClass} bg-gray-100 text-gray-800`;
+        return 'bg-slate-5 text-slate-6';
       case 'ARCHIVED':
-        return `${baseClass} bg-yellow-100 text-yellow-800`;
+        return 'bg-brand-amber/10 text-brand-amber';
       case 'DEPRECATED':
-        return `${baseClass} bg-red-100 text-red-800`;
+        return 'bg-semantic-danger/10 text-semantic-danger';
       default:
-        return `${baseClass} bg-gray-100 text-gray-600`;
+        return 'bg-slate-5 text-slate-6';
     }
   };
 
   return (
     <div className="p-8">
+      {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Playbooks</h1>
-        <p className="text-gray-600">Automated workflows for SEO, PR, and content tasks</p>
+        <h1 className="text-3xl font-bold text-white-0 mb-2">Playbooks</h1>
+        <p className="text-muted">Automated workflows for SEO, PR, and content tasks</p>
       </div>
 
       {/* Filters and Actions */}
@@ -136,13 +136,13 @@ export default function PlaybooksPage() {
           placeholder="Search playbooks..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md flex-1 max-w-md"
+          className="input-field flex-1 max-w-md"
         />
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md"
+          className="px-4 py-3 bg-slate-3 border border-border-subtle rounded-lg text-sm text-white-0 focus:border-brand-cyan focus:ring-2 focus:ring-brand-cyan/20 transition-all duration-sm"
         >
           <option value="">All Status</option>
           <option value="DRAFT">Draft</option>
@@ -153,7 +153,7 @@ export default function PlaybooksPage() {
 
         <button
           onClick={() => setShowTemplateDialog(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="btn-primary"
         >
           Create from Template
         </button>
@@ -161,7 +161,7 @@ export default function PlaybooksPage() {
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        <div className="alert-error mb-6">
           {error}
         </div>
       )}
@@ -169,20 +169,25 @@ export default function PlaybooksPage() {
       {/* Loading State */}
       {loading && (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          <p className="mt-2 text-gray-600">Loading playbooks...</p>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand-cyan"></div>
+          <p className="mt-2 text-slate-6">Loading playbooks...</p>
         </div>
       )}
 
       {/* Empty State */}
       {!loading && playbooks.length === 0 && (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-600 mb-4">
+        <div className="text-center py-12 panel-card">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-brand-iris/10 flex items-center justify-center">
+            <svg className="w-8 h-8 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <p className="text-muted mb-4">
             No playbooks yet. Create one from a template to get started.
           </p>
           <button
             onClick={() => setShowTemplateDialog(true)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="btn-primary"
           >
             Create from Template
           </button>
@@ -191,47 +196,49 @@ export default function PlaybooksPage() {
 
       {/* Playbooks Table */}
       {!loading && playbooks.length > 0 && (
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="panel-card overflow-hidden">
+          <table className="min-w-full divide-y divide-border-subtle">
+            <thead className="bg-slate-3/50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-6 uppercase tracking-wider">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-6 uppercase tracking-wider">
                   Version
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-6 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-6 uppercase tracking-wider">
                   Tags
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-6 uppercase tracking-wider">
                   Updated
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-border-subtle">
               {playbooks.map((playbook) => (
                 <tr
                   key={playbook.id}
-                  className="hover:bg-gray-50 cursor-pointer"
+                  className="hover:bg-slate-4/50 cursor-pointer transition-colors duration-sm"
                   onClick={() => (window.location.href = `/app/playbooks/${playbook.id}`)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{playbook.name}</div>
+                    <div className="text-sm font-medium text-white-0">{playbook.name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">v{playbook.version}</div>
+                    <div className="text-sm text-slate-6">v{playbook.version}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={getStatusBadgeClass(playbook.status)}>{playbook.status}</span>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeClass(playbook.status)}`}>
+                      {playbook.status}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{playbook.tags?.join(', ') || '—'}</div>
+                    <div className="text-sm text-slate-6">{playbook.tags?.join(', ') || '-'}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-6">
                     {new Date(playbook.updatedAt).toLocaleDateString()}
                   </td>
                 </tr>
@@ -243,15 +250,17 @@ export default function PlaybooksPage() {
 
       {/* Template Dialog */}
       {showTemplateDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Choose a Template</h2>
+        <div className="fixed inset-0 bg-slate-0/80 flex items-center justify-center z-50">
+          <div className="panel-card max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6 m-4">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white-0">Choose a Template</h2>
               <button
                 onClick={() => setShowTemplateDialog(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-slate-6 hover:text-white-0 transition-colors duration-sm p-2 hover:bg-slate-4 rounded-lg"
               >
-                ✕
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
@@ -259,19 +268,19 @@ export default function PlaybooksPage() {
               {templates.map((template) => (
                 <div
                   key={template.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:border-blue-500 cursor-pointer"
+                  className="border border-border-subtle rounded-xl p-4 hover:border-brand-cyan cursor-pointer transition-all duration-sm bg-slate-3/30 hover:bg-slate-3/50"
                   onClick={() => createFromTemplate(template)}
                 >
-                  <h3 className="font-semibold text-lg mb-1">{template.name}</h3>
-                  <p className="text-gray-600 text-sm mb-2">{template.description}</p>
-                  <div className="flex gap-2">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                  <h3 className="font-semibold text-lg text-white-0 mb-1">{template.name}</h3>
+                  <p className="text-muted text-sm mb-3">{template.description}</p>
+                  <div className="flex gap-2 flex-wrap">
+                    <span className="px-2 py-1 bg-brand-iris/10 text-brand-iris text-xs rounded-md font-medium">
                       {template.category}
                     </span>
                     {template.templateTags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded"
+                        className="px-2 py-1 bg-slate-5 text-slate-6 text-xs rounded-md"
                       >
                         {tag}
                       </span>

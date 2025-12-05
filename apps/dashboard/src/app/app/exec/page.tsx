@@ -292,14 +292,14 @@ export default function ExecutiveCommandCenterPage() {
             {/* Page Title */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
-                  <LayoutDashboard className="h-6 w-6 text-white" />
+                <div className="p-2 rounded-lg bg-brand-iris/20">
+                  <LayoutDashboard className="h-6 w-6 text-brand-iris" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
+                  <h1 className="text-2xl font-bold text-white-0">
                     Executive Command Center
                   </h1>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted">
                     Cross-system insights and unified executive dashboard
                   </p>
                 </div>
@@ -312,7 +312,7 @@ export default function ExecutiveCommandCenterPage() {
 
             {/* Error Display */}
             {error && (
-              <div className="flex items-center gap-2 p-3 text-red-700 bg-red-50 border border-red-200 rounded-lg">
+              <div className="alert-error flex items-center gap-2">
                 <AlertCircle className="h-5 w-5" />
                 <span>{error}</span>
                 <Button
@@ -391,8 +391,8 @@ export default function ExecutiveCommandCenterPage() {
               </CardHeader>
               <CardContent className="space-y-3 max-h-[400px] overflow-y-auto">
                 {dashboards.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <LayoutDashboard className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                  <div className="text-center py-8 text-muted">
+                    <LayoutDashboard className="h-8 w-8 mx-auto mb-2 text-slate-6" />
                     <p>No dashboards yet.</p>
                     <Button
                       variant="outline"
@@ -424,28 +424,28 @@ export default function ExecutiveCommandCenterPage() {
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Time Window</span>
-                    <span className="font-medium">
+                    <span className="text-muted">Time Window</span>
+                    <span className="font-medium text-white-0">
                       {getTimeWindowLabel(dashboard.timeWindow)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Primary Focus</span>
-                    <span className="font-medium">
+                    <span className="text-muted">Primary Focus</span>
+                    <span className="font-medium text-white-0">
                       {getPrimaryFocusLabel(dashboard.primaryFocus)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Total KPIs</span>
-                    <span className="font-medium">{kpis.length}</span>
+                    <span className="text-muted">Total KPIs</span>
+                    <span className="font-medium text-white-0">{kpis.length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Active Risks</span>
-                    <span className="font-medium text-red-600">{risksCount}</span>
+                    <span className="text-muted">Active Risks</span>
+                    <span className="font-medium text-semantic-danger">{risksCount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Opportunities</span>
-                    <span className="font-medium text-green-600">{opportunitiesCount}</span>
+                    <span className="text-muted">Opportunities</span>
+                    <span className="font-medium text-semantic-success">{opportunitiesCount}</span>
                   </div>
                 </CardContent>
               </Card>
