@@ -68,6 +68,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [magicLinkLoading, setMagicLinkLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<'google' | 'microsoft' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -142,6 +143,35 @@ export default function LoginPage() {
       const error = err as Error;
       setError(error.message || `Failed to sign in with ${provider === 'azure' ? 'Microsoft' : 'Google'}`);
       setOauthLoading(null);
+    }
+  };
+
+  const handleMagicLink = async () => {
+    if (!email) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    setMagicLinkLoading(true);
+    setError(null);
+    setMessage(null);
+
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: getRedirectUrl(),
+        },
+      });
+
+      if (error) throw error;
+
+      setMessage('Check your email for the magic link!');
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || 'Failed to send magic link');
+    } finally {
+      setMagicLinkLoading(false);
     }
   };
 
@@ -271,7 +301,7 @@ export default function LoginPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading || oauthLoading !== null}
+              disabled={loading || oauthLoading !== null || magicLinkLoading}
               className="btn-primary w-full py-3"
             >
               {loading ? (
@@ -283,6 +313,42 @@ export default function LoginPage() {
                 isSignUp ? 'Create account' : 'Sign in'
               )}
             </button>
+
+            {/* Magic Link Divider */}
+            {!isSignUp && (
+              <>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-border-subtle" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-slate-2 px-2 text-muted">or sign in with</span>
+                  </div>
+                </div>
+
+                {/* Magic Link Button */}
+                <button
+                  type="button"
+                  onClick={handleMagicLink}
+                  disabled={loading || oauthLoading !== null || magicLinkLoading || !email}
+                  className="btn-magic-link w-full"
+                >
+                  {magicLinkLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <AIPresenceDot status="analyzing" />
+                      <span>Sending magic link...</span>
+                    </span>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span>Send Magic Link</span>
+                    </>
+                  )}
+                </button>
+              </>
+            )}
 
             {/* Toggle Sign Up / Sign In */}
             <div className="text-center">
