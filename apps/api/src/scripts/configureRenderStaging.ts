@@ -91,6 +91,7 @@ function getEnvVarsToSet(): EnvVarConfig[] {
   return [
     // Required - hardcoded values
     { key: 'NODE_ENV', value: 'production', required: true },
+    { key: 'DEPLOYMENT_ENV', value: 'staging', required: true },
     { key: 'API_HOST', value: '0.0.0.0', required: true },
     { key: 'API_PORT', value: '10000', required: true },
 

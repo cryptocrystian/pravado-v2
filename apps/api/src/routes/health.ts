@@ -99,6 +99,7 @@ export async function healthRoutes(server: FastifyInstance) {
         buildTime: BUILD_INFO.buildTime,
       },
       environment: {
+        deploymentEnv: config.DEPLOYMENT_ENV,
         nodeEnv: config.NODE_ENV,
         logLevel: config.LOG_LEVEL,
         llmProvider: config.LLM_PROVIDER,
