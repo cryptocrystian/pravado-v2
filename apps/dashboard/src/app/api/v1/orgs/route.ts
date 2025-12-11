@@ -1,10 +1,12 @@
 /**
  * API route for creating organizations
+ * Uses service role key to bypass RLS for server-side operations
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,8 +22,8 @@ export async function POST(request: NextRequest) {
 
     const cookieStore = await cookies();
 
-    // Create Supabase client with user's session
-    const supabase = createServerClient(
+    // Create Supabase client with user's session (for authentication check)
+    const supabaseAuth = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -39,7 +41,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
 
     if (userError || !user) {
       console.error('[API /orgs] User error:', userError);
@@ -51,21 +53,28 @@ export async function POST(request: NextRequest) {
 
     console.log('[API /orgs] Creating org for user:', user.id);
 
-    // Ensure user exists in public.users table (might not exist if trigger didn't run)
-    const { data: existingUser, error: userCheckError } = await supabase
+    // Create admin client with service role key to bypass RLS
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
+
+    // Ensure user exists in public.users table
+    const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('id')
       .eq('id', user.id)
       .single();
 
-    if (userCheckError && userCheckError.code !== 'PGRST116') {
-      // PGRST116 is "not found" which is expected
-      console.error('[API /orgs] User check error:', userCheckError);
-    }
-
     if (!existingUser) {
       console.log('[API /orgs] User not in public.users, creating...');
-      const { error: createUserError } = await supabase
+      const { error: createUserError } = await supabaseAdmin
         .from('users')
         .insert({
           id: user.id,
@@ -84,7 +93,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the organization
-    const { data: org, error: orgError } = await supabase
+    const { data: org, error: orgError } = await supabaseAdmin
       .from('orgs')
       .insert({ name: name.trim() })
       .select()
@@ -101,7 +110,7 @@ export async function POST(request: NextRequest) {
     console.log('[API /orgs] Org created:', org.id);
 
     // Add the user as owner of the organization
-    const { error: memberError } = await supabase
+    const { error: memberError } = await supabaseAdmin
       .from('org_members')
       .insert({
         org_id: org.id,
@@ -112,7 +121,7 @@ export async function POST(request: NextRequest) {
     if (memberError) {
       console.error('[API /orgs] Member creation error:', memberError);
       // Try to clean up the org if member creation failed
-      await supabase.from('orgs').delete().eq('id', org.id);
+      await supabaseAdmin.from('orgs').delete().eq('id', org.id);
       return NextResponse.json(
         { error: { message: `Failed to add you as organization owner: ${memberError.message}` } },
         { status: 500 }
