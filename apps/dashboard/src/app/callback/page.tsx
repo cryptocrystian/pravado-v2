@@ -14,6 +14,10 @@ export const dynamic = 'force-dynamic';
 
 // Map error codes to user-friendly messages
 const getErrorMessage = (error: string | null, errorDescription: string | null): string => {
+  // Log raw error for debugging
+  console.log('[Callback] Raw error:', error);
+  console.log('[Callback] Raw error_description:', errorDescription);
+
   if (!error) return 'An unexpected error occurred';
 
   const normalizedError = error.toLowerCase();
@@ -34,9 +38,10 @@ const getErrorMessage = (error: string | null, errorDescription: string | null):
     return 'Access was denied. Please try again or use a different sign-in method.';
   }
 
-  // Provider mismatch
+  // Provider mismatch - show actual error for debugging
   if (normalizedDesc.includes('provider') || normalizedDesc.includes('mismatch')) {
-    return 'There was a mismatch with your sign-in provider. Please try again.';
+    const rawError = errorDescription?.replace(/_/g, ' ').replace(/\+/g, ' ') || 'Provider mismatch';
+    return `Provider error: ${rawError}`;
   }
 
   // Generic error with description
