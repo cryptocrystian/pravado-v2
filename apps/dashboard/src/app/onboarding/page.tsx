@@ -35,10 +35,12 @@ export default function OnboardingPage() {
 
   const handleCreateOrg = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[Onboarding] Create org button clicked, org name:', orgName);
     setLoading(true);
     setError(null);
 
     try {
+      console.log('[Onboarding] Making fetch request to /api/v1/orgs');
       const response = await fetch('/api/v1/orgs', {
         method: 'POST',
         headers: {
@@ -50,13 +52,28 @@ export default function OnboardingPage() {
         }),
       });
 
+      console.log('[Onboarding] Response status:', response.status);
+      console.log('[Onboarding] Response ok:', response.ok);
+
+      const responseText = await response.text();
+      console.log('[Onboarding] Response body:', responseText);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Failed to create organization');
+        let errorMessage = 'Failed to create organization';
+        try {
+          const errorData = JSON.parse(responseText);
+          errorMessage = errorData.error?.message || errorMessage;
+        } catch {
+          errorMessage = responseText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
-      router.push('/app');
+      console.log('[Onboarding] Success! Redirecting to /app');
+      // Use window.location for more reliable redirect
+      window.location.href = '/app';
     } catch (err) {
+      console.error('[Onboarding] Error caught:', err);
       const error = err as Error;
       setError(error.message || 'An error occurred');
     } finally {
