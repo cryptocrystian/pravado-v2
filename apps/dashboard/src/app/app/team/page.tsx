@@ -29,9 +29,9 @@ export default async function TeamPage() {
     return (
       <div className="p-8">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">Team</h2>
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">Failed to load team members</p>
+          <h2 className="text-3xl font-bold text-white-0 mb-8">Team</h2>
+          <div className="bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg p-4">
+            <p className="text-semantic-danger">Failed to load team members</p>
           </div>
         </div>
       </div>

@@ -257,17 +257,17 @@ export default function RiskRadarPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-page">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4">
+      <div className="bg-slate-1 border-b border-border-subtle px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Radar className="h-6 w-6 text-purple-600" />
+            <div className="p-2 bg-brand-magenta/10 rounded-lg">
+              <Radar className="h-6 w-6 text-brand-magenta" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">Risk Radar</h1>
-              <p className="text-sm text-gray-500">
+              <h1 className="text-xl font-semibold text-white-0">Risk Radar</h1>
+              <p className="text-sm text-muted">
                 Executive risk monitoring & predictive crisis forecasting
               </p>
             </div>
@@ -312,7 +312,7 @@ export default function RiskRadarPage() {
               <CardContent className="space-y-3">
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-6" />
                   <Input
                     placeholder="Search snapshots..."
                     value={searchQuery}
@@ -343,10 +343,10 @@ export default function RiskRadarPage() {
                 <div className="space-y-2 max-h-[600px] overflow-y-auto">
                   {loading ? (
                     <div className="flex items-center justify-center py-8">
-                      <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                      <Loader2 className="h-6 w-6 animate-spin text-brand-cyan" />
                     </div>
                   ) : filteredSnapshots.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-8 text-muted">
                       No snapshots found
                     </div>
                   ) : (
@@ -371,7 +371,7 @@ export default function RiskRadarPage() {
                 {/* Quick Stats */}
                 <div className="grid grid-cols-3 gap-3">
                   <Card className="p-3">
-                    <div className="flex items-center gap-2 text-gray-600 mb-1">
+                    <div className="flex items-center gap-2 text-muted mb-1">
                       <AlertTriangle className="h-4 w-4" />
                       <span className="text-xs">Risk Index</span>
                     </div>
@@ -379,32 +379,32 @@ export default function RiskRadarPage() {
                       className={cn(
                         'text-2xl font-bold',
                         selectedSnapshot.riskLevel === 'critical'
-                          ? 'text-red-600'
+                          ? 'text-semantic-danger'
                           : selectedSnapshot.riskLevel === 'high'
-                            ? 'text-orange-600'
+                            ? 'text-brand-amber'
                             : selectedSnapshot.riskLevel === 'medium'
-                              ? 'text-yellow-600'
-                              : 'text-green-600'
+                              ? 'text-semantic-warning'
+                              : 'text-semantic-success'
                       )}
                     >
                       {selectedSnapshot.overallRiskIndex}
                     </div>
                   </Card>
                   <Card className="p-3">
-                    <div className="flex items-center gap-2 text-gray-600 mb-1">
+                    <div className="flex items-center gap-2 text-muted mb-1">
                       <TrendingUp className="h-4 w-4" />
                       <span className="text-xs">Indicators</span>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-white-0">
                       {indicators.length}
                     </div>
                   </Card>
                   <Card className="p-3">
-                    <div className="flex items-center gap-2 text-gray-600 mb-1">
+                    <div className="flex items-center gap-2 text-muted mb-1">
                       <Sparkles className="h-4 w-4" />
                       <span className="text-xs">Forecasts</span>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-white-0">
                       {forecasts.length}
                     </div>
                   </Card>
@@ -441,8 +441,8 @@ export default function RiskRadarPage() {
               </>
             ) : (
               <Card className="p-12 text-center">
-                <Radar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <div className="text-gray-500">
+                <Radar className="h-12 w-12 text-slate-6 mx-auto mb-4" />
+                <div className="text-muted">
                   Select a snapshot to view indicators and forecasts
                 </div>
               </Card>
@@ -482,8 +482,8 @@ export default function RiskRadarPage() {
               </>
             ) : (
               <Card className="p-12 text-center">
-                <AlertTriangle className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <div className="text-gray-500">
+                <AlertTriangle className="h-12 w-12 text-slate-6 mx-auto mb-4" />
+                <div className="text-muted">
                   Select a snapshot to view executive dashboard
                 </div>
               </Card>

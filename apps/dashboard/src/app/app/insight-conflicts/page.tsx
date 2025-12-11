@@ -310,8 +310,8 @@ export default function InsightConflictsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Insight Conflicts</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-white-0">Insight Conflicts</h1>
+          <p className="text-sm text-muted mt-1">
             Autonomous conflict detection, analysis, and resolution across intelligence systems
           </p>
         </div>
@@ -332,28 +332,28 @@ export default function InsightConflictsPage() {
 
       {/* Batch actions */}
       {selectedConflicts.size > 0 && (
-        <div className="flex items-center gap-4 p-4 bg-indigo-50 rounded-lg">
-          <span className="text-sm font-medium text-indigo-700">
+        <div className="flex items-center gap-4 p-4 bg-brand-iris/10 rounded-lg border border-brand-iris/20">
+          <span className="text-sm font-medium text-brand-iris">
             {selectedConflicts.size} selected
           </span>
           <div className="flex-1" />
           <button
             onClick={handleBatchAnalyze}
             disabled={batchOperating}
-            className="px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors disabled:opacity-50"
+            className="px-3 py-1.5 text-sm font-medium text-brand-cyan hover:bg-brand-cyan/10 rounded-lg transition-colors disabled:opacity-50"
           >
             Analyze All
           </button>
           <button
             onClick={() => setShowDismissModal(true)}
             disabled={batchOperating}
-            className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+            className="px-3 py-1.5 text-sm font-medium text-slate-6 hover:bg-slate-3 rounded-lg transition-colors disabled:opacity-50"
           >
             Dismiss All
           </button>
           <button
             onClick={() => setSelectedConflicts(new Set())}
-            className="px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-700"
+            className="px-3 py-1.5 text-sm font-medium text-slate-6 hover:text-white-0"
           >
             Clear
           </button>
@@ -362,7 +362,7 @@ export default function InsightConflictsPage() {
 
       {/* Error */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        <div className="alert-error">
           {error}
         </div>
       )}
@@ -393,21 +393,21 @@ export default function InsightConflictsPage() {
       {/* Pagination */}
       {total > pageSize && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted">
             Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, total)} of {total}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => goToPage(page - 1)}
               disabled={page === 1}
-              className="px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded disabled:opacity-50"
+              className="btn-ghost disabled:opacity-50"
             >
               Previous
             </button>
             <button
               onClick={() => goToPage(page + 1)}
               disabled={!hasMore}
-              className="px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded disabled:opacity-50"
+              className="btn-ghost disabled:opacity-50"
             >
               Next
             </button>
@@ -434,27 +434,27 @@ export default function InsightConflictsPage() {
               setConflictGraph(null);
               setAuditEvents([]);
             }}
-            className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+            className="p-2 text-slate-6 hover:bg-slate-3 rounded-lg"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-gray-900">{selectedConflict.title}</h1>
+            <h1 className="text-xl font-bold text-white-0">{selectedConflict.title}</h1>
           </div>
         </div>
 
         {/* Detail tabs */}
-        <div className="flex border-b border-gray-200 mb-4">
+        <div className="flex border-b border-border-subtle mb-4">
           {(['overview', 'analysis', 'resolution', 'graph', 'audit'] as DetailTab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setDetailTab(tab)}
               className={`px-4 py-2 text-sm font-medium ${
                 detailTab === tab
-                  ? 'text-indigo-600 border-b-2 border-indigo-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'text-brand-cyan border-b-2 border-brand-cyan'
+                  : 'text-slate-6 hover:text-white-0'
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -513,21 +513,21 @@ export default function InsightConflictsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-page p-6">
       <div className="max-w-7xl mx-auto">
         {viewMode === 'list' ? renderListView() : renderDetailView()}
       </div>
 
       {/* Resolve Modal */}
       {showResolveModal && selectedConflict && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="p-4 border-b border-gray-200">
+        <div className="fixed inset-0 bg-slate-0/80 flex items-center justify-center z-50">
+          <div className="panel-card w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b border-border-subtle">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Resolve Conflict</h2>
+                <h2 className="text-lg font-semibold text-white-0">Resolve Conflict</h2>
                 <button
                   onClick={() => setShowResolveModal(false)}
-                  className="p-1 text-gray-400 hover:text-gray-600"
+                  className="p-1 text-slate-6 hover:text-white-0"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -548,19 +548,19 @@ export default function InsightConflictsPage() {
 
       {/* Dismiss Modal */}
       {showDismissModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
+        <div className="fixed inset-0 bg-slate-0/80 flex items-center justify-center z-50">
+          <div className="panel-card w-full max-w-md p-6">
+            <h2 className="text-lg font-semibold text-white-0 mb-2">
               Dismiss {selectedConflicts.size > 0 ? `${selectedConflicts.size} Conflicts` : 'Conflict'}
             </h2>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-muted mb-4">
               {selectedConflicts.size > 0
                 ? 'Are you sure you want to dismiss these conflicts? This marks them as not requiring resolution.'
                 : 'Are you sure you want to dismiss this conflict? This marks it as not requiring resolution.'
               }
             </p>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-white-0 mb-1">
                 Reason (optional)
               </label>
               <textarea
@@ -568,7 +568,7 @@ export default function InsightConflictsPage() {
                 onChange={(e) => setDismissReason(e.target.value)}
                 placeholder="Provide a reason for dismissing..."
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                className="input-field w-full text-sm"
               />
             </div>
             <div className="flex justify-end gap-3">
@@ -577,7 +577,7 @@ export default function InsightConflictsPage() {
                   setShowDismissModal(false);
                   setDismissReason('');
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
+                className="btn-ghost"
               >
                 Cancel
               </button>
@@ -590,7 +590,7 @@ export default function InsightConflictsPage() {
                   }
                 }}
                 disabled={batchOperating}
-                className="px-4 py-2 text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-lg disabled:opacity-50"
+                className="btn-secondary disabled:opacity-50"
               >
                 Dismiss
               </button>

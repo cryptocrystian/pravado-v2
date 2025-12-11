@@ -225,14 +225,14 @@ export default function RealityMapsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Reality Maps</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-white-0">Reality Maps</h1>
+          <p className="text-sm text-muted mt-1">
             AI-driven multi-outcome scenario visualization
           </p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+          className="btn-primary inline-flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -252,7 +252,7 @@ export default function RealityMapsPage() {
               setPage(1);
             }}
             placeholder="Search reality maps..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+            className="input-field w-full"
           />
         </div>
         <select
@@ -261,7 +261,7 @@ export default function RealityMapsPage() {
             setStatusFilter(e.target.value);
             setPage(1);
           }}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+          className="input-field"
         >
           <option value="">All Statuses</option>
           {Object.entries(STATUS_LABELS).map(([value, label]) => (
@@ -272,7 +272,7 @@ export default function RealityMapsPage() {
 
       {/* Error */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        <div className="alert-error">
           {error}
         </div>
       )}
@@ -280,23 +280,23 @@ export default function RealityMapsPage() {
       {/* Loading */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
-          <svg className="animate-spin w-8 h-8 text-indigo-600" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin w-8 h-8 text-brand-cyan" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
         </div>
       ) : maps.length === 0 ? (
-        <div className="text-center py-16">
-          <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-16 panel-card">
+          <svg className="w-16 h-16 mx-auto text-slate-6 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
           </svg>
-          <h3 className="text-lg font-medium text-gray-900 mb-1">No reality maps yet</h3>
-          <p className="text-sm text-gray-500 mb-4">
+          <h3 className="text-lg font-medium text-white-0 mb-1">No reality maps yet</h3>
+          <p className="text-sm text-muted mb-4">
             Create your first reality map to visualize multi-outcome scenarios.
           </p>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+            className="btn-primary"
           >
             Create Reality Map
           </button>
@@ -326,21 +326,21 @@ export default function RealityMapsPage() {
           {/* Pagination */}
           {total > pageSize && (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted">
                 Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, total)} of {total}
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded disabled:opacity-50"
+                  className="btn-ghost disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => setPage(p => p + 1)}
                   disabled={page * pageSize >= total}
-                  className="px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded disabled:opacity-50"
+                  className="btn-ghost disabled:opacity-50"
                 >
                   Next
                 </button>
@@ -367,16 +367,16 @@ export default function RealityMapsPage() {
               setGraphData(null);
               setAnalysisData(null);
             }}
-            className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+            className="p-2 text-slate-6 hover:bg-slate-3 rounded-lg"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">{selectedMap.name}</h1>
+            <h1 className="text-xl font-bold text-white-0">{selectedMap.name}</h1>
             {selectedMap.description && (
-              <p className="text-sm text-gray-500">{selectedMap.description}</p>
+              <p className="text-sm text-muted">{selectedMap.description}</p>
             )}
           </div>
         </div>
@@ -407,13 +407,13 @@ export default function RealityMapsPage() {
         />
 
         {/* Detail tabs */}
-        <div className="flex border-b border-gray-200 mt-4">
+        <div className="flex border-b border-border-subtle mt-4">
           <button
             onClick={() => setDetailTab('graph')}
             className={`px-4 py-2 text-sm font-medium ${
               detailTab === 'graph'
-                ? 'text-indigo-600 border-b-2 border-indigo-600'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'text-brand-cyan border-b-2 border-brand-cyan'
+                : 'text-slate-6 hover:text-white-0'
             }`}
           >
             Graph View
@@ -422,8 +422,8 @@ export default function RealityMapsPage() {
             onClick={() => setDetailTab('paths')}
             className={`px-4 py-2 text-sm font-medium ${
               detailTab === 'paths'
-                ? 'text-indigo-600 border-b-2 border-indigo-600'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'text-brand-cyan border-b-2 border-brand-cyan'
+                : 'text-slate-6 hover:text-white-0'
             }`}
           >
             Paths
@@ -432,8 +432,8 @@ export default function RealityMapsPage() {
             onClick={() => setDetailTab('analysis')}
             className={`px-4 py-2 text-sm font-medium ${
               detailTab === 'analysis'
-                ? 'text-indigo-600 border-b-2 border-indigo-600'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'text-brand-cyan border-b-2 border-brand-cyan'
+                : 'text-slate-6 hover:text-white-0'
             }`}
           >
             Analysis
@@ -447,25 +447,25 @@ export default function RealityMapsPage() {
               <div className="text-center">
                 {selectedMap.status === 'generating' || selectedMap.status === 'analyzing' ? (
                   <>
-                    <svg className="animate-spin w-12 h-12 mx-auto text-indigo-600 mb-4" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin w-12 h-12 mx-auto text-brand-cyan mb-4" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    <p className="text-gray-600">
+                    <p className="text-muted">
                       {selectedMap.status === 'generating' ? 'Generating reality map...' : 'Running analysis...'}
                     </p>
                   </>
                 ) : (
                   <>
-                    <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-16 h-16 mx-auto text-slate-6 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-muted mb-4">
                       {selectedMap.status === 'draft' ? 'This map has not been generated yet.' : 'Generation failed. Try again.'}
                     </p>
                     <button
                       onClick={() => handleGenerate(selectedMap)}
-                      className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+                      className="btn-primary"
                     >
                       Generate Now
                     </button>
@@ -486,7 +486,7 @@ export default function RealityMapsPage() {
                   />
                 )}
                 {detailTab === 'paths' && graphData && (
-                  <div className="h-full bg-white rounded-lg border border-gray-200">
+                  <div className="h-full panel-card">
                     <RealityPathPanel
                       paths={graphData.paths as unknown as RealityGraphPath[]}
                       selectedPathId={selectedPathId}
@@ -496,7 +496,7 @@ export default function RealityMapsPage() {
                   </div>
                 )}
                 {detailTab === 'analysis' && (
-                  <div className="h-full bg-white rounded-lg border border-gray-200">
+                  <div className="h-full panel-card">
                     <RealityAnalysisPanel
                       analysis={analysisData?.analysis ?? null}
                       loading={analyzing}
@@ -508,7 +508,7 @@ export default function RealityMapsPage() {
 
               {/* Side panel for paths when viewing graph */}
               {detailTab === 'graph' && graphData && (
-                <div className="w-80 bg-white rounded-lg border border-gray-200 flex-shrink-0">
+                <div className="w-80 panel-card flex-shrink-0">
                   <RealityPathPanel
                     paths={graphData.paths as unknown as RealityGraphPath[]}
                     selectedPathId={selectedPathId}
@@ -536,17 +536,17 @@ export default function RealityMapsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-page p-6">
       <div className="max-w-7xl mx-auto">
         {viewMode === 'list' ? renderListView() : renderDetailView()}
       </div>
 
       {/* Create Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="p-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Create Reality Map</h2>
+        <div className="fixed inset-0 bg-slate-0/80 flex items-center justify-center z-50">
+          <div className="panel-card w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b border-border-subtle">
+              <h2 className="text-lg font-semibold text-white-0">Create Reality Map</h2>
             </div>
             <div className="p-4">
               <RealityCreateForm
@@ -560,10 +560,10 @@ export default function RealityMapsPage() {
 
       {/* Edit Modal */}
       {showEditModal && editingMap && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="p-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Edit Reality Map</h2>
+        <div className="fixed inset-0 bg-slate-0/80 flex items-center justify-center z-50">
+          <div className="panel-card w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b border-border-subtle">
+              <h2 className="text-lg font-semibold text-white-0">Edit Reality Map</h2>
             </div>
             <div className="p-4">
               <RealityCreateForm
@@ -586,10 +586,10 @@ export default function RealityMapsPage() {
 
       {/* Delete Confirmation */}
       {showDeleteConfirm && deletingMap && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Delete Reality Map</h2>
-            <p className="text-sm text-gray-600 mb-4">
+        <div className="fixed inset-0 bg-slate-0/80 flex items-center justify-center z-50">
+          <div className="panel-card w-full max-w-md p-6">
+            <h2 className="text-lg font-semibold text-white-0 mb-2">Delete Reality Map</h2>
+            <p className="text-sm text-muted mb-4">
               Are you sure you want to delete &quot;{deletingMap.name}&quot;? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
@@ -598,13 +598,13 @@ export default function RealityMapsPage() {
                   setShowDeleteConfirm(false);
                   setDeletingMap(null);
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
+                className="btn-ghost"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg"
+                className="px-4 py-2 text-sm font-medium text-white bg-semantic-danger hover:bg-semantic-danger/90 rounded-lg"
               >
                 Delete
               </button>
