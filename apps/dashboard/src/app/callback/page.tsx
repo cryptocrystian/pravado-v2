@@ -82,33 +82,48 @@ export default function CallbackPage() {
       }
 
       try {
-        // Get session from Supabase (handles OAuth and Magic Link)
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        // First, try to get existing session
+        let { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
         if (sessionError) {
-          throw sessionError;
+          console.error('getSession error:', sessionError);
+        }
+
+        // If no session, try to exchange the auth code (for OAuth flows)
+        if (!session) {
+          // Check if there's a code in the URL hash or search params
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const urlParams = new URLSearchParams(window.location.search);
+          const hasAuthCode = hashParams.get('access_token') || urlParams.get('code');
+
+          if (hasAuthCode) {
+            // For PKCE flow, exchange code for session
+            const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(
+              window.location.href
+            );
+
+            if (exchangeError) {
+              console.error('Code exchange error:', exchangeError);
+              // Don't fail immediately - the session might already be set
+            } else if (data?.session) {
+              session = data.session;
+            }
+          }
+
+          // If still no session, try getSession again (session might have been set by auth state change)
+          if (!session) {
+            const retryResult = await supabase.auth.getSession();
+            session = retryResult.data.session;
+          }
         }
 
         if (!session) {
-          // No session yet - might be waiting for OAuth callback to complete
-          // Try to exchange the auth code if present
-          const { data: { session: exchangedSession }, error: exchangeError } =
-            await supabase.auth.exchangeCodeForSession(window.location.href);
-
-          if (exchangeError || !exchangedSession) {
-            setErrorMessage('No active session found. Please sign in again.');
-            setStatus('error');
-            return;
-          }
-
-          // Session established via code exchange
-          await createBackendSession(exchangedSession.access_token);
-          await redirectBasedOnOrgs();
+          setErrorMessage('No active session found. Please sign in again.');
+          setStatus('error');
           return;
         }
 
-        // Session exists - create backend session
-        await createBackendSession(session.access_token);
+        // Session established - determine where to redirect
         await redirectBasedOnOrgs();
       } catch (err) {
         console.error('Callback error:', err);
@@ -117,49 +132,46 @@ export default function CallbackPage() {
       }
     };
 
-    const createBackendSession = async (accessToken: string) => {
-      const response = await fetch('/api/v1/auth/session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          accessToken,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create session');
-      }
-    };
-
     const redirectBasedOnOrgs = async () => {
-      // Fetch user's orgs to determine redirect
+      // Query orgs directly from Supabase using the user's session
       try {
-        const response = await fetch('/api/v1/orgs', {
-          credentials: 'include',
-        });
+        // Get user to find their org memberships
+        const { data: { user } } = await supabase.auth.getUser();
 
-        if (response.ok) {
-          const data = await response.json();
-          const orgs = data.data?.items || [];
+        if (!user) {
+          // No user - go to onboarding
+          setStatus('success');
+          router.push('/onboarding');
+          return;
+        }
 
-          if (orgs.length > 0) {
-            setStatus('success');
-            router.push('/app');
-          } else {
-            setStatus('success');
-            router.push('/onboarding');
-          }
+        // Query org_members table to see if user belongs to any org
+        const { data: memberships, error: membershipError } = await supabase
+          .from('org_members')
+          .select('org_id')
+          .eq('user_id', user.id)
+          .limit(1);
+
+        if (membershipError) {
+          console.error('Membership query error:', membershipError);
+          // Default to app on error (let app handle auth state)
+          setStatus('success');
+          router.push('/app');
+          return;
+        }
+
+        if (memberships && memberships.length > 0) {
+          setStatus('success');
+          router.push('/app');
         } else {
-          // If we can't fetch orgs, redirect to onboarding
           setStatus('success');
           router.push('/onboarding');
         }
-      } catch {
-        // Default to onboarding on error
+      } catch (err) {
+        console.error('Redirect error:', err);
+        // Default to app on error
         setStatus('success');
-        router.push('/onboarding');
+        router.push('/app');
       }
     };
 
