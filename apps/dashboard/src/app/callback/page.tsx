@@ -138,46 +138,11 @@ export default function CallbackPage() {
     };
 
     const redirectBasedOnOrgs = async () => {
-      // Query orgs directly from Supabase using the user's session
-      try {
-        // Get user to find their org memberships
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-          // No user - go to onboarding
-          setStatus('success');
-          router.push('/onboarding');
-          return;
-        }
-
-        // Query org_members table to see if user belongs to any org
-        const { data: memberships, error: membershipError } = await supabase
-          .from('org_members')
-          .select('org_id')
-          .eq('user_id', user.id)
-          .limit(1);
-
-        if (membershipError) {
-          console.error('Membership query error:', membershipError);
-          // Default to app on error (let app handle auth state)
-          setStatus('success');
-          router.push('/app');
-          return;
-        }
-
-        if (memberships && memberships.length > 0) {
-          setStatus('success');
-          router.push('/app');
-        } else {
-          setStatus('success');
-          router.push('/onboarding');
-        }
-      } catch (err) {
-        console.error('Redirect error:', err);
-        // Default to app on error
-        setStatus('success');
-        router.push('/app');
-      }
+      // Skip org_members query due to RLS policy issues
+      // Just redirect to /app - the app layout will handle routing based on auth state
+      console.log('[Callback] Session established, redirecting to /app');
+      setStatus('success');
+      router.push('/app');
     };
 
     handleCallback();
