@@ -56,7 +56,8 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
         orgs (
           id,
           name,
-          created_at
+          created_at,
+          updated_at
         )
       `)
       .eq('user_id', user.id);
@@ -68,13 +69,14 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
     console.log('[getCurrentUser] Memberships found:', memberships?.length || 0);
 
     // Build orgs array from memberships
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const orgs = (memberships || [])
-      .filter((m: { orgs: unknown }) => m.orgs)
-      .map((m: { org_id: string; role: string; orgs: { id: string; name: string; created_at: string } }) => ({
+      .filter((m: any) => m.orgs)
+      .map((m: any) => ({
         id: m.orgs.id,
         name: m.orgs.name,
-        role: m.role,
         createdAt: m.orgs.created_at,
+        updatedAt: m.orgs.updated_at,
       }));
 
     // Use the first org as active org (could be enhanced with user preference)
