@@ -41,10 +41,23 @@ export default function OnboardingPage() {
 
     try {
       console.log('[Onboarding] Making fetch request to /api/v1/orgs');
+
+      // Get the current session to pass the access token
+      const { supabase } = await import('@/lib/supabaseClient');
+      const { data: { session } } = await supabase.auth.getSession();
+
+      console.log('[Onboarding] Session found:', !!session);
+      console.log('[Onboarding] Access token present:', !!session?.access_token);
+
+      if (!session?.access_token) {
+        throw new Error('No active session. Please sign in again.');
+      }
+
       const response = await fetch('/api/v1/orgs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
         },
         credentials: 'include',
         body: JSON.stringify({
