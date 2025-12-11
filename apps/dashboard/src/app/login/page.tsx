@@ -101,21 +101,9 @@ export default function LoginPage() {
         if (error) throw error;
 
         if (data.session) {
-          const response = await fetch('/api/v1/auth/session', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              accessToken: data.session.access_token,
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to create session');
-          }
-
-          window.location.href = '/callback';
+          // Session established by Supabase SDK - redirect to app
+          // The callback page will handle org check and proper routing
+          window.location.href = '/app';
         }
       }
     } catch (err) {
