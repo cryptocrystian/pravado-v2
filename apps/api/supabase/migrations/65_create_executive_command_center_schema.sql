@@ -59,7 +59,7 @@ CREATE TYPE exec_dashboard_action_type AS ENUM (
 -- 1) exec_dashboards - Main dashboard configuration and cached summary
 CREATE TABLE exec_dashboards (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   title VARCHAR(255) NOT NULL DEFAULT 'Executive Dashboard',
   description TEXT,
   time_window exec_dashboard_time_window NOT NULL DEFAULT '7d',
@@ -77,7 +77,7 @@ CREATE TABLE exec_dashboards (
 -- 2) exec_dashboard_insights - Cross-system insights
 CREATE TABLE exec_dashboard_insights (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   dashboard_id UUID NOT NULL REFERENCES exec_dashboards(id) ON DELETE CASCADE,
   source_system exec_insight_source_system NOT NULL,
   insight_type VARCHAR(100) NOT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE exec_dashboard_insights (
 -- 3) exec_dashboard_kpis - Key performance indicators
 CREATE TABLE exec_dashboard_kpis (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   dashboard_id UUID NOT NULL REFERENCES exec_dashboards(id) ON DELETE CASCADE,
   metric_key VARCHAR(100) NOT NULL,
   metric_label VARCHAR(255) NOT NULL,
@@ -116,7 +116,7 @@ CREATE TABLE exec_dashboard_kpis (
 -- 4) exec_dashboard_narratives - LLM-generated executive summaries
 CREATE TABLE exec_dashboard_narratives (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   dashboard_id UUID NOT NULL REFERENCES exec_dashboards(id) ON DELETE CASCADE,
   model_name VARCHAR(100) NOT NULL DEFAULT 'gpt-4o-mini',
   tokens_used INTEGER DEFAULT 0,
@@ -134,7 +134,7 @@ CREATE TABLE exec_dashboard_narratives (
 -- 5) exec_dashboard_audit_log - Audit trail for dashboard actions
 CREATE TABLE exec_dashboard_audit_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   dashboard_id UUID REFERENCES exec_dashboards(id) ON DELETE SET NULL,
   action_type exec_dashboard_action_type NOT NULL,
   user_id UUID,

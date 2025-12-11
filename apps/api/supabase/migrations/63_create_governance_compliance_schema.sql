@@ -96,7 +96,7 @@ CREATE TYPE governance_entity_type AS ENUM (
 
 CREATE TABLE governance_policies (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Policy identification
   key VARCHAR(100) NOT NULL,
@@ -140,7 +140,7 @@ CREATE TABLE governance_policies (
 
 CREATE TABLE governance_rules (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   policy_id UUID NOT NULL REFERENCES governance_policies(id) ON DELETE CASCADE,
 
   -- Rule identification
@@ -184,7 +184,7 @@ CREATE TABLE governance_rules (
 
 CREATE TABLE governance_findings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   policy_id UUID NOT NULL REFERENCES governance_policies(id) ON DELETE CASCADE,
   rule_id UUID NOT NULL REFERENCES governance_rules(id) ON DELETE CASCADE,
 
@@ -235,7 +235,7 @@ CREATE TABLE governance_findings (
 
 CREATE TABLE governance_risk_scores (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Entity identification
   entity_type governance_entity_type NOT NULL,
@@ -290,7 +290,7 @@ CREATE TABLE governance_risk_scores (
 
 CREATE TABLE governance_audit_insights (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Time window
   time_window_start TIMESTAMPTZ NOT NULL,
@@ -345,7 +345,7 @@ CREATE TABLE governance_audit_insights (
 
 CREATE TABLE governance_policy_versions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   policy_id UUID NOT NULL REFERENCES governance_policies(id) ON DELETE CASCADE,
 
   version_number INT NOT NULL,

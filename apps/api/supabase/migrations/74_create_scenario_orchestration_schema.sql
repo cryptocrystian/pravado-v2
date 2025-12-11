@@ -54,7 +54,7 @@ CREATE TYPE trigger_condition_type AS ENUM (
 -- 1. scenario_suites - Main suite configurations
 CREATE TABLE scenario_suites (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Basic info
   name TEXT NOT NULL,
@@ -141,7 +141,7 @@ CREATE TABLE scenario_suite_items (
 -- 3. scenario_suite_runs - Individual execution instances of a suite
 CREATE TABLE scenario_suite_runs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   suite_id UUID NOT NULL REFERENCES scenario_suites(id) ON DELETE CASCADE,
 
   -- Run identification
@@ -184,7 +184,7 @@ CREATE TABLE scenario_suite_runs (
 -- 4. scenario_suite_run_items - Individual simulation executions within a suite run
 CREATE TABLE scenario_suite_run_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   suite_run_id UUID NOT NULL REFERENCES scenario_suite_runs(id) ON DELETE CASCADE,
   suite_item_id UUID NOT NULL REFERENCES scenario_suite_items(id) ON DELETE CASCADE,
   simulation_run_id UUID REFERENCES ai_scenario_runs(id),
@@ -222,7 +222,7 @@ CREATE TABLE scenario_suite_run_items (
 -- 5. scenario_suite_audit_log - Complete audit trail for suites
 CREATE TABLE scenario_suite_audit_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   suite_id UUID REFERENCES scenario_suites(id) ON DELETE SET NULL,
   suite_run_id UUID REFERENCES scenario_suite_runs(id) ON DELETE SET NULL,
   suite_run_item_id UUID REFERENCES scenario_suite_run_items(id) ON DELETE SET NULL,

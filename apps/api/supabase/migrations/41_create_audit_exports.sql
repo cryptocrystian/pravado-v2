@@ -15,7 +15,7 @@ CREATE TYPE audit_export_status AS ENUM ('queued', 'processing', 'success', 'fai
 -- Create audit_exports table
 CREATE TABLE IF NOT EXISTS audit_exports (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id uuid NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   status audit_export_status NOT NULL DEFAULT 'queued',
   filters_json jsonb NOT NULL DEFAULT '{}'::jsonb, -- Query filters used for export

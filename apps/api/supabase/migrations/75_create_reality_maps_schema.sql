@@ -38,7 +38,7 @@ CREATE TYPE reality_map_analysis_status AS ENUM (
 -- Main reality maps table
 CREATE TABLE IF NOT EXISTS reality_maps (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   suite_id UUID REFERENCES scenario_suites(id) ON DELETE SET NULL,
   name VARCHAR(255) NOT NULL,
   description TEXT,
@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS reality_map_audit_log (
 -- Reality map comparisons - for comparing multiple paths or maps
 CREATE TABLE IF NOT EXISTS reality_map_comparisons (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Comparison subjects
   reality_map_ids UUID[] NOT NULL,

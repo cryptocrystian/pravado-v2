@@ -9,7 +9,7 @@
 -- Create org_invoice_cache table
 CREATE TABLE IF NOT EXISTS org_invoice_cache (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id uuid NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Stripe invoice identifiers
   stripe_invoice_id text NOT NULL UNIQUE,

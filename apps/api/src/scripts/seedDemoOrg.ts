@@ -80,11 +80,11 @@ interface SeedContext {
 async function seedOrganization(supabase: SupabaseClient): Promise<string> {
   console.log('🏢 Seeding organization...');
 
-  // Check if demo org already exists
+  // Check if demo org already exists (by name since slug column may not exist)
   const { data: existing } = await supabase
     .from('orgs')
     .select('id')
-    .eq('slug', DEMO_ORG.slug)
+    .eq('name', DEMO_ORG.name)
     .single();
 
   if (existing) {
@@ -97,7 +97,6 @@ async function seedOrganization(supabase: SupabaseClient): Promise<string> {
     .insert({
       id: uuidv4(),
       name: DEMO_ORG.name,
-      slug: DEMO_ORG.slug,
     })
     .select('id')
     .single();

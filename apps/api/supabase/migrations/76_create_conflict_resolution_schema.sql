@@ -44,7 +44,7 @@ CREATE TYPE insight_conflict_resolution_type AS ENUM (
 
 CREATE TABLE insight_conflicts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Conflict classification
   conflict_type insight_conflict_type NOT NULL,
@@ -243,7 +243,7 @@ CREATE INDEX idx_insight_conflict_audit_log_created_at ON insight_conflict_audit
 
 CREATE TABLE insight_conflict_clusters (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Cluster metadata
   name TEXT NOT NULL,
@@ -278,7 +278,7 @@ CREATE INDEX idx_insight_conflict_clusters_active ON insight_conflict_clusters(i
 
 CREATE TABLE insight_conflict_graph_edges (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Edge endpoints
   source_conflict_id UUID NOT NULL REFERENCES insight_conflicts(id) ON DELETE CASCADE,

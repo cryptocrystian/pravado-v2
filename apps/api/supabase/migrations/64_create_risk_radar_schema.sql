@@ -64,7 +64,7 @@ CREATE TYPE risk_radar_note_type AS ENUM (
 
 CREATE TABLE risk_radar_snapshots (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Snapshot identification
   snapshot_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -114,7 +114,7 @@ CREATE TABLE risk_radar_snapshots (
 
 CREATE TABLE risk_radar_indicators (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   snapshot_id UUID NOT NULL REFERENCES risk_radar_snapshots(id) ON DELETE CASCADE,
 
   -- Indicator identification
@@ -157,7 +157,7 @@ CREATE TABLE risk_radar_indicators (
 
 CREATE TABLE risk_radar_forecasts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   snapshot_id UUID NOT NULL REFERENCES risk_radar_snapshots(id) ON DELETE CASCADE,
 
   -- Forecast identification
@@ -206,7 +206,7 @@ CREATE TABLE risk_radar_forecasts (
 
 CREATE TABLE risk_radar_drivers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   snapshot_id UUID NOT NULL REFERENCES risk_radar_snapshots(id) ON DELETE CASCADE,
 
   -- Driver identification
@@ -249,7 +249,7 @@ CREATE TABLE risk_radar_drivers (
 
 CREATE TABLE risk_radar_notes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   snapshot_id UUID NOT NULL REFERENCES risk_radar_snapshots(id) ON DELETE CASCADE,
 
   -- Note content
@@ -283,7 +283,7 @@ CREATE TABLE risk_radar_notes (
 
 CREATE TABLE risk_radar_audit_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Operation details
   operation VARCHAR(100) NOT NULL,
