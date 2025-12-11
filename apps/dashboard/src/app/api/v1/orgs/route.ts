@@ -9,9 +9,38 @@ import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
+  console.log('[API /orgs] POST request received');
+
+  // Check environment variables first
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  console.log('[API /orgs] Env check - URL:', supabaseUrl ? 'present' : 'MISSING');
+  console.log('[API /orgs] Env check - Anon Key:', supabaseAnonKey ? 'present' : 'MISSING');
+  console.log('[API /orgs] Env check - Service Role Key:', serviceRoleKey ? 'present' : 'MISSING');
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('[API /orgs] Missing Supabase URL or Anon Key');
+    return NextResponse.json(
+      { error: { message: 'Server configuration error: Missing Supabase credentials' } },
+      { status: 500 }
+    );
+  }
+
+  if (!serviceRoleKey) {
+    console.error('[API /orgs] Missing Service Role Key');
+    return NextResponse.json(
+      { error: { message: 'Server configuration error: Missing service role key' } },
+      { status: 500 }
+    );
+  }
+
   try {
     const body = await request.json();
     const { name } = body;
+
+    console.log('[API /orgs] Request body:', { name });
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return NextResponse.json(
@@ -21,11 +50,12 @@ export async function POST(request: NextRequest) {
     }
 
     const cookieStore = await cookies();
+    console.log('[API /orgs] Got cookie store');
 
     // Create Supabase client with user's session (for authentication check)
     const supabaseAuth = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseUrl,
+      supabaseAnonKey,
       {
         cookies: {
           getAll() {
@@ -41,6 +71,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Get current user
+    console.log('[API /orgs] Getting user...');
     const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
 
     if (userError || !user) {
@@ -55,8 +86,8 @@ export async function POST(request: NextRequest) {
 
     // Create admin client with service role key to bypass RLS
     const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      supabaseUrl,
+      serviceRoleKey,
       {
         auth: {
           autoRefreshToken: false,
@@ -139,8 +170,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('[API /orgs] Unexpected error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error('[API /orgs] Error message:', errorMessage);
+    console.error('[API /orgs] Error stack:', errorStack);
     return NextResponse.json(
-      { error: { message: 'Internal server error' } },
+      { error: { message: `Internal server error: ${errorMessage}` } },
       { status: 500 }
     );
   }
