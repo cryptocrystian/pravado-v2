@@ -51,7 +51,13 @@ export async function POST(request: NextRequest) {
     }
 
     const cookieStore = await cookies();
-    console.log('[API /orgs] Got cookie store');
+    const allCookies = cookieStore.getAll();
+    console.log('[API /orgs] Got cookie store, cookie count:', allCookies.length);
+    console.log('[API /orgs] Cookie names:', allCookies.map(c => c.name).join(', '));
+
+    // Check for Supabase auth cookies
+    const authCookies = allCookies.filter(c => c.name.includes('sb-') || c.name.includes('auth'));
+    console.log('[API /orgs] Auth cookies found:', authCookies.length);
 
     // Create Supabase client with user's session (for authentication check)
     const supabaseAuth = createServerClient(
@@ -60,12 +66,17 @@ export async function POST(request: NextRequest) {
       {
         cookies: {
           getAll() {
-            return cookieStore.getAll();
+            return allCookies;
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options);
-            });
+            try {
+              cookiesToSet.forEach(({ name, value, options }) => {
+                cookieStore.set(name, value, options);
+              });
+            } catch (e) {
+              // In API routes, setting cookies may fail silently
+              console.log('[API /orgs] Cookie set error (expected in some cases):', e);
+            }
           },
         },
       }
@@ -75,10 +86,19 @@ export async function POST(request: NextRequest) {
     console.log('[API /orgs] Getting user...');
     const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
 
+    console.log('[API /orgs] User result:', user ? `Found: ${user.email}` : 'No user');
+    if (userError) {
+      console.error('[API /orgs] User error details:', {
+        message: userError.message,
+        status: userError.status,
+        name: userError.name,
+      });
+    }
+
     if (userError || !user) {
-      console.error('[API /orgs] User error:', userError);
+      console.error('[API /orgs] Unauthorized - no valid user session');
       return NextResponse.json(
-        { error: { message: 'Unauthorized' } },
+        { error: { message: `Unauthorized: ${userError?.message || 'No user session found'}` } },
         { status: 401 }
       );
     }
