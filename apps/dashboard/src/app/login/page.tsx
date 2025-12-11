@@ -119,15 +119,30 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      console.log('[OAuth] Starting sign-in with provider:', provider);
+      console.log('[OAuth] Redirect URL:', getRedirectUrl());
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: getRedirectUrl(),
         },
       });
 
-      if (error) throw error;
+      console.log('[OAuth] Response:', { data, error });
+
+      if (error) {
+        console.error('[OAuth] Error:', error);
+        throw error;
+      }
+
+      // Supabase should auto-redirect, but if url is returned, navigate manually
+      if (data?.url) {
+        console.log('[OAuth] Redirecting to:', data.url);
+        window.location.href = data.url;
+      }
     } catch (err) {
+      console.error('[OAuth] Caught error:', err);
       const error = err as Error;
       setError(error.message || `Failed to sign in with ${provider === 'azure' ? 'Microsoft' : 'Google'}`);
       setOauthLoading(null);
