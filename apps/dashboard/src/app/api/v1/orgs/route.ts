@@ -1,6 +1,7 @@
 /**
  * API route for creating organizations
  * Uses service role key to bypass RLS for server-side operations
+ * Requires SUPABASE_SERVICE_ROLE_KEY environment variable
  */
 
 import { NextRequest, NextResponse } from 'next/server';
