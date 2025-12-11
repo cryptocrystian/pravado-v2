@@ -2,5 +2,5 @@
   "version": 2,
   "framework": "nextjs",
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @pravado/dashboard build"
+  "buildCommand": "turbo run build --filter=@pravado/dashboard"
 }
