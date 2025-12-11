@@ -5,8 +5,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
@@ -50,41 +48,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const cookieStore = await cookies();
-    const allCookies = cookieStore.getAll();
-    console.log('[API /orgs] Got cookie store, cookie count:', allCookies.length);
-    console.log('[API /orgs] Cookie names:', allCookies.map(c => c.name).join(', '));
+    // Get authorization token from header
+    const authHeader = request.headers.get('Authorization');
+    console.log('[API /orgs] Auth header present:', !!authHeader);
 
-    // Check for Supabase auth cookies
-    const authCookies = allCookies.filter(c => c.name.includes('sb-') || c.name.includes('auth'));
-    console.log('[API /orgs] Auth cookies found:', authCookies.length);
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('[API /orgs] No Authorization header');
+      return NextResponse.json(
+        { error: { message: 'Unauthorized: No authorization token provided' } },
+        { status: 401 }
+      );
+    }
 
-    // Create Supabase client with user's session (for authentication check)
-    const supabaseAuth = createServerClient(
+    const accessToken = authHeader.split(' ')[1];
+    console.log('[API /orgs] Access token length:', accessToken?.length || 0);
+
+    // Create Supabase client and verify the token
+    const supabaseAuth = createClient(
       supabaseUrl,
       supabaseAnonKey,
       {
-        cookies: {
-          getAll() {
-            return allCookies;
+        global: {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
           },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) => {
-                cookieStore.set(name, value, options);
-              });
-            } catch (e) {
-              // In API routes, setting cookies may fail silently
-              console.log('[API /orgs] Cookie set error (expected in some cases):', e);
-            }
-          },
+        },
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
         },
       }
     );
 
-    // Get current user
-    console.log('[API /orgs] Getting user...');
-    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
+    // Get current user using the token
+    console.log('[API /orgs] Getting user from token...');
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser(accessToken);
 
     console.log('[API /orgs] User result:', user ? `Found: ${user.email}` : 'No user');
     if (userError) {
@@ -96,9 +94,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (userError || !user) {
-      console.error('[API /orgs] Unauthorized - no valid user session');
+      console.error('[API /orgs] Unauthorized - invalid token');
       return NextResponse.json(
-        { error: { message: `Unauthorized: ${userError?.message || 'No user session found'}` } },
+        { error: { message: `Unauthorized: ${userError?.message || 'Invalid token'}` } },
         { status: 401 }
       );
     }
