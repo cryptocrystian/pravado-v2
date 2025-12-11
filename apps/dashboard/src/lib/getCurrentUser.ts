@@ -1,10 +1,11 @@
 /**
  * Server-side helper to get current user session
+ * Uses @supabase/ssr for proper cookie handling in Next.js App Router
  */
 
 import type { UserSessionData } from '@pravado/types';
 import { cookies } from 'next/headers';
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -12,54 +13,43 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 export async function getCurrentUser(): Promise<UserSessionData | null> {
   const cookieStore = await cookies();
 
-  // Get all cookies and find the Supabase auth token
-  // Supabase stores session in cookies with format: sb-<project-ref>-auth-token
-  const allCookies = cookieStore.getAll();
-  const authCookie = allCookies.find(c => c.name.includes('auth-token'));
-
-  if (!authCookie?.value) {
-    console.log('[getCurrentUser] No auth cookie found');
-    return null;
-  }
+  // Create Supabase server client with cookie handlers
+  const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll() {
+        // In server components, we can't set cookies
+        // This is fine for read-only access
+      },
+    },
+  });
 
   try {
-    // Parse the auth token (it's base64 encoded JSON)
-    const tokenData = JSON.parse(authCookie.value);
-    const accessToken = tokenData?.access_token;
+    // Get the current user from the session
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-    if (!accessToken) {
-      console.log('[getCurrentUser] No access token in cookie');
+    if (error || !user) {
+      console.log('[getCurrentUser] No user found:', error?.message);
       return null;
     }
 
-    // Create a Supabase client with the access token
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    });
+    console.log('[getCurrentUser] User found:', user.email);
 
-    // Get user from Supabase
-    const { data: { user }, error: userError } = await supabase.auth.getUser(accessToken);
-
-    if (userError || !user) {
-      console.log('[getCurrentUser] Failed to get user:', userError?.message);
-      return null;
-    }
-
-    // For now, return a minimal session without org (let the app handle org setup)
-    // TODO: Fetch org membership using service role to avoid RLS issues
+    // Return minimal session - org will be handled by onboarding
+    const now = new Date().toISOString();
     return {
       user: {
         id: user.id,
-        email: user.email || '',
         fullName: user.user_metadata?.full_name || user.user_metadata?.name || null,
         avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+        createdAt: user.created_at || now,
+        updatedAt: user.updated_at || now,
       },
+      orgs: [], // Empty orgs array - onboarding will handle org creation
       activeOrg: null, // Will redirect to onboarding if null
-    } as UserSessionData;
+    };
   } catch (error) {
     console.error('[getCurrentUser] Error:', error);
     return null;
