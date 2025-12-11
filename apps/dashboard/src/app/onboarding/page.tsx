@@ -8,7 +8,6 @@
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 // AI Presence Dot component
@@ -28,7 +27,6 @@ const AIPresenceDot = ({ status }: { status: 'idle' | 'analyzing' | 'generating'
 };
 
 export default function OnboardingPage() {
-  const router = useRouter();
   const [orgName, setOrgName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
