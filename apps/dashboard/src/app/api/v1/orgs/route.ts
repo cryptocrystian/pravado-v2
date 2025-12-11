@@ -51,6 +51,38 @@ export async function POST(request: NextRequest) {
 
     console.log('[API /orgs] Creating org for user:', user.id);
 
+    // Ensure user exists in public.users table (might not exist if trigger didn't run)
+    const { data: existingUser, error: userCheckError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', user.id)
+      .single();
+
+    if (userCheckError && userCheckError.code !== 'PGRST116') {
+      // PGRST116 is "not found" which is expected
+      console.error('[API /orgs] User check error:', userCheckError);
+    }
+
+    if (!existingUser) {
+      console.log('[API /orgs] User not in public.users, creating...');
+      const { error: createUserError } = await supabase
+        .from('users')
+        .insert({
+          id: user.id,
+          full_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+          avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+        });
+
+      if (createUserError) {
+        console.error('[API /orgs] Create user error:', createUserError);
+        return NextResponse.json(
+          { error: { message: 'Failed to create user profile' } },
+          { status: 500 }
+        );
+      }
+      console.log('[API /orgs] User created in public.users');
+    }
+
     // Create the organization
     const { data: org, error: orgError } = await supabase
       .from('orgs')
