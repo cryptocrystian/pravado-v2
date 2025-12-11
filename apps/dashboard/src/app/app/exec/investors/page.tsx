@@ -145,8 +145,8 @@ export default function InvestorRelationsPage() {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mx-auto mb-4" />
-          <p className="text-gray-500">Loading investor relations...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-brand-cyan mx-auto mb-4" />
+          <p className="text-muted">Loading investor relations...</p>
         </div>
       </div>
     );
@@ -157,11 +157,11 @@ export default function InvestorRelationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <TrendingUp className="h-7 w-7 text-indigo-600" />
+          <h1 className="text-2xl font-bold text-white-0 flex items-center gap-2">
+            <TrendingUp className="h-7 w-7 text-brand-teal" />
             Investor Relations
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-muted mt-1">
             Create and manage investor packs, quarterly earnings narratives, and board communications
           </p>
         </div>
@@ -184,20 +184,18 @@ export default function InvestorRelationsPage() {
 
       {/* Error State */}
       {error && (
-        <Card className="border-red-200 bg-red-50">
-          <CardContent className="p-4 flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-red-600" />
-            <p className="text-red-700">{error}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => fetchData()}
-              className="ml-auto"
-            >
-              Retry
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="alert-error flex items-center gap-3 p-4">
+          <AlertCircle className="h-5 w-5" />
+          <p>{error}</p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fetchData()}
+            className="ml-auto"
+          >
+            Retry
+          </Button>
+        </div>
       )}
 
       {/* Stats Overview */}
@@ -218,22 +216,22 @@ export default function InvestorRelationsPage() {
             title="Published"
             value={stats.byStatus.published || 0}
             icon={BarChart3}
-            iconColor="text-green-600"
-            bgColor="bg-green-50"
+            iconColor="text-semantic-success"
+            bgColor="bg-semantic-success/10"
           />
           <InvestorPackStatsCard
             title="In Review"
             value={(stats.byStatus.review || 0) + (stats.byStatus.approved || 0)}
             icon={Users}
-            iconColor="text-yellow-600"
-            bgColor="bg-yellow-50"
+            iconColor="text-semantic-warning"
+            bgColor="bg-semantic-warning/10"
           />
           <InvestorPackStatsCard
             title="Q&A Generated"
             value={stats.totalQnAs}
             icon={Sparkles}
-            iconColor="text-purple-600"
-            bgColor="bg-purple-50"
+            iconColor="text-brand-iris"
+            bgColor="bg-brand-iris/10"
             subtitle={stats.approvedQnAs > 0 ? `${stats.approvedQnAs} approved` : undefined}
           />
         </div>
@@ -247,7 +245,7 @@ export default function InvestorRelationsPage() {
             <div className="flex items-center gap-3">
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-6" />
                 <Input
                   placeholder="Search packs..."
                   value={searchQuery}
@@ -317,9 +315,9 @@ export default function InvestorRelationsPage() {
             <TabsContent value={activeTab} className="mt-0">
               {displayPacks.length === 0 ? (
                 <div className="text-center py-12">
-                  <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-1">No packs found</h3>
-                  <p className="text-gray-500 mb-4">
+                  <FileText className="h-12 w-12 text-slate-6 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-white-0 mb-1">No packs found</h3>
+                  <p className="text-muted mb-4">
                     {searchQuery
                       ? 'Try adjusting your search or filters'
                       : 'Create your first investor pack to get started'}
@@ -345,7 +343,7 @@ export default function InvestorRelationsPage() {
 
           {/* Pagination */}
           {(page > 1 || hasMore) && (
-            <div className="flex items-center justify-center gap-4 mt-6 pt-4 border-t">
+            <div className="flex items-center justify-center gap-4 mt-6 pt-4 border-t border-border-subtle">
               <Button
                 variant="outline"
                 size="sm"
@@ -354,7 +352,7 @@ export default function InvestorRelationsPage() {
               >
                 Previous
               </Button>
-              <span className="text-sm text-gray-500">Page {page}</span>
+              <span className="text-sm text-muted">Page {page}</span>
               <Button
                 variant="outline"
                 size="sm"
@@ -373,7 +371,7 @@ export default function InvestorRelationsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-indigo-600" />
+              <Calendar className="h-5 w-5 text-brand-teal" />
               Packs by Format
             </CardTitle>
             <CardDescription>
@@ -387,18 +385,18 @@ export default function InvestorRelationsPage() {
                   key={format}
                   className={cn(
                     'p-4 rounded-lg text-center',
-                    count > 0 ? 'bg-indigo-50' : 'bg-gray-50'
+                    count > 0 ? 'bg-brand-teal/10' : 'bg-slate-3'
                   )}
                 >
                   <div
                     className={cn(
                       'text-2xl font-bold',
-                      count > 0 ? 'text-indigo-600' : 'text-gray-400'
+                      count > 0 ? 'text-brand-teal' : 'text-slate-6'
                     )}
                   >
                     {count}
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-muted mt-1">
                     {getFormatLabel(format as InvestorPackFormat)}
                   </div>
                 </div>
@@ -413,7 +411,7 @@ export default function InvestorRelationsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <RefreshCw className="h-5 w-5 text-indigo-600" />
+              <RefreshCw className="h-5 w-5 text-brand-cyan" />
               Recent Activity
             </CardTitle>
             <CardDescription>

@@ -3,6 +3,7 @@
 /**
  * Scenario Orchestrations Page (Sprint S72)
  * Multi-scenario suite management dashboard
+ * Styled according to Pravado Design System v2
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -185,22 +186,22 @@ export default function ScenarioOrchestrationsPage() {
 
   // Render
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-page">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
             {viewMode === 'list' ? (
               <>
-                <h1 className="text-2xl font-bold text-gray-900">Scenario Orchestrations</h1>
-                <p className="text-sm text-gray-500 mt-1">
+                <h1 className="text-2xl font-bold text-white-0">Scenario Orchestrations</h1>
+                <p className="text-sm text-muted mt-1">
                   Create and manage multi-scenario simulation suites
                 </p>
               </>
             ) : (
               <button
                 onClick={handleBack}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+                className="flex items-center gap-2 text-slate-6 hover:text-white-0"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -216,7 +217,7 @@ export default function ScenarioOrchestrationsPage() {
                 setSelectedSuite(null);
                 setViewMode('create');
               }}
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-2"
+              className="btn-primary flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -228,7 +229,7 @@ export default function ScenarioOrchestrationsPage() {
 
         {/* Error display */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          <div className="alert-error mb-6">
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -237,7 +238,7 @@ export default function ScenarioOrchestrationsPage() {
             </div>
             <button
               onClick={() => setError(null)}
-              className="text-sm text-red-600 hover:text-red-800 mt-2"
+              className="text-sm text-semantic-danger hover:opacity-80 mt-2"
             >
               Dismiss
             </button>
@@ -264,12 +265,12 @@ export default function ScenarioOrchestrationsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search suites..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                className="input-field flex-1"
               />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                className="input-field w-48"
               >
                 <option value="">All Statuses</option>
                 <option value="draft">Draft</option>
@@ -283,21 +284,21 @@ export default function ScenarioOrchestrationsPage() {
             {/* Suites grid */}
             {loading ? (
               <div className="text-center py-12">
-                <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto" />
-                <p className="mt-4 text-gray-500">Loading suites...</p>
+                <div className="animate-spin h-8 w-8 border-4 border-brand-cyan border-t-transparent rounded-full mx-auto" />
+                <p className="mt-4 text-muted">Loading suites...</p>
               </div>
             ) : suites.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-                <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="text-center py-12 panel-card">
+                <svg className="w-16 h-16 mx-auto text-slate-6 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No suites found</h3>
-                <p className="text-gray-500 mb-4">
+                <h3 className="text-lg font-medium text-white-0 mb-2">No suites found</h3>
+                <p className="text-muted mb-4">
                   Create your first scenario orchestration suite to get started.
                 </p>
                 <button
                   onClick={() => setViewMode('create')}
-                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+                  className="btn-primary"
                 >
                   Create Suite
                 </button>
@@ -322,8 +323,8 @@ export default function ScenarioOrchestrationsPage() {
 
         {/* Create/Edit View */}
         {viewMode === 'create' && (
-          <div className="max-w-2xl mx-auto bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+          <div className="max-w-2xl mx-auto panel-card p-6">
+            <h2 className="text-lg font-semibold text-white-0 mb-6">
               {selectedSuite ? 'Edit Suite' : 'Create New Suite'}
             </h2>
             <SuiteConfigForm
@@ -337,31 +338,31 @@ export default function ScenarioOrchestrationsPage() {
         {/* Detail View */}
         {viewMode === 'detail' && selectedSuite && (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="panel-card p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">{selectedSuite.name}</h2>
+                  <h2 className="text-xl font-semibold text-white-0">{selectedSuite.name}</h2>
                   {selectedSuite.description && (
-                    <p className="text-gray-500 mt-1">{selectedSuite.description}</p>
+                    <p className="text-muted mt-1">{selectedSuite.description}</p>
                   )}
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEditSuite(selectedSuite)}
-                    className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
+                    className="btn-ghost"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleRunSuite(selectedSuite)}
-                    className="px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+                    className="btn-primary"
                   >
                     Run Suite
                   </button>
                 </div>
               </div>
 
-              <h3 className="text-sm font-medium text-gray-900 mb-3">
+              <h3 className="text-sm font-medium text-white-0 mb-3">
                 Simulations ({suiteItems.length})
               </h3>
               <SuiteItemList
@@ -375,11 +376,11 @@ export default function ScenarioOrchestrationsPage() {
         {/* Run View */}
         {viewMode === 'run' && selectedRun && selectedSuite && (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="panel-card p-6">
+              <h2 className="text-xl font-semibold text-white-0 mb-2">
                 {selectedSuite.name}
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted">
                 Run ID: {selectedRun.id.slice(0, 8)}...
               </p>
             </div>
@@ -392,7 +393,7 @@ export default function ScenarioOrchestrationsPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-3">Timeline</h3>
+                <h3 className="text-sm font-medium text-white-0 mb-3">Timeline</h3>
                 <SuiteRunTimeline
                   items={runItems}
                   currentItemIndex={selectedRun.currentItemIndex || undefined}
@@ -423,9 +424,9 @@ function StatCard({
   highlight?: boolean;
 }) {
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 p-4 ${highlight && value > 0 ? 'ring-2 ring-indigo-500' : ''}`}>
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className={`text-2xl font-semibold ${highlight && value > 0 ? 'text-indigo-600' : 'text-gray-900'}`}>
+    <div className={`panel-card p-4 ${highlight && value > 0 ? 'ring-2 ring-brand-cyan' : ''}`}>
+      <p className="text-sm text-muted">{label}</p>
+      <p className={`text-2xl font-semibold ${highlight && value > 0 ? 'text-brand-cyan' : 'text-white-0'}`}>
         {value}
       </p>
     </div>

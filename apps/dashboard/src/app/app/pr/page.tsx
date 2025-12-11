@@ -204,11 +204,11 @@ export default function PRPage() {
   }, [selectedList]);
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-8 max-w-7xl mx-auto bg-page min-h-screen">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Media Explorer</h1>
-        <p className="text-gray-600">
+        <h1 className="text-3xl font-bold text-white-0 mb-2">Media Explorer</h1>
+        <p className="text-muted">
           Curated media intelligence for targeted outreach — not spray & pray
         </p>
       </div>
@@ -217,7 +217,7 @@ export default function PRPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Media Explorer (Left 2/3) */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow">
+          <div className="panel-card">
             <div className="p-6">
               {/* Search and Filters */}
               <div className="mb-6 space-y-4">
@@ -233,11 +233,11 @@ export default function PRPage() {
                     placeholder="Search journalists by name, email, or bio..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="input-field flex-1"
                   />
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="btn-primary"
                   >
                     Search
                   </button>
@@ -248,7 +248,7 @@ export default function PRPage() {
                   <select
                     value={selectedCountry}
                     onChange={(e) => setSelectedCountry(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    className="input-field"
                   >
                     <option value="">All Countries</option>
                     <option value="United States">United States</option>
@@ -260,7 +260,7 @@ export default function PRPage() {
                   <select
                     value={selectedTier}
                     onChange={(e) => setSelectedTier(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    className="input-field"
                   >
                     <option value="">All Tiers</option>
                     <option value="top_tier">Top Tier</option>
@@ -272,13 +272,13 @@ export default function PRPage() {
 
               {/* Add to List Button */}
               {selectedJournalists.size > 0 && selectedList && (
-                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md flex items-center justify-between">
-                  <span className="text-sm text-blue-900">
+                <div className="mb-4 p-3 bg-brand-cyan/10 border border-brand-cyan/20 rounded-md flex items-center justify-between">
+                  <span className="text-sm text-brand-cyan">
                     {selectedJournalists.size} journalist(s) selected
                   </span>
                   <button
                     onClick={addToList}
-                    className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
+                    className="btn-primary text-sm"
                   >
                     Add to &quot;{selectedList.name}&quot;
                   </button>
@@ -287,19 +287,19 @@ export default function PRPage() {
 
               {/* Results */}
               {loading ? (
-                <div className="text-center py-12 text-gray-500">Loading journalists...</div>
+                <div className="text-center py-12 text-muted">Loading journalists...</div>
               ) : journalists.length > 0 ? (
                 <div className="space-y-2">
-                  <div className="text-sm text-gray-600 mb-4">
+                  <div className="text-sm text-muted mb-4">
                     Found {total} journalist{total !== 1 ? 's' : ''}
                   </div>
                   {journalists.map((item) => (
                     <div
                       key={item.journalist.id}
-                      className={`p-4 border rounded-md hover:bg-gray-50 ${
+                      className={`p-4 border rounded-md hover:bg-slate-3 ${
                         selectedJournalists.has(item.journalist.id)
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200'
+                          ? 'border-brand-cyan bg-brand-cyan/10'
+                          : 'border-border-subtle'
                       }`}
                     >
                       <div className="flex items-start space-x-3">
@@ -312,19 +312,19 @@ export default function PRPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h3 className="text-base font-semibold text-gray-900">
+                              <h3 className="text-base font-semibold text-white-0">
                                 {item.journalist.fullName}
                                 {item.journalist.isFreelancer && (
-                                  <span className="ml-2 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">
+                                  <span className="ml-2 px-2 py-0.5 bg-brand-iris/10 text-brand-iris text-xs rounded">
                                     Freelancer
                                   </span>
                                 )}
                               </h3>
                               {item.outlet && (
-                                <p className="text-sm text-gray-600 mt-0.5">
+                                <p className="text-sm text-muted mt-0.5">
                                   {item.outlet.name}
                                   {item.outlet.tier && (
-                                    <span className="ml-2 text-xs text-gray-500">
+                                    <span className="ml-2 text-xs text-slate-6">
                                       ({item.outlet.tier})
                                     </span>
                                   )}
@@ -332,7 +332,7 @@ export default function PRPage() {
                               )}
                             </div>
                             {item.journalist.location && (
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-slate-6">
                                 {item.journalist.location}
                               </span>
                             )}
@@ -343,7 +343,7 @@ export default function PRPage() {
                               {item.beats.map((beat) => (
                                 <span
                                   key={beat.id}
-                                  className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded"
+                                  className="px-2 py-0.5 bg-slate-3 text-muted text-xs rounded"
                                 >
                                   {beat.name}
                                 </span>
@@ -352,7 +352,7 @@ export default function PRPage() {
                           )}
 
                           {item.journalist.email && (
-                            <p className="text-sm text-gray-500 mt-2">
+                            <p className="text-sm text-slate-6 mt-2">
                               {item.journalist.email}
                             </p>
                           )}
@@ -362,7 +362,7 @@ export default function PRPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-muted">
                   No journalists found. Try adjusting your search or filters.
                 </div>
               )}
@@ -372,13 +372,13 @@ export default function PRPage() {
 
         {/* Lists Panel (Right 1/3) */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow sticky top-4">
+          <div className="panel-card sticky top-4">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">Lists</h2>
+                <h2 className="text-xl font-semibold text-white-0">Lists</h2>
                 <button
                   onClick={() => setShowCreateListModal(true)}
-                  className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
+                  className="btn-primary text-sm"
                 >
                   Create List
                 </button>
@@ -393,27 +393,27 @@ export default function PRPage() {
                       onClick={() => setSelectedList(list)}
                       className={`p-3 rounded-md cursor-pointer ${
                         selectedList?.id === list.id
-                          ? 'bg-blue-50 border-2 border-blue-500'
-                          : 'bg-gray-50 border-2 border-transparent hover:border-gray-300'
+                          ? 'bg-brand-cyan/10 border-2 border-brand-cyan'
+                          : 'bg-slate-3 border-2 border-transparent hover:border-slate-5'
                       }`}
                     >
-                      <div className="font-medium text-gray-900 text-sm">{list.name}</div>
+                      <div className="font-medium text-white-0 text-sm">{list.name}</div>
                       {list.description && (
-                        <div className="text-xs text-gray-600 mt-0.5">{list.description}</div>
+                        <div className="text-xs text-muted mt-0.5">{list.description}</div>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-6 text-gray-500 text-sm">
+                <div className="text-center py-6 text-muted text-sm">
                   No lists yet. Create one to get started.
                 </div>
               )}
 
               {/* List Members */}
               {selectedList && (
-                <div className="border-t pt-4">
-                  <h3 className="font-semibold text-gray-900 mb-3">
+                <div className="border-t border-border-subtle pt-4">
+                  <h3 className="font-semibold text-white-0 mb-3">
                     {selectedList.name} ({listMembers.length})
                   </h3>
                   {listMembers.length > 0 ? (
@@ -421,22 +421,22 @@ export default function PRPage() {
                       {listMembers.map((member) => (
                         <div
                           key={member.journalist.id}
-                          className="p-2 bg-gray-50 rounded-md text-sm"
+                          className="p-2 bg-slate-3 rounded-md text-sm"
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium text-gray-900 truncate">
+                              <div className="font-medium text-white-0 truncate">
                                 {member.journalist.fullName}
                               </div>
                               {member.outlet && (
-                                <div className="text-xs text-gray-600 truncate">
+                                <div className="text-xs text-muted truncate">
                                   {member.outlet.name}
                                 </div>
                               )}
                             </div>
                             <button
                               onClick={() => removeFromList(member.journalist.id)}
-                              className="ml-2 text-red-600 hover:text-red-800 text-xs"
+                              className="ml-2 text-semantic-danger hover:text-semantic-danger/80 text-xs"
                             >
                               Remove
                             </button>
@@ -445,7 +445,7 @@ export default function PRPage() {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-4 text-gray-500 text-sm">
+                    <div className="text-center py-4 text-muted text-sm">
                       No members yet. Select journalists and add them to this list.
                     </div>
                   )}
@@ -458,12 +458,12 @@ export default function PRPage() {
 
       {/* Create List Modal */}
       {showCreateListModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New List</h3>
+        <div className="fixed inset-0 bg-slate-0/80 flex items-center justify-center z-50">
+          <div className="panel-card p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-white-0 mb-4">Create New List</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-white-0 mb-1">
                   List Name
                 </label>
                 <input
@@ -471,11 +471,11 @@ export default function PRPage() {
                   value={newListName}
                   onChange={(e) => setNewListName(e.target.value)}
                   placeholder="e.g., Tech Journalists"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  className="input-field w-full"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-white-0 mb-1">
                   Description (Optional)
                 </label>
                 <textarea
@@ -483,7 +483,7 @@ export default function PRPage() {
                   onChange={(e) => setNewListDescription(e.target.value)}
                   placeholder="Brief description of this list..."
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  className="input-field w-full"
                 />
               </div>
             </div>
@@ -494,14 +494,14 @@ export default function PRPage() {
                   setNewListName('');
                   setNewListDescription('');
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                className="btn-ghost flex-1"
               >
                 Cancel
               </button>
               <button
                 onClick={createList}
                 disabled={!newListName.trim()}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create
               </button>
