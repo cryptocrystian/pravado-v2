@@ -142,7 +142,8 @@ export default function CallbackPage() {
       // Just redirect to /app - the app layout will handle routing based on auth state
       console.log('[Callback] Session established, redirecting to /app');
       setStatus('success');
-      router.push('/app');
+      // Use window.location.href for a full page navigation (more reliable than router.push)
+      window.location.href = '/app';
     };
 
     handleCallback();
