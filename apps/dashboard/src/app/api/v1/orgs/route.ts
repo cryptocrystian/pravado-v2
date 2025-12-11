@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       if (createUserError) {
         console.error('[API /orgs] Create user error:', createUserError);
         return NextResponse.json(
-          { error: { message: 'Failed to create user profile' } },
+          { error: { message: `Failed to create user profile: ${createUserError.message}` } },
           { status: 500 }
         );
       }
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     if (orgError) {
       console.error('[API /orgs] Org creation error:', orgError);
       return NextResponse.json(
-        { error: { message: 'Failed to create organization' } },
+        { error: { message: `Failed to create organization: ${orgError.message}` } },
         { status: 500 }
       );
     }
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
       // Try to clean up the org if member creation failed
       await supabase.from('orgs').delete().eq('id', org.id);
       return NextResponse.json(
-        { error: { message: 'Failed to add you as organization owner' } },
+        { error: { message: `Failed to add you as organization owner: ${memberError.message}` } },
         { status: 500 }
       );
     }
