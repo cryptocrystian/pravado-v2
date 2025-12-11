@@ -122,10 +122,13 @@ export default function LoginPage() {
       console.log('[OAuth] Starting sign-in with provider:', provider);
       console.log('[OAuth] Redirect URL:', getRedirectUrl());
 
+      // Use skipBrowserRedirect to get the URL and redirect manually
+      // This avoids potential issues with automatic redirect not working
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: getRedirectUrl(),
+          skipBrowserRedirect: true, // Get URL instead of auto-redirect
         },
       });
 
@@ -136,10 +139,13 @@ export default function LoginPage() {
         throw error;
       }
 
-      // Supabase should auto-redirect, but if url is returned, navigate manually
+      // Manually redirect to the OAuth URL
       if (data?.url) {
-        console.log('[OAuth] Redirecting to:', data.url);
+        console.log('[OAuth] Manually redirecting to:', data.url);
         window.location.href = data.url;
+      } else {
+        console.error('[OAuth] No URL returned from signInWithOAuth');
+        throw new Error('No authentication URL received');
       }
     } catch (err) {
       console.error('[OAuth] Caught error:', err);
