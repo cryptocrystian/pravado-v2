@@ -94,7 +94,7 @@ CREATE TYPE ai_scenario_outcome_type AS ENUM (
 -- Main simulation configurations
 CREATE TABLE ai_scenario_simulations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
 
   -- Basic info
   name TEXT NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE ai_scenario_simulations (
 -- Individual simulation runs
 CREATE TABLE ai_scenario_runs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   simulation_id UUID NOT NULL REFERENCES ai_scenario_simulations(id) ON DELETE CASCADE,
 
   -- Run identification
@@ -181,7 +181,7 @@ CREATE TABLE ai_scenario_runs (
 -- Agent definitions for simulations
 CREATE TABLE ai_scenario_agents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   simulation_id UUID NOT NULL REFERENCES ai_scenario_simulations(id) ON DELETE CASCADE,
   run_id UUID REFERENCES ai_scenario_runs(id) ON DELETE CASCADE,
 
@@ -216,7 +216,7 @@ CREATE TABLE ai_scenario_agents (
 -- Individual turns/messages in a simulation run
 CREATE TABLE ai_scenario_turns (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   run_id UUID NOT NULL REFERENCES ai_scenario_runs(id) ON DELETE CASCADE,
 
   -- Turn positioning
@@ -250,7 +250,7 @@ CREATE TABLE ai_scenario_turns (
 -- Metrics computed during/after runs
 CREATE TABLE ai_scenario_metrics (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   run_id UUID NOT NULL REFERENCES ai_scenario_runs(id) ON DELETE CASCADE,
 
   -- Metric identification
@@ -272,7 +272,7 @@ CREATE TABLE ai_scenario_metrics (
 -- Outcomes and recommendations from runs
 CREATE TABLE ai_scenario_outcomes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   run_id UUID NOT NULL REFERENCES ai_scenario_runs(id) ON DELETE CASCADE,
 
   -- Classification
@@ -300,7 +300,7 @@ CREATE TABLE ai_scenario_outcomes (
 -- Audit log for simulation activities
 CREATE TABLE ai_scenario_audit_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   simulation_id UUID REFERENCES ai_scenario_simulations(id) ON DELETE SET NULL,
   run_id UUID REFERENCES ai_scenario_runs(id) ON DELETE SET NULL,
 

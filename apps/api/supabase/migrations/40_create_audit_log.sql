@@ -14,7 +14,7 @@
 -- Create audit_log table
 CREATE TABLE IF NOT EXISTS audit_log (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id uuid NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   actor_type text NOT NULL, -- 'user', 'system', 'agent'
   event_type text NOT NULL, -- e.g. 'login', 'billing.plan_change', 'playbook.execution_start'

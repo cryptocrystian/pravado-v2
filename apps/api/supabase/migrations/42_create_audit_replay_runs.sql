@@ -7,7 +7,7 @@ CREATE TYPE audit_replay_status AS ENUM ('queued', 'running', 'success', 'failed
 -- Create audit_replay_runs table
 CREATE TABLE IF NOT EXISTS audit_replay_runs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id uuid NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   status audit_replay_status NOT NULL DEFAULT 'queued',
   filters_json jsonb NOT NULL DEFAULT '{}'::jsonb,
