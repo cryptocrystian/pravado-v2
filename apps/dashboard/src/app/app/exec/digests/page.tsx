@@ -1,11 +1,23 @@
 /**
- * Executive Digest Management Page (Sprint S62)
+ * Executive Digest Management Page (Sprint S62 + S91 AI Presence Enhancement)
  * Main page for automated strategic briefs and weekly digest generator
  */
 
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+
+// AI Dot component for presence indication
+function AIDot({ status = 'idle' }: { status?: 'idle' | 'analyzing' | 'generating' }) {
+  const baseClasses = 'w-2.5 h-2.5 rounded-full';
+  if (status === 'analyzing') {
+    return <span className={`${baseClasses} ai-dot-analyzing`} />;
+  }
+  if (status === 'generating') {
+    return <span className={`${baseClasses} ai-dot-generating`} />;
+  }
+  return <span className={`${baseClasses} ai-dot`} />;
+}
 import {
   ExecDigestCard,
   ExecDigestHeader,
@@ -297,18 +309,34 @@ export default function ExecutiveDigestPage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Page Header */}
+      {/* Page Header with AI Presence */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white-0">Executive Digests</h1>
-          <p className="text-sm text-muted mt-1">
-            Automated strategic briefs and weekly executive reports
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="mt-1">
+            <AIDot status={isGenerating ? 'generating' : listLoading || detailsLoading ? 'analyzing' : 'idle'} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-white-0">Executive Digests</h1>
+            <p className="text-sm text-muted mt-1">
+              Automated strategic briefs and weekly executive reports
+            </p>
+          </div>
         </div>
-        <Button onClick={() => setCreateDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Digest
-        </Button>
+        <div className="flex items-center gap-3">
+          {/* AI Status Pill when active */}
+          {(isGenerating || listLoading) && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
+              <AIDot status={isGenerating ? 'generating' : 'analyzing'} />
+              <span className="text-xs font-medium text-brand-cyan">
+                {isGenerating ? 'Generating digest...' : 'Loading...'}
+              </span>
+            </div>
+          )}
+          <Button onClick={() => setCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Digest
+          </Button>
+        </div>
       </div>
 
       {/* Error Alert */}

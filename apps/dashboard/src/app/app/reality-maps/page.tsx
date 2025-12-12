@@ -1,8 +1,8 @@
 'use client';
 
 /**
- * Reality Maps Dashboard Page (Sprint S73)
- * AI-Driven Multi-Outcome Reality Maps
+ * Reality Maps Dashboard Page (Sprint S73 + S90 AI Presence Enhancement)
+ * AI-Driven Multi-Outcome Reality Maps with AI presence indicators
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -40,6 +40,54 @@ import {
 
 type ViewMode = 'list' | 'detail';
 type DetailTab = 'graph' | 'paths' | 'analysis';
+type AIStatus = 'idle' | 'analyzing' | 'generating';
+
+// AI Dot component
+function AIDot({ status }: { status: AIStatus }) {
+  const baseClasses = 'w-2.5 h-2.5 rounded-full';
+  if (status === 'analyzing') {
+    return <span className={`${baseClasses} ai-dot-analyzing`} />;
+  }
+  if (status === 'generating') {
+    return <span className={`${baseClasses} ai-dot-generating`} />;
+  }
+  return <span className={`${baseClasses} ai-dot`} />;
+}
+
+// AI Insight Banner component
+function AIInsightBanner({
+  message,
+  type = 'info',
+  onDismiss
+}: {
+  message: string;
+  type?: 'info' | 'success' | 'warning';
+  onDismiss?: () => void;
+}) {
+  const borderColor = type === 'success' ? 'border-l-semantic-success' :
+                      type === 'warning' ? 'border-l-semantic-warning' : 'border-l-brand-cyan';
+  const bgColor = type === 'success' ? 'bg-semantic-success/5' :
+                  type === 'warning' ? 'bg-semantic-warning/5' : 'bg-brand-cyan/5';
+
+  return (
+    <div className={`panel-card p-4 border-l-4 ${borderColor} ${bgColor}`}>
+      <div className="flex items-start gap-3">
+        <div className="flex items-center gap-2 shrink-0">
+          <AIDot status="idle" />
+          <span className="text-xs font-medium text-brand-cyan">Pravado Insight</span>
+        </div>
+        <p className="text-sm text-white flex-1">{message}</p>
+        {onDismiss && (
+          <button onClick={onDismiss} className="text-muted hover:text-white transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function RealityMapsPage() {
   const router = useRouter();
@@ -219,16 +267,24 @@ export default function RealityMapsPage() {
     setHighlightedPathIds(pathIds);
   };
 
+  // Derive AI status from operational states
+  const aiStatus: AIStatus = generating ? 'generating' : analyzing ? 'analyzing' : 'idle';
+
   // Render list view
   const renderListView = () => (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header with AI Status */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white-0">Reality Maps</h1>
-          <p className="text-sm text-muted mt-1">
-            AI-driven multi-outcome scenario visualization
-          </p>
+        <div className="flex items-start gap-3">
+          <div className="mt-1">
+            <AIDot status={aiStatus} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-white-0">Reality Maps</h1>
+            <p className="text-sm text-muted mt-1">
+              AI-driven multi-outcome scenario visualization
+            </p>
+          </div>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
@@ -240,6 +296,18 @@ export default function RealityMapsPage() {
           New Reality Map
         </button>
       </div>
+
+      {/* AI Insight Banner */}
+      {maps.length > 0 && (
+        <AIInsightBanner
+          message={`Pravado is monitoring ${maps.length} reality ${maps.length === 1 ? 'map' : 'maps'}. ${
+            maps.filter(m => m.status === 'completed').length > 0
+              ? `${maps.filter(m => m.status === 'completed').length} completed with AI analysis ready for review.`
+              : 'Generate your first map to see AI-powered outcome predictions.'
+          }`}
+          type="info"
+        />
+      )}
 
       {/* Filters */}
       <div className="flex items-center gap-4">
@@ -356,9 +424,12 @@ export default function RealityMapsPage() {
   const renderDetailView = () => {
     if (!selectedMap) return null;
 
+    // Determine detail-specific AI status
+    const detailAiStatus: AIStatus = generating ? 'generating' : analyzing ? 'analyzing' : 'idle';
+
     return (
       <div className="h-full flex flex-col">
-        {/* Back button and title */}
+        {/* Back button and title with AI Status */}
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={() => {
@@ -373,12 +444,26 @@ export default function RealityMapsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <div>
-            <h1 className="text-xl font-bold text-white-0">{selectedMap.name}</h1>
-            {selectedMap.description && (
-              <p className="text-sm text-muted">{selectedMap.description}</p>
-            )}
+          <div className="flex items-start gap-3 flex-1">
+            <div className="mt-1">
+              <AIDot status={detailAiStatus} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white-0">{selectedMap.name}</h1>
+              {selectedMap.description && (
+                <p className="text-sm text-muted">{selectedMap.description}</p>
+              )}
+            </div>
           </div>
+          {/* AI Status Label */}
+          {detailAiStatus !== 'idle' && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
+              <AIDot status={detailAiStatus} />
+              <span className="text-xs font-medium text-brand-cyan">
+                {detailAiStatus === 'generating' ? 'AI Generating...' : 'AI Analyzing...'}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Toolbar */}
@@ -439,6 +524,27 @@ export default function RealityMapsPage() {
             Analysis
           </button>
         </div>
+
+        {/* AI Insight Banner for completed maps */}
+        {selectedMap.status === 'completed' && analysisData?.analysis && (
+          <div className="mt-4">
+            <AIInsightBanner
+              message={(() => {
+                const recs = analysisData.analysis.recommendations || [];
+                const risks = analysisData.analysis.aggregatedRisks || [];
+                const contradictions = analysisData.analysis.contradictions || [];
+                if (recs.length > 0) {
+                  return `${recs.length} AI recommendation${recs.length > 1 ? 's' : ''} identified. ${risks.length > 0 ? `${risks.length} risk factor${risks.length > 1 ? 's' : ''} detected.` : ''}`;
+                }
+                if (contradictions.length > 0) {
+                  return `${contradictions.length} contradiction${contradictions.length > 1 ? 's' : ''} detected across outcome paths.`;
+                }
+                return `This reality map contains ${graphData?.nodes?.length || 0} nodes and ${graphData?.paths?.length || 0} outcome paths. AI analysis is ready for review.`;
+              })()}
+              type={(analysisData.analysis.aggregatedRisks?.length || 0) > 0 ? 'warning' : 'info'}
+            />
+          </div>
+        )}
 
         {/* Tab content */}
         <div className="flex-1 overflow-hidden mt-4">

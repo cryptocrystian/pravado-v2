@@ -1,5 +1,5 @@
 /**
- * SEO Intelligence Dashboard
+ * SEO Intelligence Dashboard (S90 AI Presence Enhancement)
  * Styled according to Pravado Design System v2
  */
 
@@ -14,6 +14,44 @@ import type {
   SEOSerpSnapshot,
 } from '@pravado/types';
 import { useState, useEffect } from 'react';
+
+// AI Dot component for presence indication
+function AIDot({ status = 'idle' }: { status?: 'idle' | 'analyzing' | 'generating' }) {
+  const baseClasses = 'w-2.5 h-2.5 rounded-full';
+  if (status === 'analyzing') {
+    return <span className={`${baseClasses} ai-dot-analyzing`} />;
+  }
+  if (status === 'generating') {
+    return <span className={`${baseClasses} ai-dot-generating`} />;
+  }
+  return <span className={`${baseClasses} ai-dot`} />;
+}
+
+// AI Insight Banner component
+function AIInsightBanner({
+  message,
+  type = 'info',
+}: {
+  message: string;
+  type?: 'info' | 'success' | 'warning';
+}) {
+  const borderColor = type === 'success' ? 'border-l-semantic-success' :
+                      type === 'warning' ? 'border-l-semantic-warning' : 'border-l-brand-cyan';
+  const bgColor = type === 'success' ? 'bg-semantic-success/5' :
+                  type === 'warning' ? 'bg-semantic-warning/5' : 'bg-brand-cyan/5';
+
+  return (
+    <div className={`panel-card p-4 border-l-4 ${borderColor} ${bgColor}`}>
+      <div className="flex items-start gap-3">
+        <div className="flex items-center gap-2 shrink-0">
+          <AIDot status="idle" />
+          <span className="text-xs font-medium text-brand-cyan">Pravado Insight</span>
+        </div>
+        <p className="text-sm text-white flex-1">{message}</p>
+      </div>
+    </div>
+  );
+}
 
 interface KeywordsData {
   items: SEOKeywordWithMetrics[];
@@ -136,15 +174,51 @@ export default function SEOPage() {
     );
   };
 
+  // Derive AI status
+  const aiStatus = loading ? 'analyzing' : serpLoading ? 'analyzing' : 'idle';
+
+  // Count high-priority opportunities
+  const highPriorityOpportunities = opportunities.filter(o => o.priorityScore >= 70).length;
+
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white-0 mb-2">SEO Intelligence</h1>
-        <p className="text-muted">
-          Keyword tracking, SERP analysis, on-page optimization, and backlink intelligence
-        </p>
+    <div className="p-8 max-w-7xl mx-auto bg-page min-h-screen">
+      {/* Page Header with AI Status */}
+      <div className="mb-6">
+        <div className="flex items-start gap-3">
+          <div className="mt-2">
+            <AIDot status={aiStatus} />
+          </div>
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-white-0 mb-2">SEO Intelligence</h1>
+            <p className="text-muted">
+              Keyword tracking, SERP analysis, on-page optimization, and backlink intelligence
+            </p>
+          </div>
+          {/* AI Status Pill when active */}
+          {aiStatus !== 'idle' && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
+              <AIDot status={aiStatus} />
+              <span className="text-xs font-medium text-brand-cyan">
+                Analyzing data...
+              </span>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* AI Insight Banner for Opportunities */}
+      {!loading && opportunities.length > 0 && (
+        <div className="mb-6">
+          <AIInsightBanner
+            message={`${opportunities.length} SEO opportunit${opportunities.length !== 1 ? 'ies' : 'y'} detected. ${
+              highPriorityOpportunities > 0
+                ? `${highPriorityOpportunities} high-priority action${highPriorityOpportunities !== 1 ? 's' : ''} recommended.`
+                : 'Review opportunities to improve rankings.'
+            }`}
+            type={highPriorityOpportunities > 0 ? 'success' : 'info'}
+          />
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="mb-6 border-b border-border-subtle">

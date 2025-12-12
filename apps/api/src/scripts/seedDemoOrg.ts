@@ -139,14 +139,14 @@ async function seedUsers(
       console.log(`   ✓ Created user: ${user.email}`);
     }
 
-    // Link user to org
-    const { error: linkError } = await supabase.from('user_orgs').upsert(
+    // Link user to org (using org_members table for consistency with API)
+    const { error: linkError } = await supabase.from('org_members').upsert(
       {
         user_id: userId,
         org_id: orgId,
         role: user.role,
       },
-      { onConflict: 'user_id,org_id' }
+      { onConflict: 'org_id,user_id' }
     );
 
     if (!linkError) {

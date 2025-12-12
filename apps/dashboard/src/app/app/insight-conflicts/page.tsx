@@ -1,11 +1,60 @@
 'use client';
 
 /**
- * Insight Conflicts Dashboard Page (Sprint S74)
- * Autonomous Insight Conflict Resolution Engine
+ * Insight Conflicts Dashboard Page (Sprint S74 + S90 AI Presence Enhancement)
+ * Autonomous Insight Conflict Resolution Engine with AI presence indicators
  */
 
 import { useState, useEffect, useCallback } from 'react';
+
+type AIStatus = 'idle' | 'analyzing' | 'generating';
+
+// AI Dot component for presence indication
+function AIDot({ status }: { status: AIStatus }) {
+  const baseClasses = 'w-2.5 h-2.5 rounded-full';
+  if (status === 'analyzing') {
+    return <span className={`${baseClasses} ai-dot-analyzing`} />;
+  }
+  if (status === 'generating') {
+    return <span className={`${baseClasses} ai-dot-generating`} />;
+  }
+  return <span className={`${baseClasses} ai-dot`} />;
+}
+
+// AI Insight Banner component
+function AIInsightBanner({
+  message,
+  type = 'info',
+  onDismiss
+}: {
+  message: string;
+  type?: 'info' | 'success' | 'warning';
+  onDismiss?: () => void;
+}) {
+  const borderColor = type === 'success' ? 'border-l-semantic-success' :
+                      type === 'warning' ? 'border-l-semantic-warning' : 'border-l-brand-cyan';
+  const bgColor = type === 'success' ? 'bg-semantic-success/5' :
+                  type === 'warning' ? 'bg-semantic-warning/5' : 'bg-brand-cyan/5';
+
+  return (
+    <div className={`panel-card p-4 border-l-4 ${borderColor} ${bgColor}`}>
+      <div className="flex items-start gap-3">
+        <div className="flex items-center gap-2 shrink-0">
+          <AIDot status="idle" />
+          <span className="text-xs font-medium text-brand-cyan">Pravado Insight</span>
+        </div>
+        <p className="text-sm text-white flex-1">{message}</p>
+        {onDismiss && (
+          <button onClick={onDismiss} className="text-muted hover:text-white transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 import type {
   InsightConflict,
   InsightConflictItem,
@@ -304,18 +353,54 @@ export default function InsightConflictsPage() {
     }));
   };
 
+  // Derive AI status from operational states
+  const aiStatus: AIStatus = analyzing || detecting ? 'analyzing' : resolving ? 'generating' : 'idle';
+
   // Render list view
   const renderListView = () => (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header with AI Status */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white-0">Insight Conflicts</h1>
-          <p className="text-sm text-muted mt-1">
-            Autonomous conflict detection, analysis, and resolution across intelligence systems
-          </p>
+        <div className="flex items-start gap-3">
+          <div className="mt-1">
+            <AIDot status={aiStatus} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-white-0">Insight Conflicts</h1>
+            <p className="text-sm text-muted mt-1">
+              Autonomous conflict detection, analysis, and resolution across intelligence systems
+            </p>
+          </div>
         </div>
+        {/* AI Status Pill when active */}
+        {aiStatus !== 'idle' && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
+            <AIDot status={aiStatus} />
+            <span className="text-xs font-medium text-brand-cyan">
+              {detecting ? 'Detecting Conflicts...' : analyzing ? 'AI Analyzing...' : 'AI Resolving...'}
+            </span>
+          </div>
+        )}
       </div>
+
+      {/* AI Insight Banner */}
+      {stats && (stats.totalConflicts || 0) > 0 && (
+        <AIInsightBanner
+          message={(() => {
+            const critical = stats.criticalCount || 0;
+            const high = stats.highCount || 0;
+            const pending = stats.detectedCount || 0;
+            if (critical > 0 || high > 0) {
+              return `${critical + high} high-priority conflict${critical + high > 1 ? 's' : ''} require${critical + high === 1 ? 's' : ''} attention. Pravado recommends addressing critical conflicts first to maintain data integrity.`;
+            }
+            if (pending > 0) {
+              return `${pending} conflict${pending > 1 ? 's' : ''} detected and awaiting analysis. Run AI analysis to generate resolution recommendations.`;
+            }
+            return `Monitoring ${stats.totalConflicts} conflict${stats.totalConflicts > 1 ? 's' : ''} across your intelligence systems.`;
+          })()}
+          type={((stats.criticalCount || 0) + (stats.highCount || 0)) > 0 ? 'warning' : 'info'}
+        />
+      )}
 
       {/* Stats */}
       <ConflictStatsCard stats={stats} loading={statsLoading} />
@@ -421,9 +506,12 @@ export default function InsightConflictsPage() {
   const renderDetailView = () => {
     if (!selectedConflict) return null;
 
+    // Determine detail-specific AI status
+    const detailAiStatus: AIStatus = analyzing ? 'analyzing' : resolving ? 'generating' : 'idle';
+
     return (
       <div className="h-full flex flex-col">
-        {/* Back button and title */}
+        {/* Back button and title with AI Status */}
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={() => {
@@ -440,10 +528,43 @@ export default function InsightConflictsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <div className="flex-1">
-            <h1 className="text-xl font-bold text-white-0">{selectedConflict.title}</h1>
+          <div className="flex items-start gap-3 flex-1">
+            <div className="mt-1">
+              <AIDot status={detailAiStatus} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white-0">{selectedConflict.title}</h1>
+              {selectedConflict.severity && (
+                <span className={`inline-block mt-1 px-2 py-0.5 text-xs font-medium rounded ${
+                  selectedConflict.severity === 'critical' ? 'bg-semantic-danger/20 text-semantic-danger' :
+                  selectedConflict.severity === 'high' ? 'bg-semantic-warning/20 text-semantic-warning' :
+                  'bg-slate-5/20 text-slate-6'
+                }`}>
+                  {selectedConflict.severity.toUpperCase()}
+                </span>
+              )}
+            </div>
           </div>
+          {/* AI Status Pill */}
+          {detailAiStatus !== 'idle' && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
+              <AIDot status={detailAiStatus} />
+              <span className="text-xs font-medium text-brand-cyan">
+                {analyzing ? 'AI Analyzing...' : 'AI Resolving...'}
+              </span>
+            </div>
+          )}
         </div>
+
+        {/* AI Insight Banner for conflicts with analysis results */}
+        {selectedConflict.analysisResult && selectedConflict.status !== 'resolved' && (
+          <div className="mb-4">
+            <AIInsightBanner
+              message={`AI analysis complete. ${conflictResolutions.length > 0 ? `${conflictResolutions.length} resolution${conflictResolutions.length > 1 ? 's' : ''} proposed.` : 'Ready to generate resolution recommendations.'}`}
+              type="success"
+            />
+          </div>
+        )}
 
         {/* Detail tabs */}
         <div className="flex border-b border-border-subtle mb-4">

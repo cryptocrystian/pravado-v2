@@ -1,5 +1,5 @@
 /**
- * Unified Narratives Dashboard Page (Sprint S70)
+ * Unified Narratives Dashboard Page (Sprint S70 + S91 AI Presence Enhancement)
  *
  * Cross-domain Synthesis Engine - generates multi-layer narrative documents
  * from all intelligence systems.
@@ -8,6 +8,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+
+// AI Dot component for presence indication
+function AIDot({ status = 'idle' }: { status?: 'idle' | 'analyzing' | 'generating' }) {
+  const baseClasses = 'w-2.5 h-2.5 rounded-full';
+  if (status === 'analyzing') {
+    return <span className={`${baseClasses} ai-dot-analyzing`} />;
+  }
+  if (status === 'generating') {
+    return <span className={`${baseClasses} ai-dot-generating`} />;
+  }
+  return <span className={`${baseClasses} ai-dot`} />;
+}
 import {
   AlertCircle,
   BookOpen,
@@ -270,20 +282,34 @@ export default function UnifiedNarrativesPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto py-6 px-4">
-        {/* Header */}
+        {/* Header with AI Presence */}
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3 text-white-0">
-              <div className="w-12 h-12 rounded-xl bg-brand-iris/10 flex items-center justify-center">
-                <BookOpen className="h-6 w-6 text-brand-iris" />
-              </div>
-              Unified Narratives
-            </h1>
-            <p className="text-muted mt-2">
-              Cross-domain synthesis engine for multi-layer narrative documents
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="mt-1">
+              <AIDot status={isSubmitting ? 'generating' : isLoading ? 'analyzing' : 'idle'} />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold flex items-center gap-3 text-white-0">
+                <div className="w-12 h-12 rounded-xl bg-brand-iris/10 flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-brand-iris" />
+                </div>
+                Unified Narratives
+              </h1>
+              <p className="text-muted mt-2">
+                Cross-domain synthesis engine for multi-layer narrative documents
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* AI Status Pill when active */}
+            {(isSubmitting || isLoading) && (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
+                <AIDot status={isSubmitting ? 'generating' : 'analyzing'} />
+                <span className="text-xs font-medium text-brand-cyan">
+                  {isSubmitting ? 'Synthesizing...' : 'Loading...'}
+                </span>
+              </div>
+            )}
             <Button
               variant="outline"
               onClick={loadNarratives}

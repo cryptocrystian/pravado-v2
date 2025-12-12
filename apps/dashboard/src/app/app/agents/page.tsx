@@ -1,5 +1,6 @@
 /**
- * Agents page (S3 placeholder with static agent definitions)
+ * Agents page (S3 + S90 AI Presence Enhancement)
+ * AI Agent registry with presence indicators
  */
 
 import type { ListAgentsResponse } from '@pravado/types';
@@ -8,6 +9,29 @@ import { getCurrentUser } from '@/lib/getCurrentUser';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
+
+// AI Dot component for presence indication (server component version)
+function AIDot() {
+  return <span className="w-2.5 h-2.5 rounded-full ai-dot" />;
+}
+
+// AI Insight Banner component (server component version)
+function AIInsightBanner({ message, type = 'info' }: { message: string; type?: 'info' | 'success' }) {
+  const borderColor = type === 'success' ? 'border-l-semantic-success' : 'border-l-brand-cyan';
+  const bgColor = type === 'success' ? 'bg-semantic-success/5' : 'bg-brand-cyan/5';
+
+  return (
+    <div className={`panel-card p-4 border-l-4 ${borderColor} ${bgColor}`}>
+      <div className="flex items-start gap-3">
+        <div className="flex items-center gap-2 shrink-0">
+          <AIDot />
+          <span className="text-xs font-medium text-brand-cyan">Pravado Insight</span>
+        </div>
+        <p className="text-sm text-white flex-1">{message}</p>
+      </div>
+    </div>
+  );
+}
 
 async function getAgents() {
   try {
@@ -31,33 +55,33 @@ export default async function AgentsPage() {
   const seoAgents = agents?.filter((a) => a.category === 'seo') || [];
   const generalAgents = agents?.filter((a) => a.category === 'general') || [];
 
-  return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-white-0 mb-2">AI Agents</h2>
-          <p className="text-muted">
-            Specialized AI agents available for playbook workflows and automation
-          </p>
-        </div>
+  // Calculate agent stats
+  const totalCapabilities = agents?.reduce((sum, a) => sum + a.capabilities.length, 0) || 0;
 
-        {/* Coming Soon Banner */}
-        <div className="bg-brand-amber/10 border border-brand-amber/20 rounded-lg p-6 mb-8">
-          <div className="flex items-start space-x-3">
-            <span className="text-3xl">🤖</span>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-brand-amber mb-2">
-                Agent Runtime - Coming in S4+
-              </h3>
-              <p className="text-brand-amber/80 mb-2">
-                Below are available agent definitions. Sprint S4+ will implement the full execution
-                runtime.
-              </p>
-              <p className="text-sm text-brand-amber/60">
-                Total agents: {agents?.length || 0} | Categories: PR, Content, SEO, General
+  return (
+    <div className="p-8 bg-page min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        {/* Header with AI Status */}
+        <div className="mb-6">
+          <div className="flex items-start gap-3">
+            <div className="mt-2">
+              <AIDot />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-white-0 mb-2">AI Agents</h2>
+              <p className="text-muted">
+                Specialized AI agents available for playbook workflows and automation
               </p>
             </div>
           </div>
+        </div>
+
+        {/* AI Insight Banner */}
+        <div className="mb-8">
+          <AIInsightBanner
+            message={`${agents?.length || 0} specialized AI agents ready across ${4} categories. ${totalCapabilities} unique capabilities available for workflow orchestration.`}
+            type="success"
+          />
         </div>
 
         {/* PR Agents */}
@@ -69,8 +93,11 @@ export default async function AgentsPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {prAgents.map((agent) => (
-                <div key={agent.id} className="panel-card p-5">
-                  <h4 className="text-lg font-semibold text-white-0 mb-2">{agent.name}</h4>
+                <div key={agent.id} className="panel-card p-5 hover:border-brand-cyan/30 transition-colors">
+                  <div className="flex items-start gap-2 mb-2">
+                    <AIDot />
+                    <h4 className="text-lg font-semibold text-white-0">{agent.name}</h4>
+                  </div>
                   <p className="text-sm text-muted mb-3">{agent.description}</p>
 
                   <div className="space-y-2 text-xs">
@@ -105,8 +132,11 @@ export default async function AgentsPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {contentAgents.map((agent) => (
-                <div key={agent.id} className="panel-card p-5">
-                  <h4 className="text-lg font-semibold text-white-0 mb-2">{agent.name}</h4>
+                <div key={agent.id} className="panel-card p-5 hover:border-brand-iris/30 transition-colors">
+                  <div className="flex items-start gap-2 mb-2">
+                    <AIDot />
+                    <h4 className="text-lg font-semibold text-white-0">{agent.name}</h4>
+                  </div>
                   <p className="text-sm text-muted mb-3">{agent.description}</p>
 
                   <div className="space-y-2 text-xs">
@@ -144,8 +174,11 @@ export default async function AgentsPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {seoAgents.map((agent) => (
-                <div key={agent.id} className="panel-card p-5">
-                  <h4 className="text-lg font-semibold text-white-0 mb-2">{agent.name}</h4>
+                <div key={agent.id} className="panel-card p-5 hover:border-semantic-success/30 transition-colors">
+                  <div className="flex items-start gap-2 mb-2">
+                    <AIDot />
+                    <h4 className="text-lg font-semibold text-white-0">{agent.name}</h4>
+                  </div>
                   <p className="text-sm text-muted mb-3">{agent.description}</p>
 
                   <div className="space-y-2 text-xs">
@@ -183,8 +216,11 @@ export default async function AgentsPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {generalAgents.map((agent) => (
-                <div key={agent.id} className="panel-card p-5">
-                  <h4 className="text-lg font-semibold text-white-0 mb-2">{agent.name}</h4>
+                <div key={agent.id} className="panel-card p-5 hover:border-brand-magenta/30 transition-colors">
+                  <div className="flex items-start gap-2 mb-2">
+                    <AIDot />
+                    <h4 className="text-lg font-semibold text-white-0">{agent.name}</h4>
+                  </div>
                   <p className="text-sm text-muted mb-3">{agent.description}</p>
 
                   <div className="space-y-2 text-xs">
