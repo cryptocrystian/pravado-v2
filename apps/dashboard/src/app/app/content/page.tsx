@@ -1,5 +1,5 @@
 /**
- * Content Intelligence Dashboard (Sprint S12)
+ * Content Intelligence Dashboard (Sprint S12 + S90 AI Presence Enhancement)
  * Full implementation with content library, briefs, clusters, and gaps
  */
 
@@ -19,6 +19,44 @@ import type {
 } from '@pravado/types';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+
+// AI Dot component for presence indication
+function AIDot({ status = 'idle' }: { status?: 'idle' | 'analyzing' | 'generating' }) {
+  const baseClasses = 'w-2.5 h-2.5 rounded-full';
+  if (status === 'analyzing') {
+    return <span className={`${baseClasses} ai-dot-analyzing`} />;
+  }
+  if (status === 'generating') {
+    return <span className={`${baseClasses} ai-dot-generating`} />;
+  }
+  return <span className={`${baseClasses} ai-dot`} />;
+}
+
+// AI Insight Banner component
+function AIInsightBanner({
+  message,
+  type = 'info',
+}: {
+  message: string;
+  type?: 'info' | 'success' | 'warning';
+}) {
+  const borderColor = type === 'success' ? 'border-l-semantic-success' :
+                      type === 'warning' ? 'border-l-semantic-warning' : 'border-l-brand-cyan';
+  const bgColor = type === 'success' ? 'bg-semantic-success/5' :
+                  type === 'warning' ? 'bg-semantic-warning/5' : 'bg-brand-cyan/5';
+
+  return (
+    <div className={`p-3 border-l-4 ${borderColor} ${bgColor} rounded-r-lg`}>
+      <div className="flex items-start gap-2">
+        <div className="flex items-center gap-2 shrink-0">
+          <AIDot status="idle" />
+          <span className="text-xs font-medium text-brand-cyan">Pravado</span>
+        </div>
+        <p className="text-xs text-white flex-1">{message}</p>
+      </div>
+    </div>
+  );
+}
 
 type TabType = 'overview' | 'briefs';
 type ContentStatus = 'draft' | 'published' | 'archived';
@@ -306,14 +344,33 @@ export default function ContentPage() {
     });
   };
 
+  // Derive AI status
+  const aiStatus = isGenerating ? 'generating' : isAnalyzingQuality ? 'analyzing' : 'idle';
+
   return (
     <div className="h-screen flex flex-col bg-page">
-      {/* Header */}
+      {/* Header with AI Status */}
       <div className="bg-slate-1 border-b border-border-subtle px-6 py-4">
-        <h1 className="text-2xl font-bold text-white-0">Content Intelligence</h1>
-        <p className="text-sm text-muted mt-1">
-          Manage your content library, briefs, and discover content opportunities
-        </p>
+        <div className="flex items-start gap-3">
+          <div className="mt-1">
+            <AIDot status={aiStatus} />
+          </div>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-white-0">Content Intelligence</h1>
+            <p className="text-sm text-muted mt-1">
+              Manage your content library, briefs, and discover content opportunities
+            </p>
+          </div>
+          {/* AI Status Pill when active */}
+          {aiStatus !== 'idle' && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
+              <AIDot status={aiStatus} />
+              <span className="text-xs font-medium text-brand-cyan">
+                {aiStatus === 'generating' ? 'Generating Brief...' : 'Analyzing Quality...'}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Three-panel layout */}
@@ -788,6 +845,19 @@ export default function ContentPage() {
           {/* Content Gaps Card */}
           <div className="bg-slate-1 rounded-lg shadow-sm border border-border-subtle p-4">
             <h3 className="text-lg font-semibold text-white-0 mb-3">Content Opportunities</h3>
+            {/* AI Insight Banner for gaps */}
+            {gaps.length > 0 && (
+              <div className="mb-3">
+                <AIInsightBanner
+                  message={`${gaps.length} content gap${gaps.length > 1 ? 's' : ''} identified. ${
+                    gaps.filter(g => g.seoOpportunityScore >= 70).length > 0
+                      ? `${gaps.filter(g => g.seoOpportunityScore >= 70).length} high-opportunity topic${gaps.filter(g => g.seoOpportunityScore >= 70).length > 1 ? 's' : ''} recommended.`
+                      : 'Generate briefs to address these opportunities.'
+                  }`}
+                  type={gaps.filter(g => g.seoOpportunityScore >= 70).length > 0 ? 'success' : 'info'}
+                />
+              </div>
+            )}
             {gaps.length === 0 ? (
               <p className="text-sm text-muted">No content gaps identified.</p>
             ) : (

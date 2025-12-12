@@ -470,6 +470,110 @@ export async function orgsRoutes(server: FastifyInstance) {
     }
   );
 
+  // Demo org join endpoint - allows authenticated users to join the demo org
+  server.post<{ Reply: JoinOrgResponse }>(
+    '/join-demo',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      const userId = request.user!.id;
+      const DEMO_ORG_NAME = 'Pravado Demo Org';
+
+      // Find the demo org
+      const { data: demoOrg, error: orgError } = await supabase
+        .from('orgs')
+        .select('*')
+        .eq('name', DEMO_ORG_NAME)
+        .single();
+
+      if (orgError || !demoOrg) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'DEMO_ORG_NOT_FOUND',
+            message: 'Demo organization not found. Please run seed:demo first.',
+          },
+        });
+      }
+
+      // Check if user is already a member
+      const { data: existingMembership } = await supabase
+        .from('org_members')
+        .select('id, role')
+        .eq('org_id', demoOrg.id)
+        .eq('user_id', userId)
+        .single();
+
+      if (existingMembership) {
+        // User already a member, return success with existing membership
+        return {
+          success: true,
+          data: {
+            org: {
+              id: demoOrg.id,
+              name: demoOrg.name,
+              createdAt: demoOrg.created_at,
+              updatedAt: demoOrg.updated_at,
+            },
+            membership: {
+              id: existingMembership.id,
+              orgId: demoOrg.id,
+              userId: userId,
+              role: existingMembership.role,
+              createdAt: demoOrg.created_at,
+              updatedAt: demoOrg.updated_at,
+            },
+          },
+        };
+      }
+
+      // Add user as member of demo org
+      const { data: membership, error: memberError } = await supabase
+        .from('org_members')
+        .insert({
+          org_id: demoOrg.id,
+          user_id: userId,
+          role: 'member',
+        })
+        .select()
+        .single();
+
+      if (memberError || !membership) {
+        logger.error('Failed to join demo org', { error: memberError, userId });
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'JOIN_DEMO_FAILED',
+            message: 'Failed to join demo organization',
+          },
+        });
+      }
+
+      logger.info('User joined demo org', { userId, orgId: demoOrg.id });
+
+      return {
+        success: true,
+        data: {
+          org: {
+            id: demoOrg.id,
+            name: demoOrg.name,
+            createdAt: demoOrg.created_at,
+            updatedAt: demoOrg.updated_at,
+          },
+          membership: {
+            id: membership.id,
+            orgId: membership.org_id,
+            userId: membership.user_id,
+            role: membership.role,
+            createdAt: membership.created_at,
+            updatedAt: membership.updated_at,
+          },
+        },
+      };
+    }
+  );
+
   server.post<{
     Params: { id: string; inviteId: string };
     Reply: ResendInviteResponse;

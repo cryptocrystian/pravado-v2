@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import { getCurrentUser } from '@/lib/getCurrentUser';
+import { OrgSwitcher } from '@/components/OrgSwitcher';
+import { AIOrchestrationBar } from '@/components/orchestration';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
@@ -108,24 +110,12 @@ export default async function AppLayout({
           </div>
         </div>
 
-        {/* Organization Selector */}
+        {/* Organization Switcher */}
         <div className="px-4 py-4 border-b border-border-subtle">
-          <div className="flex items-center space-x-3 p-2 rounded-lg bg-slate-3/50 hover:bg-slate-3 transition-colors duration-sm cursor-pointer">
-            <div className="w-8 h-8 bg-brand-iris rounded-lg flex items-center justify-center text-white font-semibold text-sm">
-              {session.activeOrg.name.charAt(0).toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">
-                {session.activeOrg.name}
-              </p>
-              <p className="text-xs text-muted truncate">
-                Organization
-              </p>
-            </div>
-            <svg className="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-            </svg>
-          </div>
+          <OrgSwitcher
+            currentOrg={session.activeOrg}
+            allOrgs={session.orgs}
+          />
         </div>
 
         {/* Main Navigation */}
@@ -219,6 +209,9 @@ export default async function AppLayout({
             </button>
           </div>
         </header>
+
+        {/* AI Orchestration Bar - Global visibility layer */}
+        <AIOrchestrationBar />
 
         {/* Page Content */}
         <main className="flex-1 overflow-auto bg-page">

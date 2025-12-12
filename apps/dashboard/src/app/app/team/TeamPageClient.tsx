@@ -90,29 +90,29 @@ export function TeamPageClient({
   const getRoleBadgeColor = (roleValue: string) => {
     switch (roleValue) {
       case 'owner':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-brand-magenta/10 text-brand-magenta';
       case 'admin':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-brand-iris/10 text-brand-iris';
       case 'member':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-5 text-slate-6';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-5 text-slate-6';
     }
   };
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-page min-h-screen">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">Team</h2>
-            <p className="text-gray-600 mt-1">
+            <h2 className="text-3xl font-bold text-white-0">Team</h2>
+            <p className="text-muted mt-1">
               Manage your organization members and invitations
             </p>
           </div>
           <button
             onClick={() => setShowInviteForm(!showInviteForm)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="btn-primary"
           >
             {showInviteForm ? 'Cancel' : 'Invite Member'}
           </button>
@@ -120,26 +120,26 @@ export function TeamPageClient({
 
         {/* Success/Error Messages */}
         {success && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-green-800">{success}</p>
+          <div className="alert-success mb-6">
+            <p>{success}</p>
           </div>
         )}
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error}</p>
+          <div className="alert-error mb-6">
+            <p>{error}</p>
           </div>
         )}
 
         {/* Invite Form */}
         {showInviteForm && (
-          <div className="mb-8 bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="mb-8 panel-card p-6">
+            <h3 className="text-lg font-semibold text-white-0 mb-4">
               Invite Team Member
             </h3>
             <form onSubmit={handleInvite} className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="email" className="block text-sm font-medium text-slate-6 mb-1">
                   Email Address
                 </label>
                 <input
@@ -148,25 +148,25 @@ export function TeamPageClient({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="input-field"
                   placeholder="colleague@example.com"
                 />
               </div>
 
               <div>
-                <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="role" className="block text-sm font-medium text-slate-6 mb-1">
                   Role
                 </label>
                 <select
                   id="role"
                   value={role}
                   onChange={(e) => setRole(e.target.value as 'admin' | 'member')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="input-field"
                 >
                   <option value="member">Member</option>
                   <option value="admin">Admin</option>
                 </select>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-slate-6">
                   Admins can invite and manage team members
                 </p>
               </div>
@@ -174,7 +174,7 @@ export function TeamPageClient({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-primary w-full"
               >
                 {isSubmitting ? 'Sending...' : 'Send Invitation'}
               </button>
@@ -183,20 +183,20 @@ export function TeamPageClient({
         )}
 
         {/* Members List */}
-        <div className="bg-white rounded-lg shadow mb-6">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">
+        <div className="panel-card mb-6">
+          <div className="px-6 py-4 border-b border-border-subtle">
+            <h3 className="text-lg font-semibold text-white-0">
               Members ({members.length})
             </h3>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-border-subtle">
             {members.length === 0 ? (
-              <div className="px-6 py-8 text-center text-gray-500">
+              <div className="px-6 py-8 text-center text-slate-6">
                 No members found
               </div>
             ) : (
               members.map((member) => (
-                <div key={member.id} className="px-6 py-4 flex items-center justify-between">
+                <div key={member.id} className="px-6 py-4 flex items-center justify-between hover:bg-slate-3/30 transition-colors duration-sm">
                   <div className="flex items-center space-x-3">
                     {member.user.avatarUrl ? (
                       <img
@@ -205,18 +205,18 @@ export function TeamPageClient({
                         className="w-10 h-10 rounded-full"
                       />
                     ) : (
-                      <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-medium">
+                      <div className="w-10 h-10 bg-slate-5 rounded-full flex items-center justify-center text-white-0 font-medium">
                         {member.user.fullName?.charAt(0).toUpperCase() || 'U'}
                       </div>
                     )}
                     <div>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-white-0">
                         {member.user.fullName || 'Unknown'}
                         {member.userId === currentUserId && (
-                          <span className="ml-2 text-xs text-gray-500">(You)</span>
+                          <span className="ml-2 text-xs text-slate-6">(You)</span>
                         )}
                       </p>
-                      <p className="text-xs text-gray-500">{member.user.email}</p>
+                      <p className="text-xs text-slate-6">{member.user.email}</p>
                     </div>
                   </div>
                   <div>
@@ -235,23 +235,23 @@ export function TeamPageClient({
         </div>
 
         {/* Pending Invites */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">
+        <div className="panel-card">
+          <div className="px-6 py-4 border-b border-border-subtle">
+            <h3 className="text-lg font-semibold text-white-0">
               Pending Invitations ({invites.length})
             </h3>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-border-subtle">
             {invites.length === 0 ? (
-              <div className="px-6 py-8 text-center text-gray-500">
+              <div className="px-6 py-8 text-center text-slate-6">
                 No pending invitations
               </div>
             ) : (
               invites.map((invite) => (
-                <div key={invite.id} className="px-6 py-4 flex items-center justify-between">
+                <div key={invite.id} className="px-6 py-4 flex items-center justify-between hover:bg-slate-3/30 transition-colors duration-sm">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{invite.email}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-medium text-white-0">{invite.email}</p>
+                    <p className="text-xs text-slate-6">
                       Invited {new Date(invite.createdAt).toLocaleDateString()}
                       {invite.createdByUser.fullName && ` by ${invite.createdByUser.fullName}`}
                     </p>
@@ -266,7 +266,7 @@ export function TeamPageClient({
                     </span>
                     <button
                       onClick={() => handleResend(invite.id, invite.email)}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-sm text-brand-cyan hover:text-brand-cyan/80 font-medium transition-colors duration-sm"
                     >
                       Resend
                     </button>
