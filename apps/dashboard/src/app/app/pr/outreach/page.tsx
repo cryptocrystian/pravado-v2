@@ -1,10 +1,13 @@
 'use client';
 
 /**
- * PR Outreach Dashboard (Sprint S44)
+ * PR Outreach Dashboard (Sprint S44, updated S97)
  * Main page for managing journalist outreach sequences and runs
+ * S97: Added context preservation from URL params
  */
 
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import type { OutreachRun, OutreachSequence, OutreachStats } from '@pravado/types';
@@ -18,6 +21,18 @@ import {
   listOutreachRuns,
   listOutreachSequences,
 } from '@/lib/prOutreachApi';
+
+// Context info extracted from URL params
+interface OutreachContext {
+  outlet?: string;
+  action?: string;
+  context?: string;
+  topic?: string;
+  journalistId?: string;
+  journalistName?: string;
+  articleId?: string;
+  deadline?: string;
+}
 
 export default function PROutreachPage() {
   // Sequences state
@@ -35,6 +50,42 @@ export default function PROutreachPage() {
   // Stats state
   const [stats, setStats] = useState<OutreachStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(false);
+
+  // Context state (from URL params)
+  const searchParams = useSearchParams();
+  const [outreachContext, setOutreachContext] = useState<OutreachContext | null>(null);
+
+  // Extract context from URL params on mount
+  useEffect(() => {
+    if (!searchParams) return;
+
+    const ctx: OutreachContext = {};
+    const outlet = searchParams.get('outlet');
+    const action = searchParams.get('action');
+    const context = searchParams.get('context');
+    const topic = searchParams.get('topic');
+    const journalistId = searchParams.get('journalistId');
+    const journalistName = searchParams.get('name');
+    const articleId = searchParams.get('articleId');
+    const deadline = searchParams.get('deadline');
+
+    if (outlet) ctx.outlet = outlet;
+    if (action) ctx.action = action;
+    if (context) ctx.context = context;
+    if (topic) ctx.topic = topic;
+    if (journalistId) ctx.journalistId = journalistId;
+    if (journalistName) ctx.journalistName = journalistName;
+    if (articleId) ctx.articleId = articleId;
+    if (deadline) ctx.deadline = deadline;
+
+    if (Object.keys(ctx).length > 0) {
+      setOutreachContext(ctx);
+      // Auto-open editor when coming with context
+      if (ctx.action === 'respond' || ctx.action === 'pitch') {
+        setShowSequenceEditor(true);
+      }
+    }
+  }, [searchParams]);
 
   // Load sequences
   const loadSequences = useCallback(async () => {
@@ -108,12 +159,88 @@ export default function PROutreachPage() {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Journalist Outreach</h1>
-        <p className="text-gray-600 mt-1">
-          Automated email sequences and campaign management
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <Link
+            href="/app/pr"
+            className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-flex items-center gap-1"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to PR Dashboard
+          </Link>
+          <h1 className="text-3xl font-bold">Journalist Outreach</h1>
+          <p className="text-gray-600 mt-1">
+            Automated email sequences and campaign management
+          </p>
+        </div>
       </div>
+
+      {/* Context Banner - shows when navigated from signal/recommendation */}
+      {outreachContext && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-blue-900">Outreach Context</h3>
+              <p className="text-sm text-blue-700 mt-1">
+                {outreachContext.action === 'respond' && (
+                  <>Responding to inquiry from <strong>{outreachContext.outlet}</strong></>
+                )}
+                {outreachContext.action === 'pitch' && (
+                  <>Creating pitch for <strong>{outreachContext.outlet}</strong> on <strong>{outreachContext.topic?.replace(/-/g, ' ')}</strong></>
+                )}
+                {outreachContext.action === 'follow-up' && (
+                  <>Following up on pending outreach</>
+                )}
+                {!outreachContext.action && outreachContext.outlet && (
+                  <>Targeting <strong>{outreachContext.outlet}</strong></>
+                )}
+              </p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {outreachContext.outlet && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                    Outlet: {outreachContext.outlet}
+                  </span>
+                )}
+                {outreachContext.topic && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                    Topic: {outreachContext.topic.replace(/-/g, ' ')}
+                  </span>
+                )}
+                {outreachContext.context && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                    Context: {outreachContext.context}
+                  </span>
+                )}
+                {outreachContext.deadline && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                    Deadline: {outreachContext.deadline}
+                  </span>
+                )}
+                {outreachContext.journalistName && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                    Journalist: {outreachContext.journalistName}
+                  </span>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() => setOutreachContext(null)}
+              className="flex-shrink-0 text-blue-400 hover:text-blue-600"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Stats Overview */}
       {stats && !statsLoading && (

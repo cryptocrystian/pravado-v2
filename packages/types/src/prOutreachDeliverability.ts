@@ -178,9 +178,11 @@ export interface JournalistEngagement extends EngagementMetrics {
  * Input types
  */
 export interface CreateEmailMessageInput {
-  runId: string;
-  sequenceId: string;
-  stepNumber: number;
+  // Required for sequence-based emails, optional for direct sends (S98)
+  runId?: string;
+  sequenceId?: string;
+  stepNumber?: number;
+  // Always required
   journalistId: string;
   subject: string;
   bodyHtml: string;
@@ -296,4 +298,6 @@ export interface ProviderConfig {
   domain?: string;
   fromEmail: string;
   fromName: string;
+  /** Webhook verification key (SendGrid public key, Mailgun signing key, etc.) */
+  webhookKey?: string;
 }
