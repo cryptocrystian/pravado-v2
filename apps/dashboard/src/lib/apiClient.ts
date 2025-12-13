@@ -1,10 +1,17 @@
 /**
- * API client for backend requests
+ * API client for backend requests (Server-side)
+ *
+ * S99 Fix: Use centralized config, no localhost fallback in production
  */
 
 import { cookies } from 'next/headers';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+// In production, NEXT_PUBLIC_API_URL must be set
+const API_URL = process.env.NEXT_PUBLIC_API_URL || (
+  process.env.NODE_ENV === 'production'
+    ? 'https://api-url-not-configured.invalid'
+    : 'http://localhost:3001'
+);
 
 export interface ApiResponse<T> {
   success: boolean;

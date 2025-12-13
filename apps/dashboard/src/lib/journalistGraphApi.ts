@@ -1,6 +1,8 @@
 /**
  * Journalist Identity Graph API Helper (Sprint S46)
  * Frontend API client for journalist graph operations
+ *
+ * S99 Fix: Changed from relative path to full API server URL
  */
 
 import type {
@@ -13,22 +15,35 @@ import type {
   MergeProfilesInput,
   UpdateJournalistProfileInput,
 } from '@pravado/types';
+import { API_BASE_URL } from './apiConfig';
+import { supabase } from '@/lib/supabaseClient';
 
-const API_BASE = '/api/v1/journalist-graph';
+const API_BASE = `${API_BASE_URL}/api/v1/journalist-graph`;
 
 async function apiFetch(endpoint: string, options?: RequestInit) {
+  // Get auth token from Supabase session
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options?.headers as Record<string, string>),
+  };
+
+  // Add Authorization header if we have a token
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
+    headers,
   });
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'Request failed' }));
-    throw new Error(error.message || `HTTP ${response.status}`);
+    throw new Error(error.message || error?.error?.message || `HTTP ${response.status}`);
   }
 
   return response.json();

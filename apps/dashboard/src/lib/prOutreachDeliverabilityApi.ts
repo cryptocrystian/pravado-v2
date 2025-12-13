@@ -1,6 +1,8 @@
 /**
  * PR Outreach Deliverability API Client (Sprint S45)
  * Frontend API functions for email deliverability and engagement analytics
+ *
+ * S99 Fix: Use centralized API config with auth
  */
 
 import type {
@@ -16,8 +18,9 @@ import type {
   UpdateEmailMessageInput,
   UpdateEngagementMetricResult,
 } from '@pravado/types';
+import { API_BASE_URL } from './apiConfig';
+import { supabase } from '@/lib/supabaseClient';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 const API_PREFIX = '/api/v1/pr-outreach-deliverability';
 
 /**
@@ -27,13 +30,23 @@ async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<{ success: boolean; data?: T; error?: { code: string; message: string } }> {
-  const response = await fetch(`${API_BASE}${API_PREFIX}${endpoint}`, {
+  // Get auth token from Supabase session
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${API_PREFIX}${endpoint}`, {
     ...options,
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
+    headers,
   });
 
   return response.json();

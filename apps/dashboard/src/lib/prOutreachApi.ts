@@ -1,6 +1,8 @@
 /**
  * PR Outreach API Client (Sprint S44)
  * Frontend helper for automated journalist outreach
+ *
+ * S99 Fix: Use centralized API config with auth
  */
 
 import type {
@@ -27,8 +29,29 @@ import type {
   UpdateOutreachSequenceInput,
   UpdateOutreachStepInput,
 } from '@pravado/types';
+import { API_BASE_URL } from './apiConfig';
+import { supabase } from '@/lib/supabaseClient';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Helper for authenticated fetch
+async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return fetch(url, {
+    ...options,
+    credentials: 'include',
+    headers,
+  });
+}
 
 // =============================================
 // Sequences
@@ -37,7 +60,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 export async function createOutreachSequence(
   input: CreateOutreachSequenceInput
 ): Promise<OutreachSequence> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/sequences`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -64,7 +87,7 @@ export async function listOutreachSequences(
   if (params?.limit) query.append('limit', String(params.limit));
   if (params?.offset) query.append('offset', String(params.offset));
 
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/sequences?${query.toString()}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences?${query.toString()}`, {
     method: 'GET',
     credentials: 'include',
   });
@@ -79,7 +102,7 @@ export async function listOutreachSequences(
 }
 
 export async function getOutreachSequence(id: string): Promise<OutreachSequence> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/sequences/${id}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${id}`, {
     method: 'GET',
     credentials: 'include',
   });
@@ -94,7 +117,7 @@ export async function getOutreachSequence(id: string): Promise<OutreachSequence>
 }
 
 export async function getOutreachSequenceWithSteps(id: string): Promise<OutreachSequenceWithSteps> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/sequences/${id}/with-steps`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${id}/with-steps`, {
     method: 'GET',
     credentials: 'include',
   });
@@ -112,7 +135,7 @@ export async function updateOutreachSequence(
   id: string,
   input: UpdateOutreachSequenceInput
 ): Promise<OutreachSequence> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/sequences/${id}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -129,7 +152,7 @@ export async function updateOutreachSequence(
 }
 
 export async function deleteOutreachSequence(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/sequences/${id}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${id}`, {
     method: 'DELETE',
     credentials: 'include',
   });
@@ -148,7 +171,7 @@ export async function createOutreachStep(
   sequenceId: string,
   input: CreateOutreachStepInput
 ): Promise<OutreachSequenceStep> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/sequences/${sequenceId}/steps`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${sequenceId}/steps`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -168,7 +191,7 @@ export async function updateOutreachStep(
   id: string,
   input: UpdateOutreachStepInput
 ): Promise<OutreachSequenceStep> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/steps/${id}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/steps/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -185,7 +208,7 @@ export async function updateOutreachStep(
 }
 
 export async function deleteOutreachStep(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/steps/${id}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/steps/${id}`, {
     method: 'DELETE',
     credentials: 'include',
   });
@@ -204,7 +227,7 @@ export async function startSequenceRuns(
   sequenceId: string,
   input: Omit<StartSequenceRunsInput, 'sequenceId'>
 ): Promise<{ runsCreated: number; runs: OutreachRun[]; skippedJournalists: string[] }> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/sequences/${sequenceId}/start`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${sequenceId}/start`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -231,7 +254,7 @@ export async function listOutreachRuns(
   if (params?.limit) query.append('limit', String(params.limit));
   if (params?.offset) query.append('offset', String(params.offset));
 
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/runs?${query.toString()}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/runs?${query.toString()}`, {
     method: 'GET',
     credentials: 'include',
   });
@@ -246,7 +269,7 @@ export async function listOutreachRuns(
 }
 
 export async function getOutreachRun(id: string): Promise<OutreachRunWithDetails> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/runs/${id}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/runs/${id}`, {
     method: 'GET',
     credentials: 'include',
   });
@@ -264,7 +287,7 @@ export async function updateOutreachRun(
   id: string,
   input: UpdateOutreachRunInput
 ): Promise<OutreachRun> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/runs/${id}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/runs/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -284,7 +307,7 @@ export async function stopOutreachRun(
   id: string,
   reason: OutreachStopReason
 ): Promise<OutreachRun> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/runs/${id}/stop`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/runs/${id}/stop`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -304,7 +327,7 @@ export async function advanceOutreachRun(
   id: string,
   forceAdvance: boolean = false
 ): Promise<OutreachRun> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/runs/${id}/advance`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/runs/${id}/advance`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -325,7 +348,7 @@ export async function advanceOutreachRun(
 // =============================================
 
 export async function createOutreachEvent(input: CreateOutreachEventInput): Promise<OutreachEvent> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/events`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/events`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -354,7 +377,7 @@ export async function listOutreachEvents(
   if (params?.limit) query.append('limit', String(params.limit));
   if (params?.offset) query.append('offset', String(params.offset));
 
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/events?${query.toString()}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/events?${query.toString()}`, {
     method: 'GET',
     credentials: 'include',
   });
@@ -373,11 +396,10 @@ export async function listOutreachEvents(
 // =============================================
 
 export async function previewTargeting(sequenceId: string): Promise<TargetingPreview> {
-  const response = await fetch(
-    `${API_BASE}/api/v1/pr-outreach/sequences/${sequenceId}/preview-targeting`,
+  const response = await authFetch(
+    `${API_BASE_URL}/api/v1/pr-outreach/sequences/${sequenceId}/preview-targeting`,
     {
       method: 'GET',
-      credentials: 'include',
     }
   );
 
@@ -394,7 +416,7 @@ export async function getOutreachStats(sequenceId?: string): Promise<OutreachSta
   const query = new URLSearchParams();
   if (sequenceId) query.append('sequenceId', sequenceId);
 
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/stats?${query.toString()}`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/stats?${query.toString()}`, {
     method: 'GET',
     credentials: 'include',
   });
@@ -437,7 +459,7 @@ export interface SendPitchResponse {
 }
 
 export async function sendPitch(input: SendPitchInput): Promise<SendPitchResponse> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/send-pitch`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/send-pitch`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -476,11 +498,10 @@ export interface JournalistOutreachHistory {
 export async function getJournalistOutreachHistory(
   journalistId: string
 ): Promise<JournalistOutreachHistory> {
-  const response = await fetch(
-    `${API_BASE}/api/v1/pr-outreach/journalist/${journalistId}/history`,
+  const response = await authFetch(
+    `${API_BASE_URL}/api/v1/pr-outreach/journalist/${journalistId}/history`,
     {
       method: 'GET',
-      credentials: 'include',
     }
   );
 
@@ -521,7 +542,7 @@ export interface GeneratedDraft {
 }
 
 export async function generateDraft(input: GenerateDraftInput): Promise<GeneratedDraft> {
-  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/generate-draft`, {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/generate-draft`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
