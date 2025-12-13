@@ -236,24 +236,48 @@ export function PRSituationBrief({
           </div>
         </div>
 
-        {/* Stats Bar */}
+        {/* Stats Bar - Clickable KPIs */}
         <div className="flex items-center gap-3 mt-5">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-4/60 border border-border-subtle">
-            <span className="text-sm font-semibold text-white">{data.stats.totalMentions}</span>
-            <span className="text-sm text-slate-10">Mentions</span>
-          </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-semantic-success/10 border border-semantic-success/20">
+          <Link
+            href="/app/pr/journalists?filter=all"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-4/60 border border-border-subtle hover:bg-slate-4/80 hover:border-slate-5 transition-all cursor-pointer group"
+          >
+            <span className="text-sm font-semibold text-white group-hover:text-brand-iris transition-colors">{data.stats.totalMentions}</span>
+            <span className="text-sm text-slate-10 group-hover:text-slate-9 transition-colors">Mentions</span>
+            <svg className="w-3 h-3 text-slate-10 group-hover:text-brand-iris transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+          <Link
+            href="/app/pr/journalists?sentiment=positive"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-semantic-success/10 border border-semantic-success/20 hover:bg-semantic-success/15 hover:border-semantic-success/30 transition-all cursor-pointer group"
+          >
             <span className="text-sm font-semibold text-semantic-success">{data.stats.positiveCoverage}</span>
-            <span className="text-sm text-semantic-success/80">Positive</span>
-          </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-semantic-danger/10 border border-semantic-danger/20">
+            <span className="text-sm text-semantic-success/80 group-hover:text-semantic-success transition-colors">Positive</span>
+            <svg className="w-3 h-3 text-semantic-success/60 group-hover:text-semantic-success transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+          <Link
+            href="/app/pr/journalists?sentiment=negative"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-semantic-danger/10 border border-semantic-danger/20 hover:bg-semantic-danger/15 hover:border-semantic-danger/30 transition-all cursor-pointer group"
+          >
             <span className="text-sm font-semibold text-semantic-danger">{data.stats.negativeCoverage}</span>
-            <span className="text-sm text-semantic-danger/80">Negative</span>
-          </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-iris/10 border border-brand-iris/20">
+            <span className="text-sm text-semantic-danger/80 group-hover:text-semantic-danger transition-colors">Negative</span>
+            <svg className="w-3 h-3 text-semantic-danger/60 group-hover:text-semantic-danger transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+          <Link
+            href="/app/pr/journalists?engaged=true"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-iris/10 border border-brand-iris/20 hover:bg-brand-iris/15 hover:border-brand-iris/30 transition-all cursor-pointer group"
+          >
             <span className="text-sm font-semibold text-brand-iris">{data.stats.journalistsEngaged}</span>
-            <span className="text-sm text-brand-iris/80">Journalists</span>
-          </div>
+            <span className="text-sm text-brand-iris/80 group-hover:text-brand-iris transition-colors">Journalists</span>
+            <svg className="w-3 h-3 text-brand-iris/60 group-hover:text-brand-iris transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
           {criticalItems.length > 0 && (
             <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-semantic-danger/15 border border-semantic-danger/30 shadow-sm ml-auto">
               <span className="w-2 h-2 rounded-full bg-semantic-danger animate-pulse" />

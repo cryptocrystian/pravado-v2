@@ -152,20 +152,25 @@ export default function PRPage() {
           title: 'TechCrunch features your product launch',
           description: 'Major coverage in TechCrunch startup section with positive sentiment',
           outlet: 'TechCrunch',
-          journalist: 'Sarah Chen',
+          // Generic journalist reference - actual journalist data comes from API
+          journalist: 'Tech Reporter',
           sentiment: 'positive',
           timestamp: new Date(Date.now() - 2 * 3600000).toISOString(),
-          linkUrl: '/app/pr/journalists',
+          // Context-preserving: filter to TechCrunch coverage
+          linkUrl: '/app/pr/journalists?outlet=TechCrunch&sentiment=positive',
         },
         {
           id: '2',
           type: 'journalist_activity',
           title: 'Key journalist engaged with your content',
-          description: 'Mike Roberts from Forbes shared your recent press release on LinkedIn',
+          description: 'A Forbes journalist shared your recent press release on LinkedIn',
           outlet: 'Forbes',
-          journalist: 'Mike Roberts',
+          // Generic journalist reference
+          journalist: 'Forbes Reporter',
           sentiment: 'positive',
           timestamp: new Date(Date.now() - 5 * 3600000).toISOString(),
+          // Context-preserving: filter to Forbes activity
+          linkUrl: '/app/pr/journalists?outlet=Forbes&activity=recent',
         },
         {
           id: '3',
@@ -174,6 +179,8 @@ export default function PRPage() {
           description: 'Industry coverage shifting negative on main competitor - opportunity window',
           sentiment: 'neutral',
           timestamp: new Date(Date.now() - 8 * 3600000).toISOString(),
+          // Context-preserving: view competitive analysis
+          linkUrl: '/app/pr/journalists?filter=competitor-coverage&sentiment=negative',
         },
       ],
       signals: [
@@ -185,7 +192,8 @@ export default function PRPage() {
           description: 'Your product category is trending in tech media. High opportunity for thought leadership placement.',
           confidence: 78,
           affectedPillars: ['content', 'seo'],
-          actionUrl: '/app/pr/pitches',
+          // Context-preserving: opportunity-based pitch creation
+          actionUrl: '/app/pr/pitches?context=trending-topic&action=create&type=thought-leadership',
         },
         {
           id: 's2',
@@ -195,7 +203,8 @@ export default function PRPage() {
           description: 'Competitor scheduled major announcement next week. Consider preemptive positioning.',
           confidence: 65,
           affectedPillars: ['exec', 'crisis'],
-          actionUrl: '/app/pr/generator',
+          // Context-preserving: competitive positioning press release
+          actionUrl: '/app/pr/generator?context=competitive&urgency=high&tone=differentiation',
         },
         {
           id: 's3',
@@ -205,6 +214,8 @@ export default function PRPage() {
           description: 'Three top analysts requested briefings this month - analyst relations opportunity.',
           confidence: 82,
           affectedPillars: ['content'],
+          // Context-preserving: analyst outreach
+          actionUrl: '/app/pr/outreach?type=analyst&action=schedule',
         },
       ],
       attentionItems: [
@@ -212,9 +223,10 @@ export default function PRPage() {
           id: 'a1',
           priority: 'high',
           title: 'Respond to journalist inquiry',
-          description: 'Sarah Chen from TechCrunch requested comment on industry trends - deadline EOD',
+          description: 'A TechCrunch reporter requested comment on industry trends - deadline EOD',
           actionLabel: 'Draft Response',
-          actionUrl: '/app/pr/outreach',
+          // Context-preserving: includes outlet and inquiry context
+          actionUrl: '/app/pr/outreach?outlet=TechCrunch&action=respond&context=inquiry&deadline=today',
           dueBy: new Date(Date.now() + 4 * 3600000).toISOString(),
         },
         {
@@ -223,10 +235,11 @@ export default function PRPage() {
           title: 'Follow up on pending pitches',
           description: '3 pitches sent last week have not received responses - follow up recommended',
           actionLabel: 'View Pitches',
-          actionUrl: '/app/pr/pitches',
+          // Context-preserving: filter to pending pitches needing follow-up
+          actionUrl: '/app/pr/pitches?filter=pending&days=7&action=follow-up',
         },
       ],
-      aiSummary: 'Your PR momentum is positive with strong coverage from TechCrunch. The trending topic alignment presents a significant opportunity for thought leadership. Prioritize responding to Sarah Chen\'s inquiry and consider preemptive positioning ahead of competitor announcements.',
+      aiSummary: 'Your PR momentum is positive with strong coverage from TechCrunch. The trending topic alignment presents a significant opportunity for thought leadership. Prioritize responding to the pending journalist inquiry and consider preemptive positioning ahead of competitor announcements.',
       stats: {
         totalMentions: 47,
         positiveCoverage: 38,
@@ -235,7 +248,7 @@ export default function PRPage() {
       },
     };
 
-    // Recommendations
+    // Recommendations - with context-preserving action URLs
     const mockRecommendations: PRAIRecommendationsData = {
       generatedAt: now,
       recommendations: [
@@ -249,7 +262,8 @@ export default function PRPage() {
           confidence: 85,
           impact: { coverage: 'high', sentiment: 'positive', reach: 2500000 },
           actionLabel: 'Create Pitch',
-          actionUrl: '/app/pr/pitches',
+          // Context-preserving URL: includes outlet and topic context
+          actionUrl: '/app/pr/pitches?outlet=Wired&topic=thought-leadership&action=create',
           estimatedEffort: 'moderate',
           relatedJournalists: ['Alex Rivera', 'Jennifer Wong'],
           relatedOutlets: ['Wired', 'Ars Technica'],
@@ -260,14 +274,15 @@ export default function PRPage() {
           type: 'respond',
           priority: 'critical',
           title: 'Respond to TechCrunch inquiry',
-          description: 'Sarah Chen is writing about industry trends and specifically requested your perspective. This is a key opportunity.',
-          rationale: 'TechCrunch coverage typically drives 3-5 follow-on articles. Sarah has 500K+ followers.',
+          description: 'A journalist is writing about industry trends and specifically requested your perspective. This is a key opportunity.',
+          rationale: 'TechCrunch coverage typically drives 3-5 follow-on articles.',
           confidence: 92,
           impact: { coverage: 'high', sentiment: 'positive', reach: 1800000 },
           actionLabel: 'Draft Response',
-          actionUrl: '/app/pr/outreach',
+          // Context-preserving URL: includes outlet, action type, and context
+          actionUrl: '/app/pr/outreach?outlet=TechCrunch&action=respond&context=inquiry&topic=industry-trends',
           estimatedEffort: 'quick',
-          relatedJournalists: ['Sarah Chen'],
+          relatedJournalists: ['TechCrunch Reporter'],
           relatedOutlets: ['TechCrunch'],
           deadline: new Date(Date.now() + 4 * 3600000).toISOString(),
         },
@@ -281,7 +296,8 @@ export default function PRPage() {
           confidence: 71,
           impact: { coverage: 'medium', sentiment: 'positive', reach: 950000 },
           actionLabel: 'Generate PR',
-          actionUrl: '/app/pr/generator',
+          // Context-preserving URL: includes positioning context
+          actionUrl: '/app/pr/generator?context=competitive&tone=differentiation&urgency=high',
           estimatedEffort: 'involved',
           sourcePillars: ['exec', 'crisis'],
         },
@@ -295,7 +311,8 @@ export default function PRPage() {
           confidence: 68,
           impact: { coverage: 'medium', sentiment: 'neutral', reach: 750000 },
           actionLabel: 'Send Follow-ups',
-          actionUrl: '/app/pr/pitches',
+          // Context-preserving URL: filter to pending pitches
+          actionUrl: '/app/pr/pitches?filter=pending&action=follow-up&status=awaiting-response',
           estimatedEffort: 'quick',
         },
         {
@@ -308,7 +325,8 @@ export default function PRPage() {
           confidence: 75,
           impact: { coverage: 'medium', sentiment: 'positive', reach: 500000 },
           actionLabel: 'Schedule Briefings',
-          actionUrl: '/app/pr/outreach',
+          // Context-preserving URL: analyst-specific outreach
+          actionUrl: '/app/pr/outreach?type=analyst&action=schedule&context=briefing-request',
           estimatedEffort: 'moderate',
           sourcePillars: ['content'],
         },

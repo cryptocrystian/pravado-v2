@@ -34,23 +34,47 @@ async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<s
 }
 
 /**
- * Get provider configuration from environment
+ * Get provider configuration from environment (S98)
+ * Supports SendGrid, Mailgun, or Stub providers
  */
 function getProviderConfig(): ProviderConfig {
   const provider = (process.env.EMAIL_PROVIDER as any) || 'stub';
-  const apiKey = process.env.EMAIL_PROVIDER_API_KEY;
-  const apiSecret = process.env.EMAIL_PROVIDER_API_SECRET;
-  const domain = process.env.EMAIL_PROVIDER_DOMAIN;
-  const fromEmail = process.env.EMAIL_FROM_ADDRESS || 'noreply@pravado.com';
-  const fromName = process.env.EMAIL_FROM_NAME || 'Pravado';
 
+  // SendGrid configuration (primary for S98)
+  const sendgridApiKey = process.env.SENDGRID_API_KEY;
+  const sendgridFromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@pravado.com';
+  const sendgridFromName = process.env.SENDGRID_FROM_NAME || 'Pravado';
+  const sendgridWebhookKey = process.env.SENDGRID_WEBHOOK_KEY;
+
+  // Mailgun configuration (fallback)
+  const mailgunApiKey = process.env.MAILGUN_API_KEY;
+  const mailgunDomain = process.env.MAILGUN_DOMAIN;
+  const mailgunFromEmail = process.env.MAILGUN_FROM_EMAIL || 'noreply@pravado.com';
+
+  // Select config based on provider
+  if (provider === 'sendgrid') {
+    return {
+      provider: 'sendgrid',
+      apiKey: sendgridApiKey,
+      fromEmail: sendgridFromEmail,
+      fromName: sendgridFromName,
+      webhookKey: sendgridWebhookKey,
+    };
+  } else if (provider === 'mailgun') {
+    return {
+      provider: 'mailgun',
+      apiKey: mailgunApiKey,
+      domain: mailgunDomain,
+      fromEmail: mailgunFromEmail,
+      fromName: 'Pravado',
+    };
+  }
+
+  // Default to stub
   return {
-    provider,
-    apiKey,
-    apiSecret,
-    domain,
-    fromEmail,
-    fromName,
+    provider: 'stub',
+    fromEmail: 'noreply@pravado.com',
+    fromName: 'Pravado',
   };
 }
 
@@ -394,10 +418,16 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
 
   /**
    * POST /api/pr-outreach-deliverability/webhooks/:provider
-   * Process webhook events from email providers
+   * Process webhook events from email providers (S98 - with signature validation)
    */
   fastify.post(
     '/webhooks/:provider',
+    {
+      // For SendGrid signature validation, we need the raw body
+      config: {
+        rawBody: true,
+      },
+    },
     async (request: FastifyRequest<{ Params: { provider: string } }>, reply: FastifyReply) => {
       const { provider } = request.params;
 
@@ -410,11 +440,18 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
         });
       }
 
-      // Get signature from headers (provider-specific)
+      // Get signature and timestamp from headers (provider-specific)
+      // SendGrid uses X-Twilio-Email-Event-Webhook-Signature and X-Twilio-Email-Event-Webhook-Timestamp
       const signature =
         (request.headers['x-twilio-email-event-webhook-signature'] as string) ||
         (request.headers['x-mailgun-signature'] as string) ||
         (request.headers['x-amz-sns-message-id'] as string);
+
+      const timestamp = request.headers['x-twilio-email-event-webhook-timestamp'] as string;
+
+      // Get raw body for signature validation (or stringify if not available)
+      const rawBody = (request as any).rawBody?.toString() ||
+        (typeof request.body === 'string' ? request.body : JSON.stringify(request.body));
 
       // For webhook processing, we need to determine the org ID from the payload
       // This is typically embedded in metadata or we can look it up by message ID
@@ -424,14 +461,15 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
         // Create service without specific org (we'll determine it from the message)
         const service = createOutreachDeliverabilityService({ supabase, providerConfig });
 
-        // Process the webhook
+        // Process the webhook with raw body for signature validation
         // Note: The service will look up the org from the message
-        // For now, we'll need to extract org from the payload or message lookup
         const result = await service.processWebhookEvent(
           'placeholder-org-id', // TODO: Extract from payload or lookup
           parseResult.data,
           payload,
-          signature
+          signature,
+          timestamp,
+          rawBody
         );
 
         return reply.send({

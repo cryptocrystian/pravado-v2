@@ -108,7 +108,7 @@ abstract class EmailProviderBase {
   constructor(protected config: ProviderConfig) {}
 
   abstract send(request: SendEmailRequest): Promise<SendEmailResponse>;
-  abstract validateWebhookSignature(payload: any, signature?: string): Promise<boolean>;
+  abstract validateWebhookSignature(payload: string, signature?: string, timestamp?: string): Promise<boolean>;
   abstract normalizeWebhookEvent(payload: any): Promise<WebhookPayload | null>;
 }
 
@@ -127,7 +127,7 @@ class StubEmailProvider extends EmailProviderBase {
     };
   }
 
-  async validateWebhookSignature(_payload: any, _signature?: string): Promise<boolean> {
+  async validateWebhookSignature(_payload: string, _signature?: string, _timestamp?: string): Promise<boolean> {
     return true; // Always valid for stub
   }
 
@@ -147,10 +147,10 @@ class StubEmailProvider extends EmailProviderBase {
 }
 
 /**
- * SendGrid provider
+ * SendGrid provider (S98 - Real Implementation)
  */
 class SendGridEmailProvider extends EmailProviderBase {
-  async send(_request: SendEmailRequest): Promise<SendEmailResponse> {
+  async send(request: SendEmailRequest): Promise<SendEmailResponse> {
     if (!this.config.apiKey) {
       return {
         success: false,
@@ -161,15 +161,64 @@ class SendGridEmailProvider extends EmailProviderBase {
     }
 
     try {
-      // TODO: Implement actual SendGrid API call
-      // This is a placeholder for future implementation
-      const messageId = `sg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-      return {
-        success: true,
-        messageId,
-        provider: 'sendgrid',
+      // Build SendGrid Mail API v3 request
+      const sendgridPayload = {
+        personalizations: [
+          {
+            to: [{ email: request.to }],
+            subject: request.subject,
+          },
+        ],
+        from: {
+          email: this.config.fromEmail || 'noreply@pravado.com',
+          name: this.config.fromName || 'Pravado',
+        },
+        content: [
+          ...(request.bodyText ? [{ type: 'text/plain', value: request.bodyText }] : []),
+          ...(request.bodyHtml ? [{ type: 'text/html', value: request.bodyHtml }] : []),
+        ],
+        // Enable click and open tracking
+        tracking_settings: {
+          click_tracking: { enable: true, enable_text: false },
+          open_tracking: { enable: true },
+        },
+        // Add custom metadata for webhook correlation
+        custom_args: request.metadata ? {
+          runId: request.metadata.runId || '',
+          sequenceId: request.metadata.sequenceId || '',
+          journalistId: request.metadata.journalistId || '',
+        } : {},
       };
+
+      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sendgridPayload),
+      });
+
+      if (response.status === 202) {
+        // SendGrid returns 202 Accepted on success
+        // Extract message ID from X-Message-Id header
+        const messageId = response.headers.get('X-Message-Id') ||
+          `sg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+        return {
+          success: true,
+          messageId,
+          provider: 'sendgrid',
+        };
+      } else {
+        const errorBody = await response.text();
+        return {
+          success: false,
+          messageId: null,
+          provider: 'sendgrid',
+          error: `SendGrid API error ${response.status}: ${errorBody}`,
+        };
+      }
     } catch (error) {
       return {
         success: false,
@@ -180,10 +229,55 @@ class SendGridEmailProvider extends EmailProviderBase {
     }
   }
 
-  async validateWebhookSignature(_payload: any, _signature?: string): Promise<boolean> {
-    // TODO: Implement SendGrid webhook signature validation
-    // For now, return true (implement proper validation in production)
-    return true;
+  /**
+   * Validate SendGrid Event Webhook signature (S98)
+   * SendGrid uses ECDSA signatures with their public verification key
+   * @see https://docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook-security-features
+   */
+  async validateWebhookSignature(
+    payload: string,
+    signature?: string,
+    timestamp?: string
+  ): Promise<boolean> {
+    // If no webhook verification key configured, skip validation (dev mode)
+    const verificationKey = this.config.webhookKey;
+    if (!verificationKey) {
+      console.warn('[SendGrid] No webhook verification key configured, skipping signature validation');
+      return true;
+    }
+
+    // Require signature and timestamp for validation
+    if (!signature || !timestamp) {
+      console.error('[SendGrid] Missing signature or timestamp for webhook validation');
+      return false;
+    }
+
+    try {
+      // Import Node.js crypto module
+      const crypto = await import('crypto');
+
+      // SendGrid signature verification:
+      // 1. Concatenate timestamp + payload
+      // 2. Verify ECDSA signature using SendGrid's public key
+      const payloadToVerify = timestamp + payload;
+
+      // Create verifier with the provided public key
+      const verifier = crypto.createVerify('sha256');
+      verifier.update(payloadToVerify);
+
+      // Decode base64 signature and verify
+      const signatureBuffer = Buffer.from(signature, 'base64');
+      const isValid = verifier.verify(verificationKey, signatureBuffer);
+
+      if (!isValid) {
+        console.error('[SendGrid] Webhook signature validation failed');
+      }
+
+      return isValid;
+    } catch (error) {
+      console.error('[SendGrid] Webhook signature validation error:', error);
+      return false;
+    }
   }
 
   async normalizeWebhookEvent(payload: any): Promise<WebhookPayload | null> {
@@ -254,7 +348,7 @@ class MailgunEmailProvider extends EmailProviderBase {
     }
   }
 
-  async validateWebhookSignature(_payload: any, _signature?: string): Promise<boolean> {
+  async validateWebhookSignature(_payload: string, _signature?: string, _timestamp?: string): Promise<boolean> {
     // TODO: Implement Mailgun webhook signature validation
     // For now, return true (implement proper validation in production)
     return true;
@@ -327,7 +421,7 @@ class SESEmailProvider extends EmailProviderBase {
     }
   }
 
-  async validateWebhookSignature(_payload: any, _signature?: string): Promise<boolean> {
+  async validateWebhookSignature(_payload: string, _signature?: string, _timestamp?: string): Promise<boolean> {
     // TODO: Implement AWS SNS signature validation
     // For now, return true (implement proper validation in production)
     return true;
@@ -726,13 +820,15 @@ export class OutreachDeliverabilityService {
   // =============================================
 
   /**
-   * Process a webhook event from an email provider
+   * Process a webhook event from an email provider (S98 - with signature validation)
    */
   async processWebhookEvent(
     orgId: string,
     providerType: EmailProvider,
     payload: any,
-    signature?: string
+    signature?: string,
+    timestamp?: string,
+    rawBody?: string
   ): Promise<{ success: boolean; messageId: string | null }> {
     // Create provider instance for validation and normalization
     const providerConfig: ProviderConfig = {
@@ -744,8 +840,9 @@ export class OutreachDeliverabilityService {
 
     const provider = createEmailProvider(providerConfig);
 
-    // Validate webhook signature
-    const isValid = await provider.validateWebhookSignature(payload, signature);
+    // Validate webhook signature (use raw body for ECDSA validation)
+    const payloadForValidation = rawBody || JSON.stringify(payload);
+    const isValid = await provider.validateWebhookSignature(payloadForValidation, signature, timestamp);
     if (!isValid) {
       // Webhook signature validation failed
       return { success: false, messageId: null };

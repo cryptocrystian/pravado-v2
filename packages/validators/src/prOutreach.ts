@@ -296,6 +296,28 @@ export const advanceRunInputSchema = z.object({
 });
 
 /**
+ * S98: Direct pitch sending schema
+ * For sending individual pitches to journalists
+ */
+export const sendPitchInputSchema = z.object({
+  journalistId: z.string().uuid(),
+  subject: z.string().min(1).max(500),
+  bodyHtml: z.string().min(1).max(100000),
+  bodyText: z.string().optional(),
+  pitchId: z.string().uuid().optional(),
+  articleId: z.string().uuid().optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export const sendPitchResponseSchema = z.object({
+  success: z.boolean(),
+  messageId: z.string().nullable(),
+  provider: z.string(),
+  sentAt: z.date().nullable(),
+  error: z.string().optional(),
+});
+
+/**
  * Response schemas
  */
 export const outreachSequenceListResponseSchema = z.object({
@@ -391,5 +413,8 @@ export type ListOutreachEventsQuery = z.infer<typeof listOutreachEventsQuerySche
 export type StartSequenceRunsInput = z.infer<typeof startSequenceRunsInputSchema>;
 export type StopRunInput = z.infer<typeof stopRunInputSchema>;
 export type AdvanceRunInput = z.infer<typeof advanceRunInputSchema>;
+
+export type SendPitchInput = z.infer<typeof sendPitchInputSchema>;
+export type SendPitchResponse = z.infer<typeof sendPitchResponseSchema>;
 
 export type OutreachWebhookPayload = z.infer<typeof outreachWebhookPayloadSchema>;

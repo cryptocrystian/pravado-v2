@@ -407,3 +407,132 @@ export async function getOutreachStats(sequenceId?: string): Promise<OutreachSta
   const result = await response.json();
   return result.data;
 }
+
+// =============================================
+// S98: Direct Email Sending
+// =============================================
+
+export interface SendPitchInput {
+  journalistId: string;
+  subject: string;
+  bodyHtml: string;
+  bodyText?: string;
+  pitchId?: string;
+  articleId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface SendPitchResponse {
+  success: boolean;
+  messageId: string | null;
+  provider: string;
+  sentAt: Date | null;
+  error?: string;
+  journalist: {
+    id: string;
+    name: string;
+    email: string;
+    outlet: string | null;
+  };
+}
+
+export async function sendPitch(input: SendPitchInput): Promise<SendPitchResponse> {
+  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/send-pitch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error?.error?.message || 'Failed to send pitch');
+  }
+
+  const result = await response.json();
+  return result.data;
+}
+
+export interface JournalistOutreachHistory {
+  messages: Array<{
+    id: string;
+    subject: string;
+    sentAt: Date | null;
+    openedAt: Date | null;
+    clickedAt: Date | null;
+    repliedAt: Date | null;
+    sendStatus: string;
+  }>;
+  total: number;
+  engagement: {
+    totalSent: number;
+    totalOpened: number;
+    totalClicked: number;
+    totalReplied: number;
+    engagementScore: number;
+  } | null;
+}
+
+export async function getJournalistOutreachHistory(
+  journalistId: string
+): Promise<JournalistOutreachHistory> {
+  const response = await fetch(
+    `${API_BASE}/api/v1/pr-outreach/journalist/${journalistId}/history`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error?.error?.message || 'Failed to get journalist history');
+  }
+
+  const result = await response.json();
+  return result.data;
+}
+
+// =============================================
+// S98: AI Draft Generation
+// =============================================
+
+export interface GenerateDraftInput {
+  journalistId: string;
+  action: 'pitch' | 'respond' | 'follow-up';
+  topic?: string;
+  angle?: string;
+  coverageTitle?: string;
+  coverageSummary?: string;
+}
+
+export interface GeneratedDraft {
+  subject: string;
+  bodyHtml: string;
+  bodyText: string;
+  reasoning: string;
+  generatedAt: Date;
+  journalist: {
+    id: string;
+    name: string;
+    email: string;
+    outlet: string | null;
+  };
+}
+
+export async function generateDraft(input: GenerateDraftInput): Promise<GeneratedDraft> {
+  const response = await fetch(`${API_BASE}/api/v1/pr-outreach/generate-draft`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error?.error?.message || 'Failed to generate draft');
+  }
+
+  const result = await response.json();
+  return result.data;
+}

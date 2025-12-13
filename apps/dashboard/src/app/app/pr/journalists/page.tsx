@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import * as journalistGraphApi from '@/lib/journalistGraphApi';
 
 export default function JournalistsPage() {
@@ -101,34 +102,44 @@ export default function JournalistsPage() {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {journalists.map((journalist) => (
-              <tr key={journalist.id} className="hover:bg-gray-50 cursor-pointer">
+              <tr key={journalist.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="font-medium text-gray-900">{journalist.fullName}</div>
-                  <div className="text-sm text-gray-500">{journalist.primaryEmail}</div>
+                  <Link href={`/app/pr/journalists/${journalist.id}`} className="block">
+                    <div className="font-medium text-gray-900 hover:text-blue-600">{journalist.fullName}</div>
+                    <div className="text-sm text-gray-500">{journalist.primaryEmail}</div>
+                  </Link>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {journalist.primaryOutlet || '—'}
+                  <Link href={`/app/pr/journalists/${journalist.id}`} className="block hover:text-blue-600">
+                    {journalist.primaryOutlet || '—'}
+                  </Link>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {journalist.beat || '—'}
+                  <Link href={`/app/pr/journalists/${journalist.id}`} className="block hover:text-blue-600">
+                    {journalist.beat || '—'}
+                  </Link>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${journalist.engagementScore * 100}%` }}
-                      />
+                  <Link href={`/app/pr/journalists/${journalist.id}`} className="block">
+                    <div className="flex items-center">
+                      <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
+                          style={{ width: `${journalist.engagementScore * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-sm text-gray-600">
+                        {(journalist.engagementScore * 100).toFixed(0)}%
+                      </span>
                     </div>
-                    <span className="text-sm text-gray-600">
-                      {(journalist.engagementScore * 100).toFixed(0)}%
-                    </span>
-                  </div>
+                  </Link>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {journalist.lastActivityAt
-                    ? new Date(journalist.lastActivityAt).toLocaleDateString()
-                    : '—'}
+                  <Link href={`/app/pr/journalists/${journalist.id}`} className="block hover:text-blue-600">
+                    {journalist.lastActivityAt
+                      ? new Date(journalist.lastActivityAt).toLocaleDateString()
+                      : '—'}
+                  </Link>
                 </td>
               </tr>
             ))}

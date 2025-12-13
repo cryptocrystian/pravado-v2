@@ -25,6 +25,16 @@ export const apiEnvSchema = baseEnvSchema.extend({
   MAILGUN_API_KEY: z.string().optional(),
   MAILGUN_DOMAIN: z.string().optional(),
   MAILGUN_FROM_EMAIL: z.string().email().optional(),
+  // SendGrid configuration (S98)
+  SENDGRID_API_KEY: z.string().optional(),
+  SENDGRID_FROM_EMAIL: z.string().email().optional(),
+  SENDGRID_FROM_NAME: z.string().optional(),
+  /** SendGrid Event Webhook verification key (ECDSA public key) */
+  SENDGRID_WEBHOOK_KEY: z.string().optional(),
+  // Email provider selection (sendgrid, mailgun, or stub)
+  EMAIL_PROVIDER: z.enum(['sendgrid', 'mailgun', 'stub']).default('stub'),
+  // Cron secret for scheduler endpoint authentication (S98)
+  CRON_SECRET: z.string().optional(),
   DASHBOARD_URL: z.string().url().default('http://localhost:3000'),
   // LLM configuration (S16 - optional, falls back to stub)
   LLM_PROVIDER: z.enum(['openai', 'anthropic', 'stub']).default('stub'),

@@ -259,4 +259,80 @@ export async function schedulerRoutes(server: FastifyInstance): Promise<void> {
       }
     }
   );
+
+  // ============================================================================
+  // CRON TRIGGER ENDPOINT (S98)
+  // External cron service calls this to trigger scheduled tasks
+  // ============================================================================
+
+  // POST /api/v1/scheduler/cron - Execute all due tasks (called by external cron)
+  server.post<{
+    Headers: { 'x-cron-secret'?: string };
+  }>(
+    '/api/v1/scheduler/cron',
+    async (request, reply) => {
+      try {
+        // Verify cron secret (for security - prevents unauthorized triggering)
+        const cronSecret = process.env.CRON_SECRET;
+        const providedSecret = request.headers['x-cron-secret'];
+
+        if (cronSecret && providedSecret !== cronSecret) {
+          server.log.warn('Invalid cron secret provided');
+          return reply.status(401).send({
+            success: false,
+            error: {
+              code: 'UNAUTHORIZED',
+              message: 'Invalid cron secret',
+            },
+          });
+        }
+
+        server.log.info('Cron trigger received, executing due tasks...');
+
+        const results = await schedulerService.executeDueTasks();
+
+        const summary = {
+          executed: results.length,
+          successful: results.filter((r) => r.status === 'success').length,
+          failed: results.filter((r) => r.status === 'failure').length,
+          tasks: results.map((r) => ({
+            name: r.taskName,
+            status: r.status,
+            duration: r.duration,
+            error: r.error,
+          })),
+        };
+
+        server.log.info({ summary }, 'Cron execution completed');
+
+        return reply.status(200).send({
+          success: true,
+          data: summary,
+        });
+      } catch (error) {
+        server.log.error({ error }, 'Failed to execute cron tasks');
+        return reply.status(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error instanceof Error ? error.message : 'Failed to execute cron tasks',
+          },
+        });
+      }
+    }
+  );
+
+  // GET /api/v1/scheduler/cron - Health check for cron service
+  server.get(
+    '/api/v1/scheduler/cron',
+    async (_request, reply) => {
+      return reply.status(200).send({
+        success: true,
+        data: {
+          status: 'ready',
+          message: 'Cron endpoint is healthy. POST to trigger scheduled tasks.',
+        },
+      });
+    }
+  );
 }

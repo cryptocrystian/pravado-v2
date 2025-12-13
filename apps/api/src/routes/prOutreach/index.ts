@@ -8,6 +8,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { OutreachEventType } from '@pravado/types';
 
+import type { ProviderConfig } from '@pravado/types';
 import {
   advanceRunInputSchema,
   createOutreachEventInputSchema,
@@ -16,6 +17,7 @@ import {
   listOutreachEventsQuerySchema,
   listOutreachRunsQuerySchema,
   listOutreachSequencesQuerySchema,
+  sendPitchInputSchema,
   startSequenceRunsInputSchema,
   stopRunInputSchema,
   updateOutreachRunInputSchema,
@@ -24,6 +26,8 @@ import {
 } from '@pravado/validators';
 import { requireUser } from '../../middleware/requireUser';
 import { createOutreachService } from '../../services/outreachService';
+import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
+import { createAIDraftService } from '../../services/aiDraftService';
 
 /**
  * Helper to get user's org ID
@@ -36,6 +40,36 @@ async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<s
     .limit(1);
 
   return userOrgs?.[0]?.org_id || null;
+}
+
+/**
+ * Get provider configuration from environment (S98)
+ */
+function getProviderConfig(): ProviderConfig {
+  const provider = (process.env.EMAIL_PROVIDER as any) || 'stub';
+
+  if (provider === 'sendgrid') {
+    return {
+      provider: 'sendgrid',
+      apiKey: process.env.SENDGRID_API_KEY,
+      fromEmail: process.env.SENDGRID_FROM_EMAIL || 'noreply@pravado.com',
+      fromName: process.env.SENDGRID_FROM_NAME || 'Pravado',
+    };
+  } else if (provider === 'mailgun') {
+    return {
+      provider: 'mailgun',
+      apiKey: process.env.MAILGUN_API_KEY,
+      domain: process.env.MAILGUN_DOMAIN,
+      fromEmail: process.env.MAILGUN_FROM_EMAIL || 'noreply@pravado.com',
+      fromName: 'Pravado',
+    };
+  }
+
+  return {
+    provider: 'stub',
+    fromEmail: 'noreply@pravado.com',
+    fromName: 'Pravado',
+  };
 }
 
 export default async function prOutreachRoutes(fastify: FastifyInstance) {
@@ -694,6 +728,290 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
         success: true,
         data: stats,
       });
+    }
+  );
+
+  // =============================================
+  // S98: Direct Email Sending
+  // =============================================
+
+  /**
+   * POST /api/pr-outreach/send-pitch
+   * Send a pitch directly to a journalist (S98)
+   */
+  fastify.post(
+    '/send-pitch',
+    {
+      onRequest: [requireUser],
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const user = request.user!;
+      const orgId = await getUserOrgId(user.id, supabase);
+
+      if (!orgId) {
+        return reply.status(403).send({
+          success: false,
+          error: { code: 'NO_ORG', message: 'User has no organization' },
+        });
+      }
+
+      const input = sendPitchInputSchema.parse(request.body);
+
+      // Look up the journalist's email
+      const { data: journalist, error: journalistError } = await supabase
+        .from('journalists')
+        .select('id, name, email, outlet')
+        .eq('id', input.journalistId)
+        .single();
+
+      if (journalistError || !journalist) {
+        return reply.status(404).send({
+          success: false,
+          error: { code: 'JOURNALIST_NOT_FOUND', message: 'Journalist not found' },
+        });
+      }
+
+      if (!journalist.email) {
+        return reply.status(400).send({
+          success: false,
+          error: { code: 'NO_EMAIL', message: 'Journalist has no email address' },
+        });
+      }
+
+      // Get email provider config and create service
+      const providerConfig = getProviderConfig();
+      const deliverabilityService = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig
+      });
+
+      // Send the email
+      const sendResult = await deliverabilityService.sendEmail({
+        to: journalist.email,
+        subject: input.subject,
+        bodyHtml: input.bodyHtml,
+        bodyText: input.bodyText || '',
+        metadata: {
+          orgId,
+          journalistId: input.journalistId,
+          pitchId: input.pitchId,
+          articleId: input.articleId,
+          ...input.metadata,
+        },
+      });
+
+      // Record the email message for tracking
+      if (sendResult.success && sendResult.messageId) {
+        try {
+          await deliverabilityService.createEmailMessage(orgId, {
+            journalistId: input.journalistId,
+            subject: input.subject,
+            bodyHtml: input.bodyHtml,
+            bodyText: input.bodyText || '',
+            providerMessageId: sendResult.messageId,
+            metadata: {
+              pitchId: input.pitchId,
+              articleId: input.articleId,
+              sentBy: user.id,
+              provider: sendResult.provider,
+            },
+          });
+        } catch (err) {
+          // Log but don't fail the request
+          fastify.log.error({ err }, 'Failed to record email message');
+        }
+      }
+
+      return reply.send({
+        success: true,
+        data: {
+          success: sendResult.success,
+          messageId: sendResult.messageId,
+          provider: sendResult.provider,
+          sentAt: sendResult.success ? new Date() : null,
+          error: sendResult.error,
+          journalist: {
+            id: journalist.id,
+            name: journalist.name,
+            email: journalist.email,
+            outlet: journalist.outlet,
+          },
+        },
+      });
+    }
+  );
+
+  /**
+   * GET /api/pr-outreach/journalist/:journalistId/history
+   * Get outreach history for a specific journalist (S98)
+   */
+  fastify.get<{
+    Params: { journalistId: string };
+  }>(
+    '/journalist/:journalistId/history',
+    {
+      onRequest: [requireUser],
+    },
+    async (request, reply) => {
+      const user = request.user!;
+      const orgId = await getUserOrgId(user.id, supabase);
+
+      if (!orgId) {
+        return reply.status(403).send({
+          success: false,
+          error: { code: 'NO_ORG', message: 'User has no organization' },
+        });
+      }
+
+      const { journalistId } = request.params;
+
+      const providerConfig = getProviderConfig();
+      const deliverabilityService = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig
+      });
+
+      // Get email messages for this journalist
+      const messages = await deliverabilityService.listEmailMessages(orgId, {
+        journalistId,
+        limit: 50,
+      });
+
+      // Get engagement metrics
+      const engagement = await deliverabilityService.getJournalistEngagement(journalistId, orgId);
+
+      return reply.send({
+        success: true,
+        data: {
+          messages: messages.messages,
+          total: messages.total,
+          engagement,
+        },
+      });
+    }
+  );
+
+  // =============================================
+  // S98: AI Draft Generation
+  // =============================================
+
+  /**
+   * POST /api/pr-outreach/generate-draft
+   * Generate an AI-powered pitch or response draft (S98)
+   */
+  fastify.post<{
+    Body: {
+      journalistId: string;
+      action: 'pitch' | 'respond' | 'follow-up';
+      topic?: string;
+      angle?: string;
+      coverageTitle?: string;
+      coverageSummary?: string;
+    };
+  }>(
+    '/generate-draft',
+    {
+      onRequest: [requireUser],
+    },
+    async (request, reply) => {
+      const user = request.user!;
+      const orgId = await getUserOrgId(user.id, supabase);
+
+      if (!orgId) {
+        return reply.status(403).send({
+          success: false,
+          error: { code: 'NO_ORG', message: 'User has no organization' },
+        });
+      }
+
+      const { journalistId, action, topic, angle, coverageTitle, coverageSummary } = request.body;
+
+      if (!journalistId || !action) {
+        return reply.status(400).send({
+          success: false,
+          error: { code: 'INVALID_INPUT', message: 'journalistId and action are required' },
+        });
+      }
+
+      // Look up journalist
+      const { data: journalist, error: journalistError } = await supabase
+        .from('journalists')
+        .select('id, name, email, outlet, beat, topics')
+        .eq('id', journalistId)
+        .single();
+
+      if (journalistError || !journalist) {
+        return reply.status(404).send({
+          success: false,
+          error: { code: 'JOURNALIST_NOT_FOUND', message: 'Journalist not found' },
+        });
+      }
+
+      // Look up org for brand context
+      const { data: org } = await supabase
+        .from('orgs')
+        .select('name, description')
+        .eq('id', orgId)
+        .single();
+
+      const brandName = org?.name || 'Our Company';
+      const brandDescription = org?.description;
+
+      // Create the AI draft service and generate draft
+      const aiDraftService = createAIDraftService();
+
+      try {
+        const draft = action === 'respond' || action === 'follow-up'
+          ? await aiDraftService.generateResponseDraft({
+              journalistName: journalist.name,
+              journalistEmail: journalist.email,
+              journalistOutlet: journalist.outlet,
+              journalistBeat: journalist.beat,
+              journalistTopics: journalist.topics || [],
+              brandName,
+              brandDescription,
+              coverageTitle,
+              coverageSummary,
+              action,
+              topic,
+              angle,
+            })
+          : await aiDraftService.generatePitchDraft({
+              journalistName: journalist.name,
+              journalistEmail: journalist.email,
+              journalistOutlet: journalist.outlet,
+              journalistBeat: journalist.beat,
+              journalistTopics: journalist.topics || [],
+              brandName,
+              brandDescription,
+              action,
+              topic,
+              angle,
+            });
+
+        return reply.send({
+          success: true,
+          data: {
+            subject: draft.subject,
+            bodyHtml: draft.bodyHtml,
+            bodyText: draft.bodyText,
+            reasoning: draft.reasoning,
+            generatedAt: draft.generatedAt,
+            journalist: {
+              id: journalist.id,
+              name: journalist.name,
+              email: journalist.email,
+              outlet: journalist.outlet,
+            },
+          },
+        });
+      } catch (error) {
+        fastify.log.error({ error }, 'Failed to generate AI draft');
+        return reply.status(500).send({
+          success: false,
+          error: { code: 'GENERATION_FAILED', message: 'Failed to generate draft' },
+        });
+      }
     }
   );
 }
