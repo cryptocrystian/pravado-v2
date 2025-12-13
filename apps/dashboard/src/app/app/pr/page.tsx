@@ -31,6 +31,29 @@ import {
   type PRContinuityLinksData,
 } from '@/components/pr-intelligence';
 import { AIReasoningPopover, type AIReasoningContext } from '@/components/AIReasoningPopover';
+import { API_BASE_URL } from '@/lib/apiConfig';
+import { supabase } from '@/lib/supabaseClient';
+
+// Helper to make authenticated API calls
+async function authFetch(url: string, options: RequestInit = {}) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return fetch(url, {
+    ...options,
+    credentials: 'include',
+    headers,
+  });
+}
 
 // Tab type
 type PRTab = 'overview' | 'explorer' | 'actions';
@@ -406,9 +429,8 @@ export default function PRPage() {
       if (selectedCountry) params.set('country', selectedCountry);
       if (selectedTier) params.set('tier', selectedTier);
 
-      const response = await fetch(
-        `http://localhost:4000/api/v1/pr/journalists?${params.toString()}`,
-        { credentials: 'include' }
+      const response = await authFetch(
+        `${API_BASE_URL}/api/v1/pr/journalists?${params.toString()}`
       );
       const data = await response.json();
 
@@ -426,9 +448,7 @@ export default function PRPage() {
   // Fetch lists (preserved)
   const fetchLists = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/v1/pr/lists', {
-        credentials: 'include',
-      });
+      const response = await authFetch(`${API_BASE_URL}/api/v1/pr/lists`);
       const data = await response.json();
       if (data.success) {
         setLists(data.data.items);
@@ -441,9 +461,8 @@ export default function PRPage() {
   // Fetch list members (preserved)
   const fetchListMembers = async (listId: string) => {
     try {
-      const response = await fetch(
-        `http://localhost:4000/api/v1/pr/lists/${listId}`,
-        { credentials: 'include' }
+      const response = await authFetch(
+        `${API_BASE_URL}/api/v1/pr/lists/${listId}`
       );
       const data = await response.json();
       if (data.success) {
@@ -458,10 +477,8 @@ export default function PRPage() {
   const createList = async () => {
     if (!newListName.trim()) return;
     try {
-      const response = await fetch('http://localhost:4000/api/v1/pr/lists', {
+      const response = await authFetch(`${API_BASE_URL}/api/v1/pr/lists`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({
           name: newListName,
           description: newListDescription || undefined,
@@ -483,12 +500,10 @@ export default function PRPage() {
   const addToList = async () => {
     if (!selectedList || selectedJournalists.size === 0) return;
     try {
-      const response = await fetch(
-        `http://localhost:4000/api/v1/pr/lists/${selectedList.id}/members`,
+      const response = await authFetch(
+        `${API_BASE_URL}/api/v1/pr/lists/${selectedList.id}/members`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
           body: JSON.stringify({ journalistIds: Array.from(selectedJournalists) }),
         }
       );
@@ -506,12 +521,10 @@ export default function PRPage() {
   const removeFromList = async (journalistId: string) => {
     if (!selectedList) return;
     try {
-      const response = await fetch(
-        `http://localhost:4000/api/v1/pr/lists/${selectedList.id}/members`,
+      const response = await authFetch(
+        `${API_BASE_URL}/api/v1/pr/lists/${selectedList.id}/members`,
         {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
           body: JSON.stringify({ journalistIds: [journalistId] }),
         }
       );

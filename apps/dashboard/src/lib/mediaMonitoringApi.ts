@@ -1,6 +1,8 @@
 /**
  * Media Monitoring API Helper (Sprint S40)
  * Client-side API functions for media monitoring and earned coverage
+ *
+ * S99 Fix: Use centralized API config with auth
  */
 
 import type {
@@ -18,8 +20,8 @@ import type {
   SourceListResponse,
   UpdateSourceInput,
 } from '@pravado/types';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+import { API_BASE_URL } from './apiConfig';
+import { supabase } from '@/lib/supabaseClient';
 
 // ============================================================================
 // API Error Handling
@@ -41,12 +43,22 @@ async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const response = await fetch(`${API_BASE}${endpoint}`, {
+  // Get auth token from Supabase session
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
+    headers,
     credentials: 'include',
   });
 
