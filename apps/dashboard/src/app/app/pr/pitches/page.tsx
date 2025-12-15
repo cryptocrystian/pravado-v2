@@ -27,8 +27,31 @@ import {
   queuePitchForContact,
   updatePitchSequence,
 } from '@/lib/prPitchApi';
+import { API_BASE_URL } from '@/lib/apiConfig';
+import { supabase } from '@/lib/supabaseClient';
 
 type ViewMode = 'editor' | 'contacts';
+
+// Helper for authenticated fetch
+async function authFetch(url: string, options: RequestInit = {}) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return fetch(url, {
+    ...options,
+    credentials: 'include',
+    headers,
+  });
+}
 
 export default function PRPitchesPage() {
   // State
@@ -76,12 +99,9 @@ export default function PRPitchesPage() {
   };
 
   const loadPressReleases = async () => {
-    // In real implementation, fetch from API
-    // For now, using mock data
+    // Fetch press releases from API
     try {
-      const response = await fetch('/api/v1/pr/releases?limit=20', {
-        credentials: 'include',
-      });
+      const response = await authFetch(`${API_BASE_URL}/api/v1/pr/releases?limit=20`);
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.data?.releases) {
@@ -194,9 +214,9 @@ export default function PRPitchesPage() {
     }
 
     try {
-      const response = await fetch(`/api/v1/pr/journalists?search=${encodeURIComponent(query)}&limit=10`, {
-        credentials: 'include',
-      });
+      const response = await authFetch(
+        `${API_BASE_URL}/api/v1/pr/journalists?search=${encodeURIComponent(query)}&limit=10`
+      );
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.data?.journalists) {
