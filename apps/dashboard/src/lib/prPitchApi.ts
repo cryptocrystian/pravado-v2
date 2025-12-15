@@ -1,8 +1,9 @@
 /**
- * PR Pitch API Helper (Sprint S39)
+ * PR Pitch API Helper (Sprint S100.1)
  * Client-side API functions for PR pitch and outreach sequences
  *
- * S99 Fix: Use centralized API config with auth
+ * S100.1 Fix: ALL calls go through internal /api/pr/* routes only
+ * NO direct calls to external APIs from client components
  */
 
 import type {
@@ -19,8 +20,6 @@ import type {
   PRPitchSequenceWithSteps,
   UpdatePRPitchSequenceInput,
 } from '@pravado/types';
-import { API_BASE_URL } from './apiConfig';
-import { supabase } from '@/lib/supabaseClient';
 
 // ============================================================================
 // API Error Handling
@@ -38,24 +37,21 @@ interface ApiResponse<T> {
   error?: ApiError;
 }
 
+/**
+ * Fetch via internal route handlers ONLY
+ * S100.1 invariant: NO direct calls to staging API
+ */
 async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-
-  // Get auth token from Supabase session
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
+  // S100.1: Use internal route handlers only (same-origin)
+  const url = endpoint;
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
 
   const response = await fetch(url, {
     ...options,
@@ -83,7 +79,7 @@ export async function createPitchSequence(
   input: CreatePRPitchSequenceInput
 ): Promise<PRPitchSequenceWithSteps> {
   const data = await fetchApi<{ sequence: PRPitchSequenceWithSteps }>(
-    '/api/v1/pr/pitches/sequences',
+    '/api/pr/pitches/sequences',
     {
       method: 'POST',
       body: JSON.stringify(input),
@@ -115,7 +111,7 @@ export async function listPitchSequences(
   if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
 
   const query = searchParams.toString();
-  const endpoint = `/api/v1/pr/pitches/sequences${query ? `?${query}` : ''}`;
+  const endpoint = `/api/pr/pitches/sequences${query ? `?${query}` : ''}`;
 
   return fetchApi<PRPitchSequenceListResponse>(endpoint);
 }
@@ -125,7 +121,7 @@ export async function listPitchSequences(
  */
 export async function getPitchSequence(id: string): Promise<PRPitchSequenceWithSteps> {
   const data = await fetchApi<{ sequence: PRPitchSequenceWithSteps }>(
-    `/api/v1/pr/pitches/sequences/${id}`
+    `/api/pr/pitches/sequences/${id}`
   );
   return data.sequence;
 }
@@ -138,7 +134,7 @@ export async function updatePitchSequence(
   input: UpdatePRPitchSequenceInput
 ): Promise<PRPitchSequenceWithSteps> {
   const data = await fetchApi<{ sequence: PRPitchSequenceWithSteps }>(
-    `/api/v1/pr/pitches/sequences/${id}`,
+    `/api/pr/pitches/sequences/${id}`,
     {
       method: 'PUT',
       body: JSON.stringify(input),
@@ -151,7 +147,7 @@ export async function updatePitchSequence(
  * Delete (archive) a pitch sequence
  */
 export async function deletePitchSequence(id: string): Promise<void> {
-  await fetchApi<{ message: string }>(`/api/v1/pr/pitches/sequences/${id}`, {
+  await fetchApi<{ message: string }>(`/api/pr/pitches/sequences/${id}`, {
     method: 'DELETE',
   });
 }
@@ -168,7 +164,7 @@ export async function attachContactsToSequence(
   journalistIds: string[]
 ): Promise<{ contacts: PRPitchContact[]; added: number }> {
   return fetchApi<{ contacts: PRPitchContact[]; added: number }>(
-    `/api/v1/pr/pitches/sequences/${sequenceId}/contacts`,
+    `/api/pr/pitches/sequences/${sequenceId}/contacts`,
     {
       method: 'POST',
       body: JSON.stringify({ journalistIds } as AttachContactsInput),
@@ -199,7 +195,7 @@ export async function listSequenceContacts(
   if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
 
   const query = searchParams.toString();
-  const endpoint = `/api/v1/pr/pitches/sequences/${sequenceId}/contacts${query ? `?${query}` : ''}`;
+  const endpoint = `/api/pr/pitches/sequences/${sequenceId}/contacts${query ? `?${query}` : ''}`;
 
   return fetchApi<PRPitchContactListResponse>(endpoint);
 }
@@ -209,7 +205,7 @@ export async function listSequenceContacts(
  */
 export async function getContact(contactId: string): Promise<PRPitchContactWithJournalist> {
   const data = await fetchApi<{ contact: PRPitchContactWithJournalist }>(
-    `/api/v1/pr/pitches/contacts/${contactId}`
+    `/api/pr/pitches/contacts/${contactId}`
   );
   return data.contact;
 }
@@ -225,7 +221,7 @@ export async function generatePitchPreview(
   input: GeneratePitchPreviewInput
 ): Promise<GeneratedPitchPreview> {
   const data = await fetchApi<{ preview: GeneratedPitchPreview }>(
-    '/api/v1/pr/pitches/preview',
+    '/api/pr/pitches/preview',
     {
       method: 'POST',
       body: JSON.stringify(input),
@@ -239,7 +235,7 @@ export async function generatePitchPreview(
  */
 export async function queuePitchForContact(contactId: string): Promise<PRPitchContact> {
   const data = await fetchApi<{ contact: PRPitchContact }>(
-    `/api/v1/pr/pitches/contacts/${contactId}/queue`,
+    `/api/pr/pitches/contacts/${contactId}/queue`,
     {
       method: 'POST',
     }

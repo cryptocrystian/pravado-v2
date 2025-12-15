@@ -1,11 +1,14 @@
 /**
  * Top Engaged Journalists API Route Handler
- * Sprint S100: Route handler is the ONLY way to get top engaged journalists
+ * Sprint S100.1: Route handler is the ONLY way to get top engaged journalists
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prBackendFetch, getErrorResponse } from '@/server/prBackendProxy';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {

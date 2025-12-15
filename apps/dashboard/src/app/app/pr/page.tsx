@@ -31,29 +31,6 @@ import {
   type PRContinuityLinksData,
 } from '@/components/pr-intelligence';
 import { AIReasoningPopover, type AIReasoningContext } from '@/components/AIReasoningPopover';
-import { API_BASE_URL } from '@/lib/apiConfig';
-import { supabase } from '@/lib/supabaseClient';
-
-// Helper to make authenticated API calls
-async function authFetch(url: string, options: RequestInit = {}) {
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string>),
-  };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  return fetch(url, {
-    ...options,
-    credentials: 'include',
-    headers,
-  });
-}
 
 // Tab type
 type PRTab = 'overview' | 'explorer' | 'actions';
@@ -416,7 +393,7 @@ export default function PRPage() {
     setLoadingIntel(false);
   };
 
-  // Fetch journalists (preserved from original)
+  // S100.1: Fetch journalists via internal route handler
   const fetchJournalists = async (query?: string) => {
     try {
       setLoadingExplorer(true);
@@ -429,14 +406,23 @@ export default function PRPage() {
       if (selectedCountry) params.set('country', selectedCountry);
       if (selectedTier) params.set('tier', selectedTier);
 
-      const response = await authFetch(
-        `${API_BASE_URL}/api/v1/pr/journalists?${params.toString()}`
-      );
+      const response = await fetch(`/api/pr/journalists?${params.toString()}`);
       const data = await response.json();
 
-      if (data.success) {
-        setJournalists(data.data.items);
-        setTotal(data.data.total);
+      // Map backend response format to expected format
+      if (data.profiles) {
+        setJournalists(data.profiles.map((p: { id: string; fullName: string; primaryEmail?: string; primaryOutlet?: string; beat?: string }) => ({
+          journalist: {
+            id: p.id,
+            fullName: p.fullName,
+            email: p.primaryEmail,
+            location: null,
+            isFreelancer: false,
+          },
+          outlet: p.primaryOutlet ? { name: p.primaryOutlet, tier: null } : null,
+          beats: p.beat ? [{ id: '1', name: p.beat }] : [],
+        })));
+        setTotal(data.total || data.profiles.length);
       }
     } catch (error) {
       console.error('Failed to fetch journalists:', error);
@@ -445,12 +431,12 @@ export default function PRPage() {
     }
   };
 
-  // Fetch lists (preserved)
+  // S100.1: Fetch lists via internal route handler
   const fetchLists = async () => {
     try {
-      const response = await authFetch(`${API_BASE_URL}/api/v1/pr/lists`);
+      const response = await fetch('/api/pr/lists');
       const data = await response.json();
-      if (data.success) {
+      if (data.success && data.data?.items) {
         setLists(data.data.items);
       }
     } catch (error) {
@@ -458,14 +444,12 @@ export default function PRPage() {
     }
   };
 
-  // Fetch list members (preserved)
+  // S100.1: Fetch list members via internal route handler
   const fetchListMembers = async (listId: string) => {
     try {
-      const response = await authFetch(
-        `${API_BASE_URL}/api/v1/pr/lists/${listId}`
-      );
+      const response = await fetch(`/api/pr/lists/${listId}`);
       const data = await response.json();
-      if (data.success) {
+      if (data.success && data.data?.item?.members) {
         setListMembers(data.data.item.members);
       }
     } catch (error) {
@@ -473,12 +457,13 @@ export default function PRPage() {
     }
   };
 
-  // Create list (preserved)
+  // S100.1: Create list via internal route handler
   const createList = async () => {
     if (!newListName.trim()) return;
     try {
-      const response = await authFetch(`${API_BASE_URL}/api/v1/pr/lists`, {
+      const response = await fetch('/api/pr/lists', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: newListName,
           description: newListDescription || undefined,
@@ -496,17 +481,15 @@ export default function PRPage() {
     }
   };
 
-  // Add to list (preserved)
+  // S100.1: Add to list via internal route handler
   const addToList = async () => {
     if (!selectedList || selectedJournalists.size === 0) return;
     try {
-      const response = await authFetch(
-        `${API_BASE_URL}/api/v1/pr/lists/${selectedList.id}/members`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ journalistIds: Array.from(selectedJournalists) }),
-        }
-      );
+      const response = await fetch(`/api/pr/lists/${selectedList.id}/members`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ journalistIds: Array.from(selectedJournalists) }),
+      });
       const data = await response.json();
       if (data.success) {
         setSelectedJournalists(new Set());
@@ -517,17 +500,15 @@ export default function PRPage() {
     }
   };
 
-  // Remove from list (preserved)
+  // S100.1: Remove from list via internal route handler
   const removeFromList = async (journalistId: string) => {
     if (!selectedList) return;
     try {
-      const response = await authFetch(
-        `${API_BASE_URL}/api/v1/pr/lists/${selectedList.id}/members`,
-        {
-          method: 'DELETE',
-          body: JSON.stringify({ journalistIds: [journalistId] }),
-        }
-      );
+      const response = await fetch(`/api/pr/lists/${selectedList.id}/members`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ journalistIds: [journalistId] }),
+      });
       const data = await response.json();
       if (data.success) {
         await fetchListMembers(selectedList.id);

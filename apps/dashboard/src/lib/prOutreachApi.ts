@@ -2,7 +2,8 @@
  * PR Outreach API Client (Sprint S44)
  * Frontend helper for automated journalist outreach
  *
- * S99 Fix: Use centralized API config with auth
+ * S100.1 Fix: Use internal route handlers only (same-origin)
+ * Browser calls ONLY /api/pr/* - NO direct staging API calls
  */
 
 import type {
@@ -29,28 +30,30 @@ import type {
   UpdateOutreachSequenceInput,
   UpdateOutreachStepInput,
 } from '@pravado/types';
-import { API_BASE_URL } from './apiConfig';
-import { supabase } from '@/lib/supabaseClient';
 
-// Helper for authenticated fetch
-async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
-
+// S100.1: Internal route helper - browser calls same-origin only
+async function fetchApi<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  return fetch(url, {
+  const response = await fetch(endpoint, {
     ...options,
     credentials: 'include',
     headers,
   });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(error?.error?.message || error?.error || 'Request failed');
+  }
+
+  const result = await response.json();
+  return result.data !== undefined ? result.data : result;
 }
 
 // =============================================
@@ -60,20 +63,10 @@ async function authFetch(url: string, options: RequestInit = {}): Promise<Respon
 export async function createOutreachSequence(
   input: CreateOutreachSequenceInput
 ): Promise<OutreachSequence> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences`, {
+  return fetchApi<OutreachSequence>('/api/pr/outreach/sequences', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(input),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to create sequence');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 export async function listOutreachSequences(
@@ -87,80 +80,34 @@ export async function listOutreachSequences(
   if (params?.limit) query.append('limit', String(params.limit));
   if (params?.offset) query.append('offset', String(params.offset));
 
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences?${query.toString()}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to list sequences');
-  }
-
-  const result = await response.json();
-  return result.data;
+  const queryString = query.toString();
+  return fetchApi<OutreachSequenceListResponse>(
+    `/api/pr/outreach/sequences${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 export async function getOutreachSequence(id: string): Promise<OutreachSequence> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${id}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to get sequence');
-  }
-
-  const result = await response.json();
-  return result.data;
+  return fetchApi<OutreachSequence>(`/api/pr/outreach/sequences/${id}`);
 }
 
 export async function getOutreachSequenceWithSteps(id: string): Promise<OutreachSequenceWithSteps> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${id}/with-steps`, {
-    method: 'GET',
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to get sequence with steps');
-  }
-
-  const result = await response.json();
-  return result.data;
+  return fetchApi<OutreachSequenceWithSteps>(`/api/pr/outreach/sequences/${id}/with-steps`);
 }
 
 export async function updateOutreachSequence(
   id: string,
   input: UpdateOutreachSequenceInput
 ): Promise<OutreachSequence> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${id}`, {
+  return fetchApi<OutreachSequence>(`/api/pr/outreach/sequences/${id}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(input),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to update sequence');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 export async function deleteOutreachSequence(id: string): Promise<void> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${id}`, {
+  await fetchApi<void>(`/api/pr/outreach/sequences/${id}`, {
     method: 'DELETE',
-    credentials: 'include',
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to delete sequence');
-  }
 }
 
 // =============================================
@@ -171,52 +118,26 @@ export async function createOutreachStep(
   sequenceId: string,
   input: CreateOutreachStepInput
 ): Promise<OutreachSequenceStep> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${sequenceId}/steps`, {
+  return fetchApi<OutreachSequenceStep>(`/api/pr/outreach/sequences/${sequenceId}/steps`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(input),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to create step');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 export async function updateOutreachStep(
   id: string,
   input: UpdateOutreachStepInput
 ): Promise<OutreachSequenceStep> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/steps/${id}`, {
+  return fetchApi<OutreachSequenceStep>(`/api/pr/outreach/steps/${id}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(input),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to update step');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 export async function deleteOutreachStep(id: string): Promise<void> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/steps/${id}`, {
+  await fetchApi<void>(`/api/pr/outreach/steps/${id}`, {
     method: 'DELETE',
-    credentials: 'include',
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to delete step');
-  }
 }
 
 // =============================================
@@ -227,20 +148,13 @@ export async function startSequenceRuns(
   sequenceId: string,
   input: Omit<StartSequenceRunsInput, 'sequenceId'>
 ): Promise<{ runsCreated: number; runs: OutreachRun[]; skippedJournalists: string[] }> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/sequences/${sequenceId}/start`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(input),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to start sequence runs');
-  }
-
-  const result = await response.json();
-  return result.data;
+  return fetchApi<{ runsCreated: number; runs: OutreachRun[]; skippedJournalists: string[] }>(
+    `/api/pr/outreach/sequences/${sequenceId}/start`,
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
 }
 
 export async function listOutreachRuns(
@@ -254,93 +168,44 @@ export async function listOutreachRuns(
   if (params?.limit) query.append('limit', String(params.limit));
   if (params?.offset) query.append('offset', String(params.offset));
 
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/runs?${query.toString()}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to list runs');
-  }
-
-  const result = await response.json();
-  return result.data;
+  const queryString = query.toString();
+  return fetchApi<OutreachRunListResponse>(
+    `/api/pr/outreach/runs${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 export async function getOutreachRun(id: string): Promise<OutreachRunWithDetails> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/runs/${id}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to get run');
-  }
-
-  const result = await response.json();
-  return result.data;
+  return fetchApi<OutreachRunWithDetails>(`/api/pr/outreach/runs/${id}`);
 }
 
 export async function updateOutreachRun(
   id: string,
   input: UpdateOutreachRunInput
 ): Promise<OutreachRun> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/runs/${id}`, {
+  return fetchApi<OutreachRun>(`/api/pr/outreach/runs/${id}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(input),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to update run');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 export async function stopOutreachRun(
   id: string,
   reason: OutreachStopReason
 ): Promise<OutreachRun> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/runs/${id}/stop`, {
+  return fetchApi<OutreachRun>(`/api/pr/outreach/runs/${id}/stop`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify({ reason }),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to stop run');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 export async function advanceOutreachRun(
   id: string,
   forceAdvance: boolean = false
 ): Promise<OutreachRun> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/runs/${id}/advance`, {
+  return fetchApi<OutreachRun>(`/api/pr/outreach/runs/${id}/advance`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify({ forceAdvance }),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to advance run');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 // =============================================
@@ -348,20 +213,10 @@ export async function advanceOutreachRun(
 // =============================================
 
 export async function createOutreachEvent(input: CreateOutreachEventInput): Promise<OutreachEvent> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/events`, {
+  return fetchApi<OutreachEvent>('/api/pr/outreach/events', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(input),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to create event');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 export async function listOutreachEvents(
@@ -377,18 +232,10 @@ export async function listOutreachEvents(
   if (params?.limit) query.append('limit', String(params.limit));
   if (params?.offset) query.append('offset', String(params.offset));
 
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/events?${query.toString()}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to list events');
-  }
-
-  const result = await response.json();
-  return result.data;
+  const queryString = query.toString();
+  return fetchApi<OutreachEventListResponse>(
+    `/api/pr/outreach/events${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 // =============================================
@@ -396,38 +243,19 @@ export async function listOutreachEvents(
 // =============================================
 
 export async function previewTargeting(sequenceId: string): Promise<TargetingPreview> {
-  const response = await authFetch(
-    `${API_BASE_URL}/api/v1/pr-outreach/sequences/${sequenceId}/preview-targeting`,
-    {
-      method: 'GET',
-    }
+  return fetchApi<TargetingPreview>(
+    `/api/pr/outreach/sequences/${sequenceId}/preview-targeting`
   );
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to preview targeting');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 export async function getOutreachStats(sequenceId?: string): Promise<OutreachStats> {
   const query = new URLSearchParams();
   if (sequenceId) query.append('sequenceId', sequenceId);
 
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/stats?${query.toString()}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to get stats');
-  }
-
-  const result = await response.json();
-  return result.data;
+  const queryString = query.toString();
+  return fetchApi<OutreachStats>(
+    `/api/pr/outreach/stats${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 // =============================================
@@ -459,20 +287,10 @@ export interface SendPitchResponse {
 }
 
 export async function sendPitch(input: SendPitchInput): Promise<SendPitchResponse> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/send-pitch`, {
+  return fetchApi<SendPitchResponse>('/api/pr/outreach/send-pitch', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(input),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to send pitch');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 export interface JournalistOutreachHistory {
@@ -498,20 +316,9 @@ export interface JournalistOutreachHistory {
 export async function getJournalistOutreachHistory(
   journalistId: string
 ): Promise<JournalistOutreachHistory> {
-  const response = await authFetch(
-    `${API_BASE_URL}/api/v1/pr-outreach/journalist/${journalistId}/history`,
-    {
-      method: 'GET',
-    }
+  return fetchApi<JournalistOutreachHistory>(
+    `/api/pr/outreach/journalist/${journalistId}/history`
   );
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to get journalist history');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
 // =============================================
@@ -542,18 +349,8 @@ export interface GeneratedDraft {
 }
 
 export async function generateDraft(input: GenerateDraftInput): Promise<GeneratedDraft> {
-  const response = await authFetch(`${API_BASE_URL}/api/v1/pr-outreach/generate-draft`, {
+  return fetchApi<GeneratedDraft>('/api/pr/outreach/generate-draft', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(input),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.error?.message || 'Failed to generate draft');
-  }
-
-  const result = await response.json();
-  return result.data;
 }
