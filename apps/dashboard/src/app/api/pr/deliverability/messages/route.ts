@@ -1,11 +1,14 @@
 /**
  * Email Messages API Route Handler
- * Sprint S100: Route handler is the ONLY way to get email messages
+ * Sprint S100.1: Route handler is the ONLY way to get email messages
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prBackendFetch, getErrorResponse } from '@/server/prBackendProxy';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {

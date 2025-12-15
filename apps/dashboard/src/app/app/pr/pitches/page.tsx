@@ -1,8 +1,10 @@
 'use client';
 
 /**
- * PR Pitches Page (Sprint S39)
+ * PR Pitches Page (Sprint S100.1)
  * Main workspace for managing PR pitch sequences and outreach
+ *
+ * S100.1: ALL API calls go through internal /api/pr/* routes only
  */
 
 import type {
@@ -27,31 +29,8 @@ import {
   queuePitchForContact,
   updatePitchSequence,
 } from '@/lib/prPitchApi';
-import { API_BASE_URL } from '@/lib/apiConfig';
-import { supabase } from '@/lib/supabaseClient';
 
 type ViewMode = 'editor' | 'contacts';
-
-// Helper for authenticated fetch
-async function authFetch(url: string, options: RequestInit = {}) {
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string>),
-  };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  return fetch(url, {
-    ...options,
-    credentials: 'include',
-    headers,
-  });
-}
 
 export default function PRPitchesPage() {
   // State
@@ -99,14 +78,14 @@ export default function PRPitchesPage() {
   };
 
   const loadPressReleases = async () => {
-    // Fetch press releases from API
+    // S100.1: Fetch press releases via internal route handler
     try {
-      const response = await authFetch(`${API_BASE_URL}/api/v1/pr/releases?limit=20`);
+      const response = await fetch('/api/pr/releases?limit=20');
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.data?.releases) {
+        if (data.releases) {
           setPressReleases(
-            data.data.releases.map((r: { id: string; headline: string }) => ({
+            data.releases.map((r: { id: string; headline: string }) => ({
               id: r.id,
               headline: r.headline || 'Untitled',
             }))
@@ -213,18 +192,19 @@ export default function PRPitchesPage() {
       return;
     }
 
+    // S100.1: Search journalists via internal route handler
     try {
-      const response = await authFetch(
-        `${API_BASE_URL}/api/v1/pr/journalists?search=${encodeURIComponent(query)}&limit=10`
+      const response = await fetch(
+        `/api/pr/journalists?q=${encodeURIComponent(query)}&limit=10`
       );
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.data?.journalists) {
+        if (data.profiles) {
           setSearchResults(
-            data.data.journalists.map((j: { id: string; name: string; email: string }) => ({
+            data.profiles.map((j: { id: string; fullName: string; primaryEmail: string }) => ({
               id: j.id,
-              name: j.name,
-              email: j.email || '',
+              name: j.fullName,
+              email: j.primaryEmail || '',
             }))
           );
         }

@@ -2,7 +2,8 @@
  * PR Outreach Deliverability API Client (Sprint S45)
  * Frontend API functions for email deliverability and engagement analytics
  *
- * S99 Fix: Use centralized API config with auth
+ * S100.1 Fix: Use internal route handlers only (same-origin)
+ * Browser calls ONLY /api/pr/* - NO direct staging API calls
  */
 
 import type {
@@ -18,52 +19,40 @@ import type {
   UpdateEmailMessageInput,
   UpdateEngagementMetricResult,
 } from '@pravado/types';
-import { API_BASE_URL } from './apiConfig';
-import { supabase } from '@/lib/supabaseClient';
-
-const API_PREFIX = '/api/v1/pr-outreach-deliverability';
 
 /**
- * Helper to make authenticated API requests
+ * Build query string from object
  */
-async function apiRequest<T>(
+function buildQueryString(params: object): string {
+  const queryParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      queryParams.append(key, String(value));
+    }
+  });
+  const queryString = queryParams.toString();
+  return queryString ? `?${queryString}` : '';
+}
+
+/**
+ * S100.1: Internal route helper - browser calls same-origin only
+ */
+async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<{ success: boolean; data?: T; error?: { code: string; message: string } }> {
-  // Get auth token from Supabase session
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
-
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const response = await fetch(`${API_BASE_URL}${API_PREFIX}${endpoint}`, {
+  const response = await fetch(endpoint, {
     ...options,
     credentials: 'include',
     headers,
   });
 
   return response.json();
-}
-
-/**
- * Build query string from object
- */
-function buildQueryString(params: Record<string, any>): string {
-  const queryParams = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
-      queryParams.append(key, value.toString());
-    }
-  });
-  const queryString = queryParams.toString();
-  return queryString ? `?${queryString}` : '';
 }
 
 // =============================================
@@ -77,7 +66,7 @@ export async function listEmailMessages(
   query: ListEmailMessagesQuery = {}
 ): Promise<EmailMessageListResponse> {
   const queryString = buildQueryString(query);
-  const result = await apiRequest<EmailMessageListResponse>(`/messages${queryString}`);
+  const result = await fetchApi<EmailMessageListResponse>(`/api/pr/deliverability/messages${queryString}`);
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to list email messages');
@@ -90,7 +79,7 @@ export async function listEmailMessages(
  * Get a single email message
  */
 export async function getEmailMessage(messageId: string): Promise<EmailMessage> {
-  const result = await apiRequest<EmailMessage>(`/messages/${messageId}`);
+  const result = await fetchApi<EmailMessage>(`/api/pr/deliverability/messages/${messageId}`);
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to get email message');
@@ -106,7 +95,7 @@ export async function updateEmailMessage(
   messageId: string,
   input: UpdateEmailMessageInput
 ): Promise<EmailMessage> {
-  const result = await apiRequest<EmailMessage>(`/messages/${messageId}`, {
+  const result = await fetchApi<EmailMessage>(`/api/pr/deliverability/messages/${messageId}`, {
     method: 'PATCH',
     body: JSON.stringify(input),
   });
@@ -122,7 +111,7 @@ export async function updateEmailMessage(
  * Delete an email message
  */
 export async function deleteEmailMessage(messageId: string): Promise<void> {
-  const result = await apiRequest<null>(`/messages/${messageId}`, {
+  const result = await fetchApi<null>(`/api/pr/deliverability/messages/${messageId}`, {
     method: 'DELETE',
   });
 
@@ -142,7 +131,7 @@ export async function listEngagementMetrics(
   query: ListEngagementMetricsQuery = {}
 ): Promise<EngagementMetricsListResponse> {
   const queryString = buildQueryString(query);
-  const result = await apiRequest<EngagementMetricsListResponse>(`/engagement${queryString}`);
+  const result = await fetchApi<EngagementMetricsListResponse>(`/api/pr/deliverability/engagement${queryString}`);
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to list engagement metrics');
@@ -157,7 +146,7 @@ export async function listEngagementMetrics(
 export async function getJournalistEngagement(
   journalistId: string
 ): Promise<JournalistEngagement> {
-  const result = await apiRequest<JournalistEngagement>(`/engagement/${journalistId}`);
+  const result = await fetchApi<JournalistEngagement>(`/api/pr/deliverability/engagement/${journalistId}`);
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to get journalist engagement');
@@ -172,8 +161,8 @@ export async function getJournalistEngagement(
 export async function recalculateEngagementMetrics(
   journalistId: string
 ): Promise<UpdateEngagementMetricResult> {
-  const result = await apiRequest<UpdateEngagementMetricResult>(
-    `/engagement/${journalistId}/recalculate`,
+  const result = await fetchApi<UpdateEngagementMetricResult>(
+    `/api/pr/deliverability/engagement/${journalistId}/recalculate`,
     {
       method: 'POST',
     }
@@ -194,7 +183,7 @@ export async function recalculateEngagementMetrics(
  * Get deliverability summary statistics
  */
 export async function getDeliverabilitySummary(): Promise<DeliverabilitySummary> {
-  const result = await apiRequest<DeliverabilitySummary>('/stats/deliverability');
+  const result = await fetchApi<DeliverabilitySummary>('/api/pr/deliverability/summary');
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to get deliverability summary');
@@ -210,7 +199,7 @@ export async function getTopEngagedJournalists(
   limit: number = 10
 ): Promise<JournalistEngagement[]> {
   const queryString = buildQueryString({ limit });
-  const result = await apiRequest<JournalistEngagement[]>(`/stats/top-engaged${queryString}`);
+  const result = await fetchApi<JournalistEngagement[]>(`/api/pr/deliverability/top-engaged${queryString}`);
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to get top engaged journalists');
@@ -227,7 +216,7 @@ export async function getTopEngagedJournalists(
  * Test email sending (development only)
  */
 export async function testSendEmail(request: SendEmailRequest): Promise<SendEmailResponse> {
-  const result = await apiRequest<SendEmailResponse>('/test-send', {
+  const result = await fetchApi<SendEmailResponse>('/api/pr/deliverability/test-send', {
     method: 'POST',
     body: JSON.stringify(request),
   });

@@ -1,11 +1,14 @@
 /**
  * Press Releases API Route Handler
- * Sprint S100: Route handler is the ONLY way to get/create press releases
+ * Sprint S100.1: Route handler is the ONLY way to get/create press releases
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prBackendFetch, getErrorResponse } from '@/server/prBackendProxy';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface PressRelease {
   id: string;

@@ -1,11 +1,14 @@
 /**
  * Journalist Search API Route Handler
- * Sprint S100: Route handler is the ONLY way to get journalist data
+ * Sprint S100.1: Route handler is the ONLY way to get journalist data
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prBackendFetch, getErrorResponse } from '@/server/prBackendProxy';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface JournalistProfile {
   id: string;
@@ -43,6 +46,7 @@ export async function GET(request: NextRequest) {
     const outlet = searchParams.get('outlet');
     const beat = searchParams.get('beat');
     const minEngagementScore = searchParams.get('minEngagementScore');
+    const minRelevanceScore = searchParams.get('minRelevanceScore');
     const sortBy = searchParams.get('sortBy');
     const sortOrder = searchParams.get('sortOrder');
     const limit = searchParams.get('limit');
@@ -52,6 +56,7 @@ export async function GET(request: NextRequest) {
     if (outlet) params.set('outlet', outlet);
     if (beat) params.set('beat', beat);
     if (minEngagementScore) params.set('minEngagementScore', minEngagementScore);
+    if (minRelevanceScore) params.set('minRelevanceScore', minRelevanceScore);
     if (sortBy) params.set('sortBy', sortBy);
     if (sortOrder) params.set('sortOrder', sortOrder);
     if (limit) params.set('limit', limit);
@@ -65,7 +70,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/journalists] Error:', { status, message, code });
+    console.error('[API /api/pr/journalists] GET Error:', { status, message, code });
+    return NextResponse.json({ error: message, code }, { status });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const data = await prBackendFetch('/api/v1/journalist-graph/profiles', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+    return NextResponse.json(data);
+  } catch (error: unknown) {
+    const { status, message, code } = getErrorResponse(error);
+    console.error('[API /api/pr/journalists] POST Error:', { status, message, code });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

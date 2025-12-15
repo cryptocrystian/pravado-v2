@@ -109,9 +109,11 @@ export async function prBackendFetch<T = unknown>(
     headers['Content-Type'] = 'application/json';
   }
 
+  // S100.1: Critical - disable caching to avoid stale auth tokens
   const response = await fetch(url, {
     ...init,
     headers,
+    cache: 'no-store',
   });
 
   debugLog('Backend response', {
@@ -134,6 +136,15 @@ export async function prBackendFetch<T = unknown>(
       }
     } catch {
       // Ignore JSON parse errors
+    }
+
+    // S100.1: Add specific hint for 401 errors
+    if (response.status === 401) {
+      errorCode = 'BACKEND_401';
+      debugLog('Backend returned 401', {
+        path,
+        hint: 'Token may be expired or not forwarded correctly',
+      });
     }
 
     throw new BackendProxyError({

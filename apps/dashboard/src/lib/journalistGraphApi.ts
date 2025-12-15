@@ -2,7 +2,8 @@
  * Journalist Identity Graph API Helper (Sprint S46)
  * Frontend API client for journalist graph operations
  *
- * S99 Fix: Changed from relative path to full API server URL
+ * S100.1 Fix: Use internal route handlers only (same-origin)
+ * Browser calls ONLY /api/pr/* - NO direct staging API calls
  */
 
 import type {
@@ -15,27 +16,15 @@ import type {
   MergeProfilesInput,
   UpdateJournalistProfileInput,
 } from '@pravado/types';
-import { API_BASE_URL } from './apiConfig';
-import { supabase } from '@/lib/supabaseClient';
 
-const API_BASE = `${API_BASE_URL}/api/v1/journalist-graph`;
-
+// S100.1: Internal route helper - browser calls same-origin only
 async function apiFetch(endpoint: string, options?: RequestInit) {
-  // Get auth token from Supabase session
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
-
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options?.headers as Record<string, string>),
   };
 
-  // Add Authorization header if we have a token
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const response = await fetch(`${API_BASE}${endpoint}`, {
+  const response = await fetch(endpoint, {
     ...options,
     credentials: 'include',
     headers,
@@ -63,53 +52,53 @@ export async function listProfiles(query?: ListJournalistProfilesQuery) {
   if (query?.offset !== undefined) params.append('offset', query.offset.toString());
 
   const queryString = params.toString();
-  return apiFetch(`/profiles${queryString ? `?${queryString}` : ''}`);
+  return apiFetch(`/api/pr/journalists${queryString ? `?${queryString}` : ''}`);
 }
 
 export async function getProfile(id: string) {
-  return apiFetch(`/profiles/${id}`);
+  return apiFetch(`/api/pr/journalists/${id}`);
 }
 
 export async function getEnrichedProfile(id: string) {
-  return apiFetch(`/profiles/${id}/enriched`);
+  return apiFetch(`/api/pr/journalists/${id}/enriched`);
 }
 
 export async function createProfile(input: CreateJournalistProfileInput) {
-  return apiFetch('/profiles', {
+  return apiFetch('/api/pr/journalists', {
     method: 'POST',
     body: JSON.stringify(input),
   });
 }
 
 export async function updateProfile(id: string, input: UpdateJournalistProfileInput) {
-  return apiFetch(`/profiles/${id}`, {
+  return apiFetch(`/api/pr/journalists/${id}`, {
     method: 'PUT',
     body: JSON.stringify(input),
   });
 }
 
 export async function deleteProfile(id: string) {
-  return apiFetch(`/profiles/${id}`, {
+  return apiFetch(`/api/pr/journalists/${id}`, {
     method: 'DELETE',
   });
 }
 
 // Identity resolution
 export async function resolveIdentity(input: IdentityResolutionInput) {
-  return apiFetch('/resolve-identity', {
+  return apiFetch('/api/pr/journalists/resolve-identity', {
     method: 'POST',
     body: JSON.stringify(input),
   });
 }
 
 export async function findDuplicates() {
-  return apiFetch('/find-duplicates', {
+  return apiFetch('/api/pr/journalists/find-duplicates', {
     method: 'POST',
   });
 }
 
 export async function mergeProfiles(input: MergeProfilesInput) {
-  return apiFetch('/merge-profiles', {
+  return apiFetch('/api/pr/journalists/merge-profiles', {
     method: 'POST',
     body: JSON.stringify(input),
   });
@@ -140,11 +129,11 @@ export async function listActivities(query?: ListActivitiesQuery) {
   if (query?.offset !== undefined) params.append('offset', query.offset.toString());
 
   const queryString = params.toString();
-  return apiFetch(`/activities${queryString ? `?${queryString}` : ''}`);
+  return apiFetch(`/api/pr/journalists/activities${queryString ? `?${queryString}` : ''}`);
 }
 
 export async function createActivity(input: CreateActivityInput) {
-  return apiFetch('/activities', {
+  return apiFetch('/api/pr/journalists/activities', {
     method: 'POST',
     body: JSON.stringify(input),
   });
@@ -152,18 +141,18 @@ export async function createActivity(input: CreateActivityInput) {
 
 // Scoring operations
 export async function updateScores(id: string) {
-  return apiFetch(`/profiles/${id}/update-scores`, {
+  return apiFetch(`/api/pr/journalists/${id}/update-scores`, {
     method: 'POST',
   });
 }
 
 export async function getTier(id: string) {
-  return apiFetch(`/profiles/${id}/tier`);
+  return apiFetch(`/api/pr/journalists/${id}/tier`);
 }
 
 // Graph operations
 export async function buildGraph(query?: GraphQuery) {
-  return apiFetch('/graph', {
+  return apiFetch('/api/pr/journalists/graph', {
     method: 'POST',
     body: JSON.stringify(query || {}),
   });
