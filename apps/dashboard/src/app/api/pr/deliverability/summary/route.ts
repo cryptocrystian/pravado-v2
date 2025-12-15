@@ -1,22 +1,19 @@
 /**
- * Deliverability Summary API Route (Sprint S99.2)
+ * Deliverability Summary API Route Handler
+ * Sprint S100: Route handler is the ONLY way to get deliverability stats
  */
 
 import { NextResponse } from 'next/server';
-import { fetchDeliverabilitySummary } from '@/server/prDataServer';
+
+import { prBackendFetch, getErrorResponse } from '@/server/prBackendProxy';
 
 export async function GET() {
   try {
-    const data = await fetchDeliverabilitySummary();
+    const data = await prBackendFetch('/api/v1/pr-outreach-deliverability/stats/deliverability');
     return NextResponse.json(data);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-
-    if (message.includes('AUTH_MISSING') || message.includes('AUTH_SESSION_ERROR')) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    console.error('[API Route /api/pr/deliverability/summary] Error:', message);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const { status, message, code } = getErrorResponse(error);
+    console.error('[API /api/pr/deliverability/summary] Error:', { status, message, code });
+    return NextResponse.json({ error: message, code }, { status });
   }
 }

@@ -1,14 +1,16 @@
 /**
- * PR Generator Client Component (Sprint S99.2)
+ * PR Generator Client Component (Sprint S100)
  * Client-side UI for press release generation
+ *
+ * INVARIANT: This component does NOT import from prDataServer.
+ * All data flows through /api/pr/* route handlers.
  */
 
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import type { PRGeneratedRelease, PRGenerationInput } from '@pravado/types';
 import { PRGenerationResult, PRGeneratorForm, PRSidebarList } from '@/components/pr-generator';
-import type { PressRelease } from '@/server/prDataServer';
 
 type GenerationStep = 'idle' | 'context' | 'angles' | 'headlines' | 'draft' | 'seo' | 'complete';
 
@@ -23,17 +25,22 @@ const STEP_LABELS: Record<GenerationStep, string> = {
 };
 
 interface GeneratorClientProps {
-  initialReleases: PressRelease[];
+  initialReleases: PRGeneratedRelease[];
 }
 
 export default function GeneratorClient({ initialReleases }: GeneratorClientProps) {
-  const [releases, setReleases] = useState<PRGeneratedRelease[]>(
-    initialReleases as unknown as PRGeneratedRelease[]
-  );
+  const [releases, setReleases] = useState<PRGeneratedRelease[]>(initialReleases);
   const [selectedRelease, setSelectedRelease] = useState<PRGeneratedRelease | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(initialReleases.length === 0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
+
+  // S100: Load releases on mount via route handler
+  useEffect(() => {
+    if (initialReleases.length === 0) {
+      loadReleases();
+    }
+  }, []);
   const [generationStep, setGenerationStep] = useState<GenerationStep>('idle');
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);

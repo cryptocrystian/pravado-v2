@@ -1,6 +1,6 @@
 /**
- * Email Messages API Route Handler
- * Sprint S100: Route handler is the ONLY way to get email messages
+ * Pitch Sequences API Route Handler
+ * Sprint S100: Route handler is the ONLY way to get pitch sequences
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -14,18 +14,20 @@ export async function GET(request: NextRequest) {
 
     const limit = searchParams.get('limit');
     const offset = searchParams.get('offset');
+    const isActive = searchParams.get('isActive');
 
     if (limit) params.set('limit', limit);
     if (offset) params.set('offset', offset);
+    if (isActive) params.set('isActive', isActive);
 
     const queryString = params.toString();
-    const path = `/api/v1/pr-outreach-deliverability/messages${queryString ? `?${queryString}` : ''}`;
+    const path = `/api/v1/pr-outreach/sequences${queryString ? `?${queryString}` : ''}`;
 
     const data = await prBackendFetch(path);
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/deliverability/messages] Error:', { status, message, code });
+    console.error('[API /api/pr/pitches/sequences] Error:', { status, message, code });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

@@ -1,9 +1,11 @@
 /**
- * Press Release by ID API Route Handler (Sprint S99.2)
+ * Press Release by ID API Route Handler
+ * Sprint S100: Route handler is the ONLY way to get a single press release
  */
 
 import { NextResponse } from 'next/server';
-import { fetchPressRelease } from '@/server/prDataServer';
+
+import { prBackendFetch, getErrorResponse } from '@/server/prBackendProxy';
 
 export async function GET(
   _request: Request,
@@ -11,16 +13,11 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const data = await fetchPressRelease(id);
+    const data = await prBackendFetch(`/api/v1/pr/releases/${id}`);
     return NextResponse.json(data);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-
-    if (message.includes('AUTH_MISSING') || message.includes('AUTH_SESSION_ERROR')) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    console.error('[API Route /api/pr/releases/[id]] Error:', message);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const { status, message, code } = getErrorResponse(error);
+    console.error('[API /api/pr/releases/[id]] Error:', { status, message, code });
+    return NextResponse.json({ error: message, code }, { status });
   }
 }

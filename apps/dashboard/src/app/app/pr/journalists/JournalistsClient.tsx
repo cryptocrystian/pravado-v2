@@ -1,13 +1,29 @@
 /**
- * Journalist Intelligence Client Component (Sprint S99.2)
- * Client-side UI with interactivity for journalist list
+ * Journalist Intelligence Client Component (Sprint S100)
+ * Client-side UI - ALL data loaded via /api/pr/journalists route handler
+ *
+ * INVARIANT: This component does NOT import from prDataServer.
+ * All data flows through /api/pr/* route handlers.
  */
 
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
-import type { JournalistProfile } from '@/server/prDataServer';
+
+/**
+ * Journalist profile type (inline to avoid prDataServer import)
+ * S100: Types are defined locally to avoid ANY dependency on prDataServer
+ */
+interface JournalistProfile {
+  id: string;
+  fullName: string;
+  primaryEmail: string | null;
+  primaryOutlet: string | null;
+  beat: string | null;
+  engagementScore: number;
+  lastActivityAt: string | null;
+}
 
 interface JournalistsClientProps {
   initialProfiles: JournalistProfile[];
@@ -20,6 +36,39 @@ export default function JournalistsClient({ initialProfiles, initialTotal }: Jou
   const [searchQuery, setSearchQuery] = useState('');
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(initialProfiles.length === 0);
+
+  // S100: Load data on mount via route handler
+  useEffect(() => {
+    if (initialProfiles.length === 0) {
+      loadJournalists();
+    }
+  }, []);
+
+  const loadJournalists = async () => {
+    try {
+      setError(null);
+      const params = new URLSearchParams();
+      params.set('limit', '50');
+      params.set('sortBy', 'engagement_score');
+      params.set('sortOrder', 'desc');
+
+      const response = await fetch(`/api/pr/journalists?${params.toString()}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to load journalists: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setJournalists(data.profiles || []);
+      setTotal(data.total || 0);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to load journalists';
+      setError(message);
+    } finally {
+      setIsInitialLoading(false);
+    }
+  };
 
   const handleSearch = () => {
     startTransition(async () => {
@@ -90,7 +139,18 @@ export default function JournalistsClient({ initialProfiles, initialTotal }: Jou
         </div>
       )}
 
+      {/* Initial Loading State */}
+      {isInitialLoading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading journalists...</p>
+          </div>
+        </div>
+      )}
+
       {/* Journalist List */}
+      {!isInitialLoading && (
       <div className="bg-white rounded-lg shadow">
         <table className="w-full">
           <thead className="bg-gray-50">
@@ -168,6 +228,7 @@ export default function JournalistsClient({ initialProfiles, initialTotal }: Jou
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
