@@ -1,6 +1,9 @@
+import { createLogger } from '@pravado/utils';
 import { validateEnv, apiEnvSchema } from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance, FastifyRequest } from 'fastify';
+
+const logger = createLogger('api:auth');
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -28,8 +31,13 @@ export async function authPlugin(server: FastifyInstance) {
       request.cookies?.['sb-access-token'];
 
     if (!token) {
+      logger.debug('[Auth] No token provided', { url: request.url });
       return;
     }
+
+    // Log token metadata (not the full token for security)
+    const tokenPreview = token.substring(0, 20) + '...' + token.substring(token.length - 10);
+    logger.info('[Auth] Token received', { url: request.url, tokenPreview, tokenLength: token.length });
 
     try {
       const {
@@ -37,16 +45,24 @@ export async function authPlugin(server: FastifyInstance) {
         error,
       } = await supabase.auth.getUser(token);
 
-      if (error || !user) {
+      if (error) {
+        logger.warn('[Auth] Supabase auth.getUser error', { url: request.url, error: error.message, errorCode: (error as any).code });
         return;
       }
 
+      if (!user) {
+        logger.warn('[Auth] No user returned from Supabase', { url: request.url });
+        return;
+      }
+
+      logger.info('[Auth] User authenticated', { url: request.url, userId: user.id, email: user.email });
       request.user = {
         id: user.id,
         email: user.email!,
       };
     } catch (error) {
       // Invalid token, continue without user
+      logger.error('[Auth] Exception during token validation', { url: request.url, error: error instanceof Error ? error.message : 'Unknown error' });
       return;
     }
   });
