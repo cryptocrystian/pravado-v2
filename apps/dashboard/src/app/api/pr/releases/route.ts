@@ -1,31 +1,54 @@
 /**
- * Press Releases API Route Handler (Sprint S99.2)
- * Proxies authenticated requests to backend via prDataServer
+ * Press Releases API Route Handler
+ * Sprint S100: Route handler is the ONLY way to get/create press releases
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchPressReleases, authedApiFetch } from '@/server/prDataServer';
+
+import { prBackendFetch, getErrorResponse } from '@/server/prBackendProxy';
+
+interface PressRelease {
+  id: string;
+  headline: string;
+  subHeadline: string | null;
+  body: string;
+  boilerplate: string | null;
+  status: string;
+  seoScore: number | null;
+  readabilityScore: number | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PressReleasesResponse {
+  releases: PressRelease[];
+  total: number;
+  limit: number;
+  offset: number;
+}
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
-    const params = {
-      limit: searchParams.get('limit') ? Number(searchParams.get('limit')) : undefined,
-      offset: searchParams.get('offset') ? Number(searchParams.get('offset')) : undefined,
-    };
+    const params = new URLSearchParams();
+    const limit = searchParams.get('limit');
+    const offset = searchParams.get('offset');
 
-    const data = await fetchPressReleases(params);
+    if (limit) params.set('limit', limit);
+    if (offset) params.set('offset', offset);
+
+    const queryString = params.toString();
+    const path = `/api/v1/pr/releases${queryString ? `?${queryString}` : ''}`;
+
+    const data = await prBackendFetch<PressReleasesResponse>(path);
+
     return NextResponse.json(data);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-
-    if (message.includes('AUTH_MISSING') || message.includes('AUTH_SESSION_ERROR')) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    console.error('[API Route /api/pr/releases] Error:', message);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const { status, message, code } = getErrorResponse(error);
+    console.error('[API /api/pr/releases GET] Error:', { status, message, code });
+    return NextResponse.json({ error: message, code }, { status });
   }
 }
 
@@ -33,21 +56,15 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Forward to backend generate endpoint
-    const data = await authedApiFetch('/api/v1/pr/releases/generate', {
+    const data = await prBackendFetch('/api/v1/pr/releases', {
       method: 'POST',
       body: JSON.stringify(body),
     });
 
     return NextResponse.json(data);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-
-    if (message.includes('AUTH_MISSING') || message.includes('AUTH_SESSION_ERROR')) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    console.error('[API Route /api/pr/releases POST] Error:', message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const { status, message, code } = getErrorResponse(error);
+    console.error('[API /api/pr/releases POST] Error:', { status, message, code });
+    return NextResponse.json({ error: message, code }, { status });
   }
 }

@@ -1,55 +1,71 @@
 /**
- * Journalist Search API Route Handler (Sprint S99.2)
- * Proxies authenticated requests to backend via prDataServer
+ * Journalist Search API Route Handler
+ * Sprint S100: Route handler is the ONLY way to get journalist data
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchJournalistProfiles } from '@/server/prDataServer';
+
+import { prBackendFetch, getErrorResponse } from '@/server/prBackendProxy';
+
+interface JournalistProfile {
+  id: string;
+  fullName: string;
+  primaryEmail: string;
+  secondaryEmails: string[];
+  primaryOutlet: string | null;
+  beat: string | null;
+  twitterHandle: string | null;
+  linkedinUrl: string | null;
+  websiteUrl: string | null;
+  engagementScore: number;
+  responsivenessScore: number;
+  relevanceScore: number;
+  lastActivityAt: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface JournalistProfilesResponse {
+  profiles: JournalistProfile[];
+  total: number;
+  limit: number;
+  offset: number;
+}
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
-    const params = {
-      q: searchParams.get('q') || undefined,
-      outlet: searchParams.get('outlet') || undefined,
-      beat: searchParams.get('beat') || undefined,
-      minEngagementScore: searchParams.get('minEngagementScore')
-        ? Number(searchParams.get('minEngagementScore'))
-        : undefined,
-      sortBy: searchParams.get('sortBy') || undefined,
-      sortOrder: (searchParams.get('sortOrder') as 'asc' | 'desc') || undefined,
-      limit: searchParams.get('limit') ? Number(searchParams.get('limit')) : undefined,
-      offset: searchParams.get('offset') ? Number(searchParams.get('offset')) : undefined,
-    };
+    // Build query string for backend API
+    const params = new URLSearchParams();
+    const q = searchParams.get('q');
+    const outlet = searchParams.get('outlet');
+    const beat = searchParams.get('beat');
+    const minEngagementScore = searchParams.get('minEngagementScore');
+    const sortBy = searchParams.get('sortBy');
+    const sortOrder = searchParams.get('sortOrder');
+    const limit = searchParams.get('limit');
+    const offset = searchParams.get('offset');
 
-    const data = await fetchJournalistProfiles(params);
+    if (q) params.set('q', q);
+    if (outlet) params.set('outlet', outlet);
+    if (beat) params.set('beat', beat);
+    if (minEngagementScore) params.set('minEngagementScore', minEngagementScore);
+    if (sortBy) params.set('sortBy', sortBy);
+    if (sortOrder) params.set('sortOrder', sortOrder);
+    if (limit) params.set('limit', limit);
+    if (offset) params.set('offset', offset);
+
+    const queryString = params.toString();
+    const path = `/api/v1/journalist-graph/profiles${queryString ? `?${queryString}` : ''}`;
+
+    const data = await prBackendFetch<JournalistProfilesResponse>(path);
 
     return NextResponse.json(data);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-
-    // Auth errors should return 401
-    if (message.includes('AUTH_MISSING') || message.includes('AUTH_SESSION_ERROR')) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // API errors
-    if (message.includes('API_ERROR')) {
-      return NextResponse.json(
-        { error: message.replace('API_ERROR: ', '') },
-        { status: 502 }
-      );
-    }
-
-    // Unknown errors
-    console.error('[API Route /api/pr/journalists] Error:', message);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    const { status, message, code } = getErrorResponse(error);
+    console.error('[API /api/pr/journalists] Error:', { status, message, code });
+    return NextResponse.json({ error: message, code }, { status });
   }
 }

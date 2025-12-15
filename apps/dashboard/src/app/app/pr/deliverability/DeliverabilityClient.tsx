@@ -1,16 +1,53 @@
 /**
- * PR Deliverability Client Component (Sprint S99.2)
+ * PR Deliverability Client Component (Sprint S100)
  * Client-side UI for email deliverability analytics
+ *
+ * INVARIANT: This component does NOT import from prDataServer.
+ * All data flows through /api/pr/* route handlers.
  */
 
 'use client';
 
 import { useState, useEffect } from 'react';
-import type {
-  DeliverabilitySummary,
-  EmailMessage,
-  JournalistEngagement,
-} from '@/server/prDataServer';
+
+/**
+ * S100: Types defined locally to avoid ANY dependency on prDataServer
+ */
+interface DeliverabilitySummary {
+  totalMessages: number;
+  totalSent: number;
+  totalDelivered: number;
+  totalOpened: number;
+  totalClicked: number;
+  totalBounced: number;
+  totalComplained: number;
+  totalFailed: number;
+  deliveryRate: number;
+  openRate: number;
+  clickRate: number;
+  bounceRate: number;
+}
+
+interface EmailMessage {
+  id: string;
+  subject: string;
+  sendStatus: string;
+  sentAt: string | null;
+  openedAt: string | null;
+  clickedAt: string | null;
+}
+
+interface JournalistEngagement {
+  id: string;
+  journalist: {
+    name: string;
+    email: string;
+  };
+  engagementScore: number;
+  openRate: number;
+  clickRate: number;
+  totalSent: number;
+}
 
 interface DeliverabilityClientProps {
   initialSummary: DeliverabilitySummary;
@@ -31,6 +68,7 @@ export default function DeliverabilityClient({
   const [topEngaged, setTopEngaged] = useState<JournalistEngagement[]>(initialTopEngaged);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'engagement'>('overview');
+  const [isInitialLoading, setIsInitialLoading] = useState(initialMessages.length === 0);
 
   const loadData = async () => {
     try {
@@ -55,8 +93,17 @@ export default function DeliverabilityClient({
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
+    } finally {
+      setIsInitialLoading(false);
     }
   };
+
+  // S100: Load data on mount via route handlers
+  useEffect(() => {
+    if (initialMessages.length === 0) {
+      loadData();
+    }
+  }, []);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
@@ -78,7 +125,19 @@ export default function DeliverabilityClient({
         </div>
       )}
 
-      {/* Tab Navigation */}
+      {/* Initial Loading State */}
+      {isInitialLoading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading deliverability data...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Tab Navigation and Content */}
+      {!isInitialLoading && (
+      <>
       <div className="mb-6 border-b border-gray-200">
         <nav className="flex space-x-8">
           <button
@@ -292,6 +351,8 @@ export default function DeliverabilityClient({
             </table>
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   );

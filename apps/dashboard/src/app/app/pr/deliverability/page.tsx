@@ -1,65 +1,37 @@
 /**
- * PR Deliverability Page (Sprint S99.2)
- * Server Component - fetches initial data via prDataServer
+ * PR Deliverability Page (Sprint S100)
+ * Pure client rendering - data loaded via route handlers only
+ *
+ * INVARIANT: This page does NOT import from prDataServer.
+ * All data flows through /api/pr/* route handlers.
  */
 
-import {
-  fetchDeliverabilitySummary,
-  fetchEmailMessages,
-  fetchTopEngagedJournalists,
-} from '@/server/prDataServer';
 import DeliverabilityClient from './DeliverabilityClient';
 
-export default async function DeliverabilityPage() {
-  try {
-    const [summary, messagesData, topEngaged] = await Promise.all([
-      fetchDeliverabilitySummary(),
-      fetchEmailMessages({ limit: 20 }),
-      fetchTopEngagedJournalists(10),
-    ]);
+// Default empty state for deliverability summary
+const EMPTY_SUMMARY = {
+  totalMessages: 0,
+  totalSent: 0,
+  totalDelivered: 0,
+  totalOpened: 0,
+  totalClicked: 0,
+  totalBounced: 0,
+  totalComplained: 0,
+  totalFailed: 0,
+  deliveryRate: 0,
+  openRate: 0,
+  clickRate: 0,
+  bounceRate: 0,
+};
 
-    return (
-      <DeliverabilityClient
-        initialSummary={summary}
-        initialMessages={messagesData.messages}
-        initialMessagesTotal={messagesData.total}
-        initialTopEngaged={topEngaged}
-      />
-    );
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-
-    // Check for auth errors
-    if (message.includes('AUTH_MISSING') || message.includes('AUTH_SESSION_ERROR')) {
-      return (
-        <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-red-800">Authentication Required</h2>
-            <p className="text-red-700 mt-2">
-              You must be logged in to view deliverability analytics. Please sign in to continue.
-            </p>
-            <a
-              href="/login"
-              className="mt-4 inline-block px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Sign In
-            </a>
-          </div>
-        </div>
-      );
-    }
-
-    // Generic error
-    return (
-      <div className="p-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-red-800">Error Loading Data</h2>
-          <p className="text-red-700 mt-2">{message}</p>
-          <p className="text-red-600 mt-2 text-sm">
-            Please try refreshing the page. If the problem persists, contact support.
-          </p>
-        </div>
-      </div>
-    );
-  }
+export default function DeliverabilityPage() {
+  // S100: No server-side data fetching. Client component loads via /api/pr/deliverability/*
+  return (
+    <DeliverabilityClient
+      initialSummary={EMPTY_SUMMARY}
+      initialMessages={[]}
+      initialMessagesTotal={0}
+      initialTopEngaged={[]}
+    />
+  );
 }
