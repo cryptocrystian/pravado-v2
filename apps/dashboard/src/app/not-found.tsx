@@ -45,10 +45,10 @@ export default function NotFound() {
               Go to Dashboard
             </Link>
             <Link
-              href="/"
+              href="/login"
               className="btn-secondary py-3 px-6 w-full"
             >
-              Back to Home
+              Sign In
             </Link>
           </div>
 
