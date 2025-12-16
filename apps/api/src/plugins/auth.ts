@@ -25,13 +25,20 @@ export async function authPlugin(server: FastifyInstance) {
   server.decorateRequest('user', null);
 
   server.addHook('onRequest', async (request: FastifyRequest) => {
+    // Skip logging for health checks to reduce noise
+    if (request.url.includes('/health')) {
+      return;
+    }
+
     const authHeader = request.headers.authorization;
+    logger.info('[Auth] Hook started', { url: request.url, hasAuthHeader: !!authHeader });
+
     const token =
       authHeader?.replace('Bearer ', '') ||
       request.cookies?.['sb-access-token'];
 
     if (!token) {
-      logger.debug('[Auth] No token provided', { url: request.url });
+      logger.info('[Auth] No token provided', { url: request.url });
       return;
     }
 
