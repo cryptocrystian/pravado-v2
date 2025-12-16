@@ -354,3 +354,59 @@ export async function generateDraft(input: GenerateDraftInput): Promise<Generate
     body: JSON.stringify(input),
   });
 }
+
+// =============================================
+// S100: Outreach Template Draft Generation
+// =============================================
+
+export interface GenerateOutreachDraftInput {
+  action: 'initial' | 'follow-up';
+  stepNumber: number;
+  topic?: string;
+  angle?: string;
+  companyName?: string;
+  productName?: string;
+}
+
+export interface GeneratedOutreachDraft {
+  subject: string;
+  body: string;
+}
+
+export async function generateOutreachDraft(
+  input: GenerateOutreachDraftInput
+): Promise<GeneratedOutreachDraft> {
+  // For now, generate template drafts client-side with placeholder support
+  // This can be enhanced to call an AI endpoint in the future
+  const isFollowUp = input.stepNumber > 1 || input.action === 'follow-up';
+
+  if (isFollowUp) {
+    return {
+      subject: `Re: Following up - ${input.topic || 'your story idea'}`,
+      body: `Hi {{journalist_name}},
+
+I wanted to follow up on my previous email about ${input.topic || 'our announcement'}.
+
+${input.angle ? `I thought you might find the ${input.angle} angle particularly relevant for your readers at {{outlet}}.` : 'I believe this could be a great fit for your coverage.'}
+
+Would you have 15 minutes this week to discuss?
+
+Best regards`,
+    };
+  }
+
+  return {
+    subject: `Story idea for {{outlet}}: ${input.topic || 'exclusive announcement'}`,
+    body: `Hi {{journalist_name}},
+
+I'm reaching out because I noticed your excellent coverage of ${input.topic || 'industry trends'} at {{outlet}}.
+
+${input.companyName ? `${input.companyName} has an announcement that I think would resonate with your readers.` : 'We have an exciting development to share.'}
+
+${input.angle ? `The ${input.angle} angle could make for a compelling story.` : ''}
+
+Would you be interested in an exclusive briefing?
+
+Best regards`,
+  };
+}

@@ -22,7 +22,7 @@ import { ContentRewriteService } from '../../services/contentRewriteService';
  */
 async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
   const { data: userOrgs } = await supabase
-    .from('user_orgs')
+    .from('org_members')
     .select('org_id')
     .eq('user_id', userId)
     .limit(1)

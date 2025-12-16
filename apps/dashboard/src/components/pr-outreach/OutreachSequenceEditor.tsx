@@ -17,6 +17,7 @@ import type {
 import {
   createOutreachSequence,
   createOutreachStep,
+  generateOutreachDraft,
   getOutreachSequenceWithSteps,
   updateOutreachSequence,
 } from '@/lib/prOutreachApi';
@@ -35,6 +36,7 @@ export function OutreachSequenceEditor({ sequence, onClose, onSave }: OutreachSe
   const [steps, setSteps] = useState<OutreachSequenceStep[]>([]);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [generatingStepIndex, setGeneratingStepIndex] = useState<number | null>(null);
 
   // Load sequence with steps if editing
   useEffect(() => {
@@ -146,6 +148,26 @@ export function OutreachSequenceEditor({ sequence, onClose, onSave }: OutreachSe
     setSteps(updated);
   };
 
+  const handleGenerateAIDraft = async (index: number) => {
+    setGeneratingStepIndex(index);
+    try {
+      const step = steps[index];
+      const draft = await generateOutreachDraft({
+        action: index === 0 ? 'initial' : 'follow-up',
+        stepNumber: step.stepNumber,
+        topic: name || undefined,
+      });
+
+      handleUpdateStep(index, 'subjectTemplate', draft.subject);
+      handleUpdateStep(index, 'bodyTemplate', draft.body);
+    } catch (error) {
+      console.error('Failed to generate AI draft:', error);
+      alert('Failed to generate draft. Please try again.');
+    } finally {
+      setGeneratingStepIndex(null);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
       {/* Header */}
@@ -244,12 +266,37 @@ export function OutreachSequenceEditor({ sequence, onClose, onSave }: OutreachSe
                       Step {step.stepNumber}
                       {index === 0 ? ' (Immediate)' : ` (${step.delayHours}h delay)`}
                     </div>
-                    <button
-                      onClick={() => handleDeleteStep(index)}
-                      className="text-red-600 hover:text-red-700 text-sm"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleGenerateAIDraft(index)}
+                        disabled={generatingStepIndex === index}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-sm font-medium rounded hover:from-purple-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {generatingStepIndex === index ? (
+                          <>
+                            <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                            <span>Generating...</span>
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <span>AI Draft</span>
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleDeleteStep(index)}
+                        className="text-red-600 hover:text-red-700 text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
 
                   {index > 0 && (

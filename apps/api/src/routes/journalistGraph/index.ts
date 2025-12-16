@@ -40,7 +40,7 @@ export default async function journalistGraphRoutes(fastify: FastifyInstance) {
    */
   async function getUserOrgId(userId: string): Promise<string | null> {
     const { data: userOrgs } = await supabase
-      .from('user_orgs')
+      .from('org_members')
       .select('org_id')
       .eq('user_id', userId)
       .limit(1);
