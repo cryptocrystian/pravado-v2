@@ -7,6 +7,7 @@ import { FLAGS } from '@pravado/feature-flags';
 import type { CreateSourceInput, UpdateSourceInput } from '@pravado/types';
 import { LlmRouter } from '@pravado/utils';
 import {
+  apiEnvSchema,
   createSourceSchema,
   detectMentionsInputSchema,
   ingestArticleSchema,
@@ -14,26 +15,14 @@ import {
   listMentionsSchema,
   listSourcesSchema,
   updateSourceSchema,
+  validateEnv,
 } from '@pravado/validators';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { createMediaAlertService } from '../../services/mediaAlertService'; // S43
 import { createMediaMonitoringService } from '../../services/mediaMonitoringService';
-
-/**
- * Helper to get user's org ID
- */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
-  const { data: userOrgs } = await supabase
-    .from('user_orgs')
-    .select('org_id')
-    .eq('user_id', userId)
-    .limit(1);
-
-  return userOrgs?.[0]?.org_id || null;
-}
 
 /**
  * Register media monitoring routes
@@ -45,7 +34,22 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
     return;
   }
 
-  const supabase = (server as unknown as { supabase: SupabaseClient }).supabase;
+  // Create Supabase client (S100.2 fix)
+  const env = validateEnv(apiEnvSchema);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+
+  /**
+   * Helper to get user's org ID
+   */
+  async function getUserOrgId(userId: string): Promise<string | null> {
+    const { data: userOrgs } = await supabase
+      .from('user_orgs')
+      .select('org_id')
+      .eq('user_id', userId)
+      .limit(1);
+
+    return userOrgs?.[0]?.org_id || null;
+  }
 
   // Initialize LLM Router if API key available
   const openaiApiKey = process.env.OPENAI_API_KEY;
@@ -84,7 +88,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
   }>('/api/v1/media-monitoring/sources', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -132,7 +136,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
   }>('/api/v1/media-monitoring/sources', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -182,7 +186,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
     async (request, reply) => {
       try {
         const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+        const orgId = await getUserOrgId(userId);
 
         if (!orgId) {
           return reply.status(404).send({
@@ -233,7 +237,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
     async (request, reply) => {
       try {
         const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+        const orgId = await getUserOrgId(userId);
 
         if (!orgId) {
           return reply.status(404).send({
@@ -288,7 +292,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
     async (request, reply) => {
       try {
         const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+        const orgId = await getUserOrgId(userId);
 
         if (!orgId) {
           return reply.status(404).send({
@@ -329,7 +333,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
   }>('/api/v1/media-monitoring/ingest', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -381,7 +385,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
   }>('/api/v1/media-monitoring/articles', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -431,7 +435,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
     async (request, reply) => {
       try {
         const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+        const orgId = await getUserOrgId(userId);
 
         if (!orgId) {
           return reply.status(404).send({
@@ -485,7 +489,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
     async (request, reply) => {
       try {
         const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+        const orgId = await getUserOrgId(userId);
 
         if (!orgId) {
           return reply.status(404).send({
@@ -538,7 +542,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
   }>('/api/v1/media-monitoring/mentions', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -587,7 +591,7 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
   server.get('/api/v1/media-monitoring/stats', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
