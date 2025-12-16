@@ -10,30 +10,19 @@ import type {
   MarkAlertEventsReadInput,
 } from '@pravado/types';
 import {
+  apiEnvSchema,
   createMediaAlertRuleSchema,
   updateMediaAlertRuleSchema,
   listMediaAlertRulesQuerySchema,
   listMediaAlertEventsQuerySchema,
   markAlertEventsReadSchema,
+  validateEnv,
 } from '@pravado/validators';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { createMediaAlertService } from '../../services/mediaAlertService';
-
-/**
- * Helper to get user's org ID
- */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
-  const { data: userOrgs } = await supabase
-    .from('user_orgs')
-    .select('org_id')
-    .eq('user_id', userId)
-    .limit(1);
-
-  return userOrgs?.[0]?.org_id || null;
-}
 
 /**
  * Register media alerts routes
@@ -45,7 +34,22 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
     return;
   }
 
-  const supabase = (server as unknown as { supabase: SupabaseClient }).supabase;
+  // Create Supabase client (S100.3 fix)
+  const env = validateEnv(apiEnvSchema);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+
+  /**
+   * Helper to get user's org ID
+   */
+  async function getUserOrgId(userId: string): Promise<string | null> {
+    const { data: userOrgs } = await supabase
+      .from('user_orgs')
+      .select('org_id')
+      .eq('user_id', userId)
+      .limit(1);
+
+    return userOrgs?.[0]?.org_id || null;
+  }
 
   const alertService = createMediaAlertService({
     supabase,
@@ -62,7 +66,7 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/media-alerts/rules', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -110,7 +114,7 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/media-alerts/rules', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -157,7 +161,7 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/media-alerts/rules/:id', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -194,7 +198,7 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/media-alerts/rules/:id', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -242,7 +246,7 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/media-alerts/rules/:id', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -282,7 +286,7 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/media-alerts/events', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -329,7 +333,7 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/media-alerts/events/:id', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -365,7 +369,7 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/media-alerts/events/mark-read', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -415,7 +419,7 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
   server.get('/api/v1/media-alerts/signals', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -449,7 +453,7 @@ export async function mediaAlertsRoutes(server: FastifyInstance): Promise<void> 
   server.post('/api/v1/media-alerts/evaluate', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({

@@ -10,31 +10,20 @@ import type {
   UpdatePRPitchSequenceInput,
 } from '@pravado/types';
 import {
+  apiEnvSchema,
   attachContactsSchema,
   createPRPitchSequenceSchema,
   generatePitchPreviewSchema,
   listPRPitchContactsSchema,
   listPRPitchSequencesSchema,
   updatePRPitchSequenceSchema,
+  validateEnv,
 } from '@pravado/validators';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { createPRPitchService } from '../../services/prPitchService';
-
-/**
- * Helper to get user's org ID
- */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
-  const { data: userOrgs } = await supabase
-    .from('user_orgs')
-    .select('org_id')
-    .eq('user_id', userId)
-    .limit(1);
-
-  return userOrgs?.[0]?.org_id || null;
-}
 
 /**
  * Register PR pitch routes
@@ -46,8 +35,23 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
     return;
   }
 
-  const supabase = (server as unknown as { supabase: SupabaseClient }).supabase;
+  // Create Supabase client (S100.3 fix)
+  const env = validateEnv(apiEnvSchema);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
   const pitchService = createPRPitchService(supabase);
+
+  /**
+   * Helper to get user's org ID
+   */
+  async function getUserOrgId(userId: string): Promise<string | null> {
+    const { data: userOrgs } = await supabase
+      .from('user_orgs')
+      .select('org_id')
+      .eq('user_id', userId)
+      .limit(1);
+
+    return userOrgs?.[0]?.org_id || null;
+  }
 
   // ============================================================================
   // POST /api/v1/pr/pitches/sequences - Create a new pitch sequence
@@ -57,7 +61,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
   }>('/api/v1/pr/pitches/sequences', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -108,7 +112,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
   }>('/api/v1/pr/pitches/sequences', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -158,7 +162,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
   }>('/api/v1/pr/pitches/sequences/:id', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
       const sequenceId = request.params.id;
 
       if (!orgId) {
@@ -208,7 +212,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
   }>('/api/v1/pr/pitches/sequences/:id', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
       const sequenceId = request.params.id;
 
       if (!orgId) {
@@ -260,7 +264,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
   }>('/api/v1/pr/pitches/sequences/:id', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
       const sequenceId = request.params.id;
 
       if (!orgId) {
@@ -303,7 +307,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
     async (request, reply) => {
       try {
         const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+        const orgId = await getUserOrgId(userId);
         const sequenceId = request.params.id;
 
         if (!orgId) {
@@ -364,7 +368,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
     async (request, reply) => {
       try {
         const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+        const orgId = await getUserOrgId(userId);
         const sequenceId = request.params.id;
 
         if (!orgId) {
@@ -416,7 +420,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
   }>('/api/v1/pr/pitches/preview', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -470,7 +474,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
     async (request, reply) => {
       try {
         const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+        const orgId = await getUserOrgId(userId);
         const contactId = request.params.id;
 
         if (!orgId) {
@@ -513,7 +517,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
     async (request, reply) => {
       try {
         const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+        const orgId = await getUserOrgId(userId);
         const contactId = request.params.id;
 
         if (!orgId) {
