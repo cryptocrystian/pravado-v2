@@ -3,18 +3,20 @@
  * API routes for automated journalist discovery and enrichment
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { FLAGS } from '@pravado/feature-flags';
 import { createJournalistDiscoveryService } from '../../services/journalistDiscoveryService';
 import { requireUser } from '../../middleware/requireUser';
 import {
+  apiEnvSchema,
   discoveredJournalistInputSchema,
   resolveDiscoveryInputSchema,
   authorExtractionInputSchema,
   socialProfileInputSchema,
   discoveryQuerySchema,
   batchDiscoveryInputSchema,
+  validateEnv,
   type DiscoveredJournalistInput,
   type ResolveDiscoveryInput,
   type AuthorExtractionInput,
@@ -33,19 +35,6 @@ import type {
   DiscoveredJournalistInput as DiscoveredJournalistInputType,
 } from '@pravado/types';
 
-/**
- * Helper to get user's org ID
- */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('org_id')
-    .eq('id', userId)
-    .single();
-
-  return profile?.org_id || null;
-}
-
 export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
   // Check feature flag
   if (!FLAGS.ENABLE_JOURNALIST_DISCOVERY) {
@@ -53,7 +42,22 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
     return;
   }
 
-  const supabase = (fastify as unknown as { supabase: SupabaseClient }).supabase;
+  // Create Supabase client
+  const env = validateEnv(apiEnvSchema);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+
+  /**
+   * Helper to get user's org ID
+   */
+  async function getUserOrgId(userId: string): Promise<string | null> {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('org_id')
+      .eq('id', userId)
+      .single();
+
+    return profile?.org_id || null;
+  }
 
   // POST /api/v1/journalist-discovery/extract
   fastify.post<{
@@ -71,7 +75,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
 
         const input = validationResult.data;
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -104,7 +108,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
 
         const input = validationResult.data;
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -137,7 +141,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
 
         const query = validationResult.data;
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -160,7 +164,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
   }>('/stats', { onRequest: [requireUser] }, async (request, reply: FastifyReply) => {
     try {
       const user = (request as any).user;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({ error: 'User organization not found' });
@@ -184,7 +188,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
     try {
       const { id } = request.params;
       const user = (request as any).user;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({ error: 'User organization not found' });
@@ -213,7 +217,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
     try {
       const { id } = request.params;
       const user = (request as any).user;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({ error: 'User organization not found' });
@@ -241,7 +245,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
     try {
       const { id } = request.params;
       const user = (request as any).user;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({ error: 'User organization not found' });
@@ -272,7 +276,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
       const { id } = request.params;
       const input = validationResult.data;
       const user = (request as any).user;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({ error: 'User organization not found' });
@@ -303,7 +307,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
       }
 
       const user = (request as any).user;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({ error: 'User organization not found' });
@@ -332,7 +336,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
 
       const input = validationResult.data;
       const user = (request as any).user;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({ error: 'User organization not found' });
@@ -361,7 +365,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
 
       const input = validationResult.data;
       const user = (request as any).user;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({ error: 'User organization not found' });
@@ -425,7 +429,7 @@ export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
 
       const input = validationResult.data;
       const user = (request as any).user;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({ error: 'User organization not found' });

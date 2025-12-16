@@ -6,32 +6,21 @@
 import { FLAGS } from '@pravado/feature-flags';
 import type { ProviderConfig } from '@pravado/types';
 import {
+  apiEnvSchema,
   emailProviderSchema,
   listEmailMessagesQuerySchema,
   listEngagementMetricsQuerySchema,
   sendEmailRequestSchema,
   updateEmailMessageInputSchema,
+  validateEnv,
 } from '@pravado/validators';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 
 import { requireUser } from '../../middleware/requireUser';
 import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
 
-
-/**
- * Helper to get user's org ID
- */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
-  const { data: userOrgs } = await supabase
-    .from('user_orgs')
-    .select('org_id')
-    .eq('user_id', userId)
-    .limit(1);
-
-  return userOrgs?.[0]?.org_id || null;
-}
 
 /**
  * Get provider configuration from environment (S98)
@@ -85,8 +74,23 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     return;
   }
 
-  const supabase = (fastify as unknown as { supabase: SupabaseClient }).supabase;
+  // Create Supabase client
+  const env = validateEnv(apiEnvSchema);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
   const providerConfig = getProviderConfig();
+
+  /**
+   * Helper to get user's org ID
+   */
+  async function getUserOrgId(userId: string): Promise<string | null> {
+    const { data: userOrgs } = await supabase
+      .from('user_orgs')
+      .select('org_id')
+      .eq('user_id', userId)
+      .limit(1);
+
+    return userOrgs?.[0]?.org_id || null;
+  }
 
   // =============================================
   // Email Messages
@@ -103,7 +107,7 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const user = request.user!;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({
@@ -137,7 +141,7 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     },
     async (request, reply) => {
       const user = request.user!;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({
@@ -178,7 +182,7 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     },
     async (request, reply) => {
       const user = request.user!;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({
@@ -213,7 +217,7 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     },
     async (request, reply) => {
       const user = request.user!;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({
@@ -249,7 +253,7 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const user = request.user!;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({
@@ -283,7 +287,7 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     },
     async (request, reply) => {
       const user = request.user!;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({
@@ -324,7 +328,7 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     },
     async (request, reply) => {
       const user = request.user!;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({
@@ -360,7 +364,7 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const user = request.user!;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({
@@ -390,7 +394,7 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const user = request.user!;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({
@@ -504,7 +508,7 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const user = request.user!;
-      const orgId = await getUserOrgId(user.id, supabase);
+      const orgId = await getUserOrgId(user.id);
 
       if (!orgId) {
         return reply.status(403).send({
