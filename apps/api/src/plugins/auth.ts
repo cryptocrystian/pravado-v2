@@ -2,6 +2,7 @@ import { createLogger } from '@pravado/utils';
 import { validateEnv, apiEnvSchema } from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance, FastifyRequest } from 'fastify';
+import fp from 'fastify-plugin';
 
 const logger = createLogger('api:auth');
 
@@ -14,7 +15,7 @@ declare module 'fastify' {
   }
 }
 
-export async function authPlugin(server: FastifyInstance) {
+async function authPluginImpl(server: FastifyInstance) {
   logger.info('[Auth Plugin] Initializing auth plugin...');
 
   const env = validateEnv(apiEnvSchema);
@@ -90,3 +91,13 @@ export async function authPlugin(server: FastifyInstance) {
 
   logger.info('[Auth Plugin] Auth plugin initialized successfully');
 }
+
+/**
+ * Export the auth plugin wrapped with fastify-plugin to skip encapsulation.
+ * This ensures the onRequest hook is applied to ALL routes registered after this plugin,
+ * not just routes within the plugin's own context.
+ */
+export const authPlugin = fp(authPluginImpl, {
+  name: 'auth-plugin',
+  fastify: '4.x',
+});
