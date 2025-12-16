@@ -15,6 +15,8 @@ declare module 'fastify' {
 }
 
 export async function authPlugin(server: FastifyInstance) {
+  logger.info('[Auth Plugin] Initializing auth plugin...');
+
   const env = validateEnv(apiEnvSchema);
 
   const supabase = createClient(
@@ -23,6 +25,8 @@ export async function authPlugin(server: FastifyInstance) {
   );
 
   server.decorateRequest('user', null);
+
+  logger.info('[Auth Plugin] Adding onRequest hook...');
 
   server.addHook('onRequest', async (request: FastifyRequest) => {
     // Skip logging for health checks to reduce noise
@@ -73,4 +77,6 @@ export async function authPlugin(server: FastifyInstance) {
       return;
     }
   });
+
+  logger.info('[Auth Plugin] Auth plugin initialized successfully');
 }
