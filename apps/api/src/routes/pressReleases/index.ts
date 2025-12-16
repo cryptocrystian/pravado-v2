@@ -5,24 +5,12 @@
 
 import { FLAGS } from '@pravado/feature-flags';
 import type { PRGenerationInput, PRListFilters, PRReleaseStatus } from '@pravado/types';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { apiEnvSchema, validateEnv } from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { PressReleaseService, prGenerationEmitter } from '../../services/pressReleaseService';
-
-/**
- * Helper to get user's org ID
- */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
-  const { data: userOrgs } = await supabase
-    .from('user_orgs')
-    .select('org_id')
-    .eq('user_id', userId)
-    .limit(1);
-
-  return userOrgs?.[0]?.org_id || null;
-}
 
 /**
  * Register press release routes
@@ -34,8 +22,23 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
     return;
   }
 
-  const supabase = (server as unknown as { supabase: SupabaseClient }).supabase;
+  // Create Supabase client (S100.3 fix)
+  const env = validateEnv(apiEnvSchema);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
   const prService = new PressReleaseService(supabase);
+
+  /**
+   * Helper to get user's org ID
+   */
+  async function getUserOrgId(userId: string): Promise<string | null> {
+    const { data: userOrgs } = await supabase
+      .from('user_orgs')
+      .select('org_id')
+      .eq('user_id', userId)
+      .limit(1);
+
+    return userOrgs?.[0]?.org_id || null;
+  }
 
   // ============================================================================
   // POST /api/v1/pr/releases/generate - Generate a new press release
@@ -45,7 +48,7 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
   }>('/api/v1/pr/releases/generate', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -107,7 +110,7 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
   }>('/api/v1/pr/releases', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -155,7 +158,7 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
     try {
       const { id } = request.params;
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -211,7 +214,7 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
     try {
       const { id } = request.params;
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -248,7 +251,7 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
     try {
       const { id } = request.params;
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -287,7 +290,7 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
   }>('/api/v1/pr/releases/:id/stream', { preHandler: requireUser }, async (request, reply) => {
     const { id } = request.params;
     const userId = request.user!.id;
-    const orgId = await getUserOrgId(userId, supabase);
+    const orgId = await getUserOrgId(userId);
 
     if (!orgId) {
       return reply.status(404).send({

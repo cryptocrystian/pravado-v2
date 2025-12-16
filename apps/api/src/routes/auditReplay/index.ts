@@ -5,24 +5,12 @@
 
 import { FLAGS } from '@pravado/feature-flags';
 import type { AuditReplayFilters } from '@pravado/types';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { apiEnvSchema, validateEnv } from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { AuditReplayService, replayEventEmitter } from '../../services/auditReplayService';
-
-/**
- * Helper to get user's org ID
- */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
-  const { data: userOrgs } = await supabase
-    .from('user_orgs')
-    .select('org_id')
-    .eq('user_id', userId)
-    .limit(1);
-
-  return userOrgs?.[0]?.org_id || null;
-}
 
 /**
  * Check if user has admin role
@@ -41,8 +29,23 @@ export async function auditReplayRoutes(server: FastifyInstance): Promise<void> 
     return;
   }
 
-  const supabase = (server as unknown as { supabase: SupabaseClient }).supabase;
+  // Create Supabase client (S100.3 fix)
+  const env = validateEnv(apiEnvSchema);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
   const replayService = new AuditReplayService(supabase);
+
+  /**
+   * Helper to get user's org ID
+   */
+  async function getUserOrgId(userId: string): Promise<string | null> {
+    const { data: userOrgs } = await supabase
+      .from('user_orgs')
+      .select('org_id')
+      .eq('user_id', userId)
+      .limit(1);
+
+    return userOrgs?.[0]?.org_id || null;
+  }
 
   // ============================================================================
   // POST /api/v1/audit/replay - Create a new replay job
@@ -52,7 +55,7 @@ export async function auditReplayRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/audit/replay', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -132,7 +135,7 @@ export async function auditReplayRoutes(server: FastifyInstance): Promise<void> 
     try {
       const { id } = request.params;
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -186,7 +189,7 @@ export async function auditReplayRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/audit/replay/:id/stream', { preHandler: requireUser }, async (request, reply) => {
     const { id } = request.params;
     const userId = request.user!.id;
-    const orgId = await getUserOrgId(userId, supabase);
+    const orgId = await getUserOrgId(userId);
 
     if (!orgId) {
       return reply.status(404).send({
@@ -272,7 +275,7 @@ export async function auditReplayRoutes(server: FastifyInstance): Promise<void> 
     try {
       const { id, index } = request.params;
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({
@@ -340,7 +343,7 @@ export async function auditReplayRoutes(server: FastifyInstance): Promise<void> 
   }>('/api/v1/audit/replays', { preHandler: requireUser }, async (request, reply) => {
     try {
       const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId, supabase);
+      const orgId = await getUserOrgId(userId);
 
       if (!orgId) {
         return reply.status(404).send({

@@ -6,11 +6,13 @@
 import { FLAGS } from '@pravado/feature-flags';
 import type { UpdateSchedulerTaskInput } from '@pravado/types';
 import {
+  apiEnvSchema,
   listSchedulerTasksSchema,
   listTaskRunsSchema,
   updateSchedulerTaskSchema,
+  validateEnv,
 } from '@pravado/validators';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
 import { requireAdmin } from '../../middleware/requireAdmin';
@@ -29,7 +31,9 @@ export async function schedulerRoutes(server: FastifyInstance): Promise<void> {
     return;
   }
 
-  const supabase = (server as unknown as { supabase: SupabaseClient }).supabase;
+  // Create Supabase client (S100.3 fix)
+  const env = validateEnv(apiEnvSchema);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
 
   // Initialize dependencies
   const openaiApiKey = process.env.OPENAI_API_KEY;
