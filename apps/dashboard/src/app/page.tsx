@@ -1,25 +1,26 @@
-// Force dynamic rendering to avoid SSG errors
+/**
+ * Root page - redirects to appropriate destination
+ * - Authenticated users -> /app
+ * - Unauthenticated users -> /login
+ */
+
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+
 export const dynamic = 'force-dynamic';
 
-export default function HomePage() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Pravado Dashboard
-        </h1>
-        <p className="text-xl text-gray-600 mb-8">
-          AI-powered PR, content, and SEO orchestration platform
-        </p>
-        <div className="flex gap-4 justify-center">
-          <div className="px-6 py-3 bg-primary-500 text-white rounded-lg">
-            Version 0.0.0-s0
-          </div>
-          <div className="px-6 py-3 bg-green-500 text-white rounded-lg">
-            Sprint S0 Complete
-          </div>
-        </div>
-      </div>
-    </main>
+export default async function HomePage() {
+  const cookieStore = await cookies();
+  const allCookies = cookieStore.getAll();
+
+  // Check for Supabase auth cookies
+  const hasAuthCookie = allCookies.some(
+    (cookie) => cookie.name.includes('auth-token') || cookie.name.includes('sb-')
   );
+
+  if (hasAuthCookie) {
+    redirect('/app');
+  } else {
+    redirect('/login');
+  }
 }
