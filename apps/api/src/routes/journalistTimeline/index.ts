@@ -3,7 +3,7 @@
  * API routes for journalist relationship timeline and narrative generation
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { FLAGS } from '@pravado/feature-flags';
 import { JournalistTimelineService } from '../../services/journalistTimelineService';
@@ -11,6 +11,7 @@ import { NarrativeGeneratorService } from '../../services/narrativeGeneratorServ
 import { BillingService } from '../../services/billingService';
 import { requireUser } from '../../middleware/requireUser';
 import {
+  apiEnvSchema,
   CreateTimelineEventInputSchema,
   UpdateTimelineEventInputSchema,
   CreateManualNoteInputSchema,
@@ -18,6 +19,7 @@ import {
   GenerateNarrativeInputSchema,
   BatchCreateTimelineEventsInputSchema,
   SystemEventPushSchema,
+  validateEnv,
   type CreateTimelineEventInput,
   type UpdateTimelineEventInput,
   type CreateManualNoteInput,
@@ -38,19 +40,6 @@ import type {
 } from '@pravado/types';
 import { LlmRouter } from '@pravado/utils';
 
-/**
- * Helper to get user's org ID
- */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('org_id')
-    .eq('id', userId)
-    .single();
-
-  return profile?.org_id || null;
-}
-
 export async function journalistTimelineRoutes(fastify: FastifyInstance) {
   // Check feature flag
   if (!FLAGS.ENABLE_JOURNALIST_TIMELINE) {
@@ -58,7 +47,22 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
     return;
   }
 
-  const supabase = (fastify as unknown as { supabase: SupabaseClient }).supabase;
+  // Create Supabase client
+  const env = validateEnv(apiEnvSchema);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+
+  /**
+   * Helper to get user's org ID
+   */
+  async function getUserOrgId(userId: string): Promise<string | null> {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('org_id')
+      .eq('id', userId)
+      .single();
+
+    return profile?.org_id || null;
+  }
 
   // ========================================
   // Core Event Management
@@ -80,7 +84,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
 
         const input = validationResult.data;
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -107,7 +111,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
       try {
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -148,7 +152,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
 
         const input = validationResult.data;
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -175,7 +179,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
       try {
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -208,7 +212,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
 
         const query = validationResult.data;
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -239,7 +243,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest<{ Params: { journalistId: string } }>, reply: FastifyReply) => {
       try {
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -266,7 +270,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest<{ Params: { journalistId: string } }>, reply: FastifyReply) => {
       try {
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -304,7 +308,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
     ) => {
       try {
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -347,7 +351,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest<{ Params: { journalistId: string } }>, reply: FastifyReply) => {
       try {
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -374,7 +378,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest<{ Params: { clusterId: string } }>, reply: FastifyReply) => {
       try {
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -411,7 +415,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
 
         const input = validationResult.data;
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -448,7 +452,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
 
         const input = validationResult.data;
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -485,7 +489,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
 
         const input = validationResult.data;
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
@@ -527,7 +531,7 @@ export async function journalistTimelineRoutes(fastify: FastifyInstance) {
 
         const event = validationResult.data;
         const user = (request as any).user;
-        const orgId = await getUserOrgId(user.id, supabase);
+        const orgId = await getUserOrgId(user.id);
 
         if (!orgId) {
           return reply.status(403).send({ error: 'User organization not found' });
