@@ -155,7 +155,7 @@ export class PressReleaseService {
     let orgInfo = null;
     try {
       const { data } = await this.supabase
-        .from('organizations')
+        .from('orgs')
         .select('name, description, industry')
         .eq('id', orgId)
         .single();
