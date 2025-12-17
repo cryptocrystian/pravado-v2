@@ -210,7 +210,7 @@ export class PRPitchService {
     orgId: string
   ): Promise<PRPitchContext['organization']> {
     const { data } = await this.supabase
-      .from('organizations')
+      .from('orgs')
       .select('id, name, metadata')
       .eq('id', orgId)
       .single();
