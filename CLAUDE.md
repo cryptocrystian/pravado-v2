@@ -1,5 +1,36 @@
 # PRAVADO v2 - Claude Code Instructions
 
+## Allowed Edit Scope
+
+**Claude may ONLY modify files in these paths without a Work Order:**
+
+| Path | Purpose |
+|------|---------|
+| `docs/canon/**` | Canonical specifications |
+| `contracts/**` | API contracts and schemas |
+| `apps/dashboard/**` | Canonical UI application |
+| `apps/api/**` | Backend API service |
+| `packages/**` | Shared packages |
+| `.github/**` | CI/CD and repo config |
+| `scripts/**` | Build and automation scripts |
+| `*.json` | Root config files (package.json, tsconfig.json, etc.) |
+| `*.yaml` / `*.yml` | Root config files |
+| `*.md` | Root documentation (CLAUDE.md, README.md) |
+
+### Restricted Paths (Require Work Order)
+Any path NOT listed above requires explicit authorization:
+- Creating new apps in `apps/` (except `dashboard` and `api`)
+- Modifying `docs/_archive/**` (archived, read-only)
+- Creating new top-level directories
+
+### Work Order Process
+If a task requires modifying restricted paths:
+1. **STOP** - Do not proceed
+2. **FLAG** - Inform the user that a Work Order is required
+3. **WAIT** - User must explicitly authorize the out-of-scope change
+
+---
+
 ## Canon Authority
 
 **CRITICAL: Read canon FIRST before any product work.**
