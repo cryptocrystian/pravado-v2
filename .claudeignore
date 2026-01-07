@@ -1,0 +1,81 @@
+# PRAVADO Claude Ignore File
+# Purpose: Exclude legacy/archived docs and build artifacts from Claude context
+
+# =============================================================================
+# ARCHIVED DOCUMENTATION (Legacy - Do NOT use for guidance)
+# =============================================================================
+docs/_archive/
+docs/_archive/**
+
+# Legacy sprint reports (archived)
+**/SPRINT_*.md
+**/S[0-9]*.md
+
+# Legacy stabilization/hardening docs
+**/*STABILIZATION*.md
+**/*HARDENING*.md
+
+# Legacy deployment/release docs
+**/GOLDEN_PATH*.md
+**/DESIGN_SYSTEM_ALIGNMENT*.md
+**/STAGING_*.md
+**/PLATFORM_FREEZE*.md
+**/RC1_*.md
+**/RELEASE_*.md
+**/UAT_*.md
+
+# Legacy infrastructure docs
+**/BILLING_*.md
+**/ENVIRONMENT_MATRIX*.md
+**/SUPABASE_*.md
+**/API_STAGING*.md
+**/VERCEL_*.md
+**/RENDER_*.md
+
+# =============================================================================
+# NON-CANONICAL DOCUMENTATION FOLDERS
+# =============================================================================
+docs/playbooks/
+docs/agents/
+docs/product/
+docs/design-system/
+docs/api/
+
+# =============================================================================
+# BUILD ARTIFACTS
+# =============================================================================
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+dist/
+**/dist/
+.turbo/
+**/.turbo/
+build/
+**/build/
+.vercel/
+**/.vercel/
+.expo/
+**/.expo/
+
+# =============================================================================
+# PACKAGE MANAGER
+# =============================================================================
+pnpm-lock.yaml
+
+# =============================================================================
+# IDE/EDITOR
+# =============================================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# =============================================================================
+# LOGS AND TEMP
+# =============================================================================
+*.log
+logs/
+tmp/
+temp/
