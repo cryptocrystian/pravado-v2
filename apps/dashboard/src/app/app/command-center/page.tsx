@@ -15,19 +15,22 @@
  * @see /docs/canon/DS_v3_PRINCIPLES.md
  */
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
 import {
-  TriPaneShell,
+  ActionPeekDrawer,
   ActionStreamPane,
+  CalendarPeek,
   IntelligenceCanvasPane,
   StrategyPanelPane,
-  CalendarPeek,
+  TriPaneShell,
 } from '@/components/command-center';
 import type {
+  ActionItem,
   ActionStreamResponse,
   IntelligenceCanvasResponse,
-  StrategyPanelResponse,
   OrchestrationCalendarResponse,
+  StrategyPanelResponse,
 } from '@/components/command-center/types';
 
 // Data fetch states
@@ -96,6 +99,21 @@ export default function CommandCenterPage() {
     '/api/command-center/orchestration-calendar'
   );
 
+  // Selected action state for Peek Drawer
+  const [selectedAction, setSelectedAction] = useState<ActionItem | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const handleActionSelect = useCallback((action: ActionItem) => {
+    setSelectedAction(action);
+    setIsDrawerOpen(true);
+  }, []);
+
+  const handleDrawerClose = useCallback(() => {
+    setIsDrawerOpen(false);
+    // Clear selection after drawer animation completes
+    setTimeout(() => setSelectedAction(null), 300);
+  }, []);
+
   return (
     <div className="h-[calc(100vh-64px-48px)]">
       <TriPaneShell
@@ -104,6 +122,8 @@ export default function CommandCenterPage() {
             data={actionStream.data}
             isLoading={actionStream.isLoading}
             error={actionStream.error}
+            onActionSelect={handleActionSelect}
+            selectedActionId={selectedAction?.id ?? null}
           />
         }
         intelligencePane={
@@ -132,6 +152,13 @@ export default function CommandCenterPage() {
             error={strategyPanel.error}
           />
         }
+      />
+
+      {/* Action Peek Drawer */}
+      <ActionPeekDrawer
+        action={selectedAction}
+        isOpen={isDrawerOpen}
+        onClose={handleDrawerClose}
       />
     </div>
   );

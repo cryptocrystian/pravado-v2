@@ -11,6 +11,10 @@ export { ActionStreamPane } from './ActionStreamPane';
 export { IntelligenceCanvasPane } from './IntelligenceCanvasPane';
 export { StrategyPanelPane } from './StrategyPanelPane';
 export { CalendarPeek } from './CalendarPeek';
+export { ActionPeekDrawer } from './ActionPeekDrawer';
+
+// Pillar accent system
+export { pillarAccents, priorityStyles, modeStyles, surfaceTokens, cardClasses, getPillarCardClasses } from './pillar-accents';
 
 // Re-export types
 export type {
