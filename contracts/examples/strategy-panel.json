@@ -1,0 +1,169 @@
+{
+  "generated_at": "2026-01-07T10:00:00.000Z",
+  "kpis": [
+    {
+      "id": "k_evi",
+      "label": "EVI",
+      "description": "Earned Visibility Index - composite score across all channels",
+      "value": 47.2,
+      "max_value": 100,
+      "delta_7d": 4.1,
+      "delta_30d": 12.8,
+      "trend": "up",
+      "status": "healthy",
+      "sparkline": [35.2, 36.8, 38.1, 40.2, 42.5, 43.1, 47.2]
+    },
+    {
+      "id": "k_som",
+      "label": "Share of Model",
+      "description": "Percentage of AI model responses mentioning your brand",
+      "value": 0.24,
+      "max_value": 1,
+      "delta_7d": 0.03,
+      "delta_30d": 0.08,
+      "trend": "up",
+      "status": "healthy",
+      "sparkline": [0.16, 0.17, 0.18, 0.19, 0.21, 0.22, 0.24]
+    },
+    {
+      "id": "k_citations",
+      "label": "Citation Velocity",
+      "description": "New AI citations detected per day (7-day average)",
+      "value": 12,
+      "max_value": null,
+      "delta_7d": 2,
+      "delta_30d": 5,
+      "trend": "up",
+      "status": "healthy",
+      "sparkline": [7, 8, 9, 10, 10, 11, 12]
+    },
+    {
+      "id": "k_sov",
+      "label": "Share of Voice",
+      "description": "Traditional media mention share vs competitors",
+      "value": 0.18,
+      "max_value": 1,
+      "delta_7d": -0.02,
+      "delta_30d": 0.01,
+      "trend": "down",
+      "status": "warning",
+      "sparkline": [0.19, 0.20, 0.19, 0.18, 0.19, 0.18, 0.18]
+    },
+    {
+      "id": "k_sentiment",
+      "label": "Sentiment Score",
+      "description": "Aggregate sentiment across all mentions",
+      "value": 0.72,
+      "max_value": 1,
+      "delta_7d": -0.05,
+      "delta_30d": -0.03,
+      "trend": "down",
+      "status": "warning",
+      "sparkline": [0.78, 0.77, 0.76, 0.74, 0.73, 0.72, 0.72]
+    },
+    {
+      "id": "k_content_velocity",
+      "label": "Content Velocity",
+      "description": "New content pieces published per week",
+      "value": 4,
+      "max_value": null,
+      "delta_7d": 1,
+      "delta_30d": 2,
+      "trend": "up",
+      "status": "healthy",
+      "sparkline": [2, 2, 3, 3, 3, 4, 4]
+    }
+  ],
+  "narratives": [
+    {
+      "id": "nar_visibility_story",
+      "title": "This week's visibility story",
+      "body": "Your EVI increased 4.1 points this week, driven primarily by strong AI citation growth (+17%). The TechCrunch mention on Jan 5th contributed significantly to Perplexity and ChatGPT citations. However, traditional Share of Voice dipped slightly as competitors increased their PR activity.",
+      "sentiment": "positive",
+      "pillars": ["pr", "content"],
+      "confidence": 0.89
+    },
+    {
+      "id": "nar_bottleneck",
+      "title": "Primary bottleneck",
+      "body": "Content production velocity is limiting your ability to capture emerging topics. Competitors published 3.2x more content on 'AI marketing' this week. SAGE recommends increasing content cadence to 6-8 pieces/week to maintain competitive positioning.",
+      "sentiment": "warning",
+      "pillars": ["content"],
+      "confidence": 0.82
+    },
+    {
+      "id": "nar_opportunity",
+      "title": "Emerging opportunity",
+      "body": "AI models are increasingly citing content about 'marketing measurement' and 'PR effectiveness'. Your EVI framework is well-positioned but underrepresented in AI training data. Publishing 2-3 authoritative pieces could capture this emerging citation pattern.",
+      "sentiment": "opportunity",
+      "pillars": ["content", "seo"],
+      "confidence": 0.75
+    },
+    {
+      "id": "nar_risk",
+      "title": "Risk signal",
+      "body": "Sentiment score has declined 5 points over 7 days. Social listening indicates concerns about 'data privacy' following a competitor's incident. While not directly related to your brand, proactive messaging may be warranted to maintain trust.",
+      "sentiment": "warning",
+      "pillars": ["pr"],
+      "confidence": 0.91
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "rec_1",
+      "priority": "high",
+      "title": "Capitalize on TechCrunch momentum",
+      "description": "Sarah Chen expressed interest in a follow-up piece. Schedule briefing within 48 hours to maintain relationship warmth.",
+      "action": "Schedule PR briefing",
+      "effort": "low",
+      "impact": "high",
+      "pillar": "pr"
+    },
+    {
+      "id": "rec_2",
+      "priority": "high",
+      "title": "Publish EVI deep-dive content",
+      "description": "Authoritative content on EVI methodology is being cited by AI models. Expand with technical implementation guides to capture more citations.",
+      "action": "Create content brief",
+      "effort": "medium",
+      "impact": "high",
+      "pillar": "content"
+    },
+    {
+      "id": "rec_3",
+      "priority": "medium",
+      "title": "Optimize 'marketing ops' cluster",
+      "description": "14 keywords have optimization opportunities. Estimated +2,400 monthly visits with minimal effort.",
+      "action": "Review SEO recommendations",
+      "effort": "low",
+      "impact": "medium",
+      "pillar": "seo"
+    }
+  ],
+  "upgrade_hooks": [
+    {
+      "id": "up_competitive_intel",
+      "pattern": "blurred_insight",
+      "min_plan": "pro",
+      "feature": "Competitive Intelligence",
+      "message": "Unlock detailed competitor analysis including their AI citation patterns and content strategy. See exactly how HubSpot and Clearbit are winning in AI search.",
+      "sample_value": "HubSpot's AI citation rate increased 34% after..."
+    },
+    {
+      "id": "up_predictive",
+      "pattern": "blurred_insight",
+      "min_plan": "growth",
+      "feature": "Predictive Analytics",
+      "message": "Get 14-day forecasts for your EVI and Share of Model metrics. Predictive models show high confidence opportunity windows.",
+      "sample_value": "Next week's projected EVI: 52.1 (+10.4%)"
+    },
+    {
+      "id": "up_executive_digest",
+      "pattern": "locked_feature",
+      "min_plan": "enterprise",
+      "feature": "Executive Digest",
+      "message": "Automatically generated weekly executive summary with board-ready insights and ROI attribution.",
+      "sample_value": null
+    }
+  ]
+}

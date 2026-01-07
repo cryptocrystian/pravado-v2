@@ -1,0 +1,39 @@
+# Contracts Gate CI
+#
+# Validates contract examples and enforces that mock data
+# only comes from /contracts/examples (no duplicate sources).
+#
+# @see scripts/check-contracts.mjs for validation logic
+# @see docs/canon/COMMAND-CENTER-UI.md for UI specification
+
+name: Contracts Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'contracts/**'
+      - 'apps/dashboard/src/mocks/**'
+      - 'scripts/check-contracts.mjs'
+  pull_request:
+    paths:
+      - 'contracts/**'
+      - 'apps/dashboard/src/mocks/**'
+      - 'scripts/check-contracts.mjs'
+
+jobs:
+  contracts-validation:
+    name: Validate Contracts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run contracts gate check
+        run: node scripts/check-contracts.mjs

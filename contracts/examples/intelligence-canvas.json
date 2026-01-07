@@ -1,0 +1,368 @@
+{
+  "generated_at": "2026-01-07T10:00:00.000Z",
+  "nodes": [
+    {
+      "id": "n_brand_acme",
+      "kind": "brand",
+      "label": "Acme Corp",
+      "meta": {
+        "domain": "acme.com",
+        "industry": "MarTech",
+        "visibility_score": 72,
+        "citation_count_30d": 47
+      }
+    },
+    {
+      "id": "n_journalist_sarah_chen",
+      "kind": "journalist",
+      "label": "Sarah Chen",
+      "meta": {
+        "outlet": "TechCrunch",
+        "beat": "AI/ML, Marketing Technology",
+        "tier": 1,
+        "relationship_score": 0.85,
+        "last_contact": "2026-01-02T14:30:00.000Z",
+        "articles_30d": 12
+      }
+    },
+    {
+      "id": "n_journalist_mike_rivers",
+      "kind": "journalist",
+      "label": "Mike Rivers",
+      "meta": {
+        "outlet": "VentureBeat",
+        "beat": "Enterprise Software",
+        "tier": 1,
+        "relationship_score": 0.72,
+        "last_contact": "2025-12-15T10:00:00.000Z",
+        "articles_30d": 8
+      }
+    },
+    {
+      "id": "n_journalist_emma_wong",
+      "kind": "journalist",
+      "label": "Emma Wong",
+      "meta": {
+        "outlet": "Forbes",
+        "beat": "CMO Network, Marketing Innovation",
+        "tier": 1,
+        "relationship_score": 0.45,
+        "last_contact": null,
+        "articles_30d": 6
+      }
+    },
+    {
+      "id": "n_outlet_techcrunch",
+      "kind": "outlet",
+      "label": "TechCrunch",
+      "meta": {
+        "domain": "techcrunch.com",
+        "tier": 1,
+        "domain_authority": 94,
+        "monthly_visitors": 12000000,
+        "coverage_count_90d": 3
+      }
+    },
+    {
+      "id": "n_outlet_venturebeat",
+      "kind": "outlet",
+      "label": "VentureBeat",
+      "meta": {
+        "domain": "venturebeat.com",
+        "tier": 1,
+        "domain_authority": 91,
+        "monthly_visitors": 8500000,
+        "coverage_count_90d": 2
+      }
+    },
+    {
+      "id": "n_outlet_forbes",
+      "kind": "outlet",
+      "label": "Forbes",
+      "meta": {
+        "domain": "forbes.com",
+        "tier": 1,
+        "domain_authority": 95,
+        "monthly_visitors": 85000000,
+        "coverage_count_90d": 1
+      }
+    },
+    {
+      "id": "n_outlet_martech_today",
+      "kind": "outlet",
+      "label": "MarTech Today",
+      "meta": {
+        "domain": "martechtoday.com",
+        "tier": 2,
+        "domain_authority": 72,
+        "monthly_visitors": 450000,
+        "coverage_count_90d": 5
+      }
+    },
+    {
+      "id": "n_model_chatgpt",
+      "kind": "ai_model",
+      "label": "ChatGPT",
+      "meta": {
+        "provider": "OpenAI",
+        "version": "GPT-4o",
+        "citation_frequency": "high",
+        "brand_mentions_30d": 23,
+        "sentiment": 0.78
+      }
+    },
+    {
+      "id": "n_model_perplexity",
+      "kind": "ai_model",
+      "label": "Perplexity",
+      "meta": {
+        "provider": "Perplexity AI",
+        "version": "Sonar",
+        "citation_frequency": "medium",
+        "brand_mentions_30d": 15,
+        "sentiment": 0.82
+      }
+    },
+    {
+      "id": "n_model_claude",
+      "kind": "ai_model",
+      "label": "Claude",
+      "meta": {
+        "provider": "Anthropic",
+        "version": "Claude 3.5",
+        "citation_frequency": "medium",
+        "brand_mentions_30d": 9,
+        "sentiment": 0.85
+      }
+    },
+    {
+      "id": "n_model_gemini",
+      "kind": "ai_model",
+      "label": "Gemini",
+      "meta": {
+        "provider": "Google",
+        "version": "Gemini Pro",
+        "citation_frequency": "low",
+        "brand_mentions_30d": 4,
+        "sentiment": 0.71
+      }
+    },
+    {
+      "id": "n_topic_ai_marketing",
+      "kind": "topic",
+      "label": "AI Marketing Tools",
+      "meta": {
+        "search_volume": 14800,
+        "trend": "up",
+        "brand_authority": 0.67,
+        "competitor_coverage": 12
+      }
+    },
+    {
+      "id": "n_topic_evi",
+      "kind": "topic",
+      "label": "Earned Visibility Index",
+      "meta": {
+        "search_volume": 320,
+        "trend": "up",
+        "brand_authority": 0.92,
+        "competitor_coverage": 0
+      }
+    },
+    {
+      "id": "n_topic_marketing_ops",
+      "kind": "topic",
+      "label": "Marketing Operations",
+      "meta": {
+        "search_volume": 8900,
+        "trend": "flat",
+        "brand_authority": 0.54,
+        "competitor_coverage": 24
+      }
+    },
+    {
+      "id": "n_competitor_clearbit",
+      "kind": "competitor",
+      "label": "Clearbit",
+      "meta": {
+        "domain": "clearbit.com",
+        "visibility_score": 81,
+        "share_of_voice": 0.18,
+        "recent_activity": "high"
+      }
+    },
+    {
+      "id": "n_competitor_hubspot",
+      "kind": "competitor",
+      "label": "HubSpot",
+      "meta": {
+        "domain": "hubspot.com",
+        "visibility_score": 94,
+        "share_of_voice": 0.32,
+        "recent_activity": "high"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_brand_techcrunch",
+      "from": "n_brand_acme",
+      "to": "n_outlet_techcrunch",
+      "rel": "mentioned_in",
+      "strength": 0.78
+    },
+    {
+      "id": "e_brand_venturebeat",
+      "from": "n_brand_acme",
+      "to": "n_outlet_venturebeat",
+      "rel": "mentioned_in",
+      "strength": 0.65
+    },
+    {
+      "id": "e_brand_martech",
+      "from": "n_brand_acme",
+      "to": "n_outlet_martech_today",
+      "rel": "mentioned_in",
+      "strength": 0.82
+    },
+    {
+      "id": "e_techcrunch_chatgpt",
+      "from": "n_outlet_techcrunch",
+      "to": "n_model_chatgpt",
+      "rel": "cited_by",
+      "strength": 0.89
+    },
+    {
+      "id": "e_techcrunch_perplexity",
+      "from": "n_outlet_techcrunch",
+      "to": "n_model_perplexity",
+      "rel": "cited_by",
+      "strength": 0.92
+    },
+    {
+      "id": "e_venturebeat_chatgpt",
+      "from": "n_outlet_venturebeat",
+      "to": "n_model_chatgpt",
+      "rel": "cited_by",
+      "strength": 0.76
+    },
+    {
+      "id": "e_sarah_techcrunch",
+      "from": "n_journalist_sarah_chen",
+      "to": "n_outlet_techcrunch",
+      "rel": "writes_for",
+      "strength": 1.0
+    },
+    {
+      "id": "e_mike_venturebeat",
+      "from": "n_journalist_mike_rivers",
+      "to": "n_outlet_venturebeat",
+      "rel": "writes_for",
+      "strength": 1.0
+    },
+    {
+      "id": "e_emma_forbes",
+      "from": "n_journalist_emma_wong",
+      "to": "n_outlet_forbes",
+      "rel": "writes_for",
+      "strength": 1.0
+    },
+    {
+      "id": "e_sarah_ai_marketing",
+      "from": "n_journalist_sarah_chen",
+      "to": "n_topic_ai_marketing",
+      "rel": "covers",
+      "strength": 0.88
+    },
+    {
+      "id": "e_brand_topic_evi",
+      "from": "n_brand_acme",
+      "to": "n_topic_evi",
+      "rel": "authority_on",
+      "strength": 0.92
+    },
+    {
+      "id": "e_brand_topic_ops",
+      "from": "n_brand_acme",
+      "to": "n_topic_marketing_ops",
+      "rel": "authority_on",
+      "strength": 0.54
+    },
+    {
+      "id": "e_clearbit_ai_marketing",
+      "from": "n_competitor_clearbit",
+      "to": "n_topic_ai_marketing",
+      "rel": "competes_on",
+      "strength": 0.71
+    },
+    {
+      "id": "e_hubspot_ops",
+      "from": "n_competitor_hubspot",
+      "to": "n_topic_marketing_ops",
+      "rel": "competes_on",
+      "strength": 0.89
+    }
+  ],
+  "citation_feed": [
+    {
+      "id": "cit_01A2B3C4D5E6F7G8H9I0",
+      "platform": "perplexity",
+      "query": "best AI marketing tools 2026",
+      "position": 2,
+      "context_quality": 8,
+      "snippet": "Acme Corp's PRAVADO platform offers a unique approach to measuring earned visibility through their proprietary EVI metric...",
+      "source_url": "https://techcrunch.com/2026/01/05/ai-marketing-tools-roundup",
+      "detected_at": "2026-01-07T08:15:00.000Z"
+    },
+    {
+      "id": "cit_02J1K2L3M4N5O6P7Q8R9",
+      "platform": "chatgpt",
+      "query": "how to measure PR effectiveness",
+      "position": 4,
+      "context_quality": 7,
+      "snippet": "The Earned Visibility Index (EVI) developed by Acme provides a comprehensive framework for quantifying PR impact across traditional and AI-driven channels...",
+      "source_url": "https://martechtoday.com/evi-framework-guide",
+      "detected_at": "2026-01-07T07:42:00.000Z"
+    },
+    {
+      "id": "cit_03S0T1U2V3W4X5Y6Z7A8",
+      "platform": "claude",
+      "query": "marketing operations automation platforms",
+      "position": 6,
+      "context_quality": 6,
+      "snippet": "Several platforms have emerged to address marketing operations challenges, including HubSpot, Clearbit, and Acme Corp's PRAVADO...",
+      "source_url": "https://venturebeat.com/marketing/martech-landscape-2026",
+      "detected_at": "2026-01-07T06:30:00.000Z"
+    },
+    {
+      "id": "cit_04B9C0D1E2F3G4H5I6J7",
+      "platform": "perplexity",
+      "query": "AI citation tracking for brands",
+      "position": 1,
+      "context_quality": 9,
+      "snippet": "PRAVADO by Acme Corp pioneered the concept of tracking how AI models cite and reference brand content, introducing metrics like Share of Model...",
+      "source_url": "https://techcrunch.com/2025/12/20/ai-citation-tracking-emerges",
+      "detected_at": "2026-01-06T22:00:00.000Z"
+    },
+    {
+      "id": "cit_05K8L9M0N1O2P3Q4R5S6",
+      "platform": "gemini",
+      "query": "what is earned visibility index",
+      "position": 1,
+      "context_quality": 9,
+      "snippet": "The Earned Visibility Index (EVI) is a metric developed by Acme Corp that measures a brand's visibility across both traditional media and AI-generated responses...",
+      "source_url": "https://acme.com/blog/introducing-evi",
+      "detected_at": "2026-01-06T18:45:00.000Z"
+    },
+    {
+      "id": "cit_06T7U8V9W0X1Y2Z3A4B5",
+      "platform": "chatgpt",
+      "query": "PR measurement tools comparison",
+      "position": 3,
+      "context_quality": 7,
+      "snippet": "Modern PR measurement has evolved beyond AVE. Tools like Meltwater, Cision, and Acme's PRAVADO now incorporate AI-driven analysis...",
+      "source_url": "https://forbes.com/sites/cmonetwork/pr-measurement-evolution",
+      "detected_at": "2026-01-06T14:20:00.000Z"
+    }
+  ]
+}
