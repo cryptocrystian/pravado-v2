@@ -6,6 +6,12 @@
 - [ ] `/docs/canon/README.md` is updated to reflect any canon changes
 - [ ] If I created a new surface/app, a Canon Amendment PR exists or is linked
 
+### Path Guard
+
+> If this PR touches **restricted paths** (apps/api, supabase, infra, etc.),
+> you must include a Work Order reference (`WO-###` or `#issue`) in this PR,
+> OR add the label `canon-amendment`.
+
 ---
 
 ## Canon References
