@@ -1,0 +1,173 @@
+{
+  "generated_at": "2026-01-07T10:00:00.000Z",
+  "items": [
+    {
+      "id": "act_01H8X9Y2Z3A4B5C6D7E8F9G0",
+      "pillar": "pr",
+      "type": "proposal",
+      "priority": "critical",
+      "title": "Pitch opportunity: TechCrunch AI coverage",
+      "summary": "Sarah Chen at TechCrunch is writing a piece on AI-powered marketing tools. High relevance match (92%) based on her recent coverage patterns. Recommend immediate outreach with our EVI methodology angle.",
+      "confidence": 0.92,
+      "impact": 0.87,
+      "mode": "copilot",
+      "gate": {
+        "required": false,
+        "reason": null,
+        "min_plan": null
+      },
+      "cta": {
+        "primary": "Review Pitch",
+        "secondary": "Details"
+      },
+      "updated_at": "2026-01-07T09:45:00.000Z"
+    },
+    {
+      "id": "act_02J9K0L1M2N3O4P5Q6R7S8T9",
+      "pillar": "content",
+      "type": "alert",
+      "priority": "high",
+      "title": "Content gap detected: AI citation optimization",
+      "summary": "Competitor Clearbit published 3 pieces on AI citations this week. Your coverage is 0. SAGE recommends a pillar piece to capture emerging search intent.",
+      "confidence": 0.78,
+      "impact": 0.65,
+      "mode": "manual",
+      "gate": {
+        "required": true,
+        "reason": "AI content generation requires Pro plan",
+        "min_plan": "pro"
+      },
+      "cta": {
+        "primary": "Generate Brief",
+        "secondary": "Snooze"
+      },
+      "updated_at": "2026-01-07T08:30:00.000Z"
+    },
+    {
+      "id": "act_03U0V1W2X3Y4Z5A6B7C8D9E0",
+      "pillar": "seo",
+      "type": "task",
+      "priority": "medium",
+      "title": "Keyword cluster optimization ready",
+      "summary": "14 keywords in the 'marketing automation' cluster have optimization opportunities. Estimated traffic uplift: +2,400 monthly visits. Auto-execution available.",
+      "confidence": 0.85,
+      "impact": 0.72,
+      "mode": "autopilot",
+      "gate": {
+        "required": false,
+        "reason": null,
+        "min_plan": null
+      },
+      "cta": {
+        "primary": "Execute",
+        "secondary": "Details"
+      },
+      "updated_at": "2026-01-07T07:15:00.000Z"
+    },
+    {
+      "id": "act_04F1G2H3I4J5K6L7M8N9O0P1",
+      "pillar": "pr",
+      "type": "alert",
+      "priority": "critical",
+      "title": "Crisis signal: Negative sentiment spike",
+      "summary": "Social listening detected 340% increase in negative mentions around 'data privacy'. 3 journalists have requested comment. Immediate response recommended.",
+      "confidence": 0.95,
+      "impact": 0.93,
+      "mode": "manual",
+      "gate": {
+        "required": false,
+        "reason": null,
+        "min_plan": null
+      },
+      "cta": {
+        "primary": "View Crisis Hub",
+        "secondary": "Details"
+      },
+      "updated_at": "2026-01-07T10:02:00.000Z"
+    },
+    {
+      "id": "act_05Q2R3S4T5U6V7W8X9Y0Z1A2",
+      "pillar": "content",
+      "type": "proposal",
+      "priority": "low",
+      "title": "Blog post optimization suggestions",
+      "summary": "5 existing posts could benefit from refreshed statistics and internal linking. Low effort, moderate SEO impact.",
+      "confidence": 0.67,
+      "impact": 0.45,
+      "mode": "copilot",
+      "gate": {
+        "required": false,
+        "reason": null,
+        "min_plan": null
+      },
+      "cta": {
+        "primary": "Review List",
+        "secondary": "Snooze"
+      },
+      "updated_at": "2026-01-06T16:00:00.000Z"
+    },
+    {
+      "id": "act_06B3C4D5E6F7G8H9I0J1K2L3",
+      "pillar": "seo",
+      "type": "alert",
+      "priority": "high",
+      "title": "Ranking drop: 'marketing ops platform'",
+      "summary": "Position dropped from #3 to #8 in past 7 days. Competitor HubSpot published new content targeting this term. Counter-strategy recommended.",
+      "confidence": 0.88,
+      "impact": 0.79,
+      "mode": "manual",
+      "gate": {
+        "required": true,
+        "reason": "Competitive analysis requires Growth plan",
+        "min_plan": "growth"
+      },
+      "cta": {
+        "primary": "Analyze",
+        "secondary": "Details"
+      },
+      "updated_at": "2026-01-07T06:00:00.000Z"
+    },
+    {
+      "id": "act_07M4N5O6P7Q8R9S0T1U2V3W4",
+      "pillar": "pr",
+      "type": "task",
+      "priority": "medium",
+      "title": "Follow-up: VentureBeat interview",
+      "summary": "Interview with VentureBeat scheduled for tomorrow. Prep materials generated. Review talking points and approve key messages.",
+      "confidence": 0.91,
+      "impact": 0.68,
+      "mode": "copilot",
+      "gate": {
+        "required": false,
+        "reason": null,
+        "min_plan": null
+      },
+      "cta": {
+        "primary": "Approve",
+        "secondary": "Edit"
+      },
+      "updated_at": "2026-01-07T09:00:00.000Z"
+    },
+    {
+      "id": "act_08X5Y6Z7A8B9C0D1E2F3G4H5",
+      "pillar": "content",
+      "type": "proposal",
+      "priority": "high",
+      "title": "AI model citation opportunity",
+      "summary": "Claude and Perplexity are citing competitor content for 'EVI metrics'. Publishing authoritative content could capture these citations within 2-4 weeks.",
+      "confidence": 0.82,
+      "impact": 0.86,
+      "mode": "copilot",
+      "gate": {
+        "required": true,
+        "reason": "AI citation tracking requires Enterprise plan",
+        "min_plan": "enterprise"
+      },
+      "cta": {
+        "primary": "Create Strategy",
+        "secondary": "Details"
+      },
+      "updated_at": "2026-01-07T08:00:00.000Z"
+    }
+  ]
+}
