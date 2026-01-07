@@ -16,6 +16,8 @@ interface ActionStreamPaneProps {
   data: ActionStreamResponse | null;
   isLoading: boolean;
   error: Error | null;
+  onActionSelect?: (action: ActionItem) => void;
+  selectedActionId?: string | null;
 }
 
 // Pillar color mapping (DS v3.1)
@@ -33,16 +35,52 @@ const priorityStyles: Record<Priority, { dot: string; label: string }> = {
   low: { dot: 'bg-slate-5', label: 'Low' },
 };
 
-function ActionCard({ action }: { action: ActionItem }) {
+function ActionCard({
+  action,
+  onClick,
+  isSelected,
+}: {
+  action: ActionItem;
+  onClick?: () => void;
+  isSelected?: boolean;
+}) {
   const pillarStyle = pillarColors[action.pillar];
   const priorityStyle = priorityStyles[action.priority];
 
+  // Build border class based on pillar
+  const borderHoverClass =
+    action.pillar === 'seo'
+      ? 'hover:border-brand-cyan/40'
+      : action.pillar === 'pr'
+        ? 'hover:border-brand-magenta/40'
+        : 'hover:border-brand-iris/40';
+
+  // Selected state styling
+  const selectedClass = isSelected
+    ? action.pillar === 'seo'
+      ? 'border-brand-cyan/60 shadow-[0_0_12px_rgba(0,217,255,0.15)]'
+      : action.pillar === 'pr'
+        ? 'border-brand-magenta/60 shadow-[0_0_12px_rgba(232,121,249,0.15)]'
+        : 'border-brand-iris/60 shadow-[0_0_12px_rgba(168,85,247,0.15)]'
+    : 'border-[#1F1F28]';
+
   return (
     <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
       className={`
-        group p-4 bg-[#13131A] border border-[#1F1F28] rounded-lg
-        hover:border-${action.pillar === 'seo' ? 'brand-cyan' : action.pillar === 'pr' ? 'brand-magenta' : 'brand-iris'}/40
+        group p-4 bg-[#13131A] border rounded-lg
+        ${selectedClass}
+        ${borderHoverClass}
         transition-all duration-200 cursor-pointer
+        focus:outline-none focus:ring-2 focus:ring-brand-cyan/30 focus:ring-offset-2 focus:ring-offset-[#0A0A0F]
       `}
     >
       {/* Header: Pillar + Priority */}
@@ -185,7 +223,13 @@ function ErrorState({ error }: { error: Error }) {
   );
 }
 
-export function ActionStreamPane({ data, isLoading, error }: ActionStreamPaneProps) {
+export function ActionStreamPane({
+  data,
+  isLoading,
+  error,
+  onActionSelect,
+  selectedActionId,
+}: ActionStreamPaneProps) {
   if (isLoading) {
     return <LoadingSkeleton />;
   }
@@ -198,8 +242,18 @@ export function ActionStreamPane({ data, isLoading, error }: ActionStreamPanePro
     return (
       <div className="p-4">
         <div className="p-8 text-center text-slate-6">
-          <svg className="w-12 h-12 mx-auto mb-3 text-slate-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          <svg
+            className="w-12 h-12 mx-auto mb-3 text-slate-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1}
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
           </svg>
           <p className="text-sm">No actions pending</p>
         </div>
@@ -210,7 +264,12 @@ export function ActionStreamPane({ data, isLoading, error }: ActionStreamPanePro
   return (
     <div className="p-4 space-y-3">
       {data.items.map((action) => (
-        <ActionCard key={action.id} action={action} />
+        <ActionCard
+          key={action.id}
+          action={action}
+          onClick={() => onActionSelect?.(action)}
+          isSelected={selectedActionId === action.id}
+        />
       ))}
     </div>
   );
