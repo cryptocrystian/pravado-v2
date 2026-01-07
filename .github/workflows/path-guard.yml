@@ -1,0 +1,26 @@
+name: Path Guard
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  path-guard:
+    name: Path Guard Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history needed for git diff
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Path Guard Check
+        run: node scripts/check-path-guard.mjs
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
