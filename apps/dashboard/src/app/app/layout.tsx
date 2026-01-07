@@ -61,6 +61,11 @@ const icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
   ),
+  commandCenter: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+    </svg>
+  ),
 };
 
 // AI Presence Dot
@@ -84,6 +89,7 @@ export default async function AppLayout({
   }
 
   const navItems = [
+    { name: 'Command Center', href: '/app/command-center', icon: icons.commandCenter },
     { name: 'Dashboard', href: '/app', icon: icons.dashboard },
     { name: 'PR', href: '/app/pr', icon: icons.pr },
     { name: 'Content', href: '/app/content', icon: icons.content },
