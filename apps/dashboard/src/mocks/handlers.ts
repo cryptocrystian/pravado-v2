@@ -15,8 +15,8 @@ import { http, HttpResponse, delay } from 'msw';
 // the shared contracts folder at repo root
 import actionStream from '../../../../contracts/examples/action-stream.json';
 import intelligenceCanvas from '../../../../contracts/examples/intelligence-canvas.json';
-import strategyPanel from '../../../../contracts/examples/strategy-panel.json';
 import orchestrationCalendar from '../../../../contracts/examples/orchestration-calendar.json';
+import strategyPanel from '../../../../contracts/examples/strategy-panel.json';
 
 /**
  * Simulated network delay for realistic UX testing
