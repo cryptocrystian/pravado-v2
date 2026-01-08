@@ -11,14 +11,15 @@
  */
 
 /**
- * IntelligenceCanvasPane - Knowledge Graph & Citation Feed
+ * IntelligenceCanvasPane - 2-Row Layout with Tabs
  *
- * Features per reference:
- * - Intelligence Entity Map (network visualization with glowing nodes)
- * - Live Citation Feed with platform badges
- * - Statistics cards (Share of Model Voice, Citation Velocity, Media Coverage)
- * - Competitive Intelligence Dashboard
- * - Node focus interaction
+ * DS v3 density-optimized layout:
+ * - TOP ROW: Intelligence Entity Map (fixed height, network visualization)
+ * - BOTTOM ROW: Tabbed content with internal scroll
+ *   - Tab 1: Live Citation Feed
+ *   - Tab 2: Competitive Intelligence
+ *
+ * Designed for minimal vertical scroll at 1440p viewport.
  *
  * @see /contracts/examples/intelligence-canvas.json
  */
@@ -122,81 +123,7 @@ function NodeIcon({ kind, className }: { kind: NodeKind; className?: string }) {
   }
 }
 
-// Stats Card Component
-function StatsCard({ label, value, delta, trend, color }: {
-  label: string;
-  value: string;
-  delta?: string;
-  trend?: 'up' | 'down' | 'flat';
-  color: 'cyan' | 'iris' | 'magenta';
-}) {
-  const colors = {
-    cyan: { text: 'text-brand-cyan', bg: 'bg-brand-cyan/10', border: 'border-brand-cyan/30' },
-    iris: { text: 'text-brand-iris', bg: 'bg-brand-iris/10', border: 'border-brand-iris/30' },
-    magenta: { text: 'text-brand-magenta', bg: 'bg-brand-magenta/10', border: 'border-brand-magenta/30' },
-  };
-  const c = colors[color];
-
-  return (
-    <div className={`p-3 rounded-lg ${c.bg} border ${c.border}`}>
-      <p className="text-[10px] text-slate-5 uppercase tracking-wide mb-1">{label}</p>
-      <p className={`text-2xl font-bold ${c.text}`}>{value}</p>
-      {delta && (
-        <p className={`text-[10px] mt-1 ${trend === 'up' ? 'text-semantic-success' : trend === 'down' ? 'text-semantic-danger' : 'text-slate-5'}`}>
-          {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} {delta}
-        </p>
-      )}
-    </div>
-  );
-}
-
-// Citation Card Component
-function CitationCard({ citation }: { citation: Citation }) {
-  const platform = platformConfig[citation.platform] || {
-    label: citation.platform.toUpperCase(),
-    bg: 'bg-slate-5/15',
-    text: 'text-white',
-    icon: '🔗',
-  };
-
-  const timeAgo = getTimeAgo(citation.detected_at);
-  const qualityColor = citation.context_quality >= 8 ? 'text-semantic-success' : citation.context_quality >= 5 ? 'text-brand-amber' : 'text-semantic-danger';
-
-  return (
-    <div className="p-3 bg-[#0D0D12] border border-[#1A1A24] rounded-lg hover:border-brand-cyan/30 hover:shadow-[0_0_16px_rgba(0,217,255,0.08)] transition-all duration-200 group">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-2">
-        <span className={`px-2 py-0.5 text-[10px] font-bold ${platform.bg} ${platform.text} rounded border border-current/20`}>
-          {platform.icon} {platform.label}
-        </span>
-        <span className="text-[9px] text-slate-6">{timeAgo}</span>
-      </div>
-
-      {/* Query */}
-      <p className="text-[10px] text-slate-5 mb-1.5 italic truncate">&quot;{citation.query}&quot;</p>
-
-      {/* Snippet */}
-      <p className="text-[11px] text-white/90 line-clamp-2 mb-2 leading-relaxed">{citation.snippet}</p>
-
-      {/* Metrics */}
-      <div className="flex items-center gap-3 pt-2 border-t border-[#1A1A24]">
-        <span className="text-[9px] text-slate-5">
-          Pos <span className="text-brand-cyan font-bold">#{citation.position}</span>
-        </span>
-        <span className="text-[9px] text-slate-5">
-          Quality <span className={`font-bold ${qualityColor}`}>{citation.context_quality}/10</span>
-        </span>
-        {citation.source_url && (
-          <a href={citation.source_url} target="_blank" rel="noopener noreferrer" className="ml-auto text-[9px] text-brand-cyan hover:underline opacity-0 group-hover:opacity-100 transition-opacity">
-            View →
-          </a>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Network Graph Visualization (placeholder with node indicators)
+// Network Graph Visualization - Fixed height for top row
 function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -207,9 +134,9 @@ function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
   const relatedEdges = focusedNodeId ? edges.filter(e => e.from === focusedNodeId || e.to === focusedNodeId) : [];
 
   return (
-    <div className="relative bg-[#0D0D12] border border-[#1A1A24] rounded-lg overflow-hidden">
-      {/* Graph area */}
-      <div className="h-48 relative">
+    <div className="relative bg-[#0D0D12] border border-[#1A1A24] rounded-lg overflow-hidden h-full">
+      {/* Graph area - fills container */}
+      <div className="h-full relative min-h-[180px]">
         {/* Animated background grid */}
         <div className="absolute inset-0 opacity-20">
           <svg width="100%" height="100%" className="text-brand-cyan/20">
@@ -227,12 +154,12 @@ function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
           {focusedNode ? (
             // Focused node view
             <div className="text-center px-4">
-              <div className={`w-14 h-14 mx-auto mb-2 rounded-full ${nodeKindConfig[focusedNode.kind].bg} ${nodeKindConfig[focusedNode.kind].glow} border ${nodeKindConfig[focusedNode.kind].border} flex items-center justify-center`}>
-                <NodeIcon kind={focusedNode.kind} className={`w-7 h-7 ${nodeKindConfig[focusedNode.kind].text}`} />
+              <div className={`w-12 h-12 mx-auto mb-2 rounded-full ${nodeKindConfig[focusedNode.kind].bg} ${nodeKindConfig[focusedNode.kind].glow} border ${nodeKindConfig[focusedNode.kind].border} flex items-center justify-center`}>
+                <NodeIcon kind={focusedNode.kind} className={`w-6 h-6 ${nodeKindConfig[focusedNode.kind].text}`} />
               </div>
-              <p className="text-sm font-semibold text-white mb-1">{focusedNode.label}</p>
-              <p className="text-[10px] text-slate-5">{relatedEdges.length} connections</p>
-              <button onClick={() => onNodeClick('')} className="mt-2 text-[10px] text-brand-cyan hover:underline">
+              <p className="text-sm font-semibold text-white mb-0.5">{focusedNode.label}</p>
+              <p className="text-[9px] text-slate-5">{relatedEdges.length} connections</p>
+              <button onClick={() => onNodeClick('')} className="mt-1.5 text-[9px] text-brand-cyan hover:underline">
                 Clear focus
               </button>
             </div>
@@ -241,14 +168,14 @@ function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
             <div className="relative w-full h-full">
               {/* Central brand node */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <div className={`w-12 h-12 rounded-full bg-brand-cyan/15 border border-brand-cyan/40 shadow-[0_0_20px_rgba(0,217,255,0.3)] flex items-center justify-center animate-pulse`}>
-                  <span className="text-lg">🏢</span>
+                <div className={`w-10 h-10 rounded-full bg-brand-cyan/15 border border-brand-cyan/40 shadow-[0_0_20px_rgba(0,217,255,0.3)] flex items-center justify-center animate-pulse`}>
+                  <span className="text-base">🏢</span>
                 </div>
               </div>
-              {/* Surrounding nodes - positioned manually for visual effect */}
+              {/* Surrounding nodes */}
               {nodes.slice(0, 6).map((node, i) => {
                 const angle = (i / 6) * Math.PI * 2;
-                const radius = 70;
+                const radius = 60;
                 const x = Math.cos(angle) * radius;
                 const y = Math.sin(angle) * radius;
                 const config = nodeKindConfig[node.kind];
@@ -256,10 +183,10 @@ function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
                   <button
                     key={node.id}
                     onClick={() => onNodeClick(node.id)}
-                    className={`absolute w-8 h-8 rounded-full ${config.bg} border ${config.border} ${config.glow} flex items-center justify-center hover:scale-110 transition-transform`}
-                    style={{ top: `calc(50% + ${y}px - 16px)`, left: `calc(50% + ${x}px - 16px)` }}
+                    className={`absolute w-7 h-7 rounded-full ${config.bg} border ${config.border} ${config.glow} flex items-center justify-center hover:scale-110 transition-transform`}
+                    style={{ top: `calc(50% + ${y}px - 14px)`, left: `calc(50% + ${x}px - 14px)` }}
                   >
-                    <NodeIcon kind={node.kind} className={`w-4 h-4 ${config.text}`} />
+                    <NodeIcon kind={node.kind} className={`w-3.5 h-3.5 ${config.text}`} />
                   </button>
                 );
               })}
@@ -267,7 +194,7 @@ function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
               <svg className="absolute inset-0 pointer-events-none" style={{ width: '100%', height: '100%' }}>
                 {nodes.slice(0, 6).map((_, i) => {
                   const angle = (i / 6) * Math.PI * 2;
-                  const radius = 70;
+                  const radius = 60;
                   const x = Math.cos(angle) * radius;
                   const y = Math.sin(angle) * radius;
                   return (
@@ -287,17 +214,136 @@ function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Footer */}
-      <div className="px-3 py-2 bg-[#0A0A0F] border-t border-[#1A1A24] flex items-center justify-between">
-        <span className="text-[10px] text-slate-5">
-          {nodes.length} nodes · {edges.length} connections
-        </span>
-        <span className="text-[10px] text-brand-cyan">Click nodes to explore</span>
+        {/* Legend overlay - bottom left */}
+        <div className="absolute bottom-2 left-2 flex flex-wrap gap-1.5">
+          {(['ai_model', 'journalist', 'topic'] as NodeKind[]).map(kind => (
+            <span key={kind} className={`px-1.5 py-0.5 text-[8px] font-medium rounded ${nodeKindConfig[kind].bg} ${nodeKindConfig[kind].text}`}>
+              {nodeKindConfig[kind].label}
+            </span>
+          ))}
+        </div>
+
+        {/* Stats overlay - bottom right */}
+        <div className="absolute bottom-2 right-2 text-[9px] text-slate-5">
+          {nodes.length} nodes · {edges.length} edges
+        </div>
       </div>
     </div>
   );
+}
+
+// Citation Card - Compact version
+function CitationCard({ citation }: { citation: Citation }) {
+  const platform = platformConfig[citation.platform] || {
+    label: citation.platform.toUpperCase(),
+    bg: 'bg-slate-5/15',
+    text: 'text-white',
+    icon: '🔗',
+  };
+
+  const timeAgo = getTimeAgo(citation.detected_at);
+  const qualityColor = citation.context_quality >= 8 ? 'text-semantic-success' : citation.context_quality >= 5 ? 'text-brand-amber' : 'text-semantic-danger';
+
+  return (
+    <div className="p-2.5 bg-[#0D0D12] border border-[#1A1A24] rounded-lg hover:border-brand-cyan/30 hover:shadow-[0_0_12px_rgba(0,217,255,0.06)] transition-all duration-200 group">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-1.5">
+        <span className={`px-1.5 py-0.5 text-[9px] font-bold ${platform.bg} ${platform.text} rounded border border-current/20`}>
+          {platform.icon} {platform.label}
+        </span>
+        <span className="text-[8px] text-slate-6">{timeAgo}</span>
+      </div>
+
+      {/* Query */}
+      <p className="text-[9px] text-slate-5 mb-1 italic truncate">&quot;{citation.query}&quot;</p>
+
+      {/* Snippet */}
+      <p className="text-[10px] text-white/90 line-clamp-2 leading-relaxed">{citation.snippet}</p>
+
+      {/* Metrics */}
+      <div className="flex items-center gap-2 pt-1.5 mt-1.5 border-t border-[#1A1A24]">
+        <span className="text-[8px] text-slate-5">
+          Pos <span className="text-brand-cyan font-bold">#{citation.position}</span>
+        </span>
+        <span className="text-[8px] text-slate-5">
+          Quality <span className={`font-bold ${qualityColor}`}>{citation.context_quality}/10</span>
+        </span>
+        {citation.source_url && (
+          <a href={citation.source_url} target="_blank" rel="noopener noreferrer" className="ml-auto text-[8px] text-brand-cyan hover:underline opacity-0 group-hover:opacity-100 transition-opacity">
+            View →
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Competitive Intelligence Table - Compact
+function CompetitiveIntelTable() {
+  const competitors = [
+    { name: 'Your Brand', share: '23.4%', citations: 847, sentiment: 8.2, trend: 'up' as const, highlight: true },
+    { name: 'Competitor A', share: '18.2%', citations: 623, sentiment: 7.1, trend: 'flat' as const, highlight: false },
+    { name: 'Competitor B', share: '15.5%', citations: 534, sentiment: 6.8, trend: 'down' as const, highlight: false },
+    { name: 'Competitor C', share: '12.1%', citations: 412, sentiment: 7.4, trend: 'up' as const, highlight: false },
+  ];
+
+  return (
+    <div className="bg-[#0D0D12] border border-[#1A1A24] rounded-lg overflow-hidden">
+      {/* Table Header */}
+      <div className="grid grid-cols-5 gap-2 px-3 py-2 bg-[#0A0A0F] border-b border-[#1A1A24] text-[8px] text-slate-5 uppercase tracking-wide">
+        <span>Company</span>
+        <span>Share</span>
+        <span>Citations</span>
+        <span>Sentiment</span>
+        <span>Trend</span>
+      </div>
+      {/* Rows */}
+      {competitors.map((row, i) => (
+        <div key={i} className={`grid grid-cols-5 gap-2 px-3 py-2 text-[10px] ${row.highlight ? 'bg-brand-cyan/5' : ''} ${i !== competitors.length - 1 ? 'border-b border-[#1A1A24]' : ''}`}>
+          <span className={`font-medium ${row.highlight ? 'text-brand-cyan' : 'text-white'}`}>{row.name}</span>
+          <span className="text-white">{row.share}</span>
+          <span className="text-white">{row.citations}</span>
+          <span className={row.sentiment >= 8 ? 'text-semantic-success' : row.sentiment >= 6 ? 'text-brand-amber' : 'text-semantic-danger'}>{row.sentiment}</span>
+          <span className={row.trend === 'up' ? 'text-semantic-success' : row.trend === 'down' ? 'text-semantic-danger' : 'text-slate-5'}>
+            {row.trend === 'up' ? '↑' : row.trend === 'down' ? '↓' : '→'}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Stats Cards Row - Compact inline
+function StatsRow() {
+  return (
+    <div className="grid grid-cols-3 gap-2 mb-3">
+      <div className="p-2 rounded-lg bg-brand-cyan/10 border border-brand-cyan/30">
+        <p className="text-[8px] text-slate-5 uppercase tracking-wide">Share of Voice</p>
+        <p className="text-lg font-bold text-brand-cyan">23.4%</p>
+        <p className="text-[8px] text-semantic-success">↑ +2.1%</p>
+      </div>
+      <div className="p-2 rounded-lg bg-brand-iris/10 border border-brand-iris/30">
+        <p className="text-[8px] text-slate-5 uppercase tracking-wide">Citations</p>
+        <p className="text-lg font-bold text-brand-iris">847</p>
+        <p className="text-[8px] text-semantic-success">↑ +12%</p>
+      </div>
+      <div className="p-2 rounded-lg bg-brand-magenta/10 border border-brand-magenta/30">
+        <p className="text-[8px] text-slate-5 uppercase tracking-wide">Coverage</p>
+        <p className="text-lg font-bold text-brand-magenta">34</p>
+        <p className="text-[8px] text-semantic-success">↑ +5</p>
+      </div>
+    </div>
+  );
+}
+
+// Tab Content Components
+type TabId = 'citations' | 'competitive';
+
+interface TabConfig {
+  id: TabId;
+  label: string;
+  count?: number;
 }
 
 function getTimeAgo(dateString: string): string {
@@ -313,23 +359,13 @@ function getTimeAgo(dateString: string): string {
 
 function LoadingSkeleton() {
   return (
-    <div className="p-4 space-y-4">
-      {/* Graph skeleton */}
-      <div className="h-48 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full bg-[#1A1A24]" />
+    <div className="h-full flex flex-col p-3">
+      {/* Top: Graph skeleton */}
+      <div className="h-[200px] bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse flex items-center justify-center mb-3">
+        <div className="w-10 h-10 rounded-full bg-[#1A1A24]" />
       </div>
-      {/* Stats skeleton */}
-      <div className="grid grid-cols-3 gap-2">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="h-20 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
-        ))}
-      </div>
-      {/* Citations skeleton */}
-      <div className="space-y-2">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="h-24 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
-        ))}
-      </div>
+      {/* Bottom: Tabs + content skeleton */}
+      <div className="flex-1 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
     </div>
   );
 }
@@ -354,6 +390,7 @@ function ErrorState({ error }: { error: Error }) {
 
 export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceCanvasPaneProps) {
   const [focusedNodeId, setFocusedNodeId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabId>('citations');
 
   if (isLoading) return <LoadingSkeleton />;
   if (error) return <ErrorState error={error} />;
@@ -367,10 +404,15 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
     setFocusedNodeId(prev => prev === nodeId ? null : nodeId);
   };
 
+  const tabs: TabConfig[] = [
+    { id: 'citations', label: 'Citations', count: data.citation_feed.length },
+    { id: 'competitive', label: 'Competitive Intel' },
+  ];
+
   return (
-    <div className="p-4 space-y-4">
-      {/* Section: Intelligence Entity Map */}
-      <div>
+    <div className="h-full flex flex-col p-3 gap-3">
+      {/* TOP ROW: Intelligence Entity Map (fixed height) */}
+      <div className="flex-shrink-0">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs font-semibold text-white flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-iris animate-pulse" />
@@ -378,102 +420,106 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
           </h3>
           <span className="text-[9px] text-slate-5">Real-time connections</span>
         </div>
-        <NetworkGraph
-          nodes={data.nodes}
-          edges={data.edges}
-          focusedNodeId={focusedNodeId}
-          onNodeClick={handleNodeClick}
-        />
+        <div className="h-[200px]">
+          <NetworkGraph
+            nodes={data.nodes}
+            edges={data.edges}
+            focusedNodeId={focusedNodeId}
+            onNodeClick={handleNodeClick}
+          />
+        </div>
       </div>
 
-      {/* Section: Live Citation Feed */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xs font-semibold text-white flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-semantic-success animate-pulse" />
-            Live Citation Feed
-          </h3>
-          <span className="text-[9px] text-slate-5">{data.citation_feed.length} citations</span>
-        </div>
-        <div className="space-y-2">
-          {data.citation_feed.slice(0, 4).map(citation => (
-            <CitationCard key={citation.id} citation={citation} />
+      {/* BOTTOM ROW: Tabbed Content (flexible height with internal scroll) */}
+      <div className="flex-1 flex flex-col min-h-0 bg-[#0D0D12] border border-[#1A1A24] rounded-lg overflow-hidden">
+        {/* Tab Header */}
+        <div className="flex items-center border-b border-[#1A1A24] px-1 bg-[#0A0A0F]">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`
+                relative px-3 py-2 text-[10px] font-medium transition-colors
+                ${activeTab === tab.id
+                  ? 'text-brand-cyan'
+                  : 'text-slate-5 hover:text-white'
+                }
+              `}
+            >
+              {tab.label}
+              {tab.count !== undefined && (
+                <span className={`ml-1.5 px-1 py-0.5 text-[8px] rounded ${activeTab === tab.id ? 'bg-brand-cyan/20 text-brand-cyan' : 'bg-slate-5/20 text-slate-5'}`}>
+                  {tab.count}
+                </span>
+              )}
+              {activeTab === tab.id && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-cyan" />
+              )}
+            </button>
           ))}
         </div>
-        {data.citation_feed.length > 4 && (
-          <button className="w-full mt-2 py-2 text-[10px] text-brand-cyan hover:text-brand-cyan/80 transition-colors">
-            View all {data.citation_feed.length} citations →
-          </button>
-        )}
-      </div>
 
-      {/* Section: Key Statistics */}
-      <div>
-        <h3 className="text-xs font-semibold text-white mb-2 flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
-          Key Statistics
-        </h3>
-        <div className="grid grid-cols-3 gap-2">
-          <StatsCard
-            label="Share of Model Voice"
-            value="23.4%"
-            delta="+2.1% (7d)"
-            trend="up"
-            color="cyan"
-          />
-          <StatsCard
-            label="Citation Velocity"
-            value="847"
-            delta="+12% (7d)"
-            trend="up"
-            color="iris"
-          />
-          <StatsCard
-            label="Media Coverage"
-            value="34"
-            delta="+5 (7d)"
-            trend="up"
-            color="magenta"
-          />
-        </div>
-      </div>
+        {/* Tab Content - scrollable */}
+        <div className="flex-1 overflow-y-auto p-3">
+          {activeTab === 'citations' && (
+            <div className="space-y-3">
+              {/* Stats Row */}
+              <StatsRow />
 
-      {/* Section: Competitive Intelligence */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xs font-semibold text-white flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-semantic-danger" />
-            Competitive Intelligence
-          </h3>
-          <button className="text-[9px] text-slate-5 hover:text-brand-cyan transition-colors">
-            Configure →
-          </button>
-        </div>
-        <div className="bg-[#0D0D12] border border-[#1A1A24] rounded-lg overflow-hidden">
-          {/* Table Header */}
-          <div className="grid grid-cols-5 gap-2 px-3 py-2 bg-[#0A0A0F] border-b border-[#1A1A24] text-[9px] text-slate-5 uppercase tracking-wide">
-            <span>Company</span>
-            <span>Share</span>
-            <span>Citations</span>
-            <span>Sentiment</span>
-            <span>Trend</span>
-          </div>
-          {/* Rows */}
-          {[
-            { name: 'Your Brand', share: '23.4%', citations: 847, sentiment: 8.2, trend: 'up', highlight: true },
-            { name: 'Competitor A', share: '18.2%', citations: 623, sentiment: 7.1, trend: 'flat', highlight: false },
-            { name: 'Competitor B', share: '15.5%', citations: 534, sentiment: 6.8, trend: 'down', highlight: false },
-          ].map((row, i) => (
-            <div key={i} className={`grid grid-cols-5 gap-2 px-3 py-2 text-[10px] ${row.highlight ? 'bg-brand-cyan/5' : ''} ${i !== 2 ? 'border-b border-[#1A1A24]' : ''}`}>
-              <span className={`font-medium ${row.highlight ? 'text-brand-cyan' : 'text-white'}`}>{row.name}</span>
-              <span className="text-white">{row.share}</span>
-              <span className="text-white">{row.citations}</span>
-              <span className={row.sentiment >= 8 ? 'text-semantic-success' : row.sentiment >= 6 ? 'text-brand-amber' : 'text-semantic-danger'}>{row.sentiment}</span>
-              <span className={row.trend === 'up' ? 'text-semantic-success' : row.trend === 'down' ? 'text-semantic-danger' : 'text-slate-5'}>
-                {row.trend === 'up' ? '↑' : row.trend === 'down' ? '↓' : '→'}
-              </span>
+              {/* Citation Feed */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-[10px] font-semibold text-slate-5 uppercase tracking-wide flex items-center gap-1.5">
+                    <span className="w-1 h-1 rounded-full bg-semantic-success animate-pulse" />
+                    Live Feed
+                  </h4>
+                </div>
+                <div className="space-y-2">
+                  {data.citation_feed.slice(0, 5).map(citation => (
+                    <CitationCard key={citation.id} citation={citation} />
+                  ))}
+                </div>
+                {data.citation_feed.length > 5 && (
+                  <button className="w-full mt-2 py-1.5 text-[9px] text-brand-cyan hover:text-brand-cyan/80 transition-colors border border-brand-cyan/20 rounded hover:bg-brand-cyan/5">
+                    View all {data.citation_feed.length} citations →
+                  </button>
+                )}
+              </div>
             </div>
-          ))}
+          )}
+
+          {activeTab === 'competitive' && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-[10px] font-semibold text-slate-5 uppercase tracking-wide flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-semantic-danger" />
+                  Competitive Landscape
+                </h4>
+                <button className="text-[8px] text-slate-5 hover:text-brand-cyan transition-colors">
+                  Configure →
+                </button>
+              </div>
+              <CompetitiveIntelTable />
+
+              {/* Trend Chart Placeholder */}
+              <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+                <h5 className="text-[9px] text-slate-5 uppercase tracking-wide mb-2">Share of Voice Trend</h5>
+                <div className="h-20 flex items-end gap-1">
+                  {[40, 42, 38, 45, 48, 52, 56, 54, 58, 62, 65, 70].map((val, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 bg-brand-cyan/30 rounded-t hover:bg-brand-cyan/50 transition-colors"
+                      style={{ height: `${val}%` }}
+                    />
+                  ))}
+                </div>
+                <div className="flex justify-between mt-1 text-[8px] text-slate-6">
+                  <span>12 weeks ago</span>
+                  <span>Today</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

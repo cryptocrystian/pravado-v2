@@ -1,17 +1,30 @@
 'use client';
 
 /**
- * CalendarPeek - Upcoming Calendar Items Widget
+ * VISUAL AUTHORITY:
+ * - Layout: COMMAND_CENTER_REFERENCE.png
+ * - Design System: DS_V3_REFERENCE.png
+ * - Canon: /docs/canon/DS_v3_PRINCIPLES.md
  *
- * DS v3.1 styled widget showing upcoming orchestration items.
- * Links to full calendar surface at /app/calendar.
+ * If this component diverges from the reference images,
+ * STOP and request clarification.
+ */
+
+/**
+ * CalendarPeek v2 - Enhanced Calendar Widget
+ *
+ * DS v3 density-optimized calendar preview:
+ * - View toggle: Day | Week | Month
+ * - Agenda list with pillar tags, time, status, action icons on hover
+ * - Schedule Drawer for item details + mode/reschedule controls
  *
  * @see /contracts/examples/orchestration-calendar.json
  */
 
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 
-import type { CalendarItem, CalendarStatus, OrchestrationCalendarResponse, Pillar } from './types';
+import type { CalendarItem, CalendarStatus, Mode, OrchestrationCalendarResponse, Pillar } from './types';
 
 interface CalendarPeekProps {
   data: OrchestrationCalendarResponse | null;
@@ -19,11 +32,13 @@ interface CalendarPeekProps {
   error: Error | null;
 }
 
+type ViewMode = 'day' | 'week' | 'month';
+
 // Pillar colors
-const pillarColors: Record<Pillar, { bg: string; text: string }> = {
-  pr: { bg: 'bg-brand-magenta/10', text: 'text-brand-magenta' },
-  content: { bg: 'bg-brand-iris/10', text: 'text-brand-iris' },
-  seo: { bg: 'bg-brand-cyan/10', text: 'text-brand-cyan' },
+const pillarColors: Record<Pillar, { bg: string; text: string; border: string }> = {
+  pr: { bg: 'bg-brand-magenta/10', text: 'text-brand-magenta', border: 'border-brand-magenta/30' },
+  content: { bg: 'bg-brand-iris/10', text: 'text-brand-iris', border: 'border-brand-iris/30' },
+  seo: { bg: 'bg-brand-cyan/10', text: 'text-brand-cyan', border: 'border-brand-cyan/30' },
 };
 
 // Status styling
@@ -36,129 +51,339 @@ const statusStyles: Record<CalendarStatus, { bg: string; text: string; label: st
   failed: { bg: 'bg-semantic-danger/10', text: 'text-semantic-danger', label: 'Failed' },
 };
 
-// Pillar glow colors for DS v3.1
-const pillarGlows: Record<Pillar, string> = {
-  pr: 'hover:shadow-[0_0_12px_rgba(232,121,249,0.1)]',
-  content: 'hover:shadow-[0_0_12px_rgba(168,85,247,0.1)]',
-  seo: 'hover:shadow-[0_0_12px_rgba(0,217,255,0.1)]',
+// Mode icons
+const modeIcons: Record<Mode, { icon: JSX.Element; label: string; color: string }> = {
+  autopilot: {
+    icon: (
+      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+      </svg>
+    ),
+    label: 'Autopilot',
+    color: 'text-brand-cyan',
+  },
+  copilot: {
+    icon: (
+      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+      </svg>
+    ),
+    label: 'Copilot',
+    color: 'text-brand-iris',
+  },
+  manual: {
+    icon: (
+      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+      </svg>
+    ),
+    label: 'Manual',
+    color: 'text-slate-5',
+  },
 };
 
-const pillarBorderHover: Record<Pillar, string> = {
-  pr: 'hover:border-brand-magenta/30',
-  content: 'hover:border-brand-iris/30',
-  seo: 'hover:border-brand-cyan/30',
-};
-
-function CalendarItemRow({ item }: { item: CalendarItem }) {
+// Calendar Item Row Component
+function CalendarItemRow({ item, onClick }: { item: CalendarItem; onClick: () => void }) {
   const pillarStyle = pillarColors[item.pillar];
   const statusStyle = statusStyles[item.status];
-  const pillarGlow = pillarGlows[item.pillar];
-  const borderHover = pillarBorderHover[item.pillar];
+  const modeInfo = modeIcons[item.mode];
 
   // Format date for display
   const itemDate = new Date(`${item.date}T${item.time}`);
   const isToday = item.date === new Date().toISOString().split('T')[0];
-  const isTomorrow =
-    item.date === new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  const isTomorrow = item.date === new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
-  const dateLabel = isToday
-    ? 'Today'
-    : isTomorrow
-      ? 'Tomorrow'
-      : itemDate.toLocaleDateString('en-US', {
-          weekday: 'short',
-          month: 'short',
-          day: 'numeric',
-        });
+  const dateLabel = isToday ? 'Today' : isTomorrow ? 'Tomorrow' : itemDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
   return (
-    <div
+    <button
+      onClick={onClick}
       className={`
-        flex items-center gap-3 p-3 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg
-        ${borderHover} ${pillarGlow}
-        transition-all duration-200 cursor-pointer
+        w-full flex items-center gap-2 p-2 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg
+        hover:border-${item.pillar === 'pr' ? 'brand-magenta' : item.pillar === 'content' ? 'brand-iris' : 'brand-cyan'}/30
+        hover:shadow-[0_0_8px_rgba(0,217,255,0.05)]
+        transition-all duration-200 group text-left
       `}
     >
-      {/* Time */}
-      <div className="text-center w-14 flex-shrink-0">
-        <p className={`text-[10px] uppercase tracking-wide ${isToday ? 'text-brand-cyan font-medium' : 'text-slate-6'}`}>
+      {/* Time Column */}
+      <div className="text-center w-12 flex-shrink-0">
+        <p className={`text-[8px] uppercase tracking-wide ${isToday ? 'text-brand-cyan font-medium' : 'text-slate-6'}`}>
           {dateLabel}
         </p>
-        <p className="text-sm font-bold text-white">{item.time}</p>
+        <p className="text-xs font-bold text-white">{item.time}</p>
       </div>
 
       {/* Divider */}
-      <div className={`w-px h-10 ${pillarStyle.bg.replace('/10', '/30')}`} />
+      <div className={`w-px h-8 ${pillarStyle.bg.replace('/10', '/30')}`} />
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span
-            className={`px-1.5 py-0.5 text-[10px] font-semibold rounded uppercase tracking-wide ${pillarStyle.bg} ${pillarStyle.text}`}
-          >
+        <div className="flex items-center gap-1.5 mb-0.5">
+          <span className={`px-1 py-0.5 text-[8px] font-semibold rounded uppercase tracking-wide ${pillarStyle.bg} ${pillarStyle.text}`}>
             {item.pillar}
           </span>
-          <span
-            className={`px-1.5 py-0.5 text-[10px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}
-          >
+          <span className={`px-1 py-0.5 text-[8px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}>
             {statusStyle.label}
           </span>
         </div>
-        <p className="text-sm text-white truncate">{item.title}</p>
+        <p className="text-[10px] text-white truncate">{item.title}</p>
       </div>
 
-      {/* Mode indicator */}
-      <div className="flex-shrink-0">
-        {item.mode === 'autopilot' && (
-          <div
-            className="w-7 h-7 flex items-center justify-center bg-brand-cyan/10 rounded-full border border-brand-cyan/20"
-            title="Autopilot"
-          >
-            <svg
-              className="w-3.5 h-3.5 text-brand-cyan"
-              fill="currentColor"
-              viewBox="0 0 20 20"
+      {/* Quick Actions (visible on hover) */}
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className={`w-5 h-5 flex items-center justify-center rounded ${modeInfo.color}`} title={modeInfo.label}>
+          {modeInfo.icon}
+        </span>
+        <span className="w-5 h-5 flex items-center justify-center text-slate-5 hover:text-white rounded hover:bg-[#1A1A24]" title="More">
+          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+          </svg>
+        </span>
+      </div>
+    </button>
+  );
+}
+
+// Mini Month Grid (placeholder)
+function MiniMonthGrid() {
+  const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const today = new Date();
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  const startOffset = firstDay.getDay();
+
+  // Mock: highlight some days with activity
+  const activeDays = [3, 7, 10, 14, 18, 21, 25];
+  const todayDate = today.getDate();
+
+  return (
+    <div className="p-2 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
+      {/* Day headers */}
+      <div className="grid grid-cols-7 gap-1 mb-1">
+        {days.map((d, i) => (
+          <span key={i} className="text-[8px] text-slate-5 text-center font-medium">{d}</span>
+        ))}
+      </div>
+      {/* Days grid */}
+      <div className="grid grid-cols-7 gap-1">
+        {/* Empty cells for offset */}
+        {Array.from({ length: startOffset }).map((_, i) => (
+          <span key={`empty-${i}`} className="w-5 h-5" />
+        ))}
+        {/* Day cells */}
+        {Array.from({ length: daysInMonth }).map((_, i) => {
+          const day = i + 1;
+          const isActive = activeDays.includes(day);
+          const isCurrentDay = day === todayDate;
+          return (
+            <span
+              key={day}
+              className={`
+                w-5 h-5 flex items-center justify-center text-[9px] rounded
+                ${isCurrentDay ? 'bg-brand-cyan text-black font-bold' : isActive ? 'bg-brand-iris/20 text-brand-iris' : 'text-slate-5 hover:bg-[#1A1A24]'}
+                transition-colors cursor-pointer
+              `}
             >
-              <path
-                fillRule="evenodd"
-                d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-                clipRule="evenodd"
-              />
-            </svg>
+              {day}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Schedule Drawer Component
+function ScheduleDrawer({
+  isOpen,
+  onClose,
+  item,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  item: CalendarItem | null;
+}) {
+  const [selectedMode, setSelectedMode] = useState<Mode>(item?.mode || 'copilot');
+
+  useEffect(() => {
+    if (item) setSelectedMode(item.mode);
+  }, [item]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  // Prevent body scroll when open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !item) return null;
+
+  const pillarStyle = pillarColors[item.pillar];
+  const statusStyle = statusStyles[item.status];
+  const itemDate = new Date(`${item.date}T${item.time}`);
+
+  return (
+    <div className="fixed inset-0 z-[100]">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Drawer - slides from right */}
+      <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#0D0D12] border-l border-[#1A1A24] shadow-2xl shadow-black/50 overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#1A1A24] bg-[#0A0A0F]">
+          <div className="flex items-center gap-2">
+            <div className={`w-8 h-8 rounded-lg ${pillarStyle.bg} border ${pillarStyle.border} flex items-center justify-center`}>
+              <svg className={`w-4 h-4 ${pillarStyle.text}`} fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-white">Schedule Details</h2>
+              <p className="text-[10px] text-slate-5">Item configuration</p>
+            </div>
           </div>
-        )}
-        {item.mode === 'copilot' && (
-          <div
-            className="w-7 h-7 flex items-center justify-center bg-brand-iris/10 rounded-full border border-brand-iris/20"
-            title="Copilot"
+          <button
+            onClick={onClose}
+            className="p-1.5 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors"
           >
-            <svg
-              className="w-3.5 h-3.5 text-brand-iris"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Item Header */}
+          <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <span className={`px-1.5 py-0.5 text-[9px] font-semibold rounded uppercase ${pillarStyle.bg} ${pillarStyle.text}`}>
+                {item.pillar}
+              </span>
+              <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}>
+                {statusStyle.label}
+              </span>
+            </div>
+            <h3 className="text-sm font-semibold text-white mb-1">{item.title}</h3>
+            <p className="text-[10px] text-slate-5">{item.details.summary}</p>
           </div>
-        )}
-        {item.mode === 'manual' && (
-          <div
-            className="w-7 h-7 flex items-center justify-center bg-slate-4/30 rounded-full border border-slate-5/20"
-            title="Manual"
-          >
-            <svg
-              className="w-3.5 h-3.5 text-slate-6"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                clipRule="evenodd"
-              />
-            </svg>
+
+          {/* Date & Time */}
+          <div>
+            <h4 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold mb-2">Schedule</h4>
+            <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-white">
+                  {itemDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                </p>
+                <p className="text-[10px] text-slate-5">at {item.time}</p>
+              </div>
+              <button className="px-2 py-1 text-[9px] text-brand-cyan hover:bg-brand-cyan/10 rounded border border-brand-cyan/20 transition-colors">
+                Reschedule
+              </button>
+            </div>
           </div>
-        )}
+
+          {/* Mode Selector */}
+          <div>
+            <h4 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold mb-2">Automation Mode</h4>
+            <div className="grid grid-cols-3 gap-2">
+              {(['manual', 'copilot', 'autopilot'] as Mode[]).map((mode) => {
+                const info = modeIcons[mode];
+                const isSelected = selectedMode === mode;
+                return (
+                  <button
+                    key={mode}
+                    onClick={() => setSelectedMode(mode)}
+                    className={`
+                      p-2 rounded-lg border transition-all text-center
+                      ${isSelected
+                        ? `bg-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'slate-5'}/10 border-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'slate-5'}/30`
+                        : 'bg-[#0A0A0F] border-[#1A1A24] hover:border-[#2A2A36]'
+                      }
+                    `}
+                  >
+                    <span className={`flex items-center justify-center ${isSelected ? info.color : 'text-slate-5'}`}>
+                      {info.icon}
+                    </span>
+                    <p className={`text-[9px] mt-1 font-medium ${isSelected ? 'text-white' : 'text-slate-5'}`}>{info.label}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Details */}
+          <div>
+            <h4 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold mb-2">Details</h4>
+            <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-slate-5">Owner</span>
+                <span className="text-[10px] text-white">{item.details.owner}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-slate-5">Risk Level</span>
+                <span className={`text-[10px] ${item.details.risk === 'high' ? 'text-semantic-danger' : item.details.risk === 'med' ? 'text-semantic-warning' : 'text-semantic-success'}`}>
+                  {item.details.risk.charAt(0).toUpperCase() + item.details.risk.slice(1)}
+                </span>
+              </div>
+              {item.details.estimated_duration && (
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] text-slate-5">Duration</span>
+                  <span className="text-[10px] text-white">{item.details.estimated_duration}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Approval State */}
+          {item.status === 'awaiting_approval' && (
+            <div>
+              <h4 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold mb-2">Approval Required</h4>
+              <div className="p-3 bg-semantic-warning/8 border border-semantic-warning/20 rounded-lg">
+                <p className="text-[10px] text-slate-5 mb-2">This item requires approval before execution.</p>
+                <div className="flex items-center gap-2">
+                  <button className="flex-1 px-3 py-1.5 text-[10px] font-semibold text-white bg-semantic-success/10 border border-semantic-success/30 rounded hover:bg-semantic-success/20 transition-colors">
+                    Approve
+                  </button>
+                  <button className="flex-1 px-3 py-1.5 text-[10px] font-semibold text-slate-5 bg-[#1A1A24] border border-[#2A2A36] rounded hover:text-white transition-colors">
+                    Reject
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Request Approval Button */}
+          {item.status !== 'awaiting_approval' && item.status !== 'published' && (
+            <button className="w-full px-3 py-2 text-[10px] font-semibold text-brand-iris bg-brand-iris/10 border border-brand-iris/30 rounded-lg hover:bg-brand-iris/20 transition-colors">
+              Request Approval
+            </button>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-4 py-3 border-t border-[#1A1A24] bg-[#0A0A0F]">
+          <p className="text-[9px] text-slate-6 text-center">
+            Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-slate-5">Esc</kbd> to close
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -166,46 +391,51 @@ function CalendarItemRow({ item }: { item: CalendarItem }) {
 
 function LoadingSkeleton() {
   return (
-    <div className="space-y-2">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="flex items-center gap-3 p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg animate-pulse">
-          <div className="w-14 flex-shrink-0">
-            <div className="h-3 w-10 bg-slate-5 rounded mx-auto mb-1" />
-            <div className="h-4 w-12 bg-slate-4 rounded mx-auto" />
-          </div>
-          <div className="w-px h-10 bg-[#1F1F28]" />
-          <div className="flex-1">
-            <div className="flex gap-2 mb-1">
-              <div className="h-4 w-8 bg-slate-5 rounded" />
-              <div className="h-4 w-12 bg-slate-5 rounded" />
+    <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+      <div className="flex items-center justify-between mb-3">
+        <div className="h-4 w-20 bg-slate-5 rounded animate-pulse" />
+        <div className="h-4 w-16 bg-slate-5/50 rounded animate-pulse" />
+      </div>
+      <div className="space-y-2">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex items-center gap-2 p-2 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg animate-pulse">
+            <div className="w-12 h-8 bg-[#1A1A24] rounded" />
+            <div className="w-px h-8 bg-[#1F1F28]" />
+            <div className="flex-1 space-y-1">
+              <div className="h-3 w-16 bg-[#1A1A24] rounded" />
+              <div className="h-3 w-full bg-[#1A1A24] rounded" />
             </div>
-            <div className="h-4 w-3/4 bg-slate-4 rounded" />
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
 
 export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
-  if (isLoading) {
-    return (
-      <div className="p-4 bg-[#13131A] border border-[#1F1F28] rounded-lg">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white">Upcoming</h3>
-        </div>
-        <LoadingSkeleton />
-      </div>
-    );
-  }
+  const [viewMode, setViewMode] = useState<ViewMode>('day');
+  const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const handleItemClick = useCallback((item: CalendarItem) => {
+    setSelectedItem(item);
+    setIsDrawerOpen(true);
+  }, []);
+
+  const handleCloseDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+    setTimeout(() => setSelectedItem(null), 300);
+  }, []);
+
+  if (isLoading) return <LoadingSkeleton />;
 
   if (error) {
     return (
-      <div className="p-4 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white">Upcoming</h3>
+          <h3 className="text-xs font-semibold text-white">Calendar</h3>
         </div>
-        <div className="p-3 bg-semantic-danger/10 border border-semantic-danger/20 rounded text-xs text-semantic-danger">
+        <div className="p-2 bg-semantic-danger/10 border border-semantic-danger/20 rounded text-[10px] text-semantic-danger">
           Failed to load calendar
         </div>
       </div>
@@ -214,72 +444,93 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
 
   if (!data || data.items.length === 0) {
     return (
-      <div className="p-4 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white">Upcoming</h3>
+          <h3 className="text-xs font-semibold text-white">Calendar</h3>
         </div>
-        <p className="text-xs text-slate-6 text-center py-4">No upcoming items</p>
+        <p className="text-[10px] text-slate-6 text-center py-3">No scheduled items</p>
       </div>
     );
   }
 
-  // Filter to upcoming items (not published/failed) and sort by date
+  // Filter items based on view mode
   const today = new Date().toISOString().split('T')[0];
-  const upcomingItems = data.items
-    .filter((item) => item.date >= today && !['published', 'failed'].includes(item.status))
-    .sort((a, b) => {
-      const dateA = `${a.date}T${a.time}`;
-      const dateB = `${b.date}T${b.time}`;
-      return dateA.localeCompare(dateB);
+  const weekEnd = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
+
+  const filteredItems = data.items
+    .filter((item) => {
+      if (viewMode === 'day') return item.date === today;
+      if (viewMode === 'week') return item.date >= today && item.date <= weekEnd;
+      return true; // month shows all
     })
-    .slice(0, 5);
+    .filter((item) => !['published', 'failed'].includes(item.status))
+    .sort((a, b) => `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`))
+    .slice(0, viewMode === 'month' ? 10 : 5);
 
   return (
-    <div className="p-4 bg-[#13131A] border border-[#1F1F28] rounded-lg">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <svg
-            className="w-4 h-4 text-brand-cyan"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <h3 className="text-sm font-semibold text-white">Upcoming</h3>
+    <>
+      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+        {/* Header with View Toggle */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-brand-cyan" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+            </svg>
+            <h3 className="text-xs font-semibold text-white">Calendar</h3>
+          </div>
+
+          {/* View Toggle */}
+          <div className="flex items-center bg-[#0A0A0F] rounded p-0.5 border border-[#1A1A24]">
+            {(['day', 'week', 'month'] as ViewMode[]).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className={`
+                  px-2 py-0.5 text-[9px] font-medium rounded transition-colors
+                  ${viewMode === mode ? 'bg-brand-cyan/20 text-brand-cyan' : 'text-slate-5 hover:text-white'}
+                `}
+              >
+                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
-        <span className="px-2 py-0.5 text-[10px] font-medium text-brand-cyan bg-brand-cyan/10 rounded">
-          {upcomingItems.length} items
-        </span>
-      </div>
-      <div className="space-y-2">
-        {upcomingItems.map((item) => (
-          <CalendarItemRow key={item.id} item={item} />
-        ))}
-      </div>
-      {/* View Full Calendar Link */}
-      <Link
-        href="/app/calendar"
-        className="mt-3 flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-brand-cyan bg-brand-cyan/5 border border-brand-cyan/20 rounded hover:bg-brand-cyan/10 hover:border-brand-cyan/30 transition-all duration-200 group"
-      >
-        View Full Calendar
-        <svg
-          className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+
+        {/* Content based on view mode */}
+        {viewMode === 'month' ? (
+          <MiniMonthGrid />
+        ) : (
+          <div className="space-y-1.5">
+            {filteredItems.length === 0 ? (
+              <p className="text-[10px] text-slate-6 text-center py-2">
+                No items {viewMode === 'day' ? 'today' : 'this week'}
+              </p>
+            ) : (
+              filteredItems.map((item) => (
+                <CalendarItemRow key={item.id} item={item} onClick={() => handleItemClick(item)} />
+              ))
+            )}
+          </div>
+        )}
+
+        {/* View Full Calendar Link */}
+        <Link
+          href="/app/calendar"
+          className="mt-3 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] font-medium text-brand-cyan bg-brand-cyan/5 border border-brand-cyan/20 rounded hover:bg-brand-cyan/10 hover:border-brand-cyan/30 transition-all duration-200 group"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </Link>
-    </div>
+          View Full Calendar
+          <svg className="w-3 h-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+      </div>
+
+      {/* Schedule Drawer */}
+      <ScheduleDrawer
+        isOpen={isDrawerOpen}
+        onClose={handleCloseDrawer}
+        item={selectedItem}
+      />
+    </>
   );
 }
