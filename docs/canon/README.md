@@ -50,6 +50,7 @@ These files define WHAT Pravado is and HOW it should work:
 | `SAGE_v2.md` | Strategy mesh specification (S-A-G-E) |
 | `AUTOMATE_v2.md` | Execution layer specification |
 | `UX_SURFACES.md` | The 7 canonical user-facing surfaces |
+| `COMMAND-CENTER-UI.md` | Command Center interaction patterns and styling |
 | `CORE_UX_FLOWS.md` | The 7 canonical user flows |
 | `DS_v3_PRINCIPLES.md` | Design system principles |
 | `DS_v3_1_EXPRESSION.md` | Design tokens and expression |

@@ -39,10 +39,10 @@ export default function NotFound() {
           {/* Actions */}
           <div className="flex flex-col gap-3">
             <Link
-              href="/app"
+              href="/app/command-center"
               className="btn-primary py-3 px-6 w-full"
             >
-              Go to Dashboard
+              Go to Command Center
             </Link>
             <Link
               href="/login"
