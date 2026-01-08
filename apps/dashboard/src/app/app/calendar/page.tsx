@@ -1,9 +1,20 @@
 'use client';
 
 /**
+ * VISUAL AUTHORITY:
+ * - Layout: COMMAND_CENTER_REFERENCE.png
+ * - Design System: DS_V3_REFERENCE.png
+ * - Canon: /docs/canon/DS_v3_PRINCIPLES.md
+ *
+ * If this component diverges from the reference images,
+ * STOP and request clarification.
+ */
+
+/**
  * Calendar Page - Orchestration Calendar
  *
  * Stub page for full calendar surface.
+ * Uses DS v3 topbar shell (CalendarLayout) - NO sidebar.
  * Full implementation will be built in a future sprint.
  *
  * @see /contracts/examples/orchestration-calendar.json
@@ -14,7 +25,7 @@ import Link from 'next/link';
 
 export default function CalendarPage() {
   return (
-    <div className="min-h-[calc(100vh-64px-48px)] bg-[#0A0A0F] p-6">
+    <div className="min-h-[calc(100vh-64px)] bg-[#0A0A0F] p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

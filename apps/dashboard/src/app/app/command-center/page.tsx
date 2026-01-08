@@ -1,6 +1,16 @@
 'use client';
 
 /**
+ * VISUAL AUTHORITY:
+ * - Layout: COMMAND_CENTER_REFERENCE.png
+ * - Design System: DS_V3_REFERENCE.png
+ * - Canon: /docs/canon/DS_v3_PRINCIPLES.md
+ *
+ * If this component diverges from the reference images,
+ * STOP and request clarification.
+ */
+
+/**
  * Command Center Page
  *
  * AI-First Command Center with tri-pane layout:
@@ -8,6 +18,7 @@
  * - Center: Intelligence Canvas (knowledge graph + citations)
  * - Right: Strategy Panel (KPIs + narratives)
  *
+ * Uses DS v3 topbar shell (CommandCenterLayout) - NO sidebar.
  * Data is fetched from /api/command-center/* endpoints
  * and served via MSW during hollow development phase.
  *
@@ -115,7 +126,7 @@ export default function CommandCenterPage() {
   }, []);
 
   return (
-    <div className="h-[calc(100vh-64px-48px)]">
+    <div className="h-[calc(100vh-64px)]">
       <TriPaneShell
         actionPane={
           <ActionStreamPane
