@@ -93,15 +93,15 @@ export function CommandCenterTopbar({
             <span className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
           </Link>
 
-          {/* Org Selector (compact topbar variant) */}
+          {/* Org Selector (compact topbar variant) - Legibility: use lighter text */}
           <button className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#13131A] border border-[#1A1A24] hover:border-[#2A2A36] transition-colors group">
             <div className="w-5 h-5 rounded bg-brand-iris/20 flex items-center justify-center text-brand-iris text-[10px] font-bold">
               {orgName.charAt(0).toUpperCase()}
             </div>
-            <span className="text-xs font-medium text-slate-5 group-hover:text-white transition-colors truncate max-w-[100px]">
+            <span className="text-xs font-medium text-white/80 group-hover:text-white transition-colors truncate max-w-[100px]">
               {orgName}
             </span>
-            <svg className="w-3 h-3 text-slate-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
@@ -109,7 +109,7 @@ export function CommandCenterTopbar({
           {/* Divider */}
           <div className="hidden md:block w-px h-6 bg-[#1A1A24]" />
 
-          {/* Surface Navigation Menu */}
+          {/* Surface Navigation Menu - Legibility: near-white text for nav labels */}
           <nav className="hidden md:flex items-center gap-0.5">
             {surfaceNavItems.map((item) => {
               const active = isActive(item.href);
@@ -120,8 +120,8 @@ export function CommandCenterTopbar({
                   className={`
                     px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200
                     ${active
-                      ? 'bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/30'
-                      : 'text-slate-5 hover:text-white hover:bg-[#13131A]'
+                      ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30 shadow-[0_0_12px_rgba(0,217,255,0.15)]'
+                      : 'text-white/75 hover:text-white hover:bg-[#13131A]'
                     }
                   `}
                 >
@@ -133,20 +133,20 @@ export function CommandCenterTopbar({
           </nav>
         </div>
 
-        {/* Center: Omni-Tray Trigger (NOT a real search input) */}
+        {/* Center: Omni-Tray Trigger (NOT a real search input) - Legibility: lighter text */}
         <div className="flex-1 max-w-sm mx-auto">
           <button
             onClick={() => setOmniTrayOpen(true)}
             className="w-full flex items-center px-4 py-2 rounded-full bg-[#13131A] border border-[#1A1A24] hover:border-[#2A2A36] hover:bg-[#16161F] transition-all duration-200 group"
             aria-label="Open Omni-Tray"
           >
-            <svg className="w-4 h-4 text-slate-5 flex-shrink-0 group-hover:text-brand-cyan transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-white/50 flex-shrink-0 group-hover:text-brand-cyan transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-            <span className="flex-1 text-left text-sm text-slate-5 group-hover:text-slate-4 ml-3 truncate">
+            <span className="flex-1 text-left text-sm text-white/60 group-hover:text-white/80 ml-3 truncate">
               Ask Pravado…
             </span>
-            <kbd className="hidden sm:flex items-center gap-1 px-1.5 py-0.5 text-[10px] text-slate-5 bg-[#1A1A24] rounded group-hover:bg-[#22222D]">
+            <kbd className="hidden sm:flex items-center gap-1 px-1.5 py-0.5 text-[10px] text-white/50 bg-[#1A1A24] rounded group-hover:bg-[#22222D] group-hover:text-white/70">
               <span>⌘</span>
               <span>K</span>
             </kbd>
@@ -161,7 +161,7 @@ export function CommandCenterTopbar({
             <span className="text-[10px] font-medium text-brand-cyan uppercase tracking-wide">AI Active</span>
           </div>
 
-          {/* Context Toggle Chips */}
+          {/* Context Toggle Chips - Legibility: lighter inactive text */}
           <div className="hidden xl:flex items-center gap-1">
             {contextChips.map((chip) => {
               const isChipActive = activeChips.has(chip.id);
@@ -174,9 +174,9 @@ export function CommandCenterTopbar({
                     transition-all duration-200 border
                     ${isChipActive
                       ? chip.color === 'brand-magenta'
-                        ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
-                        : 'bg-brand-iris/15 text-brand-iris border-brand-iris/30'
-                      : 'bg-transparent text-slate-5 border-[#1A1A24] hover:border-[#2A2A36] hover:text-white'
+                        ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30 shadow-[0_0_8px_rgba(232,121,249,0.15)]'
+                        : 'bg-brand-iris/15 text-brand-iris border-brand-iris/30 shadow-[0_0_8px_rgba(168,85,247,0.15)]'
+                      : 'bg-transparent text-white/60 border-[#1A1A24] hover:border-[#2A2A36] hover:text-white'
                     }
                   `}
                 >
@@ -186,7 +186,7 @@ export function CommandCenterTopbar({
                         ? chip.color === 'brand-magenta'
                           ? 'bg-brand-magenta'
                           : 'bg-brand-iris'
-                        : 'bg-slate-5'
+                        : 'bg-white/40'
                     }`}
                   />
                   {chip.label}
@@ -195,8 +195,8 @@ export function CommandCenterTopbar({
             })}
           </div>
 
-          {/* Notifications */}
-          <button className="relative p-2 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors">
+          {/* Notifications - Legibility: lighter icon */}
+          <button className="relative p-2 text-white/60 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
@@ -204,8 +204,8 @@ export function CommandCenterTopbar({
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-magenta" />
           </button>
 
-          {/* User Menu */}
-          <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-[#1A1A24] transition-colors">
+          {/* User Menu - Legibility: lighter dropdown arrow */}
+          <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-[#1A1A24] transition-colors group">
             {userAvatarUrl ? (
               <img
                 src={userAvatarUrl}
@@ -217,7 +217,7 @@ export function CommandCenterTopbar({
                 {userName.charAt(0).toUpperCase()}
               </div>
             )}
-            <svg className="w-3 h-3 text-slate-5 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 text-white/50 group-hover:text-white/80 hidden sm:block transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
