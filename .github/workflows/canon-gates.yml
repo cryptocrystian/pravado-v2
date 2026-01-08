@@ -38,3 +38,19 @@ jobs:
 
       - name: Check Legacy Surfaces
         run: node apps/dashboard/scripts/check-legacy-surfaces.mjs
+
+  command-center-shell-guard:
+    name: Command Center Shell Guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check Command Center Shell Integrity
+        working-directory: apps/dashboard
+        run: node scripts/check-command-center-shell.mjs

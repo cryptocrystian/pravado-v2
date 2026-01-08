@@ -12,6 +12,7 @@ export { IntelligenceCanvasPane } from './IntelligenceCanvasPane';
 export { StrategyPanelPane } from './StrategyPanelPane';
 export { CalendarPeek } from './CalendarPeek';
 export { ActionPeekDrawer } from './ActionPeekDrawer';
+export { CommandCenterTopbar } from './CommandCenterTopbar';
 
 // Pillar accent system
 export { pillarAccents, priorityStyles, modeStyles, surfaceTokens, cardClasses, getPillarCardClasses } from './pillar-accents';
