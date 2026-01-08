@@ -11,17 +11,19 @@
  */
 
 /**
- * CalendarPeek v2 - Enhanced Calendar Widget
+ * CalendarPeek v2.5 - Enhanced Calendar with Day Selection
  *
- * DS v3 density-optimized calendar preview:
- * - View toggle: Day | Week | Month
- * - Agenda list with pillar tags, time, status, action icons on hover
- * - Schedule Drawer for item details + mode/reschedule controls
+ * DS v3 density-optimized calendar:
+ * - Day/Week/Month view toggle
+ * - Desktop: Calendar grid LEFT, Agenda panel RIGHT
+ * - Mobile: Segmented "Calendar | Agenda" tabs
+ * - Day selection with pillar dots showing item count
+ * - ScheduleDrawer for item details + mode/reschedule controls
  *
  * @see /contracts/examples/orchestration-calendar.json
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import type { CalendarItem, CalendarStatus, Mode, OrchestrationCalendarResponse, Pillar } from './types';
@@ -33,12 +35,13 @@ interface CalendarPeekProps {
 }
 
 type ViewMode = 'day' | 'week' | 'month';
+type MobileTab = 'calendar' | 'agenda';
 
 // Pillar colors
-const pillarColors: Record<Pillar, { bg: string; text: string; border: string }> = {
-  pr: { bg: 'bg-brand-magenta/10', text: 'text-brand-magenta', border: 'border-brand-magenta/30' },
-  content: { bg: 'bg-brand-iris/10', text: 'text-brand-iris', border: 'border-brand-iris/30' },
-  seo: { bg: 'bg-brand-cyan/10', text: 'text-brand-cyan', border: 'border-brand-cyan/30' },
+const pillarColors: Record<Pillar, { bg: string; text: string; border: string; dot: string }> = {
+  pr: { bg: 'bg-brand-magenta/10', text: 'text-brand-magenta', border: 'border-brand-magenta/30', dot: 'bg-brand-magenta' },
+  content: { bg: 'bg-brand-iris/10', text: 'text-brand-iris', border: 'border-brand-iris/30', dot: 'bg-brand-iris' },
+  seo: { bg: 'bg-brand-cyan/10', text: 'text-brand-cyan', border: 'border-brand-cyan/30', dot: 'bg-brand-cyan' },
 };
 
 // Status styling
@@ -82,112 +85,349 @@ const modeIcons: Record<Mode, { icon: JSX.Element; label: string; color: string 
   },
 };
 
-// Calendar Item Row Component
-function CalendarItemRow({ item, onClick }: { item: CalendarItem; onClick: () => void }) {
+// Helper to format date string
+function formatDateKey(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+// Get items grouped by date
+function getItemsByDate(items: CalendarItem[]): Map<string, CalendarItem[]> {
+  const grouped = new Map<string, CalendarItem[]>();
+  items.forEach((item) => {
+    const existing = grouped.get(item.date) || [];
+    grouped.set(item.date, [...existing, item]);
+  });
+  return grouped;
+}
+
+// Get pillar distribution for a date
+function getPillarDots(items: CalendarItem[]): Pillar[] {
+  const pillars = new Set<Pillar>();
+  items.forEach((item) => pillars.add(item.pillar));
+  return Array.from(pillars);
+}
+
+// Agenda Item Row Component
+function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => void }) {
   const pillarStyle = pillarColors[item.pillar];
   const statusStyle = statusStyles[item.status];
   const modeInfo = modeIcons[item.mode];
 
-  // Format date for display
-  const itemDate = new Date(`${item.date}T${item.time}`);
-  const isToday = item.date === new Date().toISOString().split('T')[0];
-  const isTomorrow = item.date === new Date(Date.now() + 86400000).toISOString().split('T')[0];
-
-  const dateLabel = isToday ? 'Today' : isTomorrow ? 'Tomorrow' : itemDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-
   return (
     <button
       onClick={onClick}
-      className={`
-        w-full flex items-center gap-2 p-2 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg
-        hover:border-${item.pillar === 'pr' ? 'brand-magenta' : item.pillar === 'content' ? 'brand-iris' : 'brand-cyan'}/30
-        hover:shadow-[0_0_8px_rgba(0,217,255,0.05)]
-        transition-all duration-200 group text-left
-      `}
+      className="calendar-agenda-item w-full flex items-center gap-2 p-2 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg hover:border-[#2A2A36] hover:shadow-[0_0_8px_rgba(0,217,255,0.05)] transition-all duration-200 group text-left"
     >
-      {/* Time Column */}
-      <div className="text-center w-12 flex-shrink-0">
-        <p className={`text-[8px] uppercase tracking-wide ${isToday ? 'text-brand-cyan font-medium' : 'text-slate-6'}`}>
-          {dateLabel}
-        </p>
-        <p className="text-xs font-bold text-white">{item.time}</p>
+      {/* Time */}
+      <div className="text-center w-10 flex-shrink-0">
+        <p className="text-[10px] font-bold text-white">{item.time}</p>
       </div>
 
-      {/* Divider */}
-      <div className={`w-px h-8 ${pillarStyle.bg.replace('/10', '/30')}`} />
+      {/* Pillar Accent Bar */}
+      <div className={`w-0.5 h-8 rounded-full ${pillarStyle.dot}`} />
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 mb-0.5">
-          <span className={`px-1 py-0.5 text-[8px] font-semibold rounded uppercase tracking-wide ${pillarStyle.bg} ${pillarStyle.text}`}>
+          <span className={`px-1 py-0.5 text-[7px] font-semibold rounded uppercase tracking-wide ${pillarStyle.bg} ${pillarStyle.text}`}>
             {item.pillar}
           </span>
-          <span className={`px-1 py-0.5 text-[8px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}>
+          <span className={`px-1 py-0.5 text-[7px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}>
             {statusStyle.label}
           </span>
         </div>
-        <p className="text-[10px] text-white truncate">{item.title}</p>
+        <p className="text-[9px] text-white truncate">{item.title}</p>
       </div>
 
       {/* Quick Actions (visible on hover) */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <span className={`w-5 h-5 flex items-center justify-center rounded ${modeInfo.color}`} title={modeInfo.label}>
+        <span className={`w-4 h-4 flex items-center justify-center rounded ${modeInfo.color}`} title={modeInfo.label}>
           {modeInfo.icon}
-        </span>
-        <span className="w-5 h-5 flex items-center justify-center text-slate-5 hover:text-white rounded hover:bg-[#1A1A24]" title="More">
-          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-          </svg>
         </span>
       </div>
     </button>
   );
 }
 
-// Mini Month Grid (placeholder)
-function MiniMonthGrid() {
-  const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-  const today = new Date();
-  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-  const startOffset = firstDay.getDay();
-
-  // Mock: highlight some days with activity
-  const activeDays = [3, 7, 10, 14, 18, 21, 25];
-  const todayDate = today.getDate();
+// Calendar Day Cell
+function CalendarDayCell({
+  date,
+  isSelected,
+  isToday,
+  itemCount,
+  pillarDots,
+  onClick,
+  isCurrentMonth,
+}: {
+  date: Date;
+  isSelected: boolean;
+  isToday: boolean;
+  itemCount: number;
+  pillarDots: Pillar[];
+  onClick: () => void;
+  isCurrentMonth: boolean;
+}) {
+  const day = date.getDate();
 
   return (
-    <div className="p-2 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
+    <button
+      onClick={onClick}
+      className={`
+        calendar-day-cell relative w-full aspect-square flex flex-col items-center justify-center rounded-lg
+        transition-all duration-200 ease-out
+        ${isSelected
+          ? 'bg-brand-cyan/20 border border-brand-cyan/40 shadow-[0_0_12px_rgba(0,217,255,0.15)]'
+          : isToday
+            ? 'bg-brand-iris/10 border border-brand-iris/30'
+            : 'hover:bg-[#1A1A24] border border-transparent hover:border-[#2A2A36]'
+        }
+        ${!isCurrentMonth ? 'opacity-40' : ''}
+      `}
+    >
+      <span className={`
+        text-[10px] font-medium
+        ${isSelected ? 'text-brand-cyan' : isToday ? 'text-brand-iris' : isCurrentMonth ? 'text-white' : 'text-slate-6'}
+      `}>
+        {day}
+      </span>
+
+      {/* Pillar dots */}
+      {pillarDots.length > 0 && (
+        <div className="flex items-center gap-0.5 mt-0.5">
+          {pillarDots.slice(0, 3).map((pillar, i) => (
+            <span key={i} className={`w-1 h-1 rounded-full ${pillarColors[pillar].dot}`} />
+          ))}
+        </div>
+      )}
+
+      {/* Item count badge */}
+      {itemCount > 0 && (
+        <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 flex items-center justify-center text-[7px] font-bold bg-brand-cyan text-black rounded-full">
+          {itemCount > 9 ? '9+' : itemCount}
+        </span>
+      )}
+    </button>
+  );
+}
+
+// Week Strip View (horizontal)
+function WeekStripView({
+  selectedDate,
+  onDateSelect,
+  itemsByDate,
+}: {
+  selectedDate: Date;
+  onDateSelect: (date: Date) => void;
+  itemsByDate: Map<string, CalendarItem[]>;
+}) {
+  const days = useMemo(() => {
+    const result: Date[] = [];
+    const today = new Date();
+    // Show 7 days centered around selected date or today
+    const centerDate = selectedDate || today;
+    const startDate = new Date(centerDate);
+    startDate.setDate(startDate.getDate() - 3);
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startDate);
+      d.setDate(d.getDate() + i);
+      result.push(d);
+    }
+    return result;
+  }, [selectedDate]);
+
+  const today = formatDateKey(new Date());
+
+  return (
+    <div className="flex items-center gap-1 p-1 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+      {days.map((date) => {
+        const dateKey = formatDateKey(date);
+        const items = itemsByDate.get(dateKey) || [];
+        const pillarDots = getPillarDots(items);
+        const isSelected = formatDateKey(selectedDate) === dateKey;
+        const isToday = dateKey === today;
+
+        return (
+          <div key={dateKey} className="flex-1">
+            <p className="text-[7px] text-slate-6 text-center mb-0.5 uppercase">
+              {date.toLocaleDateString('en-US', { weekday: 'short' })}
+            </p>
+            <CalendarDayCell
+              date={date}
+              isSelected={isSelected}
+              isToday={isToday}
+              itemCount={items.length}
+              pillarDots={pillarDots}
+              onClick={() => onDateSelect(date)}
+              isCurrentMonth={true}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// Month Grid View
+function MonthGridView({
+  selectedDate,
+  onDateSelect,
+  itemsByDate,
+}: {
+  selectedDate: Date;
+  onDateSelect: (date: Date) => void;
+  itemsByDate: Map<string, CalendarItem[]>;
+}) {
+  const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const today = new Date();
+  const todayKey = formatDateKey(today);
+
+  // Build calendar grid
+  const calendarDays = useMemo(() => {
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startOffset = firstDay.getDay();
+    const daysInMonth = lastDay.getDate();
+
+    const result: { date: Date; isCurrentMonth: boolean }[] = [];
+
+    // Previous month days
+    for (let i = startOffset - 1; i >= 0; i--) {
+      const d = new Date(year, month, -i);
+      result.push({ date: d, isCurrentMonth: false });
+    }
+
+    // Current month days
+    for (let i = 1; i <= daysInMonth; i++) {
+      result.push({ date: new Date(year, month, i), isCurrentMonth: true });
+    }
+
+    // Next month days (fill to 42 for 6 rows)
+    const remaining = 42 - result.length;
+    for (let i = 1; i <= remaining; i++) {
+      result.push({ date: new Date(year, month + 1, i), isCurrentMonth: false });
+    }
+
+    return result;
+  }, [selectedDate]);
+
+  const selectedKey = formatDateKey(selectedDate);
+
+  return (
+    <div className="p-2 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+      {/* Month/Year Header */}
+      <div className="flex items-center justify-between mb-2 px-1">
+        <button
+          onClick={() => {
+            const prev = new Date(selectedDate);
+            prev.setMonth(prev.getMonth() - 1);
+            onDateSelect(prev);
+          }}
+          className="p-1 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <span className="text-[10px] font-semibold text-white">
+          {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+        </span>
+        <button
+          onClick={() => {
+            const next = new Date(selectedDate);
+            next.setMonth(next.getMonth() + 1);
+            onDateSelect(next);
+          }}
+          className="p-1 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
       {/* Day headers */}
-      <div className="grid grid-cols-7 gap-1 mb-1">
+      <div className="grid grid-cols-7 gap-0.5 mb-1">
         {days.map((d, i) => (
-          <span key={i} className="text-[8px] text-slate-5 text-center font-medium">{d}</span>
+          <span key={i} className="text-[7px] text-slate-6 text-center font-medium py-1">{d}</span>
         ))}
       </div>
+
       {/* Days grid */}
-      <div className="grid grid-cols-7 gap-1">
-        {/* Empty cells for offset */}
-        {Array.from({ length: startOffset }).map((_, i) => (
-          <span key={`empty-${i}`} className="w-5 h-5" />
-        ))}
-        {/* Day cells */}
-        {Array.from({ length: daysInMonth }).map((_, i) => {
-          const day = i + 1;
-          const isActive = activeDays.includes(day);
-          const isCurrentDay = day === todayDate;
+      <div className="grid grid-cols-7 gap-0.5">
+        {calendarDays.map(({ date, isCurrentMonth }, i) => {
+          const dateKey = formatDateKey(date);
+          const items = itemsByDate.get(dateKey) || [];
+          const pillarDots = getPillarDots(items);
+          const isSelected = selectedKey === dateKey;
+          const isToday = dateKey === todayKey;
+
           return (
-            <span
-              key={day}
-              className={`
-                w-5 h-5 flex items-center justify-center text-[9px] rounded
-                ${isCurrentDay ? 'bg-brand-cyan text-black font-bold' : isActive ? 'bg-brand-iris/20 text-brand-iris' : 'text-slate-5 hover:bg-[#1A1A24]'}
-                transition-colors cursor-pointer
-              `}
-            >
-              {day}
-            </span>
+            <CalendarDayCell
+              key={i}
+              date={date}
+              isSelected={isSelected}
+              isToday={isToday}
+              itemCount={items.length}
+              pillarDots={pillarDots}
+              onClick={() => onDateSelect(date)}
+              isCurrentMonth={isCurrentMonth}
+            />
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+// Agenda Panel Component
+function AgendaPanel({
+  selectedDate,
+  items,
+  onItemClick,
+}: {
+  selectedDate: Date;
+  items: CalendarItem[];
+  onItemClick: (item: CalendarItem) => void;
+}) {
+  const isToday = formatDateKey(selectedDate) === formatDateKey(new Date());
+  const dateLabel = isToday
+    ? 'Today'
+    : selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+  const sortedItems = useMemo(() => {
+    return [...items].sort((a, b) => a.time.localeCompare(b.time));
+  }, [items]);
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between px-2 py-1.5 border-b border-[#1A1A24]">
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
+          <span className="text-[10px] font-semibold text-white">{dateLabel}</span>
+        </div>
+        <span className="text-[9px] text-slate-6">{items.length} items</span>
+      </div>
+
+      {/* Items */}
+      <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+        {sortedItems.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-6 text-center">
+            <div className="w-8 h-8 rounded-lg bg-[#1A1A24] flex items-center justify-center mb-2">
+              <svg className="w-4 h-4 text-slate-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <p className="text-[9px] text-slate-5">No items scheduled</p>
+          </div>
+        ) : (
+          sortedItems.map((item) => (
+            <AgendaItemRow key={item.id} item={item} onClick={() => onItemClick(item)} />
+          ))
+        )}
       </div>
     </div>
   );
@@ -396,26 +636,44 @@ function LoadingSkeleton() {
         <div className="h-4 w-20 bg-slate-5 rounded animate-pulse" />
         <div className="h-4 w-16 bg-slate-5/50 rounded animate-pulse" />
       </div>
-      <div className="space-y-2">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-center gap-2 p-2 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg animate-pulse">
-            <div className="w-12 h-8 bg-[#1A1A24] rounded" />
-            <div className="w-px h-8 bg-[#1F1F28]" />
-            <div className="flex-1 space-y-1">
-              <div className="h-3 w-16 bg-[#1A1A24] rounded" />
-              <div className="h-3 w-full bg-[#1A1A24] rounded" />
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="h-24 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg animate-pulse" />
+        <div className="space-y-1.5">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-10 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg animate-pulse" />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
 export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
-  const [viewMode, setViewMode] = useState<ViewMode>('day');
+  const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [mobileTab, setMobileTab] = useState<MobileTab>('calendar');
+  const [selectedDate, setSelectedDate] = useState<Date>(() => new Date()); // Auto-select Today
   const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Group items by date
+  const itemsByDate = useMemo(() => {
+    if (!data?.items) return new Map<string, CalendarItem[]>();
+    return getItemsByDate(data.items.filter((item) => !['published', 'failed'].includes(item.status)));
+  }, [data]);
+
+  // Get items for selected date
+  const selectedDateItems = useMemo(() => {
+    const dateKey = formatDateKey(selectedDate);
+    return itemsByDate.get(dateKey) || [];
+  }, [itemsByDate, selectedDate]);
+
+  const handleDateSelect = useCallback((date: Date) => {
+    setSelectedDate(date);
+    // On mobile, switch to agenda when selecting a date
+    if (window.innerWidth < 640) {
+      setMobileTab('agenda');
+    }
+  }, []);
 
   const handleItemClick = useCallback((item: CalendarItem) => {
     setSelectedItem(item);
@@ -425,6 +683,11 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
   const handleCloseDrawer = useCallback(() => {
     setIsDrawerOpen(false);
     setTimeout(() => setSelectedItem(null), 300);
+  }, []);
+
+  // Go to today
+  const goToToday = useCallback(() => {
+    setSelectedDate(new Date());
   }, []);
 
   if (isLoading) return <LoadingSkeleton />;
@@ -453,34 +716,30 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
     );
   }
 
-  // Filter items based on view mode
-  const today = new Date().toISOString().split('T')[0];
-  const weekEnd = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
-
-  const filteredItems = data.items
-    .filter((item) => {
-      if (viewMode === 'day') return item.date === today;
-      if (viewMode === 'week') return item.date >= today && item.date <= weekEnd;
-      return true; // month shows all
-    })
-    .filter((item) => !['published', 'failed'].includes(item.status))
-    .sort((a, b) => `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`))
-    .slice(0, viewMode === 'month' ? 10 : 5);
+  const isToday = formatDateKey(selectedDate) === formatDateKey(new Date());
 
   return (
     <>
       <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg">
-        {/* Header with View Toggle */}
+        {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-brand-cyan" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
             </svg>
             <h3 className="text-xs font-semibold text-white">Calendar</h3>
+            {!isToday && (
+              <button
+                onClick={goToToday}
+                className="px-1.5 py-0.5 text-[8px] font-medium text-brand-cyan bg-brand-cyan/10 border border-brand-cyan/20 rounded hover:bg-brand-cyan/15 transition-colors"
+              >
+                Today
+              </button>
+            )}
           </div>
 
-          {/* View Toggle */}
-          <div className="flex items-center bg-[#0A0A0F] rounded p-0.5 border border-[#1A1A24]">
+          {/* View Toggle - Desktop */}
+          <div className="hidden sm:flex items-center bg-[#0A0A0F] rounded p-0.5 border border-[#1A1A24]">
             {(['day', 'week', 'month'] as ViewMode[]).map((mode) => (
               <button
                 key={mode}
@@ -494,24 +753,80 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
               </button>
             ))}
           </div>
+
+          {/* Mobile Tab Switcher */}
+          <div className="sm:hidden flex items-center bg-[#0A0A0F] rounded p-0.5 border border-[#1A1A24]">
+            {(['calendar', 'agenda'] as MobileTab[]).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setMobileTab(tab)}
+                className={`
+                  px-2 py-0.5 text-[9px] font-medium rounded transition-colors
+                  ${mobileTab === tab ? 'bg-brand-cyan/20 text-brand-cyan' : 'text-slate-5 hover:text-white'}
+                `}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Content based on view mode */}
-        {viewMode === 'month' ? (
-          <MiniMonthGrid />
-        ) : (
-          <div className="space-y-1.5">
-            {filteredItems.length === 0 ? (
-              <p className="text-[10px] text-slate-6 text-center py-2">
-                No items {viewMode === 'day' ? 'today' : 'this week'}
-              </p>
-            ) : (
-              filteredItems.map((item) => (
-                <CalendarItemRow key={item.id} item={item} onClick={() => handleItemClick(item)} />
-              ))
+        {/* Desktop: Split View (Calendar LEFT, Agenda RIGHT) */}
+        <div className="hidden sm:grid sm:grid-cols-2 gap-2 min-h-[180px]">
+          {/* Calendar Side */}
+          <div>
+            {viewMode === 'day' && (
+              <WeekStripView
+                selectedDate={selectedDate}
+                onDateSelect={handleDateSelect}
+                itemsByDate={itemsByDate}
+              />
+            )}
+            {viewMode === 'week' && (
+              <WeekStripView
+                selectedDate={selectedDate}
+                onDateSelect={handleDateSelect}
+                itemsByDate={itemsByDate}
+              />
+            )}
+            {viewMode === 'month' && (
+              <MonthGridView
+                selectedDate={selectedDate}
+                onDateSelect={handleDateSelect}
+                itemsByDate={itemsByDate}
+              />
             )}
           </div>
-        )}
+
+          {/* Agenda Side */}
+          <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+            <AgendaPanel
+              selectedDate={selectedDate}
+              items={selectedDateItems}
+              onItemClick={handleItemClick}
+            />
+          </div>
+        </div>
+
+        {/* Mobile: Tab-based View */}
+        <div className="sm:hidden">
+          {mobileTab === 'calendar' && (
+            <MonthGridView
+              selectedDate={selectedDate}
+              onDateSelect={handleDateSelect}
+              itemsByDate={itemsByDate}
+            />
+          )}
+          {mobileTab === 'agenda' && (
+            <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden min-h-[150px]">
+              <AgendaPanel
+                selectedDate={selectedDate}
+                items={selectedDateItems}
+                onItemClick={handleItemClick}
+              />
+            </div>
+          )}
+        </div>
 
         {/* View Full Calendar Link */}
         <Link

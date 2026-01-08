@@ -11,15 +11,18 @@
  */
 
 /**
- * ActionStreamPane - Action Stream Display
+ * ActionStreamPane - Progressive Disclosure Action Stream
  *
- * Displays prioritized action items from the AI.
+ * 3-Layer Progressive Disclosure System:
+ * - Layer 1 (Card): Outcome-first, compact cards with essential info
+ * - Layer 2 (Hover): Ghost reveal of extra details + peek affordance
+ * - Layer 3 (Drawer): Full details via ActionPeekDrawer (on click)
+ *
  * Features:
  * - Filter tabs (All, Draft, Proposed, etc.)
  * - Cards with LEFT BORDER accents (pillar-colored)
- * - Compact, information-dense, urgent styling
- * - Confidence/impact meters
- * - Gate warnings and CTA buttons
+ * - Micro-interactions: glow intensify, meter animation, consistent easing
+ * - Gated/upgrade CTAs consolidated in drawer (Layer 3)
  *
  * @see /contracts/examples/action-stream.json
  */
@@ -52,28 +55,36 @@ const pillarAccents: Record<Pillar, {
   bg: string;
   text: string;
   glow: string;
+  glowIntense: string;
   badge: string;
+  meterGradient: string;
 }> = {
   pr: {
     border: 'border-l-brand-magenta',
     bg: 'bg-brand-magenta/5',
     text: 'text-brand-magenta',
     glow: 'shadow-[0_0_20px_rgba(232,121,249,0.12)]',
+    glowIntense: 'shadow-[0_0_28px_rgba(232,121,249,0.25)]',
     badge: 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30',
+    meterGradient: 'from-brand-magenta to-brand-magenta/60',
   },
   content: {
     border: 'border-l-brand-iris',
     bg: 'bg-brand-iris/5',
     text: 'text-brand-iris',
     glow: 'shadow-[0_0_20px_rgba(168,85,247,0.12)]',
+    glowIntense: 'shadow-[0_0_28px_rgba(168,85,247,0.25)]',
     badge: 'bg-brand-iris/15 text-brand-iris border-brand-iris/30',
+    meterGradient: 'from-brand-iris to-brand-iris/60',
   },
   seo: {
     border: 'border-l-brand-cyan',
     bg: 'bg-brand-cyan/5',
     text: 'text-brand-cyan',
     glow: 'shadow-[0_0_20px_rgba(0,217,255,0.12)]',
+    glowIntense: 'shadow-[0_0_28px_rgba(0,217,255,0.25)]',
     badge: 'bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30',
+    meterGradient: 'from-brand-cyan to-brand-cyan/60',
   },
 };
 
@@ -89,6 +100,43 @@ const priorityConfig: Record<Priority, {
   low: { dot: 'bg-slate-5', label: 'Low', urgent: false },
 };
 
+// Animated meter bar component
+function AnimatedMeter({
+  value,
+  label,
+  colorClass,
+}: {
+  value: number;
+  label: string;
+  colorClass: string;
+}) {
+  const percentage = Math.round(value * 100);
+
+  return (
+    <div className="flex-1">
+      <div className="flex items-center justify-between mb-0.5">
+        <span className="text-[9px] text-slate-6 uppercase tracking-wide">{label}</span>
+        <span className="text-[9px] text-white font-bold">{percentage}%</span>
+      </div>
+      <div className="h-1 bg-[#1A1A24] rounded-full overflow-hidden">
+        <div
+          className={`h-full bg-gradient-to-r ${colorClass} rounded-full transition-all duration-700 ease-out`}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * ActionCard - 3-Layer Progressive Disclosure
+ *
+ * Layer 1: Compact card showing outcome + pillar + priority
+ * Layer 2: Hover reveals ghost details (extra chips, peek affordance)
+ * Layer 3: Click opens drawer with full details
+ *
+ * MARKER: action-card-hover-peek (for CI guardrail check)
+ */
 function ActionCard({
   action,
   onClick,
@@ -113,19 +161,23 @@ function ActionCard({
         }
       }}
       className={`
+        action-card-hover-peek
         group relative bg-[#0D0D12] rounded-lg overflow-hidden cursor-pointer
         border-l-[3px] ${pillar.border}
         border border-[#1A1A24] border-l-0
-        transition-all duration-200
+        transition-all duration-300 ease-out
         hover:bg-[#111116] hover:border-[#2A2A36]
+        hover:${pillar.glowIntense}
         ${isSelected ? `${pillar.glow} border-[#2A2A36]` : ''}
         focus:outline-none focus:ring-1 focus:ring-brand-cyan/40
       `}
     >
-      {/* Subtle gradient overlay */}
-      <div className={`absolute inset-0 ${pillar.bg} opacity-0 group-hover:opacity-100 transition-opacity`} />
+      {/* Subtle gradient overlay - intensifies on hover */}
+      <div className={`absolute inset-0 ${pillar.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
 
       <div className="relative p-3">
+        {/* LAYER 1: Essential Info (Always Visible) */}
+
         {/* Header Row: Pillar Badge + Priority + Mode */}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
@@ -146,71 +198,89 @@ function ActionCard({
           </div>
         </div>
 
-        {/* Title */}
-        <h3 className="text-[13px] font-semibold text-white mb-1 leading-snug line-clamp-2 group-hover:text-white/90">
+        {/* Title - Outcome-first */}
+        <h3 className="text-[13px] font-semibold text-white mb-1 leading-snug line-clamp-2 group-hover:text-white/95">
           {action.title}
         </h3>
 
-        {/* Summary */}
-        <p className="text-[11px] text-slate-5 mb-2.5 line-clamp-2 leading-relaxed">
+        {/* Summary - Layer 1 truncated */}
+        <p className="text-[11px] text-slate-5 mb-2.5 line-clamp-2 leading-relaxed group-hover:text-slate-4 transition-colors duration-200">
           {action.summary}
         </p>
 
-        {/* Confidence & Impact Meters - Compact inline */}
+        {/* Confidence & Impact Meters - Animated */}
         <div className="flex gap-3 mb-2.5">
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-0.5">
-              <span className="text-[9px] text-slate-6 uppercase tracking-wide">Conf</span>
-              <span className="text-[9px] text-white font-bold">{Math.round(action.confidence * 100)}%</span>
-            </div>
-            <div className="h-0.5 bg-[#1A1A24] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-brand-cyan to-brand-cyan/60 rounded-full"
-                style={{ width: `${action.confidence * 100}%` }}
-              />
-            </div>
+          <AnimatedMeter
+            value={action.confidence}
+            label="Conf"
+            colorClass="from-brand-cyan to-brand-cyan/60"
+          />
+          <AnimatedMeter
+            value={action.impact}
+            label="Impact"
+            colorClass="from-brand-iris to-brand-iris/60"
+          />
+        </div>
+
+        {/* LAYER 2: Ghost Reveal (Visible on Hover) */}
+        <div className="overflow-hidden transition-all duration-300 ease-out max-h-0 group-hover:max-h-20 opacity-0 group-hover:opacity-100">
+          {/* Extra chips row */}
+          <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+            {/* Time estimate chip */}
+            <span className="px-1.5 py-0.5 text-[8px] font-medium text-slate-5 bg-[#1A1A24] rounded">
+              ~5 min
+            </span>
+            {/* Confidence qualifier */}
+            {action.confidence >= 0.8 && (
+              <span className="px-1.5 py-0.5 text-[8px] font-medium text-semantic-success bg-semantic-success/10 rounded border border-semantic-success/20">
+                High conf
+              </span>
+            )}
+            {/* Gate indicator (minimal in Layer 2) */}
+            {action.gate.required && (
+              <span className="px-1.5 py-0.5 text-[8px] font-medium text-semantic-warning bg-semantic-warning/10 rounded border border-semantic-warning/20">
+                Gated
+              </span>
+            )}
           </div>
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-0.5">
-              <span className="text-[9px] text-slate-6 uppercase tracking-wide">Impact</span>
-              <span className="text-[9px] text-white font-bold">{Math.round(action.impact * 100)}%</span>
-            </div>
-            <div className="h-0.5 bg-[#1A1A24] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-brand-iris to-brand-iris/60 rounded-full"
-                style={{ width: `${action.impact * 100}%` }}
-              />
-            </div>
+
+          {/* Peek affordance */}
+          <div className="flex items-center justify-center gap-1 text-[9px] text-slate-5 group-hover:text-brand-cyan transition-colors">
+            <span>Click for full details</span>
+            <svg className="w-3 h-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </div>
         </div>
 
-        {/* Gate Warning - Compact */}
-        {action.gate.required && (
-          <div className="flex items-center gap-1.5 px-2 py-1 mb-2.5 bg-semantic-warning/8 border border-semantic-warning/20 rounded text-[10px]">
-            <svg className="w-3 h-3 text-semantic-warning flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-            <span className="text-semantic-warning truncate">
-              {action.gate.reason || 'Requires approval'}
-            </span>
-          </div>
-        )}
-
-        {/* CTA Buttons - Compact */}
-        <div className="flex gap-1.5">
+        {/* LAYER 1: CTA Buttons (Compact) */}
+        <div className="flex gap-1.5 mt-2">
           <button
             className={`
               flex-1 px-2.5 py-1.5 text-[10px] font-semibold rounded
               ${pillar.badge}
-              hover:brightness-110 transition-all duration-150
+              hover:brightness-110 transition-all duration-200
             `}
+            onClick={(e) => {
+              e.stopPropagation();
+              // Primary CTA handler - Layer 1 quick action
+            }}
           >
             {action.cta.primary}
           </button>
-          <button className="px-2.5 py-1.5 text-[10px] font-medium text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded transition-colors">
+          <button
+            className="px-2.5 py-1.5 text-[10px] font-medium text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded transition-colors duration-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Secondary CTA handler
+            }}
+          >
             {action.cta.secondary}
           </button>
         </div>
+
+        {/* Gate warning moved to Layer 3 (Drawer) for cleaner cards */}
+        {/* Note: Gate indicator chip shown in Layer 2 hover state */}
       </div>
     </div>
   );
@@ -311,7 +381,7 @@ export function ActionStreamPane({
               onClick={() => setActiveFilter(tab.key)}
               className={`
                 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wide rounded
-                transition-all duration-150 whitespace-nowrap
+                transition-all duration-200 ease-out whitespace-nowrap
                 ${isActive
                   ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
                   : 'text-slate-5 hover:text-white hover:bg-[#1A1A24]'

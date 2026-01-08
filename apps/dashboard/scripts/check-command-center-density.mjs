@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * CI Guard: Command Center Density + Calendar UX
+ * CI Guard: Command Center Density + Calendar UX + Legibility
  *
- * Prevents regression of UI density and calendar UX patterns:
- * 1. Intelligence pane must use tabs and 2-row structure
- * 2. Calendar peek must have Schedule Drawer
- * 3. Strategy pane must have progressive disclosure with drawer
+ * Prevents regression of:
+ * 1. UI density patterns (tabs, 2-row structure, progressive disclosure)
+ * 2. Calendar UX (day selection, schedule drawer)
+ * 3. Action Stream progressive disclosure (hover-peek class)
+ * 4. Legibility (no low-contrast zinc-500/600 for primary labels)
  *
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
@@ -18,7 +19,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const COMMAND_CENTER_COMPONENTS = path.resolve(__dirname, '../src/components/command-center');
 
-// Required patterns for density compliance
+// Required patterns for compliance
 const REQUIRED_PATTERNS = [
   {
     file: 'IntelligenceCanvasPane.tsx',
@@ -41,11 +42,34 @@ const REQUIRED_PATTERNS = [
       { regex: /ScheduleDrawer/, description: 'Schedule drawer component' },
       { regex: /viewMode.*day.*week.*month|ViewMode/i, description: 'Day/Week/Month view toggle' },
       { regex: /handleItemClick|selectedItem/, description: 'Item selection for drawer' },
+      { regex: /selectedDate/, description: 'Day selection state (v2.5)' },
+      { regex: /calendar-day-cell|CalendarDayCell/, description: 'Day cell component (v2.5)' },
+    ],
+  },
+  {
+    file: 'ActionStreamPane.tsx',
+    patterns: [
+      { regex: /action-card-hover-peek/, description: 'Hover peek CSS class marker (3-layer disclosure)' },
+      { regex: /LAYER 1|LAYER 2/i, description: 'Layer documentation comments' },
+      { regex: /group-hover:opacity|group-hover:max-h/, description: 'Hover reveal animation' },
     ],
   },
 ];
 
-function checkFile(fileName, requiredPatterns) {
+// Forbidden patterns (should NOT be present for legibility)
+const FORBIDDEN_PATTERNS = [
+  {
+    file: 'CommandCenterTopbar.tsx',
+    patterns: [
+      // Primary nav labels should NOT use low-contrast grays
+      { regex: /text-zinc-500|text-zinc-600/, description: 'Low-contrast zinc colors on primary labels' },
+      // Old slate-5 pattern on primary nav (replaced with white/75)
+      { regex: /'text-slate-5 hover:text-white hover:bg-\[#13131A\]'/, description: 'Old low-contrast nav pattern' },
+    ],
+  },
+];
+
+function checkFile(fileName, requiredPatterns, forbiddenPatterns = []) {
   const filePath = path.join(COMMAND_CENTER_COMPONENTS, fileName);
 
   if (!fs.existsSync(filePath)) {
@@ -55,9 +79,17 @@ function checkFile(fileName, requiredPatterns) {
   const content = fs.readFileSync(filePath, 'utf-8');
   const errors = [];
 
+  // Check required patterns (must be present)
   for (const pattern of requiredPatterns) {
     if (!pattern.regex.test(content)) {
-      errors.push(`Missing: ${pattern.description}`);
+      errors.push(`Missing required: ${pattern.description}`);
+    }
+  }
+
+  // Check forbidden patterns (must NOT be present)
+  for (const pattern of forbiddenPatterns) {
+    if (pattern.regex.test(content)) {
+      errors.push(`Found forbidden: ${pattern.description}`);
     }
   }
 
@@ -68,14 +100,25 @@ function checkFile(fileName, requiredPatterns) {
 }
 
 function main() {
-  console.log('Checking Command Center density and UX patterns...\n');
+  console.log('Checking Command Center density, UX, and legibility patterns...\n');
 
   let hasErrors = false;
   const results = [];
 
+  // Check required patterns
   for (const check of REQUIRED_PATTERNS) {
     const result = checkFile(check.file, check.patterns);
     results.push({ file: check.file, ...result });
+
+    if (!result.success) {
+      hasErrors = true;
+    }
+  }
+
+  // Check forbidden patterns
+  for (const check of FORBIDDEN_PATTERNS) {
+    const result = checkFile(check.file, [], check.patterns);
+    results.push({ file: check.file + ' (legibility)', ...result });
 
     if (!result.success) {
       hasErrors = true;
@@ -97,15 +140,17 @@ function main() {
   console.log('');
 
   if (hasErrors) {
-    console.error('FAIL: Command Center density/UX patterns are incomplete.\n');
+    console.error('FAIL: Command Center patterns are incomplete or have regressions.\n');
     console.error('Required patterns:');
     console.error('  - IntelligenceCanvasPane: Tabs + 2-row layout');
     console.error('  - StrategyPanelPane: Insights drawer + progressive disclosure');
-    console.error('  - CalendarPeek: Schedule drawer + Day/Week/Month toggle\n');
+    console.error('  - CalendarPeek: Schedule drawer + Day/Week/Month toggle + day selection');
+    console.error('  - ActionStreamPane: Hover-peek class + layer structure');
+    console.error('  - CommandCenterTopbar: No low-contrast zinc-500/600 on primary labels\n');
     process.exit(1);
   }
 
-  console.log('PASS: All Command Center density/UX patterns present.\n');
+  console.log('PASS: All Command Center patterns present and legibility checks passed.\n');
   process.exit(0);
 }
 
