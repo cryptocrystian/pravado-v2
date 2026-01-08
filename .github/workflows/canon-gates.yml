@@ -54,3 +54,20 @@ jobs:
       - name: Check Command Center Shell Integrity
         working-directory: apps/dashboard
         run: node scripts/check-command-center-shell.mjs
+
+  command-center-topbar-guard:
+    name: Command Center Topbar Guard
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check for Search Duplication
+        working-directory: apps/dashboard
+        run: node scripts/check-command-center-topbar.mjs
