@@ -15,11 +15,6 @@ export const dynamic = 'force-dynamic';
 
 // Navigation Icons (simple SVG icons matching DS style)
 const icons = {
-  dashboard: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-    </svg>
-  ),
   pr: (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
@@ -90,7 +85,6 @@ export default async function AppLayout({
 
   const navItems = [
     { name: 'Command Center', href: '/app/command-center', icon: icons.commandCenter },
-    { name: 'Dashboard', href: '/app', icon: icons.dashboard },
     { name: 'PR', href: '/app/pr', icon: icons.pr },
     { name: 'Content', href: '/app/content', icon: icons.content },
     { name: 'SEO', href: '/app/seo', icon: icons.seo },

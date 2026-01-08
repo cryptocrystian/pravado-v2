@@ -61,13 +61,13 @@ export default function AnalyticsPage() {
           </div>
 
           <Link
-            href="/app"
+            href="/app/command-center"
             className="inline-flex items-center gap-2 px-6 py-3 bg-slate-4 text-white font-medium rounded-lg hover:bg-slate-5 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to Dashboard
+            Back to Command Center
           </Link>
         </div>
       </div>

@@ -23,3 +23,18 @@ jobs:
 
       - name: Run Canon Integrity Check
         run: node scripts/check-canon-integrity.mjs
+
+  legacy-surface-guard:
+    name: Legacy Surface Guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check Legacy Surfaces
+        run: node apps/dashboard/scripts/check-legacy-surfaces.mjs

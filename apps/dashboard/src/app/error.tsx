@@ -55,10 +55,10 @@ export default function Error({
               Try again
             </button>
             <a
-              href="/app"
+              href="/app/command-center"
               className="btn-secondary py-3 px-6"
             >
-              Go to Dashboard
+              Go to Command Center
             </a>
           </div>
 
