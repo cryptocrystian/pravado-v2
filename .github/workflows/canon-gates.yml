@@ -71,3 +71,19 @@ jobs:
       - name: Check for Search Duplication
         working-directory: apps/dashboard
         run: node scripts/check-command-center-topbar.mjs
+
+  command-center-density-guard:
+    name: Command Center Density Guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check Command Center Density Patterns
+        working-directory: apps/dashboard
+        run: node scripts/check-command-center-density.mjs
