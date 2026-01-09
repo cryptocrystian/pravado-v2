@@ -8,6 +8,7 @@
 
 export { TriPaneShell } from './TriPaneShell';
 export { ActionStreamPane } from './ActionStreamPane';
+export { ActionCard, type DensityLevel } from './ActionCard';
 export { IntelligenceCanvasPane } from './IntelligenceCanvasPane';
 export { StrategyPanelPane } from './StrategyPanelPane';
 export { CalendarPeek } from './CalendarPeek';
