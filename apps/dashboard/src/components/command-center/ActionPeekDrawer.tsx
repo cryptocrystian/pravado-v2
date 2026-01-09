@@ -56,7 +56,7 @@ function ConfidenceImpactMeter({
       {/* Tick marks */}
       <div className="flex justify-between px-1">
         {[0, 25, 50, 75, 100].map((tick) => (
-          <span key={tick} className="text-[9px] text-white/50">
+          <span key={tick} className="text-[11px] text-white/50"> {/* typography-allow: meter ticks */}
             {tick}
           </span>
         ))}
@@ -128,7 +128,7 @@ function DiffPlaceholder() {
         <div className="h-3 w-3/5 bg-[#1F1F28] rounded animate-pulse" />
         <div className="h-3 w-2/3 bg-[#1F1F28] rounded animate-pulse" />
       </div>
-      <p className="text-[10px] text-white/50 mt-3 text-center italic">
+      <p className="text-xs text-white/50 mt-3 text-center italic">
         Detailed content preview coming soon
       </p>
     </div>
@@ -174,7 +174,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
 
               {/* Mode badge */}
               <span
-                className={`px-2 py-1 text-[10px] font-medium rounded uppercase tracking-wide ${modeStyle.bg} ${modeStyle.text}`}
+                className={`px-2 py-1 text-[11px] font-medium rounded uppercase tracking-wide ${modeStyle.bg} ${modeStyle.text}`} // typography-allow: badge
               >
                 {modeStyle.label}
               </span>

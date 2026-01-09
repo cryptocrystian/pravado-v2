@@ -63,8 +63,8 @@ function AEOHealthScore({ score, breakdown }: { score: number; breakdown: { pr: 
   return (
     <div className="p-3 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold">AEO Health Score</h3>
-        <span className="text-[8px] text-white/30">Updated 2h ago</span>
+        <h3 className="text-xs text-white/50 uppercase tracking-wide font-semibold">AEO Health Score</h3>
+        <span className="text-[11px] text-white/30">Updated 2h ago</span> {/* typography-allow: meta */}
       </div>
 
       <div className="flex items-center gap-4">
@@ -73,7 +73,7 @@ function AEOHealthScore({ score, breakdown }: { score: number; breakdown: { pr: 
           <div className={`text-4xl font-bold ${scoreColor}`} style={{ textShadow: `0 0 30px ${glowColor}` }}>
             {score}
           </div>
-          <p className="text-[9px] text-white/50 mt-0.5">
+          <p className="text-xs text-white/50 mt-0.5">
             {score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : 'Needs Work'}
           </p>
         </div>
@@ -81,25 +81,25 @@ function AEOHealthScore({ score, breakdown }: { score: number; breakdown: { pr: 
         {/* Mini breakdown */}
         <div className="flex-1 space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-[8px] text-brand-magenta w-12">PR</span>
+            <span className="text-[11px] text-brand-magenta w-12">PR</span> {/* typography-allow: pillar */}
             <div className="flex-1 h-1.5 bg-[#1A1A24] rounded-full overflow-hidden">
               <div className="h-full bg-brand-magenta rounded-full" style={{ width: `${breakdown.pr}%` }} />
             </div>
-            <span className="text-[9px] text-white w-6 text-right">{breakdown.pr}</span>
+            <span className="text-xs text-white w-6 text-right">{breakdown.pr}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[8px] text-brand-iris w-12">Content</span>
+            <span className="text-[11px] text-brand-iris w-12">Content</span> {/* typography-allow: pillar */}
             <div className="flex-1 h-1.5 bg-[#1A1A24] rounded-full overflow-hidden">
               <div className="h-full bg-brand-iris rounded-full" style={{ width: `${breakdown.content}%` }} />
             </div>
-            <span className="text-[9px] text-white w-6 text-right">{breakdown.content}</span>
+            <span className="text-xs text-white w-6 text-right">{breakdown.content}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[8px] text-brand-cyan w-12">SEO</span>
+            <span className="text-[11px] text-brand-cyan w-12">SEO</span> {/* typography-allow: pillar */}
             <div className="flex-1 h-1.5 bg-[#1A1A24] rounded-full overflow-hidden">
               <div className="h-full bg-brand-cyan rounded-full" style={{ width: `${breakdown.seo}%` }} />
             </div>
-            <span className="text-[9px] text-white w-6 text-right">{breakdown.seo}</span>
+            <span className="text-xs text-white w-6 text-right">{breakdown.seo}</span>
           </div>
         </div>
       </div>
@@ -131,13 +131,13 @@ function KPICard({ kpi }: { kpi: KPI }) {
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1">
           <span className={`w-1 h-1 rounded-full ${statusDot}`} />
-          <span className="text-[8px] text-white/50 font-medium truncate">{kpi.label}</span>
+          <span className="text-[11px] text-white/50 font-medium truncate">{kpi.label}</span> {/* typography-allow: label */}
         </div>
       </div>
       <div className="flex items-end justify-between">
         <div>
           <span className="text-base font-bold text-white">{formattedValue}</span>
-          <span className={`text-[8px] ${trendColor} ml-1`}>
+          <span className={`text-[11px] ${trendColor} ml-1`}> {/* typography-allow: trend */}
             {trendIcon} {formattedDelta}
           </span>
         </div>
@@ -162,11 +162,11 @@ function BottleneckCard({ narrative }: { narrative: Narrative }) {
       <div className="flex items-start gap-2">
         <span className="text-semantic-warning text-sm">⚠</span>
         <div className="flex-1 min-w-0">
-          <h4 className="text-[10px] font-semibold text-white mb-0.5">{narrative.title}</h4>
-          <p className="text-[9px] text-white/50 line-clamp-2">{narrative.body}</p>
+          <h4 className="text-xs font-semibold text-white mb-0.5">{narrative.title}</h4>
+          <p className="text-xs text-white/50 line-clamp-2">{narrative.body}</p>
           <div className="flex items-center gap-1.5 mt-1.5">
             {narrative.pillars.map(pillar => (
-              <span key={pillar} className={`text-[8px] font-bold uppercase ${pillarColors[pillar].text}`}>
+              <span key={pillar} className={`text-[11px] font-bold uppercase ${pillarColors[pillar].text}`}> {/* typography-allow: badge */}
                 {pillar}
               </span>
             ))}
@@ -189,10 +189,10 @@ function RecommendationCard({ rec, onClick }: { rec: Recommendation; onClick?: (
       <div className="flex items-start gap-2">
         <span className={`w-1.5 h-1.5 mt-1 rounded-full flex-shrink-0 ${priorityStyle.dot}`} />
         <div className="flex-1 min-w-0">
-          <h4 className="text-[10px] font-semibold text-white line-clamp-1 group-hover:text-brand-cyan transition-colors">{rec.title}</h4>
-          <p className="text-[8px] text-white/50 line-clamp-1 mt-0.5">{rec.description}</p>
+          <h4 className="text-xs font-semibold text-white line-clamp-1 group-hover:text-brand-cyan transition-colors">{rec.title}</h4>
+          <p className="text-[11px] text-white/50 line-clamp-1 mt-0.5">{rec.description}</p> {/* typography-allow: description */}
         </div>
-        <span className={`text-[7px] font-bold uppercase ${pillarColors[rec.pillar].text}`}>{rec.pillar}</span>
+        <span className={`text-[11px] font-bold uppercase ${pillarColors[rec.pillar].text}`}>{rec.pillar}</span> {/* typography-allow: badge */}
       </div>
     </button>
   );
@@ -208,15 +208,15 @@ function MonthlyTargets() {
 
   return (
     <div className="p-2.5 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
-      <h3 className="text-[9px] text-white/50 uppercase tracking-wide font-semibold mb-2">Monthly Targets</h3>
+      <h3 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Monthly Targets</h3>
       <div className="space-y-2">
         {targets.map((t, i) => {
           const pct = Math.min((t.current / t.target) * 100, 100);
           return (
             <div key={i}>
               <div className="flex items-center justify-between mb-0.5">
-                <span className="text-[9px] text-white">{t.label}</span>
-                <span className={`text-[8px] ${pillarColors[t.pillar].text}`}>{t.current}/{t.target}</span>
+                <span className="text-xs text-white">{t.label}</span>
+                <span className={`text-[11px] ${pillarColors[t.pillar].text}`}>{t.current}/{t.target}</span> {/* typography-allow: progress */}
               </div>
               <div className="h-1 bg-[#1A1A24] rounded-full overflow-hidden">
                 <div
@@ -289,7 +289,7 @@ function InsightsDrawer({
             </div>
             <div>
               <h2 className="text-sm font-semibold text-white">Strategy Insights</h2>
-              <p className="text-[10px] text-white/50">All recommendations and AI insights</p>
+              <p className="text-[11px] text-white/55">All recommendations and AI insights</p> {/* typography-allow: drawer subtitle */}
             </div>
           </div>
           <button
@@ -306,7 +306,7 @@ function InsightsDrawer({
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* AI Insights Section */}
           <div>
-            <h3 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2 flex items-center gap-1.5">
+            <h3 className="text-[11px] text-white/55 uppercase tracking-wide font-semibold mb-2 flex items-center gap-1.5"> {/* typography-allow: section header */}
               <span className="w-1.5 h-1.5 rounded-full bg-brand-iris animate-pulse" />
               AI Insights
             </h3>
@@ -324,15 +324,15 @@ function InsightsDrawer({
                     <div className="flex items-start gap-2">
                       <span className={`text-sm ${style.iconColor}`}>{style.icon}</span>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-[11px] font-semibold text-white mb-1">{narrative.title}</h4>
-                        <p className="text-[10px] text-white/50 leading-relaxed">{narrative.body}</p>
+                        <h4 className="text-xs font-semibold text-white mb-1">{narrative.title}</h4>
+                        <p className="text-[11px] text-white/55 leading-relaxed">{narrative.body}</p> {/* typography-allow: narrative body */}
                         <div className="flex items-center gap-2 mt-2">
                           {narrative.pillars.map(pillar => (
-                            <span key={pillar} className={`text-[9px] font-bold uppercase ${pillarColors[pillar].text}`}>
+                            <span key={pillar} className={`text-[11px] font-bold uppercase ${pillarColors[pillar].text}`}> {/* typography-allow: pillar badge */}
                               {pillar}
                             </span>
                           ))}
-                          <span className="text-[9px] text-white/30 ml-auto">{Math.round(narrative.confidence * 100)}% confidence</span>
+                          <span className="text-[11px] text-white/40 ml-auto">{Math.round(narrative.confidence * 100)}% confidence</span> {/* typography-allow: confidence */}
                         </div>
                       </div>
                     </div>
@@ -344,7 +344,7 @@ function InsightsDrawer({
 
           {/* All Recommendations Section */}
           <div>
-            <h3 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2">
+            <h3 className="text-[11px] text-white/55 uppercase tracking-wide font-semibold mb-2"> {/* typography-allow: section header */}
               All Recommendations ({recommendations.length})
             </h3>
             <div className="space-y-2">
@@ -359,24 +359,24 @@ function InsightsDrawer({
                       <span className={`w-2 h-2 mt-0.5 rounded-full flex-shrink-0 ${priorityStyle.dot}`} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <h4 className="text-[11px] font-semibold text-white">{rec.title}</h4>
-                          <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded ${pillarColors[rec.pillar].bg} ${pillarColors[rec.pillar].text}`}>
+                          <h4 className="text-xs font-semibold text-white">{rec.title}</h4>
+                          <span className={`text-[11px] font-bold uppercase px-1.5 py-0.5 rounded ${pillarColors[rec.pillar].bg} ${pillarColors[rec.pillar].text}`}> {/* typography-allow: pillar badge */}
                             {rec.pillar}
                           </span>
                         </div>
-                        <p className="text-[10px] text-white/50 mt-1">{rec.description}</p>
+                        <p className="text-[11px] text-white/55 mt-1">{rec.description}</p> {/* typography-allow: rec description */}
                       </div>
                     </div>
                     <div className="flex items-center justify-between pt-2 border-t border-[#1A1A24]">
                       <div className="flex items-center gap-3">
-                        <span className="text-[8px] text-white/50">
+                        <span className="text-[11px] text-white/55"> {/* typography-allow: effort label */}
                           Effort: <span className="text-white">{effortLabel}</span>
                         </span>
-                        <span className="text-[8px] text-white/50">
+                        <span className="text-[11px] text-white/55"> {/* typography-allow: impact label */}
                           Impact: <span className={rec.impact === 'high' ? 'text-semantic-success' : 'text-white'}>{impactLabel}</span>
                         </span>
                       </div>
-                      <button className={`px-2 py-1 text-[9px] font-semibold rounded ${pillarColors[rec.pillar].bg} ${pillarColors[rec.pillar].text} border ${pillarColors[rec.pillar].border} hover:brightness-110 transition-all`}>
+                      <button className={`px-2 py-1 text-[11px] font-semibold rounded ${pillarColors[rec.pillar].bg} ${pillarColors[rec.pillar].text} border ${pillarColors[rec.pillar].border} hover:brightness-110 transition-all`}> {/* typography-allow: action button */}
                         {rec.action}
                       </button>
                     </div>
@@ -389,8 +389,8 @@ function InsightsDrawer({
 
         {/* Footer */}
         <div className="px-4 py-3 border-t border-[#1A1A24] bg-[#0A0A0F]">
-          <p className="text-[9px] text-white/30 text-center">
-            Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-white/50">Esc</kbd> to close
+          <p className="text-[11px] text-white/40 text-center"> {/* typography-allow: footer hint */}
+            Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-white/55">Esc</kbd> to close
           </p>
         </div>
       </div>

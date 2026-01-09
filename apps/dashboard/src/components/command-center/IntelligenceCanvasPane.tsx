@@ -158,8 +158,8 @@ function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
                 <NodeIcon kind={focusedNode.kind} className={`w-6 h-6 ${nodeKindConfig[focusedNode.kind].text}`} />
               </div>
               <p className="text-sm font-semibold text-white mb-0.5">{focusedNode.label}</p>
-              <p className="text-[9px] text-white/50">{relatedEdges.length} connections</p>
-              <button onClick={() => onNodeClick('')} className="mt-1.5 text-[9px] text-brand-cyan hover:underline">
+              <p className="text-xs text-white/50">{relatedEdges.length} connections</p>
+              <button onClick={() => onNodeClick('')} className="mt-1.5 text-xs text-brand-cyan hover:underline">
                 Clear focus
               </button>
             </div>
@@ -218,14 +218,14 @@ function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
         {/* Legend overlay - bottom left */}
         <div className="absolute bottom-2 left-2 flex flex-wrap gap-1.5">
           {(['ai_model', 'journalist', 'topic'] as NodeKind[]).map(kind => (
-            <span key={kind} className={`px-1.5 py-0.5 text-[8px] font-medium rounded ${nodeKindConfig[kind].bg} ${nodeKindConfig[kind].text}`}>
+            <span key={kind} className={`px-1.5 py-0.5 text-[11px] font-medium rounded ${nodeKindConfig[kind].bg} ${nodeKindConfig[kind].text}`}> {/* typography-allow: legend */}
               {nodeKindConfig[kind].label}
             </span>
           ))}
         </div>
 
         {/* Stats overlay - bottom right */}
-        <div className="absolute bottom-2 right-2 text-[9px] text-white/50">
+        <div className="absolute bottom-2 right-2 text-xs text-white/50">
           {nodes.length} nodes · {edges.length} edges
         </div>
       </div>
@@ -249,28 +249,28 @@ function CitationCard({ citation }: { citation: Citation }) {
     <div className="p-2.5 bg-[#0D0D12] border border-[#1A1A24] rounded-lg hover:border-brand-cyan/30 hover:shadow-[0_0_12px_rgba(0,217,255,0.06)] transition-all duration-200 group">
       {/* Header */}
       <div className="flex items-center justify-between mb-1.5">
-        <span className={`px-1.5 py-0.5 text-[9px] font-bold ${platform.bg} ${platform.text} rounded border border-current/20`}>
+        <span className={`px-1.5 py-0.5 text-[11px] font-bold ${platform.bg} ${platform.text} rounded border border-current/20`}> {/* typography-allow: badge */}
           {platform.icon} {platform.label}
         </span>
-        <span className="text-[8px] text-white/30">{timeAgo}</span>
+        <span className="text-[11px] text-white/30">{timeAgo}</span> {/* typography-allow: meta */}
       </div>
 
       {/* Query */}
-      <p className="text-[9px] text-white/50 mb-1 italic truncate">&quot;{citation.query}&quot;</p>
+      <p className="text-xs text-white/50 mb-1 italic truncate">&quot;{citation.query}&quot;</p>
 
       {/* Snippet */}
-      <p className="text-[10px] text-white/90 line-clamp-2 leading-relaxed">{citation.snippet}</p>
+      <p className="text-xs text-white/90 line-clamp-2 leading-relaxed">{citation.snippet}</p>
 
       {/* Metrics */}
       <div className="flex items-center gap-2 pt-1.5 mt-1.5 border-t border-[#1A1A24]">
-        <span className="text-[8px] text-white/50">
+        <span className="text-[11px] text-white/50"> {/* typography-allow: meta */}
           Pos <span className="text-brand-cyan font-bold">#{citation.position}</span>
         </span>
-        <span className="text-[8px] text-white/50">
+        <span className="text-[11px] text-white/50"> {/* typography-allow: meta */}
           Quality <span className={`font-bold ${qualityColor}`}>{citation.context_quality}/10</span>
         </span>
         {citation.source_url && (
-          <a href={citation.source_url} target="_blank" rel="noopener noreferrer" className="ml-auto text-[8px] text-brand-cyan hover:underline opacity-0 group-hover:opacity-100 transition-opacity">
+          <a href={citation.source_url} target="_blank" rel="noopener noreferrer" className="ml-auto text-xs text-brand-cyan hover:underline opacity-0 group-hover:opacity-100 transition-opacity">
             View →
           </a>
         )}
@@ -291,7 +291,7 @@ function CompetitiveIntelTable() {
   return (
     <div className="bg-[#0D0D12] border border-[#1A1A24] rounded-lg overflow-hidden">
       {/* Table Header */}
-      <div className="grid grid-cols-5 gap-2 px-3 py-2 bg-[#0A0A0F] border-b border-[#1A1A24] text-[8px] text-white/50 uppercase tracking-wide">
+      <div className="grid grid-cols-5 gap-2 px-3 py-2 bg-[#0A0A0F] border-b border-[#1A1A24] text-[11px] text-white/50 uppercase tracking-wide"> {/* typography-allow: table header */}
         <span>Company</span>
         <span>Share</span>
         <span>Citations</span>
@@ -300,7 +300,7 @@ function CompetitiveIntelTable() {
       </div>
       {/* Rows */}
       {competitors.map((row, i) => (
-        <div key={i} className={`grid grid-cols-5 gap-2 px-3 py-2 text-[10px] ${row.highlight ? 'bg-brand-cyan/5' : ''} ${i !== competitors.length - 1 ? 'border-b border-[#1A1A24]' : ''}`}>
+        <div key={i} className={`grid grid-cols-5 gap-2 px-3 py-2 text-xs ${row.highlight ? 'bg-brand-cyan/5' : ''} ${i !== competitors.length - 1 ? 'border-b border-[#1A1A24]' : ''}`}>
           <span className={`font-medium ${row.highlight ? 'text-brand-cyan' : 'text-white'}`}>{row.name}</span>
           <span className="text-white">{row.share}</span>
           <span className="text-white">{row.citations}</span>
@@ -319,19 +319,19 @@ function StatsRow() {
   return (
     <div className="grid grid-cols-3 gap-2 mb-3">
       <div className="p-2 rounded-lg bg-brand-cyan/10 border border-brand-cyan/30">
-        <p className="text-[8px] text-white/50 uppercase tracking-wide">Share of Voice</p>
+        <p className="text-[11px] text-white/50 uppercase tracking-wide">Share of Voice</p> {/* typography-allow: label */}
         <p className="text-lg font-bold text-brand-cyan">23.4%</p>
-        <p className="text-[8px] text-semantic-success">↑ +2.1%</p>
+        <p className="text-[11px] text-semantic-success">↑ +2.1%</p> {/* typography-allow: delta */}
       </div>
       <div className="p-2 rounded-lg bg-brand-iris/10 border border-brand-iris/30">
-        <p className="text-[8px] text-white/50 uppercase tracking-wide">Citations</p>
+        <p className="text-[11px] text-white/50 uppercase tracking-wide">Citations</p> {/* typography-allow: label */}
         <p className="text-lg font-bold text-brand-iris">847</p>
-        <p className="text-[8px] text-semantic-success">↑ +12%</p>
+        <p className="text-[11px] text-semantic-success">↑ +12%</p> {/* typography-allow: delta */}
       </div>
       <div className="p-2 rounded-lg bg-brand-magenta/10 border border-brand-magenta/30">
-        <p className="text-[8px] text-white/50 uppercase tracking-wide">Coverage</p>
+        <p className="text-[11px] text-white/50 uppercase tracking-wide">Coverage</p> {/* typography-allow: label */}
         <p className="text-lg font-bold text-brand-magenta">34</p>
-        <p className="text-[8px] text-semantic-success">↑ +5</p>
+        <p className="text-[11px] text-semantic-success">↑ +5</p> {/* typography-allow: delta */}
       </div>
     </div>
   );
@@ -380,7 +380,7 @@ function ErrorState({ error }: { error: Error }) {
           </svg>
           <div>
             <h4 className="text-xs font-semibold text-semantic-danger">Failed to load intelligence</h4>
-            <p className="text-[10px] text-white/50 mt-0.5">{error.message}</p>
+            <p className="text-xs text-white/50 mt-0.5">{error.message}</p>
           </div>
         </div>
       </div>
@@ -418,7 +418,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
             <span className="w-1.5 h-1.5 rounded-full bg-brand-iris animate-pulse" />
             Intelligence Entity Map
           </h3>
-          <span className="text-[9px] text-white/50">Real-time connections</span>
+          <span className="text-xs text-white/50">Real-time connections</span>
         </div>
         <div className="h-[200px]">
           <NetworkGraph
@@ -439,7 +439,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                relative px-3 py-2 text-[10px] font-medium transition-colors
+                relative px-3 py-2 text-xs font-medium transition-colors
                 ${activeTab === tab.id
                   ? 'text-brand-cyan'
                   : 'text-white/50 hover:text-white'
@@ -448,7 +448,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
             >
               {tab.label}
               {tab.count !== undefined && (
-                <span className={`ml-1.5 px-1 py-0.5 text-[8px] rounded ${activeTab === tab.id ? 'bg-brand-cyan/20 text-brand-cyan' : 'bg-slate-5/20 text-white/50'}`}>
+                <span className={`ml-1.5 px-1 py-0.5 text-[11px] rounded ${activeTab === tab.id ? 'bg-brand-cyan/20 text-brand-cyan' : 'bg-white/10 text-white/50'}`}> {/* typography-allow: count */}
                   {tab.count}
                 </span>
               )}
@@ -469,7 +469,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
               {/* Citation Feed */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-[10px] font-semibold text-white/50 uppercase tracking-wide flex items-center gap-1.5">
+                  <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wide flex items-center gap-1.5">
                     <span className="w-1 h-1 rounded-full bg-semantic-success animate-pulse" />
                     Live Feed
                   </h4>
@@ -480,7 +480,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
                   ))}
                 </div>
                 {data.citation_feed.length > 5 && (
-                  <button className="w-full mt-2 py-1.5 text-[9px] text-brand-cyan hover:text-brand-cyan/80 transition-colors border border-brand-cyan/20 rounded hover:bg-brand-cyan/5">
+                  <button className="w-full mt-2 py-1.5 text-xs text-brand-cyan hover:text-brand-cyan/80 transition-colors border border-brand-cyan/20 rounded hover:bg-brand-cyan/5">
                     View all {data.citation_feed.length} citations →
                   </button>
                 )}
@@ -491,11 +491,11 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
           {activeTab === 'competitive' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-[10px] font-semibold text-white/50 uppercase tracking-wide flex items-center gap-1.5">
+                <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wide flex items-center gap-1.5">
                   <span className="w-1 h-1 rounded-full bg-semantic-danger" />
                   Competitive Landscape
                 </h4>
-                <button className="text-[8px] text-white/50 hover:text-brand-cyan transition-colors">
+                <button className="text-xs text-white/50 hover:text-brand-cyan transition-colors">
                   Configure →
                 </button>
               </div>
@@ -503,7 +503,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
 
               {/* Trend Chart Placeholder */}
               <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
-                <h5 className="text-[9px] text-white/50 uppercase tracking-wide mb-2">Share of Voice Trend</h5>
+                <h5 className="text-xs text-white/50 uppercase tracking-wide mb-2">Share of Voice Trend</h5>
                 <div className="h-20 flex items-end gap-1">
                   {[40, 42, 38, 45, 48, 52, 56, 54, 58, 62, 65, 70].map((val, i) => (
                     <div
@@ -513,7 +513,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
                     />
                   ))}
                 </div>
-                <div className="flex justify-between mt-1 text-[8px] text-white/30">
+                <div className="flex justify-between mt-1 text-[11px] text-white/30"> {/* typography-allow: axis labels */}
                   <span>12 weeks ago</span>
                   <span>Today</span>
                 </div>

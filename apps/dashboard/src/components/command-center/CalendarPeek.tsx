@@ -112,16 +112,6 @@ function getPillarDots(items: CalendarItem[]): Pillar[] {
   return Array.from(pillars);
 }
 
-// Time bucket helper for day view
-function getTimeBucket(time: string): string {
-  const hour = parseInt(time.split(':')[0], 10);
-  if (hour < 9) return 'Early Morning';
-  if (hour < 12) return 'Morning';
-  if (hour < 14) return 'Midday';
-  if (hour < 17) return 'Afternoon';
-  return 'Evening';
-}
-
 // Agenda Item Row Component
 function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => void }) {
   const pillarStyle = pillarColors[item.pillar];
@@ -218,12 +208,12 @@ function CalendarDayCell({
         </div>
       )}
 
-      {/* Item count badge - compact style for month - typography-allow: badge counts are intentionally small */}
+      {/* Item count badge - typography-allow: badge counts are intentionally small */}
       {itemCount > 0 && (
         <span className={`
           absolute flex items-center justify-center font-bold bg-brand-cyan text-black rounded-full
-          ${compact ? '-top-0.5 -right-0.5 w-3.5 h-3.5 text-[9px]' : '-top-0.5 -right-0.5 w-4 h-4 text-[10px]'}
-        `}>
+          ${compact ? '-top-0.5 -right-0.5 w-3.5 h-3.5 text-[11px]' : '-top-0.5 -right-0.5 w-4 h-4 text-[11px]'}
+        `}> {/* typography-allow: badge */}
           {itemCount > 9 ? '9+' : itemCount}
         </span>
       )}
@@ -231,38 +221,41 @@ function CalendarDayCell({
   );
 }
 
-// DAY VIEW - Large single day with hourly grouping
-function DayView({
+// DAY TIMELINE VIEW - Left pane: compact time rail with event markers
+function DayTimelineView({
   selectedDate,
   onDateSelect,
   items,
+  selectedItemId,
   onItemClick,
 }: {
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
   items: CalendarItem[];
+  selectedItemId: string | null;
   onItemClick: (item: CalendarItem) => void;
 }) {
   const isToday = formatDateKey(selectedDate) === formatDateKey(new Date());
   const dateLabel = selectedDate.toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
+    weekday: 'short',
+    month: 'short',
     day: 'numeric'
   });
 
-  // Group items by time bucket
-  const buckets = useMemo(() => {
-    const grouped = new Map<string, CalendarItem[]>();
-    const sortedItems = [...items].sort((a, b) => a.time.localeCompare(b.time));
-    sortedItems.forEach((item) => {
-      const bucket = getTimeBucket(item.time);
-      const existing = grouped.get(bucket) || [];
-      grouped.set(bucket, [...existing, item]);
-    });
-    return grouped;
-  }, [items]);
+  // Define time blocks for the day (working hours: 8 AM - 8 PM)
+  const timeBlocks = ['8 AM', '10 AM', '12 PM', '2 PM', '4 PM', '6 PM', '8 PM'];
 
-  const bucketOrder = ['Early Morning', 'Morning', 'Midday', 'Afternoon', 'Evening'];
+  // Map items to their time positions
+  const getItemPosition = (time: string) => {
+    const hour = parseInt(time.split(':')[0], 10);
+    // Clamp to 8 AM - 8 PM range (0-12 hours range)
+    const clampedHour = Math.max(8, Math.min(20, hour));
+    return ((clampedHour - 8) / 12) * 100;
+  };
+
+  const sortedItems = useMemo(() => {
+    return [...items].sort((a, b) => a.time.localeCompare(b.time));
+  }, [items]);
 
   return (
     <div className="h-full flex flex-col">
@@ -276,7 +269,7 @@ function DayView({
           }}
           className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
         >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
@@ -284,9 +277,6 @@ function DayView({
           <p className={`text-[11px] font-semibold ${isToday ? 'text-brand-cyan' : 'text-white/90'}`}>
             {isToday ? 'Today' : dateLabel}
           </p>
-          {isToday && (
-            <p className="text-[9px] text-white/50">{dateLabel}</p>
-          )}
         </div>
         <button
           onClick={() => {
@@ -296,39 +286,169 @@ function DayView({
           }}
           className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
         >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
 
-      {/* Time Buckets */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-2">
+      {/* Time Rail */}
+      <div className="flex-1 overflow-y-auto px-2 py-1.5">
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="w-8 h-8 rounded-lg bg-[#1A1A24] flex items-center justify-center mb-2">
-              <svg className="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <div className="w-6 h-6 rounded-lg bg-[#1A1A24] flex items-center justify-center mb-1.5">
+              <svg className="w-3 h-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <p className="text-xs text-white/50">No items scheduled</p>
+            <p className="text-[11px] text-white/50">No items</p> {/* typography-allow: empty state */}
           </div>
         ) : (
-          bucketOrder.map((bucket) => {
-            const bucketItems = buckets.get(bucket);
-            if (!bucketItems || bucketItems.length === 0) return null;
-            return (
-              <div key={bucket}>
-                <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-1 px-1">{bucket}</p>
-                <div className="space-y-1">
-                  {bucketItems.map((item) => (
-                    <AgendaItemRow key={item.id} item={item} onClick={() => onItemClick(item)} />
-                  ))}
-                </div>
-              </div>
-            );
-          })
+          <div className="relative h-full min-h-[140px]">
+            {/* Time markers */}
+            <div className="absolute left-0 top-0 bottom-0 w-10 flex flex-col justify-between py-1">
+              {timeBlocks.map((time) => (
+                <span key={time} className="text-[11px] text-white/40 leading-none">{time}</span> // typography-allow: time marker
+              ))}
+            </div>
+
+            {/* Timeline rail */}
+            <div className="absolute left-12 right-0 top-0 bottom-0">
+              {/* Vertical time line */}
+              <div className="absolute left-0 top-1 bottom-1 w-0.5 bg-[#1A1A24] rounded-full" />
+
+              {/* Event markers on the rail */}
+              {sortedItems.map((item) => {
+                const position = getItemPosition(item.time);
+                const pillarStyle = pillarColors[item.pillar];
+                const isSelected = item.id === selectedItemId;
+
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onItemClick(item)}
+                    className={`
+                      absolute left-0 right-1 h-5 flex items-center gap-1.5 pl-2 pr-1.5 rounded
+                      transition-all duration-200 group
+                      ${isSelected
+                        ? `${pillarStyle.bg} border ${pillarStyle.border} shadow-[0_0_8px_rgba(0,217,255,0.1)]`
+                        : 'hover:bg-[#1A1A24]'
+                      }
+                    `}
+                    style={{ top: `${position}%` }}
+                  >
+                    {/* Pillar dot on timeline */}
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${pillarStyle.dot} ${isSelected ? 'ring-2 ring-white/20' : ''}`} />
+                    {/* Time + truncated title */}
+                    <span className="text-[11px] text-white/60 flex-shrink-0">{item.time}</span> {/* typography-allow: time */}
+                    <span className={`text-[11px] truncate ${isSelected ? 'text-white/90' : 'text-white/70'}`}>{item.title}</span> {/* typography-allow: event title */}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// DAY DETAILS PANEL - Right pane: shows selected event details
+function DayDetailsPanel({
+  selectedItem,
+  onClose,
+}: {
+  selectedItem: CalendarItem | null;
+  onClose: () => void;
+}) {
+  if (!selectedItem) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center text-center p-3">
+        <div className="w-8 h-8 rounded-lg bg-[#1A1A24] flex items-center justify-center mb-2">
+          <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+          </svg>
+        </div>
+        <p className="text-xs text-white/50">Select an item from timeline</p>
+        <p className="text-[11px] text-white/30 mt-0.5">Click to view details</p> {/* typography-allow: hint */}
+      </div>
+    );
+  }
+
+  const pillarStyle = pillarColors[selectedItem.pillar];
+  const statusStyle = statusStyles[selectedItem.status];
+  const modeInfo = modeIcons[selectedItem.mode];
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between px-2 py-1.5 border-b border-[#1A1A24]">
+        <div className="flex items-center gap-1.5">
+          <span className={`w-1.5 h-1.5 rounded-full ${pillarStyle.dot}`} />
+          <span className="text-xs font-semibold text-white/90">Details</span>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-0.5 text-white/40 hover:text-white/70 hover:bg-[#1A1A24] rounded transition-colors"
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-2 space-y-2">
+        {/* Badges */}
+        <div className="flex items-center gap-1 flex-wrap">
+          <span className={`px-1.5 py-0.5 text-[11px] font-semibold rounded uppercase ${pillarStyle.bg} ${pillarStyle.text}`}> {/* typography-allow: badge */}
+            {selectedItem.pillar}
+          </span>
+          <span className={`px-1.5 py-0.5 text-[11px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}> {/* typography-allow: badge */}
+            {statusStyle.label}
+          </span>
+          <span className={`flex items-center gap-0.5 px-1.5 py-0.5 text-[11px] rounded bg-[#1A1A24] ${modeInfo.color}`}> {/* typography-allow: badge */}
+            {modeInfo.icon}
+            <span>{modeInfo.label}</span>
+          </span>
+        </div>
+
+        {/* Title */}
+        <h4 className="text-xs font-semibold text-white/90 leading-snug">{selectedItem.title}</h4>
+
+        {/* Time */}
+        <div className="flex items-center gap-1.5 text-[11px] text-white/60"> {/* typography-allow: meta */}
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{selectedItem.time}</span>
+        </div>
+
+        {/* Summary */}
+        {selectedItem.details?.summary && (
+          <p className="text-[11px] text-white/55 leading-relaxed">{selectedItem.details.summary}</p> // typography-allow: summary
+        )}
+
+        {/* Quick info */}
+        <div className="pt-1 border-t border-[#1A1A24] space-y-1">
+          <div className="flex items-center justify-between text-[11px]"> {/* typography-allow: meta */}
+            <span className="text-white/40">Owner</span>
+            <span className="text-white/70">{selectedItem.details?.owner || 'Unassigned'}</span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]"> {/* typography-allow: meta */}
+            <span className="text-white/40">Risk</span>
+            <span className={selectedItem.details?.risk === 'high' ? 'text-semantic-danger' : selectedItem.details?.risk === 'med' ? 'text-semantic-warning' : 'text-semantic-success'}>
+              {selectedItem.details?.risk?.charAt(0).toUpperCase() + selectedItem.details?.risk?.slice(1) || 'Low'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Action button */}
+      <div className="px-2 pb-2 pt-1 border-t border-[#1A1A24]">
+        <button className={`w-full px-2 py-1.5 text-[11px] font-semibold rounded ${pillarStyle.bg} ${pillarStyle.text} border ${pillarStyle.border} hover:brightness-110 transition-all`}> {/* typography-allow: button */}
+          Open Full View
+        </button>
       </div>
     </div>
   );
@@ -402,7 +522,7 @@ function WeekView({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <span className="text-[10px] font-medium text-white/70">{weekLabel}</span>
+        <span className="text-xs font-medium text-white/70">{weekLabel}</span>
         <button
           onClick={() => navigateWeek(1)}
           className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
@@ -696,7 +816,7 @@ function ScheduleDrawer({
             </div>
             <div>
               <h2 className="text-sm font-semibold text-white/90">Schedule Details</h2>
-              <p className="text-[10px] text-white/50">Item configuration</p>
+              <p className="text-xs text-white/50">Item configuration</p>
             </div>
           </div>
           <button
@@ -714,28 +834,28 @@ function ScheduleDrawer({
           {/* Item Header */}
           <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
             <div className="flex items-center gap-2 mb-2">
-              <span className={`px-1.5 py-0.5 text-[9px] font-semibold rounded uppercase ${pillarStyle.bg} ${pillarStyle.text}`}>
+              <span className={`px-1.5 py-0.5 text-[11px] font-semibold rounded uppercase ${pillarStyle.bg} ${pillarStyle.text}`}> {/* typography-allow: badge */}
                 {item.pillar}
               </span>
-              <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}>
+              <span className={`px-1.5 py-0.5 text-[11px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}> {/* typography-allow: badge */}
                 {statusStyle.label}
               </span>
             </div>
             <h3 className="text-sm font-semibold text-white/90 mb-1">{item.title}</h3>
-            <p className="text-[10px] text-white/50">{item.details.summary}</p>
+            <p className="text-xs text-white/50">{item.details.summary}</p>
           </div>
 
           {/* Date & Time */}
           <div>
-            <h4 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2">Schedule</h4>
+            <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Schedule</h4>
             <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-white/90">
                   {itemDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                 </p>
-                <p className="text-[10px] text-white/50">at {item.time}</p>
+                <p className="text-xs text-white/50">at {item.time}</p>
               </div>
-              <button className="px-2 py-1 text-[9px] text-brand-cyan hover:bg-brand-cyan/10 rounded border border-brand-cyan/20 transition-colors">
+              <button className="px-2 py-1 text-xs text-brand-cyan hover:bg-brand-cyan/10 rounded border border-brand-cyan/20 transition-colors">
                 Reschedule
               </button>
             </div>
@@ -743,7 +863,7 @@ function ScheduleDrawer({
 
           {/* Mode Selector */}
           <div>
-            <h4 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2">Automation Mode</h4>
+            <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Automation Mode</h4>
             <div className="grid grid-cols-3 gap-2">
               {(['manual', 'copilot', 'autopilot'] as Mode[]).map((mode) => {
                 const info = modeIcons[mode];
@@ -763,7 +883,7 @@ function ScheduleDrawer({
                     <span className={`flex items-center justify-center ${isSelected ? info.color : 'text-white/50'}`}>
                       {info.icon}
                     </span>
-                    <p className={`text-[9px] mt-1 font-medium ${isSelected ? 'text-white/90' : 'text-white/50'}`}>{info.label}</p>
+                    <p className={`text-xs mt-1 font-medium ${isSelected ? 'text-white/90' : 'text-white/50'}`}>{info.label}</p>
                   </button>
                 );
               })}
@@ -772,22 +892,22 @@ function ScheduleDrawer({
 
           {/* Details */}
           <div>
-            <h4 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2">Details</h4>
+            <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Details</h4>
             <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[9px] text-white/50">Owner</span>
-                <span className="text-[10px] text-white/90">{item.details.owner}</span>
+                <span className="text-xs text-white/50">Owner</span>
+                <span className="text-xs text-white/90">{item.details.owner}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[9px] text-white/50">Risk Level</span>
-                <span className={`text-[10px] ${item.details.risk === 'high' ? 'text-semantic-danger' : item.details.risk === 'med' ? 'text-semantic-warning' : 'text-semantic-success'}`}>
+                <span className="text-xs text-white/50">Risk Level</span>
+                <span className={`text-xs ${item.details.risk === 'high' ? 'text-semantic-danger' : item.details.risk === 'med' ? 'text-semantic-warning' : 'text-semantic-success'}`}>
                   {item.details.risk.charAt(0).toUpperCase() + item.details.risk.slice(1)}
                 </span>
               </div>
               {item.details.estimated_duration && (
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] text-white/50">Duration</span>
-                  <span className="text-[10px] text-white/90">{item.details.estimated_duration}</span>
+                  <span className="text-xs text-white/50">Duration</span>
+                  <span className="text-xs text-white/90">{item.details.estimated_duration}</span>
                 </div>
               )}
             </div>
@@ -796,14 +916,14 @@ function ScheduleDrawer({
           {/* Approval State */}
           {item.status === 'awaiting_approval' && (
             <div>
-              <h4 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2">Approval Required</h4>
+              <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Approval Required</h4>
               <div className="p-3 bg-semantic-warning/8 border border-semantic-warning/20 rounded-lg">
-                <p className="text-[10px] text-white/50 mb-2">This item requires approval before execution.</p>
+                <p className="text-xs text-white/50 mb-2">This item requires approval before execution.</p>
                 <div className="flex items-center gap-2">
-                  <button className="flex-1 px-3 py-1.5 text-[10px] font-semibold text-white/90 bg-semantic-success/10 border border-semantic-success/30 rounded hover:bg-semantic-success/20 transition-colors">
+                  <button className="flex-1 px-3 py-1.5 text-xs font-semibold text-white/90 bg-semantic-success/10 border border-semantic-success/30 rounded hover:bg-semantic-success/20 transition-colors">
                     Approve
                   </button>
-                  <button className="flex-1 px-3 py-1.5 text-[10px] font-semibold text-white/50 bg-[#1A1A24] border border-[#2A2A36] rounded hover:text-white/90 transition-colors">
+                  <button className="flex-1 px-3 py-1.5 text-xs font-semibold text-white/50 bg-[#1A1A24] border border-[#2A2A36] rounded hover:text-white/90 transition-colors">
                     Reject
                   </button>
                 </div>
@@ -813,7 +933,7 @@ function ScheduleDrawer({
 
           {/* Request Approval Button */}
           {item.status !== 'awaiting_approval' && item.status !== 'published' && (
-            <button className="w-full px-3 py-2 text-[10px] font-semibold text-brand-iris bg-brand-iris/10 border border-brand-iris/30 rounded-lg hover:bg-brand-iris/20 transition-colors">
+            <button className="w-full px-3 py-2 text-xs font-semibold text-brand-iris bg-brand-iris/10 border border-brand-iris/30 rounded-lg hover:bg-brand-iris/20 transition-colors">
               Request Approval
             </button>
           )}
@@ -821,7 +941,7 @@ function ScheduleDrawer({
 
         {/* Footer */}
         <div className="px-4 py-3 border-t border-[#1A1A24] bg-[#0A0A0F]">
-          <p className="text-[9px] text-white/50 text-center">
+          <p className="text-xs text-white/50 text-center">
             Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-white/50">Esc</kbd> to close
           </p>
         </div>
@@ -855,6 +975,8 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date()); // Auto-select Today
   const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  // Day view: separate selection state for inline details panel
+  const [dayViewSelectedItem, setDayViewSelectedItem] = useState<CalendarItem | null>(null);
 
   // Group items by date
   const itemsByDate = useMemo(() => {
@@ -870,6 +992,8 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
 
   const handleDateSelect = useCallback((date: Date) => {
     setSelectedDate(date);
+    // Clear day view selection when changing dates
+    setDayViewSelectedItem(null);
     // On mobile, switch to agenda when selecting a date
     if (window.innerWidth < 640) {
       setMobileTab('agenda');
@@ -899,7 +1023,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs font-semibold text-white/90">Calendar</h3>
         </div>
-        <div className="p-2 bg-semantic-danger/10 border border-semantic-danger/20 rounded text-[10px] text-semantic-danger">
+        <div className="p-2 bg-semantic-danger/10 border border-semantic-danger/20 rounded text-xs text-semantic-danger">
           Failed to load calendar
         </div>
       </div>
@@ -912,7 +1036,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs font-semibold text-white/90">Calendar</h3>
         </div>
-        <p className="text-[10px] text-white/50 text-center py-3">No scheduled items</p>
+        <p className="text-xs text-white/50 text-center py-3">No scheduled items</p>
       </div>
     );
   }
@@ -979,19 +1103,21 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
           <div className="hidden sm:block h-full">
             {viewMode === 'day' && (
               <div className="h-full grid grid-cols-2 gap-2">
+                {/* LEFT: Day timeline with event markers */}
                 <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
-                  <DayView
+                  <DayTimelineView
                     selectedDate={selectedDate}
                     onDateSelect={handleDateSelect}
                     items={selectedDateItems}
-                    onItemClick={handleItemClick}
+                    selectedItemId={dayViewSelectedItem?.id || null}
+                    onItemClick={(item) => setDayViewSelectedItem(item)}
                   />
                 </div>
+                {/* RIGHT: Details panel for selected event */}
                 <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
-                  <AgendaPanel
-                    selectedDate={selectedDate}
-                    items={selectedDateItems}
-                    onItemClick={handleItemClick}
+                  <DayDetailsPanel
+                    selectedItem={dayViewSelectedItem}
+                    onClose={() => setDayViewSelectedItem(null)}
                   />
                 </div>
               </div>
