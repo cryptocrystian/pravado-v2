@@ -111,7 +111,7 @@ export function TriPaneShell({
                 <svg className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
                 </svg>
-                <span className="text-[10px] font-medium uppercase tracking-wider [writing-mode:vertical-lr] rotate-180">Actions</span>
+                <span className="text-[11px] font-medium uppercase tracking-wider [writing-mode:vertical-lr] rotate-180">Actions</span> {/* typography-allow: vertical label */}
               </div>
             </button>
           ) : (
@@ -145,7 +145,7 @@ export function TriPaneShell({
               <div className="w-2 h-2 rounded-full bg-brand-iris animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
               <h2 className="text-sm font-semibold text-white tracking-tight">Intelligence Canvas</h2>
             </div>
-            <div className="flex items-center gap-1 text-[10px] text-white/50">
+            <div className="flex items-center gap-1 text-[11px] text-white/50"> {/* typography-allow: status indicator */}
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
               </svg>
@@ -175,7 +175,7 @@ export function TriPaneShell({
                 <svg className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span className="text-[10px] font-medium uppercase tracking-wider [writing-mode:vertical-lr]">Strategy</span>
+                <span className="text-[11px] font-medium uppercase tracking-wider [writing-mode:vertical-lr]">Strategy</span> {/* typography-allow: vertical label */}
               </div>
             </button>
           ) : (

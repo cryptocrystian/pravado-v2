@@ -429,7 +429,7 @@ function ErrorState({ error }: { error: Error }) {
           </svg>
           <div>
             <h4 className="text-xs font-semibold text-semantic-danger">Failed to load strategy</h4>
-            <p className="text-[10px] text-white/50 mt-0.5">{error.message}</p>
+            <p className="text-[11px] text-white/50 mt-0.5">{error.message}</p> {/* typography-allow: error meta */}
           </div>
         </div>
       </div>
@@ -471,7 +471,7 @@ export function StrategyPanelPane({ data, isLoading, error }: StrategyPanelPaneP
 
         {/* Key Metrics Grid */}
         <div>
-          <h3 className="text-[9px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">Key Metrics</h3>
+          <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">Key Metrics</h3> {/* typography-allow: section header */}
           <div className="grid grid-cols-2 gap-2">
             {topKPIs.map(kpi => (
               <KPICard key={kpi.id} kpi={kpi} />
@@ -482,7 +482,7 @@ export function StrategyPanelPane({ data, isLoading, error }: StrategyPanelPaneP
         {/* Primary Bottleneck */}
         {primaryBottleneck && (
           <div>
-            <h3 className="text-[9px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">Primary Bottleneck</h3>
+            <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">Primary Bottleneck</h3> {/* typography-allow: section header */}
             <BottleneckCard narrative={primaryBottleneck} />
           </div>
         )}
@@ -490,10 +490,10 @@ export function StrategyPanelPane({ data, isLoading, error }: StrategyPanelPaneP
         {/* Top Recommendations + View All */}
         <div>
           <div className="flex items-center justify-between mb-2 px-0.5">
-            <h3 className="text-[9px] text-white/50 uppercase tracking-wide font-semibold">Recommendations</h3>
+            <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold">Recommendations</h3> {/* typography-allow: section header */}
             <button
               onClick={handleOpenDrawer}
-              className="text-[9px] text-brand-cyan hover:text-brand-cyan/80 transition-colors"
+              className="text-[11px] text-brand-cyan hover:text-brand-cyan/80 transition-colors" /* typography-allow: link */
             >
               View all ({data.recommendations.length}) →
             </button>
