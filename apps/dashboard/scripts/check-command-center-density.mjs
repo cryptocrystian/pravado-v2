@@ -49,9 +49,17 @@ const REQUIRED_PATTERNS = [
   {
     file: 'ActionStreamPane.tsx',
     patterns: [
-      { regex: /action-card-hover-peek/, description: 'Hover peek CSS class marker (3-layer disclosure)' },
       { regex: /LAYER 1|LAYER 2/i, description: 'Layer documentation comments' },
-      { regex: /group-hover:opacity|group-hover:max-h/, description: 'Hover reveal animation' },
+      { regex: /ActionCard|DensityLevel/, description: 'ActionCard component import (v5)' },
+    ],
+  },
+  {
+    file: 'ActionCard.tsx',
+    patterns: [
+      { regex: /action-card-v3/, description: 'Action card v3 CSS class marker' },
+      { regex: /densityLevel|DensityLevel/, description: 'Density level support' },
+      { regex: /onPrimaryAction|onSecondaryAction/, description: 'On-card CTA handlers' },
+      { regex: /group-hover:/, description: 'Hover reveal animations' },
     ],
   },
 ];
