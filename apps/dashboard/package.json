@@ -5,7 +5,7 @@
   "description": "Pravado v2 Dashboard - Next.js admin interface",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "WATCHPACK_POLLING=true next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",

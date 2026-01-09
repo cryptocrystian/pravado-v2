@@ -11,26 +11,32 @@
  */
 
 /**
- * ActionStreamPane v3.0 - Auto-Compact Density + Progressive Disclosure
+ * ActionStreamPane v4.0 - True Adaptive Density + Progressive Disclosure
  *
- * AUTO-COMPACT MODE:
- * - When cards exceed pane height, automatically switches to compact layout
- * - Compact: Title + pillar + priority (single line, no paragraphs)
- * - Toggle available: Auto | Compact | Expanded
+ * TRUE ADAPTIVE DENSITY:
+ * - Computes per-card height based on available space and card count
+ * - targetCardHeight = clamp(availableHeight / cardCount, MIN_H, MAX_H)
+ * - Few cards = larger, more readable cards (reduce empty space)
+ * - Many cards = compact cards (maximize visible cards)
+ *
+ * DENSITY LEVELS:
+ * - Comfortable (MAX_H ~80px): Title, pillar, priority, summary snippet, metrics
+ * - Standard (~56px): Title, pillar, priority, metrics
+ * - Compact (MIN_H ~36px): Single line - title, pillar, priority, metrics inline
  *
  * PROGRESSIVE DISCLOSURE (3 Layers):
- * - Layer 1 (Card): Minimal - title, pillar badge, priority dot, conf/impact pills
- * - Layer 2 (Hover): Overlay reveal - summary line, time estimate, gated chip
+ * - Layer 1 (Card): Content scales with adaptive density
+ * - Layer 2 (Hover): Overlay peek - additional summary, time estimate, gated chip
  * - Layer 3 (Drawer): Full details via ActionPeekDrawer
  *
  * GROUPING:
- * - Critical/Urgent actions pinned to top
+ * - Critical/Urgent actions pinned to top (slightly larger)
  * - Others sorted by confidence descending
  *
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ActionItem, ActionStreamResponse, Pillar, Priority } from './types';
 
 interface ActionStreamPaneProps {
@@ -44,6 +50,11 @@ interface ActionStreamPaneProps {
 // Filter tabs configuration
 type FilterTab = 'all' | 'draft' | 'proposed' | 'urgent' | 'signal';
 type DensityMode = 'auto' | 'compact' | 'expanded';
+
+// Adaptive density constants
+const MIN_CARD_HEIGHT = 36; // Compact single-line
+const STANDARD_CARD_HEIGHT = 56; // Standard with metrics
+const MAX_CARD_HEIGHT = 80; // Comfortable with summary
 
 const filterTabs: { key: FilterTab; label: string }[] = [
   { key: 'all', label: 'All' },
@@ -100,117 +111,196 @@ const priorityConfig: Record<Priority, {
   low: { dot: 'bg-white/30', label: 'Low', urgent: false },
 };
 
-// Compact confidence/impact pill
-function MetricPill({ value, label }: { value: number; label: string }) {
+// Density level determines what content is shown
+type DensityLevel = 'compact' | 'standard' | 'comfortable';
+
+function getDensityLevel(targetHeight: number): DensityLevel {
+  if (targetHeight >= MAX_CARD_HEIGHT - 10) return 'comfortable';
+  if (targetHeight >= STANDARD_CARD_HEIGHT) return 'standard';
+  return 'compact';
+}
+
+// Compact confidence/impact pill - typography-allow: 11px is minimum readable for metrics
+function MetricPill({ value, label, size = 'small' }: { value: number; label: string; size?: 'small' | 'normal' }) {
   const percentage = Math.round(value * 100);
   return (
-    <span className="px-1.5 py-0.5 text-[8px] font-bold bg-[#1A1A24] text-white/70 rounded">
+    <span className={`font-bold bg-[#1A1A24] text-white/70 rounded ${
+      size === 'normal' ? 'px-1.5 py-0.5 text-[11px]' : 'px-1 py-0.5 text-[11px]'
+    }`}>
       {label[0]}: {percentage}%
     </span>
   );
 }
 
 /**
- * CompactActionCard - Ultra-dense single-line card
- * Used in auto-compact mode when list exceeds viewport
+ * AdaptiveActionCard - Scales content based on computed density
+ *
+ * DENSITY LEVELS:
+ * - compact: Single line - title, pillar, priority inline
+ * - standard: Two lines - title/pillar + metrics row
+ * - comfortable: Three+ lines - full header, title, summary snippet, metrics
  *
  * MARKER: action-card-hover-peek (for CI guardrail check)
  */
-function CompactActionCard({
+function AdaptiveActionCard({
   action,
   onClick,
   isSelected,
+  densityLevel,
+  isUrgent,
 }: {
   action: ActionItem;
   onClick?: () => void;
   isSelected?: boolean;
+  densityLevel: DensityLevel;
+  isUrgent?: boolean;
 }) {
   const pillar = pillarAccents[action.pillar];
   const priority = priorityConfig[action.priority];
 
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick?.();
-        }
-      }}
-      className={`
-        action-card-hover-peek
-        group relative bg-[#0D0D12] rounded overflow-hidden cursor-pointer
-        border-l-[3px] ${pillar.border}
-        border border-[#1A1A24] border-l-0
-        transition-all duration-200 ease-out
-        hover:bg-[#111116] hover:border-[#2A2A36]
-        ${isSelected ? `${pillar.glow} border-[#2A2A36]` : ''}
-        focus:outline-none focus:ring-1 focus:ring-brand-cyan/40
-      `}
-    >
-      <div className="relative px-2.5 py-2 flex items-center gap-2">
-        {/* Priority Dot */}
-        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${priority.dot}`} />
+  // Compact: ultra-dense single line
+  if (densityLevel === 'compact') {
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onClick?.();
+          }
+        }}
+        className={`
+          action-card-hover-peek
+          group relative bg-[#0D0D12] rounded overflow-hidden cursor-pointer
+          border-l-[3px] ${pillar.border}
+          border border-[#1A1A24] border-l-0
+          transition-all duration-200 ease-out
+          hover:bg-[#111116] hover:border-[#2A2A36]
+          ${isSelected ? `${pillar.glow} border-[#2A2A36]` : ''}
+          ${isUrgent ? 'ring-1 ring-semantic-danger/20' : ''}
+          focus:outline-none focus:ring-1 focus:ring-brand-cyan/40
+        `}
+      >
+        <div className="relative px-2.5 py-2 flex items-center gap-2">
+          {/* Priority Dot */}
+          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${priority.dot}`} />
 
-        {/* Pillar Badge - compact */}
-        <span className={`px-1 py-0.5 text-[8px] font-bold uppercase rounded border flex-shrink-0 ${pillar.badge}`}>
-          {action.pillar}
-        </span>
+          {/* Pillar Badge - compact */}
+          <span className={`px-1 py-0.5 text-[11px] font-bold uppercase rounded border flex-shrink-0 ${pillar.badge}`}>
+            {action.pillar}
+          </span>
 
-        {/* Title - truncated */}
-        <span className="flex-1 text-[11px] font-medium text-white/90 truncate">
-          {action.title}
-        </span>
+          {/* Title - truncated */}
+          <span className="flex-1 text-xs font-medium text-white/90 truncate">
+            {action.title}
+          </span>
 
-        {/* Metric pills */}
-        <div className="hidden sm:flex items-center gap-1 flex-shrink-0">
-          <MetricPill value={action.confidence} label="Conf" />
-          <MetricPill value={action.impact} label="Impact" />
+          {/* Metric pills */}
+          <div className="hidden sm:flex items-center gap-1 flex-shrink-0">
+            <MetricPill value={action.confidence} label="Conf" />
+            <MetricPill value={action.impact} label="Impact" />
+          </div>
+
+          {/* Hover reveal: arrow */}
+          <svg
+            className="w-3 h-3 text-white/30 group-hover:text-brand-cyan transition-colors flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
         </div>
 
-        {/* Hover reveal: arrow */}
-        <svg
-          className="w-3 h-3 text-white/30 group-hover:text-brand-cyan transition-colors flex-shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
+        {/* LAYER 2: Hover overlay with summary */}
+        <div className="absolute inset-0 bg-[#0D0D12]/95 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center px-2.5 pointer-events-none">
+          <p className="text-xs text-white/70 truncate flex-1">{action.summary}</p>
+          {action.gate.required && (
+            <span className="px-1 py-0.5 text-[11px] font-medium text-semantic-warning bg-semantic-warning/10 rounded border border-semantic-warning/20 flex-shrink-0 ml-2">
+              Gated
+            </span>
+          )}
+        </div>
       </div>
+    );
+  }
 
-      {/* LAYER 2: Hover overlay with summary */}
-      <div className="absolute inset-0 bg-[#0D0D12]/95 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center px-2.5 pointer-events-none">
-        <p className="text-[10px] text-white/70 truncate flex-1">{action.summary}</p>
-        {action.gate.required && (
-          <span className="px-1 py-0.5 text-[7px] font-medium text-semantic-warning bg-semantic-warning/10 rounded border border-semantic-warning/20 flex-shrink-0 ml-2">
-            Gated
-          </span>
-        )}
+  // Standard: two-line layout with metrics
+  if (densityLevel === 'standard') {
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onClick?.();
+          }
+        }}
+        className={`
+          action-card-hover-peek
+          group relative bg-[#0D0D12] rounded-lg overflow-hidden cursor-pointer
+          border-l-[3px] ${pillar.border}
+          border border-[#1A1A24] border-l-0
+          transition-all duration-200 ease-out
+          hover:bg-[#111116] hover:border-[#2A2A36]
+          ${isSelected ? `${pillar.glow} border-[#2A2A36]` : ''}
+          ${isUrgent ? 'ring-1 ring-semantic-danger/20' : ''}
+          focus:outline-none focus:ring-1 focus:ring-brand-cyan/40
+        `}
+      >
+        <div className={`absolute inset-0 ${pillar.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-200`} />
+
+        <div className="relative p-2.5">
+          {/* Row 1: Pillar + Priority + Title */}
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border flex-shrink-0 ${pillar.badge}`}>
+              {action.pillar}
+            </span>
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${priority.dot}`} />
+            <h3 className="flex-1 text-xs font-semibold text-white/90 truncate">
+              {action.title}
+            </h3>
+          </div>
+
+          {/* Row 2: Metrics */}
+          <div className="flex items-center gap-2">
+            <MetricPill value={action.confidence} label="Conf" />
+            <MetricPill value={action.impact} label="Impact" />
+            {action.gate.required && (
+              <span className="px-1 py-0.5 text-[11px] font-medium text-semantic-warning bg-semantic-warning/10 rounded border border-semantic-warning/20">
+                Gated
+              </span>
+            )}
+            {action.mode === 'autopilot' && (
+              <span className="px-1 py-0.5 text-[11px] font-medium uppercase rounded bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">
+                Auto
+              </span>
+            )}
+            <span className="flex-1" />
+            <svg
+              className="w-3 h-3 text-white/30 group-hover:text-brand-cyan transition-colors"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+
+          {/* LAYER 2: Hover overlay */}
+          <div className="absolute inset-0 bg-[#0D0D12]/95 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center px-2.5 pointer-events-none">
+            <p className="text-xs text-white/70 truncate flex-1">{action.summary}</p>
+          </div>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-/**
- * ExpandedActionCard - Full card with progressive disclosure
- *
- * MARKER: action-card-hover-peek (for CI guardrail check)
- */
-function ExpandedActionCard({
-  action,
-  onClick,
-  isSelected,
-}: {
-  action: ActionItem;
-  onClick?: () => void;
-  isSelected?: boolean;
-}) {
-  const pillar = pillarAccents[action.pillar];
-  const priority = priorityConfig[action.priority];
-
+  // Comfortable: full layout with summary visible
   return (
     <div
       role="button"
@@ -230,63 +320,57 @@ function ExpandedActionCard({
         transition-all duration-300 ease-out
         hover:bg-[#111116] hover:border-[#2A2A36]
         ${isSelected ? `${pillar.glow} border-[#2A2A36]` : ''}
+        ${isUrgent ? 'ring-1 ring-semantic-danger/20' : ''}
         focus:outline-none focus:ring-1 focus:ring-brand-cyan/40
       `}
     >
-      {/* Subtle gradient overlay on hover */}
       <div className={`absolute inset-0 ${pillar.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
 
       <div className="relative p-3">
-        {/* LAYER 1: Essential Info */}
-
         {/* Header Row */}
         <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
-            <span className={`px-1.5 py-0.5 text-[9px] font-bold uppercase rounded border ${pillar.badge}`}>
+            <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border ${pillar.badge}`}>
               {action.pillar}
             </span>
             {action.mode === 'autopilot' && (
-              <span className="px-1 py-0.5 text-[8px] font-medium uppercase rounded bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">
+              <span className="px-1 py-0.5 text-[11px] font-medium uppercase rounded bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">
                 Auto
               </span>
             )}
           </div>
           <div className="flex items-center gap-1.5">
             <span className={`w-1.5 h-1.5 rounded-full ${priority.dot}`} />
-            <span className={`text-[9px] ${priority.urgent ? 'text-semantic-warning font-medium' : 'text-white/50'}`}>
+            <span className={`text-xs ${priority.urgent ? 'text-semantic-warning font-medium' : 'text-white/50'}`}>
               {priority.label}
             </span>
           </div>
         </div>
 
         {/* Title */}
-        <h3 className="text-[12px] font-semibold text-white/90 mb-1 leading-snug line-clamp-2">
+        <h3 className="text-sm font-semibold text-white/90 mb-1 leading-snug line-clamp-2">
           {action.title}
         </h3>
 
+        {/* Summary - visible in comfortable mode */}
+        <p className="text-xs text-white/50 line-clamp-1 mb-2">{action.summary}</p>
+
         {/* Metric pills row */}
-        <div className="flex items-center gap-2 mb-1.5">
-          <MetricPill value={action.confidence} label="Conf" />
-          <MetricPill value={action.impact} label="Impact" />
+        <div className="flex items-center gap-2">
+          <MetricPill value={action.confidence} label="Conf" size="normal" />
+          <MetricPill value={action.impact} label="Impact" size="normal" />
           {action.gate.required && (
-            <span className="px-1 py-0.5 text-[7px] font-medium text-semantic-warning bg-semantic-warning/10 rounded border border-semantic-warning/20">
+            <span className="px-1.5 py-0.5 text-[11px] font-medium text-semantic-warning bg-semantic-warning/10 rounded border border-semantic-warning/20">
               Gated
             </span>
           )}
-        </div>
-
-        {/* LAYER 2: Hover reveal - summary + CTA */}
-        <div className="overflow-hidden transition-all duration-300 ease-out max-h-0 group-hover:max-h-16 opacity-0 group-hover:opacity-100">
-          <p className="text-[10px] text-white/60 line-clamp-2 mb-2">{action.summary}</p>
-          <div className="flex items-center justify-between">
-            <span className="text-[8px] text-white/40">~5 min</span>
-            <span className="text-[9px] text-brand-cyan flex items-center gap-1">
-              View details
-              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </span>
-          </div>
+          <span className="flex-1" />
+          <span className="text-xs text-brand-cyan flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            View details
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </span>
         </div>
       </div>
     </div>
@@ -333,7 +417,7 @@ function ErrorState({ error }: { error: Error }) {
           </svg>
           <div>
             <h4 className="text-xs font-semibold text-semantic-danger">Failed to load actions</h4>
-            <p className="text-[10px] text-white/50 mt-0.5">{error.message}</p>
+            <p className="text-xs text-white/50 mt-0.5">{error.message}</p>
           </div>
         </div>
       </div>
@@ -350,7 +434,7 @@ function EmptyState() {
         </svg>
       </div>
       <p className="text-xs text-white/50 font-medium">No pending actions</p>
-      <p className="text-[10px] text-white/30 mt-1">AI is analyzing your strategy</p>
+      <p className="text-xs text-white/30 mt-1">AI is analyzing your strategy</p>
     </div>
   );
 }
@@ -364,32 +448,56 @@ export function ActionStreamPane({
 }: ActionStreamPaneProps) {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
   const [densityMode, setDensityMode] = useState<DensityMode>('auto');
-  const [shouldCompact, setShouldCompact] = useState(false);
+  const [computedDensityLevel, setComputedDensityLevel] = useState<DensityLevel>('standard');
   const listRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
 
-  // Auto-compact detection: if content would overflow, switch to compact
-  useEffect(() => {
-    if (densityMode !== 'auto' || !listRef.current || !contentRef.current) return;
+  // Adaptive density calculation
+  useLayoutEffect(() => {
+    if (!listRef.current || !data?.items) return;
 
-    const checkOverflow = () => {
+    const calculateDensity = () => {
       const container = listRef.current;
-      const content = contentRef.current;
-      if (!container || !content) return;
+      if (!container) return;
 
-      // If content height > container height, need compact mode
-      const containerHeight = container.clientHeight;
-      const contentHeight = content.scrollHeight;
-      setShouldCompact(contentHeight > containerHeight + 50); // 50px buffer
+      const availableHeight = container.clientHeight;
+      const cardCount = data.items.length;
+
+      if (cardCount === 0) {
+        setComputedDensityLevel('comfortable');
+        return;
+      }
+
+      // Account for padding (16px top + 16px bottom) and gaps between cards
+      const padding = 32;
+      const gapPerCard = 8; // space-y-2 = 8px
+      const totalGaps = (cardCount - 1) * gapPerCard;
+      const usableHeight = availableHeight - padding - totalGaps;
+
+      // Calculate target height per card
+      const targetCardHeight = usableHeight / cardCount;
+
+      // Clamp to our bounds
+      const clampedHeight = Math.max(MIN_CARD_HEIGHT, Math.min(MAX_CARD_HEIGHT, targetCardHeight));
+
+      // Convert to density level
+      setComputedDensityLevel(getDensityLevel(clampedHeight));
     };
 
-    checkOverflow();
-    // Recheck on resize
-    window.addEventListener('resize', checkOverflow);
-    return () => window.removeEventListener('resize', checkOverflow);
-  }, [densityMode, data]);
+    calculateDensity();
 
-  const isCompact = densityMode === 'compact' || (densityMode === 'auto' && shouldCompact);
+    // Recalculate on resize
+    const resizeObserver = new ResizeObserver(calculateDensity);
+    resizeObserver.observe(listRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, [data]);
+
+  // Determine effective density level based on mode
+  const effectiveDensityLevel: DensityLevel = useMemo(() => {
+    if (densityMode === 'compact') return 'compact';
+    if (densityMode === 'expanded') return 'comfortable';
+    return computedDensityLevel; // auto mode uses computed
+  }, [densityMode, computedDensityLevel]);
 
   // Filter and sort actions
   const processedItems = useMemo(() => {
@@ -445,7 +553,7 @@ export function ActionStreamPane({
                 key={tab.key}
                 onClick={() => setActiveFilter(tab.key)}
                 className={`
-                  px-2 py-1 text-[9px] font-semibold uppercase tracking-wide rounded
+                  px-2 py-1 text-[11px] font-semibold uppercase tracking-wide rounded
                   transition-all duration-200 ease-out whitespace-nowrap
                   ${isActive
                     ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
@@ -471,7 +579,7 @@ export function ActionStreamPane({
               key={mode}
               onClick={() => setDensityMode(mode)}
               className={`
-                px-1.5 py-0.5 text-[8px] font-medium rounded transition-colors
+                px-1.5 py-0.5 text-[11px] font-medium rounded transition-colors
                 ${densityMode === mode ? 'bg-white/10 text-white/90' : 'text-white/40 hover:text-white/70'}
               `}
               title={mode === 'auto' ? 'Auto-compact when overflow' : mode === 'compact' ? 'Always compact' : 'Always expanded'}
@@ -485,18 +593,18 @@ export function ActionStreamPane({
       {/* Content */}
       <div ref={listRef} className="flex-1 overflow-y-auto">
         {isLoading ? (
-          <LoadingSkeleton compact={isCompact} />
+          <LoadingSkeleton compact={effectiveDensityLevel === 'compact'} />
         ) : error ? (
           <ErrorState error={error} />
         ) : processedItems.length === 0 ? (
           <EmptyState />
         ) : (
-          <div ref={contentRef} className={isCompact ? 'p-2 space-y-1' : 'p-3 space-y-2'}>
+          <div className={effectiveDensityLevel === 'compact' ? 'p-2 space-y-1' : 'p-3 space-y-2'}>
             {/* Urgent section header if any urgent items */}
             {processedItems.some(i => i.priority === 'critical' || i.priority === 'high') && activeFilter === 'all' && (
               <div className="flex items-center gap-1.5 px-1 py-0.5 mb-1">
                 <span className="w-1 h-1 rounded-full bg-semantic-danger animate-pulse" />
-                <span className="text-[8px] font-semibold text-semantic-danger uppercase tracking-wider">Urgent</span>
+                <span className="text-xs font-semibold text-semantic-danger uppercase tracking-wider">Urgent</span>
               </div>
             )}
 
@@ -509,23 +617,17 @@ export function ActionStreamPane({
 
               return (
                 <div key={action.id}>
-                  {isCompact ? (
-                    <CompactActionCard
-                      action={action}
-                      onClick={() => handleActionClick(action)}
-                      isSelected={selectedActionId === action.id}
-                    />
-                  ) : (
-                    <ExpandedActionCard
-                      action={action}
-                      onClick={() => handleActionClick(action)}
-                      isSelected={selectedActionId === action.id}
-                    />
-                  )}
+                  <AdaptiveActionCard
+                    action={action}
+                    onClick={() => handleActionClick(action)}
+                    isSelected={selectedActionId === action.id}
+                    densityLevel={effectiveDensityLevel}
+                    isUrgent={isUrgent}
+                  />
                   {showDivider && (
                     <div className="flex items-center gap-1.5 px-1 py-1 mt-1.5">
                       <div className="flex-1 h-px bg-[#1A1A24]" />
-                      <span className="text-[7px] text-white/30 uppercase tracking-wider">Other</span>
+                      <span className="text-xs text-white/30 uppercase tracking-wider">Other</span>
                       <div className="flex-1 h-px bg-[#1A1A24]" />
                     </div>
                   )}
