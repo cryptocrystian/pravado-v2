@@ -235,46 +235,66 @@ No `text-slate-*`, `text-gray-*`, `text-neutral-*`, `text-zinc-*` tokens in Comm
 - Right side: Agenda panel showing items for selected date
 - Both panels scroll independently within fixed container
 
-## Action Stream Disclosure Rules
+## Action Stream Density Contract (v6.0)
 
-### Adaptive Density System (v5.0)
-The Action Stream automatically adjusts card density based on available space AND card count:
+### UX-Pilot Authority
+**Comfortable mode is the UX-Pilot reference authority.** All Action Stream cards should look like UX-Pilot in comfortable mode by default.
 
-**Density Levels:**
-| Level | Card Count | Card Height | Content Shown |
-|-------|------------|-------------|---------------|
-| Comfortable | 1-3 cards | ~140px | Full details, large CTAs, metrics row, summary |
-| Standard | 4-7 cards | ~90px | Title, summary, CTA row, confidence badge |
-| Compact | 8-14 cards | ~52px | Title, CTA row, mode/gate badges |
-| Ultra-compact | 15+ cards | ~32px | Single line - title + pillar + priority only |
+### Density Levels (3 Modes)
 
-**Toggle Modes:**
-- **Auto (A)**: Adaptive density based on space + count (default)
-- **Compact (C)**: Forces compact mode regardless of space
-- **Expanded (E)**: Forces comfortable mode (may require scrolling)
+| Level | Card Count | Card Height | Content Shown | CTA Visibility |
+|-------|------------|-------------|---------------|----------------|
+| **Comfortable** (DEFAULT) | ≤8 cards | ~130-150px | Full details, metrics row, summary | **DOMINANT** primary + subdued secondary |
+| Standard | 9-12 cards | ~80-100px | Title, summary, condensed badges | Visible primary + text secondary |
+| Compact | 13+ cards | ~48-56px | Title only, inline badges | Primary CTA only + chevron |
+
+### Density Selection Rules
+1. **Comfortable is DEFAULT** - Should be the most common state
+2. **≤8 cards** → Always comfortable (unless height-constrained)
+3. **9-12 cards** → Standard (transition zone)
+4. **13+ cards** → Compact (fallback only)
+
+### CTA Hierarchy Rules (CRITICAL)
+
+**Comfortable Mode (UX-Pilot Authority):**
+- **Primary CTA**: DOMINANT - Large, fully colored pill, strong glow, white text
+  - Ready state: `bg-semantic-success` with green glow
+  - Non-ready: Pillar color (`bg-brand-magenta/iris/cyan`) with pillar glow
+- **Secondary CTA**: SUBDUED - Ghost style, border only, never competes
+  - `text-white/60` with `border-white/10`, no background
+
+**Standard Mode:**
+- Primary CTA: Colored background/border, moderate size
+- Secondary CTA: Text-only link style (`text-white/55`)
+
+**Compact Mode:**
+- Primary CTA only - Compact pill button
+- Secondary: Click card or chevron to open drawer
 
 ### On-Card CTAs (REQUIRED)
-Every action card MUST include two visible CTAs:
+Every action card MUST include visible CTAs:
 
-**Primary CTA** (left):
-- Contextual action label: "Execute", "Auto-Fix", "Send Email", etc.
-- Sourced from `action.cta.primary`
-- Green glow when action is "ready" state (high confidence + not gated)
-- Pillar-colored otherwise
+**Primary CTA:**
+- Contextual action label from `action.cta.primary`
+- "Execute", "Auto-Fix", "Send Email", "Investigate", etc.
+- Ready state (confidence ≥0.8 + no gate): Green success styling
+- Non-ready: Pillar-colored
 
-**Secondary CTA** (right of primary):
-- Review/Details action: "Review", "Details", etc.
-- Sourced from `action.cta.secondary`
-- Opens ActionPeekDrawer with full details
+**Secondary CTA (Comfortable/Standard only):**
+- Action from `action.cta.secondary`
+- "Review", "Details", "View", etc.
+- Opens ActionPeekDrawer
 
-**Ready State:**
-- Defined as: `confidence >= 0.8 AND gate.required === false`
-- Shows "Ready" badge in standard/comfortable modes
-- Primary CTA uses success styling (green glow)
+### Ready State Definition
+```typescript
+isReady = confidence >= 0.8 && !gate.required
+```
+- Shows "✓ Ready" badge in comfortable mode
+- Primary CTA uses success styling with enhanced glow
 
 ### Progressive Disclosure (3 Layers)
-1. **Layer 1 (Card)**: Content scales with density level + visible CTAs
-2. **Layer 2 (Hover)**: Background tint + enhanced interactivity
+1. **Layer 1 (Card)**: Content scales with density + visible CTAs
+2. **Layer 2 (Hover)**: Background tint via `group-hover:opacity`
 3. **Layer 3 (Drawer)**: Full details via ActionPeekDrawer
 
 ### Grouping
@@ -284,34 +304,60 @@ Every action card MUST include two visible CTAs:
 
 ### Card Layout by Density
 
-**Ultra-Compact:**
+**Compact (13+ cards):**
 ```
-[●] [PR] Title text truncated... [→]
-```
-
-**Compact:**
-```
-[●] [PR] Title text...                           2h ago
-[Execute] [Review]                    [Auto] [Gated]
+[●] [PR] Title text truncated...       [Execute] [→]
 ```
 
-**Standard:**
+**Standard (9-12 cards):**
 ```
-[PR] [High] [Ready]                              2h ago
-Title text that can wrap to two lines
-Summary text in muted color...
-[Execute] [Review]              87% conf [Auto] [Gated]
+[●] [PR] [High] [Ready]                         2h ago
+Title text that can wrap to one line
+Summary text truncated...
+[Execute] Review                              87%  [●]
 ```
 
-**Comfortable:**
+**Comfortable (DEFAULT, ≤8 cards):**
 ```
-[PR] [High] [Ready] [Autopilot]                  2h ago
-Title text that can wrap to two lines maximum
-Summary text showing more detail in muted color...
-─────────────────────────────────────────────────────
-Confidence: 87%  |  Impact: 72%  |  [Approval Required]
-[  Execute  ] [  Review  ]
+┌─────────────────────────────────────────────────────┐
+│ [●][High] [PR] [✓ Ready] [Auto]             2h ago  │
+│                                                      │
+│ Title text that can wrap to two lines maximum       │
+│                                                      │
+│ Summary text showing more detail in readable        │
+│ contrast (white/65)...                              │
+│                                                      │
+│ ┌─────────────────────────────────────────────────┐ │
+│ │ Confidence  87%  │  Impact  72%  │ [Approval]  │ │
+│ └─────────────────────────────────────────────────┘ │
+│                                                      │
+│ [████ Execute ████]  [ Review ]                     │
+│  (DOMINANT - colored)  (subdued - ghost)            │
+└─────────────────────────────────────────────────────┘
 ```
+
+## Testing (Development Only)
+
+### Density Query Param Override
+Use `?density=` query parameter to force density modes for testing:
+
+```
+/app/command-center?density=comfortable   # Force comfortable mode
+/app/command-center?density=standard      # Force standard mode
+/app/command-center?density=compact       # Force compact mode
+```
+
+**Behavior:**
+- Overrides auto-calculation when present
+- Shows "DEV" badge in density toggle area
+- Disables manual toggle buttons
+- Only works on `/app/command-center` route
+
+### Toggle Buttons
+UI toggle buttons in header (disabled when query param active):
+- **A** (Auto): Adaptive density based on card count (default)
+- **F** (Force Comfortable): Always comfortable mode
+- **C** (Compact): Always compact mode
 
 ## Keyboard Accessibility
 
@@ -339,7 +385,7 @@ apps/dashboard/src/
 │   ├── TriPaneShell.tsx          # Responsive layout
 │   ├── CommandCenterTopbar.tsx   # AI-native topbar navigation
 │   ├── ActionStreamPane.tsx      # Left pane with adaptive density
-│   ├── ActionCard.tsx            # Action card component (v3)
+│   ├── ActionCard.tsx            # Action card component (v4 - UX-Pilot aligned)
 │   ├── ActionPeekDrawer.tsx      # Drawer for action details
 │   ├── IntelligenceCanvasPane.tsx # Center pane
 │   ├── StrategyPanelPane.tsx     # Right pane

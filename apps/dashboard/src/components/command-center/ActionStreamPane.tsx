@@ -5,41 +5,43 @@
  * - Layout: COMMAND_CENTER_REFERENCE.png
  * - Design System: DS_V3_REFERENCE.png
  * - Canon: /docs/canon/DS_v3_PRINCIPLES.md
+ * - UX-Pilot: Authority for Comfortable mode card design
  *
  * If this component diverges from the reference images,
  * STOP and request clarification.
  */
 
 /**
- * ActionStreamPane v5.0 - UX Pilot Reference Match
+ * ActionStreamPane v6.0 - UX Pilot Aligned
  *
- * TRUE ADAPTIVE DENSITY:
- * - Computes density based on available space AND card count
- * - Few cards = comfortable/standard (no empty space)
- * - Many cards = compact/ultra-compact (maximize visible)
+ * DENSITY CONTRACT (3 levels):
+ * - Comfortable (DEFAULT): <=8 cards OR sufficient vertical room (6+ cards visible)
+ *   → Full UX-Pilot card design with dominant CTA
+ * - Standard: 9-12 cards (transition zone)
+ *   → Condensed layout with visible CTA
+ * - Compact: 13+ cards OR height-constrained
+ *   → Row-based layout, primary CTA only
  *
- * DENSITY LEVELS:
- * - Comfortable (1-3 cards): Full details, large CTAs, metrics row
- * - Standard (4-7 cards): Title, summary, CTA row
- * - Compact (8-14 cards): Title, CTA row only
- * - Ultra-compact (15+ cards): Single line, title only
+ * COMFORTABLE = UX-PILOT AUTHORITY:
+ * - Card height ~120-150px
+ * - Dominant primary CTA (colored pill, strong contrast)
+ * - Subdued secondary action (ghost/outline)
+ * - Clear severity indication via left accent
  *
- * ON-CARD CTAs:
- * - Primary: Execute / Auto-Fix / Send Email (contextual)
- * - Secondary: Review / Details
+ * DEV TESTING:
+ * - Query param override: ?density=comfortable|standard|compact
+ * - This overrides auto-calculation for testing
  *
  * PROGRESSIVE DISCLOSURE (3 Layers):
- * - LAYER 1 (Card): Content scales with adaptive density
- * - LAYER 2 (Hover): Background tint via group-hover:opacity transitions
+ * - LAYER 1 (Card): Content scales with density
+ * - LAYER 2 (Hover): Background tint via group-hover transitions
  * - LAYER 3 (Drawer): Full details via ActionPeekDrawer
- *
- * Card component uses action-card-hover-peek class for hover states.
- * See ActionCard.tsx for card implementation with group-hover:max-h patterns.
  *
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ActionCard, type DensityLevel } from './ActionCard';
 import type { ActionItem, ActionStreamResponse, Priority } from './types';
 
@@ -53,14 +55,17 @@ interface ActionStreamPaneProps {
 
 // Filter tabs configuration
 type FilterTab = 'all' | 'draft' | 'proposed' | 'urgent' | 'signal';
-type DensityMode = 'auto' | 'compact' | 'expanded';
+type DensityMode = 'auto' | 'compact' | 'comfortable';
 
-// Height thresholds for adaptive density
+// NEW: Density thresholds aligned with UX-Pilot contract
+// Comfortable is DEFAULT and most common
 const DENSITY_THRESHOLDS = {
-  comfortable: { maxCards: 3, minHeightPerCard: 140 },
-  standard: { maxCards: 7, minHeightPerCard: 90 },
-  compact: { maxCards: 14, minHeightPerCard: 52 },
-  ultraCompact: { minHeightPerCard: 32 },
+  // Comfortable: default for <=8 cards, or when 6+ cards fit comfortably
+  comfortable: { maxCards: 8, minHeightPerCard: 130 },
+  // Standard: transition zone for 9-12 cards
+  standard: { maxCards: 12, minHeightPerCard: 80 },
+  // Compact: 13+ cards or height-constrained (fallback only)
+  compact: { minHeightPerCard: 48 },
 };
 
 const filterTabs: { key: FilterTab; label: string }[] = [
@@ -81,39 +86,45 @@ const priorityConfig: Record<Priority, { dot: string; urgent: boolean }> = {
 
 /**
  * Calculate optimal density level based on available space and card count
+ *
+ * NEW v6.0 RULES (UX-Pilot aligned):
+ * - Comfortable is DEFAULT and should be most common
+ * - Only fall back to standard/compact when necessary
  */
 function calculateDensityLevel(availableHeight: number, cardCount: number): DensityLevel {
+  // Default to comfortable for empty or small lists
   if (cardCount === 0) return 'comfortable';
 
-  // Calculate minimum height needed for each density level
-  const padding = 24; // Container padding
-  const headerHeight = 0; // Section headers if any
-  const usableHeight = availableHeight - padding - headerHeight;
-
-  // Check if we can fit all cards at each density level
+  const padding = 32; // Container padding
+  const usableHeight = availableHeight - padding;
   const heightPerCard = usableHeight / cardCount;
 
-  if (cardCount <= DENSITY_THRESHOLDS.comfortable.maxCards && heightPerCard >= DENSITY_THRESHOLDS.comfortable.minHeightPerCard) {
-    return 'comfortable';
+  // Rule 1: <=8 cards = comfortable (unless height-constrained)
+  if (cardCount <= DENSITY_THRESHOLDS.comfortable.maxCards) {
+    // Even with 8 cards, prefer comfortable if we have room for 6+ visible
+    if (heightPerCard >= DENSITY_THRESHOLDS.comfortable.minHeightPerCard * 0.75) {
+      return 'comfortable';
+    }
   }
 
-  if (cardCount <= DENSITY_THRESHOLDS.standard.maxCards && heightPerCard >= DENSITY_THRESHOLDS.standard.minHeightPerCard) {
-    return 'standard';
+  // Rule 2: 9-12 cards = standard (transition zone)
+  if (cardCount <= DENSITY_THRESHOLDS.standard.maxCards) {
+    if (heightPerCard >= DENSITY_THRESHOLDS.standard.minHeightPerCard) {
+      return 'standard';
+    }
   }
 
-  if (cardCount <= DENSITY_THRESHOLDS.compact.maxCards && heightPerCard >= DENSITY_THRESHOLDS.compact.minHeightPerCard) {
-    return 'compact';
-  }
-
-  return 'ultra-compact';
+  // Rule 3: 13+ cards OR height-constrained = compact (fallback only)
+  return 'compact';
 }
 
 function LoadingSkeleton({ density }: { density: DensityLevel }) {
-  const skeletonCount = density === 'ultra-compact' ? 8 : density === 'compact' ? 6 : density === 'standard' ? 4 : 3;
-  const skeletonHeight = density === 'ultra-compact' ? 'h-8' : density === 'compact' ? 'h-14' : density === 'standard' ? 'h-24' : 'h-36';
+  // Skeleton counts by density
+  const skeletonCount = density === 'compact' ? 6 : density === 'standard' ? 4 : 3;
+  const skeletonHeight = density === 'compact' ? 'h-12' : density === 'standard' ? 'h-20' : 'h-32';
 
   return (
-    <div className={density === 'ultra-compact' || density === 'compact' ? 'p-2 space-y-1' : 'p-3 space-y-2'}>
+    <div className={density === 'compact' ? 'p-2 space-y-1' : 'p-3 space-y-2.5'}>
       {Array.from({ length: skeletonCount }).map((_, i) => (
         <div key={i} className={`${skeletonHeight} bg-[#0D0D12] border-l-[3px] border-l-white/10 border border-[#1A1A24] border-l-0 rounded-lg animate-pulse`} />
       ))}
@@ -160,10 +171,17 @@ export function ActionStreamPane({
   onActionSelect,
   selectedActionId,
 }: ActionStreamPaneProps) {
+  const searchParams = useSearchParams();
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
   const [densityMode, setDensityMode] = useState<DensityMode>('auto');
-  const [computedDensity, setComputedDensity] = useState<DensityLevel>('standard');
+  const [computedDensity, setComputedDensity] = useState<DensityLevel>('comfortable'); // Default to comfortable
   const listRef = useRef<HTMLDivElement>(null);
+
+  // DEV: Query param override for testing density modes
+  // Usage: ?density=comfortable|standard|compact
+  const densityOverride = searchParams?.get('density') as DensityLevel | null;
+  const validOverrides: DensityLevel[] = ['comfortable', 'standard', 'compact'];
+  const hasValidOverride = !!(densityOverride && validOverrides.includes(densityOverride));
 
   // Filter and sort actions
   const processedItems = useMemo(() => {
@@ -214,12 +232,18 @@ export function ActionStreamPane({
     return () => resizeObserver.disconnect();
   }, [data, processedItems.length]);
 
-  // Determine effective density level based on mode
+  // Determine effective density level based on mode and overrides
   const effectiveDensity: DensityLevel = useMemo(() => {
+    // Priority 1: Query param override (for dev testing)
+    if (hasValidOverride && densityOverride) {
+      return densityOverride;
+    }
+    // Priority 2: User toggle selection
     if (densityMode === 'compact') return 'compact';
-    if (densityMode === 'expanded') return 'comfortable';
+    if (densityMode === 'comfortable') return 'comfortable';
+    // Priority 3: Auto-calculated density (defaults to comfortable)
     return computedDensity;
-  }, [densityMode, computedDensity]);
+  }, [densityMode, computedDensity, hasValidOverride, densityOverride]);
 
   // Count items per filter
   const counts = useMemo(() => ({
@@ -247,9 +271,11 @@ export function ActionStreamPane({
   }, [onActionSelect]);
 
   // Spacing based on density
-  const listSpacing = effectiveDensity === 'ultra-compact' || effectiveDensity === 'compact'
-    ? 'p-2 space-y-1'
-    : 'p-3 space-y-2';
+  const listSpacing = effectiveDensity === 'compact'
+    ? 'p-2 space-y-1.5'
+    : effectiveDensity === 'standard'
+    ? 'p-3 space-y-2'
+    : 'p-3 space-y-2.5'; // Comfortable - more spacious
 
   return (
     <div className="flex flex-col h-full">
@@ -285,20 +311,34 @@ export function ActionStreamPane({
         </div>
 
         {/* Density Toggle */}
-        <div className="flex items-center bg-[#0D0D12] rounded p-0.5 border border-[#1A1A24] flex-shrink-0">
-          {(['auto', 'compact', 'expanded'] as DensityMode[]).map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setDensityMode(mode)}
-              className={`
-                px-1.5 py-0.5 text-[11px] font-medium rounded transition-colors
-                ${densityMode === mode ? 'bg-white/10 text-white/90' : 'text-white/45 hover:text-white/75'}
-              `}
-              title={mode === 'auto' ? 'Adaptive density' : mode === 'compact' ? 'Always compact' : 'Always expanded'}
-            >
-              {mode === 'auto' ? 'A' : mode === 'compact' ? 'C' : 'E'}
-            </button>
-          ))}
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {/* Override indicator */}
+          {hasValidOverride && (
+            <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase bg-semantic-warning/20 text-semantic-warning rounded">
+              DEV
+            </span>
+          )}
+          <div className="flex items-center bg-[#0D0D12] rounded p-0.5 border border-[#1A1A24]">
+            {(['auto', 'comfortable', 'compact'] as DensityMode[]).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setDensityMode(mode)}
+                disabled={hasValidOverride}
+                className={`
+                  px-1.5 py-0.5 text-[11px] font-medium rounded transition-colors
+                  ${hasValidOverride ? 'opacity-50 cursor-not-allowed' : ''}
+                  ${densityMode === mode ? 'bg-white/10 text-white/90' : 'text-white/45 hover:text-white/75'}
+                `}
+                title={
+                  mode === 'auto' ? 'Adaptive density (default)' :
+                  mode === 'comfortable' ? 'Force comfortable (UX-Pilot)' :
+                  'Force compact'
+                }
+              >
+                {mode === 'auto' ? 'A' : mode === 'comfortable' ? 'F' : 'C'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
