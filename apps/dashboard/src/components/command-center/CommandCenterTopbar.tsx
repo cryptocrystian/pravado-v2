@@ -95,7 +95,7 @@ export function CommandCenterTopbar({
 
           {/* Org Selector (compact topbar variant) - Legibility: use lighter text */}
           <button className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#13131A] border border-[#1A1A24] hover:border-[#2A2A36] transition-colors group">
-            <div className="w-5 h-5 rounded bg-brand-iris/20 flex items-center justify-center text-brand-iris text-[10px] font-bold">
+            <div className="w-5 h-5 rounded bg-brand-iris/20 flex items-center justify-center text-brand-iris text-[11px] font-bold"> {/* typography-allow: badge */}
               {orgName.charAt(0).toUpperCase()}
             </div>
             <span className="text-xs font-medium text-white/80 group-hover:text-white transition-colors truncate max-w-[100px]">
@@ -109,8 +109,8 @@ export function CommandCenterTopbar({
           {/* Divider */}
           <div className="hidden md:block w-px h-6 bg-[#1A1A24]" />
 
-          {/* Surface Navigation Menu - Legibility: near-white text for nav labels */}
-          <nav className="hidden md:flex items-center gap-0.5">
+          {/* Surface Navigation Menu - PROMINENT: This is the primary navigation anchor */}
+          <nav className="hidden md:flex items-center gap-1">
             {surfaceNavItems.map((item) => {
               const active = isActive(item.href);
               return (
@@ -118,15 +118,19 @@ export function CommandCenterTopbar({
                   key={item.href}
                   href={item.href}
                   className={`
-                    px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200
+                    relative px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-200
                     ${active
-                      ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30 shadow-[0_0_12px_rgba(0,217,255,0.15)]'
-                      : 'text-white/75 hover:text-white hover:bg-[#13131A]'
+                      ? 'bg-brand-cyan/15 text-white border border-brand-cyan/30 shadow-[0_0_12px_rgba(0,217,255,0.2)]'
+                      : 'text-white/70 hover:text-white/95 hover:bg-[#13131A]'
                     }
                   `}
                 >
                   <span className="hidden lg:inline">{item.name}</span>
                   <span className="lg:hidden">{item.shortName}</span>
+                  {/* Active underline glow */}
+                  {active && (
+                    <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-brand-cyan rounded-full shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
+                  )}
                 </Link>
               );
             })}
@@ -146,7 +150,7 @@ export function CommandCenterTopbar({
             <span className="flex-1 text-left text-sm text-white/60 group-hover:text-white/80 ml-3 truncate">
               Ask Pravado…
             </span>
-            <kbd className="hidden sm:flex items-center gap-1 px-1.5 py-0.5 text-[10px] text-white/50 bg-[#1A1A24] rounded group-hover:bg-[#22222D] group-hover:text-white/70">
+            <kbd className="hidden sm:flex items-center gap-1 px-1.5 py-0.5 text-[11px] text-white/50 bg-[#1A1A24] rounded group-hover:bg-[#22222D] group-hover:text-white/70"> {/* typography-allow: kbd */}
               <span>⌘</span>
               <span>K</span>
             </kbd>
@@ -158,7 +162,7 @@ export function CommandCenterTopbar({
           {/* AI Active Indicator */}
           <div className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_6px_rgba(0,217,255,0.8)]" />
-            <span className="text-[10px] font-medium text-brand-cyan uppercase tracking-wide">AI Active</span>
+            <span className="text-[11px] font-medium text-brand-cyan uppercase tracking-wide">AI Active</span> {/* typography-allow: badge */}
           </div>
 
           {/* Context Toggle Chips - Legibility: lighter inactive text */}
@@ -170,7 +174,7 @@ export function CommandCenterTopbar({
                   key={chip.id}
                   onClick={() => toggleChip(chip.id)}
                   className={`
-                    flex items-center gap-1.5 px-2 py-1.5 rounded-full text-[10px] font-medium
+                    flex items-center gap-1.5 px-2 py-1.5 rounded-full text-[11px] font-medium
                     transition-all duration-200 border
                     ${isChipActive
                       ? chip.color === 'brand-magenta'
@@ -179,7 +183,7 @@ export function CommandCenterTopbar({
                       : 'bg-transparent text-white/60 border-[#1A1A24] hover:border-[#2A2A36] hover:text-white'
                     }
                   `}
-                >
+                > {/* typography-allow: chip */}
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
                       isChipActive
@@ -244,7 +248,7 @@ export function CommandCenterTopbar({
               </div>
               <div className="flex-1">
                 <h2 className="text-sm font-semibold text-white">Omni-Tray</h2>
-                <p className="text-[10px] text-white/50">AI-powered command interface</p>
+                <p className="text-xs text-white/50">AI-powered command interface</p>
               </div>
               <button
                 onClick={() => setOmniTrayOpen(false)}
@@ -271,7 +275,7 @@ export function CommandCenterTopbar({
 
             {/* Footer hint */}
             <div className="px-4 py-3 border-t border-[#1A1A24] bg-[#0A0A0F]">
-              <p className="text-[10px] text-white/30 text-center">
+              <p className="text-xs text-white/30 text-center">
                 Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-white/50">Esc</kbd> to close
               </p>
             </div>
