@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
- * CI Guard: Command Center Density + Calendar UX + Legibility
+ * CI Guard: Command Center Density + Calendar UX + Legibility v2.0
  *
  * Prevents regression of:
- * 1. UI density patterns (tabs, 2-row structure, progressive disclosure)
+ * 1. UI density patterns (v6.0 - comfortable/standard/compact)
  * 2. Calendar UX (day selection, schedule drawer)
  * 3. Action Stream progressive disclosure (hover-peek class)
  * 4. Legibility (no low-contrast zinc-500/600 for primary labels)
+ * 5. CTA hierarchy (dominant primary in comfortable mode)
  *
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
@@ -50,16 +51,20 @@ const REQUIRED_PATTERNS = [
     file: 'ActionStreamPane.tsx',
     patterns: [
       { regex: /LAYER 1|LAYER 2/i, description: 'Layer documentation comments' },
-      { regex: /ActionCard|DensityLevel/, description: 'ActionCard component import (v5)' },
+      { regex: /ActionCard|DensityLevel/, description: 'ActionCard component import' },
+      { regex: /useSearchParams/, description: 'Query param support for density override (v6)' },
+      { regex: /densityOverride|hasValidOverride/, description: 'Dev density override logic (v6)' },
     ],
   },
   {
     file: 'ActionCard.tsx',
     patterns: [
-      { regex: /action-card-v3/, description: 'Action card v3 CSS class marker' },
+      { regex: /action-card-v3/, description: 'Action card v3/v4 CSS class marker' },
       { regex: /densityLevel|DensityLevel/, description: 'Density level support' },
       { regex: /onPrimaryAction|onSecondaryAction/, description: 'On-card CTA handlers' },
       { regex: /group-hover:/, description: 'Hover reveal animations' },
+      { regex: /COMFORTABLE MODE|UX-PILOT/i, description: 'UX-Pilot authority comment (v4)' },
+      { regex: /DOMINANT|subdued/i, description: 'CTA hierarchy documentation (v4)' },
     ],
   },
 ];
