@@ -51,7 +51,7 @@ const priorityConfig: Record<Priority, { dot: string; label: string }> = {
   critical: { dot: 'bg-semantic-danger animate-pulse', label: 'Critical' },
   high: { dot: 'bg-semantic-warning', label: 'High' },
   medium: { dot: 'bg-brand-cyan', label: 'Medium' },
-  low: { dot: 'bg-slate-5', label: 'Low' },
+  low: { dot: 'bg-white/30', label: 'Low' },
 };
 
 // Hero AEO Health Score Component - Compact
@@ -63,8 +63,8 @@ function AEOHealthScore({ score, breakdown }: { score: number; breakdown: { pr: 
   return (
     <div className="p-3 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold">AEO Health Score</h3>
-        <span className="text-[8px] text-slate-6">Updated 2h ago</span>
+        <h3 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold">AEO Health Score</h3>
+        <span className="text-[8px] text-white/30">Updated 2h ago</span>
       </div>
 
       <div className="flex items-center gap-4">
@@ -73,7 +73,7 @@ function AEOHealthScore({ score, breakdown }: { score: number; breakdown: { pr: 
           <div className={`text-4xl font-bold ${scoreColor}`} style={{ textShadow: `0 0 30px ${glowColor}` }}>
             {score}
           </div>
-          <p className="text-[9px] text-slate-5 mt-0.5">
+          <p className="text-[9px] text-white/50 mt-0.5">
             {score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : 'Needs Work'}
           </p>
         </div>
@@ -114,7 +114,7 @@ function AEOHealthScore({ score, breakdown }: { score: number; breakdown: { pr: 
 
 // Compact KPI Card
 function KPICard({ kpi }: { kpi: KPI }) {
-  const trendColor = kpi.trend === 'up' ? 'text-semantic-success' : kpi.trend === 'down' ? 'text-semantic-danger' : 'text-slate-5';
+  const trendColor = kpi.trend === 'up' ? 'text-semantic-success' : kpi.trend === 'down' ? 'text-semantic-danger' : 'text-white/50';
   const trendIcon = kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→';
   const statusDot = kpi.status === 'healthy' ? 'bg-semantic-success' : kpi.status === 'warning' ? 'bg-semantic-warning' : 'bg-semantic-danger';
 
@@ -131,7 +131,7 @@ function KPICard({ kpi }: { kpi: KPI }) {
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1">
           <span className={`w-1 h-1 rounded-full ${statusDot}`} />
-          <span className="text-[8px] text-slate-5 font-medium truncate">{kpi.label}</span>
+          <span className="text-[8px] text-white/50 font-medium truncate">{kpi.label}</span>
         </div>
       </div>
       <div className="flex items-end justify-between">
@@ -163,7 +163,7 @@ function BottleneckCard({ narrative }: { narrative: Narrative }) {
         <span className="text-semantic-warning text-sm">⚠</span>
         <div className="flex-1 min-w-0">
           <h4 className="text-[10px] font-semibold text-white mb-0.5">{narrative.title}</h4>
-          <p className="text-[9px] text-slate-5 line-clamp-2">{narrative.body}</p>
+          <p className="text-[9px] text-white/50 line-clamp-2">{narrative.body}</p>
           <div className="flex items-center gap-1.5 mt-1.5">
             {narrative.pillars.map(pillar => (
               <span key={pillar} className={`text-[8px] font-bold uppercase ${pillarColors[pillar].text}`}>
@@ -190,7 +190,7 @@ function RecommendationCard({ rec, onClick }: { rec: Recommendation; onClick?: (
         <span className={`w-1.5 h-1.5 mt-1 rounded-full flex-shrink-0 ${priorityStyle.dot}`} />
         <div className="flex-1 min-w-0">
           <h4 className="text-[10px] font-semibold text-white line-clamp-1 group-hover:text-brand-cyan transition-colors">{rec.title}</h4>
-          <p className="text-[8px] text-slate-5 line-clamp-1 mt-0.5">{rec.description}</p>
+          <p className="text-[8px] text-white/50 line-clamp-1 mt-0.5">{rec.description}</p>
         </div>
         <span className={`text-[7px] font-bold uppercase ${pillarColors[rec.pillar].text}`}>{rec.pillar}</span>
       </div>
@@ -208,7 +208,7 @@ function MonthlyTargets() {
 
   return (
     <div className="p-2.5 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
-      <h3 className="text-[9px] text-slate-5 uppercase tracking-wide font-semibold mb-2">Monthly Targets</h3>
+      <h3 className="text-[9px] text-white/50 uppercase tracking-wide font-semibold mb-2">Monthly Targets</h3>
       <div className="space-y-2">
         {targets.map((t, i) => {
           const pct = Math.min((t.current / t.target) * 100, 100);
@@ -289,12 +289,12 @@ function InsightsDrawer({
             </div>
             <div>
               <h2 className="text-sm font-semibold text-white">Strategy Insights</h2>
-              <p className="text-[10px] text-slate-5">All recommendations and AI insights</p>
+              <p className="text-[10px] text-white/50">All recommendations and AI insights</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors"
+            className="p-1.5 text-white/50 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -306,7 +306,7 @@ function InsightsDrawer({
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* AI Insights Section */}
           <div>
-            <h3 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold mb-2 flex items-center gap-1.5">
+            <h3 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-iris animate-pulse" />
               AI Insights
             </h3>
@@ -325,14 +325,14 @@ function InsightsDrawer({
                       <span className={`text-sm ${style.iconColor}`}>{style.icon}</span>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-[11px] font-semibold text-white mb-1">{narrative.title}</h4>
-                        <p className="text-[10px] text-slate-5 leading-relaxed">{narrative.body}</p>
+                        <p className="text-[10px] text-white/50 leading-relaxed">{narrative.body}</p>
                         <div className="flex items-center gap-2 mt-2">
                           {narrative.pillars.map(pillar => (
                             <span key={pillar} className={`text-[9px] font-bold uppercase ${pillarColors[pillar].text}`}>
                               {pillar}
                             </span>
                           ))}
-                          <span className="text-[9px] text-slate-6 ml-auto">{Math.round(narrative.confidence * 100)}% confidence</span>
+                          <span className="text-[9px] text-white/30 ml-auto">{Math.round(narrative.confidence * 100)}% confidence</span>
                         </div>
                       </div>
                     </div>
@@ -344,7 +344,7 @@ function InsightsDrawer({
 
           {/* All Recommendations Section */}
           <div>
-            <h3 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold mb-2">
+            <h3 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2">
               All Recommendations ({recommendations.length})
             </h3>
             <div className="space-y-2">
@@ -364,15 +364,15 @@ function InsightsDrawer({
                             {rec.pillar}
                           </span>
                         </div>
-                        <p className="text-[10px] text-slate-5 mt-1">{rec.description}</p>
+                        <p className="text-[10px] text-white/50 mt-1">{rec.description}</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between pt-2 border-t border-[#1A1A24]">
                       <div className="flex items-center gap-3">
-                        <span className="text-[8px] text-slate-5">
+                        <span className="text-[8px] text-white/50">
                           Effort: <span className="text-white">{effortLabel}</span>
                         </span>
-                        <span className="text-[8px] text-slate-5">
+                        <span className="text-[8px] text-white/50">
                           Impact: <span className={rec.impact === 'high' ? 'text-semantic-success' : 'text-white'}>{impactLabel}</span>
                         </span>
                       </div>
@@ -389,8 +389,8 @@ function InsightsDrawer({
 
         {/* Footer */}
         <div className="px-4 py-3 border-t border-[#1A1A24] bg-[#0A0A0F]">
-          <p className="text-[9px] text-slate-6 text-center">
-            Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-slate-5">Esc</kbd> to close
+          <p className="text-[9px] text-white/30 text-center">
+            Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-white/50">Esc</kbd> to close
           </p>
         </div>
       </div>
@@ -429,7 +429,7 @@ function ErrorState({ error }: { error: Error }) {
           </svg>
           <div>
             <h4 className="text-xs font-semibold text-semantic-danger">Failed to load strategy</h4>
-            <p className="text-[10px] text-slate-5 mt-0.5">{error.message}</p>
+            <p className="text-[10px] text-white/50 mt-0.5">{error.message}</p>
           </div>
         </div>
       </div>
@@ -451,7 +451,7 @@ export function StrategyPanelPane({ data, isLoading, error }: StrategyPanelPaneP
   if (isLoading) return <LoadingSkeleton />;
   if (error) return <ErrorState error={error} />;
   if (!data) return (
-    <div className="p-6 text-center text-slate-5">
+    <div className="p-6 text-center text-white/50">
       <p className="text-xs">No strategy data available</p>
     </div>
   );
@@ -471,7 +471,7 @@ export function StrategyPanelPane({ data, isLoading, error }: StrategyPanelPaneP
 
         {/* Key Metrics Grid */}
         <div>
-          <h3 className="text-[9px] text-slate-5 uppercase tracking-wide font-semibold mb-2 px-0.5">Key Metrics</h3>
+          <h3 className="text-[9px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">Key Metrics</h3>
           <div className="grid grid-cols-2 gap-2">
             {topKPIs.map(kpi => (
               <KPICard key={kpi.id} kpi={kpi} />
@@ -482,7 +482,7 @@ export function StrategyPanelPane({ data, isLoading, error }: StrategyPanelPaneP
         {/* Primary Bottleneck */}
         {primaryBottleneck && (
           <div>
-            <h3 className="text-[9px] text-slate-5 uppercase tracking-wide font-semibold mb-2 px-0.5">Primary Bottleneck</h3>
+            <h3 className="text-[9px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">Primary Bottleneck</h3>
             <BottleneckCard narrative={primaryBottleneck} />
           </div>
         )}
@@ -490,7 +490,7 @@ export function StrategyPanelPane({ data, isLoading, error }: StrategyPanelPaneP
         {/* Top Recommendations + View All */}
         <div>
           <div className="flex items-center justify-between mb-2 px-0.5">
-            <h3 className="text-[9px] text-slate-5 uppercase tracking-wide font-semibold">Recommendations</h3>
+            <h3 className="text-[9px] text-white/50 uppercase tracking-wide font-semibold">Recommendations</h3>
             <button
               onClick={handleOpenDrawer}
               className="text-[9px] text-brand-cyan hover:text-brand-cyan/80 transition-colors"

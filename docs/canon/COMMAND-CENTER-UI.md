@@ -125,8 +125,65 @@ pillarAccents: {
 ### Typography
 - Section headers: `text-xs font-semibold uppercase tracking-wide`
 - Card titles: `text-sm font-medium`
-- Body text: `text-xs` with `text-slate-6`
+- Body text: `text-xs` with `text-white/50`
 - Metrics: `text-[10px] uppercase tracking-wide`
+
+### Contrast Token Rules (ENFORCED BY CI)
+No `text-slate-*`, `text-gray-*`, `text-neutral-*`, `text-zinc-*` tokens in Command Center scope.
+
+Allowed text tokens:
+- Primary labels: `text-white/90`
+- Secondary labels: `text-white/70`
+- Muted/tertiary: `text-white/50`
+- Disabled/subtle: `text-white/30`
+- Brand accents: `text-brand-cyan`, `text-brand-iris`, `text-brand-magenta`
+- Semantic: `text-semantic-danger`, `text-semantic-warning`, `text-semantic-success`
+
+Exceptions require `contrast-allow:` comment on the same line.
+
+## Calendar Interaction Rules
+
+### Outlook-Like Contract (v3.0)
+**CRITICAL**: Container height is FIXED at `h-[280px]` - DOES NOT CHANGE between Day/Week/Month views.
+
+#### View Behaviors
+- **Day View**: Large single-day header with hourly agenda grouping (Early Morning, Morning, Midday, Afternoon, Evening)
+- **Week View**: 7-day horizontal strip with selectable days, agenda list for selected date below
+- **Month View**: Compact 6-row grid with pillar dots, split-view agenda panel on desktop
+
+#### Interaction
+- Clicking any day updates `selectedDate` and agenda list
+- On mobile: Segmented "Calendar | Agenda" tabs
+- "Today" button appears when not viewing today
+
+### Desktop Split-View
+- Left side: Calendar grid (Day/Week/Month selector)
+- Right side: Agenda panel showing items for selected date
+- Both panels scroll independently within fixed container
+
+## Action Stream Disclosure Rules
+
+### Auto-Compact Mode (v3.0)
+When cards exceed pane height, automatically switches to compact layout.
+
+Toggle modes:
+- **Auto (A)**: Compacts when overflow detected
+- **Compact (C)**: Always single-line cards
+- **Expanded (E)**: Always full cards
+
+### Progressive Disclosure (3 Layers)
+1. **Layer 1 (Card)**: Title + pillar badge + priority dot + conf/impact pills
+2. **Layer 2 (Hover)**: Overlay reveals summary, time estimate, gated indicator
+3. **Layer 3 (Drawer)**: Full details via ActionPeekDrawer
+
+### Grouping
+- Critical/Urgent actions pinned to top with "Urgent" header
+- Divider separates urgent from other items
+- Within tiers: sorted by confidence descending
+
+### Compact Card Layout
+- Single line: priority dot + pillar badge + title + metric pills + arrow
+- Hover overlay shows truncated summary + gated chip
 
 ## Keyboard Accessibility
 

@@ -244,11 +244,11 @@ export function CommandCenterTopbar({
               </div>
               <div className="flex-1">
                 <h2 className="text-sm font-semibold text-white">Omni-Tray</h2>
-                <p className="text-[10px] text-slate-5">AI-powered command interface</p>
+                <p className="text-[10px] text-white/50">AI-powered command interface</p>
               </div>
               <button
                 onClick={() => setOmniTrayOpen(false)}
-                className="p-1.5 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors"
+                className="p-1.5 text-white/50 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -264,15 +264,15 @@ export function CommandCenterTopbar({
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Omni-Tray (Coming Next)</h3>
-              <p className="text-sm text-slate-5 max-w-sm mx-auto">
+              <p className="text-sm text-white/50 max-w-sm mx-auto">
                 Your AI-powered command interface for search, navigation, and intelligent actions across all Pravado surfaces.
               </p>
             </div>
 
             {/* Footer hint */}
             <div className="px-4 py-3 border-t border-[#1A1A24] bg-[#0A0A0F]">
-              <p className="text-[10px] text-slate-6 text-center">
-                Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-slate-5">Esc</kbd> to close
+              <p className="text-[10px] text-white/30 text-center">
+                Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-white/50">Esc</kbd> to close
               </p>
             </div>
           </div>

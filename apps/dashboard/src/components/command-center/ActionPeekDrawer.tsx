@@ -42,7 +42,7 @@ function ConfidenceImpactMeter({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-slate-6 uppercase tracking-wide">
+        <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
           {label}
         </span>
         <span className="text-sm font-bold text-white">{percentage}%</span>
@@ -56,7 +56,7 @@ function ConfidenceImpactMeter({
       {/* Tick marks */}
       <div className="flex justify-between px-1">
         {[0, 25, 50, 75, 100].map((tick) => (
-          <span key={tick} className="text-[9px] text-slate-5">
+          <span key={tick} className="text-[9px] text-white/50">
             {tick}
           </span>
         ))}
@@ -86,7 +86,7 @@ function GateWarning({ gate }: { gate: ActionItem['gate'] }) {
           <h4 className="text-sm font-medium text-semantic-warning">
             Approval Required
           </h4>
-          <p className="text-xs text-slate-6 mt-1">
+          <p className="text-xs text-white/70 mt-1">
             {gate.reason || 'This action requires approval before execution.'}
           </p>
           {gate.min_plan && (
@@ -106,7 +106,7 @@ function DiffPlaceholder() {
     <div className="p-4 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg">
       <div className="flex items-center gap-2 mb-3">
         <svg
-          className="w-4 h-4 text-slate-5"
+          className="w-4 h-4 text-white/50"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -118,7 +118,7 @@ function DiffPlaceholder() {
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
           />
         </svg>
-        <span className="text-xs font-medium text-slate-6 uppercase tracking-wide">
+        <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
           Details / Diff Preview
         </span>
       </div>
@@ -128,7 +128,7 @@ function DiffPlaceholder() {
         <div className="h-3 w-3/5 bg-[#1F1F28] rounded animate-pulse" />
         <div className="h-3 w-2/3 bg-[#1F1F28] rounded animate-pulse" />
       </div>
-      <p className="text-[10px] text-slate-5 mt-3 text-center italic">
+      <p className="text-[10px] text-white/50 mt-3 text-center italic">
         Detailed content preview coming soon
       </p>
     </div>
@@ -167,7 +167,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
                 <span
                   className={`w-2 h-2 rounded-full ${priorityStyle.dot}`}
                 />
-                <span className="text-xs text-slate-6">
+                <span className="text-xs text-white/70">
                   {priorityStyle.label}
                 </span>
               </div>
@@ -186,7 +186,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
             </SheetTitle>
 
             {/* Summary */}
-            <SheetDescription className="text-sm text-slate-6 leading-relaxed">
+            <SheetDescription className="text-sm text-white/70 leading-relaxed">
               {action.summary}
             </SheetDescription>
           </SheetHeader>
@@ -196,7 +196,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
         <div className="px-6 py-4 space-y-6 overflow-y-auto max-h-[calc(100vh-300px)]">
           {/* Confidence & Impact Meters */}
           <div className="space-y-4">
-            <h3 className="text-xs font-semibold text-slate-6 uppercase tracking-wide">
+            <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wide">
               AI Analysis
             </h3>
             <ConfidenceImpactMeter
@@ -216,7 +216,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
 
           {/* Diff/Details Placeholder */}
           <div>
-            <h3 className="text-xs font-semibold text-slate-6 uppercase tracking-wide mb-3">
+            <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wide mb-3">
               Preview
             </h3>
             <DiffPlaceholder />
@@ -224,7 +224,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
 
           {/* Metadata */}
           <div className="pt-4 border-t border-[#1F1F28]">
-            <div className="flex items-center justify-between text-xs text-slate-5">
+            <div className="flex items-center justify-between text-xs text-white/50">
               <span>Action ID: {action.id.slice(0, 8)}...</span>
               <span>
                 Updated:{' '}
@@ -259,7 +259,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
               {action.cta.primary}
             </button>
             <button
-              className="px-4 py-2.5 text-sm font-medium text-slate-6 hover:text-white bg-[#1F1F28] hover:bg-[#2A2A36] rounded-lg transition-colors"
+              className="px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white bg-[#1F1F28] hover:bg-[#2A2A36] rounded-lg transition-colors"
               onClick={() => {
                 // TODO: Implement secondary action
                 console.log('Secondary CTA:', action.cta.secondary);

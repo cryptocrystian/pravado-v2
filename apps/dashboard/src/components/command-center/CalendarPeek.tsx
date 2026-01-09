@@ -11,16 +11,21 @@
  */
 
 /**
- * CalendarPeek v2.5 - Enhanced Calendar with Day Selection
+ * CalendarPeek v3.0 - Outlook-Style Fixed Height Contract
  *
- * DS v3 density-optimized calendar:
- * - Day/Week/Month view toggle
- * - Desktop: Calendar grid LEFT, Agenda panel RIGHT
+ * CRITICAL CONTRACT:
+ * - Container height is FIXED at h-[280px] - DOES NOT CHANGE between views
+ * - Day/Week/Month views render DIFFERENTLY (not identical)
+ * - Internal scrolling for content overflow
+ * - Split-view desktop: Calendar LEFT (fixed), Agenda RIGHT (scrollable)
  * - Mobile: Segmented "Calendar | Agenda" tabs
- * - Day selection with pillar dots showing item count
- * - ScheduleDrawer for item details + mode/reschedule controls
  *
- * @see /contracts/examples/orchestration-calendar.json
+ * View Behaviors:
+ * - Day: Large single-day display with hourly agenda grouping
+ * - Week: 7-day strip with selectable days, highlights selectedDate
+ * - Month: Compact 6-row grid inside fixed viewport
+ *
+ * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -37,7 +42,7 @@ interface CalendarPeekProps {
 type ViewMode = 'day' | 'week' | 'month';
 type MobileTab = 'calendar' | 'agenda';
 
-// Pillar colors
+// Pillar colors - contrast-allow: using brand colors per DS v3
 const pillarColors: Record<Pillar, { bg: string; text: string; border: string; dot: string }> = {
   pr: { bg: 'bg-brand-magenta/10', text: 'text-brand-magenta', border: 'border-brand-magenta/30', dot: 'bg-brand-magenta' },
   content: { bg: 'bg-brand-iris/10', text: 'text-brand-iris', border: 'border-brand-iris/30', dot: 'bg-brand-iris' },
@@ -46,7 +51,7 @@ const pillarColors: Record<Pillar, { bg: string; text: string; border: string; d
 
 // Status styling
 const statusStyles: Record<CalendarStatus, { bg: string; text: string; label: string }> = {
-  planned: { bg: 'bg-slate-4/50', text: 'text-slate-6', label: 'Planned' },
+  planned: { bg: 'bg-white/5', text: 'text-white/50', label: 'Planned' },
   drafting: { bg: 'bg-brand-iris/10', text: 'text-brand-iris', label: 'Drafting' },
   awaiting_approval: { bg: 'bg-semantic-warning/10', text: 'text-semantic-warning', label: 'Pending' },
   scheduled: { bg: 'bg-brand-cyan/10', text: 'text-brand-cyan', label: 'Scheduled' },
@@ -81,7 +86,7 @@ const modeIcons: Record<Mode, { icon: JSX.Element; label: string; color: string 
       </svg>
     ),
     label: 'Manual',
-    color: 'text-slate-5',
+    color: 'text-white/50',
   },
 };
 
@@ -107,6 +112,16 @@ function getPillarDots(items: CalendarItem[]): Pillar[] {
   return Array.from(pillars);
 }
 
+// Time bucket helper for day view
+function getTimeBucket(time: string): string {
+  const hour = parseInt(time.split(':')[0], 10);
+  if (hour < 9) return 'Early Morning';
+  if (hour < 12) return 'Morning';
+  if (hour < 14) return 'Midday';
+  if (hour < 17) return 'Afternoon';
+  return 'Evening';
+}
+
 // Agenda Item Row Component
 function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => void }) {
   const pillarStyle = pillarColors[item.pillar];
@@ -120,7 +135,7 @@ function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => v
     >
       {/* Time */}
       <div className="text-center w-10 flex-shrink-0">
-        <p className="text-[10px] font-bold text-white">{item.time}</p>
+        <p className="text-[10px] font-bold text-white/90">{item.time}</p>
       </div>
 
       {/* Pillar Accent Bar */}
@@ -136,7 +151,7 @@ function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => v
             {statusStyle.label}
           </span>
         </div>
-        <p className="text-[9px] text-white truncate">{item.title}</p>
+        <p className="text-[9px] text-white/90 truncate">{item.title}</p>
       </div>
 
       {/* Quick Actions (visible on hover) */}
@@ -149,7 +164,7 @@ function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => v
   );
 }
 
-// Calendar Day Cell
+// Calendar Day Cell - compact for month view
 function CalendarDayCell({
   date,
   isSelected,
@@ -158,6 +173,7 @@ function CalendarDayCell({
   pillarDots,
   onClick,
   isCurrentMonth,
+  compact = false,
 }: {
   date: Date;
   isSelected: boolean;
@@ -166,6 +182,7 @@ function CalendarDayCell({
   pillarDots: Pillar[];
   onClick: () => void;
   isCurrentMonth: boolean;
+  compact?: boolean;
 }) {
   const day = date.getDate();
 
@@ -173,8 +190,9 @@ function CalendarDayCell({
     <button
       onClick={onClick}
       className={`
-        calendar-day-cell relative w-full aspect-square flex flex-col items-center justify-center rounded-lg
+        calendar-day-cell relative flex flex-col items-center justify-center rounded
         transition-all duration-200 ease-out
+        ${compact ? 'w-full h-7' : 'w-full aspect-square'}
         ${isSelected
           ? 'bg-brand-cyan/20 border border-brand-cyan/40 shadow-[0_0_12px_rgba(0,217,255,0.15)]'
           : isToday
@@ -186,13 +204,13 @@ function CalendarDayCell({
     >
       <span className={`
         text-[10px] font-medium
-        ${isSelected ? 'text-brand-cyan' : isToday ? 'text-brand-iris' : isCurrentMonth ? 'text-white' : 'text-slate-6'}
+        ${isSelected ? 'text-brand-cyan' : isToday ? 'text-brand-iris' : isCurrentMonth ? 'text-white/90' : 'text-white/30'}
       `}>
         {day}
       </span>
 
-      {/* Pillar dots */}
-      {pillarDots.length > 0 && (
+      {/* Pillar dots - only show if not compact */}
+      {!compact && pillarDots.length > 0 && (
         <div className="flex items-center gap-0.5 mt-0.5">
           {pillarDots.slice(0, 3).map((pillar, i) => (
             <span key={i} className={`w-1 h-1 rounded-full ${pillarColors[pillar].dot}`} />
@@ -200,9 +218,12 @@ function CalendarDayCell({
         </div>
       )}
 
-      {/* Item count badge */}
+      {/* Item count badge - compact style for month */}
       {itemCount > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 flex items-center justify-center text-[7px] font-bold bg-brand-cyan text-black rounded-full">
+        <span className={`
+          absolute flex items-center justify-center font-bold bg-brand-cyan text-black rounded-full
+          ${compact ? '-top-0.5 -right-0.5 w-3 h-3 text-[6px]' : '-top-0.5 -right-0.5 w-3.5 h-3.5 text-[7px]'}
+        `}>
           {itemCount > 9 ? '9+' : itemCount}
         </span>
       )}
@@ -210,23 +231,129 @@ function CalendarDayCell({
   );
 }
 
-// Week Strip View (horizontal)
-function WeekStripView({
+// DAY VIEW - Large single day with hourly grouping
+function DayView({
+  selectedDate,
+  onDateSelect,
+  items,
+  onItemClick,
+}: {
+  selectedDate: Date;
+  onDateSelect: (date: Date) => void;
+  items: CalendarItem[];
+  onItemClick: (item: CalendarItem) => void;
+}) {
+  const isToday = formatDateKey(selectedDate) === formatDateKey(new Date());
+  const dateLabel = selectedDate.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  // Group items by time bucket
+  const buckets = useMemo(() => {
+    const grouped = new Map<string, CalendarItem[]>();
+    const sortedItems = [...items].sort((a, b) => a.time.localeCompare(b.time));
+    sortedItems.forEach((item) => {
+      const bucket = getTimeBucket(item.time);
+      const existing = grouped.get(bucket) || [];
+      grouped.set(bucket, [...existing, item]);
+    });
+    return grouped;
+  }, [items]);
+
+  const bucketOrder = ['Early Morning', 'Morning', 'Midday', 'Afternoon', 'Evening'];
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Day Header with Nav */}
+      <div className="flex items-center justify-between px-2 py-1.5 border-b border-[#1A1A24] bg-[#0A0A0F]">
+        <button
+          onClick={() => {
+            const prev = new Date(selectedDate);
+            prev.setDate(prev.getDate() - 1);
+            onDateSelect(prev);
+          }}
+          className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div className="text-center">
+          <p className={`text-[11px] font-semibold ${isToday ? 'text-brand-cyan' : 'text-white/90'}`}>
+            {isToday ? 'Today' : dateLabel}
+          </p>
+          {isToday && (
+            <p className="text-[9px] text-white/50">{dateLabel}</p>
+          )}
+        </div>
+        <button
+          onClick={() => {
+            const next = new Date(selectedDate);
+            next.setDate(next.getDate() + 1);
+            onDateSelect(next);
+          }}
+          className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Time Buckets */}
+      <div className="flex-1 overflow-y-auto p-2 space-y-2">
+        {items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="w-8 h-8 rounded-lg bg-[#1A1A24] flex items-center justify-center mb-2">
+              <svg className="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <p className="text-[10px] text-white/50">No items scheduled</p>
+          </div>
+        ) : (
+          bucketOrder.map((bucket) => {
+            const bucketItems = buckets.get(bucket);
+            if (!bucketItems || bucketItems.length === 0) return null;
+            return (
+              <div key={bucket}>
+                <p className="text-[8px] font-semibold text-white/50 uppercase tracking-wider mb-1 px-1">{bucket}</p>
+                <div className="space-y-1">
+                  {bucketItems.map((item) => (
+                    <AgendaItemRow key={item.id} item={item} onClick={() => onItemClick(item)} />
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+
+// WEEK VIEW - 7-day horizontal strip with agenda below
+function WeekView({
   selectedDate,
   onDateSelect,
   itemsByDate,
+  items,
+  onItemClick,
 }: {
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
   itemsByDate: Map<string, CalendarItem[]>;
+  items: CalendarItem[];
+  onItemClick: (item: CalendarItem) => void;
 }) {
   const days = useMemo(() => {
     const result: Date[] = [];
-    const today = new Date();
-    // Show 7 days centered around selected date or today
-    const centerDate = selectedDate || today;
-    const startDate = new Date(centerDate);
-    startDate.setDate(startDate.getDate() - 3);
+    const startDate = new Date(selectedDate);
+    // Get start of week (Sunday)
+    const dayOfWeek = startDate.getDay();
+    startDate.setDate(startDate.getDate() - dayOfWeek);
 
     for (let i = 0; i < 7; i++) {
       const d = new Date(startDate);
@@ -237,39 +364,64 @@ function WeekStripView({
   }, [selectedDate]);
 
   const today = formatDateKey(new Date());
+  const selectedKey = formatDateKey(selectedDate);
 
   return (
-    <div className="flex items-center gap-1 p-1 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
-      {days.map((date) => {
-        const dateKey = formatDateKey(date);
-        const items = itemsByDate.get(dateKey) || [];
-        const pillarDots = getPillarDots(items);
-        const isSelected = formatDateKey(selectedDate) === dateKey;
-        const isToday = dateKey === today;
+    <div className="h-full flex flex-col">
+      {/* Week Strip */}
+      <div className="flex items-center gap-0.5 p-1.5 bg-[#0A0A0F] border-b border-[#1A1A24]">
+        {days.map((date) => {
+          const dateKey = formatDateKey(date);
+          const dayItems = itemsByDate.get(dateKey) || [];
+          const pillarDots = getPillarDots(dayItems);
+          const isSelected = selectedKey === dateKey;
+          const isToday = dateKey === today;
 
-        return (
-          <div key={dateKey} className="flex-1">
-            <p className="text-[7px] text-slate-6 text-center mb-0.5 uppercase">
-              {date.toLocaleDateString('en-US', { weekday: 'short' })}
-            </p>
-            <CalendarDayCell
-              date={date}
-              isSelected={isSelected}
-              isToday={isToday}
-              itemCount={items.length}
-              pillarDots={pillarDots}
-              onClick={() => onDateSelect(date)}
-              isCurrentMonth={true}
-            />
+          return (
+            <div key={dateKey} className="flex-1 text-center">
+              <p className="text-[7px] text-white/50 uppercase mb-0.5">
+                {date.toLocaleDateString('en-US', { weekday: 'short' })}
+              </p>
+              <CalendarDayCell
+                date={date}
+                isSelected={isSelected}
+                isToday={isToday}
+                itemCount={dayItems.length}
+                pillarDots={pillarDots}
+                onClick={() => onDateSelect(date)}
+                isCurrentMonth={true}
+                compact
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Agenda for selected day */}
+      <div className="flex-1 overflow-y-auto p-2">
+        <div className="flex items-center gap-1.5 mb-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
+          <span className="text-[10px] font-semibold text-white/90">
+            {selectedKey === today ? 'Today' : selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+          </span>
+          <span className="text-[9px] text-white/50">{items.length} items</span>
+        </div>
+        {items.length === 0 ? (
+          <p className="text-[9px] text-white/50 text-center py-4">No items scheduled</p>
+        ) : (
+          <div className="space-y-1">
+            {[...items].sort((a, b) => a.time.localeCompare(b.time)).map((item) => (
+              <AgendaItemRow key={item.id} item={item} onClick={() => onItemClick(item)} />
+            ))}
           </div>
-        );
-      })}
+        )}
+      </div>
     </div>
   );
 }
 
-// Month Grid View
-function MonthGridView({
+// MONTH VIEW - Compact 6-row grid with scrollable area
+function MonthView({
   selectedDate,
   onDateSelect,
   itemsByDate,
@@ -316,7 +468,7 @@ function MonthGridView({
   const selectedKey = formatDateKey(selectedDate);
 
   return (
-    <div className="p-2 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+    <div className="h-full flex flex-col p-2">
       {/* Month/Year Header */}
       <div className="flex items-center justify-between mb-2 px-1">
         <button
@@ -325,13 +477,13 @@ function MonthGridView({
             prev.setMonth(prev.getMonth() - 1);
             onDateSelect(prev);
           }}
-          className="p-1 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
+          className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <span className="text-[10px] font-semibold text-white">
+        <span className="text-[11px] font-semibold text-white/90">
           {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </span>
         <button
@@ -340,7 +492,7 @@ function MonthGridView({
             next.setMonth(next.getMonth() + 1);
             onDateSelect(next);
           }}
-          className="p-1 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
+          className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -351,38 +503,41 @@ function MonthGridView({
       {/* Day headers */}
       <div className="grid grid-cols-7 gap-0.5 mb-1">
         {days.map((d, i) => (
-          <span key={i} className="text-[7px] text-slate-6 text-center font-medium py-1">{d}</span>
+          <span key={i} className="text-[7px] text-white/50 text-center font-medium py-0.5">{d}</span>
         ))}
       </div>
 
-      {/* Days grid */}
-      <div className="grid grid-cols-7 gap-0.5">
-        {calendarDays.map(({ date, isCurrentMonth }, i) => {
-          const dateKey = formatDateKey(date);
-          const items = itemsByDate.get(dateKey) || [];
-          const pillarDots = getPillarDots(items);
-          const isSelected = selectedKey === dateKey;
-          const isToday = dateKey === todayKey;
+      {/* Days grid - scrollable area */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid grid-cols-7 gap-0.5">
+          {calendarDays.map(({ date, isCurrentMonth }, i) => {
+            const dateKey = formatDateKey(date);
+            const dayItems = itemsByDate.get(dateKey) || [];
+            const pillarDots = getPillarDots(dayItems);
+            const isSelected = selectedKey === dateKey;
+            const isToday = dateKey === todayKey;
 
-          return (
-            <CalendarDayCell
-              key={i}
-              date={date}
-              isSelected={isSelected}
-              isToday={isToday}
-              itemCount={items.length}
-              pillarDots={pillarDots}
-              onClick={() => onDateSelect(date)}
-              isCurrentMonth={isCurrentMonth}
-            />
-          );
-        })}
+            return (
+              <CalendarDayCell
+                key={i}
+                date={date}
+                isSelected={isSelected}
+                isToday={isToday}
+                itemCount={dayItems.length}
+                pillarDots={pillarDots}
+                onClick={() => onDateSelect(date)}
+                isCurrentMonth={isCurrentMonth}
+                compact
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 }
 
-// Agenda Panel Component
+// Agenda Panel Component (for desktop split view)
 function AgendaPanel({
   selectedDate,
   items,
@@ -407,9 +562,9 @@ function AgendaPanel({
       <div className="flex items-center justify-between px-2 py-1.5 border-b border-[#1A1A24]">
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
-          <span className="text-[10px] font-semibold text-white">{dateLabel}</span>
+          <span className="text-[10px] font-semibold text-white/90">{dateLabel}</span>
         </div>
-        <span className="text-[9px] text-slate-6">{items.length} items</span>
+        <span className="text-[9px] text-white/50">{items.length} items</span>
       </div>
 
       {/* Items */}
@@ -417,11 +572,11 @@ function AgendaPanel({
         {sortedItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-6 text-center">
             <div className="w-8 h-8 rounded-lg bg-[#1A1A24] flex items-center justify-center mb-2">
-              <svg className="w-4 h-4 text-slate-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <p className="text-[9px] text-slate-5">No items scheduled</p>
+            <p className="text-[9px] text-white/50">No items scheduled</p>
           </div>
         ) : (
           sortedItems.map((item) => (
@@ -494,13 +649,13 @@ function ScheduleDrawer({
               </svg>
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-white">Schedule Details</h2>
-              <p className="text-[10px] text-slate-5">Item configuration</p>
+              <h2 className="text-sm font-semibold text-white/90">Schedule Details</h2>
+              <p className="text-[10px] text-white/50">Item configuration</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors"
+            className="p-1.5 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded-lg transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -520,19 +675,19 @@ function ScheduleDrawer({
                 {statusStyle.label}
               </span>
             </div>
-            <h3 className="text-sm font-semibold text-white mb-1">{item.title}</h3>
-            <p className="text-[10px] text-slate-5">{item.details.summary}</p>
+            <h3 className="text-sm font-semibold text-white/90 mb-1">{item.title}</h3>
+            <p className="text-[10px] text-white/50">{item.details.summary}</p>
           </div>
 
           {/* Date & Time */}
           <div>
-            <h4 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold mb-2">Schedule</h4>
+            <h4 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2">Schedule</h4>
             <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-white">
+                <p className="text-xs font-medium text-white/90">
                   {itemDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                 </p>
-                <p className="text-[10px] text-slate-5">at {item.time}</p>
+                <p className="text-[10px] text-white/50">at {item.time}</p>
               </div>
               <button className="px-2 py-1 text-[9px] text-brand-cyan hover:bg-brand-cyan/10 rounded border border-brand-cyan/20 transition-colors">
                 Reschedule
@@ -542,7 +697,7 @@ function ScheduleDrawer({
 
           {/* Mode Selector */}
           <div>
-            <h4 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold mb-2">Automation Mode</h4>
+            <h4 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2">Automation Mode</h4>
             <div className="grid grid-cols-3 gap-2">
               {(['manual', 'copilot', 'autopilot'] as Mode[]).map((mode) => {
                 const info = modeIcons[mode];
@@ -554,15 +709,15 @@ function ScheduleDrawer({
                     className={`
                       p-2 rounded-lg border transition-all text-center
                       ${isSelected
-                        ? `bg-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'slate-5'}/10 border-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'slate-5'}/30`
+                        ? `bg-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'white'}/10 border-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'white'}/30`
                         : 'bg-[#0A0A0F] border-[#1A1A24] hover:border-[#2A2A36]'
                       }
                     `}
                   >
-                    <span className={`flex items-center justify-center ${isSelected ? info.color : 'text-slate-5'}`}>
+                    <span className={`flex items-center justify-center ${isSelected ? info.color : 'text-white/50'}`}>
                       {info.icon}
                     </span>
-                    <p className={`text-[9px] mt-1 font-medium ${isSelected ? 'text-white' : 'text-slate-5'}`}>{info.label}</p>
+                    <p className={`text-[9px] mt-1 font-medium ${isSelected ? 'text-white/90' : 'text-white/50'}`}>{info.label}</p>
                   </button>
                 );
               })}
@@ -571,22 +726,22 @@ function ScheduleDrawer({
 
           {/* Details */}
           <div>
-            <h4 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold mb-2">Details</h4>
+            <h4 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2">Details</h4>
             <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[9px] text-slate-5">Owner</span>
-                <span className="text-[10px] text-white">{item.details.owner}</span>
+                <span className="text-[9px] text-white/50">Owner</span>
+                <span className="text-[10px] text-white/90">{item.details.owner}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[9px] text-slate-5">Risk Level</span>
+                <span className="text-[9px] text-white/50">Risk Level</span>
                 <span className={`text-[10px] ${item.details.risk === 'high' ? 'text-semantic-danger' : item.details.risk === 'med' ? 'text-semantic-warning' : 'text-semantic-success'}`}>
                   {item.details.risk.charAt(0).toUpperCase() + item.details.risk.slice(1)}
                 </span>
               </div>
               {item.details.estimated_duration && (
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] text-slate-5">Duration</span>
-                  <span className="text-[10px] text-white">{item.details.estimated_duration}</span>
+                  <span className="text-[9px] text-white/50">Duration</span>
+                  <span className="text-[10px] text-white/90">{item.details.estimated_duration}</span>
                 </div>
               )}
             </div>
@@ -595,14 +750,14 @@ function ScheduleDrawer({
           {/* Approval State */}
           {item.status === 'awaiting_approval' && (
             <div>
-              <h4 className="text-[10px] text-slate-5 uppercase tracking-wide font-semibold mb-2">Approval Required</h4>
+              <h4 className="text-[10px] text-white/50 uppercase tracking-wide font-semibold mb-2">Approval Required</h4>
               <div className="p-3 bg-semantic-warning/8 border border-semantic-warning/20 rounded-lg">
-                <p className="text-[10px] text-slate-5 mb-2">This item requires approval before execution.</p>
+                <p className="text-[10px] text-white/50 mb-2">This item requires approval before execution.</p>
                 <div className="flex items-center gap-2">
-                  <button className="flex-1 px-3 py-1.5 text-[10px] font-semibold text-white bg-semantic-success/10 border border-semantic-success/30 rounded hover:bg-semantic-success/20 transition-colors">
+                  <button className="flex-1 px-3 py-1.5 text-[10px] font-semibold text-white/90 bg-semantic-success/10 border border-semantic-success/30 rounded hover:bg-semantic-success/20 transition-colors">
                     Approve
                   </button>
-                  <button className="flex-1 px-3 py-1.5 text-[10px] font-semibold text-slate-5 bg-[#1A1A24] border border-[#2A2A36] rounded hover:text-white transition-colors">
+                  <button className="flex-1 px-3 py-1.5 text-[10px] font-semibold text-white/50 bg-[#1A1A24] border border-[#2A2A36] rounded hover:text-white/90 transition-colors">
                     Reject
                   </button>
                 </div>
@@ -620,8 +775,8 @@ function ScheduleDrawer({
 
         {/* Footer */}
         <div className="px-4 py-3 border-t border-[#1A1A24] bg-[#0A0A0F]">
-          <p className="text-[9px] text-slate-6 text-center">
-            Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-slate-5">Esc</kbd> to close
+          <p className="text-[9px] text-white/50 text-center">
+            Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-white/50">Esc</kbd> to close
           </p>
         </div>
       </div>
@@ -631,13 +786,13 @@ function ScheduleDrawer({
 
 function LoadingSkeleton() {
   return (
-    <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+    <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg h-[280px]">
       <div className="flex items-center justify-between mb-3">
-        <div className="h-4 w-20 bg-slate-5 rounded animate-pulse" />
-        <div className="h-4 w-16 bg-slate-5/50 rounded animate-pulse" />
+        <div className="h-4 w-20 bg-white/5 rounded animate-pulse" />
+        <div className="h-4 w-16 bg-white/5 rounded animate-pulse" />
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <div className="h-24 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg animate-pulse" />
+      <div className="grid grid-cols-2 gap-2 h-[200px]">
+        <div className="bg-[#0A0A0F] border border-[#1F1F28] rounded-lg animate-pulse" />
         <div className="space-y-1.5">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-10 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg animate-pulse" />
@@ -694,9 +849,9 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
 
   if (error) {
     return (
-      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg h-[280px]">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-semibold text-white">Calendar</h3>
+          <h3 className="text-xs font-semibold text-white/90">Calendar</h3>
         </div>
         <div className="p-2 bg-semantic-danger/10 border border-semantic-danger/20 rounded text-[10px] text-semantic-danger">
           Failed to load calendar
@@ -707,11 +862,11 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
 
   if (!data || data.items.length === 0) {
     return (
-      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg h-[280px]">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-semibold text-white">Calendar</h3>
+          <h3 className="text-xs font-semibold text-white/90">Calendar</h3>
         </div>
-        <p className="text-[10px] text-slate-6 text-center py-3">No scheduled items</p>
+        <p className="text-[10px] text-white/50 text-center py-3">No scheduled items</p>
       </div>
     );
   }
@@ -720,14 +875,15 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
 
   return (
     <>
-      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+      {/* FIXED HEIGHT CONTAINER - Outlook-like contract */}
+      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg h-[280px] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2 flex-shrink-0">
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-brand-cyan" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
             </svg>
-            <h3 className="text-xs font-semibold text-white">Calendar</h3>
+            <h3 className="text-xs font-semibold text-white/90">Calendar</h3>
             {!isToday && (
               <button
                 onClick={goToToday}
@@ -746,7 +902,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
                 onClick={() => setViewMode(mode)}
                 className={`
                   px-2 py-0.5 text-[9px] font-medium rounded transition-colors
-                  ${viewMode === mode ? 'bg-brand-cyan/20 text-brand-cyan' : 'text-slate-5 hover:text-white'}
+                  ${viewMode === mode ? 'bg-brand-cyan/20 text-brand-cyan' : 'text-white/50 hover:text-white/90'}
                 `}
               >
                 {mode.charAt(0).toUpperCase() + mode.slice(1)}
@@ -762,7 +918,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
                 onClick={() => setMobileTab(tab)}
                 className={`
                   px-2 py-0.5 text-[9px] font-medium rounded transition-colors
-                  ${mobileTab === tab ? 'bg-brand-cyan/20 text-brand-cyan' : 'text-slate-5 hover:text-white'}
+                  ${mobileTab === tab ? 'bg-brand-cyan/20 text-brand-cyan' : 'text-white/50 hover:text-white/90'}
                 `}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -771,67 +927,87 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
           </div>
         </div>
 
-        {/* Desktop: Split View (Calendar LEFT, Agenda RIGHT) */}
-        <div className="hidden sm:grid sm:grid-cols-2 gap-2 min-h-[180px]">
-          {/* Calendar Side */}
-          <div>
+        {/* Main Content Area - fills remaining space */}
+        <div className="flex-1 min-h-0 overflow-hidden">
+          {/* Desktop: View-specific layouts */}
+          <div className="hidden sm:block h-full">
             {viewMode === 'day' && (
-              <WeekStripView
-                selectedDate={selectedDate}
-                onDateSelect={handleDateSelect}
-                itemsByDate={itemsByDate}
-              />
+              <div className="h-full grid grid-cols-2 gap-2">
+                <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                  <DayView
+                    selectedDate={selectedDate}
+                    onDateSelect={handleDateSelect}
+                    items={selectedDateItems}
+                    onItemClick={handleItemClick}
+                  />
+                </div>
+                <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                  <AgendaPanel
+                    selectedDate={selectedDate}
+                    items={selectedDateItems}
+                    onItemClick={handleItemClick}
+                  />
+                </div>
+              </div>
             )}
             {viewMode === 'week' && (
-              <WeekStripView
-                selectedDate={selectedDate}
-                onDateSelect={handleDateSelect}
-                itemsByDate={itemsByDate}
-              />
+              <div className="h-full bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                <WeekView
+                  selectedDate={selectedDate}
+                  onDateSelect={handleDateSelect}
+                  itemsByDate={itemsByDate}
+                  items={selectedDateItems}
+                  onItemClick={handleItemClick}
+                />
+              </div>
             )}
             {viewMode === 'month' && (
-              <MonthGridView
-                selectedDate={selectedDate}
-                onDateSelect={handleDateSelect}
-                itemsByDate={itemsByDate}
-              />
+              <div className="h-full grid grid-cols-2 gap-2">
+                <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                  <MonthView
+                    selectedDate={selectedDate}
+                    onDateSelect={handleDateSelect}
+                    itemsByDate={itemsByDate}
+                  />
+                </div>
+                <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                  <AgendaPanel
+                    selectedDate={selectedDate}
+                    items={selectedDateItems}
+                    onItemClick={handleItemClick}
+                  />
+                </div>
+              </div>
             )}
           </div>
 
-          {/* Agenda Side */}
-          <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
-            <AgendaPanel
-              selectedDate={selectedDate}
-              items={selectedDateItems}
-              onItemClick={handleItemClick}
-            />
+          {/* Mobile: Tab-based View */}
+          <div className="sm:hidden h-full">
+            {mobileTab === 'calendar' && (
+              <div className="h-full bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                <MonthView
+                  selectedDate={selectedDate}
+                  onDateSelect={handleDateSelect}
+                  itemsByDate={itemsByDate}
+                />
+              </div>
+            )}
+            {mobileTab === 'agenda' && (
+              <div className="h-full bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                <AgendaPanel
+                  selectedDate={selectedDate}
+                  items={selectedDateItems}
+                  onItemClick={handleItemClick}
+                />
+              </div>
+            )}
           </div>
-        </div>
-
-        {/* Mobile: Tab-based View */}
-        <div className="sm:hidden">
-          {mobileTab === 'calendar' && (
-            <MonthGridView
-              selectedDate={selectedDate}
-              onDateSelect={handleDateSelect}
-              itemsByDate={itemsByDate}
-            />
-          )}
-          {mobileTab === 'agenda' && (
-            <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden min-h-[150px]">
-              <AgendaPanel
-                selectedDate={selectedDate}
-                items={selectedDateItems}
-                onItemClick={handleItemClick}
-              />
-            </div>
-          )}
         </div>
 
         {/* View Full Calendar Link */}
         <Link
           href="/app/calendar"
-          className="mt-3 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] font-medium text-brand-cyan bg-brand-cyan/5 border border-brand-cyan/20 rounded hover:bg-brand-cyan/10 hover:border-brand-cyan/30 transition-all duration-200 group"
+          className="mt-2 flex items-center justify-center gap-1.5 px-2 py-1 text-[10px] font-medium text-brand-cyan bg-brand-cyan/5 border border-brand-cyan/20 rounded hover:bg-brand-cyan/10 hover:border-brand-cyan/30 transition-all duration-200 group flex-shrink-0"
         >
           View Full Calendar
           <svg className="w-3 h-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

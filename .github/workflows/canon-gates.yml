@@ -87,3 +87,20 @@ jobs:
       - name: Check Command Center Density Patterns
         working-directory: apps/dashboard
         run: node scripts/check-command-center-density.mjs
+
+  command-center-contrast-guard:
+    name: Command Center Contrast Guard
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check Command Center Contrast / Legibility
+        working-directory: apps/dashboard
+        run: node scripts/check-command-center-contrast.mjs

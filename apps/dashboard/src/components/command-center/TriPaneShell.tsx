@@ -81,7 +81,7 @@ export function TriPaneShell({
               ${
                 activePane === segment.key
                   ? 'bg-gradient-to-r from-brand-cyan/20 to-brand-cyan/10 text-brand-cyan border border-brand-cyan/40 shadow-[0_0_20px_rgba(0,217,255,0.15)]'
-                  : 'text-slate-5 hover:text-white hover:bg-[#13131A]'
+                  : 'text-white/50 hover:text-white hover:bg-[#13131A]'
               }
             `}
           >
@@ -104,7 +104,7 @@ export function TriPaneShell({
           {leftCollapsed ? (
             <button
               onClick={() => setLeftCollapsed(false)}
-              className="h-full flex items-center justify-center text-slate-5 hover:text-brand-cyan transition-colors group"
+              className="h-full flex items-center justify-center text-white/50 hover:text-brand-cyan transition-colors group"
               aria-label="Expand Action Stream"
             >
               <div className="flex flex-col items-center gap-3">
@@ -123,7 +123,7 @@ export function TriPaneShell({
                 </div>
                 <button
                   onClick={() => setLeftCollapsed(true)}
-                  className="p-1.5 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
+                  className="p-1.5 text-white/50 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
                   aria-label="Collapse Action Stream"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@ export function TriPaneShell({
               <div className="w-2 h-2 rounded-full bg-brand-iris animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
               <h2 className="text-sm font-semibold text-white tracking-tight">Intelligence Canvas</h2>
             </div>
-            <div className="flex items-center gap-1 text-[10px] text-slate-5">
+            <div className="flex items-center gap-1 text-[10px] text-white/50">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
               </svg>
@@ -168,7 +168,7 @@ export function TriPaneShell({
           {rightCollapsed ? (
             <button
               onClick={() => setRightCollapsed(false)}
-              className="h-full flex items-center justify-center text-slate-5 hover:text-brand-magenta transition-colors group"
+              className="h-full flex items-center justify-center text-white/50 hover:text-brand-magenta transition-colors group"
               aria-label="Expand Strategy Panel"
             >
               <div className="flex flex-col items-center gap-3">
@@ -187,7 +187,7 @@ export function TriPaneShell({
                 </div>
                 <button
                   onClick={() => setRightCollapsed(true)}
-                  className="p-1.5 text-slate-5 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
+                  className="p-1.5 text-white/50 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
                   aria-label="Collapse Strategy Panel"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

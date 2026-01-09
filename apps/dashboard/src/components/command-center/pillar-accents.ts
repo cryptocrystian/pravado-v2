@@ -90,9 +90,9 @@ export const priorityStyles: Record<
     label: 'Medium',
   },
   low: {
-    dot: 'bg-slate-5',
-    bg: 'bg-slate-5/10',
-    text: 'text-slate-5',
+    dot: 'bg-white/30',
+    bg: 'bg-white/30/10',
+    text: 'text-white/50',
     label: 'Low',
   },
 };
@@ -122,8 +122,8 @@ export const modeStyles: Record<
     label: 'Copilot',
   },
   manual: {
-    bg: 'bg-slate-4/50',
-    text: 'text-slate-6',
+    bg: 'bg-white/20/50',
+    text: 'text-white/30',
     icon: 'clock',
     label: 'Manual',
   },
