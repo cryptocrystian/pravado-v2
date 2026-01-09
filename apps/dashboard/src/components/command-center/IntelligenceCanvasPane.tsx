@@ -158,7 +158,7 @@ function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
                 <NodeIcon kind={focusedNode.kind} className={`w-6 h-6 ${nodeKindConfig[focusedNode.kind].text}`} />
               </div>
               <p className="text-sm font-semibold text-white mb-0.5">{focusedNode.label}</p>
-              <p className="text-[9px] text-slate-5">{relatedEdges.length} connections</p>
+              <p className="text-[9px] text-white/50">{relatedEdges.length} connections</p>
               <button onClick={() => onNodeClick('')} className="mt-1.5 text-[9px] text-brand-cyan hover:underline">
                 Clear focus
               </button>
@@ -225,7 +225,7 @@ function NetworkGraph({ nodes, edges, focusedNodeId, onNodeClick }: {
         </div>
 
         {/* Stats overlay - bottom right */}
-        <div className="absolute bottom-2 right-2 text-[9px] text-slate-5">
+        <div className="absolute bottom-2 right-2 text-[9px] text-white/50">
           {nodes.length} nodes · {edges.length} edges
         </div>
       </div>
@@ -252,21 +252,21 @@ function CitationCard({ citation }: { citation: Citation }) {
         <span className={`px-1.5 py-0.5 text-[9px] font-bold ${platform.bg} ${platform.text} rounded border border-current/20`}>
           {platform.icon} {platform.label}
         </span>
-        <span className="text-[8px] text-slate-6">{timeAgo}</span>
+        <span className="text-[8px] text-white/30">{timeAgo}</span>
       </div>
 
       {/* Query */}
-      <p className="text-[9px] text-slate-5 mb-1 italic truncate">&quot;{citation.query}&quot;</p>
+      <p className="text-[9px] text-white/50 mb-1 italic truncate">&quot;{citation.query}&quot;</p>
 
       {/* Snippet */}
       <p className="text-[10px] text-white/90 line-clamp-2 leading-relaxed">{citation.snippet}</p>
 
       {/* Metrics */}
       <div className="flex items-center gap-2 pt-1.5 mt-1.5 border-t border-[#1A1A24]">
-        <span className="text-[8px] text-slate-5">
+        <span className="text-[8px] text-white/50">
           Pos <span className="text-brand-cyan font-bold">#{citation.position}</span>
         </span>
-        <span className="text-[8px] text-slate-5">
+        <span className="text-[8px] text-white/50">
           Quality <span className={`font-bold ${qualityColor}`}>{citation.context_quality}/10</span>
         </span>
         {citation.source_url && (
@@ -291,7 +291,7 @@ function CompetitiveIntelTable() {
   return (
     <div className="bg-[#0D0D12] border border-[#1A1A24] rounded-lg overflow-hidden">
       {/* Table Header */}
-      <div className="grid grid-cols-5 gap-2 px-3 py-2 bg-[#0A0A0F] border-b border-[#1A1A24] text-[8px] text-slate-5 uppercase tracking-wide">
+      <div className="grid grid-cols-5 gap-2 px-3 py-2 bg-[#0A0A0F] border-b border-[#1A1A24] text-[8px] text-white/50 uppercase tracking-wide">
         <span>Company</span>
         <span>Share</span>
         <span>Citations</span>
@@ -305,7 +305,7 @@ function CompetitiveIntelTable() {
           <span className="text-white">{row.share}</span>
           <span className="text-white">{row.citations}</span>
           <span className={row.sentiment >= 8 ? 'text-semantic-success' : row.sentiment >= 6 ? 'text-brand-amber' : 'text-semantic-danger'}>{row.sentiment}</span>
-          <span className={row.trend === 'up' ? 'text-semantic-success' : row.trend === 'down' ? 'text-semantic-danger' : 'text-slate-5'}>
+          <span className={row.trend === 'up' ? 'text-semantic-success' : row.trend === 'down' ? 'text-semantic-danger' : 'text-white/50'}>
             {row.trend === 'up' ? '↑' : row.trend === 'down' ? '↓' : '→'}
           </span>
         </div>
@@ -319,17 +319,17 @@ function StatsRow() {
   return (
     <div className="grid grid-cols-3 gap-2 mb-3">
       <div className="p-2 rounded-lg bg-brand-cyan/10 border border-brand-cyan/30">
-        <p className="text-[8px] text-slate-5 uppercase tracking-wide">Share of Voice</p>
+        <p className="text-[8px] text-white/50 uppercase tracking-wide">Share of Voice</p>
         <p className="text-lg font-bold text-brand-cyan">23.4%</p>
         <p className="text-[8px] text-semantic-success">↑ +2.1%</p>
       </div>
       <div className="p-2 rounded-lg bg-brand-iris/10 border border-brand-iris/30">
-        <p className="text-[8px] text-slate-5 uppercase tracking-wide">Citations</p>
+        <p className="text-[8px] text-white/50 uppercase tracking-wide">Citations</p>
         <p className="text-lg font-bold text-brand-iris">847</p>
         <p className="text-[8px] text-semantic-success">↑ +12%</p>
       </div>
       <div className="p-2 rounded-lg bg-brand-magenta/10 border border-brand-magenta/30">
-        <p className="text-[8px] text-slate-5 uppercase tracking-wide">Coverage</p>
+        <p className="text-[8px] text-white/50 uppercase tracking-wide">Coverage</p>
         <p className="text-lg font-bold text-brand-magenta">34</p>
         <p className="text-[8px] text-semantic-success">↑ +5</p>
       </div>
@@ -380,7 +380,7 @@ function ErrorState({ error }: { error: Error }) {
           </svg>
           <div>
             <h4 className="text-xs font-semibold text-semantic-danger">Failed to load intelligence</h4>
-            <p className="text-[10px] text-slate-5 mt-0.5">{error.message}</p>
+            <p className="text-[10px] text-white/50 mt-0.5">{error.message}</p>
           </div>
         </div>
       </div>
@@ -395,7 +395,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
   if (isLoading) return <LoadingSkeleton />;
   if (error) return <ErrorState error={error} />;
   if (!data) return (
-    <div className="p-6 text-center text-slate-5">
+    <div className="p-6 text-center text-white/50">
       <p className="text-xs">No intelligence data available</p>
     </div>
   );
@@ -418,7 +418,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
             <span className="w-1.5 h-1.5 rounded-full bg-brand-iris animate-pulse" />
             Intelligence Entity Map
           </h3>
-          <span className="text-[9px] text-slate-5">Real-time connections</span>
+          <span className="text-[9px] text-white/50">Real-time connections</span>
         </div>
         <div className="h-[200px]">
           <NetworkGraph
@@ -442,13 +442,13 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
                 relative px-3 py-2 text-[10px] font-medium transition-colors
                 ${activeTab === tab.id
                   ? 'text-brand-cyan'
-                  : 'text-slate-5 hover:text-white'
+                  : 'text-white/50 hover:text-white'
                 }
               `}
             >
               {tab.label}
               {tab.count !== undefined && (
-                <span className={`ml-1.5 px-1 py-0.5 text-[8px] rounded ${activeTab === tab.id ? 'bg-brand-cyan/20 text-brand-cyan' : 'bg-slate-5/20 text-slate-5'}`}>
+                <span className={`ml-1.5 px-1 py-0.5 text-[8px] rounded ${activeTab === tab.id ? 'bg-brand-cyan/20 text-brand-cyan' : 'bg-slate-5/20 text-white/50'}`}>
                   {tab.count}
                 </span>
               )}
@@ -469,7 +469,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
               {/* Citation Feed */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-[10px] font-semibold text-slate-5 uppercase tracking-wide flex items-center gap-1.5">
+                  <h4 className="text-[10px] font-semibold text-white/50 uppercase tracking-wide flex items-center gap-1.5">
                     <span className="w-1 h-1 rounded-full bg-semantic-success animate-pulse" />
                     Live Feed
                   </h4>
@@ -491,11 +491,11 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
           {activeTab === 'competitive' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-[10px] font-semibold text-slate-5 uppercase tracking-wide flex items-center gap-1.5">
+                <h4 className="text-[10px] font-semibold text-white/50 uppercase tracking-wide flex items-center gap-1.5">
                   <span className="w-1 h-1 rounded-full bg-semantic-danger" />
                   Competitive Landscape
                 </h4>
-                <button className="text-[8px] text-slate-5 hover:text-brand-cyan transition-colors">
+                <button className="text-[8px] text-white/50 hover:text-brand-cyan transition-colors">
                   Configure →
                 </button>
               </div>
@@ -503,7 +503,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
 
               {/* Trend Chart Placeholder */}
               <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
-                <h5 className="text-[9px] text-slate-5 uppercase tracking-wide mb-2">Share of Voice Trend</h5>
+                <h5 className="text-[9px] text-white/50 uppercase tracking-wide mb-2">Share of Voice Trend</h5>
                 <div className="h-20 flex items-end gap-1">
                   {[40, 42, 38, 45, 48, 52, 56, 54, 58, 62, 65, 70].map((val, i) => (
                     <div
@@ -513,7 +513,7 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
                     />
                   ))}
                 </div>
-                <div className="flex justify-between mt-1 text-[8px] text-slate-6">
+                <div className="flex justify-between mt-1 text-[8px] text-white/30">
                   <span>12 weeks ago</span>
                   <span>Today</span>
                 </div>
