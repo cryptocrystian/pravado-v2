@@ -369,7 +369,8 @@ interface CalendarEntryCardProps {
 
 function CalendarEntryCard({
   asset,
-  automationMode = 'copilot',
+  // Default to manual (most restrictive) per AUTOMATION_MODES_UX.md mode ceiling principle
+  automationMode = 'manual',
   crossPillarDeps = [],
   onClick,
 }: CalendarEntryCardProps) {
@@ -476,7 +477,7 @@ function CalendarCell({
           <CalendarEntryCard
             key={asset.id}
             asset={asset}
-            automationMode={automationModeMap.get(asset.id) || 'copilot'}
+            automationMode={automationModeMap.get(asset.id) || 'manual'}
             crossPillarDeps={crossPillarDepsMap.get(asset.id) || []}
             onClick={() => onSelectAsset?.(asset.id)}
           />
