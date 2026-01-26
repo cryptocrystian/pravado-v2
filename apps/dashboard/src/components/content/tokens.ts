@@ -182,6 +182,69 @@ export const modeTokens = {
 } as const;
 
 // ============================================
+// RISK VOCABULARY MAPPING
+// ============================================
+
+/**
+ * Internal risk taxonomy per AUTOMATE_EXECUTION_MODEL Section 5.3
+ * Used throughout content pillar components.
+ */
+export type InternalRiskClass = 'low' | 'medium' | 'high' | 'critical';
+
+/**
+ * Calendar-facing risk vocabulary per ORCHESTRATION_CALENDAR_CONTRACT Section 7.1
+ * Used when interfacing with Orchestration Calendar components.
+ *
+ * @see /docs/canon/ORCHESTRATION_CALENDAR_CONTRACT.md Section 7.1
+ */
+export type CalendarRiskLevel = 'low' | 'med' | 'high';
+
+/**
+ * Map internal risk class to calendar-facing risk level.
+ *
+ * Per ORCHESTRATION_CALENDAR_CONTRACT Section 7.1, calendar uses: low | med | high
+ * Per AUTOMATE_EXECUTION_MODEL Section 5.3, internal uses: low | medium | high | critical
+ *
+ * Mapping:
+ * - low → low
+ * - medium → med
+ * - high → high
+ * - critical → high (calendar doesn't distinguish critical from high)
+ */
+export function toCalendarRiskLevel(internal: InternalRiskClass): CalendarRiskLevel {
+  const mapping: Record<InternalRiskClass, CalendarRiskLevel> = {
+    low: 'low',
+    medium: 'med',
+    high: 'high',
+    critical: 'high', // Calendar contract doesn't have critical; map to high
+  };
+  return mapping[internal];
+}
+
+/**
+ * Map calendar risk level back to internal risk class.
+ * Note: 'high' maps to 'high' (not 'critical') as the inverse operation.
+ */
+export function fromCalendarRiskLevel(calendar: CalendarRiskLevel): InternalRiskClass {
+  const mapping: Record<CalendarRiskLevel, InternalRiskClass> = {
+    low: 'low',
+    med: 'medium',
+    high: 'high',
+  };
+  return mapping[calendar];
+}
+
+/**
+ * Risk styling tokens for internal risk classes.
+ */
+export const riskTokens: Record<InternalRiskClass, { color: string; label: string; calendarLabel: CalendarRiskLevel }> = {
+  low: { color: 'text-semantic-success', label: 'Low Risk', calendarLabel: 'low' },
+  medium: { color: 'text-semantic-warning', label: 'Medium Risk', calendarLabel: 'med' },
+  high: { color: 'text-semantic-danger', label: 'High Risk', calendarLabel: 'high' },
+  critical: { color: 'text-semantic-danger', label: 'Critical', calendarLabel: 'high' },
+};
+
+// ============================================
 // UTILITY CLASSES
 // ============================================
 
