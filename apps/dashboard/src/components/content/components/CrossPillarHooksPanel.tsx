@@ -259,7 +259,11 @@ function createExplainableAction(
     sourcePillar: 'content',
     targetPillar: targetPillarMap[actionConfig.pillar],
     mode,
-    confidence: 0.85, // Default confidence for cross-pillar hooks
+    // TODO: Confidence should be computed from action context per AUTOMATE_EXECUTION_MODEL Section 5.2
+    // Placeholder: 0.85 represents "high confidence" threshold for cross-pillar integrations
+    // where user intent is explicit (button click) and action pattern is well-understood.
+    // Future: derive from signal strength, pattern match quality, and historical success rate.
+    confidence: 0.85,
     riskClass: actionConfig.riskClass,
     userSummary: `${actionConfig.label} for "${assetTitle}" to ${actionConfig.pillar.toUpperCase()} pillar.`,
     technicalDetail: {
