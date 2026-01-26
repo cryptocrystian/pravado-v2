@@ -25,6 +25,22 @@ import type { CiteMindStatus, DerivativeSurface, AutomationMode } from '../types
 // ============================================
 
 /**
+ * Causal Chain Step per AUTOMATE_EXECUTION_MODEL Section 7.2 Level 3
+ *
+ * Documents the temporal progression of events leading to action execution.
+ */
+export interface CausalChainStep {
+  /** Step identifier */
+  step: string;
+  /** ISO 8601 timestamp */
+  timestamp: string;
+  /** Who/what performed this step */
+  actor: 'system' | 'user';
+  /** Optional additional context */
+  detail?: string;
+}
+
+/**
  * Explainable Action Object per AUTOMATE_EXECUTION_MODEL Section 7.2
  *
  * Every action must be explainable at three levels:
@@ -59,6 +75,13 @@ export interface ExplainableAction {
       probability: number;
     };
   };
+  /**
+   * Level 3: Causal Chain per AUTOMATE_EXECUTION_MODEL Section 7.2
+   *
+   * Documents the temporal sequence of events:
+   * Signal Detection → Proposal Generation → Approval → Preparation → Execution → Outcome
+   */
+  causalChain: CausalChainStep[];
   /** Reversibility per AUTOMATE Section 4 */
   reversibility: 'fully_reversible' | 'partially_reversible' | 'irreversible';
   /** Timestamp */
@@ -166,6 +189,52 @@ const HOOK_ACTIONS: HookAction[] = [
 // Per AUTOMATE_EXECUTION_MODEL Section 7.2
 // ============================================
 
+/**
+ * Generate causal chain steps per AUTOMATE_EXECUTION_MODEL Section 7.2 Level 3
+ *
+ * Example from canon:
+ * Signal Detection (t-48h) → Proposal Generation (t-24h) → Approval (t-12h)
+ *   → Preparation (t-1h) → Execution (t-0) → Outcome (t+48h)
+ */
+function generateCausalChain(
+  actionConfig: HookAction,
+  assetTitle: string,
+  mode: AutomationMode
+): CausalChainStep[] {
+  const now = new Date();
+
+  // For user-initiated actions, the causal chain is compressed
+  // In production, this would pull from actual system events
+  return [
+    {
+      step: 'Content Published',
+      timestamp: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(), // t-24h
+      actor: 'user',
+      detail: `"${assetTitle}" made available for cross-pillar integration`,
+    },
+    {
+      step: 'Derivative Generated',
+      timestamp: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(), // t-1h
+      actor: 'system',
+      detail: actionConfig.requiresDerivative
+        ? `${actionConfig.requiresDerivative} derivative created`
+        : 'Content prepared for integration',
+    },
+    {
+      step: 'Hook Initiated',
+      timestamp: new Date(now.getTime() - 1 * 60 * 1000).toISOString(), // t-1m
+      actor: 'user',
+      detail: `User triggered "${actionConfig.label}" in ${mode} mode`,
+    },
+    {
+      step: 'Execution',
+      timestamp: now.toISOString(), // t-0
+      actor: 'system',
+      detail: `Cross-pillar hook sent to ${actionConfig.pillar.toUpperCase()} pillar`,
+    },
+  ];
+}
+
 function createExplainableAction(
   actionConfig: HookAction,
   assetId: string,
@@ -202,6 +271,7 @@ function createExplainableAction(
         probability: 0.9,
       },
     },
+    causalChain: generateCausalChain(actionConfig, assetTitle, mode),
     reversibility: actionConfig.reversibility,
     createdAt: new Date().toISOString(),
     assetId,
@@ -291,6 +361,7 @@ export function CrossPillarHooksPanel({
   const [loadingActions, setLoadingActions] = useState<Set<string>>(new Set());
   const [completedActions, setCompletedActions] = useState<Set<string>>(new Set());
   const [lastAction, setLastAction] = useState<ExplainableAction | null>(null);
+  const [isCausalChainExpanded, setIsCausalChainExpanded] = useState(false);
 
   const isBlocked = citeMindStatus === 'blocked';
 
@@ -449,6 +520,7 @@ export function CrossPillarHooksPanel({
       {/* Last Action Explanation (per AUTOMATE Section 7.2) */}
       {lastAction && !compact && (
         <div className="mt-3 p-2 bg-slate-3 rounded-lg">
+          {/* Level 1: User Summary */}
           <div className="flex items-center gap-2 mb-1">
             <svg className="w-3 h-3 text-brand-cyan" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
@@ -464,6 +536,54 @@ export function CrossPillarHooksPanel({
               Risk: {lastAction.riskClass}
             </span>
           </div>
+
+          {/* Level 3: Causal Chain (collapsible) per AUTOMATE Section 7.2 */}
+          {lastAction.causalChain && lastAction.causalChain.length > 0 && (
+            <div className="mt-2 pt-2 border-t border-slate-4">
+              <button
+                onClick={() => setIsCausalChainExpanded(!isCausalChainExpanded)}
+                className="flex items-center gap-1 text-[9px] text-white/40 hover:text-white/60 transition-colors"
+              >
+                <svg
+                  className={`w-3 h-3 transition-transform ${isCausalChainExpanded ? 'rotate-90' : ''}`}
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+                Causal Chain ({lastAction.causalChain.length} steps)
+              </button>
+
+              {isCausalChainExpanded && (
+                <div className="mt-2 pl-2 border-l border-slate-4 space-y-2">
+                  {lastAction.causalChain.map((step, index) => (
+                    <div key={index} className="relative">
+                      {/* Timeline dot */}
+                      <div
+                        className={`absolute -left-[5px] top-1 w-2 h-2 rounded-full ${
+                          step.actor === 'user' ? 'bg-brand-iris' : 'bg-brand-cyan'
+                        }`}
+                      />
+                      <div className="pl-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9px] font-medium text-white/60">{step.step}</span>
+                          <span className="text-[8px] text-white/30">
+                            {step.actor === 'user' ? '👤' : '🤖'}
+                          </span>
+                        </div>
+                        {step.detail && (
+                          <p className="text-[8px] text-white/40">{step.detail}</p>
+                        )}
+                        <p className="text-[7px] text-white/20">
+                          {new Date(step.timestamp).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
