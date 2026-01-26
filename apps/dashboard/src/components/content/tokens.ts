@@ -245,6 +245,45 @@ export const riskTokens: Record<InternalRiskClass, { color: string; label: strin
 };
 
 // ============================================
+// MOTION TOKENS
+// ============================================
+
+/**
+ * Motion tokens per DS_v3_1_EXPRESSION.md Section "Motion"
+ *
+ * Canon specifies:
+ * - Easing: cubic-bezier(0.16, 1, 0.3, 1) - "premium and subtle"
+ * - Pulse/live indicators: minimal
+ *
+ * @see /docs/canon/DS_v3_1_EXPRESSION.md
+ */
+export const motion = {
+  /** Canon-specified easing function for premium, subtle motion */
+  easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+
+  /** Duration tokens (match Tailwind defaults for interoperability) */
+  duration: {
+    fast: '150ms',
+    base: '200ms',
+    slow: '300ms',
+  },
+
+  /** Pre-composed transition classes using canon easing */
+  transition: {
+    /** Fast interaction feedback (buttons, hovers) */
+    fast: 'transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)]',
+    /** Base transition (most UI elements) */
+    base: 'transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]',
+    /** Slow transition (panels, modals) */
+    slow: 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
+    /** Colors only (hover states) */
+    colors: 'transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]',
+    /** Opacity only (fade effects) */
+    opacity: 'transition-opacity duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]',
+  },
+} as const;
+
+// ============================================
 // UTILITY CLASSES
 // ============================================
 
