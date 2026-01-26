@@ -215,7 +215,8 @@ function ModeCeilingIndicator({ ceiling, currentMode }: { ceiling: AutomationMod
 export function LifecycleStepper({
   currentStatus,
   citeMindStatus,
-  automationMode = 'copilot',
+  // Default to manual (most restrictive) per AUTOMATION_MODES_UX.md mode ceiling principle
+  automationMode = 'manual',
   warningAcknowledged = false,
   onTransition,
   isTransitioning = false,

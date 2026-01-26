@@ -355,7 +355,8 @@ export function CrossPillarHooksPanel({
   assetTitle,
   derivatives,
   citeMindStatus,
-  automationMode = 'copilot',
+  // Default to manual (most restrictive) per AUTOMATION_MODES_UX.md mode ceiling principle
+  automationMode = 'manual',
   onGeneratePRHooks,
   onSendAEOBundle,
   onAddToCommandCenter,
