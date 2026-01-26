@@ -10,7 +10,18 @@
  * Phase 4C: Calendar entries bound to content asset IDs
  * Clicking calendar entry opens asset work surface.
  *
- * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
+ * NAVIGATION BEHAVIOR NOTE:
+ * This Content Calendar differs from the Orchestration Calendar in click behavior:
+ * - Content Calendar: Click navigates to the asset/brief detail page (work surface)
+ * - Orchestration Calendar: Click opens a day-view drawer/modal (per ORCHESTRATION_CALENDAR_CONTRACT §3.2)
+ *
+ * This distinction is intentional:
+ * - Content Calendar is a pillar-specific view optimized for content workflow
+ * - Orchestration Calendar is a cross-pillar coordination view with inline day expansion
+ *
+ * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md Section 4.4 (calendar integration)
+ * @see /docs/canon/ORCHESTRATION_CALENDAR_CONTRACT.md Section 3.2 (day view behavior)
+ * @see /docs/canon/UX_SURFACES.md (surface hierarchy and navigation)
  * @see /docs/canon/AUTOMATION_MODES_UX.md
  */
 
