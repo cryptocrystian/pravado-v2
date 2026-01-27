@@ -39,7 +39,7 @@ interface ContentAction {
   title: string;
   summary: string;
   priority: 'critical' | 'high' | 'medium' | 'low';
-  type: 'opportunity' | 'issue' | 'scheduled' | 'sage_proposal';
+  type: 'opportunity' | 'issue' | 'scheduled' | 'sage_proposal' | 'execution';
   relatedEntityId?: string;
   relatedEntityType?: 'gap' | 'brief' | 'asset' | 'cluster';
   cta: {
@@ -48,6 +48,8 @@ interface ContentAction {
   };
   mode: AutomationMode;
   createdAt: string;
+  /** For execution actions: the orchestration action ID */
+  orchestrateActionId?: string;
 }
 
 interface ContentOverviewViewProps {
@@ -77,6 +79,8 @@ interface ContentOverviewViewProps {
   onGenerateDraft?: () => void;
   onViewCluster?: (clusterId: string) => void;
   onViewCalendar?: () => void;
+  /** Launch orchestration editor for a specific action (Phase 6A.7) */
+  onLaunchOrchestrate?: (actionId: string) => void;
 }
 
 // ============================================
@@ -224,9 +228,11 @@ function CTACluster({
 function TodaysWorkActionStack({
   actions,
   mode,
+  onLaunchOrchestrate,
 }: {
   actions: ContentAction[];
   mode: AutomationMode;
+  onLaunchOrchestrate?: (actionId: string) => void;
 }) {
   const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
   const sortedActions = [...actions].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
@@ -266,6 +272,7 @@ function TodaysWorkActionStack({
             key={action.id}
             action={action}
             isFirst={index === 0}
+            onLaunchOrchestrate={onLaunchOrchestrate}
           />
         ))}
       </div>
@@ -298,9 +305,11 @@ function ModeIndicator({ mode }: { mode: AutomationMode }) {
 function ContentActionCard({
   action,
   isFirst,
+  onLaunchOrchestrate,
 }: {
   action: ContentAction;
   isFirst: boolean;
+  onLaunchOrchestrate?: (actionId: string) => void;
 }) {
   const priorityStyles = {
     critical: {
@@ -326,18 +335,30 @@ function ContentActionCard({
     issue: 'Issue',
     scheduled: 'Scheduled',
     sage_proposal: 'SAGE',
+    execution: 'Execute',
   };
 
   const style = priorityStyles[action.priority];
 
+  // Handle card click for orchestration (Phase 6A.7)
+  const handleCardClick = () => {
+    if (action.orchestrateActionId && onLaunchOrchestrate) {
+      onLaunchOrchestrate(action.orchestrateActionId);
+    }
+  };
+
+  const isOrchestrationReady = !!action.orchestrateActionId;
+
   return (
     <div
+      onClick={handleCardClick}
       className={`
         p-3 bg-slate-2 border border-border-subtle rounded-lg
         border-l-[3px] ${style.border}
         hover:border-brand-iris/40 hover:bg-[#111116]
         transition-all cursor-pointer
         ${isFirst ? 'ring-1 ring-brand-iris/20' : ''}
+        ${isOrchestrationReady ? 'group' : ''}
       `}
     >
       <div className="flex items-start justify-between gap-3">
@@ -353,6 +374,14 @@ function ContentActionCard({
                 AUTO
               </span>
             )}
+            {isOrchestrationReady && (
+              <span className="px-1.5 py-0.5 text-[9px] font-medium text-brand-iris bg-brand-iris/15 rounded flex items-center gap-1">
+                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Ready
+              </span>
+            )}
           </div>
 
           {/* Title */}
@@ -366,11 +395,15 @@ function ContentActionCard({
           </p>
         </div>
 
-        {/* CTA */}
+        {/* CTA - Shows "Execute" for orchestration-ready actions */}
         <button
           onClick={(e) => {
             e.stopPropagation();
-            action.cta.action();
+            if (isOrchestrationReady && onLaunchOrchestrate) {
+              onLaunchOrchestrate(action.orchestrateActionId!);
+            } else {
+              action.cta.action();
+            }
           }}
           className={`
             px-3 py-1.5 text-xs font-semibold rounded shrink-0
@@ -379,9 +412,10 @@ function ContentActionCard({
               ? 'bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_12px_rgba(168,85,247,0.25)]'
               : 'bg-brand-iris/10 text-brand-iris border border-brand-iris/30 hover:bg-brand-iris/20'
             }
+            ${isOrchestrationReady ? 'group-hover:shadow-[0_0_16px_rgba(168,85,247,0.30)]' : ''}
           `}
         >
-          {action.cta.label}
+          {isOrchestrationReady ? 'Execute →' : action.cta.label}
         </button>
       </div>
     </div>
@@ -646,6 +680,7 @@ export function ContentOverviewView({
   onGenerateDraft,
   onViewCluster,
   onViewCalendar,
+  onLaunchOrchestrate,
 }: ContentOverviewViewProps) {
   // Loading state
   if (isLoading) {
@@ -691,6 +726,27 @@ export function ContentOverviewView({
 
   // Generate actions from gaps, briefs, and SAGE proposals
   const actions: ContentAction[] = [
+    // Execution-ready briefs (Phase 6A.7: Entry point to Orchestration Editor)
+    ...briefs
+      .filter((b) => b.status === 'approved' || b.status === 'in_progress')
+      .slice(0, 2)
+      .map((brief, i): ContentAction => ({
+        id: `exec-${brief.id}`,
+        title: `Execute Brief: ${brief.title}`,
+        summary: `Ready to build authority · Target: ${brief.targetKeyword || 'Multiple keywords'}`,
+        priority: 'high',
+        type: 'execution',
+        relatedEntityId: brief.id,
+        relatedEntityType: 'brief',
+        cta: {
+          label: 'Execute',
+          action: () => onViewBrief?.(brief.id),
+        },
+        mode: mode,
+        createdAt: brief.createdAt,
+        // Map brief ID to orchestration action ID (using mock IDs for now)
+        orchestrateActionId: `action-${(i % 3) + 1}`,
+      })),
     // High-opportunity gaps
     ...gaps
       .filter((g) => g.seoOpportunityScore >= 60)
@@ -710,20 +766,20 @@ export function ContentOverviewView({
         mode: mode,
         createdAt: new Date().toISOString(),
       })),
-    // Briefs needing attention
+    // Briefs needing attention (draft status)
     ...briefs
-      .filter((b) => b.status === 'draft' || b.status === 'in_progress')
+      .filter((b) => b.status === 'draft')
       .slice(0, 2)
       .map((brief): ContentAction => ({
         id: `brief-${brief.id}`,
         title: brief.title,
         summary: `Status: ${brief.status} · Target: ${brief.targetKeyword || 'Not set'}`,
-        priority: brief.status === 'in_progress' ? 'high' : 'medium',
+        priority: 'medium',
         type: 'scheduled',
         relatedEntityId: brief.id,
         relatedEntityType: 'brief',
         cta: {
-          label: brief.status === 'draft' ? 'Review' : 'Continue',
+          label: 'Review',
           action: () => onViewBrief?.(brief.id),
         },
         mode: mode,
@@ -767,7 +823,11 @@ export function ContentOverviewView({
 
       {/* Primary Region: Today's Work Action Stack */}
       <section className="min-h-[280px]">
-        <TodaysWorkActionStack actions={actions} mode={mode} />
+        <TodaysWorkActionStack
+          actions={actions}
+          mode={mode}
+          onLaunchOrchestrate={onLaunchOrchestrate}
+        />
       </section>
 
       {/* Secondary Row: Pipeline, Upcoming, Cross-Pillar */}
