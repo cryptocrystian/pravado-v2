@@ -101,33 +101,118 @@ export function ContentLoadingSkeleton({
 function DashboardSkeleton() {
   return (
     <div className="p-4 space-y-4">
-      {/* Authority metrics row */}
-      <div className="grid grid-cols-3 gap-4">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-24 bg-[#13131A] rounded-lg animate-pulse border border-[#1A1A24] p-4">
-            <div className="h-3 w-20 bg-[#1A1A24] rounded mb-2" />
-            <div className="h-8 w-12 bg-[#1A1A24] rounded" />
-          </div>
-        ))}
+      {/* Top Row: Health Strip + CTA Cluster */}
+      <div className="flex items-start justify-between gap-4">
+        {/* Health Strip */}
+        <div className="flex-1 h-14 bg-slate-2 border border-border-subtle rounded-lg animate-pulse flex items-center gap-4 px-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex flex-col gap-1">
+              <div className="h-2 w-16 bg-slate-4 rounded" />
+              <div className="h-5 w-10 bg-slate-4 rounded" />
+            </div>
+          ))}
+        </div>
+        {/* CTA Cluster */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="h-9 w-24 bg-brand-iris/20 rounded-lg animate-pulse" />
+          <div className="h-9 w-28 bg-slate-2 border border-border-subtle rounded-lg animate-pulse" />
+          <div className="h-9 w-28 bg-slate-2 border border-border-subtle rounded-lg animate-pulse" />
+        </div>
       </div>
 
-      {/* Themes section */}
-      <div className="bg-[#13131A] rounded-lg animate-pulse border border-[#1A1A24] p-4">
-        <div className="h-4 w-32 bg-[#1A1A24] rounded mb-4" />
-        <div className="grid grid-cols-2 gap-3">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-16 bg-[#1A1A24] rounded-lg" />
+      {/* Today's Work Action Stack */}
+      <div className="min-h-[280px]">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-24 bg-slate-4 rounded animate-pulse" />
+            <div className="h-5 w-16 bg-brand-iris/10 rounded-full animate-pulse" />
+          </div>
+          <div className="h-5 w-14 bg-slate-4 rounded animate-pulse" />
+        </div>
+        <div className="space-y-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="p-3 bg-slate-2 border border-border-subtle rounded-lg animate-pulse border-l-[3px] border-l-slate-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 bg-slate-4 rounded-full" />
+                    <div className="h-3 w-16 bg-slate-4 rounded" />
+                  </div>
+                  <div className="h-4 w-48 bg-slate-4 rounded mb-1" />
+                  <div className="h-3 w-32 bg-slate-4 rounded" />
+                </div>
+                <div className="h-7 w-20 bg-brand-iris/20 rounded animate-pulse" />
+              </div>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Proposals section */}
-      <div className="bg-[#13131A] rounded-lg animate-pulse border border-[#1A1A24] p-4">
-        <div className="h-4 w-40 bg-[#1A1A24] rounded mb-4" />
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-12 bg-[#1A1A24] rounded-lg" />
-          ))}
+      {/* Secondary Row */}
+      <div className="grid grid-cols-3 gap-3">
+        {/* Pipeline Status */}
+        <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg animate-pulse">
+          <div className="h-3 w-16 bg-slate-4 rounded mb-3" />
+          <div className="flex items-center gap-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex flex-col items-center gap-1">
+                <div className="h-4 w-6 bg-slate-4 rounded" />
+                <div className="h-2 w-8 bg-slate-4 rounded" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Upcoming */}
+        <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg animate-pulse">
+          <div className="h-3 w-16 bg-slate-4 rounded mb-3" />
+          <div className="flex items-center gap-2">
+            <div className="h-6 w-8 bg-slate-4 rounded" />
+            <div className="h-3 w-24 bg-slate-4 rounded" />
+          </div>
+        </div>
+
+        {/* Cross-Pillar */}
+        <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg animate-pulse">
+          <div className="h-3 w-20 bg-slate-4 rounded mb-3" />
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 bg-brand-magenta/30 rounded-full" />
+              <div className="h-3 w-12 bg-slate-4 rounded" />
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 bg-brand-cyan/30 rounded-full" />
+              <div className="h-3 w-12 bg-slate-4 rounded" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Opportunities */}
+      <div className="space-y-3">
+        <div className="h-4 w-32 bg-slate-4 rounded animate-pulse" />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <div className="h-3 w-20 bg-slate-4 rounded animate-pulse" />
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="p-2.5 bg-slate-2 border border-border-subtle rounded-lg animate-pulse">
+                <div className="h-3 w-28 bg-slate-4 rounded mb-1.5" />
+                <div className="h-2 w-16 bg-slate-4 rounded" />
+              </div>
+            ))}
+          </div>
+          <div className="space-y-2">
+            <div className="h-3 w-20 bg-slate-4 rounded animate-pulse" />
+            {[1, 2].map((i) => (
+              <div key={i} className="p-2.5 bg-slate-2 border border-border-subtle rounded-lg animate-pulse">
+                <div className="h-3 w-32 bg-slate-4 rounded mb-1.5" />
+                <div className="h-2 w-20 bg-slate-4 rounded" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

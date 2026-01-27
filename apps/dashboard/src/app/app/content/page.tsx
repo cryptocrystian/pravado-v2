@@ -254,6 +254,31 @@ export default function ContentPage() {
     }
   }, [router, selectedAssetId]);
 
+  const handleImportContent = useCallback(() => {
+    // Could open import modal
+    console.log('Import content');
+  }, []);
+
+  const handleFixIssues = useCallback(() => {
+    // Navigate to library filtered by CiteMind issues
+    setActiveView('library');
+  }, []);
+
+  const handleGenerateDraft = useCallback(() => {
+    // Could open AI draft generation modal
+    console.log('Generate draft');
+  }, []);
+
+  const handleViewCluster = useCallback((clusterId: string) => {
+    // Navigate to library filtered by cluster
+    console.log('View cluster:', clusterId);
+    setActiveView('library');
+  }, []);
+
+  const handleViewCalendar = useCallback(() => {
+    setActiveView('calendar');
+  }, []);
+
   // Render active view
   const renderActiveView = () => {
     switch (activeView) {
@@ -264,12 +289,19 @@ export default function ContentPage() {
             clusters={clusters}
             gaps={gaps}
             briefs={briefs}
+            assets={items}
+            mode="copilot"
             isLoading={isLoading}
             error={error}
             onViewLibrary={handleViewLibrary}
             onViewGap={handleViewGap}
             onViewBrief={handleViewBrief}
             onGenerateBrief={handleGenerateBrief}
+            onImportContent={handleImportContent}
+            onFixIssues={handleFixIssues}
+            onGenerateDraft={handleGenerateDraft}
+            onViewCluster={handleViewCluster}
+            onViewCalendar={handleViewCalendar}
           />
         );
       case 'library':
