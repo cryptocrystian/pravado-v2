@@ -153,7 +153,7 @@ export function ContentOverviewView({
           </button>
         </div>
         {briefs.length === 0 ? (
-          <div className="p-4 bg-[#13131A] border border-[#1F1F28] rounded-lg text-center">
+          <div className="p-4 bg-slate-2 border border-border-subtle rounded-lg text-center">
             <p className="text-xs text-white/40">No briefs created yet</p>
             <button
               onClick={onGenerateBrief}
@@ -203,7 +203,7 @@ export function ContentOverviewView({
 
 function ThemeCard({ cluster }: { cluster: ContentClusterDTO }) {
   return (
-    <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer">
+    <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer">
       <h4 className="text-sm font-medium text-white mb-1">{cluster.cluster.name}</h4>
       <div className="flex items-center gap-2 text-[10px] text-white/40">
         <span>{cluster.topics.length} topics</span>
@@ -229,7 +229,7 @@ function GapCard({ gap, onClick }: { gap: ContentGap; onClick?: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer flex items-center justify-between"
+      className="p-3 bg-slate-2 border border-border-subtle rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer flex items-center justify-between"
     >
       <div>
         <h4 className="text-sm font-medium text-white">{gap.keyword}</h4>
@@ -261,7 +261,7 @@ function BriefCard({ brief, onClick }: { brief: ContentBrief; onClick?: () => vo
   return (
     <div
       onClick={onClick}
-      className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer"
+      className="p-3 bg-slate-2 border border-border-subtle rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer"
     >
       <div className="flex items-start justify-between gap-2">
         <h4 className="text-sm font-medium text-white line-clamp-1">{brief.title}</h4>

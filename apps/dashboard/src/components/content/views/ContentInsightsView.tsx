@@ -231,7 +231,7 @@ export function ContentInsightsView({
       {/* Authority Distribution Chart Placeholder */}
       <section>
         <h3 className="text-sm font-semibold text-white mb-3">Authority Distribution</h3>
-        <div className="p-6 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+        <div className="p-6 bg-slate-2 border border-border-subtle rounded-lg">
           <div className="flex items-center justify-center h-32">
             <div className="text-center">
               <svg className="w-8 h-8 text-white/20 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,7 +259,7 @@ interface InsightMetricCardProps {
 
 function InsightMetricCard({ label, value, trend, description }: InsightMetricCardProps) {
   return (
-    <div className="p-4 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+    <div className="p-4 bg-slate-2 border border-border-subtle rounded-lg">
       <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">{label}</div>
       <div className="flex items-baseline gap-2">
         <span className={`text-2xl font-bold ${getScoreColor(value)}`}>{value}</span>
@@ -300,7 +300,7 @@ function TopAssetRow({ rank, asset, onOpenForRevision, onRegenerateDerivatives }
   const score = asset.authoritySignals?.authorityContributionScore ?? 0;
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg group hover:border-brand-iris/40 transition-colors">
+    <div className="flex items-center gap-3 p-3 bg-slate-2 border border-border-subtle rounded-lg group hover:border-brand-iris/40 transition-colors">
       <span className="text-lg font-bold text-white/30 w-6 text-center">#{rank}</span>
       <div className="flex-1 min-w-0">
         <h4 className="text-sm font-medium text-white truncate">{asset.title}</h4>
@@ -354,7 +354,7 @@ function GapOpportunityRow({ gap, onCreateBrief, onViewDetails }: GapOpportunity
       : 'text-white/50 bg-white/10';
 
   return (
-    <div className="flex items-center justify-between p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg group hover:border-brand-iris/40 transition-colors">
+    <div className="flex items-center justify-between p-3 bg-slate-2 border border-border-subtle rounded-lg group hover:border-brand-iris/40 transition-colors">
       <div className="flex-1 min-w-0" onClick={onViewDetails} role="button" tabIndex={0}>
         <h4 className="text-sm font-medium text-white">{gap.keyword}</h4>
         <div className="flex items-center gap-2 text-[10px] text-white/40 mt-0.5">
