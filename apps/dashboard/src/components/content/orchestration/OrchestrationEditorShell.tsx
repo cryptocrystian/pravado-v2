@@ -22,8 +22,9 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import { modeTokens, motion, citeMindStatus as citeMindTokens, surface, border, label as labelClass } from '../tokens';
+import { motion, citeMindStatus as citeMindTokens, surface, border, label as labelClass } from '../tokens';
 import type { AutomationMode, CiteMindStatus } from '../types';
+import { ModeSelector, ModeBehaviorBanner } from './ModeSelector';
 
 // ============================================
 // TYPES
@@ -167,31 +168,6 @@ function getProfileStatusTokens(status: TargetAIProfile['status']) {
   }
 }
 
-// ============================================
-// MODE ICON COMPONENT
-// ============================================
-
-function ModeIcon({ mode, className = 'w-4 h-4' }: { mode: AutomationMode; className?: string }) {
-  if (mode === 'manual') {
-    return (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-      </svg>
-    );
-  }
-  if (mode === 'copilot') {
-    return (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-    );
-  }
-  return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-    </svg>
-  );
-}
 
 // ============================================
 // TRIGGER CARD COMPONENT
@@ -402,6 +378,7 @@ function CiteMindStatusPanel({ status, issues = [] }: CiteMindStatusPanelProps) 
 export function OrchestrationEditorShell({
   action,
   currentMode,
+  onModeChange,
   onBack,
   onSaveDraft,
   onComplete,
@@ -413,9 +390,15 @@ export function OrchestrationEditorShell({
   isLoading = false,
   hasUnsavedChanges = false,
 }: OrchestrationEditorShellProps) {
-  const modeConfig = modeTokens[currentMode];
   const [isLeftPaneCollapsed, setIsLeftPaneCollapsed] = useState(false);
   const [isRightPaneCollapsed, setIsRightPaneCollapsed] = useState(false);
+
+  // Handle mode change (only if handler provided)
+  const handleModeChange = (newMode: AutomationMode) => {
+    if (onModeChange) {
+      onModeChange(newMode);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-0 flex flex-col">
@@ -459,11 +442,13 @@ export function OrchestrationEditorShell({
 
               {/* Right: Mode + Actions */}
               <div className="flex items-center gap-2">
-                {/* Mode Indicator */}
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${modeConfig.bg} ${modeConfig.border}`}>
-                  <ModeIcon mode={currentMode} className="w-3.5 h-3.5" />
-                  <span className={`text-xs font-medium ${modeConfig.text}`}>{modeConfig.label}</span>
-                </div>
+                {/* Mode Selector (with ceiling enforcement) */}
+                <ModeSelector
+                  currentMode={currentMode}
+                  modeCeiling={action.modeCeiling}
+                  onModeChange={handleModeChange}
+                  disabled={!onModeChange}
+                />
 
                 {/* Explain Button */}
                 <button
@@ -574,6 +559,11 @@ export function OrchestrationEditorShell({
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Mode Behavior Banner */}
+          <div className="px-4 pt-3 pb-0">
+            <ModeBehaviorBanner mode={currentMode} isActive />
           </div>
 
           {/* Canvas Content */}

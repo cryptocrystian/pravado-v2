@@ -28,6 +28,7 @@ import {
   type TargetAIProfile,
 } from '@/components/content';
 import { motion } from '@/components/content/tokens';
+import type { AutomationMode } from '@/components/content/types';
 
 // ============================================
 // MOCK DATA
@@ -183,6 +184,7 @@ export default function ContentOrchestratePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [currentMode, setCurrentMode] = useState<AutomationMode>('manual');
 
   // Fetch action context (mock for now)
   useEffect(() => {
@@ -202,6 +204,8 @@ export default function ContentOrchestratePage() {
       if (foundAction) {
         setAction(foundAction);
         setNotFound(false);
+        // Initialize mode to the ceiling (user can step down if needed)
+        setCurrentMode(foundAction.modeCeiling);
       } else {
         setAction(null);
         setNotFound(true);
@@ -235,6 +239,11 @@ export default function ContentOrchestratePage() {
     console.log('Opening explain drawer...');
   }, []);
 
+  const handleModeChange = useCallback((newMode: AutomationMode) => {
+    setCurrentMode(newMode);
+    console.log(`Mode changed to: ${newMode}`);
+  }, []);
+
   // Loading state
   if (isLoading) {
     return (
@@ -256,7 +265,8 @@ export default function ContentOrchestratePage() {
   return (
     <OrchestrationEditorShell
       action={action}
-      currentMode={action.modeCeiling}
+      currentMode={currentMode}
+      onModeChange={handleModeChange}
       onBack={handleNavigateBack}
       onSaveDraft={handleSaveDraft}
       onComplete={handleComplete}

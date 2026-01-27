@@ -14,3 +14,9 @@ export {
   type TargetAIProfile,
   type OrchestrationEditorShellProps,
 } from './OrchestrationEditorShell';
+
+export {
+  ModeSelector,
+  ModeIndicator,
+  ModeBehaviorBanner,
+} from './ModeSelector';
