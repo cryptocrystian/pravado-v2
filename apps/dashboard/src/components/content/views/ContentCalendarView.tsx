@@ -230,11 +230,11 @@ export function ContentCalendarView({
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Calendar Header */}
-      <div className="px-4 py-3 flex items-center justify-between border-b border-[#1A1A24]">
+      <div className="px-4 py-3 flex items-center justify-between border-b border-slate-4">
         <div className="flex items-center gap-2">
           <button
             onClick={prevMonth}
-            className="p-1.5 text-white/50 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors"
+            className="p-1.5 text-white/50 hover:text-white hover:bg-slate-3 rounded-lg transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
@@ -245,7 +245,7 @@ export function ContentCalendarView({
           </span>
           <button
             onClick={nextMonth}
-            className="p-1.5 text-white/50 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors"
+            className="p-1.5 text-white/50 hover:text-white hover:bg-slate-3 rounded-lg transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
@@ -258,7 +258,7 @@ export function ContentCalendarView({
           <select
             value={selectedFormat}
             onChange={(e) => setSelectedFormat(e.target.value as ContentFormat | 'all')}
-            className="px-2 py-1 text-xs bg-[#13131A] border border-[#1F1F28] rounded-lg text-white/70 focus:outline-none focus:border-brand-iris/40"
+            className="px-2 py-1 text-xs bg-slate-2 border border-border-subtle rounded-lg text-white/70 focus:outline-none focus:border-brand-iris/40"
           >
             <option value="all">All Formats</option>
             {Object.entries(FORMAT_CONFIG).map(([key, config]) => (
@@ -276,7 +276,7 @@ export function ContentCalendarView({
       </div>
 
       {/* Format Lanes Legend */}
-      <div className="px-4 py-2 flex items-center gap-3 border-b border-[#1A1A24] overflow-x-auto">
+      <div className="px-4 py-2 flex items-center gap-3 border-b border-slate-4 overflow-x-auto">
         {Object.entries(FORMAT_CONFIG).map(([key, config]) => (
           <button
             key={key}
@@ -294,7 +294,7 @@ export function ContentCalendarView({
       </div>
 
       {/* Day Headers */}
-      <div className="grid grid-cols-7 border-b border-[#1A1A24]">
+      <div className="grid grid-cols-7 border-b border-slate-4">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
           <div key={day} className="px-2 py-2 text-center text-[10px] text-white/40 uppercase tracking-wider">
             {day}
@@ -307,7 +307,7 @@ export function ContentCalendarView({
         <div className="grid grid-cols-7 auto-rows-[minmax(100px,1fr)]">
           {days.map((day, index) => {
             if (day === null) {
-              return <div key={`empty-${index}`} className="border-r border-b border-[#1A1A24] bg-[#0A0A0F]" />;
+              return <div key={`empty-${index}`} className="border-r border-b border-slate-4 bg-slate-0" />;
             }
 
             const cellDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
@@ -331,7 +331,7 @@ export function ContentCalendarView({
       </div>
 
       {/* Campaign Legend */}
-      <div className="px-4 py-2 flex items-center gap-4 border-t border-[#1A1A24]">
+      <div className="px-4 py-2 flex items-center gap-4 border-t border-slate-4">
         <span className="text-[10px] text-white/40 uppercase">Campaigns:</span>
         {MOCK_CAMPAIGNS.map((campaign) => (
           <div key={campaign.id} className="flex items-center gap-1.5">
@@ -447,9 +447,9 @@ function CalendarCell({
   return (
     <div
       className={`
-        border-r border-b border-[#1A1A24] p-1.5
-        ${isToday ? 'bg-brand-iris/5' : 'bg-[#0A0A0F]'}
-        ${hasItems ? 'hover:bg-[#13131A]' : ''}
+        border-r border-b border-slate-4 p-1.5
+        ${isToday ? 'bg-brand-iris/5' : 'bg-slate-0'}
+        ${hasItems ? 'hover:bg-slate-2' : ''}
         transition-colors
       `}
     >

@@ -160,7 +160,7 @@ export function ContentLibraryView({
       />
 
       {/* Results count */}
-      <div className="px-4 py-2 flex items-center justify-between border-b border-[#1A1A24]">
+      <div className="px-4 py-2 flex items-center justify-between border-b border-slate-4">
         <span className="text-xs text-white/40">
           {filteredAssets.length} {filteredAssets.length === 1 ? 'asset' : 'assets'}
           {(statusFilter || typeFilter || entityFilter || searchQuery) && ' (filtered)'}
@@ -212,11 +212,11 @@ export function ContentLibraryView({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-4 py-3 flex items-center justify-center gap-2 border-t border-[#1A1A24]">
+        <div className="px-4 py-3 flex items-center justify-center gap-2 border-t border-slate-4">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 text-xs text-white/70 bg-[#1A1A24] hover:bg-[#2A2A36] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
+            className="px-3 py-1.5 text-xs text-white/70 bg-[#1A1A24] hover:bg-slate-4 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
           >
             Previous
           </button>
@@ -226,7 +226,7 @@ export function ContentLibraryView({
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1.5 text-xs text-white/70 bg-[#1A1A24] hover:bg-[#2A2A36] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
+            className="px-3 py-1.5 text-xs text-white/70 bg-[#1A1A24] hover:bg-slate-4 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
           >
             Next
           </button>
@@ -248,9 +248,9 @@ interface AssetDetailPreviewProps {
 
 export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPreviewProps) {
   return (
-    <div className="h-full flex flex-col bg-[#0A0A0F]">
+    <div className="h-full flex flex-col bg-slate-0">
       {/* Header */}
-      <div className="p-4 border-b border-[#1A1A24]">
+      <div className="p-4 border-b border-slate-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-sm font-semibold text-white line-clamp-2">{asset.title}</h3>
           {onClose && (
@@ -321,7 +321,7 @@ export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPrevie
         )}
 
         {/* Timestamps */}
-        <div className="pt-2 border-t border-[#1A1A24]">
+        <div className="pt-2 border-t border-slate-4">
           <div className="text-[10px] text-white/30">
             Created: {new Date(asset.createdAt).toLocaleDateString()}
           </div>
@@ -333,7 +333,7 @@ export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPrevie
 
       {/* Actions */}
       {onEdit && (
-        <div className="p-4 border-t border-[#1A1A24]">
+        <div className="p-4 border-t border-slate-4">
           <button
             onClick={onEdit}
             className="w-full px-4 py-2 text-sm font-medium text-white bg-brand-iris hover:bg-brand-iris/90 rounded-lg transition-colors"
@@ -355,7 +355,7 @@ function MetricItem({ label, value }: { label: string; value: number }) {
   };
 
   return (
-    <div className="p-2 bg-[#13131A] border border-[#1F1F28] rounded-lg text-center">
+    <div className="p-2 bg-slate-2 border border-border-subtle rounded-lg text-center">
       <div className={`text-sm font-bold ${getColor(value)}`}>{value}</div>
       <div className="text-[9px] text-white/40 uppercase">{label}</div>
     </div>
