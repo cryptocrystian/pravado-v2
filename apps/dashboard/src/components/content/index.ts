@@ -74,4 +74,5 @@ export {
   ModeBehaviorBanner,
   LivingCanvasEditor,
   AutopilotDraftPreview,
+  ExplainabilityDrawer,
 } from './orchestration';

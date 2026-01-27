@@ -24,6 +24,7 @@ import { useEffect, useState, useCallback } from 'react';
 import {
   OrchestrationEditorShell,
   LivingCanvasEditor,
+  ExplainabilityDrawer,
   type TriggerAction,
   type EntityChecklistItem,
   type TargetAIProfile,
@@ -186,6 +187,7 @@ export default function ContentOrchestratePage() {
   const [notFound, setNotFound] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [currentMode, setCurrentMode] = useState<AutomationMode>('manual');
+  const [isExplainOpen, setIsExplainOpen] = useState(false);
 
   // Fetch action context (mock for now)
   useEffect(() => {
@@ -236,8 +238,7 @@ export default function ContentOrchestratePage() {
   }, [router]);
 
   const handleExplainToggle = useCallback(() => {
-    // TODO: Implement explain drawer (Phase 6A.5)
-    console.log('Opening explain drawer...');
+    setIsExplainOpen((prev) => !prev);
   }, []);
 
   const handleModeChange = useCallback((newMode: AutomationMode) => {
@@ -264,32 +265,42 @@ export default function ContentOrchestratePage() {
 
   // Render orchestration editor with the shell
   return (
-    <OrchestrationEditorShell
-      action={action}
-      currentMode={currentMode}
-      onModeChange={handleModeChange}
-      onBack={handleNavigateBack}
-      onSaveDraft={handleSaveDraft}
-      onComplete={handleComplete}
-      onExplainToggle={handleExplainToggle}
-      entityChecklist={MOCK_ENTITY_CHECKLIST}
-      targetProfiles={MOCK_AI_PROFILES}
-      schemaPreview={MOCK_SCHEMA}
-      hasUnsavedChanges={hasUnsavedChanges}
-      isLoading={false}
-    >
-      {/* Living Canvas Editor */}
-      <LivingCanvasEditor
-        mode={currentMode}
-        initialContent=""
-        onContentChange={(content) => {
-          setHasUnsavedChanges(content.length > 0);
-        }}
-        trackedEntities={MOCK_ENTITY_CHECKLIST.map((e) => e.entity)}
-        placeholder={`Start writing about "${action.sourceContext.keyword || action.title}"...
+    <>
+      <OrchestrationEditorShell
+        action={action}
+        currentMode={currentMode}
+        onModeChange={handleModeChange}
+        onBack={handleNavigateBack}
+        onSaveDraft={handleSaveDraft}
+        onComplete={handleComplete}
+        onExplainToggle={handleExplainToggle}
+        entityChecklist={MOCK_ENTITY_CHECKLIST}
+        targetProfiles={MOCK_AI_PROFILES}
+        schemaPreview={MOCK_SCHEMA}
+        hasUnsavedChanges={hasUnsavedChanges}
+        isLoading={false}
+      >
+        {/* Living Canvas Editor */}
+        <LivingCanvasEditor
+          mode={currentMode}
+          initialContent=""
+          onContentChange={(content) => {
+            setHasUnsavedChanges(content.length > 0);
+          }}
+          trackedEntities={MOCK_ENTITY_CHECKLIST.map((e) => e.entity)}
+          placeholder={`Start writing about "${action.sourceContext.keyword || action.title}"...
 
 Try typing "AI content creation" or "automation" to see Copilot suggestions.`}
+        />
+      </OrchestrationEditorShell>
+
+      {/* Explainability Drawer (Phase 6A.5 - §6 invariant) */}
+      <ExplainabilityDrawer
+        isOpen={isExplainOpen}
+        onClose={() => setIsExplainOpen(false)}
+        action={action}
+        currentMode={currentMode}
       />
-    </OrchestrationEditorShell>
+    </>
   );
 }
