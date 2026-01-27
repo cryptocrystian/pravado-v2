@@ -21,10 +21,105 @@
 
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
 import { motion, citeMindStatus as citeMindTokens, surface, border, label as labelClass } from '../tokens';
 import type { AutomationMode, CiteMindStatus } from '../types';
 import { ModeSelector, ModeBehaviorBanner } from './ModeSelector';
+
+// ============================================
+// MICRO-INTERACTION HOOKS (Phase 6A.6)
+// ============================================
+
+/**
+ * Hook for save flash micro-interaction.
+ * Provides visual feedback when content is saved.
+ */
+function useSaveFlash() {
+  const [showFlash, setShowFlash] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const triggerFlash = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setShowFlash(true);
+    timeoutRef.current = setTimeout(() => {
+      setShowFlash(false);
+    }, 800);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  return { showFlash, triggerFlash };
+}
+
+/**
+ * Hook for tracking entity state changes for animations.
+ */
+function useEntityStateTransitions(items: EntityChecklistItem[]) {
+  const [recentlyChanged, setRecentlyChanged] = useState<Set<string>>(new Set());
+  const prevItemsRef = useRef<EntityChecklistItem[]>(items);
+
+  useEffect(() => {
+    const newlyChanged = new Set<string>();
+
+    items.forEach((item) => {
+      const prevItem = prevItemsRef.current.find(p => p.id === item.id);
+      if (prevItem && prevItem.state !== item.state) {
+        newlyChanged.add(item.id);
+      }
+    });
+
+    let timer: NodeJS.Timeout | undefined;
+
+    if (newlyChanged.size > 0) {
+      setRecentlyChanged(newlyChanged);
+      timer = setTimeout(() => {
+        setRecentlyChanged(new Set());
+      }, 600);
+    }
+
+    prevItemsRef.current = items;
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [items]);
+
+  return recentlyChanged;
+}
+
+/**
+ * Hook for mode change pulse animation.
+ */
+function useModeChangePulse(currentMode: AutomationMode) {
+  const [showPulse, setShowPulse] = useState(false);
+  const prevModeRef = useRef(currentMode);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout | undefined;
+
+    if (prevModeRef.current !== currentMode) {
+      setShowPulse(true);
+      timer = setTimeout(() => {
+        setShowPulse(false);
+      }, 500);
+      prevModeRef.current = currentMode;
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [currentMode]);
+
+  return showPulse;
+}
 
 // ============================================
 // TYPES
@@ -226,6 +321,8 @@ interface EntityChecklistProps {
 }
 
 function EntityChecklist({ items }: EntityChecklistProps) {
+  const recentlyChanged = useEntityStateTransitions(items);
+
   if (items.length === 0) return null;
 
   const satisfiedCount = items.filter(i => i.state === 'satisfied').length;
@@ -238,31 +335,43 @@ function EntityChecklist({ items }: EntityChecklistProps) {
         <span className="text-[10px] text-brand-iris font-medium">{progress}%</span>
       </div>
 
-      {/* Progress bar */}
+      {/* Progress bar with smooth transition */}
       <div className="h-1 bg-slate-4 rounded-full overflow-hidden mb-3">
         <div
           className={`h-full bg-brand-iris rounded-full ${motion.transition.base}`}
-          style={{ width: `${progress}%` }}
+          style={{ width: `${progress}%`, transition: 'width 300ms cubic-bezier(0.16, 1, 0.3, 1)' }}
         />
       </div>
 
-      {/* Checklist items */}
+      {/* Checklist items with state change animations */}
       <div className="space-y-1.5">
         {items.map((item) => {
           const stateTokens = getEntityStateTokens(item.state);
+          const isJustChanged = recentlyChanged.has(item.id);
           return (
             <div
               key={item.id}
-              className={`flex items-center justify-between px-2 py-1.5 rounded ${stateTokens.bg} ${motion.transition.fast}`}
+              className={`
+                flex items-center justify-between px-2 py-1.5 rounded ${stateTokens.bg} ${motion.transition.fast}
+                ${isJustChanged ? 'ring-2 ring-brand-iris/40 animate-[pulse_0.6s_ease-out]' : ''}
+              `}
+              style={{
+                transition: 'background-color 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
             >
               <div className="flex items-center gap-2">
-                <span className={`text-xs ${stateTokens.text}`}>{stateTokens.icon}</span>
+                <span
+                  className={`text-xs ${stateTokens.text} ${isJustChanged ? 'scale-125' : ''}`}
+                  style={{ transition: 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1)' }}
+                >
+                  {stateTokens.icon}
+                </span>
                 <span className={`text-xs ${item.state === 'satisfied' ? 'text-white/80' : 'text-white/50'}`}>
                   {item.entity}
                 </span>
               </div>
               {item.requiredMentions && (
-                <span className="text-[10px] text-white/30">
+                <span className={`text-[10px] ${isJustChanged ? 'text-brand-iris' : 'text-white/30'}`}>
                   {item.currentMentions ?? 0}/{item.requiredMentions}
                 </span>
               )}
@@ -392,6 +501,11 @@ export function OrchestrationEditorShell({
 }: OrchestrationEditorShellProps) {
   const [isLeftPaneCollapsed, setIsLeftPaneCollapsed] = useState(false);
   const [isRightPaneCollapsed, setIsRightPaneCollapsed] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+
+  // Micro-interaction hooks (Phase 6A.6)
+  const { showFlash, triggerFlash } = useSaveFlash();
+  const showModePulse = useModeChangePulse(currentMode);
 
   // Handle mode change (only if handler provided)
   const handleModeChange = (newMode: AutomationMode) => {
@@ -400,8 +514,52 @@ export function OrchestrationEditorShell({
     }
   };
 
+  // Handle save with flash feedback
+  const handleSaveDraft = useCallback(() => {
+    if (onSaveDraft) {
+      onSaveDraft();
+      triggerFlash();
+    }
+  }, [onSaveDraft, triggerFlash]);
+
+  // Handle complete with animation
+  const handleComplete = useCallback(() => {
+    setIsCompleting(true);
+    // Brief delay to show completion animation
+    setTimeout(() => {
+      if (onComplete) {
+        onComplete();
+      }
+    }, 300);
+  }, [onComplete]);
+
   return (
-    <div className="min-h-screen bg-slate-0 flex flex-col">
+    <div className="min-h-screen bg-slate-0 flex flex-col relative">
+      {/* Save Flash Overlay (Phase 6A.6) */}
+      {showFlash && (
+        <div
+          className="absolute inset-0 z-50 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at top, rgba(168, 85, 247, 0.1) 0%, transparent 50%)',
+            animation: 'fadeOut 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          }}
+        />
+      )}
+
+      {/* Completion Overlay (Phase 6A.6) */}
+      {isCompleting && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-0/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-semantic-success/20 border-2 border-semantic-success flex items-center justify-center animate-[pulse_0.5s_ease-out]">
+              <svg className="w-6 h-6 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span className="text-sm text-white/70">Action Complete</span>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b border-[#1A1A24] bg-gradient-to-b from-slate-1 to-transparent shrink-0">
         <div className="px-6 py-3">
@@ -442,13 +600,21 @@ export function OrchestrationEditorShell({
 
               {/* Right: Mode + Actions */}
               <div className="flex items-center gap-2">
-                {/* Mode Selector (with ceiling enforcement) */}
-                <ModeSelector
-                  currentMode={currentMode}
-                  modeCeiling={action.modeCeiling}
-                  onModeChange={handleModeChange}
-                  disabled={!onModeChange}
-                />
+                {/* Mode Selector (with ceiling enforcement + pulse effect) */}
+                <div className={`relative ${showModePulse ? 'animate-[pulse_0.5s_ease-out]' : ''}`}>
+                  <ModeSelector
+                    currentMode={currentMode}
+                    modeCeiling={action.modeCeiling}
+                    onModeChange={handleModeChange}
+                    disabled={!onModeChange}
+                  />
+                  {showModePulse && (
+                    <div
+                      className="absolute inset-0 rounded-lg ring-2 ring-brand-iris/50 pointer-events-none"
+                      style={{ animation: 'fadeOut 0.5s ease-out forwards' }}
+                    />
+                  )}
+                </div>
 
                 {/* Explain Button */}
                 <button
@@ -462,27 +628,39 @@ export function OrchestrationEditorShell({
                   Explain
                 </button>
 
-                {/* Save Draft */}
+                {/* Save Draft with flash feedback */}
                 <button
                   type="button"
-                  onClick={onSaveDraft}
+                  onClick={handleSaveDraft}
                   disabled={!hasUnsavedChanges}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-lg ${motion.transition.fast} ${
+                  className={`relative px-3 py-1.5 text-xs font-medium rounded-lg ${motion.transition.fast} ${
                     hasUnsavedChanges
                       ? 'text-white/70 bg-slate-4 hover:bg-slate-5'
                       : 'text-white/30 bg-slate-4/50 cursor-not-allowed'
                   }`}
                 >
-                  Save Draft
+                  {showFlash ? (
+                    <span className="flex items-center gap-1.5">
+                      <svg className="w-3 h-3 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Saved
+                    </span>
+                  ) : (
+                    'Save Draft'
+                  )}
                 </button>
 
-                {/* Complete Action */}
+                {/* Complete Action with animation */}
                 <button
                   type="button"
-                  onClick={onComplete}
-                  className={`px-4 py-1.5 bg-brand-iris text-white text-xs font-medium rounded-lg hover:bg-brand-iris/90 shadow-[0_0_20px_rgba(168,85,247,0.20)] ${motion.transition.fast}`}
+                  onClick={handleComplete}
+                  disabled={isCompleting}
+                  className={`px-4 py-1.5 bg-brand-iris text-white text-xs font-medium rounded-lg hover:bg-brand-iris/90 shadow-[0_0_20px_rgba(168,85,247,0.20)] ${motion.transition.fast} ${
+                    isCompleting ? 'opacity-70 cursor-wait' : ''
+                  }`}
                 >
-                  Complete Action
+                  {isCompleting ? 'Completing...' : 'Complete Action'}
                 </button>
               </div>
             </div>
