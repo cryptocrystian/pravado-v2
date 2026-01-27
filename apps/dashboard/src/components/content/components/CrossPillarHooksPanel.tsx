@@ -102,12 +102,12 @@ export interface CrossPillarHooksPanelProps {
   citeMindStatus: CiteMindStatus;
   /** Current automation mode */
   automationMode?: AutomationMode;
-  /** Callback when PR pitch hooks are generated - returns explainable action */
-  onGeneratePRHooks?: () => Promise<ExplainableAction>;
-  /** Callback when AEO bundle is sent - returns explainable action */
-  onSendAEOBundle?: () => Promise<ExplainableAction>;
-  /** Callback when adding to Command Center - returns explainable action */
-  onAddToCommandCenter?: () => Promise<ExplainableAction>;
+  /** Callback when PR pitch hooks are generated - optionally returns explainable action (component creates one if not provided) */
+  onGeneratePRHooks?: () => Promise<ExplainableAction | void>;
+  /** Callback when AEO bundle is sent - optionally returns explainable action (component creates one if not provided) */
+  onSendAEOBundle?: () => Promise<ExplainableAction | void>;
+  /** Callback when adding to Command Center - optionally returns explainable action (component creates one if not provided) */
+  onAddToCommandCenter?: () => Promise<ExplainableAction | void>;
   /** Callback when action is completed with full action object */
   onActionComplete?: (action: ExplainableAction) => void;
   /** Compact mode */
@@ -403,7 +403,7 @@ export function CrossPillarHooksPanel({
       setLoadingActions((prev) => new Set(prev).add(actionId));
 
       try {
-        let result: ExplainableAction | undefined;
+        let result: ExplainableAction | void | undefined;
 
         switch (actionId) {
           case 'pr-pitch':

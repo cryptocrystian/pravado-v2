@@ -38,7 +38,8 @@ interface AppShellWrapperProps {
 }
 
 // Routes that use their own shell (no sidebar, no legacy header)
-const CUSTOM_SHELL_ROUTES = ['/app/command-center', '/app/calendar', '/app/pr'];
+// These routes render with DS v3 topbar work surface pattern
+const CUSTOM_SHELL_ROUTES = ['/app/command-center', '/app/calendar', '/app/pr', '/app/content'];
 
 // AI Presence Dot
 const AIPresenceDot = () => (
