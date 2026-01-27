@@ -1,14 +1,20 @@
 'use client';
 
 /**
- * Content Overview View
+ * Content Overview View v2 - Execution-First Cockpit
  *
- * Primary dashboard view for the Content pillar showing:
- * - Authority contribution summary (primary KPI)
- * - Active themes with asset counts
- * - AI ingestion readiness aggregate
- * - SAGE proposals for content actions
- * - Cross-pillar hooks
+ * Phase 5B/5C redesign: Action-first dashboard for Content pillar.
+ *
+ * LAYOUT (3 REGIONS):
+ * 1) Health Strip - Compact metrics row (Authority Score, CiteMind Status, AI Readiness)
+ * 2) Today's Work Action Stack - Primary region with 5-8 prioritized actions
+ * 3) Secondary Row - Pipeline counts, Upcoming deadlines, Cross-Pillar Impact
+ *
+ * CTA CLUSTER:
+ * - New Brief (primary)
+ * - Import Content
+ * - Fix Issues (if CiteMind issues exist)
+ * - Generate Draft
  *
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
  */
@@ -18,10 +24,31 @@ import type {
   ContentClusterDTO,
   ContentGap,
   ContentBrief,
+  ContentAsset,
+  AutomationMode,
 } from '../types';
-import { AuthorityDashboard } from '../components/AuthorityDashboard';
 import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
+
+// ============================================
+// TYPES
+// ============================================
+
+interface ContentAction {
+  id: string;
+  title: string;
+  summary: string;
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  type: 'opportunity' | 'issue' | 'scheduled' | 'sage_proposal';
+  relatedEntityId?: string;
+  relatedEntityType?: 'gap' | 'brief' | 'asset' | 'cluster';
+  cta: {
+    label: string;
+    action: () => void;
+  };
+  mode: AutomationMode;
+  createdAt: string;
+}
 
 interface ContentOverviewViewProps {
   /** Aggregate authority signals */
@@ -32,6 +59,10 @@ interface ContentOverviewViewProps {
   gaps: ContentGap[];
   /** Recent briefs */
   briefs: ContentBrief[];
+  /** Content assets (for pipeline counts) */
+  assets?: ContentAsset[];
+  /** Current automation mode */
+  mode?: AutomationMode;
   /** Loading state */
   isLoading: boolean;
   /** Error state */
@@ -41,24 +72,587 @@ interface ContentOverviewViewProps {
   onViewGap?: (keyword: string) => void;
   onViewBrief?: (briefId: string) => void;
   onGenerateBrief?: () => void;
+  onImportContent?: () => void;
+  onFixIssues?: () => void;
+  onGenerateDraft?: () => void;
+  onViewCluster?: (clusterId: string) => void;
+  onViewCalendar?: () => void;
 }
+
+// ============================================
+// HEALTH STRIP
+// ============================================
+
+function HealthStrip({
+  signals,
+  citeMindIssueCount,
+}: {
+  signals: AuthoritySignals | null;
+  citeMindIssueCount: number;
+}) {
+  const metrics = [
+    {
+      label: 'Authority Score',
+      value: signals?.authorityContributionScore ?? 0,
+      suffix: '',
+      color: getMetricColor(signals?.authorityContributionScore ?? 0),
+      isPrimary: true,
+    },
+    {
+      label: 'Citation Ready',
+      value: signals?.citationEligibilityScore ?? 0,
+      suffix: '%',
+      color: getMetricColor(signals?.citationEligibilityScore ?? 0),
+    },
+    {
+      label: 'AI Readiness',
+      value: signals?.aiIngestionLikelihood ?? 0,
+      suffix: '%',
+      color: getMetricColor(signals?.aiIngestionLikelihood ?? 0),
+    },
+    {
+      label: 'Cross-Pillar',
+      value: signals?.crossPillarImpact ?? 0,
+      suffix: '',
+      color: getMetricColor(signals?.crossPillarImpact ?? 0),
+    },
+    {
+      label: 'CiteMind Issues',
+      value: citeMindIssueCount,
+      suffix: '',
+      color: citeMindIssueCount > 0 ? 'text-semantic-warning' : 'text-semantic-success',
+      isAlert: citeMindIssueCount > 0,
+    },
+  ];
+
+  return (
+    <div className="flex items-center gap-4 p-3 bg-slate-2 border border-border-subtle rounded-lg overflow-x-auto">
+      {metrics.map((metric, index) => (
+        <div
+          key={metric.label}
+          className={`flex items-center gap-2 ${index !== 0 ? 'pl-4 border-l border-slate-4' : ''} ${
+            metric.isPrimary ? 'min-w-[120px]' : 'min-w-[100px]'
+          }`}
+        >
+          <div className="flex flex-col">
+            <span className="text-[10px] text-white/40 uppercase tracking-wider whitespace-nowrap">
+              {metric.label}
+            </span>
+            <span className={`text-lg font-bold ${metric.color} ${metric.isAlert ? 'animate-pulse' : ''}`}>
+              {metric.value}{metric.suffix}
+            </span>
+          </div>
+          {metric.isPrimary && (
+            <div className="w-8 h-8 rounded-full bg-brand-iris/20 flex items-center justify-center">
+              <svg className="w-4 h-4 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function getMetricColor(value: number): string {
+  if (value >= 80) return 'text-semantic-success';
+  if (value >= 60) return 'text-brand-cyan';
+  if (value >= 40) return 'text-semantic-warning';
+  return 'text-semantic-danger';
+}
+
+// ============================================
+// CTA CLUSTER
+// ============================================
+
+function CTACluster({
+  hasIssues,
+  onGenerateBrief,
+  onImportContent,
+  onFixIssues,
+  onGenerateDraft,
+}: {
+  hasIssues: boolean;
+  onGenerateBrief?: () => void;
+  onImportContent?: () => void;
+  onFixIssues?: () => void;
+  onGenerateDraft?: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      {/* Primary CTA */}
+      <button
+        onClick={onGenerateBrief}
+        className="px-4 py-2 text-sm font-semibold text-white bg-brand-iris hover:bg-brand-iris/90 rounded-lg transition-colors shadow-[0_0_16px_rgba(168,85,247,0.25)]"
+      >
+        + New Brief
+      </button>
+
+      {/* Secondary CTAs */}
+      <button
+        onClick={onImportContent}
+        className="px-3 py-2 text-sm font-medium text-white/70 bg-slate-2 border border-border-subtle hover:border-brand-iris/40 rounded-lg transition-colors"
+      >
+        Import Content
+      </button>
+
+      {hasIssues && (
+        <button
+          onClick={onFixIssues}
+          className="px-3 py-2 text-sm font-medium text-semantic-warning bg-semantic-warning/10 border border-semantic-warning/30 hover:bg-semantic-warning/15 rounded-lg transition-colors flex items-center gap-1.5"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-semantic-warning animate-pulse" />
+          Fix Issues
+        </button>
+      )}
+
+      <button
+        onClick={onGenerateDraft}
+        className="px-3 py-2 text-sm font-medium text-white/70 bg-slate-2 border border-border-subtle hover:border-brand-iris/40 rounded-lg transition-colors"
+      >
+        Generate Draft
+      </button>
+    </div>
+  );
+}
+
+// ============================================
+// TODAY'S WORK ACTION STACK
+// ============================================
+
+function TodaysWorkActionStack({
+  actions,
+  mode,
+}: {
+  actions: ContentAction[];
+  mode: AutomationMode;
+}) {
+  const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+  const sortedActions = [...actions].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+  const displayActions = sortedActions.slice(0, 8);
+
+  if (displayActions.length === 0) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full bg-brand-iris/10 flex items-center justify-center mx-auto mb-3">
+            <svg className="w-6 h-6 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-sm text-white/60">No actions needed right now</p>
+          <p className="text-xs text-white/40 mt-1">Your content is looking good!</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-white">Today&apos;s Work</h3>
+          <span className="px-2 py-0.5 text-[10px] font-medium text-brand-iris bg-brand-iris/10 border border-brand-iris/20 rounded-full">
+            {displayActions.length} actions
+          </span>
+        </div>
+        <ModeIndicator mode={mode} />
+      </div>
+
+      <div className="space-y-2">
+        {displayActions.map((action, index) => (
+          <ContentActionCard
+            key={action.id}
+            action={action}
+            isFirst={index === 0}
+          />
+        ))}
+      </div>
+
+      {actions.length > 8 && (
+        <button className="w-full py-2 text-xs text-white/50 hover:text-white/70 transition-colors">
+          View all {actions.length} actions →
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ModeIndicator({ mode }: { mode: AutomationMode }) {
+  const modeConfig = {
+    manual: { label: 'Manual', color: 'text-white/60 bg-white/10' },
+    copilot: { label: 'Copilot', color: 'text-brand-cyan bg-brand-cyan/15' },
+    autopilot: { label: 'Autopilot', color: 'text-semantic-success bg-semantic-success/15' },
+  };
+
+  const config = modeConfig[mode];
+
+  return (
+    <span className={`px-2 py-0.5 text-[10px] font-medium uppercase rounded ${config.color}`}>
+      {config.label}
+    </span>
+  );
+}
+
+function ContentActionCard({
+  action,
+  isFirst,
+}: {
+  action: ContentAction;
+  isFirst: boolean;
+}) {
+  const priorityStyles = {
+    critical: {
+      dot: 'bg-semantic-danger animate-pulse',
+      border: isFirst ? 'border-l-semantic-danger' : 'border-l-semantic-danger/50',
+    },
+    high: {
+      dot: 'bg-semantic-warning',
+      border: isFirst ? 'border-l-semantic-warning' : 'border-l-semantic-warning/50',
+    },
+    medium: {
+      dot: 'bg-brand-cyan',
+      border: isFirst ? 'border-l-brand-cyan' : 'border-l-brand-cyan/50',
+    },
+    low: {
+      dot: 'bg-white/40',
+      border: isFirst ? 'border-l-white/40' : 'border-l-white/20',
+    },
+  };
+
+  const typeLabels = {
+    opportunity: 'Opportunity',
+    issue: 'Issue',
+    scheduled: 'Scheduled',
+    sage_proposal: 'SAGE',
+  };
+
+  const style = priorityStyles[action.priority];
+
+  return (
+    <div
+      className={`
+        p-3 bg-slate-2 border border-border-subtle rounded-lg
+        border-l-[3px] ${style.border}
+        hover:border-brand-iris/40 hover:bg-[#111116]
+        transition-all cursor-pointer
+        ${isFirst ? 'ring-1 ring-brand-iris/20' : ''}
+      `}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          {/* Header row */}
+          <div className="flex items-center gap-2 mb-1">
+            <span className={`w-2 h-2 rounded-full ${style.dot}`} />
+            <span className="text-[10px] font-medium text-white/50 uppercase">
+              {typeLabels[action.type]}
+            </span>
+            {action.mode === 'autopilot' && (
+              <span className="px-1.5 py-0.5 text-[9px] font-medium text-semantic-success bg-semantic-success/15 rounded">
+                AUTO
+              </span>
+            )}
+          </div>
+
+          {/* Title */}
+          <h4 className="text-sm font-medium text-white line-clamp-1 mb-0.5">
+            {action.title}
+          </h4>
+
+          {/* Summary */}
+          <p className="text-xs text-white/50 line-clamp-1">
+            {action.summary}
+          </p>
+        </div>
+
+        {/* CTA */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            action.cta.action();
+          }}
+          className={`
+            px-3 py-1.5 text-xs font-semibold rounded shrink-0
+            transition-all
+            ${isFirst
+              ? 'bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_12px_rgba(168,85,247,0.25)]'
+              : 'bg-brand-iris/10 text-brand-iris border border-brand-iris/30 hover:bg-brand-iris/20'
+            }
+          `}
+        >
+          {action.cta.label}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// SECONDARY ROW
+// ============================================
+
+function SecondaryRow({
+  pipelineCounts,
+  upcomingDeadlines,
+  crossPillarImpact,
+  onViewCalendar,
+  onViewLibrary,
+}: {
+  pipelineCounts: { draft: number; review: number; approved: number; published: number };
+  upcomingDeadlines: { count: number; nextDate?: string };
+  crossPillarImpact: { prHooks: number; seoHooks: number };
+  onViewCalendar?: () => void;
+  onViewLibrary?: () => void;
+}) {
+  return (
+    <div className="grid grid-cols-3 gap-3">
+      {/* Pipeline Status */}
+      <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg">
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-xs font-semibold text-white/70">Pipeline</h4>
+          <button
+            onClick={onViewLibrary}
+            className="text-[10px] text-brand-iris hover:underline"
+          >
+            View →
+          </button>
+        </div>
+        <div className="flex items-center gap-3">
+          <PipelineStat label="Draft" count={pipelineCounts.draft} color="text-white/50" />
+          <PipelineStat label="Review" count={pipelineCounts.review} color="text-semantic-warning" />
+          <PipelineStat label="Ready" count={pipelineCounts.approved} color="text-semantic-success" />
+          <PipelineStat label="Live" count={pipelineCounts.published} color="text-brand-cyan" />
+        </div>
+      </div>
+
+      {/* Upcoming Deadlines */}
+      <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg">
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-xs font-semibold text-white/70">Upcoming</h4>
+          <button
+            onClick={onViewCalendar}
+            className="text-[10px] text-brand-iris hover:underline"
+          >
+            Calendar →
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-bold text-white">{upcomingDeadlines.count}</span>
+          <span className="text-xs text-white/40">deadlines this week</span>
+        </div>
+        {upcomingDeadlines.nextDate && (
+          <p className="text-[10px] text-white/50 mt-1">
+            Next: {upcomingDeadlines.nextDate}
+          </p>
+        )}
+      </div>
+
+      {/* Cross-Pillar Impact */}
+      <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg">
+        <h4 className="text-xs font-semibold text-white/70 mb-2">Cross-Pillar</h4>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-brand-magenta" />
+            <span className="text-xs text-white/60">{crossPillarImpact.prHooks} PR</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-brand-cyan" />
+            <span className="text-xs text-white/60">{crossPillarImpact.seoHooks} SEO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PipelineStat({
+  label,
+  count,
+  color,
+}: {
+  label: string;
+  count: number;
+  color: string;
+}) {
+  return (
+    <div className="flex flex-col items-center">
+      <span className={`text-sm font-bold ${color}`}>{count}</span>
+      <span className="text-[9px] text-white/40 uppercase">{label}</span>
+    </div>
+  );
+}
+
+// ============================================
+// QUICK OPPORTUNITIES (Themes + Gaps with CTAs)
+// ============================================
+
+function QuickOpportunities({
+  clusters,
+  gaps,
+  onViewCluster,
+  onViewGap,
+  onGenerateBrief,
+}: {
+  clusters: ContentClusterDTO[];
+  gaps: ContentGap[];
+  onViewCluster?: (clusterId: string) => void;
+  onViewGap?: (keyword: string) => void;
+  onGenerateBrief?: () => void;
+}) {
+  const topGaps = gaps.slice(0, 3);
+  const topClusters = clusters.slice(0, 2);
+
+  if (topGaps.length === 0 && topClusters.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold text-white">Quick Opportunities</h3>
+
+      <div className="grid grid-cols-2 gap-3">
+        {/* High-Score Gaps */}
+        {topGaps.length > 0 && (
+          <div className="space-y-2">
+            <span className="text-[10px] text-white/40 uppercase tracking-wider">Content Gaps</span>
+            {topGaps.map((gap, index) => (
+              <GapOpportunityCard
+                key={index}
+                gap={gap}
+                onViewGap={() => onViewGap?.(gap.keyword)}
+                onCreateBrief={onGenerateBrief}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Active Themes */}
+        {topClusters.length > 0 && (
+          <div className="space-y-2">
+            <span className="text-[10px] text-white/40 uppercase tracking-wider">Active Themes</span>
+            {topClusters.map((cluster) => (
+              <ThemeOpportunityCard
+                key={cluster.cluster.id}
+                cluster={cluster}
+                onViewCluster={() => onViewCluster?.(cluster.cluster.id)}
+                onAddContent={onGenerateBrief}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function GapOpportunityCard({
+  gap,
+  onViewGap,
+  onCreateBrief,
+}: {
+  gap: ContentGap;
+  onViewGap?: () => void;
+  onCreateBrief?: () => void;
+}) {
+  const scoreColor =
+    gap.seoOpportunityScore >= 70
+      ? 'text-semantic-success bg-semantic-success/10'
+      : gap.seoOpportunityScore >= 40
+      ? 'text-semantic-warning bg-semantic-warning/10'
+      : 'text-white/50 bg-white/10';
+
+  return (
+    <div
+      onClick={onViewGap}
+      className="p-2.5 bg-slate-2 border border-border-subtle rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer"
+    >
+      <div className="flex items-center justify-between gap-2 mb-1.5">
+        <h5 className="text-xs font-medium text-white line-clamp-1">{gap.keyword}</h5>
+        <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full ${scoreColor}`}>
+          {gap.seoOpportunityScore}
+        </span>
+      </div>
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] text-white/40">
+          {gap.intent && <span className="capitalize">{gap.intent}</span>}
+        </span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onCreateBrief?.();
+          }}
+          className="px-2 py-0.5 text-[10px] font-medium text-brand-iris hover:bg-brand-iris/10 rounded transition-colors"
+        >
+          Create Brief →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ThemeOpportunityCard({
+  cluster,
+  onViewCluster,
+  onAddContent,
+}: {
+  cluster: ContentClusterDTO;
+  onViewCluster?: () => void;
+  onAddContent?: () => void;
+}) {
+  return (
+    <div
+      onClick={onViewCluster}
+      className="p-2.5 bg-slate-2 border border-border-subtle rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer"
+    >
+      <h5 className="text-xs font-medium text-white mb-1 line-clamp-1">{cluster.cluster.name}</h5>
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] text-white/40">
+          {cluster.topics.length} topics · {cluster.representativeContent.length} assets
+        </span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddContent?.();
+          }}
+          className="px-2 py-0.5 text-[10px] font-medium text-brand-iris hover:bg-brand-iris/10 rounded transition-colors"
+        >
+          Add Content →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
 
 export function ContentOverviewView({
   signals,
   clusters,
   gaps,
   briefs,
+  assets = [],
+  mode = 'copilot',
   isLoading,
   error,
   onViewLibrary,
   onViewGap,
   onViewBrief,
   onGenerateBrief,
+  onImportContent,
+  onFixIssues,
+  onGenerateDraft,
+  onViewCluster,
+  onViewCalendar,
 }: ContentOverviewViewProps) {
+  // Loading state
   if (isLoading) {
     return <ContentLoadingSkeleton type="dashboard" />;
   }
 
+  // Error state
   if (error) {
     return (
       <div className="p-4">
@@ -70,8 +664,8 @@ export function ContentOverviewView({
     );
   }
 
-  const hasData = signals || clusters.length > 0 || gaps.length > 0;
-
+  // Empty state
+  const hasData = signals || clusters.length > 0 || gaps.length > 0 || briefs.length > 0;
   if (!hasData) {
     return (
       <ContentEmptyState
@@ -82,229 +676,123 @@ export function ContentOverviewView({
     );
   }
 
+  // Calculate CiteMind issues
+  const citeMindIssueCount = assets.filter(
+    (a) => a.citeMindStatus === 'warning' || a.citeMindStatus === 'blocked'
+  ).length;
+
+  // Calculate pipeline counts
+  const pipelineCounts = {
+    draft: assets.filter((a) => a.status === 'draft').length,
+    review: assets.filter((a) => a.status === 'review').length,
+    approved: assets.filter((a) => a.status === 'approved').length,
+    published: assets.filter((a) => a.status === 'published').length,
+  };
+
+  // Generate actions from gaps, briefs, and SAGE proposals
+  const actions: ContentAction[] = [
+    // High-opportunity gaps
+    ...gaps
+      .filter((g) => g.seoOpportunityScore >= 60)
+      .slice(0, 3)
+      .map((gap, i): ContentAction => ({
+        id: `gap-${i}`,
+        title: `Create content for "${gap.keyword}"`,
+        summary: `${gap.seoOpportunityScore} opportunity score · ${gap.existingContentCount} existing pieces`,
+        priority: gap.seoOpportunityScore >= 80 ? 'high' : 'medium',
+        type: 'opportunity',
+        relatedEntityId: gap.keyword,
+        relatedEntityType: 'gap',
+        cta: {
+          label: 'Create Brief',
+          action: () => onGenerateBrief?.(),
+        },
+        mode: mode,
+        createdAt: new Date().toISOString(),
+      })),
+    // Briefs needing attention
+    ...briefs
+      .filter((b) => b.status === 'draft' || b.status === 'in_progress')
+      .slice(0, 2)
+      .map((brief): ContentAction => ({
+        id: `brief-${brief.id}`,
+        title: brief.title,
+        summary: `Status: ${brief.status} · Target: ${brief.targetKeyword || 'Not set'}`,
+        priority: brief.status === 'in_progress' ? 'high' : 'medium',
+        type: 'scheduled',
+        relatedEntityId: brief.id,
+        relatedEntityType: 'brief',
+        cta: {
+          label: brief.status === 'draft' ? 'Review' : 'Continue',
+          action: () => onViewBrief?.(brief.id),
+        },
+        mode: mode,
+        createdAt: brief.createdAt,
+      })),
+    // CiteMind issues
+    ...(citeMindIssueCount > 0
+      ? [
+          {
+            id: 'citemind-issues',
+            title: `${citeMindIssueCount} content pieces need attention`,
+            summary: 'CiteMind detected issues that may affect citation eligibility',
+            priority: 'high' as const,
+            type: 'issue' as const,
+            cta: {
+              label: 'Fix Issues',
+              action: () => onFixIssues?.(),
+            },
+            mode: mode,
+            createdAt: new Date().toISOString(),
+          },
+        ]
+      : []),
+  ];
+
   return (
-    <div className="p-4 space-y-6">
-      {/* Authority Dashboard */}
-      {signals && (
-        <section>
-          <AuthorityDashboard signals={signals} />
-        </section>
-      )}
-
-      {/* Active Themes */}
-      {clusters.length > 0 && (
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-white">Active Themes</h3>
-            <span className="text-[10px] text-white/40">{clusters.length} clusters</span>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {clusters.slice(0, 4).map((cluster) => (
-              <ThemeCard key={cluster.cluster.id} cluster={cluster} />
-            ))}
-          </div>
-          {clusters.length > 4 && (
-            <button
-              onClick={onViewLibrary}
-              className="mt-2 text-xs text-brand-iris hover:underline"
-            >
-              View all {clusters.length} themes →
-            </button>
-          )}
-        </section>
-      )}
-
-      {/* Content Opportunities */}
-      {gaps.length > 0 && (
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-white">Content Opportunities</h3>
-            <span className="text-[10px] text-white/40">{gaps.length} gaps</span>
-          </div>
-          <div className="space-y-2">
-            {gaps.slice(0, 5).map((gap, index) => (
-              <GapCard
-                key={index}
-                gap={gap}
-                onClick={() => onViewGap?.(gap.keyword)}
-              />
-            ))}
-          </div>
-          {gaps.length > 5 && (
-            <button
-              onClick={onViewLibrary}
-              className="mt-2 text-xs text-brand-iris hover:underline"
-            >
-              View all {gaps.length} opportunities →
-            </button>
-          )}
-        </section>
-      )}
-
-      {/* Recent Briefs */}
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white">Recent Briefs</h3>
-          <button
-            onClick={onGenerateBrief}
-            className="text-xs text-brand-iris hover:underline"
-          >
-            + New Brief
-          </button>
+    <div className="p-4 space-y-4">
+      {/* Top Row: Health Strip + CTA Cluster */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <HealthStrip signals={signals} citeMindIssueCount={citeMindIssueCount} />
         </div>
-        {briefs.length === 0 ? (
-          <div className="p-4 bg-slate-2 border border-border-subtle rounded-lg text-center">
-            <p className="text-xs text-white/40">No briefs created yet</p>
-            <button
-              onClick={onGenerateBrief}
-              className="mt-2 text-xs text-brand-iris hover:underline"
-            >
-              Generate your first brief
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {briefs.slice(0, 3).map((brief) => (
-              <BriefCard
-                key={brief.id}
-                brief={brief}
-                onClick={() => onViewBrief?.(brief.id)}
-              />
-            ))}
-          </div>
-        )}
+        <CTACluster
+          hasIssues={citeMindIssueCount > 0}
+          onGenerateBrief={onGenerateBrief}
+          onImportContent={onImportContent}
+          onFixIssues={onFixIssues}
+          onGenerateDraft={onGenerateDraft}
+        />
+      </div>
+
+      {/* Primary Region: Today's Work Action Stack */}
+      <section className="min-h-[280px]">
+        <TodaysWorkActionStack actions={actions} mode={mode} />
       </section>
 
-      {/* Cross-Pillar Hooks */}
-      <section>
-        <h3 className="text-sm font-semibold text-white mb-3">Cross-Pillar Hooks</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <CrossPillarHookCard
-            pillar="pr"
-            label="PR Integration"
-            description="Content can feed pitch angles"
-            count={0}
-          />
-          <CrossPillarHookCard
-            pillar="seo"
-            label="SEO Sync"
-            description="AEO snippets ready"
-            count={0}
-          />
-        </div>
-      </section>
-    </div>
-  );
-}
+      {/* Secondary Row: Pipeline, Upcoming, Cross-Pillar */}
+      <SecondaryRow
+        pipelineCounts={pipelineCounts}
+        upcomingDeadlines={{
+          count: briefs.filter((b) => b.deadline).length,
+          nextDate: briefs.find((b) => b.deadline)?.deadline?.split('T')[0],
+        }}
+        crossPillarImpact={{
+          prHooks: 0, // TODO: Calculate from actual data
+          seoHooks: 0,
+        }}
+        onViewCalendar={onViewCalendar}
+        onViewLibrary={onViewLibrary}
+      />
 
-// ============================================
-// THEME CARD
-// ============================================
-
-function ThemeCard({ cluster }: { cluster: ContentClusterDTO }) {
-  return (
-    <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer">
-      <h4 className="text-sm font-medium text-white mb-1">{cluster.cluster.name}</h4>
-      <div className="flex items-center gap-2 text-[10px] text-white/40">
-        <span>{cluster.topics.length} topics</span>
-        <span>·</span>
-        <span>{cluster.representativeContent.length} assets</span>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// GAP CARD
-// ============================================
-
-function GapCard({ gap, onClick }: { gap: ContentGap; onClick?: () => void }) {
-  const scoreColor =
-    gap.seoOpportunityScore >= 70
-      ? 'text-semantic-success bg-semantic-success/10'
-      : gap.seoOpportunityScore >= 40
-      ? 'text-semantic-warning bg-semantic-warning/10'
-      : 'text-white/50 bg-white/10';
-
-  return (
-    <div
-      onClick={onClick}
-      className="p-3 bg-slate-2 border border-border-subtle rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer flex items-center justify-between"
-    >
-      <div>
-        <h4 className="text-sm font-medium text-white">{gap.keyword}</h4>
-        <div className="flex items-center gap-2 text-[10px] text-white/40 mt-0.5">
-          {gap.intent && <span className="capitalize">{gap.intent}</span>}
-          <span>·</span>
-          <span>{gap.existingContentCount} existing</span>
-        </div>
-      </div>
-      <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${scoreColor}`}>
-        {gap.seoOpportunityScore}
-      </span>
-    </div>
-  );
-}
-
-// ============================================
-// BRIEF CARD
-// ============================================
-
-function BriefCard({ brief, onClick }: { brief: ContentBrief; onClick?: () => void }) {
-  const statusColor =
-    brief.status === 'approved'
-      ? 'text-brand-cyan bg-brand-cyan/10'
-      : brief.status === 'completed'
-      ? 'text-semantic-success bg-semantic-success/10'
-      : 'text-semantic-warning bg-semantic-warning/10';
-
-  return (
-    <div
-      onClick={onClick}
-      className="p-3 bg-slate-2 border border-border-subtle rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer"
-    >
-      <div className="flex items-start justify-between gap-2">
-        <h4 className="text-sm font-medium text-white line-clamp-1">{brief.title}</h4>
-        <span className={`px-2 py-0.5 text-[10px] font-medium rounded-full shrink-0 ${statusColor}`}>
-          {brief.status}
-        </span>
-      </div>
-      {brief.targetKeyword && (
-        <p className="text-[10px] text-white/40 mt-1">
-          Target: {brief.targetKeyword}
-        </p>
-      )}
-    </div>
-  );
-}
-
-// ============================================
-// CROSS-PILLAR HOOK CARD
-// ============================================
-
-function CrossPillarHookCard({
-  pillar,
-  label,
-  description,
-  count,
-}: {
-  pillar: 'pr' | 'seo';
-  label: string;
-  description: string;
-  count: number;
-}) {
-  const accentColor = pillar === 'pr' ? 'brand-magenta' : 'brand-cyan';
-
-  return (
-    <div className={`p-3 bg-${accentColor}/5 border border-${accentColor}/20 rounded-lg`}>
-      <div className="flex items-center gap-2 mb-1">
-        <div className={`w-2 h-2 rounded-full bg-${accentColor}`} />
-        <span className={`text-xs font-medium text-${accentColor}`}>{label}</span>
-      </div>
-      <p className="text-[10px] text-white/40">{description}</p>
-      {count > 0 && (
-        <p className="text-[10px] text-white/55 mt-1">{count} active hooks</p>
-      )}
+      {/* Quick Opportunities */}
+      <QuickOpportunities
+        clusters={clusters}
+        gaps={gaps}
+        onViewCluster={onViewCluster}
+        onViewGap={onViewGap}
+        onGenerateBrief={onGenerateBrief}
+      />
     </div>
   );
 }
