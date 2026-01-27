@@ -279,6 +279,11 @@ export default function ContentPage() {
     setActiveView('calendar');
   }, []);
 
+  // Phase 6A.7: Launch orchestration editor for an action
+  const handleLaunchOrchestrate = useCallback((actionId: string) => {
+    router.push(`/app/content/orchestrate/${actionId}`);
+  }, [router]);
+
   // Render active view
   const renderActiveView = () => {
     switch (activeView) {
@@ -302,6 +307,7 @@ export default function ContentPage() {
             onGenerateDraft={handleGenerateDraft}
             onViewCluster={handleViewCluster}
             onViewCalendar={handleViewCalendar}
+            onLaunchOrchestrate={handleLaunchOrchestrate}
           />
         );
       case 'library':
