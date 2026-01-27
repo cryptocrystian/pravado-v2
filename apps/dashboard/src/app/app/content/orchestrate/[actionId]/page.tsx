@@ -23,6 +23,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import {
   OrchestrationEditorShell,
+  LivingCanvasEditor,
   type TriggerAction,
   type EntityChecklistItem,
   type TargetAIProfile,
@@ -277,26 +278,18 @@ export default function ContentOrchestratePage() {
       hasUnsavedChanges={hasUnsavedChanges}
       isLoading={false}
     >
-      {/* Editor content will be added in Phase 6A.4 */}
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-brand-iris/10 border border-brand-iris/20 flex items-center justify-center">
-            <svg className="w-6 h-6 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-          </div>
-          <p className="text-sm text-white/60">Editor content area</p>
-          <p className="text-xs text-white/30 mt-1">Phase 6A.4: Minimal editor with phantom writing</p>
+      {/* Living Canvas Editor */}
+      <LivingCanvasEditor
+        mode={currentMode}
+        initialContent=""
+        onContentChange={(content) => {
+          setHasUnsavedChanges(content.length > 0);
+        }}
+        trackedEntities={MOCK_ENTITY_CHECKLIST.map((e) => e.entity)}
+        placeholder={`Start writing about "${action.sourceContext.keyword || action.title}"...
 
-          {/* Temporary: Button to simulate changes */}
-          <button
-            onClick={() => setHasUnsavedChanges(true)}
-            className="mt-4 px-3 py-1.5 text-xs text-white/50 border border-slate-4 rounded hover:bg-slate-4 transition-colors"
-          >
-            Simulate Edit
-          </button>
-        </div>
-      </div>
+Try typing "AI content creation" or "automation" to see Copilot suggestions.`}
+      />
     </OrchestrationEditorShell>
   );
 }

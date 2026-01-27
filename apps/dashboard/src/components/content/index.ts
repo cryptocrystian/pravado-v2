@@ -69,4 +69,9 @@ export {
   type EntityChecklistItem,
   type TargetAIProfile,
   type OrchestrationEditorShellProps,
+  ModeSelector,
+  ModeIndicator,
+  ModeBehaviorBanner,
+  LivingCanvasEditor,
+  AutopilotDraftPreview,
 } from './orchestration';
