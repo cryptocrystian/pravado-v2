@@ -26,7 +26,8 @@ export default function PlaybookDetailPage() {
 
   const fetchPlaybook = async () => {
     try {
-      const response = await fetch(`/api/v1/playbooks/${playbookId}`, {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch(`/api/playbooks/${playbookId}`, {
         credentials: 'include',
       });
       const data = await response.json();
@@ -41,11 +42,12 @@ export default function PlaybookDetailPage() {
   const execute = async (simulate: boolean, withCollaboration = false, withMemory = false) => {
     setExecuting(true);
     try {
-      let endpoint = `/api/v1/playbooks/${playbookId}/execute`;
+      // Gate 1A: Use route handlers, not direct backend calls
+      let endpoint = `/api/playbooks/${playbookId}/execute`;
       if (simulate && withCollaboration) {
-        endpoint = `/api/v1/playbooks/${playbookId}/simulate/collaboration`;
+        endpoint = `/api/playbooks/${playbookId}/simulate/collaboration`;
       } else if (simulate) {
-        endpoint = `/api/v1/playbooks/${playbookId}/simulate`;
+        endpoint = `/api/playbooks/${playbookId}/simulate`;
       }
 
       const response = await fetch(endpoint, {
@@ -80,7 +82,8 @@ export default function PlaybookDetailPage() {
     if (!runId) return;
 
     try {
-      const response = await fetch(`/api/v1/playbook-runs/${runId}/memory`, {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch(`/api/playbook-runs/${runId}/memory`, {
         credentials: 'include',
       });
       const data = await response.json();

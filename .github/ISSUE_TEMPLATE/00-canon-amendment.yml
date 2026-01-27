@@ -1,0 +1,43 @@
+name: "Canon Amendment"
+description: "Request or propose a change to /docs/canon (source of truth)."
+title: "AMENDMENT: <short description>"
+labels: ["amendment", "canon"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Canon is the single source of truth. Use this template to change product meaning.
+  - type: textarea
+    id: change
+    attributes:
+      label: What is changing?
+      description: Clear, specific change.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is it changing?
+      description: Business/UX/technical rationale.
+    validations:
+      required: true
+  - type: textarea
+    id: impacted
+    attributes:
+      label: Impacted canon files
+      description: List files + sections.
+      placeholder: "/docs/canon/SAGE_v2.md § Mesh Amplification Logic"
+    validations:
+      required: true
+  - type: textarea
+    id: contracts
+    attributes:
+      label: Impacted contracts
+      description: OpenAPI/schemas/examples impacted (if any).
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How we know this amendment is correctly reflected.
+    validations:
+      required: true

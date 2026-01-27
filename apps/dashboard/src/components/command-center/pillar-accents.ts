@@ -23,6 +23,7 @@ export const pillarAccents: Record<
   {
     bg: string;
     bgHover: string;
+    solidBg: string;
     text: string;
     border: string;
     borderHover: string;
@@ -33,6 +34,7 @@ export const pillarAccents: Record<
   pr: {
     bg: 'bg-brand-magenta/10',
     bgHover: 'bg-brand-magenta/20',
+    solidBg: 'bg-brand-magenta',
     text: 'text-brand-magenta',
     border: 'border-brand-magenta/30',
     borderHover: 'border-brand-magenta/60',
@@ -42,6 +44,7 @@ export const pillarAccents: Record<
   content: {
     bg: 'bg-brand-iris/10',
     bgHover: 'bg-brand-iris/20',
+    solidBg: 'bg-brand-iris',
     text: 'text-brand-iris',
     border: 'border-brand-iris/30',
     borderHover: 'border-brand-iris/60',
@@ -51,6 +54,7 @@ export const pillarAccents: Record<
   seo: {
     bg: 'bg-brand-cyan/10',
     bgHover: 'bg-brand-cyan/20',
+    solidBg: 'bg-brand-cyan',
     text: 'text-brand-cyan',
     border: 'border-brand-cyan/30',
     borderHover: 'border-brand-cyan/60',

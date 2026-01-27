@@ -1,63 +1,118 @@
 /**
  * Pitch Sequences API Route Handler
- * Sprint S100.1: Route handler for pitch sequences list and create
+ * Sprint S100.1: Direct Supabase queries with runtime flag support
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
-import { prBackendFetch, getErrorResponse } from '@/server/prBackendProxy';
+import { getPRConfig } from '@/lib/env/pr-config';
+import { authenticatePRRequest, createAuthErrorResponse, addPRAuthHeader } from '@/server/pr/prAuth';
+import { createPRService } from '@/server/pr/prService';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
+  const config = getPRConfig();
+
+  // Authenticate request
+  const auth = await authenticatePRRequest();
+
+  if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
+    if (config.showBackendStatus) {
+      console.log(`[API /api/pr/pitches/sequences] Auth failed: ${auth.status} - ${auth.error}`);
+    }
+    return createAuthErrorResponse(auth);
+  }
+
   try {
+    const prService = createPRService(auth.client, auth.orgId);
+
     const { searchParams } = new URL(request.url);
-    const params = new URLSearchParams();
-
-    // Forward all query params
     const status = searchParams.getAll('status');
-    status.forEach(s => params.append('status', s));
-
-    const pressReleaseId = searchParams.get('pressReleaseId');
-    const search = searchParams.get('search');
+    const search = searchParams.get('search') || undefined;
     const limit = searchParams.get('limit');
     const offset = searchParams.get('offset');
-    const sortBy = searchParams.get('sortBy');
-    const sortOrder = searchParams.get('sortOrder');
-    const isActive = searchParams.get('isActive');
+    const sortBy = searchParams.get('sortBy') || undefined;
+    const sortOrder = searchParams.get('sortOrder') as 'asc' | 'desc' | undefined;
 
-    if (pressReleaseId) params.set('pressReleaseId', pressReleaseId);
-    if (search) params.set('search', search);
-    if (limit) params.set('limit', limit);
-    if (offset) params.set('offset', offset);
-    if (sortBy) params.set('sortBy', sortBy);
-    if (sortOrder) params.set('sortOrder', sortOrder);
-    if (isActive) params.set('isActive', isActive);
+    const result = await prService.listPitchSequences({
+      status: status.length > 0 ? status : undefined,
+      search,
+      limit: limit ? parseInt(limit, 10) : undefined,
+      offset: offset ? parseInt(offset, 10) : undefined,
+      sortBy,
+      sortOrder,
+    });
 
-    const queryString = params.toString();
-    const path = `/api/v1/pr/pitches/sequences${queryString ? `?${queryString}` : ''}`;
+    if (config.showBackendStatus) {
+      console.log(`[API /api/pr/pitches/sequences] GET: ${result.sequences.length}/${result.total} sequences`);
+    }
 
-    const data = await prBackendFetch(path);
-    return NextResponse.json(data);
+    const response = NextResponse.json({
+      sequences: result.sequences,
+      total: result.total,
+    });
+    return addPRAuthHeader(response, 'ok');
   } catch (error: unknown) {
-    const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/pitches/sequences] GET Error:', { status, message, code });
-    return NextResponse.json({ error: message, code }, { status });
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[API /api/pr/pitches/sequences] GET Error:', message);
+
+    if (!config.allowMockFallback) {
+      const response = NextResponse.json(
+        { error: message, code: 'DB_ERROR' },
+        { status: 500 }
+      );
+      return addPRAuthHeader(response, 'ok');
+    }
+
+    const response = NextResponse.json({
+      sequences: [],
+      total: 0,
+      _mock: true,
+      _error: message,
+    });
+    return addPRAuthHeader(response, 'ok');
   }
 }
 
 export async function POST(request: NextRequest) {
+  const config = getPRConfig();
+
+  // Authenticate request
+  const auth = await authenticatePRRequest();
+
+  if (auth.status !== 'ok' || !auth.client || !auth.orgId || !auth.userId) {
+    if (config.showBackendStatus) {
+      console.log(`[API /api/pr/pitches/sequences] POST Auth failed: ${auth.status} - ${auth.error}`);
+    }
+    return createAuthErrorResponse(auth);
+  }
+
   try {
+    const prService = createPRService(auth.client, auth.orgId);
     const body = await request.json();
-    const data = await prBackendFetch('/api/v1/pr/pitches/sequences', {
-      method: 'POST',
-      body: JSON.stringify(body),
+
+    const sequence = await prService.createPitchSequence(auth.userId, {
+      name: body.name,
+      defaultSubject: body.defaultSubject || body.default_subject,
+      defaultPreviewText: body.defaultPreviewText || body.default_preview_text,
+      settings: body.settings,
     });
-    return NextResponse.json(data);
+
+    if (config.showBackendStatus) {
+      console.log(`[API /api/pr/pitches/sequences] POST: Created sequence ${sequence.id}`);
+    }
+
+    const response = NextResponse.json(sequence, { status: 201 });
+    return addPRAuthHeader(response, 'ok');
   } catch (error: unknown) {
-    const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/pitches/sequences] POST Error:', { status, message, code });
-    return NextResponse.json({ error: message, code }, { status });
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[API /api/pr/pitches/sequences] POST Error:', message);
+    const response = NextResponse.json(
+      { error: message, code: 'CREATE_ERROR' },
+      { status: 500 }
+    );
+    return addPRAuthHeader(response, 'ok');
   }
 }

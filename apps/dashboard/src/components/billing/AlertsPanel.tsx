@@ -76,7 +76,8 @@ export function AlertsPanel() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/v1/billing/alerts', {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch('/api/billing/alerts', {
         credentials: 'include',
       });
 
@@ -108,7 +109,8 @@ export function AlertsPanel() {
     try {
       setAcknowledging((prev) => new Set(prev).add(alertId));
 
-      const response = await fetch(`/api/v1/billing/alerts/${alertId}/acknowledge`, {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch(`/api/billing/alerts/${alertId}/acknowledge`, {
         method: 'POST',
         credentials: 'include',
       });

@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 /**
- * CI Guard: Command Center Density + Calendar UX + Legibility v2.0
+ * CI Guard: Command Center Density + Calendar UX + Legibility v3.0
  *
  * Prevents regression of:
- * 1. UI density patterns (v6.0 - comfortable/standard/compact)
+ * 1. UI density patterns (v7.0 - comfortable/standard/compact)
  * 2. Calendar UX (day selection, schedule drawer)
- * 3. Action Stream progressive disclosure (hover-peek class)
- * 4. Legibility (no low-contrast zinc-500/600 for primary labels)
- * 5. CTA hierarchy (dominant primary in comfortable mode)
+ * 3. Action Stream no-layout-shift hover (absolute positioned overlay)
+ * 4. Active/History lifecycle toggle
+ * 5. Legibility (no low-contrast zinc-500/600 for primary labels)
+ * 6. CTA hierarchy (dominant primary in comfortable mode)
  *
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
@@ -54,17 +55,21 @@ const REQUIRED_PATTERNS = [
       { regex: /ActionCard|DensityLevel/, description: 'ActionCard component import' },
       { regex: /useSearchParams/, description: 'Query param support for density override (v6)' },
       { regex: /densityOverride|hasValidOverride/, description: 'Dev density override logic (v6)' },
+      { regex: /lifecycleBucket|LifecycleBucket/, description: 'Active/History lifecycle state (v7)' },
+      { regex: /Active.*History|bucketCounts/i, description: 'Active/History toggle UI (v7)' },
     ],
   },
   {
     file: 'ActionCard.tsx',
     patterns: [
-      { regex: /action-card-v3/, description: 'Action card v3/v4 CSS class marker' },
+      { regex: /action-card-v[3456]/, description: 'Action card v3/v4/v5/v6 CSS class marker' },
       { regex: /densityLevel|DensityLevel/, description: 'Density level support' },
-      { regex: /onPrimaryAction|onSecondaryAction/, description: 'On-card CTA handlers' },
-      { regex: /group-hover:/, description: 'Hover reveal animations' },
-      { regex: /COMFORTABLE MODE|UX-PILOT/i, description: 'UX-Pilot authority comment (v4)' },
-      { regex: /DOMINANT|subdued/i, description: 'CTA hierarchy documentation (v4)' },
+      { regex: /onPrimaryAction|onReview/, description: 'On-card CTA handlers (v5+: onReview replaces onSecondaryAction)' },
+      { regex: /group-hover:opacity/, description: 'Hover opacity transitions (v6: no-layout-shift)' },
+      { regex: /COMFORTABLE MODE|UX-PILOT/i, description: 'UX-Pilot authority comment' },
+      { regex: /DOMINANT|EXECUTES action/i, description: 'CTA behavior documentation' },
+      { regex: /min-h-\[180px\]|min-h-\[120px\]/, description: 'Fixed height cards (v6: no-layout-shift)' },
+      { regex: /absolute.*bottom|NO LAYOUT SHIFT/i, description: 'Absolute positioned hover (v6)' },
     ],
   },
 ];

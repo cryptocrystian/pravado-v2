@@ -31,6 +31,12 @@ const nextConfig = {
         poll: 1000,
         aggregateTimeout: 300,
       };
+      // CRITICAL: Disable webpack's persistent filesystem cache in dev
+      // This prevents 404s on static chunks when cache gets out of sync with browser
+      // The .next/cache/webpack directory causes issues in WSL2 with rapid file changes
+      config.cache = {
+        type: 'memory',
+      };
     }
     return config;
   },

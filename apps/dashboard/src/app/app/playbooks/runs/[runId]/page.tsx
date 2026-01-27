@@ -44,7 +44,8 @@ export default function PlaybookRunViewerPage() {
    */
   const fetchRun = useCallback(async () => {
     try {
-      const response = await fetch(`/api/v1/playbook-runs/${runId}`, {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch(`/api/playbook-runs/${runId}`, {
         credentials: 'include',
       });
 

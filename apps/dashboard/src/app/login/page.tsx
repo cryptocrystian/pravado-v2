@@ -1,6 +1,7 @@
 /**
  * Login/Signup page with Supabase Auth
- * Styled according to Pravado Design System v2
+ * Styled according to Pravado Design System v3 (AI-Native Command Center)
+ * Canonical source: docs/canon/DS_v3_1_EXPRESSION.md
  */
 
 'use client';
@@ -30,17 +31,19 @@ const MicrosoftIcon = () => (
   </svg>
 );
 
-// AI Presence Dot component
+// AI Presence Dot component (DS v3: cyber-blue for analyzing, electric-purple for generating)
 const AIPresenceDot = ({ status }: { status: 'idle' | 'analyzing' | 'generating' }) => {
-  const statusClasses = {
-    idle: 'bg-slate-6',
-    analyzing: 'bg-brand-cyan animate-ai-pulse',
-    generating: 'bg-brand-iris',
+  // DS v3 colors: cyber-blue (#00D9FF) for analyzing, electric-purple (#A855F7) for generating
+  const statusStyles: Record<string, React.CSSProperties> = {
+    idle: { backgroundColor: '#3D3D4A' }, // --slate-6
+    analyzing: { backgroundColor: '#00D9FF' }, // --cyber-blue
+    generating: { backgroundColor: '#A855F7' }, // --electric-purple
   };
 
   return (
     <span
-      className={`w-2 h-2 rounded-full ${statusClasses[status]}`}
+      className={`w-2 h-2 rounded-full ${status === 'analyzing' ? 'animate-ai-pulse' : ''}`}
+      style={statusStyles[status]}
       aria-label={`AI ${status}`}
     />
   );
@@ -184,12 +187,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-page px-4 py-12">
-      {/* Background gradient effect */}
+    <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ backgroundColor: '#0A0A0F' }}>
+      {/* Background gradient effect (DS v3: electric-purple glow) */}
       <div
-        className="fixed inset-0 pointer-events-none opacity-30"
+        className="fixed inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at 50% 0%, var(--brand-iris) 0%, transparent 50%)',
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 60%)',
         }}
       />
 
@@ -245,13 +248,13 @@ export default function LoginPage() {
             </button>
           </div>
 
-          {/* Divider */}
+          {/* Divider (DS v3) */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border-subtle" />
+              <div className="w-full border-t" style={{ borderColor: '#1F1F28' }} />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-slate-2 px-2 text-muted">or continue with email</span>
+              <span className="px-2" style={{ backgroundColor: '#13131A', color: '#3D3D4A' }}>or continue with email</span>
             </div>
           </div>
 
@@ -322,15 +325,15 @@ export default function LoginPage() {
               )}
             </button>
 
-            {/* Magic Link Divider */}
+            {/* Magic Link Divider (DS v3) */}
             {!isSignUp && (
               <>
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-border-subtle" />
+                    <div className="w-full border-t" style={{ borderColor: '#1F1F28' }} />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-slate-2 px-2 text-muted">or sign in with</span>
+                    <span className="px-2" style={{ backgroundColor: '#13131A', color: '#3D3D4A' }}>or sign in with</span>
                   </div>
                 </div>
 
@@ -358,7 +361,7 @@ export default function LoginPage() {
               </>
             )}
 
-            {/* Toggle Sign Up / Sign In */}
+            {/* Toggle Sign Up / Sign In (DS v3) */}
             <div className="text-center">
               <button
                 type="button"
@@ -367,7 +370,8 @@ export default function LoginPage() {
                   setError(null);
                   setMessage(null);
                 }}
-                className="text-sm text-brand-cyan hover:text-brand-cyan/80 transition-colors duration-sm"
+                className="text-sm transition-colors"
+                style={{ color: '#00D9FF' }}
               >
                 {isSignUp
                   ? 'Already have an account? Sign in'
@@ -377,12 +381,12 @@ export default function LoginPage() {
           </form>
         </div>
 
-        {/* Footer */}
-        <p className="mt-6 text-center text-xs text-muted">
+        {/* Footer (DS v3) */}
+        <p className="mt-6 text-center text-xs" style={{ color: '#3D3D4A' }}>
           By continuing, you agree to Pravado&apos;s{' '}
-          <a href="#" className="text-brand-cyan hover:underline">Terms of Service</a>
+          <a href="#" className="hover:underline" style={{ color: '#00D9FF' }}>Terms of Service</a>
           {' '}and{' '}
-          <a href="#" className="text-brand-cyan hover:underline">Privacy Policy</a>
+          <a href="#" className="hover:underline" style={{ color: '#00D9FF' }}>Privacy Policy</a>
         </p>
       </div>
     </div>

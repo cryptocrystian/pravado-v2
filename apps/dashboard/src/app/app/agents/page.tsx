@@ -3,9 +3,10 @@
  * AI Agent registry with presence indicators
  */
 
-import type { ListAgentsResponse } from '@pravado/types';
+import type { AgentDefinition } from '@pravado/types';
 
 import { getCurrentUser } from '@/lib/getCurrentUser';
+import { backendFetch } from '@/server/backendProxy';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
@@ -33,13 +34,11 @@ function AIInsightBanner({ message, type = 'info' }: { message: string; type?: '
   );
 }
 
-async function getAgents() {
+async function getAgents(): Promise<AgentDefinition[]> {
   try {
-    const response = await fetch('http://localhost:4000/api/v1/agents', {
-      cache: 'no-store',
-    });
-    const data: ListAgentsResponse = await response.json();
-    return data.success ? data.data?.agents : [];
+    // Gate 1A: Use server-side backendFetch, not hardcoded localhost
+    const data = await backendFetch<{ agents: AgentDefinition[] }>('/api/v1/agents');
+    return data?.agents || [];
   } catch (error) {
     console.error('Failed to fetch agents:', error);
     return [];

@@ -38,7 +38,7 @@ interface AppShellWrapperProps {
 }
 
 // Routes that use their own shell (no sidebar, no legacy header)
-const CUSTOM_SHELL_ROUTES = ['/app/command-center', '/app/calendar'];
+const CUSTOM_SHELL_ROUTES = ['/app/command-center', '/app/calendar', '/app/pr'];
 
 // AI Presence Dot
 const AIPresenceDot = () => (

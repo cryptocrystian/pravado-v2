@@ -1,169 +1,320 @@
 {
-  "generated_at": "2026-01-07T10:00:00.000Z",
-  "kpis": [
-    {
-      "id": "k_evi",
-      "label": "EVI",
-      "description": "Earned Visibility Index - composite score across all channels",
-      "value": 47.2,
-      "max_value": 100,
-      "delta_7d": 4.1,
-      "delta_30d": 12.8,
-      "trend": "up",
-      "status": "healthy",
-      "sparkline": [35.2, 36.8, 38.1, 40.2, 42.5, 43.1, 47.2]
-    },
-    {
-      "id": "k_som",
-      "label": "Share of Model",
-      "description": "Percentage of AI model responses mentioning your brand",
-      "value": 0.24,
-      "max_value": 1,
-      "delta_7d": 0.03,
-      "delta_30d": 0.08,
-      "trend": "up",
-      "status": "healthy",
-      "sparkline": [0.16, 0.17, 0.18, 0.19, 0.21, 0.22, 0.24]
-    },
-    {
-      "id": "k_citations",
-      "label": "Citation Velocity",
-      "description": "New AI citations detected per day (7-day average)",
-      "value": 12,
-      "max_value": null,
-      "delta_7d": 2,
-      "delta_30d": 5,
-      "trend": "up",
-      "status": "healthy",
-      "sparkline": [7, 8, 9, 10, 10, 11, 12]
-    },
-    {
-      "id": "k_sov",
-      "label": "Share of Voice",
-      "description": "Traditional media mention share vs competitors",
-      "value": 0.18,
-      "max_value": 1,
-      "delta_7d": -0.02,
-      "delta_30d": 0.01,
-      "trend": "down",
-      "status": "warning",
-      "sparkline": [0.19, 0.20, 0.19, 0.18, 0.19, 0.18, 0.18]
-    },
-    {
-      "id": "k_sentiment",
-      "label": "Sentiment Score",
-      "description": "Aggregate sentiment across all mentions",
-      "value": 0.72,
-      "max_value": 1,
-      "delta_7d": -0.05,
-      "delta_30d": -0.03,
-      "trend": "down",
-      "status": "warning",
-      "sparkline": [0.78, 0.77, 0.76, 0.74, 0.73, 0.72, 0.72]
-    },
-    {
-      "id": "k_content_velocity",
-      "label": "Content Velocity",
-      "description": "New content pieces published per week",
-      "value": 4,
-      "max_value": null,
-      "delta_7d": 1,
-      "delta_30d": 2,
-      "trend": "up",
-      "status": "healthy",
-      "sparkline": [2, 2, 3, 3, 3, 4, 4]
-    }
-  ],
+  "generated_at": "2026-01-11T10:00:00.000Z",
+  "evi": {
+    "score": 67.4,
+    "previous_score": 63.3,
+    "delta_7d": 4.1,
+    "delta_30d": 12.8,
+    "status": "competitive",
+    "trend": "up",
+    "sparkline": [54.2, 56.8, 59.1, 61.2, 63.3, 65.1, 67.4],
+    "drivers": [
+      {
+        "type": "visibility",
+        "label": "Visibility",
+        "score": 72.5,
+        "weight": 0.40,
+        "delta_7d": 5.2,
+        "trend": "up",
+        "metrics": [
+          {
+            "id": "m_ai_presence",
+            "label": "AI Answer Presence",
+            "value": 24,
+            "max_value": 100,
+            "delta_7d": 3,
+            "trend": "up",
+            "driver": "visibility",
+            "description": "Percentage of relevant AI queries where your brand is cited"
+          },
+          {
+            "id": "m_press_coverage",
+            "label": "Press Mention Coverage",
+            "value": 78,
+            "max_value": 100,
+            "delta_7d": 8,
+            "trend": "up",
+            "driver": "visibility",
+            "description": "Weighted press mentions (T1: 3x, T2: 2x, T3: 1x)"
+          },
+          {
+            "id": "m_serp_coverage",
+            "label": "Topic SERP Coverage",
+            "value": 45,
+            "max_value": 100,
+            "delta_7d": 2,
+            "trend": "up",
+            "driver": "visibility",
+            "description": "Percentage of target keywords ranking in top 10"
+          },
+          {
+            "id": "m_featured_snippets",
+            "label": "Featured Snippets",
+            "value": 12,
+            "max_value": 50,
+            "delta_7d": 1,
+            "trend": "up",
+            "driver": "visibility",
+            "description": "Number of featured snippets held for target queries"
+          }
+        ]
+      },
+      {
+        "type": "authority",
+        "label": "Authority",
+        "score": 64.8,
+        "weight": 0.35,
+        "delta_7d": 2.1,
+        "trend": "up",
+        "metrics": [
+          {
+            "id": "m_citation_quality",
+            "label": "Citation Quality Score",
+            "value": 71,
+            "max_value": 100,
+            "delta_7d": 3,
+            "trend": "up",
+            "driver": "authority",
+            "description": "Average authority of sources citing your brand"
+          },
+          {
+            "id": "m_domain_authority",
+            "label": "Referring Domain Authority",
+            "value": 58,
+            "max_value": 100,
+            "delta_7d": 1,
+            "trend": "flat",
+            "driver": "authority",
+            "description": "Weighted average Domain Authority of backlink sources"
+          },
+          {
+            "id": "m_journalist_match",
+            "label": "Journalist Match Strength",
+            "value": 82,
+            "max_value": 100,
+            "delta_7d": 5,
+            "trend": "up",
+            "driver": "authority",
+            "description": "Relevance score of journalists covering your brand"
+          },
+          {
+            "id": "m_structured_data",
+            "label": "Structured Data Coverage",
+            "value": 48,
+            "max_value": 100,
+            "delta_7d": 0,
+            "trend": "flat",
+            "driver": "authority",
+            "description": "Percentage of pages with valid schema markup"
+          }
+        ]
+      },
+      {
+        "type": "momentum",
+        "label": "Momentum",
+        "score": 61.2,
+        "weight": 0.25,
+        "delta_7d": 4.8,
+        "trend": "up",
+        "metrics": [
+          {
+            "id": "m_citation_velocity",
+            "label": "Citation Velocity (WoW)",
+            "value": 17,
+            "max_value": 100,
+            "delta_7d": 8,
+            "trend": "up",
+            "driver": "momentum",
+            "description": "Week-over-week change in AI/media citations"
+          },
+          {
+            "id": "m_sov_change",
+            "label": "Share of Voice Change",
+            "value": -2,
+            "max_value": 100,
+            "delta_7d": -5,
+            "trend": "down",
+            "driver": "momentum",
+            "description": "Delta in SOV vs. competitors over 30 days"
+          },
+          {
+            "id": "m_content_velocity",
+            "label": "Content Velocity vs Competitors",
+            "value": 0.8,
+            "max_value": 2,
+            "delta_7d": 0.1,
+            "trend": "up",
+            "driver": "momentum",
+            "description": "Ratio of brand content output to competitor average"
+          },
+          {
+            "id": "m_topic_growth",
+            "label": "Topic Growth Rate",
+            "value": 34,
+            "max_value": 100,
+            "delta_7d": 12,
+            "trend": "up",
+            "driver": "momentum",
+            "description": "Velocity of coverage in emerging topic clusters"
+          }
+        ]
+      }
+    ]
+  },
   "narratives": [
     {
-      "id": "nar_visibility_story",
-      "title": "This week's visibility story",
-      "body": "Your EVI increased 4.1 points this week, driven primarily by strong AI citation growth (+17%). The TechCrunch mention on Jan 5th contributed significantly to Perplexity and ChatGPT citations. However, traditional Share of Voice dipped slightly as competitors increased their PR activity.",
+      "id": "nar_evi_summary",
+      "title": "Your Visibility Story This Week",
+      "body": "EVI increased 4.1 points to 67.4, moving you firmly into Competitive territory. The TechCrunch mention on Jan 5th drove significant AI citation growth (+17%), with Perplexity and Claude now citing your EVI methodology. Your Visibility driver leads at 72.5, while Momentum shows the strongest growth trajectory.",
       "sentiment": "positive",
-      "pillars": ["pr", "content"],
+      "drivers": ["visibility", "momentum"],
       "confidence": 0.89
     },
     {
-      "id": "nar_bottleneck",
-      "title": "Primary bottleneck",
-      "body": "Content production velocity is limiting your ability to capture emerging topics. Competitors published 3.2x more content on 'AI marketing' this week. SAGE recommends increasing content cadence to 6-8 pieces/week to maintain competitive positioning.",
-      "sentiment": "warning",
-      "pillars": ["content"],
+      "id": "nar_authority_focus",
+      "title": "Authority Building Opportunity",
+      "body": "Your Authority score (64.8) is trailing Visibility. Structured data coverage at 48% is leaving AI comprehension gains on the table. Implementing schema markup on your top 20 pages could push Authority above 70, adding ~3 points to overall EVI.",
+      "sentiment": "opportunity",
+      "drivers": ["authority"],
       "confidence": 0.82
     },
     {
-      "id": "nar_opportunity",
-      "title": "Emerging opportunity",
-      "body": "AI models are increasingly citing content about 'marketing measurement' and 'PR effectiveness'. Your EVI framework is well-positioned but underrepresented in AI training data. Publishing 2-3 authoritative pieces could capture this emerging citation pattern.",
-      "sentiment": "opportunity",
-      "pillars": ["content", "seo"],
-      "confidence": 0.75
+      "id": "nar_momentum_warning",
+      "title": "Share of Voice Pressure",
+      "body": "Despite strong Citation Velocity (+17% WoW), traditional Share of Voice declined 2% as HubSpot and Clearbit increased PR activity. Content Velocity ratio (0.8x) indicates competitors are outpacing your publishing cadence. Recommend increasing to 6-8 pieces/week to maintain Momentum trajectory.",
+      "sentiment": "warning",
+      "drivers": ["momentum"],
+      "confidence": 0.91
     },
     {
-      "id": "nar_risk",
-      "title": "Risk signal",
-      "body": "Sentiment score has declined 5 points over 7 days. Social listening indicates concerns about 'data privacy' following a competitor's incident. While not directly related to your brand, proactive messaging may be warranted to maintain trust.",
+      "id": "nar_competitive_intel",
+      "title": "Competitor Movement",
+      "body": "HubSpot's EVI rose 6.2 points this week, primarily driven by a Wall Street Journal feature. Their Visibility score now exceeds yours by 8 points. However, your Authority growth rate is 2.1x theirs—maintain this advantage to close the gap.",
       "sentiment": "warning",
-      "pillars": ["pr"],
-      "confidence": 0.91
+      "drivers": ["visibility", "authority"],
+      "confidence": 0.78
     }
   ],
-  "recommendations": [
+  "top_movers": [
     {
-      "id": "rec_1",
-      "priority": "high",
-      "title": "Capitalize on TechCrunch momentum",
-      "description": "Sarah Chen expressed interest in a follow-up piece. Schedule briefing within 48 hours to maintain relationship warmth.",
-      "action": "Schedule PR briefing",
-      "effort": "low",
-      "impact": "high",
-      "pillar": "pr"
+      "id": "mover_techcrunch_citation",
+      "driver": "visibility",
+      "delta_points": 2.4,
+      "reason": "TechCrunch AI coverage mention drove +17% AI citations",
+      "evidence_type": "citation",
+      "deep_link": {
+        "label": "View in PR Coverage",
+        "href": "/app/pr/coverage?source=techcrunch"
+      },
+      "action_id": "act_01H8X9Y2Z3A4B5C6D7E8F9G0",
+      "pillar": "pr",
+      "trend": "up"
     },
     {
-      "id": "rec_2",
-      "priority": "high",
-      "title": "Publish EVI deep-dive content",
-      "description": "Authoritative content on EVI methodology is being cited by AI models. Expand with technical implementation guides to capture more citations.",
-      "action": "Create content brief",
-      "effort": "medium",
-      "impact": "high",
-      "pillar": "content"
+      "id": "mover_schema_fix",
+      "driver": "authority",
+      "delta_points": 1.2,
+      "reason": "Schema markup deployed on 12 product pages",
+      "evidence_type": "diff",
+      "deep_link": {
+        "label": "View in SEO Command",
+        "href": "/app/seo/technical?filter=schema"
+      },
+      "pillar": "seo",
+      "trend": "up"
     },
     {
-      "id": "rec_3",
-      "priority": "medium",
-      "title": "Optimize 'marketing ops' cluster",
-      "description": "14 keywords have optimization opportunities. Estimated +2,400 monthly visits with minimal effort.",
-      "action": "Review SEO recommendations",
-      "effort": "low",
-      "impact": "medium",
-      "pillar": "seo"
+      "id": "mover_content_velocity",
+      "driver": "momentum",
+      "delta_points": 1.8,
+      "reason": "Published 6 pieces this week vs competitor avg of 4",
+      "evidence_type": "metric",
+      "deep_link": {
+        "label": "View in Content Hub",
+        "href": "/app/content/calendar?period=7d"
+      },
+      "pillar": "content",
+      "trend": "up"
+    },
+    {
+      "id": "mover_sov_pressure",
+      "driver": "momentum",
+      "delta_points": -0.8,
+      "reason": "HubSpot increased PR activity, SOV declined 2%",
+      "evidence_type": "metric",
+      "deep_link": {
+        "label": "View Competitor Intel",
+        "href": "/app/intelligence/competitors?focus=hubspot"
+      },
+      "pillar": "pr",
+      "trend": "down"
     }
   ],
   "upgrade_hooks": [
     {
-      "id": "up_competitive_intel",
+      "id": "up_competitive_evi",
       "pattern": "blurred_insight",
       "min_plan": "pro",
-      "feature": "Competitive Intelligence",
-      "message": "Unlock detailed competitor analysis including their AI citation patterns and content strategy. See exactly how HubSpot and Clearbit are winning in AI search.",
-      "sample_value": "HubSpot's AI citation rate increased 34% after..."
+      "feature": "Competitive EVI Tracking",
+      "message": "See your competitors' EVI scores, driver breakdowns, and week-over-week changes. Know exactly where HubSpot and Clearbit are winning.",
+      "sample_value": "HubSpot EVI: 74.2 (+6.2)"
     },
     {
-      "id": "up_predictive",
+      "id": "up_predictive_evi",
       "pattern": "blurred_insight",
       "min_plan": "growth",
-      "feature": "Predictive Analytics",
-      "message": "Get 14-day forecasts for your EVI and Share of Model metrics. Predictive models show high confidence opportunity windows.",
-      "sample_value": "Next week's projected EVI: 52.1 (+10.4%)"
+      "feature": "EVI Forecasting",
+      "message": "Get 14-day EVI projections based on scheduled content, pending press, and historical patterns. See your path to Dominant status.",
+      "sample_value": "Projected EVI (Jan 25): 71.8 (+4.4)"
     },
     {
-      "id": "up_executive_digest",
+      "id": "up_driver_attribution",
       "pattern": "locked_feature",
       "min_plan": "enterprise",
-      "feature": "Executive Digest",
-      "message": "Automatically generated weekly executive summary with board-ready insights and ROI attribution.",
+      "feature": "EVI Attribution",
+      "message": "Connect every action to its EVI impact. See exactly which press hits, content pieces, and SEO wins drove your score changes.",
       "sample_value": null
     }
-  ]
+  ],
+  "forecast": {
+    "current_score": 67.4,
+    "horizon_days": 30,
+    "baseline": {
+      "low": 68.5,
+      "expected": 71.2,
+      "high": 74.8
+    },
+    "with_scenarios": {
+      "low": 72.1,
+      "expected": 76.4,
+      "high": 81.2
+    },
+    "scenarios": [
+      {
+        "id": "scen_schema_deploy",
+        "label": "Deploy Schema Fixes",
+        "description": "Implement structured data on 12 product pages to improve AI comprehension",
+        "drivers": ["authority"],
+        "delta_evi": 2.8,
+        "is_active": true
+      },
+      {
+        "id": "scen_pr_placements",
+        "label": "Secure 2 PR Placements",
+        "description": "Land coverage in TechCrunch and VentureBeat within 30 days",
+        "drivers": ["visibility", "momentum"],
+        "delta_evi": 3.4,
+        "is_active": true
+      },
+      {
+        "id": "scen_content_velocity",
+        "label": "Increase Content Velocity",
+        "description": "Publish 6+ pieces per week to outpace competitor average",
+        "drivers": ["momentum"],
+        "delta_evi": 1.2,
+        "is_active": false
+      }
+    ],
+    "updated_at": "2026-01-11T10:00:00.000Z"
+  }
 }

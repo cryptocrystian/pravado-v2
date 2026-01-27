@@ -40,7 +40,8 @@ export function CreateBranchModal({
     setCreating(true);
 
     try {
-      const response = await fetch(`/api/v1/playbooks/${playbookId}/branches`, {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch(`/api/playbooks/${playbookId}/branches`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: branchName }),

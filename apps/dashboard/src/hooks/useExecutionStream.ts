@@ -104,8 +104,9 @@ export function useExecutionStream(
 
   /**
    * Connect to SSE stream
+   * Gate 1A: Fetch stream URL from route handler (includes auth token)
    */
-  const connect = useCallback(() => {
+  const connect = useCallback(async () => {
     if (!runId || !enabled) {
       return;
     }
@@ -115,13 +116,18 @@ export function useExecutionStream(
       eventSourceRef.current.close();
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    const streamUrl = `${apiUrl}/api/v1/playbook-runs/${runId}/stream`;
-
     try {
-      const eventSource = new EventSource(streamUrl, {
-        withCredentials: true,
+      // Gate 1A: Get authenticated stream URL from route handler
+      const response = await fetch(`/api/playbook-runs/${runId}/stream`, {
+        credentials: 'include',
       });
+      const result = await response.json();
+
+      if (!result.success || !result.data?.streamUrl) {
+        throw new Error('Failed to get stream URL');
+      }
+
+      const eventSource = new EventSource(result.data.streamUrl);
 
       eventSourceRef.current = eventSource;
 

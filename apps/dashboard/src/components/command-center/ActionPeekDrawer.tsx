@@ -86,11 +86,11 @@ function GateWarning({ gate }: { gate: ActionItem['gate'] }) {
           <h4 className="text-sm font-medium text-semantic-warning">
             Approval Required
           </h4>
-          <p className="text-xs text-white/70 mt-1">
+          <p className="text-[13px] text-white/70 mt-1">
             {gate.reason || 'This action requires approval before execution.'}
           </p>
           {gate.min_plan && (
-            <p className="text-xs text-semantic-warning mt-2">
+            <p className="text-[13px] text-semantic-warning mt-2">
               Available on <span className="font-semibold">{gate.min_plan}</span>{' '}
               plan and above
             </p>
@@ -128,7 +128,7 @@ function DiffPlaceholder() {
         <div className="h-3 w-3/5 bg-[#1F1F28] rounded animate-pulse" />
         <div className="h-3 w-2/3 bg-[#1F1F28] rounded animate-pulse" />
       </div>
-      <p className="text-xs text-white/50 mt-3 text-center italic">
+      <p className="text-[13px] text-white/50 mt-3 text-center italic">
         Detailed content preview coming soon
       </p>
     </div>
@@ -167,7 +167,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
                 <span
                   className={`w-2 h-2 rounded-full ${priorityStyle.dot}`}
                 />
-                <span className="text-xs text-white/70">
+                <span className="text-[13px] text-white/70">
                   {priorityStyle.label}
                 </span>
               </div>
@@ -224,7 +224,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
 
           {/* Metadata */}
           <div className="pt-4 border-t border-[#1F1F28]">
-            <div className="flex items-center justify-between text-xs text-white/50">
+            <div className="flex items-center justify-between text-[13px] text-white/50">
               <span>Action ID: {action.id.slice(0, 8)}...</span>
               <span>
                 Updated:{' '}

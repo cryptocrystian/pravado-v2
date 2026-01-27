@@ -42,7 +42,8 @@ export function BranchSelector({
   useEffect(() => {
     const loadBranches = async () => {
       try {
-        const response = await fetch(`/api/v1/playbooks/${playbookId}/branches`);
+        // Gate 1A: Use route handler, not direct backend call
+        const response = await fetch(`/api/playbooks/${playbookId}/branches`);
         const data = await response.json();
 
         if (data.success && data.data?.branches) {
@@ -84,9 +85,9 @@ export function BranchSelector({
     }
 
     try {
-      // Call switch branch API
+      // Gate 1A: Use route handler, not direct backend call
       const response = await fetch(
-        `/api/v1/playbooks/${playbookId}/branches/${branchId}/switch`,
+        `/api/playbooks/${playbookId}/branches/${branchId}/switch`,
         {
           method: 'POST',
         }

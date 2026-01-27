@@ -17,6 +17,7 @@ import actionStream from '../../../../contracts/examples/action-stream.json';
 import intelligenceCanvas from '../../../../contracts/examples/intelligence-canvas.json';
 import orchestrationCalendar from '../../../../contracts/examples/orchestration-calendar.json';
 import strategyPanel from '../../../../contracts/examples/strategy-panel.json';
+import entityMap from '../../../../contracts/examples/entity-map.json';
 
 /**
  * Simulated network delay for realistic UX testing
@@ -161,6 +162,20 @@ export const handlers = [
       items,
       filters: orchestrationCalendar.filters,
       summary,
+    });
+  }),
+
+  /**
+   * GET /api/command-center/entity-map
+   * Returns the SAGE-native entity map with nodes, edges, and action impacts
+   * @see /docs/canon/ENTITY-MAP-SAGE.md
+   */
+  http.get('/api/command-center/entity-map', async () => {
+    await delay(MOCK_DELAY_MS);
+
+    return HttpResponse.json({
+      ...entityMap,
+      generated_at: new Date().toISOString(),
     });
   }),
 ];

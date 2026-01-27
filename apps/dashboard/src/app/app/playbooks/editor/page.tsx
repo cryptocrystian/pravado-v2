@@ -43,7 +43,8 @@ export default function PlaybookEditorPage() {
 
     const loadPlaybook = async () => {
       try {
-        const response = await fetch(`/api/v1/playbooks/${playbookId}`);
+        // Gate 1A: Use route handler, not direct backend call
+        const response = await fetch(`/api/playbooks/${playbookId}`);
         const data = await response.json();
 
         if (data.success && data.data?.item) {
@@ -89,7 +90,8 @@ export default function PlaybookEditorPage() {
 
       const steps = convertToSteps(graph);
 
-      const response = await fetch(`/api/v1/playbooks/${playbookId}`, {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch(`/api/playbooks/${playbookId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -116,8 +118,8 @@ export default function PlaybookEditorPage() {
       // Local validation
       const localValidation = validateGraph(graph);
 
-      // TODO: Call backend validation endpoint
-      // const response = await fetch(`/api/v1/playbooks/${playbookId}/validate`, {...});
+      // TODO: Call route handler for validation
+      // const response = await fetch(`/api/playbooks/${playbookId}/validate`, {...});
 
       return {
         valid: localValidation.valid,

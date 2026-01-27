@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+    <style>::-webkit-scrollbar { display: none;}</style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'cyber-blue': '#00D9FF',
+                        'electric-purple': '#A855F7',
+                        'dark-bg': '#0A0A0F',
+                        'dark-card': '#13131A',
+                        'dark-border': '#1F1F28',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-bg text-gray-100 font-sans">
+
+<header id="header" class="fixed top-0 left-0 right-0 h-14 bg-dark-card border-b border-dark-border flex items-center justify-between px-6 z-50">
+    <div class="flex items-center space-x-8">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 bg-gradient-to-br from-cyber-blue to-electric-purple rounded-lg flex items-center justify-center">
+                <i class="fa-solid fa-bolt text-white text-sm"></i>
+            </div>
+            <span class="text-lg font-bold text-white">CommandAI</span>
+        </div>
+        <nav class="flex items-center space-x-6">
+            <button class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-dark-bg border border-cyber-blue text-cyber-blue">
+                <i class="fa-solid fa-terminal text-xs"></i>
+                <span class="text-sm font-medium">Command Center</span>
+            </button>
+            <button class="flex items-center space-x-2 px-3 py-1.5 rounded-lg hover:bg-dark-bg text-gray-400 hover:text-gray-200 transition-colors">
+                <i class="fa-solid fa-chart-network text-xs"></i>
+                <span class="text-sm">Intelligence</span>
+            </button>
+            <button class="flex items-center space-x-2 px-3 py-1.5 rounded-lg hover:bg-dark-bg text-gray-400 hover:text-gray-200 transition-colors">
+                <i class="fa-solid fa-bullseye-arrow text-xs"></i>
+                <span class="text-sm">Strategy</span>
+            </button>
+        </nav>
+    </div>
+    <div class="flex items-center space-x-4">
+        <button class="flex items-center space-x-2 px-4 py-2 bg-dark-bg border border-dark-border rounded-lg hover:border-gray-600 transition-colors">
+            <i class="fa-solid fa-command text-gray-400 text-xs"></i>
+            <span class="text-sm text-gray-400">Press ⌘K to search</span>
+        </button>
+        <button class="relative w-8 h-8 rounded-lg bg-dark-bg border border-dark-border hover:border-gray-600 flex items-center justify-center transition-colors">
+            <i class="fa-regular fa-bell text-gray-400"></i>
+            <span class="absolute top-0 right-0 w-2 h-2 bg-electric-purple rounded-full"></span>
+        </button>
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+            <span class="text-xs font-bold text-white">CM</span>
+        </div>
+    </div>
+</header>
+
+<div id="main-layout" class="flex pt-14">
+    <aside id="left-action-stream" class="w-80 bg-dark-card border-r border-dark-border flex flex-col overflow-y-auto" style="height: calc(100vh - 3.5rem);">
+        <div class="sticky top-0 bg-dark-card border-b border-dark-border p-4 z-10">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wide">Action Stream</h2>
+                <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">Clear All</button>
+            </div>
+            <div class="flex space-x-2">
+                <button class="flex-1 px-3 py-1.5 bg-cyber-blue bg-opacity-20 text-cyber-blue rounded-md text-xs font-medium">
+                    All (12)
+                </button>
+                <button class="flex-1 px-3 py-1.5 bg-dark-bg text-gray-400 hover:text-gray-200 rounded-md text-xs font-medium">
+                    PR (4)
+                </button>
+                <button class="flex-1 px-3 py-1.5 bg-dark-bg text-gray-400 hover:text-gray-200 rounded-md text-xs font-medium">
+                    SEO (5)
+                </button>
+                <button class="flex-1 px-3 py-1.5 bg-dark-bg text-gray-400 hover:text-gray-200 rounded-md text-xs font-medium">
+                    AEO (3)
+                </button>
+            </div>
+        </div>
+
+        <div class="p-4 space-y-3">
+            <div id="action-card-1" class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-cyber-blue transition-colors">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-cyan-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-newspaper text-cyan-400 text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">TechCrunch Pitch Ready</h3>
+                            <p class="text-xs text-gray-500">PR • 2 min ago</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 bg-green-500 bg-opacity-20 text-green-400 rounded text-xs font-medium">High Priority</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-3">AI-drafted pitch based on latest product launch. Journalist match: 94%</p>
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-3 py-2 bg-cyber-blue hover:bg-cyan-400 text-dark-bg rounded-md text-xs font-semibold transition-colors">
+                        <i class="fa-solid fa-paper-plane mr-1"></i> Execute
+                    </button>
+                    <button class="px-3 py-2 bg-dark-card border border-dark-border hover:border-gray-600 text-gray-300 rounded-md text-xs font-medium transition-colors">
+                        Review
+                    </button>
+                </div>
+            </div>
+
+            <div id="action-card-2" class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-electric-purple transition-colors">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-sparkles text-electric-purple text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">Schema Error Fix</h3>
+                            <p class="text-xs text-gray-500">AEO • 5 min ago</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 bg-red-500 bg-opacity-20 text-red-400 rounded text-xs font-medium">Critical</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-3">3 schema markup errors detected on /products page. Auto-fix available.</p>
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-3 py-2 bg-electric-purple hover:bg-purple-400 text-white rounded-md text-xs font-semibold transition-colors">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Auto-Fix
+                    </button>
+                    <button class="px-3 py-2 bg-dark-card border border-dark-border hover:border-gray-600 text-gray-300 rounded-md text-xs font-medium transition-colors">
+                        Details
+                    </button>
+                </div>
+            </div>
+
+            <div id="action-card-3" class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-cyan-500 transition-colors">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-link text-blue-400 text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">Unlinked Mention Found</h3>
+                            <p class="text-xs text-gray-500">SEO • 12 min ago</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 bg-yellow-500 bg-opacity-20 text-yellow-400 rounded text-xs font-medium">Medium</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-3">Forbes article mentions your brand. Outreach email drafted for backlink request.</p>
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-3 py-2 bg-cyber-blue hover:bg-cyan-400 text-dark-bg rounded-md text-xs font-semibold transition-colors">
+                        <i class="fa-solid fa-envelope mr-1"></i> Send Email
+                    </button>
+                    <button class="px-3 py-2 bg-dark-card border border-dark-border hover:border-gray-600 text-gray-300 rounded-md text-xs font-medium transition-colors">
+                        Edit
+                    </button>
+                </div>
+            </div>
+
+            <div id="action-card-4" class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-electric-purple transition-colors">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-brain text-electric-purple text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">UX Pilot Citation Win</h3>
+                            <p class="text-xs text-gray-500">AEO • 18 min ago</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 bg-green-500 bg-opacity-20 text-green-400 rounded text-xs font-medium">Success</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-3">Your content now cited in 3 new UX Pilot responses. Amplify strategy ready.</p>
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-3 py-2 bg-electric-purple hover:bg-purple-400 text-white rounded-md text-xs font-semibold transition-colors">
+                        <i class="fa-solid fa-rocket mr-1"></i> Amplify
+                    </button>
+                    <button class="px-3 py-2 bg-dark-card border border-dark-border hover:border-gray-600 text-gray-300 rounded-md text-xs font-medium transition-colors">
+                        Analyze
+                    </button>
+                </div>
+            </div>
+
+            <div id="action-card-5" class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-cyan-500 transition-colors">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-cyan-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-microphone text-cyan-400 text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">Podcast Pitch Ready</h3>
+                            <p class="text-xs text-gray-500">PR • 25 min ago</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 bg-yellow-500 bg-opacity-20 text-yellow-400 rounded text-xs font-medium">Medium</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-3">3 podcast hosts matched to your expertise. Personalized pitches generated.</p>
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-3 py-2 bg-cyber-blue hover:bg-cyan-400 text-dark-bg rounded-md text-xs font-semibold transition-colors">
+                        <i class="fa-solid fa-paper-plane mr-1"></i> Send All
+                    </button>
+                    <button class="px-3 py-2 bg-dark-card border border-dark-border hover:border-gray-600 text-gray-300 rounded-md text-xs font-medium transition-colors">
+                        Review
+                    </button>
+                </div>
+            </div>
+
+            <div id="action-card-6" class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-blue-500 transition-colors">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-chart-line text-blue-400 text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">Keyword Opportunity</h3>
+                            <p class="text-xs text-gray-500">SEO • 32 min ago</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 bg-green-500 bg-opacity-20 text-green-400 rounded text-xs font-medium">High Priority</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-3">New low-competition keyword cluster detected. Content brief auto-generated.</p>
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-3 py-2 bg-cyber-blue hover:bg-cyan-400 text-dark-bg rounded-md text-xs font-semibold transition-colors">
+                        <i class="fa-solid fa-pen mr-1"></i> Create Content
+                    </button>
+                    <button class="px-3 py-2 bg-dark-card border border-dark-border hover:border-gray-600 text-gray-300 rounded-md text-xs font-medium transition-colors">
+                        View Brief
+                    </button>
+                </div>
+            </div>
+
+            <div id="action-card-7" class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-electric-purple transition-colors">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-robot text-electric-purple text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">Perplexity Optimization</h3>
+                            <p class="text-xs text-gray-500">AEO • 45 min ago</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 bg-yellow-500 bg-opacity-20 text-yellow-400 rounded text-xs font-medium">Medium</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-3">Content optimization suggestions to improve Perplexity AI citation rate by 34%.</p>
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-3 py-2 bg-electric-purple hover:bg-purple-400 text-white rounded-md text-xs font-semibold transition-colors">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Optimize
+                    </button>
+                    <button class="px-3 py-2 bg-dark-card border border-dark-border hover:border-gray-600 text-gray-300 rounded-md text-xs font-medium transition-colors">
+                        Preview
+                    </button>
+                </div>
+            </div>
+
+            <div id="action-card-8" class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-cyan-500 transition-colors">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-cyan-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-users text-cyan-400 text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">Journalist Relationship</h3>
+                            <p class="text-xs text-gray-500">PR • 1 hour ago</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 bg-blue-500 bg-opacity-20 text-blue-400 rounded text-xs font-medium">Nurture</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-3">Follow-up email scheduled for Sarah Chen (TechCrunch). Engagement score: 8.5/10</p>
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-3 py-2 bg-cyber-blue hover:bg-cyan-400 text-dark-bg rounded-md text-xs font-semibold transition-colors">
+                        <i class="fa-solid fa-check mr-1"></i> Approve
+                    </button>
+                    <button class="px-3 py-2 bg-dark-card border border-dark-border hover:border-gray-600 text-gray-300 rounded-md text-xs font-medium transition-colors">
+                        Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main id="center-intelligence-canvas" class="flex-1 overflow-y-auto" style="height: calc(100vh - 3.5rem);">
+        <div class="p-6">
+            <div id="pillar-toggles" class="flex items-center justify-between mb-6">
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg text-sm font-semibold shadow-lg shadow-cyan-500/50">
+                        <i class="fa-solid fa-layer-group mr-2"></i> Unified View
+                    </button>
+                    <button class="px-4 py-2 bg-dark-card border border-dark-border text-gray-400 hover:text-white hover:border-cyan-500 rounded-lg text-sm font-medium transition-colors">
+                        <i class="fa-solid fa-newspaper mr-2"></i> PR Deep Dive
+                    </button>
+                    <button class="px-4 py-2 bg-dark-card border border-dark-border text-gray-400 hover:text-white hover:border-blue-500 rounded-lg text-sm font-medium transition-colors">
+                        <i class="fa-solid fa-chart-line mr-2"></i> SEO Deep Dive
+                    </button>
+                    <button class="px-4 py-2 bg-dark-card border border-dark-border text-gray-400 hover:text-white hover:border-purple-500 rounded-lg text-sm font-medium transition-colors">
+                        <i class="fa-solid fa-brain mr-2"></i> AEO Deep Dive
+                    </button>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button class="px-3 py-2 bg-dark-card border border-dark-border text-gray-400 hover:text-white rounded-lg text-sm transition-colors">
+                        <i class="fa-solid fa-filter mr-2"></i> Filters
+                    </button>
+                    <button class="px-3 py-2 bg-dark-card border border-dark-border text-gray-400 hover:text-white rounded-lg text-sm transition-colors">
+                        <i class="fa-solid fa-download mr-2"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <div id="entity-map-section" class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-white mb-1">Intelligence Entity Map</h2>
+                        <p class="text-sm text-gray-400">Real-time connections between your brand, journalists, keywords, and competitors</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="px-3 py-1.5 bg-dark-bg border border-dark-border text-gray-400 hover:text-white rounded-md text-xs transition-colors">
+                            <i class="fa-solid fa-expand mr-1"></i> Expand
+                        </button>
+                        <button class="px-3 py-1.5 bg-dark-bg border border-dark-border text-gray-400 hover:text-white rounded-md text-xs transition-colors">
+                            <i class="fa-solid fa-rotate mr-1"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-dark-bg rounded-lg border border-dark-border overflow-hidden" style="height: 500px;">
+                    <div class="relative w-full h-full flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10"></div>
+                        
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <div class="relative">
+                                <div class="w-24 h-24 bg-gradient-to-br from-cyber-blue to-electric-purple rounded-2xl flex items-center justify-center shadow-2xl shadow-cyan-500/50 animate-pulse">
+                                    <i class="fa-solid fa-building text-white text-3xl"></i>
+                                </div>
+                                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-dark-card border border-cyber-blue px-3 py-1 rounded-full">
+                                    <span class="text-xs font-semibold text-cyber-blue">Your Brand</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="absolute top-20 left-32">
+                            <div class="relative">
+                                <div class="w-16 h-16 bg-cyan-500 bg-opacity-20 rounded-xl flex items-center justify-center border border-cyan-500">
+                                    <i class="fa-solid fa-user-tie text-cyan-400 text-xl"></i>
+                                </div>
+                                <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-dark-card border border-cyan-500 px-2 py-0.5 rounded text-nowrap">
+                                    <span class="text-xs text-cyan-400">Sarah Chen</span>
+                                </div>
+                                <div class="absolute top-8 left-20 w-32 h-0.5 bg-gradient-to-r from-cyan-500 to-transparent"></div>
+                            </div>
+                        </div>
+
+                        <div class="absolute top-32 right-28">
+                            <div class="relative">
+                                <div class="w-16 h-16 bg-cyan-500 bg-opacity-20 rounded-xl flex items-center justify-center border border-cyan-500">
+                                    <i class="fa-solid fa-user-pen text-cyan-400 text-xl"></i>
+                                </div>
+                                <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-dark-card border border-cyan-500 px-2 py-0.5 rounded text-nowrap">
+                                    <span class="text-xs text-cyan-400">Mike Johnson</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-24 left-24">
+                            <div class="relative">
+                                <div class="w-16 h-16 bg-blue-500 bg-opacity-20 rounded-xl flex items-center justify-center border border-blue-500">
+                                    <i class="fa-solid fa-key text-blue-400 text-xl"></i>
+                                </div>
+                                <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-dark-card border border-blue-500 px-2 py-0.5 rounded text-nowrap">
+                                    <span class="text-xs text-blue-400">AI Marketing</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-32 right-32">
+                            <div class="relative">
+                                <div class="w-16 h-16 bg-blue-500 bg-opacity-20 rounded-xl flex items-center justify-center border border-blue-500">
+                                    <i class="fa-solid fa-magnifying-glass text-blue-400 text-xl"></i>
+                                </div>
+                                <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-dark-card border border-blue-500 px-2 py-0.5 rounded text-nowrap">
+                                    <span class="text-xs text-blue-400">SEO Tools</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="absolute top-1/2 right-20 transform -translate-y-1/2">
+                            <div class="relative">
+                                <div class="w-16 h-16 bg-red-500 bg-opacity-20 rounded-xl flex items-center justify-center border border-red-500">
+                                    <i class="fa-solid fa-chess text-red-400 text-xl"></i>
+                                </div>
+                                <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-dark-card border border-red-500 px-2 py-0.5 rounded text-nowrap">
+                                    <span class="text-xs text-red-400">Competitor A</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="absolute top-1/2 left-20 transform -translate-y-1/2">
+                            <div class="relative">
+                                <div class="w-16 h-16 bg-electric-purple bg-opacity-20 rounded-xl flex items-center justify-center border border-electric-purple">
+                                    <i class="fa-solid fa-robot text-electric-purple text-xl"></i>
+                                </div>
+                                <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-dark-card border border-electric-purple px-2 py-0.5 rounded text-nowrap">
+                                    <span class="text-xs text-electric-purple">UX Pilot</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none">
+                            <line x1="50%" y1="50%" x2="20%" y2="15%" stroke="url(#gradient1)" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+                            <line x1="50%" y1="50%" x2="80%" y2="25%" stroke="url(#gradient1)" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+                            <line x1="50%" y1="50%" x2="15%" y2="70%" stroke="url(#gradient2)" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+                            <line x1="50%" y1="50%" x2="80%" y2="65%" stroke="url(#gradient2)" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+                            <line x1="50%" y1="50%" x2="85%" y2="50%" stroke="url(#gradient3)" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+                            <line x1="50%" y1="50%" x2="15%" y2="50%" stroke="url(#gradient4)" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+                            <defs>
+                                <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#00D9FF;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#00D9FF;stop-opacity:0" />
+                                </linearGradient>
+                                <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:0" />
+                                </linearGradient>
+                                <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#EF4444;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#EF4444;stop-opacity:0" />
+                                </linearGradient>
+                                <linearGradient id="gradient4" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#A855F7;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#A855F7;stop-opacity:0" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center space-x-6">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-cyan-500 rounded-full"></div>
+                            <span class="text-xs text-gray-400">Journalists (8)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                            <span class="text-xs text-gray-400">Keywords (23)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <span class="text-xs text-gray-400">Competitors (5)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-electric-purple rounded-full"></div>
+                            <span class="text-xs text-gray-400">AI Models (4)</span>
+                        </div>
+                    </div>
+                    <span class="text-xs text-gray-500">Last updated: 2 minutes ago</span>
+                </div>
+            </div>
+
+            <div id="citation-feed-section" class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-white mb-1">Live Citation Feed</h2>
+                        <p class="text-sm text-gray-400">Real-time tracking of AI model citations across UX Pilot, Perplexity, UX Pilot, and Gemini</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="px-3 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs font-medium flex items-center">
+                            <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                            Live
+                        </span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-electric-purple transition-colors">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fa-solid fa-comment text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-semibold text-white">UX Pilot Citation</h3>
+                                    <p class="text-xs text-gray-500">2 minutes ago</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-electric-purple bg-opacity-20 text-electric-purple rounded text-xs font-medium">AEO Win</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-2">Your article "AI Marketing Strategies 2024" was cited in response to: "What are the best AI marketing tools?"</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <span class="text-xs text-gray-500">Position: #2</span>
+                                <span class="text-xs text-gray-500">Context Quality: 9.2/10</span>
+                                <span class="text-xs text-gray-500">Est. Views: 1.2K</span>
+                            </div>
+                            <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">View Details →</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-electric-purple transition-colors">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center">
+                                    <i class="fa-solid fa-magnifying-glass text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-semibold text-white">Perplexity Citation</h3>
+                                    <p class="text-xs text-gray-500">8 minutes ago</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-electric-purple bg-opacity-20 text-electric-purple rounded text-xs font-medium">AEO Win</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-2">Your guide on "SEO vs AEO" featured prominently in search results for answer engine optimization queries.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <span class="text-xs text-gray-500">Position: #1</span>
+                                <span class="text-xs text-gray-500">Context Quality: 9.8/10</span>
+                                <span class="text-xs text-gray-500">Est. Views: 2.4K</span>
+                            </div>
+                            <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">View Details →</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-electric-purple transition-colors">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
+                                    <i class="fa-solid fa-brain text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-semibold text-white">UX Pilot Citation</h3>
+                                    <p class="text-xs text-gray-500">15 minutes ago</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-electric-purple bg-opacity-20 text-electric-purple rounded text-xs font-medium">AEO Win</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-2">Your whitepaper referenced in technical discussion about enterprise AI implementation strategies.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <span class="text-xs text-gray-500">Position: #3</span>
+                                <span class="text-xs text-gray-500">Context Quality: 8.7/10</span>
+                                <span class="text-xs text-gray-500">Est. Views: 890</span>
+                            </div>
+                            <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">View Details →</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-electric-purple transition-colors">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-red-400 to-orange-500 rounded-lg flex items-center justify-center">
+                                    <i class="fa-brands fa-google text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-semibold text-white">Gemini Citation</h3>
+                                    <p class="text-xs text-gray-500">22 minutes ago</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-electric-purple bg-opacity-20 text-electric-purple rounded text-xs font-medium">AEO Win</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-2">Your case study included in responses about successful digital transformation examples.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <span class="text-xs text-gray-500">Position: #2</span>
+                                <span class="text-xs text-gray-500">Context Quality: 9.1/10</span>
+                                <span class="text-xs text-gray-500">Est. Views: 1.5K</span>
+                            </div>
+                            <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">View Details →</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center justify-center">
+                    <button class="px-4 py-2 bg-dark-bg border border-dark-border text-gray-400 hover:text-white hover:border-gray-600 rounded-lg text-sm transition-colors">
+                        Load More Citations
+                    </button>
+                </div>
+            </div>
+
+            <div id="performance-metrics-grid" class="grid grid-cols-3 gap-6 mb-6">
+                <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Share of Model (SoM)</h3>
+                        <i class="fa-solid fa-chart-pie text-electric-purple"></i>
+                    </div>
+                    <div class="mb-2">
+                        <div class="text-3xl font-bold text-white mb-1">23.4%</div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-green-400 flex items-center">
+                                <i class="fa-solid fa-arrow-up text-xs mr-1"></i> +4.2%
+                            </span>
+                            <span class="text-xs text-gray-500">vs last month</span>
+                        </div>
+                    </div>
+                    <div id="som-chart" style="height: 120px;"></div>
+                </div>
+
+                <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Citation Velocity</h3>
+                        <i class="fa-solid fa-rocket text-cyber-blue"></i>
+                    </div>
+                    <div class="mb-2">
+                        <div class="text-3xl font-bold text-white mb-1">847</div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-green-400 flex items-center">
+                                <i class="fa-solid fa-arrow-up text-xs mr-1"></i> +12.8%
+                            </span>
+                            <span class="text-xs text-gray-500">citations/week</span>
+                        </div>
+                    </div>
+                    <div id="velocity-chart" style="height: 120px;"></div>
+                </div>
+
+                <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Media Coverage</h3>
+                        <i class="fa-solid fa-newspaper text-cyan-400"></i>
+                    </div>
+                    <div class="mb-2">
+                        <div class="text-3xl font-bold text-white mb-1">34</div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-green-400 flex items-center">
+                                <i class="fa-solid fa-arrow-up text-xs mr-1"></i> +8
+                            </span>
+                            <span class="text-xs text-gray-500">mentions this week</span>
+                        </div>
+                    </div>
+                    <div id="coverage-chart" style="height: 120px;"></div>
+                </div>
+            </div>
+
+            <div id="competitive-intelligence" class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-white mb-1">Competitive Intelligence Dashboard</h2>
+                        <p class="text-sm text-gray-400">Track competitor performance across PR, SEO, and AEO channels</p>
+                    </div>
+                    <button class="px-3 py-2 bg-dark-bg border border-dark-border text-gray-400 hover:text-white rounded-lg text-sm transition-colors">
+                        <i class="fa-solid fa-sliders mr-2"></i> Configure
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-dark-border">
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide">Competitor</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide">SoM Score</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide">Citations/Week</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide">Media Mentions</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide">Backlinks</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-dark-border hover:bg-dark-bg transition-colors">
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-cyber-blue to-electric-purple rounded-lg flex items-center justify-center">
+                                            <span class="text-xs font-bold text-white">YB</span>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold text-white">Your Brand</div>
+                                            <div class="text-xs text-green-400">Leading</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">23.4%</div>
+                                    <div class="text-xs text-green-400">+4.2%</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">847</div>
+                                    <div class="text-xs text-green-400">+12.8%</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">34</div>
+                                    <div class="text-xs text-green-400">+8</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">12.4K</div>
+                                    <div class="text-xs text-green-400">+340</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fa-solid fa-arrow-trend-up text-green-400"></i>
+                                        <span class="text-xs text-green-400 font-medium">Strong</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-dark-border hover:bg-dark-bg transition-colors">
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-red-500 bg-opacity-20 rounded-lg flex items-center justify-center border border-red-500">
+                                            <span class="text-xs font-bold text-red-400">CA</span>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold text-white">Competitor A</div>
+                                            <div class="text-xs text-gray-500">Tracking</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">19.8%</div>
+                                    <div class="text-xs text-red-400">-1.2%</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">723</div>
+                                    <div class="text-xs text-yellow-400">+2.1%</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">28</div>
+                                    <div class="text-xs text-red-400">-3</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">10.2K</div>
+                                    <div class="text-xs text-yellow-400">+120</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fa-solid fa-arrow-right text-yellow-400"></i>
+                                        <span class="text-xs text-yellow-400 font-medium">Stable</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-dark-border hover:bg-dark-bg transition-colors">
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-orange-500 bg-opacity-20 rounded-lg flex items-center justify-center border border-orange-500">
+                                            <span class="text-xs font-bold text-orange-400">CB</span>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold text-white">Competitor B</div>
+                                            <div class="text-xs text-gray-500">Tracking</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">16.2%</div>
+                                    <div class="text-xs text-green-400">+1.8%</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">612</div>
+                                    <div class="text-xs text-green-400">+8.4%</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">22</div>
+                                    <div class="text-xs text-green-400">+5</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">8.9K</div>
+                                    <div class="text-xs text-green-400">+280</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fa-solid fa-arrow-trend-up text-green-400"></i>
+                                        <span class="text-xs text-green-400 font-medium">Growing</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-dark-border hover:bg-dark-bg transition-colors">
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center border border-blue-500">
+                                            <span class="text-xs font-bold text-blue-400">CC</span>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold text-white">Competitor C</div>
+                                            <div class="text-xs text-gray-500">Tracking</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">14.5%</div>
+                                    <div class="text-xs text-red-400">-2.3%</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">534</div>
+                                    <div class="text-xs text-red-400">-5.2%</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">19</div>
+                                    <div class="text-xs text-red-400">-4</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="text-sm font-semibold text-white">7.6K</div>
+                                    <div class="text-xs text-red-400">-90</div>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fa-solid fa-arrow-trend-down text-red-400"></i>
+                                        <span class="text-xs text-red-400 font-medium">Declining</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="content-performance-section" class="grid grid-cols-2 gap-6 mb-6">
+                <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-white">Top Performing Content</h3>
+                        <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">View All →</button>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3 p-3 bg-dark-bg rounded-lg hover:bg-opacity-70 transition-colors cursor-pointer">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-file-lines text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-semibold text-white truncate">AI Marketing Strategies 2024</h4>
+                                <div class="flex items-center space-x-3 mt-1">
+                                    <span class="text-xs text-gray-500">342 citations</span>
+                                    <span class="text-xs text-gray-500">•</span>
+                                    <span class="text-xs text-green-400">+28% growth</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+                                <span class="text-xs text-white font-semibold">9.8</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3 p-3 bg-dark-bg rounded-lg hover:bg-opacity-70 transition-colors cursor-pointer">
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-book text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-semibold text-white truncate">SEO vs AEO: Complete Guide</h4>
+                                <div class="flex items-center space-x-3 mt-1">
+                                    <span class="text-xs text-gray-500">289 citations</span>
+                                    <span class="text-xs text-gray-500">•</span>
+                                    <span class="text-xs text-green-400">+34% growth</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+                                <span class="text-xs text-white font-semibold">9.5</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3 p-3 bg-dark-bg rounded-lg hover:bg-opacity-70 transition-colors cursor-pointer">
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-chart-line text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-semibold text-white truncate">Enterprise AI Implementation</h4>
+                                <div class="flex items-center space-x-3 mt-1">
+                                    <span class="text-xs text-gray-500">216 citations</span>
+                                    <span class="text-xs text-gray-500">•</span>
+                                    <span class="text-xs text-green-400">+19% growth</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+                                <span class="text-xs text-white font-semibold">9.2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-white">Content Gap Analysis</h3>
+                        <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">Generate Ideas →</button>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-dark-bg rounded-lg border border-yellow-500 border-opacity-30">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-sm font-semibold text-white">Voice Search Optimization</h4>
+                                <span class="px-2 py-0.5 bg-yellow-500 bg-opacity-20 text-yellow-400 rounded text-xs font-medium">High Opportunity</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-2">Competitors have 3x more content. Est. 2.4K monthly citations available.</p>
+                            <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">Create Content Brief →</button>
+                        </div>
+                        <div class="p-3 bg-dark-bg rounded-lg border border-orange-500 border-opacity-30">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-sm font-semibold text-white">AI Ethics & Governance</h4>
+                                <span class="px-2 py-0.5 bg-orange-500 bg-opacity-20 text-orange-400 rounded text-xs font-medium">Medium Opportunity</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-2">Growing topic with limited competition. Est. 1.8K monthly citations.</p>
+                            <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">Create Content Brief →</button>
+                        </div>
+                        <div class="p-3 bg-dark-bg rounded-lg border border-green-500 border-opacity-30">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-sm font-semibold text-white">UX Pilot Plugins Development</h4>
+                                <span class="px-2 py-0.5 bg-green-500 bg-opacity-20 text-green-400 rounded text-xs font-medium">Trending</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-2">Emerging topic with high search velocity. Est. 3.2K monthly citations.</p>
+                            <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">Create Content Brief →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <aside id="right-strategy-panel" class="w-80 bg-dark-card border-l border-dark-border overflow-y-auto" style="height: calc(100vh - 3.5rem);">
+        <div class="p-6">
+            <div id="aeo-health-score" class="mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-semibold text-white uppercase tracking-wide">AEO Health Score</h3>
+                    <i class="fa-solid fa-heart-pulse text-electric-purple"></i>
+                </div>
+                <div class="mb-3">
+                    <div class="flex items-end justify-between mb-2">
+                        <span class="text-4xl font-bold text-white">87</span>
+                        <span class="text-sm text-gray-400">/100</span>
+                    </div>
+                    <div class="w-full h-3 bg-dark-bg rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-cyber-blue via-electric-purple to-pink-500 rounded-full" style="width: 87%;"></div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-green-400 flex items-center">
+                        <i class="fa-solid fa-arrow-up text-xs mr-1"></i> +5 points
+                    </span>
+                    <span class="text-xs text-gray-500">vs last week</span>
+                </div>
+                <div class="mt-4 space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-400">Schema Coverage</span>
+                        <span class="text-white font-medium">94%</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-400">Citation Quality</span>
+                        <span class="text-white font-medium">89%</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-400">Content Freshness</span>
+                        <span class="text-white font-medium">82%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="silo-tax-savings" class="bg-dark-bg border border-dark-border rounded-lg p-4 mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Silo Tax Savings</h3>
+                    <i class="fa-solid fa-piggy-bank text-green-400"></i>
+                </div>
+                <div class="mb-2">
+                    <div class="text-2xl font-bold text-white mb-1">284 hrs</div>
+                    <p class="text-xs text-gray-400">Labor hours saved this month</p>
+                </div>
+                <div class="flex items-center justify-between text-xs mt-3 pt-3 border-t border-dark-border">
+                    <span class="text-gray-400">Est. Cost Savings</span>
+                    <span class="text-green-400 font-semibold">$28,400</span>
+                </div>
+            </div>
+
+            <div id="strategic-roadmap" class="mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold text-white uppercase tracking-wide">Strategic Roadmap</h3>
+                    <button class="text-xs text-cyber-blue hover:text-cyan-300 font-medium">Edit</button>
+                </div>
+                <div class="space-y-4">
+                    <div class="relative pl-6">
+                        <div class="absolute left-0 top-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <i class="fa-solid fa-check text-white text-xs"></i>
+                        </div>
+                        <div class="absolute left-2 top-5 w-0.5 h-full bg-dark-border"></div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-white mb-1">Q1: Foundation</h4>
+                            <p class="text-xs text-gray-400 mb-2">Establish baseline metrics and integrate data sources</p>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex-1 h-1.5 bg-dark-bg rounded-full overflow-hidden">
+                                    <div class="h-full bg-green-500 rounded-full" style="width: 100%;"></div>
+                                </div>
+                                <span class="text-xs text-green-400 font-medium">100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative pl-6">
+                        <div class="absolute left-0 top-1 w-4 h-4 bg-cyber-blue rounded-full flex items-center justify-center animate-pulse">
+                            <div class="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                        <div class="absolute left-2 top-5 w-0.5 h-full bg-dark-border"></div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-white mb-1">Q2: Optimization</h4>
+                            <p class="text-xs text-gray-400 mb-2">Scale AEO efforts and automate PR workflows</p>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex-1 h-1.5 bg-dark-bg rounded-full overflow-hidden">
+                                    <div class="h-full bg-cyber-blue rounded-full" style="width: 67%;"></div>
+                                </div>
+                                <span class="text-xs text-cyber-blue font-medium">67%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative pl-6">
+                        <div class="absolute left-0 top-1 w-4 h-4 bg-dark-border rounded-full"></div>
+                        <div class="absolute left-2 top-5 w-0.5 h-full bg-dark-border"></div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-500 mb-1">Q3: Expansion</h4>
+                            <p class="text-xs text-gray-500 mb-2">Expand to new markets and content verticals</p>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex-1 h-1.5 bg-dark-bg rounded-full overflow-hidden">
+                                    <div class="h-full bg-gray-600 rounded-full" style="width: 0%;"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 font-medium">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative pl-6">
+                        <div class="absolute left-0 top-1 w-4 h-4 bg-dark-border rounded-full"></div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-500 mb-1">Q4: Dominance</h4>
+                            <p class="text-xs text-gray-500 mb-2">Achieve market leadership in SoM metrics</p>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex-1 h-1.5 bg-dark-bg rounded-full overflow-hidden">
+                                    <div class="h-full bg-gray-600 rounded-full" style="width: 0%;"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 font-medium">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="kpi-targets" class="bg-dark-bg border border-dark-border rounded-lg p-4 mb-6">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Monthly Targets</h3>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs text-gray-400">SoM Growth</span>
+                            <span class="text-xs text-white font-medium">23.4% / 25%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-dark-card rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-cyber-blue to-electric-purple rounded-full" style="width: 93.6%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs text-gray-400">Citation Velocity</span>
+                            <span class="text-xs text-white font-medium">847 / 900</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-dark-card rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full" style="width: 94.1%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs text-gray-400">Media Mentions</span>
+                            <span class="text-xs text-white font-medium">34 / 40</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-dark-card rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quick-actions" class="mb-6">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Quick Actions</h3>
+                <div class="space-y-2">
+                    <button class="w-full px-4 py-3 bg-dark-bg border border-dark-border hover:border-cyber-blue text-left rounded-lg transition-colors group">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-cyan-500 bg-opacity-20 rounded-lg flex items-center justify-center group-hover:bg-opacity-30 transition-colors">
+                                <i class="fa-solid fa-robot text-cyan-400 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-white">AI Content Audit</div>
+                                <div class="text-xs text-gray-500">Analyze all content for AEO</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-600 text-xs"></i>
+                        </div>
+                    </button>
+                    <button class="w-full px-4 py-3 bg-dark-bg border border-dark-border hover:border-electric-purple text-left rounded-lg transition-colors group">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center group-hover:bg-opacity-30 transition-colors">
+                                <i class="fa-solid fa-newspaper text-electric-purple text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-white">PR Campaign</div>
+                                <div class="text-xs text-gray-500">Launch automated outreach</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-600 text-xs"></i>
+                        </div>
+                    </button>
+                    <button class="w-full px-4 py-3 bg-dark-bg border border-dark-border hover:border-blue-500 text-left rounded-lg transition-colors group">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center group-hover:bg-opacity-30 transition-colors">
+                                <i class="fa-solid fa-chart-line text-blue-400 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-white">SEO Deep Scan</div>
+                                <div class="text-xs text-gray-500">Identify optimization gaps</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-600 text-xs"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="recent-alerts" class="bg-dark-bg border border-dark-border rounded-lg p-4">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Recent Alerts</h3>
+                <div class="space-y-3">
+                    <div class="flex items-start space-x-2">
+                        <div class="w-6 h-6 bg-yellow-500 bg-opacity-20 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fa-solid fa-exclamation text-yellow-400 text-xs"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-white mb-1">Competitor launched new content series</p>
+                            <span class="text-xs text-gray-500">15 min ago</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <div class="w-6 h-6 bg-green-500 bg-opacity-20 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fa-solid fa-check text-green-400 text-xs"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-white mb-1">New citation from UX Pilot detected</p>
+                            <span class="text-xs text-gray-500">1 hour ago</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <div class="w-6 h-6 bg-blue-500 bg-opacity-20 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fa-solid fa-info text-blue-400 text-xs"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-white mb-1">Weekly report ready for review</p>
+                            <span class="text-xs text-gray-500">2 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<div id="copilot-ghost" class="fixed bottom-6 right-6 z-50">
+    <button class="w-14 h-14 bg-gradient-to-br from-cyber-blue to-electric-purple rounded-full shadow-2xl shadow-cyan-500/50 flex items-center justify-center hover:scale-110 transition-transform group">
+        <i class="fa-solid fa-robot text-white text-xl group-hover:animate-pulse"></i>
+    </button>
+    <div class="absolute bottom-16 right-0 bg-dark-card border border-cyber-blue rounded-lg p-3 shadow-xl w-64 hidden group-hover:block">
+        <p class="text-xs text-white mb-2">👋 Hi! I'm your AI Co-Pilot. Ask me anything about your data.</p>
+        <div class="flex space-x-1">
+            <button class="flex-1 px-2 py-1 bg-dark-bg border border-dark-border text-xs text-gray-400 hover:text-white rounded transition-colors">
+                Show insights
+            </button>
+            <button class="flex-1 px-2 py-1 bg-cyber-blue text-dark-bg text-xs font-medium rounded hover:bg-cyan-400 transition-colors">
+                Ask question
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+window.addEventListener('load', function() {
+    try {
+        const somData = [{
+            type: 'scatter',
+            mode: 'lines',
+            x: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            y: [19.2, 20.8, 22.1, 23.4],
+            line: { color: '#A855F7', width: 3 },
+            fill: 'tozeroy',
+            fillcolor: 'rgba(168, 85, 247, 0.1)'
+        }];
+        
+        const somLayout = {
+            margin: { t: 10, r: 10, b: 30, l: 30 },
+            plot_bgcolor: '#13131A',
+            paper_bgcolor: '#13131A',
+            xaxis: { showgrid: false, color: '#6B7280', tickfont: { size: 10 } },
+            yaxis: { showgrid: true, gridcolor: '#1F1F28', color: '#6B7280', tickfont: { size: 10 } },
+            showlegend: false
+        };
+        
+        Plotly.newPlot('som-chart', somData, somLayout, {responsive: true, displayModeBar: false, displaylogo: false});
+
+        const velocityData = [{
+            type: 'bar',
+            x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            y: [112, 134, 128, 145, 118, 89, 121],
+            marker: { color: '#00D9FF' }
+        }];
+        
+        const velocityLayout = {
+            margin: { t: 10, r: 10, b: 30, l: 30 },
+            plot_bgcolor: '#13131A',
+            paper_bgcolor: '#13131A',
+            xaxis: { showgrid: false, color: '#6B7280', tickfont: { size: 10 } },
+            yaxis: { showgrid: true, gridcolor: '#1F1F28', color: '#6B7280', tickfont: { size: 10 } },
+            showlegend: false
+        };
+        
+        Plotly.newPlot('velocity-chart', velocityData, velocityLayout, {responsive: true, displayModeBar: false, displaylogo: false});
+
+        const coverageData = [{
+            type: 'scatter',
+            mode: 'lines+markers',
+            x: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            y: [22, 26, 31, 34],
+            line: { color: '#00D9FF', width: 2 },
+            marker: { size: 6, color: '#00D9FF' }
+        }];
+        
+        const coverageLayout = {
+            margin: { t: 10, r: 10, b: 30, l: 30 },
+            plot_bgcolor: '#13131A',
+            paper_bgcolor: '#13131A',
+            xaxis: { showgrid: false, color: '#6B7280', tickfont: { size: 10 } },
+            yaxis: { showgrid: true, gridcolor: '#1F1F28', color: '#6B7280', tickfont: { size: 10 } },
+            showlegend: false
+        };
+        
+        Plotly.newPlot('coverage-chart', coverageData, coverageLayout, {responsive: true, displayModeBar: false, displaylogo: false});
+        
+    } catch(e) {
+        console.error('Chart rendering error:', e);
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+{
+  "$schema": "../schemas/pr-work-surface.schema.json",
+  "version": "1.0.0",
+  "surface": "pr-work-surface",
+  "description": "PR Work Surface V1 contract - Influence Orchestration System",
+  "canonReference": [
+    "/docs/canon/PR_PILLAR_MODEL.md",
+    "/docs/canon/PR_WORK_SURFACE_CONTRACT.md",
+    "/docs/canon/CITEMIND_SYSTEM.md"
+  ],
+  "tabs": [
+    { "id": "overview", "label": "Overview", "route": "/app/pr" },
+    { "id": "database", "label": "Database", "route": "/app/pr/database" },
+    { "id": "pitches", "label": "Pitches", "route": "/app/pr/pitches" },
+    { "id": "coverage", "label": "Coverage", "route": "/app/pr/coverage" },
+    { "id": "distribution", "label": "Distribution", "route": "/app/pr/distribution" },
+    { "id": "settings", "label": "Settings", "route": "/app/pr/settings" }
+  ],
+  "entities": {
+    "mediaContact": {
+      "fields": [
+        { "key": "id", "type": "uuid", "required": true },
+        { "key": "entityType", "type": "enum", "values": ["journalist", "podcast", "influencer", "kol", "outlet"], "required": true },
+        { "key": "name", "type": "string", "required": true },
+        { "key": "email", "type": "string", "required": false },
+        { "key": "outlet", "type": "string", "required": false },
+        { "key": "beats", "type": "string[]", "required": false },
+        { "key": "topicCurrency", "type": "number", "min": 0, "max": 100, "description": "Freshness decay indicator" },
+        { "key": "preferredChannels", "type": "enum[]", "values": ["email", "social", "form", "phone"] },
+        { "key": "relationshipStage", "type": "enum", "values": ["cold", "warm", "engaged", "advocate"] },
+        { "key": "pitchEligibilityScore", "type": "number", "min": 0, "max": 100 },
+        { "key": "lastInteraction", "type": "datetime", "required": false },
+        { "key": "lastMention", "type": "datetime", "required": false },
+        { "key": "lastCitation", "type": "datetime", "required": false },
+        { "key": "aiCitationScore", "type": "number", "min": 0, "max": 100, "description": "CiteMind Engine 3 score" }
+      ]
+    },
+    "pitch": {
+      "fields": [
+        { "key": "id", "type": "uuid", "required": true },
+        { "key": "contactId", "type": "uuid", "required": true },
+        { "key": "subject", "type": "string", "required": true },
+        { "key": "body", "type": "string", "required": true },
+        { "key": "personalizationScore", "type": "number", "min": 0, "max": 100 },
+        { "key": "status", "type": "enum", "values": ["draft", "scheduled", "sent", "opened", "replied", "declined"] },
+        { "key": "sentAt", "type": "datetime", "required": false },
+        { "key": "followUpCount", "type": "number", "default": 0 }
+      ]
+    },
+    "coverage": {
+      "fields": [
+        { "key": "id", "type": "uuid", "required": true },
+        { "key": "url", "type": "string", "required": true },
+        { "key": "headline", "type": "string", "required": true },
+        { "key": "outlet", "type": "string", "required": true },
+        { "key": "tier", "type": "enum", "values": ["t1", "t2", "t3", "trade", "niche"] },
+        { "key": "sentiment", "type": "enum", "values": ["positive", "neutral", "negative"] },
+        { "key": "publishedAt", "type": "datetime", "required": true },
+        { "key": "citationDetected", "type": "boolean", "default": false },
+        { "key": "attributedPitchId", "type": "uuid", "required": false }
+      ]
+    },
+    "distribution": {
+      "fields": [
+        { "key": "id", "type": "uuid", "required": true },
+        { "key": "releaseId", "type": "uuid", "required": true },
+        { "key": "track", "type": "enum", "values": ["citemind_aeo", "legacy_wire"], "required": true },
+        { "key": "status", "type": "enum", "values": ["draft", "pending_approval", "distributed", "failed"] },
+        { "key": "cost", "type": "number", "description": "Cost in cents for legacy wire" },
+        { "key": "distributedAt", "type": "datetime", "required": false }
+      ]
+    }
+  },
+  "automationCeilings": {
+    "pitchSend": { "modeCeiling": "manual", "rationale": "External, irreversible, relationship impact" },
+    "wireDistribution": { "modeCeiling": "manual", "rationale": "External, costly, compliance implications" },
+    "followUpSend": { "modeCeiling": "manual", "rationale": "Relationship sensitive" },
+    "pitchDraft": { "modeCeiling": "copilot", "rationale": "AI assist, human review" },
+    "newsroomPublish": { "modeCeiling": "copilot", "rationale": "External but controlled" },
+    "coverageMonitoring": { "modeCeiling": "autopilot", "rationale": "Read-only" },
+    "journalistResearch": { "modeCeiling": "autopilot", "rationale": "Internal only" },
+    "citemindAudioTransformation": { "modeCeiling": "manual", "rationale": "V1 constraint: audio never autopilot" }
+  },
+  "distributionTracks": {
+    "track1": {
+      "id": "citemind_aeo",
+      "label": "CiteMind AEO Push",
+      "description": "AI-optimized distribution via Pravado Newsroom",
+      "defaultEnabled": true,
+      "features": [
+        "Pravado Newsroom publish",
+        "NewsArticle schema auto-generation",
+        "IndexNow notification",
+        "Citation tracking enabled"
+      ],
+      "cost": 0
+    },
+    "track2": {
+      "id": "legacy_wire",
+      "label": "Legacy Wire Distribution",
+      "description": "Traditional wire service distribution",
+      "defaultEnabled": false,
+      "requiresExplicitConfirmation": true,
+      "planGated": true,
+      "minimumPlan": "growth",
+      "exampleCost": 14900,
+      "features": [
+        "Bloomberg Terminal distribution",
+        "Yahoo Finance syndication",
+        "AP/Reuters pickup potential",
+        "SEC compliance ready"
+      ]
+    }
+  },
+  "guardrails": {
+    "personalizationMinimum": 40,
+    "followUpLimitPerWeek": 2,
+    "dailyPitchCap": { "starter": 10, "growth": 50, "pro": 200 },
+    "newContactRateWarning": 20
+  }
+}

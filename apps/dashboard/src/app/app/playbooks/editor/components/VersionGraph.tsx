@@ -89,7 +89,8 @@ export function VersionGraph({ playbookId, onCommitSelect }: VersionGraphProps) 
   useEffect(() => {
     const loadDAG = async () => {
       try {
-        const response = await fetch(`/api/v1/playbooks/${playbookId}/commits/dag`);
+        // Gate 1A: Use route handler, not direct backend call
+        const response = await fetch(`/api/playbooks/${playbookId}/commits/dag`);
         const data = await response.json();
 
         if (data.success && data.data?.dag) {

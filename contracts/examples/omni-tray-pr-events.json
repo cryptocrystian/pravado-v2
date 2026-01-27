@@ -1,0 +1,141 @@
+{
+  "$schema": "../schemas/omni-tray-events.schema.json",
+  "version": "1.0.0",
+  "surface": "omni-tray",
+  "scope": "pr-pillar",
+  "description": "Omni-Tray event contracts for PR Work Surface - defines which actions trigger tray notifications",
+  "canonReference": [
+    "/docs/canon/PR_WORK_SURFACE_CONTRACT.md",
+    "/docs/canon/AUTOMATION_MODES_UX.md"
+  ],
+  "eventTypes": {
+    "action_required": {
+      "description": "User action is needed to proceed",
+      "urgencyLevels": ["low", "medium", "high", "critical"],
+      "displayBehavior": "persist_until_resolved",
+      "allowDismiss": true
+    },
+    "approval_required": {
+      "description": "AI-generated content awaiting human approval",
+      "urgencyLevels": ["medium", "high"],
+      "displayBehavior": "persist_until_resolved",
+      "allowDismiss": false,
+      "requiresExplicitAction": true
+    },
+    "risk_detected": {
+      "description": "System detected potential issue requiring attention",
+      "urgencyLevels": ["low", "medium", "high"],
+      "displayBehavior": "persist_with_timeout",
+      "timeoutSeconds": 86400,
+      "allowDismiss": true
+    }
+  },
+  "prActionsOmniTrayEligibility": {
+    "mayInvokeOmniTray": [
+      {
+        "action": "pitch_approval_needed",
+        "eventType": "approval_required",
+        "trigger": "AI-drafted pitch ready for review",
+        "urgency": "medium",
+        "cta": "Review Draft"
+      },
+      {
+        "action": "follow_up_window",
+        "eventType": "action_required",
+        "trigger": "Optimal follow-up window reached (5-7 days post-send)",
+        "urgency": "medium",
+        "cta": "Draft Follow-up"
+      },
+      {
+        "action": "journalist_inquiry",
+        "eventType": "action_required",
+        "trigger": "Inbound inquiry detected requiring response",
+        "urgency": "high",
+        "cta": "Draft Response"
+      },
+      {
+        "action": "coverage_triage",
+        "eventType": "action_required",
+        "trigger": "New coverage detected requiring attribution",
+        "urgency": "medium",
+        "cta": "Review & Attribute"
+      },
+      {
+        "action": "relationship_decay",
+        "eventType": "risk_detected",
+        "trigger": "Contact relationship score declining",
+        "urgency": "low",
+        "cta": "View Contact"
+      },
+      {
+        "action": "data_hygiene_review",
+        "eventType": "approval_required",
+        "trigger": "CiteMind detected contact data change",
+        "urgency": "medium",
+        "cta": "Review Update"
+      },
+      {
+        "action": "scheduled_send_pending",
+        "eventType": "action_required",
+        "trigger": "Scheduled send approaching, requires manual confirmation",
+        "urgency": "high",
+        "cta": "Confirm Send"
+      }
+    ],
+    "mayNotInvokeOmniTray": [
+      {
+        "action": "coverage_monitoring",
+        "reason": "Background process, no user action needed"
+      },
+      {
+        "action": "journalist_research",
+        "reason": "Internal enrichment, no interruption warranted"
+      },
+      {
+        "action": "pitch_draft_creation",
+        "reason": "User-initiated, already in focus"
+      },
+      {
+        "action": "contact_view",
+        "reason": "Navigation, not an event"
+      },
+      {
+        "action": "report_generation",
+        "reason": "Background process, notify via different channel"
+      }
+    ]
+  },
+  "eventPayloadSchema": {
+    "required": ["eventId", "eventType", "action", "title", "urgency", "createdAt"],
+    "properties": {
+      "eventId": { "type": "uuid" },
+      "eventType": { "type": "enum", "values": ["action_required", "approval_required", "risk_detected"] },
+      "action": { "type": "string" },
+      "title": { "type": "string", "maxLength": 80 },
+      "description": { "type": "string", "maxLength": 200 },
+      "urgency": { "type": "enum", "values": ["low", "medium", "high", "critical"] },
+      "cta": { "type": "string", "maxLength": 30 },
+      "targetRoute": { "type": "string" },
+      "relatedEntityId": { "type": "uuid" },
+      "relatedEntityType": { "type": "enum", "values": ["contact", "pitch", "coverage", "distribution"] },
+      "copilotReasoning": { "type": "string", "description": "Explanation for AI-triggered events" },
+      "createdAt": { "type": "datetime" },
+      "expiresAt": { "type": "datetime", "required": false }
+    }
+  },
+  "integrationPoints": {
+    "todoHooks": [
+      "// TODO: Implement Omni-Tray event dispatch from PRInbox.tsx when item added",
+      "// TODO: Implement Omni-Tray event dispatch from PRPitches.tsx when approval needed",
+      "// TODO: Implement Omni-Tray event dispatch from PRDistribution.tsx for scheduled sends",
+      "// TODO: Implement Omni-Tray dismiss/resolve handlers",
+      "// TODO: Wire up event subscription in layout for tray updates"
+    ],
+    "futureConsiderations": [
+      "Sound/haptic feedback for critical events",
+      "Badge count persistence across sessions",
+      "Event grouping for related actions",
+      "Snooze functionality per event type"
+    ]
+  }
+}
