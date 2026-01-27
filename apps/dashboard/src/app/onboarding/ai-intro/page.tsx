@@ -310,8 +310,8 @@ export default function AIIntroPage() {
         throw new Error('No active session. Please sign in again.');
       }
 
-      // Create organization with onboarding context
-      const response = await fetch('/api/v1/orgs', {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch('/api/orgs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

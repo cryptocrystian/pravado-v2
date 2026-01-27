@@ -32,7 +32,8 @@ export default function PlaybooksPage() {
       if (statusFilter) params.append('status', statusFilter);
       if (searchQuery) params.append('q', searchQuery);
 
-      const response = await fetch(`/api/v1/playbooks?${params.toString()}`, {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch(`/api/playbooks?${params.toString()}`, {
         credentials: 'include',
       });
 
@@ -52,7 +53,8 @@ export default function PlaybooksPage() {
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch('/api/v1/playbooks/templates', {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch('/api/playbooks/templates', {
         credentials: 'include',
       });
 
@@ -69,7 +71,8 @@ export default function PlaybooksPage() {
 
   const createFromTemplate = async (template: PlaybookRuntimeTemplate) => {
     try {
-      const response = await fetch('/api/v1/playbooks', {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch('/api/playbooks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

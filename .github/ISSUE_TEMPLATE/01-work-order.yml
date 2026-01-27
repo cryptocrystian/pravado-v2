@@ -1,0 +1,58 @@
+name: "Work Order (Canon-Bound)"
+description: "Implementation task bound to canon sections and contracts."
+title: "WORK: <surface> — <short description>"
+labels: ["work"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        All work must cite canon + acceptance criteria. If it changes product meaning, file an AMENDMENT instead.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: UX Surface
+      options:
+        - Command Center
+        - PR Work Surface
+        - Content Work Surface
+        - SEO Work Surface
+        - Orchestration Calendar
+        - Analytics & Reporting
+        - Omni-Tray
+        - Contracts
+        - Infra/CI
+    validations:
+      required: true
+  - type: textarea
+    id: canon
+    attributes:
+      label: Canon references
+      description: List file + section headings that define this work.
+      placeholder: "/docs/canon/CORE_UX_FLOWS.md § FLOW 1 — PR CORE WORKFLOW"
+    validations:
+      required: true
+  - type: textarea
+    id: contracts
+    attributes:
+      label: Contract references
+      description: Schemas/examples/OpenAPI endpoints affected (if applicable).
+      placeholder: "/contracts/schemas/action_card.json"
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Bullet list. Must be testable.
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test plan
+      description: How you will validate (unit/contract/e2e/visual).
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / constraints
+      description: Any risk, dependencies, rollout notes.

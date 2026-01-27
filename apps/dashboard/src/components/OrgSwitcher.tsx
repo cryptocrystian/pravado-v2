@@ -47,13 +47,13 @@ export function OrgSwitcher({ currentOrg, allOrgs }: OrgSwitcherProps) {
         throw new Error('Not authenticated');
       }
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const response = await fetch(`${apiUrl}/api/v1/orgs/join-demo`, {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch('/api/orgs/join-demo', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
         },
+        credentials: 'include',
       });
 
       const data = await response.json();

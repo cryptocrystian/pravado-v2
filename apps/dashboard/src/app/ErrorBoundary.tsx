@@ -55,9 +55,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
    */
   private async logErrorToApi(error: Error, errorInfo: ErrorInfo): Promise<void> {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
-      await fetch(`${apiUrl}/api/v1/logs/client`, {
+      // Gate 1A: Use route handler, not direct backend call
+      await fetch('/api/logs/client', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

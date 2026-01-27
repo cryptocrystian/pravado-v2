@@ -1,0 +1,402 @@
+{
+  "generated_at": "2026-01-12T10:00:00.000Z",
+  "layout_seed": "acme-corp-2026-01-12",
+  "nodes": [
+    {
+      "id": "n_brand_acme",
+      "kind": "brand",
+      "label": "Acme Corp",
+      "zone": "authority",
+      "pillar": "pr",
+      "meta": {
+        "domain": "acme.com",
+        "industry": "MarTech",
+        "visibility_score": 72,
+        "citation_count_30d": 47
+      }
+    },
+    {
+      "id": "n_journalist_sarah_chen",
+      "kind": "journalist",
+      "label": "Sarah Chen",
+      "zone": "signal",
+      "pillar": "pr",
+      "meta": {
+        "outlet": "TechCrunch",
+        "beat": "AI/ML, Marketing Technology",
+        "tier": 1,
+        "relationship_score": 0.85,
+        "last_contact": "2026-01-02T14:30:00.000Z",
+        "articles_30d": 12
+      }
+    },
+    {
+      "id": "n_journalist_mike_rivers",
+      "kind": "journalist",
+      "label": "Mike Rivers",
+      "zone": "signal",
+      "pillar": "pr",
+      "meta": {
+        "outlet": "VentureBeat",
+        "beat": "Enterprise Software",
+        "tier": 1,
+        "relationship_score": 0.72,
+        "last_contact": "2025-12-15T10:00:00.000Z",
+        "articles_30d": 8
+      }
+    },
+    {
+      "id": "n_journalist_emma_wong",
+      "kind": "journalist",
+      "label": "Emma Wong",
+      "zone": "signal",
+      "pillar": "pr",
+      "meta": {
+        "outlet": "Forbes",
+        "beat": "CMO Network, Marketing Innovation",
+        "tier": 1,
+        "relationship_score": 0.45,
+        "last_contact": null,
+        "articles_30d": 6
+      }
+    },
+    {
+      "id": "n_outlet_techcrunch",
+      "kind": "outlet",
+      "label": "TechCrunch",
+      "zone": "signal",
+      "pillar": "pr",
+      "meta": {
+        "domain": "techcrunch.com",
+        "tier": 1,
+        "domain_authority": 94,
+        "monthly_visitors": 12000000,
+        "coverage_count_90d": 3
+      }
+    },
+    {
+      "id": "n_outlet_venturebeat",
+      "kind": "outlet",
+      "label": "VentureBeat",
+      "zone": "signal",
+      "pillar": "pr",
+      "meta": {
+        "domain": "venturebeat.com",
+        "tier": 1,
+        "domain_authority": 91,
+        "monthly_visitors": 8500000,
+        "coverage_count_90d": 2
+      }
+    },
+    {
+      "id": "n_outlet_forbes",
+      "kind": "outlet",
+      "label": "Forbes",
+      "zone": "signal",
+      "pillar": "pr",
+      "meta": {
+        "domain": "forbes.com",
+        "tier": 1,
+        "domain_authority": 95,
+        "monthly_visitors": 85000000,
+        "coverage_count_90d": 1
+      }
+    },
+    {
+      "id": "n_model_chatgpt",
+      "kind": "ai_model",
+      "label": "ChatGPT",
+      "zone": "growth",
+      "pillar": "seo",
+      "meta": {
+        "provider": "OpenAI",
+        "version": "GPT-4o",
+        "citation_frequency": "high",
+        "brand_mentions_30d": 23,
+        "sentiment": 0.78
+      }
+    },
+    {
+      "id": "n_model_perplexity",
+      "kind": "ai_model",
+      "label": "Perplexity",
+      "zone": "growth",
+      "pillar": "seo",
+      "meta": {
+        "provider": "Perplexity AI",
+        "version": "Sonar",
+        "citation_frequency": "medium",
+        "brand_mentions_30d": 15,
+        "sentiment": 0.82
+      }
+    },
+    {
+      "id": "n_model_claude",
+      "kind": "ai_model",
+      "label": "Claude",
+      "zone": "growth",
+      "pillar": "seo",
+      "meta": {
+        "provider": "Anthropic",
+        "version": "Claude 3.5",
+        "citation_frequency": "medium",
+        "brand_mentions_30d": 9,
+        "sentiment": 0.85
+      }
+    },
+    {
+      "id": "n_topic_ai_marketing",
+      "kind": "topic",
+      "label": "AI Marketing Tools",
+      "zone": "growth",
+      "pillar": "content",
+      "meta": {
+        "search_volume": 14800,
+        "trend": "up",
+        "brand_authority": 0.67,
+        "competitor_coverage": 12
+      }
+    },
+    {
+      "id": "n_topic_evi",
+      "kind": "topic",
+      "label": "Earned Visibility Index",
+      "zone": "growth",
+      "pillar": "content",
+      "meta": {
+        "search_volume": 320,
+        "trend": "up",
+        "brand_authority": 0.92,
+        "competitor_coverage": 0
+      }
+    },
+    {
+      "id": "n_topic_marketing_ops",
+      "kind": "topic",
+      "label": "Marketing Operations",
+      "zone": "growth",
+      "pillar": "content",
+      "meta": {
+        "search_volume": 8900,
+        "trend": "flat",
+        "brand_authority": 0.54,
+        "competitor_coverage": 24
+      }
+    },
+    {
+      "id": "n_competitor_clearbit",
+      "kind": "competitor",
+      "label": "Clearbit",
+      "zone": "exposure",
+      "pillar": "seo",
+      "meta": {
+        "domain": "clearbit.com",
+        "visibility_score": 81,
+        "share_of_voice": 0.18,
+        "recent_activity": "high"
+      }
+    },
+    {
+      "id": "n_competitor_hubspot",
+      "kind": "competitor",
+      "label": "HubSpot",
+      "zone": "exposure",
+      "pillar": "seo",
+      "meta": {
+        "domain": "hubspot.com",
+        "visibility_score": 94,
+        "share_of_voice": 0.32,
+        "recent_activity": "high"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_sarah_techcrunch",
+      "from": "n_journalist_sarah_chen",
+      "to": "n_outlet_techcrunch",
+      "rel": "writes_for",
+      "strength": 1.0,
+      "pillar": "pr"
+    },
+    {
+      "id": "e_sarah_brand",
+      "from": "n_journalist_sarah_chen",
+      "to": "n_brand_acme",
+      "rel": "covers",
+      "strength": 0.85,
+      "pillar": "pr"
+    },
+    {
+      "id": "e_sarah_ai_marketing",
+      "from": "n_journalist_sarah_chen",
+      "to": "n_topic_ai_marketing",
+      "rel": "covers",
+      "strength": 0.88,
+      "pillar": "pr"
+    },
+    {
+      "id": "e_mike_venturebeat",
+      "from": "n_journalist_mike_rivers",
+      "to": "n_outlet_venturebeat",
+      "rel": "writes_for",
+      "strength": 1.0,
+      "pillar": "pr"
+    },
+    {
+      "id": "e_emma_forbes",
+      "from": "n_journalist_emma_wong",
+      "to": "n_outlet_forbes",
+      "rel": "writes_for",
+      "strength": 1.0,
+      "pillar": "pr"
+    },
+    {
+      "id": "e_brand_techcrunch",
+      "from": "n_brand_acme",
+      "to": "n_outlet_techcrunch",
+      "rel": "mentioned_in",
+      "strength": 0.78,
+      "pillar": "pr"
+    },
+    {
+      "id": "e_brand_topic_evi",
+      "from": "n_brand_acme",
+      "to": "n_topic_evi",
+      "rel": "authority_on",
+      "strength": 0.92,
+      "pillar": "content"
+    },
+    {
+      "id": "e_brand_topic_ops",
+      "from": "n_brand_acme",
+      "to": "n_topic_marketing_ops",
+      "rel": "authority_on",
+      "strength": 0.54,
+      "pillar": "content"
+    },
+    {
+      "id": "e_brand_chatgpt",
+      "from": "n_brand_acme",
+      "to": "n_model_chatgpt",
+      "rel": "cited_by",
+      "strength": 0.73,
+      "pillar": "seo"
+    },
+    {
+      "id": "e_brand_perplexity",
+      "from": "n_brand_acme",
+      "to": "n_model_perplexity",
+      "rel": "cited_by",
+      "strength": 0.68,
+      "pillar": "seo"
+    },
+    {
+      "id": "e_brand_claude",
+      "from": "n_brand_acme",
+      "to": "n_model_claude",
+      "rel": "cited_by",
+      "strength": 0.52,
+      "pillar": "seo"
+    },
+    {
+      "id": "e_clearbit_ai_marketing",
+      "from": "n_competitor_clearbit",
+      "to": "n_topic_ai_marketing",
+      "rel": "competes_on",
+      "strength": 0.71,
+      "pillar": "seo"
+    },
+    {
+      "id": "e_hubspot_ops",
+      "from": "n_competitor_hubspot",
+      "to": "n_topic_marketing_ops",
+      "rel": "competes_on",
+      "strength": 0.89,
+      "pillar": "seo"
+    },
+    {
+      "id": "e_clearbit_brand",
+      "from": "n_competitor_clearbit",
+      "to": "n_brand_acme",
+      "rel": "competes",
+      "strength": 0.65,
+      "pillar": "seo"
+    },
+    {
+      "id": "e_hubspot_brand",
+      "from": "n_competitor_hubspot",
+      "to": "n_brand_acme",
+      "rel": "competes",
+      "strength": 0.78,
+      "pillar": "seo"
+    }
+  ],
+  "action_impacts": {
+    "act_01H8X9Y2Z3A4B5C6D7E8F9G0": {
+      "driver_node": "n_journalist_sarah_chen",
+      "impacted_nodes": [
+        "n_journalist_sarah_chen",
+        "n_outlet_techcrunch",
+        "n_brand_acme",
+        "n_topic_ai_marketing"
+      ],
+      "impacted_edges": [
+        "e_sarah_techcrunch",
+        "e_sarah_brand",
+        "e_sarah_ai_marketing",
+        "e_brand_techcrunch"
+      ]
+    },
+    "act_02J9K0L1M2N3O4P5Q6R7S8T9": {
+      "driver_node": "n_topic_ai_marketing",
+      "impacted_nodes": [
+        "n_topic_ai_marketing",
+        "n_brand_acme",
+        "n_competitor_clearbit"
+      ],
+      "impacted_edges": [
+        "e_clearbit_ai_marketing",
+        "e_clearbit_brand"
+      ]
+    },
+    "act_03U0V1W2X3Y4Z5A6B7C8D9E0": {
+      "driver_node": "n_topic_evi",
+      "impacted_nodes": [
+        "n_topic_evi",
+        "n_brand_acme",
+        "n_model_chatgpt",
+        "n_model_perplexity"
+      ],
+      "impacted_edges": [
+        "e_brand_topic_evi",
+        "e_brand_chatgpt",
+        "e_brand_perplexity"
+      ]
+    },
+    "act_04F1G2H3I4J5K6L7M8N9O0P1": {
+      "driver_node": "n_topic_marketing_ops",
+      "impacted_nodes": [
+        "n_topic_marketing_ops",
+        "n_brand_acme",
+        "n_competitor_hubspot"
+      ],
+      "impacted_edges": [
+        "e_brand_topic_ops",
+        "e_hubspot_ops",
+        "e_hubspot_brand"
+      ]
+    },
+    "act_05Q2R3S4T5U6V7W8X9Y0Z1A2": {
+      "driver_node": "n_journalist_mike_rivers",
+      "impacted_nodes": [
+        "n_journalist_mike_rivers",
+        "n_outlet_venturebeat",
+        "n_brand_acme"
+      ],
+      "impacted_edges": [
+        "e_mike_venturebeat"
+      ]
+    }
+  }
+}

@@ -1,8 +1,8 @@
 import type { Config } from 'tailwindcss';
 
 /**
- * Tailwind Configuration for Pravado Design System v2
- * Canonical source: docs/design-system/pravado_design_system_v2_ai_first_standard.md
+ * Tailwind Configuration for Pravado Design System v3
+ * Canonical source: docs/canon/DS_v3_1_EXPRESSION.md
  */
 const config: Config = {
   darkMode: ['class'],

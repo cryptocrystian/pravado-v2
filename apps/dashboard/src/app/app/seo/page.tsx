@@ -83,10 +83,10 @@ export default function SEOPage() {
         params.set('q', query);
       }
 
-      const response = await fetch(
-        `http://localhost:4000/api/v1/seo/keywords?${params.toString()}`,
-        { credentials: 'include' }
-      );
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch(`/api/seo/keywords?${params.toString()}`, {
+        credentials: 'include',
+      });
       const data = await response.json();
 
       if (data.success) {
@@ -102,7 +102,8 @@ export default function SEOPage() {
   // Fetch opportunities
   const fetchOpportunities = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/v1/seo/opportunities?limit=10', {
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch('/api/seo/opportunities?limit=10', {
         credentials: 'include',
       });
       const data = await response.json();
@@ -119,10 +120,10 @@ export default function SEOPage() {
   const fetchSerpSnapshot = async (keywordId: string) => {
     setSerpLoading(true);
     try {
-      const response = await fetch(
-        `http://localhost:4000/api/v1/seo/serp?keywordId=${keywordId}`,
-        { credentials: 'include' }
-      );
+      // Gate 1A: Use route handler, not direct backend call
+      const response = await fetch(`/api/seo/serp?keywordId=${keywordId}`, {
+        credentials: 'include',
+      });
       const data = await response.json();
 
       if (data.success) {

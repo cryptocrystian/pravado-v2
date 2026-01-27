@@ -7,7 +7,25 @@
       "type": "proposal",
       "priority": "critical",
       "title": "Pitch opportunity: TechCrunch AI coverage",
-      "summary": "Sarah Chen at TechCrunch is writing a piece on AI-powered marketing tools. High relevance match (92%) based on her recent coverage patterns. Recommend immediate outreach with our EVI methodology angle.",
+      "summary": "Sarah Chen at TechCrunch is writing a piece on AI-powered marketing tools. High relevance match based on her recent coverage patterns.",
+      "why": "Sarah Chen has covered AI marketing tools 4 times in the past month, with positive sentiment toward innovative approaches. Her upcoming piece aligns perfectly with our EVI methodology positioning. This is a rare window—her deadline is Friday.",
+      "recommended_next_step": "Send personalized pitch emphasizing our unique EVI methodology and recent customer success metrics.",
+      "signals": [
+        { "label": "Match", "value": "92%", "tone": "positive" },
+        { "label": "Deadline", "value": "<48h", "tone": "warning" },
+        { "label": "Sentiment", "value": "Favorable", "tone": "positive" }
+      ],
+      "guardrails": [],
+      "evidence": [
+        { "type": "citation", "label": "Recent article", "value": "\"AI Marketing Tools Are Finally Delivering\" - Dec 28", "url": "https://techcrunch.com/ai-marketing-tools" },
+        { "type": "metric", "label": "Coverage history", "value": "4 AI marketing pieces in 30 days" },
+        { "type": "metric", "label": "Avg engagement", "value": "12.4K shares per article" }
+      ],
+      "deep_link": {
+        "label": "Open in PR Pitches",
+        "href": "/app/pr/pitches?journalist=sarah-chen&outlet=techcrunch"
+      },
+      "controls": ["schedule", "edit"],
       "confidence": 0.92,
       "impact": 0.87,
       "mode": "copilot",
@@ -17,10 +35,11 @@
         "min_plan": null
       },
       "cta": {
-        "primary": "Review Pitch",
-        "secondary": "Details"
+        "primary": "Send Pitch",
+        "secondary": "Review"
       },
-      "updated_at": "2026-01-07T09:45:00.000Z"
+      "updated_at": "2026-01-07T09:45:00.000Z",
+      "evi_driver": "visibility"
     },
     {
       "id": "act_02J9K0L1M2N3O4P5Q6R7S8T9",
@@ -28,7 +47,24 @@
       "type": "alert",
       "priority": "high",
       "title": "Content gap detected: AI citation optimization",
-      "summary": "Competitor Clearbit published 3 pieces on AI citations this week. Your coverage is 0. SAGE recommends a pillar piece to capture emerging search intent.",
+      "summary": "Competitor Clearbit published 3 pieces on AI citations this week. Your coverage is 0.",
+      "why": "AI models are increasingly citing Clearbit's content for 'citation optimization' queries. Without content in this space, you're losing both SEO traffic and AI referrals. The topic is gaining momentum—search volume up 340% this quarter.",
+      "recommended_next_step": "Generate a pillar page brief targeting 'AI citation optimization' to establish authority.",
+      "signals": [
+        { "label": "Gap", "value": "0 vs 3", "tone": "critical" },
+        { "label": "Search↑", "value": "+340%", "tone": "positive" },
+        { "label": "AI refs", "value": "0", "tone": "warning" }
+      ],
+      "guardrails": ["AI content generation requires Pro plan"],
+      "evidence": [
+        { "type": "url", "label": "Clearbit article", "value": "How to Optimize for AI Citations", "url": "https://clearbit.com/blog/ai-citations" },
+        { "type": "metric", "label": "Search volume", "value": "12,400/mo (up from 2,800)" }
+      ],
+      "deep_link": {
+        "label": "Open in Content Hub",
+        "href": "/app/content/briefs?topic=ai-citation-optimization"
+      },
+      "controls": ["edit"],
       "confidence": 0.78,
       "impact": 0.65,
       "mode": "manual",
@@ -39,9 +75,10 @@
       },
       "cta": {
         "primary": "Generate Brief",
-        "secondary": "Snooze"
+        "secondary": "Review"
       },
-      "updated_at": "2026-01-07T08:30:00.000Z"
+      "updated_at": "2026-01-07T08:30:00.000Z",
+      "evi_driver": "momentum"
     },
     {
       "id": "act_03U0V1W2X3Y4Z5A6B7C8D9E0",
@@ -49,7 +86,24 @@
       "type": "task",
       "priority": "medium",
       "title": "Keyword cluster optimization ready",
-      "summary": "14 keywords in the 'marketing automation' cluster have optimization opportunities. Estimated traffic uplift: +2,400 monthly visits. Auto-execution available.",
+      "summary": "14 keywords in the 'marketing automation' cluster have optimization opportunities.",
+      "why": "Your pages rank positions 4-10 for these keywords but have thin content compared to top 3 results. Adding 200-400 words of targeted content per page could move 8+ keywords into top 3 positions.",
+      "recommended_next_step": "Review the optimization plan and approve auto-execution for low-risk pages.",
+      "signals": [
+        { "label": "Keywords", "value": "14", "tone": "neutral" },
+        { "label": "Traffic↑", "value": "+2.4K/mo", "tone": "positive" },
+        { "label": "Risk", "value": "Low", "tone": "positive" }
+      ],
+      "evidence": [
+        { "type": "metric", "label": "Current avg position", "value": "6.2" },
+        { "type": "metric", "label": "Target avg position", "value": "2.8" },
+        { "type": "diff", "label": "Content delta", "value": "Avg 320 words needed per page" }
+      ],
+      "deep_link": {
+        "label": "Open in SEO Command",
+        "href": "/app/seo/clusters/marketing-automation"
+      },
+      "controls": ["schedule"],
       "confidence": 0.85,
       "impact": 0.72,
       "mode": "autopilot",
@@ -60,9 +114,10 @@
       },
       "cta": {
         "primary": "Execute",
-        "secondary": "Details"
+        "secondary": "Review"
       },
-      "updated_at": "2026-01-07T07:15:00.000Z"
+      "updated_at": "2026-01-07T07:15:00.000Z",
+      "evi_driver": "authority"
     },
     {
       "id": "act_04F1G2H3I4J5K6L7M8N9O0P1",
@@ -70,7 +125,24 @@
       "type": "alert",
       "priority": "critical",
       "title": "Crisis signal: Negative sentiment spike",
-      "summary": "Social listening detected 340% increase in negative mentions around 'data privacy'. 3 journalists have requested comment. Immediate response recommended.",
+      "summary": "Social listening detected 340% increase in negative mentions around 'data privacy'.",
+      "why": "A viral tweet from @TechWatchdog mentioned a perceived privacy issue with your platform. 3 journalists have already requested comment. Without a response, this could escalate to major outlet coverage.",
+      "recommended_next_step": "Review the Crisis Hub and approve the prepared holding statement.",
+      "signals": [
+        { "label": "Mentions", "value": "+340%", "tone": "critical" },
+        { "label": "Journalists", "value": "3 waiting", "tone": "warning" },
+        { "label": "Time", "value": "2h ago", "tone": "warning" }
+      ],
+      "guardrails": ["Requires legal review before public statement"],
+      "evidence": [
+        { "type": "url", "label": "Source tweet", "value": "@TechWatchdog thread (42K impressions)", "url": "https://twitter.com/techwatchdog/status/123" },
+        { "type": "metric", "label": "Sentiment delta", "value": "-67% in 2 hours" }
+      ],
+      "deep_link": {
+        "label": "Open Crisis Hub",
+        "href": "/app/pr/crisis?incident=data-privacy-2026-01"
+      },
+      "controls": ["assign"],
       "confidence": 0.95,
       "impact": 0.93,
       "mode": "manual",
@@ -81,9 +153,10 @@
       },
       "cta": {
         "primary": "View Crisis Hub",
-        "secondary": "Details"
+        "secondary": "Review"
       },
-      "updated_at": "2026-01-07T10:02:00.000Z"
+      "updated_at": "2026-01-07T10:02:00.000Z",
+      "evi_driver": "visibility"
     },
     {
       "id": "act_05Q2R3S4T5U6V7W8X9Y0Z1A2",
@@ -91,7 +164,23 @@
       "type": "proposal",
       "priority": "low",
       "title": "Blog post optimization suggestions",
-      "summary": "5 existing posts could benefit from refreshed statistics and internal linking. Low effort, moderate SEO impact.",
+      "summary": "5 existing posts could benefit from refreshed statistics and internal linking.",
+      "why": "These posts still receive 2.1K monthly visits but have outdated 2024 statistics. Updating them is low effort and could improve both engagement and SEO performance.",
+      "recommended_next_step": "Review the list and batch-approve updates for posts with outdated stats.",
+      "signals": [
+        { "label": "Posts", "value": "5", "tone": "neutral" },
+        { "label": "Traffic", "value": "2.1K/mo", "tone": "neutral" },
+        { "label": "Effort", "value": "Low", "tone": "positive" }
+      ],
+      "evidence": [
+        { "type": "metric", "label": "Oldest stat", "value": "March 2024" },
+        { "type": "metric", "label": "Est. time", "value": "15 min total" }
+      ],
+      "deep_link": {
+        "label": "Open in Content Hub",
+        "href": "/app/content/optimize?filter=outdated-stats"
+      },
+      "controls": ["schedule", "edit"],
       "confidence": 0.67,
       "impact": 0.45,
       "mode": "copilot",
@@ -102,9 +191,10 @@
       },
       "cta": {
         "primary": "Review List",
-        "secondary": "Snooze"
+        "secondary": "Review"
       },
-      "updated_at": "2026-01-06T16:00:00.000Z"
+      "updated_at": "2026-01-06T16:00:00.000Z",
+      "evi_driver": "momentum"
     },
     {
       "id": "act_06B3C4D5E6F7G8H9I0J1K2L3",
@@ -112,7 +202,24 @@
       "type": "alert",
       "priority": "high",
       "title": "Ranking drop: 'marketing ops platform'",
-      "summary": "Position dropped from #3 to #8 in past 7 days. Competitor HubSpot published new content targeting this term. Counter-strategy recommended.",
+      "summary": "Position dropped from #3 to #8 in past 7 days. Competitor HubSpot published new content.",
+      "why": "HubSpot's new comparison page is outranking you with fresher content and more comprehensive feature coverage. Your page hasn't been updated in 4 months. This keyword drives 1,200 monthly visits.",
+      "recommended_next_step": "Analyze the competitive gap and update your page with current differentiators.",
+      "signals": [
+        { "label": "Position", "value": "#3→#8", "tone": "critical" },
+        { "label": "Traffic risk", "value": "-1.2K/mo", "tone": "warning" },
+        { "label": "Competitor", "value": "HubSpot", "tone": "neutral" }
+      ],
+      "guardrails": ["Competitive analysis requires Growth plan"],
+      "evidence": [
+        { "type": "url", "label": "HubSpot page", "value": "Marketing Ops Platform Comparison", "url": "https://hubspot.com/marketing-ops" },
+        { "type": "metric", "label": "Your page age", "value": "4 months since update" }
+      ],
+      "deep_link": {
+        "label": "Open in SEO Command",
+        "href": "/app/seo/keywords/marketing-ops-platform"
+      },
+      "controls": ["edit"],
       "confidence": 0.88,
       "impact": 0.79,
       "mode": "manual",
@@ -123,9 +230,10 @@
       },
       "cta": {
         "primary": "Analyze",
-        "secondary": "Details"
+        "secondary": "Review"
       },
-      "updated_at": "2026-01-07T06:00:00.000Z"
+      "updated_at": "2026-01-07T06:00:00.000Z",
+      "evi_driver": "authority"
     },
     {
       "id": "act_07M4N5O6P7Q8R9S0T1U2V3W4",
@@ -133,7 +241,23 @@
       "type": "task",
       "priority": "medium",
       "title": "Follow-up: VentureBeat interview",
-      "summary": "Interview with VentureBeat scheduled for tomorrow. Prep materials generated. Review talking points and approve key messages.",
+      "summary": "Interview with VentureBeat scheduled for tomorrow. Prep materials generated.",
+      "why": "The interviewer, Michael Nuñez, focuses on AI ethics and responsible tech. Emphasizing your transparency initiatives and data governance will resonate. His articles average 8K shares.",
+      "recommended_next_step": "Review talking points and approve the key messages before the interview.",
+      "signals": [
+        { "label": "Time", "value": "Tomorrow", "tone": "warning" },
+        { "label": "Prep", "value": "Ready", "tone": "positive" },
+        { "label": "Reach", "value": "8K avg", "tone": "positive" }
+      ],
+      "evidence": [
+        { "type": "metric", "label": "Interviewer focus", "value": "AI ethics, responsible tech" },
+        { "type": "citation", "label": "Recent piece", "value": "\"The AI Transparency Imperative\" - Jan 2" }
+      ],
+      "deep_link": {
+        "label": "Open in PR Interviews",
+        "href": "/app/pr/interviews/venturebeat-michael-nunez"
+      },
+      "controls": ["edit", "assign"],
       "confidence": 0.91,
       "impact": 0.68,
       "mode": "copilot",
@@ -144,9 +268,10 @@
       },
       "cta": {
         "primary": "Approve",
-        "secondary": "Edit"
+        "secondary": "Review"
       },
-      "updated_at": "2026-01-07T09:00:00.000Z"
+      "updated_at": "2026-01-07T09:00:00.000Z",
+      "evi_driver": "visibility"
     },
     {
       "id": "act_08X5Y6Z7A8B9C0D1E2F3G4H5",
@@ -154,7 +279,24 @@
       "type": "proposal",
       "priority": "high",
       "title": "AI model citation opportunity",
-      "summary": "Claude and Perplexity are citing competitor content for 'EVI metrics'. Publishing authoritative content could capture these citations within 2-4 weeks.",
+      "summary": "Claude and Perplexity are citing competitor content for 'EVI metrics'.",
+      "why": "AI models currently cite HubSpot and Salesforce when asked about EVI metrics—a term you pioneered. Publishing authoritative, structured content could redirect these citations to your brand within 2-4 weeks.",
+      "recommended_next_step": "Create a comprehensive EVI metrics guide optimized for AI citation patterns.",
+      "signals": [
+        { "label": "Citations", "value": "0 (you)", "tone": "critical" },
+        { "label": "Competitors", "value": "12 refs", "tone": "warning" },
+        { "label": "Opportunity", "value": "High", "tone": "positive" }
+      ],
+      "guardrails": ["AI citation tracking requires Enterprise plan"],
+      "evidence": [
+        { "type": "citation", "label": "Claude response", "value": "\"According to HubSpot's EVI framework...\"" },
+        { "type": "metric", "label": "AI query volume", "value": "~2,400/mo for EVI-related terms" }
+      ],
+      "deep_link": {
+        "label": "Open in Content Hub",
+        "href": "/app/content/ai-citations?term=evi-metrics"
+      },
+      "controls": ["edit"],
       "confidence": 0.82,
       "impact": 0.86,
       "mode": "copilot",
@@ -165,9 +307,10 @@
       },
       "cta": {
         "primary": "Create Strategy",
-        "secondary": "Details"
+        "secondary": "Review"
       },
-      "updated_at": "2026-01-07T08:00:00.000Z"
+      "updated_at": "2026-01-07T08:00:00.000Z",
+      "evi_driver": "visibility"
     }
   ]
 }

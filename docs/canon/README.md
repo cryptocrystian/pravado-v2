@@ -1,5 +1,5 @@
 # PRAVADO v2 — CANON INDEX
-Version: v1.1
+Version: v1.5
 
 ## Purpose
 This index lists every canonical file that must exist, what it's for, and its category.
@@ -56,6 +56,45 @@ These files define WHAT Pravado is and HOW it should work:
 | `DS_v3_1_EXPRESSION.md` | Design tokens and expression |
 | `AUTOMATION_MODES_UX.md` | Manual/Copilot/Autopilot modes |
 | `PLANS_LIMITS_ENTITLEMENTS.md` | Pricing tiers and limits |
+| `PR_PILLAR_MODEL.md` | PR pillar operating model (Influence Orchestration) |
+| `CONTENT_PILLAR_CANON.md` | Authoritative specification for Content work surface |
+| `CONTENT_PILLAR_SYSTEM.md` | Content pillar system model (objects, views, agents, playbooks) |
+
+---
+
+## C) V1 Freeze Contracts
+These files define FROZEN behavior for V1 release:
+
+| File | Purpose |
+|------|---------|
+| `COMMAND_CENTER_CONTRACT.md` | V1 freeze contract for Command Center |
+| `COMMAND_CENTER_GOLDEN_FLOW.md` | THE single prioritized user flow |
+| `ENTITY_MAP_CONTRACT.md` | Entity Map semantic contract |
+| `ORCHESTRATION_CALENDAR_CONTRACT.md` | Calendar semantic contract |
+| `EARNED_VISIBILITY_INDEX.md` | EVI calculation and display |
+| `ENTITY-MAP-SAGE.md` | Entity Map SAGE-native specification |
+| `PR_WORK_SURFACE_CONTRACT.md` | V1 freeze contract for PR Work Surface |
+| `PR_INBOX_CONTRACT.md` | V1.1 PR Inbox / Work Queue specification |
+| `PR_CONTACT_LEDGER_CONTRACT.md` | V1.1 Contact Timeline / Relationship Ledger specification |
+| `PR_PITCH_PIPELINE_CONTRACT.md` | V1.1 Pitch Pipeline specification |
+| `CONTENT_WORK_SURFACE_CONTRACT.md` | V1 freeze contract for Content Work Surface |
+
+---
+
+## D) Defensible IP Canon
+These files define trade secrets and patent-eligible systems:
+
+| File | Purpose |
+|------|---------|
+| `SAGE_OPERATING_MODEL.md` | SAGE internal operating model (RESTRICTED) |
+| `AUTOMATE_EXECUTION_MODEL.md` | AUTOMATE execution model (RESTRICTED) |
+| `EVI_MATHEMATICS.md` | EVI calculation mathematics (RESTRICTED) |
+| `INFLUENCE_FIELD_VISUALIZATION.md` | Physics-based visualization (RESTRICTED) |
+| `CITEMIND_SYSTEM.md` | CiteMind multi-engine system (RESTRICTED) |
+| `PATENT_CLAIMS_DRAFT.md` | Patent claim drafts (CONFIDENTIAL) |
+| `TRADE_SECRET_BOUNDARIES.md` | Disclosure classifications (INTERNAL) |
+| `EXECUTIVE_NARRATIVE.md` | CMO/CEO/Investor narrative (PUBLIC) |
+| `SALES_OBJECTIONS.md` | Sales objection handling (PUBLIC)
 
 ---
 

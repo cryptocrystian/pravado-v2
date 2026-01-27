@@ -25,12 +25,19 @@
  */
 
 import { useState } from 'react';
-import type { Citation, GraphEdge, GraphNode, IntelligenceCanvasResponse, NodeKind } from './types';
+import type { Citation, GraphEdge, GraphNode, IntelligenceCanvasResponse, NodeKind, EntityMapResponse } from './types';
+import { EntityMap } from './EntityMap';
 
 interface IntelligenceCanvasPaneProps {
   data: IntelligenceCanvasResponse | null;
   isLoading: boolean;
   error: Error | null;
+  /** v2 Entity Map data */
+  entityMapData?: EntityMapResponse | null;
+  /** Currently hovered action ID from Action Stream */
+  hoveredActionId?: string | null;
+  /** Currently executing action ID (for pulse animation) */
+  executingActionId?: string | null;
 }
 
 // Node kind styling - DS v3 with glows
@@ -388,9 +395,19 @@ function ErrorState({ error }: { error: Error }) {
   );
 }
 
-export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceCanvasPaneProps) {
+export function IntelligenceCanvasPane({
+  data,
+  isLoading,
+  error,
+  entityMapData,
+  hoveredActionId,
+  executingActionId,
+}: IntelligenceCanvasPaneProps) {
   const [focusedNodeId, setFocusedNodeId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('citations');
+
+  // Use EntityMap if data is available, otherwise fall back to legacy NetworkGraph
+  const useEntityMap = !!entityMapData;
 
   if (isLoading) return <LoadingSkeleton />;
   if (error) return <ErrorState error={error} />;
@@ -421,12 +438,24 @@ export function IntelligenceCanvasPane({ data, isLoading, error }: IntelligenceC
           <span className="text-xs text-white/50">Real-time connections</span>
         </div>
         <div className="h-[200px]">
-          <NetworkGraph
-            nodes={data.nodes}
-            edges={data.edges}
-            focusedNodeId={focusedNodeId}
-            onNodeClick={handleNodeClick}
-          />
+          {useEntityMap ? (
+            <EntityMap
+              nodes={entityMapData.nodes}
+              edges={entityMapData.edges}
+              layoutSeed={entityMapData.layout_seed}
+              actionImpacts={entityMapData.action_impacts}
+              hoveredActionId={hoveredActionId ?? null}
+              executingActionId={executingActionId ?? null}
+              onNodeClick={handleNodeClick}
+            />
+          ) : (
+            <NetworkGraph
+              nodes={data.nodes}
+              edges={data.edges}
+              focusedNodeId={focusedNodeId}
+              onNodeClick={handleNodeClick}
+            />
+          )}
         </div>
       </div>
 

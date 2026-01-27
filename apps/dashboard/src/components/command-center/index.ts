@@ -8,12 +8,17 @@
 
 export { TriPaneShell } from './TriPaneShell';
 export { ActionStreamPane } from './ActionStreamPane';
-export { ActionCard, type DensityLevel } from './ActionCard';
+export { ActionCard, type DensityLevel, type ExecutionState } from './ActionCard';
+export { ActionModal } from './ActionModal';
 export { IntelligenceCanvasPane } from './IntelligenceCanvasPane';
 export { StrategyPanelPane } from './StrategyPanelPane';
 export { CalendarPeek } from './CalendarPeek';
-export { ActionPeekDrawer } from './ActionPeekDrawer';
+// Note: ActionPeekDrawer is deprecated - use ActionModal instead
+// export { ActionPeekDrawer } from './ActionPeekDrawer';
 export { CommandCenterTopbar } from './CommandCenterTopbar';
+export { EVIExplainerModal } from './EVIExplainerModal';
+export { EVIForecastPanel } from './EVIForecastPanel';
+export { EntityMap } from './EntityMap';
 
 // Pillar accent system
 export { pillarAccents, priorityStyles, modeStyles, surfaceTokens, cardClasses, getPillarCardClasses } from './pillar-accents';
@@ -28,4 +33,14 @@ export type {
   Pillar,
   Priority,
   Mode,
+  EVIFilterState,
+  EVIDriverType,
+  TopMover,
+  // Entity Map types
+  EntityNode,
+  EntityEdge,
+  EntityZone,
+  EdgeRel,
+  ActionImpactMap,
+  EntityMapResponse,
 } from './types';

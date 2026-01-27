@@ -202,8 +202,9 @@ export function useEditorStream(
 
   /**
    * Connect to SSE stream
+   * Gate 1A: Fetch stream URL from route handler (includes auth token)
    */
-  const connect = useCallback(() => {
+  const connect = useCallback(async () => {
     if (!playbookId || !enabled) {
       return;
     }
@@ -213,13 +214,18 @@ export function useEditorStream(
       eventSourceRef.current.close();
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    const streamUrl = `${apiUrl}/api/v1/playbooks/${playbookId}/editor/stream`;
-
     try {
-      const eventSource = new EventSource(streamUrl, {
-        withCredentials: true,
+      // Gate 1A: Get authenticated stream URL from route handler
+      const response = await fetch(`/api/playbooks/${playbookId}/editor/stream`, {
+        credentials: 'include',
       });
+      const result = await response.json();
+
+      if (!result.success || !result.data?.streamUrl) {
+        throw new Error('Failed to get stream URL');
+      }
+
+      const eventSource = new EventSource(result.data.streamUrl);
 
       eventSourceRef.current = eventSource;
 
@@ -322,14 +328,14 @@ export function useEditorStream(
 
   /**
    * Send cursor update
+   * Gate 1A: Use route handler, not direct backend call
    */
   const sendCursor = useCallback(
     async (position: CursorPosition) => {
       if (!playbookId) return;
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
       try {
-        await fetch(`${apiUrl}/api/v1/playbooks/${playbookId}/editor/cursor`, {
+        await fetch(`/api/playbooks/${playbookId}/editor/cursor`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -344,14 +350,14 @@ export function useEditorStream(
 
   /**
    * Send selection update
+   * Gate 1A: Use route handler, not direct backend call
    */
   const sendSelection = useCallback(
     async (selection: NodeSelection, lock: boolean = false) => {
       if (!playbookId) return;
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
       try {
-        await fetch(`${apiUrl}/api/v1/playbooks/${playbookId}/editor/selection`, {
+        await fetch(`/api/playbooks/${playbookId}/editor/selection`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -366,14 +372,14 @@ export function useEditorStream(
 
   /**
    * Send graph patch
+   * Gate 1A: Use route handler, not direct backend call
    */
   const sendPatch = useCallback(
     async (patch: GraphPatch, graphVersion?: number) => {
       if (!playbookId) return;
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
       try {
-        await fetch(`${apiUrl}/api/v1/playbooks/${playbookId}/editor/graph/patch`, {
+        await fetch(`/api/playbooks/${playbookId}/editor/graph/patch`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

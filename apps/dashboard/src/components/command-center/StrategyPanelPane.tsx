@@ -5,171 +5,302 @@
  * - Layout: COMMAND_CENTER_REFERENCE.png
  * - Design System: DS_V3_REFERENCE.png
  * - Canon: /docs/canon/DS_v3_PRINCIPLES.md
+ * - KPI: /docs/canon/EARNED_VISIBILITY_INDEX.md
  *
- * If this component diverges from the reference images,
- * STOP and request clarification.
+ * CRITICAL: Strategy Panel is DIAGNOSTIC ONLY.
+ * It explains EVI state but contains NO action buttons.
+ * Actions belong in the Action Stream.
  */
 
 /**
- * StrategyPanelPane - Progressive Disclosure Pattern
+ * StrategyPanelPane - EVI North Star Display v1.0
  *
- * DS v3 density-optimized with glanceable design:
- * - Hero: AEO Health Score (large, prominent)
- * - Key metrics grid (4 compact KPIs)
- * - Primary bottleneck highlight
- * - Top 3 recommendations + "View all" drawer trigger
- * - Insights Drawer for full recommendation list
+ * Displays the Earned Visibility Index as the single North Star KPI:
+ * - Hero: EVI score with delta, status band, sparkline
+ * - Driver breakdown: Visibility (40%), Authority (35%), Momentum (25%)
+ * - Expandable metrics per driver
+ * - AI-generated narratives explaining EVI movement
+ * - Upgrade hooks for gated insights
  *
+ * @see /docs/canon/EARNED_VISIBILITY_INDEX.md
  * @see /contracts/examples/strategy-panel.json
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import type {
-  KPI,
+  EarnedVisibilityIndex,
+  EVIDriver,
+  EVIDriverType,
+  EVIFilterState,
+  EVIMetric,
+  EVIStatus,
   Narrative,
-  Pillar,
-  Priority,
-  Recommendation,
+  NarrativeSentiment,
   StrategyPanelResponse,
+  TopMover,
+  Trend,
+  UpgradeHook,
 } from './types';
 
 interface StrategyPanelPaneProps {
   data: StrategyPanelResponse | null;
   isLoading: boolean;
   error: Error | null;
+  /** Callback when user clicks a driver row to filter Action Stream */
+  onDriverFilter?: (filter: EVIFilterState) => void;
+  /** Current active filter (for highlighting active filter source) */
+  activeFilter?: EVIFilterState | null;
 }
 
-// Pillar colors - DS v3
-const pillarColors: Record<Pillar, { text: string; bg: string; border: string }> = {
-  pr: { text: 'text-brand-magenta', bg: 'bg-brand-magenta/10', border: 'border-brand-magenta/30' },
-  content: { text: 'text-brand-iris', bg: 'bg-brand-iris/10', border: 'border-brand-iris/30' },
-  seo: { text: 'text-brand-cyan', bg: 'bg-brand-cyan/10', border: 'border-brand-cyan/30' },
+// EVI Status band colors
+const statusConfig: Record<EVIStatus, { label: string; color: string; bg: string; glow: string }> = {
+  at_risk: { label: 'At Risk', color: 'text-semantic-danger', bg: 'bg-semantic-danger', glow: 'rgba(239,68,68,0.3)' },
+  emerging: { label: 'Emerging', color: 'text-brand-amber', bg: 'bg-brand-amber', glow: 'rgba(245,158,11,0.3)' },
+  competitive: { label: 'Competitive', color: 'text-brand-cyan', bg: 'bg-brand-cyan', glow: 'rgba(6,182,212,0.3)' },
+  dominant: { label: 'Dominant', color: 'text-semantic-success', bg: 'bg-semantic-success', glow: 'rgba(34,197,94,0.3)' },
 };
 
-// Priority styling
-const priorityConfig: Record<Priority, { dot: string; label: string }> = {
-  critical: { dot: 'bg-semantic-danger animate-pulse', label: 'Critical' },
-  high: { dot: 'bg-semantic-warning', label: 'High' },
-  medium: { dot: 'bg-brand-cyan', label: 'Medium' },
-  low: { dot: 'bg-white/30', label: 'Low' },
+// Driver color configuration type
+interface DriverColorConfig {
+  text: string;
+  bg: string;
+  border: string;
+  bar: string;
+}
+
+// Driver colors
+const driverColors: Record<EVIDriverType, DriverColorConfig> = {
+  visibility: { text: 'text-brand-cyan', bg: 'bg-brand-cyan/10', border: 'border-brand-cyan/30', bar: 'bg-brand-cyan' },
+  authority: { text: 'text-brand-iris', bg: 'bg-brand-iris/10', border: 'border-brand-iris/30', bar: 'bg-brand-iris' },
+  momentum: { text: 'text-brand-magenta', bg: 'bg-brand-magenta/10', border: 'border-brand-magenta/30', bar: 'bg-brand-magenta' },
 };
 
-// Hero AEO Health Score Component - Compact
-function AEOHealthScore({ score, breakdown }: { score: number; breakdown: { pr: number; content: number; seo: number } }) {
-  const scoreColor = score >= 80 ? 'text-semantic-success' : score >= 60 ? 'text-brand-amber' : 'text-semantic-danger';
-  const glowColor = score >= 80 ? 'rgba(34,197,94,0.3)' : score >= 60 ? 'rgba(245,158,11,0.3)' : 'rgba(239,68,68,0.3)';
-  const progressColor = score >= 80 ? 'bg-semantic-success' : score >= 60 ? 'bg-brand-amber' : 'bg-semantic-danger';
+// Trend rendering
+function TrendIndicator({ trend, delta, size = 'sm' }: { trend: Trend; delta: number; size?: 'sm' | 'md' }) {
+  const color = trend === 'up' ? 'text-semantic-success' : trend === 'down' ? 'text-semantic-danger' : 'text-white/50';
+  const icon = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→';
+  const formattedDelta = delta >= 0 ? `+${delta.toFixed(1)}` : delta.toFixed(1);
+  const textSize = size === 'md' ? 'text-sm' : 'text-xs';
 
   return (
-    <div className="p-3 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-xs text-white/50 uppercase tracking-wide font-semibold">AEO Health Score</h3>
-        <span className="text-[11px] text-white/30">Updated 2h ago</span> {/* typography-allow: meta */}
+    <span className={`${color} ${textSize} font-medium`}>
+      {icon} {formattedDelta}
+    </span>
+  );
+}
+
+// Sparkline Component
+function Sparkline({ data, color = 'brand-cyan' }: { data: number[]; color?: string }) {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+
+  return (
+    <div className="flex items-end gap-[2px] h-6">
+      {data.map((val, i) => (
+        <div
+          key={i}
+          className={`w-1 rounded-sm bg-${color}/60`}
+          style={{ height: `${Math.max(((val - min) / range) * 100, 15)}%` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// EVI Hero Component
+function EVIHero({ evi }: { evi: EarnedVisibilityIndex }) {
+  const status = statusConfig[evi.status];
+
+  return (
+    <div className="p-4 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-xs text-white/50 uppercase tracking-wide font-semibold">Earned Visibility Index</h3>
+        <span className={`text-[11px] px-2 py-0.5 rounded-full ${status.bg}/20 ${status.color} font-semibold`}>
+          {status.label}
+        </span>
       </div>
 
-      <div className="flex items-center gap-4">
+      {/* Score Display */}
+      <div className="flex items-center gap-6">
         {/* Large Score */}
         <div className="text-center">
-          <div className={`text-4xl font-bold ${scoreColor}`} style={{ textShadow: `0 0 30px ${glowColor}` }}>
-            {score}
+          <div
+            className={`text-5xl font-bold ${status.color}`}
+            style={{ textShadow: `0 0 40px ${status.glow}` }}
+          >
+            {evi.score.toFixed(1)}
           </div>
-          <p className="text-xs text-white/50 mt-0.5">
-            {score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : 'Needs Work'}
-          </p>
+          <div className="flex items-center justify-center gap-2 mt-1">
+            <TrendIndicator trend={evi.trend} delta={evi.delta_7d} size="md" />
+            <span className="text-[11px] text-white/30">7d</span>
+          </div>
         </div>
 
-        {/* Mini breakdown */}
-        <div className="flex-1 space-y-1.5">
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-brand-magenta w-12">PR</span> {/* typography-allow: pillar */}
-            <div className="flex-1 h-1.5 bg-[#1A1A24] rounded-full overflow-hidden">
-              <div className="h-full bg-brand-magenta rounded-full" style={{ width: `${breakdown.pr}%` }} />
-            </div>
-            <span className="text-xs text-white w-6 text-right">{breakdown.pr}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-brand-iris w-12">Content</span> {/* typography-allow: pillar */}
-            <div className="flex-1 h-1.5 bg-[#1A1A24] rounded-full overflow-hidden">
-              <div className="h-full bg-brand-iris rounded-full" style={{ width: `${breakdown.content}%` }} />
-            </div>
-            <span className="text-xs text-white w-6 text-right">{breakdown.content}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-brand-cyan w-12">SEO</span> {/* typography-allow: pillar */}
-            <div className="flex-1 h-1.5 bg-[#1A1A24] rounded-full overflow-hidden">
-              <div className="h-full bg-brand-cyan rounded-full" style={{ width: `${breakdown.seo}%` }} />
-            </div>
-            <span className="text-xs text-white w-6 text-right">{breakdown.seo}</span>
+        {/* Sparkline + 30d delta */}
+        <div className="flex-1">
+          <Sparkline data={evi.sparkline} color={status.color.replace('text-', '')} />
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-[11px] text-white/40">30-day trend</span>
+            <span className={`text-[11px] ${evi.delta_30d >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}>
+              {evi.delta_30d >= 0 ? '+' : ''}{evi.delta_30d.toFixed(1)} pts
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Overall progress bar */}
-      <div className="h-1 bg-[#1A1A24] rounded-full overflow-hidden mt-3">
-        <div className={`h-full ${progressColor} rounded-full transition-all duration-500`} style={{ width: `${score}%` }} />
+      {/* Overall Progress Bar */}
+      <div className="mt-4">
+        <div className="h-1.5 bg-[#1A1A24] rounded-full overflow-hidden">
+          <div
+            className={`h-full ${status.bg} rounded-full transition-all duration-500`}
+            style={{ width: `${evi.score}%` }}
+          />
+        </div>
+        <div className="flex justify-between mt-1">
+          <span className="text-[10px] text-white/30">0</span>
+          <span className="text-[10px] text-white/30">100</span>
+        </div>
       </div>
     </div>
   );
 }
 
-// Compact KPI Card
-function KPICard({ kpi }: { kpi: KPI }) {
-  const trendColor = kpi.trend === 'up' ? 'text-semantic-success' : kpi.trend === 'down' ? 'text-semantic-danger' : 'text-white/50';
-  const trendIcon = kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→';
-  const statusDot = kpi.status === 'healthy' ? 'bg-semantic-success' : kpi.status === 'warning' ? 'bg-semantic-warning' : 'bg-semantic-danger';
-
-  const formattedValue = kpi.max_value === 1 ? `${Math.round(kpi.value * 100)}%` : kpi.value.toLocaleString();
-  const formattedDelta = kpi.delta_7d >= 0 ? `+${kpi.delta_7d}` : `${kpi.delta_7d}`;
-
-  // Sparkline
-  const sparkMax = Math.max(...kpi.sparkline);
-  const sparkMin = Math.min(...kpi.sparkline);
-  const sparkRange = sparkMax - sparkMin || 1;
+// Driver Row Component (Expandable + Filterable)
+function DriverRow({
+  driver,
+  isExpanded,
+  onToggle,
+  onFilter,
+  isFiltered,
+}: {
+  driver: EVIDriver;
+  isExpanded: boolean;
+  onToggle: () => void;
+  onFilter?: () => void;
+  isFiltered?: boolean;
+}) {
+  const colors = driverColors[driver.type];
+  const weightPct = Math.round(driver.weight * 100);
 
   return (
-    <div className="p-2 bg-[#0D0D12] border border-[#1A1A24] rounded-lg hover:border-[#2A2A36] transition-colors">
-      <div className="flex items-center justify-between mb-1">
-        <div className="flex items-center gap-1">
-          <span className={`w-1 h-1 rounded-full ${statusDot}`} />
-          <span className="text-[11px] text-white/50 font-medium truncate">{kpi.label}</span> {/* typography-allow: label */}
+    <div className={`border ${colors.border} rounded-lg overflow-hidden transition-all ${isFiltered ? 'ring-2 ring-brand-cyan/50' : ''}`}>
+      {/* Driver Header - Always visible */}
+      <div className={`w-full p-3 ${colors.bg} flex items-center justify-between`}>
+        <button
+          onClick={onToggle}
+          className="flex items-center gap-3 hover:brightness-110 transition-all flex-1"
+        >
+          <div className={`w-8 h-8 rounded-lg ${colors.bg} border ${colors.border} flex items-center justify-center`}>
+            <span className={`text-lg font-bold ${colors.text}`}>
+              {driver.type === 'visibility' ? 'V' : driver.type === 'authority' ? 'A' : 'M'}
+            </span>
+          </div>
+          <div className="text-left">
+            <div className="flex items-center gap-2">
+              <span className={`text-sm font-semibold ${colors.text}`}>{driver.label}</span>
+              <span className="text-[10px] text-white/40">({weightPct}%)</span>
+            </div>
+            <TrendIndicator trend={driver.trend} delta={driver.delta_7d} />
+          </div>
+        </button>
+
+        <div className="flex items-center gap-2">
+          <span className={`text-2xl font-bold ${colors.text}`}>{driver.score.toFixed(1)}</span>
+          {/* Filter button */}
+          {onFilter && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onFilter();
+              }}
+              className={`p-1.5 rounded-lg transition-all ${
+                isFiltered
+                  ? 'bg-brand-cyan/20 text-brand-cyan'
+                  : 'hover:bg-white/10 text-white/40 hover:text-white/70'
+              }`}
+              title={isFiltered ? 'Clear filter' : `Filter actions by ${driver.label}`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+            </button>
+          )}
+          <button onClick={onToggle} className="p-1 hover:bg-white/10 rounded transition-all">
+            <svg
+              className={`w-4 h-4 text-white/50 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
         </div>
       </div>
-      <div className="flex items-end justify-between">
-        <div>
-          <span className="text-base font-bold text-white">{formattedValue}</span>
-          <span className={`text-[11px] ${trendColor} ml-1`}> {/* typography-allow: trend */}
-            {trendIcon} {formattedDelta}
-          </span>
-        </div>
-        <div className="flex items-end gap-[1px] h-3">
-          {kpi.sparkline.slice(-6).map((val, i) => (
-            <div
-              key={i}
-              className="w-[2px] bg-brand-cyan/50 rounded-sm"
-              style={{ height: `${Math.max(((val - sparkMin) / sparkRange) * 100, 15)}%` }}
-            />
+
+      {/* Expanded Metrics */}
+      {isExpanded && (
+        <div className="p-3 bg-[#0A0A0F] border-t border-[#1A1A24] space-y-2">
+          {driver.metrics.map((metric) => (
+            <MetricRow key={metric.id} metric={metric} driverColors={colors} />
           ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-// Primary Bottleneck Card
-function BottleneckCard({ narrative }: { narrative: Narrative }) {
+// Metric Row Component
+function MetricRow({ metric, driverColors }: { metric: EVIMetric; driverColors: DriverColorConfig }) {
+  const pct = (metric.value / metric.max_value) * 100;
+
   return (
-    <div className="p-2.5 bg-semantic-warning/8 border border-semantic-warning/20 rounded-lg">
+    <div className="p-2 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs text-white/70">{metric.label}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-white">
+            {metric.value}{metric.max_value === 100 ? '' : `/${metric.max_value}`}
+          </span>
+          <TrendIndicator trend={metric.trend} delta={metric.delta_7d} />
+        </div>
+      </div>
+      <div className="h-1 bg-[#1A1A24] rounded-full overflow-hidden">
+        <div
+          className={`h-full ${driverColors.bar} rounded-full`}
+          style={{ width: `${Math.min(pct, 100)}%` }}
+        />
+      </div>
+      <p className="text-[10px] text-white/40 mt-1">{metric.description}</p>
+    </div>
+  );
+}
+
+// Narrative Card Component
+function NarrativeCard({ narrative }: { narrative: Narrative }) {
+  const sentimentConfig: Record<NarrativeSentiment, { bg: string; border: string; icon: string; iconColor: string }> = {
+    positive: { bg: 'bg-semantic-success/8', border: 'border-semantic-success/20', icon: '✓', iconColor: 'text-semantic-success' },
+    warning: { bg: 'bg-semantic-warning/8', border: 'border-semantic-warning/20', icon: '!', iconColor: 'text-semantic-warning' },
+    opportunity: { bg: 'bg-brand-cyan/8', border: 'border-brand-cyan/20', icon: '★', iconColor: 'text-brand-cyan' },
+  };
+  const style = sentimentConfig[narrative.sentiment];
+
+  return (
+    <div className={`p-3 ${style.bg} border ${style.border} rounded-lg`}>
       <div className="flex items-start gap-2">
-        <span className="text-semantic-warning text-sm">⚠</span>
+        <span className={`text-sm ${style.iconColor}`}>{style.icon}</span>
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold text-white mb-0.5">{narrative.title}</h4>
-          <p className="text-xs text-white/50 line-clamp-2">{narrative.body}</p>
-          <div className="flex items-center gap-1.5 mt-1.5">
-            {narrative.pillars.map(pillar => (
-              <span key={pillar} className={`text-[11px] font-bold uppercase ${pillarColors[pillar].text}`}> {/* typography-allow: badge */}
-                {pillar}
+          <h4 className="text-xs font-semibold text-white mb-1">{narrative.title}</h4>
+          <p className="text-[11px] text-white/55 leading-relaxed">{narrative.body}</p>
+          <div className="flex items-center gap-2 mt-2">
+            {narrative.drivers.map((driver) => (
+              <span key={driver} className={`text-[10px] font-bold uppercase ${driverColors[driver].text}`}>
+                {driver}
               </span>
             ))}
+            <span className="text-[10px] text-white/40 ml-auto">{Math.round(narrative.confidence * 100)}% confidence</span>
           </div>
         </div>
       </div>
@@ -177,259 +308,129 @@ function BottleneckCard({ narrative }: { narrative: Narrative }) {
   );
 }
 
-// Compact Recommendation Card
-function RecommendationCard({ rec, onClick }: { rec: Recommendation; onClick?: () => void }) {
-  const priorityStyle = priorityConfig[rec.priority];
+// Upgrade Hook Card Component
+function UpgradeHookCard({ hook }: { hook: UpgradeHook }) {
+  const isBlurred = hook.pattern === 'blurred_insight';
+
+  return (
+    <div className="p-3 bg-[#0D0D12] border border-brand-iris/20 rounded-lg relative overflow-hidden">
+      {isBlurred && (
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-brand-iris/5 to-transparent" />
+      )}
+      <div className="flex items-start gap-2">
+        <span className="text-brand-iris">✦</span>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-xs font-semibold text-white mb-0.5">{hook.feature}</h4>
+          <p className="text-[11px] text-white/55">{hook.message}</p>
+          {hook.sample_value && (
+            <div className={`mt-2 text-xs font-mono ${isBlurred ? 'blur-sm' : ''} text-brand-iris`}>
+              {hook.sample_value}
+            </div>
+          )}
+          <button className="mt-2 text-[11px] text-brand-iris hover:text-brand-iris/80 font-semibold transition-colors">
+            Upgrade to {hook.min_plan} →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Top Mover Card Component
+function TopMoverCard({ mover, onClick }: { mover: TopMover; onClick?: () => void }) {
+  const colors = driverColors[mover.driver];
+  const isPositive = mover.delta_points >= 0;
+  const trendColor = isPositive ? 'text-semantic-success' : 'text-semantic-danger';
+
+  // Evidence type icons
+  const evidenceIcons: Record<string, string> = {
+    citation: '📰',
+    url: '🔗',
+    diff: '📝',
+    metric: '📊',
+  };
 
   return (
     <button
       onClick={onClick}
-      className="w-full p-2 bg-[#0D0D12] border border-[#1A1A24] rounded-lg hover:border-[#2A2A36] transition-colors text-left group"
+      className={`
+        w-full p-2.5 bg-[#0D0D12] border border-[#1A1A24] rounded-lg
+        hover:border-brand-cyan/30 hover:bg-[#0D0D12]/80
+        transition-all text-left group
+      `}
     >
       <div className="flex items-start gap-2">
-        <span className={`w-1.5 h-1.5 mt-1 rounded-full flex-shrink-0 ${priorityStyle.dot}`} />
+        {/* Evidence type icon */}
+        <span className="text-sm">{evidenceIcons[mover.evidence_type] || '📊'}</span>
+
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold text-white line-clamp-1 group-hover:text-brand-cyan transition-colors">{rec.title}</h4>
-          <p className="text-[11px] text-white/50 line-clamp-1 mt-0.5">{rec.description}</p> {/* typography-allow: description */}
+          {/* Driver + Delta */}
+          <div className="flex items-center gap-2 mb-1">
+            <span className={`text-[10px] font-bold uppercase ${colors.text}`}>
+              {mover.driver}
+            </span>
+            <span className={`text-xs font-bold ${trendColor}`}>
+              {isPositive ? '+' : ''}{mover.delta_points.toFixed(1)} pts
+            </span>
+            <span className={`text-[10px] ${mover.trend === 'up' ? 'text-semantic-success' : 'text-semantic-danger'}`}>
+              {mover.trend === 'up' ? '↑' : '↓'}
+            </span>
+          </div>
+
+          {/* Reason */}
+          <p className="text-[11px] text-white/70 line-clamp-2">{mover.reason}</p>
+
+          {/* Deep link hint */}
+          <div className="flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[10px] text-brand-cyan">{mover.deep_link.label}</span>
+            <svg className="w-3 h-3 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
         </div>
-        <span className={`text-[11px] font-bold uppercase ${pillarColors[rec.pillar].text}`}>{rec.pillar}</span> {/* typography-allow: badge */}
       </div>
     </button>
   );
 }
 
-// Monthly Targets Section
-function MonthlyTargets() {
-  const targets = [
-    { label: 'PR Coverage', current: 24, target: 30, pillar: 'pr' as Pillar },
-    { label: 'Content Pieces', current: 8, target: 12, pillar: 'content' as Pillar },
-    { label: 'SEO Tasks', current: 15, target: 20, pillar: 'seo' as Pillar },
-  ];
-
-  return (
-    <div className="p-2.5 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
-      <h3 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Monthly Targets</h3>
-      <div className="space-y-2">
-        {targets.map((t, i) => {
-          const pct = Math.min((t.current / t.target) * 100, 100);
-          return (
-            <div key={i}>
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-xs text-white">{t.label}</span>
-                <span className={`text-[11px] ${pillarColors[t.pillar].text}`}>{t.current}/{t.target}</span> {/* typography-allow: progress */}
-              </div>
-              <div className="h-1 bg-[#1A1A24] rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all ${t.pillar === 'pr' ? 'bg-brand-magenta' : t.pillar === 'content' ? 'bg-brand-iris' : 'bg-brand-cyan'}`}
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// Insights Drawer Component
-function InsightsDrawer({
-  isOpen,
-  onClose,
-  recommendations,
-  narratives,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  recommendations: Recommendation[];
-  narratives: Narrative[];
-}) {
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
-
-  // Prevent body scroll when open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[100]">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Drawer - slides from right */}
-      <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#0D0D12] border-l border-[#1A1A24] shadow-2xl shadow-black/50 overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#1A1A24] bg-[#0A0A0F]">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-brand-iris/10 border border-brand-iris/20 flex items-center justify-center">
-              <svg className="w-4 h-4 text-brand-iris" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-white">Strategy Insights</h2>
-              <p className="text-[11px] text-white/55">All recommendations and AI insights</p> {/* typography-allow: drawer subtitle */}
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 text-white/50 hover:text-white hover:bg-[#1A1A24] rounded-lg transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Content - scrollable */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {/* AI Insights Section */}
-          <div>
-            <h3 className="text-[11px] text-white/55 uppercase tracking-wide font-semibold mb-2 flex items-center gap-1.5"> {/* typography-allow: section header */}
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-iris animate-pulse" />
-              AI Insights
-            </h3>
-            <div className="space-y-2">
-              {narratives.map((narrative) => {
-                const sentimentConfig = {
-                  positive: { bg: 'bg-semantic-success/8', border: 'border-semantic-success/20', icon: '✓', iconColor: 'text-semantic-success' },
-                  warning: { bg: 'bg-semantic-warning/8', border: 'border-semantic-warning/20', icon: '!', iconColor: 'text-semantic-warning' },
-                  opportunity: { bg: 'bg-brand-cyan/8', border: 'border-brand-cyan/20', icon: '★', iconColor: 'text-brand-cyan' },
-                };
-                const style = sentimentConfig[narrative.sentiment];
-
-                return (
-                  <div key={narrative.id} className={`p-3 ${style.bg} border ${style.border} rounded-lg`}>
-                    <div className="flex items-start gap-2">
-                      <span className={`text-sm ${style.iconColor}`}>{style.icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-xs font-semibold text-white mb-1">{narrative.title}</h4>
-                        <p className="text-[11px] text-white/55 leading-relaxed">{narrative.body}</p> {/* typography-allow: narrative body */}
-                        <div className="flex items-center gap-2 mt-2">
-                          {narrative.pillars.map(pillar => (
-                            <span key={pillar} className={`text-[11px] font-bold uppercase ${pillarColors[pillar].text}`}> {/* typography-allow: pillar badge */}
-                              {pillar}
-                            </span>
-                          ))}
-                          <span className="text-[11px] text-white/40 ml-auto">{Math.round(narrative.confidence * 100)}% confidence</span> {/* typography-allow: confidence */}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* All Recommendations Section */}
-          <div>
-            <h3 className="text-[11px] text-white/55 uppercase tracking-wide font-semibold mb-2"> {/* typography-allow: section header */}
-              All Recommendations ({recommendations.length})
-            </h3>
-            <div className="space-y-2">
-              {recommendations.map((rec) => {
-                const priorityStyle = priorityConfig[rec.priority];
-                const effortLabel = rec.effort === 'low' ? 'Quick Win' : rec.effort === 'medium' ? 'Moderate' : 'Major';
-                const impactLabel = rec.impact === 'high' ? 'High Impact' : rec.impact === 'medium' ? 'Medium' : 'Low';
-
-                return (
-                  <div key={rec.id} className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg hover:border-[#2A2A36] transition-colors">
-                    <div className="flex items-start gap-2 mb-2">
-                      <span className={`w-2 h-2 mt-0.5 rounded-full flex-shrink-0 ${priorityStyle.dot}`} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <h4 className="text-xs font-semibold text-white">{rec.title}</h4>
-                          <span className={`text-[11px] font-bold uppercase px-1.5 py-0.5 rounded ${pillarColors[rec.pillar].bg} ${pillarColors[rec.pillar].text}`}> {/* typography-allow: pillar badge */}
-                            {rec.pillar}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-white/55 mt-1">{rec.description}</p> {/* typography-allow: rec description */}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between pt-2 border-t border-[#1A1A24]">
-                      <div className="flex items-center gap-3">
-                        <span className="text-[11px] text-white/55"> {/* typography-allow: effort label */}
-                          Effort: <span className="text-white">{effortLabel}</span>
-                        </span>
-                        <span className="text-[11px] text-white/55"> {/* typography-allow: impact label */}
-                          Impact: <span className={rec.impact === 'high' ? 'text-semantic-success' : 'text-white'}>{impactLabel}</span>
-                        </span>
-                      </div>
-                      <button className={`px-2 py-1 text-[11px] font-semibold rounded ${pillarColors[rec.pillar].bg} ${pillarColors[rec.pillar].text} border ${pillarColors[rec.pillar].border} hover:brightness-110 transition-all`}> {/* typography-allow: action button */}
-                        {rec.action}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="px-4 py-3 border-t border-[#1A1A24] bg-[#0A0A0F]">
-          <p className="text-[11px] text-white/40 text-center"> {/* typography-allow: footer hint */}
-            Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-white/55">Esc</kbd> to close
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+// Loading Skeleton
 function LoadingSkeleton() {
   return (
     <div className="p-3 space-y-3">
-      {/* AEO Score skeleton */}
-      <div className="h-28 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
-      {/* KPIs skeleton */}
-      <div className="grid grid-cols-2 gap-2">
-        {[1, 2, 3, 4].map(i => (
-          <div key={i} className="h-14 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
+      {/* EVI Hero skeleton */}
+      <div className="h-36 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
+      {/* Driver rows skeleton */}
+      <div className="space-y-2">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-16 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
         ))}
       </div>
-      {/* Recommendations skeleton */}
+      {/* Narratives skeleton */}
       <div className="space-y-2">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="h-12 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
+        {[1, 2].map((i) => (
+          <div key={i} className="h-20 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
         ))}
       </div>
     </div>
   );
 }
 
+// Error State
 function ErrorState({ error }: { error: Error }) {
   return (
     <div className="p-3">
       <div className="p-3 bg-semantic-danger/8 border border-semantic-danger/20 rounded-lg">
         <div className="flex items-start gap-2">
           <svg className="w-4 h-4 text-semantic-danger flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clipRule="evenodd"
+            />
           </svg>
           <div>
             <h4 className="text-xs font-semibold text-semantic-danger">Failed to load strategy</h4>
-            <p className="text-[11px] text-white/50 mt-0.5">{error.message}</p> {/* typography-allow: error meta */}
+            <p className="text-[11px] text-white/50 mt-0.5">{error.message}</p>
           </div>
         </div>
       </div>
@@ -437,85 +438,138 @@ function ErrorState({ error }: { error: Error }) {
   );
 }
 
-export function StrategyPanelPane({ data, isLoading, error }: StrategyPanelPaneProps) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+export function StrategyPanelPane({
+  data,
+  isLoading,
+  error,
+  onDriverFilter,
+  activeFilter,
+}: StrategyPanelPaneProps) {
+  const [expandedDrivers, setExpandedDrivers] = useState<Set<EVIDriverType>>(new Set());
 
-  const handleOpenDrawer = useCallback(() => {
-    setIsDrawerOpen(true);
+  const toggleDriver = useCallback((driverType: EVIDriverType) => {
+    setExpandedDrivers((prev) => {
+      const next = new Set(prev);
+      if (next.has(driverType)) {
+        next.delete(driverType);
+      } else {
+        next.add(driverType);
+      }
+      return next;
+    });
   }, []);
 
-  const handleCloseDrawer = useCallback(() => {
-    setIsDrawerOpen(false);
-  }, []);
+  // Handle driver filter click - toggle or clear
+  const handleDriverFilter = useCallback((driverType: EVIDriverType, label: string) => {
+    if (!onDriverFilter) return;
+
+    // If already filtered by this driver, clear it
+    if (activeFilter?.driver === driverType) {
+      onDriverFilter(null as unknown as EVIFilterState);
+    } else {
+      onDriverFilter({
+        driver: driverType,
+        source: 'driver_click',
+        label: `${label} actions`,
+      });
+    }
+  }, [onDriverFilter, activeFilter]);
+
+  // Handle top mover click
+  const handleTopMoverClick = useCallback((mover: TopMover) => {
+    if (!onDriverFilter) return;
+
+    onDriverFilter({
+      driver: mover.driver,
+      pillar: mover.pillar,
+      source: 'top_mover_click',
+      label: `${mover.driver} → ${mover.pillar}`,
+    });
+  }, [onDriverFilter]);
 
   if (isLoading) return <LoadingSkeleton />;
   if (error) return <ErrorState error={error} />;
-  if (!data) return (
-    <div className="p-6 text-center text-white/50">
-      <p className="text-xs">No strategy data available</p>
-    </div>
-  );
+  if (!data) {
+    return (
+      <div className="p-6 text-center text-white/50">
+        <p className="text-xs">No strategy data available</p>
+      </div>
+    );
+  }
 
-  // Calculate AEO score and breakdown (mock)
-  const aeoScore = 87;
-  const aeoBreakdown = { pr: 87, content: 82, seo: 91 };
-  const topKPIs = data.kpis.slice(0, 4);
-  const topRecommendations = data.recommendations.slice(0, 3);
-  const primaryBottleneck = data.narratives.find(n => n.sentiment === 'warning');
+  const { evi, narratives, upgrade_hooks, top_movers } = data;
 
   return (
-    <>
-      <div className="p-3 space-y-3 h-full overflow-y-auto">
-        {/* Hero: AEO Health Score */}
-        <AEOHealthScore score={aeoScore} breakdown={aeoBreakdown} />
+    <div className="p-3 space-y-3 h-full overflow-y-auto">
+      {/* EVI Hero - North Star KPI */}
+      <EVIHero evi={evi} />
 
-        {/* Key Metrics Grid */}
-        <div>
-          <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">Key Metrics</h3> {/* typography-allow: section header */}
-          <div className="grid grid-cols-2 gap-2">
-            {topKPIs.map(kpi => (
-              <KPICard key={kpi.id} kpi={kpi} />
-            ))}
-          </div>
+      {/* Driver Breakdown */}
+      <div>
+        <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">
+          EVI Drivers
+        </h3>
+        <div className="space-y-2">
+          {evi.drivers.map((driver) => (
+            <DriverRow
+              key={driver.type}
+              driver={driver}
+              isExpanded={expandedDrivers.has(driver.type)}
+              onToggle={() => toggleDriver(driver.type)}
+              onFilter={onDriverFilter ? () => handleDriverFilter(driver.type, driver.label) : undefined}
+              isFiltered={activeFilter?.driver === driver.type}
+            />
+          ))}
         </div>
-
-        {/* Primary Bottleneck */}
-        {primaryBottleneck && (
-          <div>
-            <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">Primary Bottleneck</h3> {/* typography-allow: section header */}
-            <BottleneckCard narrative={primaryBottleneck} />
-          </div>
-        )}
-
-        {/* Top Recommendations + View All */}
-        <div>
-          <div className="flex items-center justify-between mb-2 px-0.5">
-            <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold">Recommendations</h3> {/* typography-allow: section header */}
-            <button
-              onClick={handleOpenDrawer}
-              className="text-[11px] text-brand-cyan hover:text-brand-cyan/80 transition-colors" /* typography-allow: link */
-            >
-              View all ({data.recommendations.length}) →
-            </button>
-          </div>
-          <div className="space-y-1.5">
-            {topRecommendations.map(rec => (
-              <RecommendationCard key={rec.id} rec={rec} onClick={handleOpenDrawer} />
-            ))}
-          </div>
-        </div>
-
-        {/* Monthly Targets */}
-        <MonthlyTargets />
       </div>
 
-      {/* Insights Drawer */}
-      <InsightsDrawer
-        isOpen={isDrawerOpen}
-        onClose={handleCloseDrawer}
-        recommendations={data.recommendations}
-        narratives={data.narratives}
-      />
-    </>
+      {/* Top Movers (7d) - EVI Attribution */}
+      {top_movers && top_movers.length > 0 && (
+        <div>
+          <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5 flex items-center gap-1.5">
+            <span className="text-semantic-success">↑</span>
+            Top Movers (7d)
+          </h3>
+          <div className="space-y-1.5">
+            {top_movers.slice(0, 5).map((mover) => (
+              <TopMoverCard
+                key={mover.id}
+                mover={mover}
+                onClick={() => handleTopMoverClick(mover)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* AI Narratives */}
+      {narratives.length > 0 && (
+        <div>
+          <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-iris animate-pulse" />
+            AI Insights
+          </h3>
+          <div className="space-y-2">
+            {narratives.map((narrative) => (
+              <NarrativeCard key={narrative.id} narrative={narrative} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Upgrade Hooks */}
+      {upgrade_hooks.length > 0 && (
+        <div>
+          <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">
+            Unlock More Insights
+          </h3>
+          <div className="space-y-2">
+            {upgrade_hooks.slice(0, 2).map((hook) => (
+              <UpgradeHookCard key={hook.id} hook={hook} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

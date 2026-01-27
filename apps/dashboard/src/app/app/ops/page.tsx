@@ -53,11 +53,12 @@ export default function OpsPage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        // Gate 1A: Use route handlers, not direct backend calls
         const [overviewRes, queueRes] = await Promise.all([
-          fetch('/api/v1/ops/overview?period=24h', {
+          fetch('/api/ops/overview?period=24h', {
             credentials: 'include',
           }),
-          fetch('/api/v1/ops/queue', {
+          fetch('/api/ops/queue', {
             credentials: 'include',
           }),
         ]);
