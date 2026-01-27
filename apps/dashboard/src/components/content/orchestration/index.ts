@@ -20,3 +20,8 @@ export {
   ModeIndicator,
   ModeBehaviorBanner,
 } from './ModeSelector';
+
+export {
+  LivingCanvasEditor,
+  AutopilotDraftPreview,
+} from './LivingCanvasEditor';
