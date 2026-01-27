@@ -207,9 +207,9 @@ function ExplainDrawer({ isOpen, onClose, view }: ExplainDrawerProps) {
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 bottom-0 w-[400px] max-w-full bg-[#13131A] border-l border-[#1F1F28] z-50 shadow-elev-3 overflow-y-auto">
+      <div className="fixed right-0 top-0 bottom-0 w-[400px] max-w-full bg-slate-2 border-l border-border-subtle z-50 shadow-elev-3 overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-[#13131A] border-b border-[#1F1F28] px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-slate-2 border-b border-border-subtle px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-brand-iris/10">
               <svg className="w-5 h-5 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,10 +304,12 @@ export function ContentWorkSurfaceShell({
   const activeViewConfig = VIEW_TABS.find((t) => t.key === activeView);
   const modeConfig = modeTokens[activeViewConfig?.modeCeiling || 'manual'];
 
+  // DS v3 palette tokens (per DS_v3_1_EXPRESSION.md)
+  // dark-bg: #0A0A0F (slate-0), dark-card: #13131A (slate-2), dark-border: #1F1F28
   return (
-    <div className="min-h-screen bg-[#0A0A0F]">
-      {/* Header */}
-      <div className="border-b border-[#1A1A24] bg-gradient-to-b from-[#0D0D12] to-transparent">
+    <div className="min-h-screen bg-slate-0">
+      {/* Header - gradient from slightly elevated to transparent */}
+      <div className="border-b border-[#1A1A24] bg-gradient-to-b from-slate-1 to-transparent">
         <div className="px-6 pt-6 pb-0">
           <div className="max-w-[1600px] mx-auto">
             {/* Title Row */}
@@ -411,7 +413,7 @@ export function ContentWorkSurfaceShell({
         {showRightRail && (
           <div
             className={`
-              hidden lg:flex flex-col border-l border-[#1A1A24] bg-[#0A0A0F]
+              hidden lg:flex flex-col border-l border-[#1A1A24] bg-slate-0
               transition-all duration-300 ease-out shrink-0
               ${rightRailCollapsed ? 'w-12' : 'w-[320px] xl:w-[360px]'}
             `}
@@ -431,7 +433,7 @@ export function ContentWorkSurfaceShell({
               </button>
             ) : (
               <>
-                <div className="flex items-center justify-between px-4 py-3 border-b border-[#1A1A24] bg-gradient-to-r from-[#0D0D12] to-[#0A0A0F]">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-[#1A1A24] bg-gradient-to-r from-slate-1 to-slate-0">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-brand-iris/50" />
                     <h2 className="text-sm font-semibold text-white tracking-tight">Asset Details</h2>
