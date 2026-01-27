@@ -59,3 +59,14 @@ export {
   useContentClusters,
   useContentSignals,
 } from './hooks/useContentData';
+
+// ============================================
+// ORCHESTRATION (Phase 6A)
+// ============================================
+export {
+  OrchestrationEditorShell,
+  type TriggerAction,
+  type EntityChecklistItem,
+  type TargetAIProfile,
+  type OrchestrationEditorShellProps,
+} from './orchestration';
