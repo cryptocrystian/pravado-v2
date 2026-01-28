@@ -38,8 +38,10 @@ import {
   type AIPerceptualState,
   deriveAIPerceptualState,
   AI_PERCEPTUAL_SIGNALS,
-} from '../ai-perception';
-import { AmbientAIIndicator, AIStateDot, AIStateRing } from '../components/AIStateIndicator';
+  AmbientAIIndicator,
+  AIStateDot,
+  AIStateRing,
+} from '@/components/ai';
 
 // ============================================
 // TYPES

@@ -26,6 +26,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import type { InboxItem, InboxItemType, SAGEDimension, Mode } from '../types';
 import { priorityStyles, modeStyles, eviDriverStyles } from '../prWorkSurfaceStyles';
+import {
+  LocalAIIndicator,
+  AIStateDot,
+  deriveAIPerceptualState,
+  deriveUrgencyFromDeadline,
+  type AIPerceptualState,
+} from '@/components/ai';
 
 // ============================================
 // API TYPES & FETCHER
@@ -140,6 +147,42 @@ const SAGE_LABELS: Record<SAGEDimension, { label: string; short: string; descrip
   growth: { label: 'Growth', short: 'G', description: 'Relationship building & momentum' },
   exposure: { label: 'Exposure', short: 'E', description: 'Reach & visibility expansion' },
 };
+
+/**
+ * Derive AI perceptual state for an inbox item.
+ * Per AI_VISUAL_COMMUNICATION_CANON §2 - maps item attributes to visual state.
+ */
+function deriveItemAIState(item: InboxItem): AIPerceptualState {
+  const hasUrgentDeadline = deriveUrgencyFromDeadline(item.dueAt);
+  const isHighPriority = item.priority === 'critical' || item.priority === 'high';
+
+  // Escalating: Real urgency (deadline + critical/high priority)
+  if (hasUrgentDeadline && isHighPriority) {
+    return 'escalating';
+  }
+
+  // Blocked: Items with high risk (relationship decay, data issues)
+  if (item.risk === 'high' || (item.type === 'relationship_decay' && item.urgency < 30)) {
+    return 'blocked';
+  }
+
+  // Ready: Approval queue items with AI drafts ready
+  if (item.type === 'approval_queue' && item.confidence && item.confidence >= 70) {
+    return 'ready';
+  }
+
+  // Evaluating: Data hygiene items being processed, or low-confidence items
+  if (item.type === 'data_hygiene' || (item.confidence && item.confidence < 60)) {
+    return 'evaluating';
+  }
+
+  // Ready: Items with primary action available
+  if (item.primaryAction) {
+    return 'ready';
+  }
+
+  return 'idle';
+}
 
 // ============================================
 // MOCK DATA
@@ -396,6 +439,9 @@ function QueueItem({ item, isSelected, onClick }: QueueItemProps) {
   const typeConfig = INBOX_TYPE_CONFIG[item.type];
   const pConfig = priorityStyles[item.priority];
 
+  // Derive AI perceptual state for this item
+  const aiState = deriveItemAIState(item);
+
   // Relationship context lookup
   const relationshipCtx = item.relatedContactId ? MOCK_RELATIONSHIP_CONTEXT[item.relatedContactId] : null;
 
@@ -458,8 +504,12 @@ function QueueItem({ item, isSelected, onClick }: QueueItemProps) {
       }`}
     >
       <div className="flex items-start gap-3">
-        {/* Priority indicator */}
-        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${pConfig.dot}`} />
+        {/* Priority + AI State indicator */}
+        <div className="flex flex-col items-center gap-1.5 mt-1">
+          <div className={`w-2 h-2 rounded-full shrink-0 ${pConfig.dot}`} />
+          {/* AI state dot - shows when not idle per canon §2.2 */}
+          {aiState !== 'idle' && <AIStateDot state={aiState} size="xs" />}
+        </div>
 
         <div className="flex-1 min-w-0">
           {/* Title */}
@@ -550,6 +600,9 @@ function DetailPanel({ item, onPrimaryAction, onSnooze, onDismiss, onOpenContact
   const pConfig = priorityStyles[item.priority];
   const mConfig = modeStyles[item.modeCeiling];
 
+  // Derive AI perceptual state for this item
+  const aiState = deriveItemAIState(item);
+
   // Copilot reasoning lookup
   const copilotReasoningType = MOCK_COPILOT_REASONING[item.id];
   const copilotReasoning = copilotReasoningType ? COPILOT_REASONING_LABELS[copilotReasoningType] : null;
@@ -614,6 +667,8 @@ function DetailPanel({ item, onPrimaryAction, onSnooze, onDismiss, onOpenContact
             <ModeIcon mode={item.modeCeiling} />
             {mConfig.label}
           </span>
+          {/* Local AI State Indicator - per AI_VISUAL_COMMUNICATION_CANON §2 */}
+          <LocalAIIndicator state={aiState} />
         </div>
         <h2 className="text-base font-semibold text-white leading-tight">{item.title}</h2>
         {timeRemaining && (
