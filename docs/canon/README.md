@@ -55,6 +55,7 @@ These files define WHAT Pravado is and HOW it should work:
 | `DS_v3_PRINCIPLES.md` | Design system principles |
 | `DS_v3_1_EXPRESSION.md` | Design tokens and expression |
 | `AUTOMATION_MODES_UX.md` | Manual/Copilot/Autopilot modes |
+| `AI_VISUAL_COMMUNICATION_CANON.md` | AI state, confidence, and motion principles |
 | `PLANS_LIMITS_ENTITLEMENTS.md` | Pricing tiers and limits |
 | `PR_PILLAR_MODEL.md` | PR pillar operating model (Influence Orchestration) |
 | `CONTENT_PILLAR_CANON.md` | Authoritative specification for Content work surface |
