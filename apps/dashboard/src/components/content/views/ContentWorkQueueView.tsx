@@ -467,12 +467,33 @@ function ExecutionGravityPane({
     ? `${filteredOutCount} auto-handled`
     : undefined;
 
-  // Mode descriptor microcopy (Phase 8A.5)
-  const modeDescriptor = {
-    manual: "You're in control — nothing executes without confirmation.",
-    copilot: 'AI prepares drafts; you approve state changes.',
-    autopilot: 'Routine work runs automatically; you review exceptions.',
+  // Mode behavior configuration (Phase 9A.2)
+  const modeBehavior = {
+    manual: {
+      descriptor: 'You decide priority.',
+      showRerank: true,
+      showRecentlyHandled: false,
+    },
+    copilot: {
+      descriptor: 'AI prepared this queue; you approve transitions.',
+      showRerank: false,
+      showRecentlyHandled: false,
+    },
+    autopilot: {
+      descriptor: 'Showing exceptions only — routine actions run automatically.',
+      showRerank: false,
+      showRecentlyHandled: true,
+    },
   };
+
+  const behavior = modeBehavior[mode];
+
+  // Mock recently handled items for autopilot mode
+  const recentlyHandled = [
+    { id: 'recent-1', title: 'Auto-scheduled blog post', time: '2 min ago' },
+    { id: 'recent-2', title: 'Derivative generated for SEO', time: '5 min ago' },
+    { id: 'recent-3', title: 'Brief execution completed', time: '12 min ago' },
+  ];
 
   return (
     <>
@@ -490,16 +511,30 @@ function ExecutionGravityPane({
               </span>
             )}
           </div>
-          {prioritizedActions.length > 1 && (
-            <span className="text-[10px] text-white/40">
-              {prioritizedActions.length} {mode === 'autopilot' ? 'exception' : 'total'}{prioritizedActions.length !== 1 ? 's' : ''}
-            </span>
-          )}
+          <div className="flex items-center gap-3">
+            {/* Re-rank affordance for Manual mode */}
+            {behavior.showRerank && prioritizedActions.length > 1 && (
+              <button
+                onClick={() => {/* TODO: Open re-rank modal/popover */}}
+                className="flex items-center gap-1 px-2 py-1 text-[10px] text-white/50 hover:text-white hover:bg-white/5 rounded transition-colors"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+                Re-rank
+              </button>
+            )}
+            {prioritizedActions.length > 1 && (
+              <span className="text-[10px] text-white/40">
+                {prioritizedActions.length} {mode === 'autopilot' ? 'exception' : 'total'}{prioritizedActions.length !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Mode descriptor - subtle, visible (Phase 8A.5) */}
+        {/* Mode descriptor - behavior-specific microcopy */}
         <p className="text-xs text-white/40 -mt-2">
-          {modeDescriptor[mode]}
+          {behavior.descriptor}
         </p>
 
         {/* DOMINANT: Next Best Action Card with AI State Ring (Phase 9A) */}
@@ -541,11 +576,32 @@ function ExecutionGravityPane({
           </div>
         )}
 
-        {/* Autopilot mode explainer - subtle bottom hint */}
-        {mode === 'autopilot' && prioritizedActions.length > 0 && (
-          <p className="text-[10px] text-white/30 text-center pt-2 border-t border-border-subtle">
-            Showing items that require manual review. Routine actions are handled automatically.
-          </p>
+        {/* Autopilot: Recently handled log (read-only, 3 items max) */}
+        {behavior.showRecentlyHandled && (
+          <div className="pt-3 border-t border-border-subtle">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-[10px] font-medium text-white/40 uppercase tracking-wider">
+                Recently Handled
+              </h4>
+              <span className="text-[10px] text-white/30">Auto-executed</span>
+            </div>
+            <div className="space-y-1">
+              {recentlyHandled.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between px-2 py-1.5 bg-slate-2/30 rounded text-[10px]"
+                >
+                  <div className="flex items-center gap-2">
+                    <svg className="w-3 h-3 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-white/60">{item.title}</span>
+                  </div>
+                  <span className="text-white/30">{item.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
