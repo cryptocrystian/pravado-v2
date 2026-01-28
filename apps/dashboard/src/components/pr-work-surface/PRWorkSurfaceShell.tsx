@@ -22,6 +22,7 @@ import {
   deriveAIPerceptualState,
   type AIPerceptualState,
 } from '@/components/ai';
+import { ModeSwitcher } from '@/components/shared/ModeSwitcher';
 
 // Tab configuration
 export type PRTab = 'inbox' | 'overview' | 'database' | 'pitches' | 'coverage' | 'distribution' | 'settings';
@@ -365,11 +366,11 @@ export function PRWorkSurfaceShell({ activeTab, onTabChange, children, aiState =
                   </p>
                 </div>
 
-                {/* Mode Indicator */}
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${modeConfig.bg} ${modeConfig.border}`}>
-                  <ModeIcon mode={activeTabConfig?.modeCeiling || 'manual'} />
-                  <span className={`text-xs font-medium ${modeConfig.text}`}>{modeConfig.label}</span>
-                </div>
+                {/* Mode Switcher - Phase 10A user-controllable mode */}
+                <ModeSwitcher
+                  pillar="pr"
+                  ceiling={activeTabConfig?.modeCeiling}
+                />
 
                 {/* Ambient AI State Indicator - per AI_VISUAL_COMMUNICATION_CANON §2 */}
                 <AmbientAIIndicator state={aiState} showLabel size="sm" />
