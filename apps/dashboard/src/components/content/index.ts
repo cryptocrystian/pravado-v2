@@ -17,6 +17,20 @@ export * from './types';
 export * from './tokens';
 
 // ============================================
+// AI PERCEPTION (Phase 9A)
+// ============================================
+export {
+  type AIPerceptualState,
+  type ConfidenceLevel,
+  AI_STATE_PRIORITY,
+  AI_PERCEPTUAL_SIGNALS,
+  CONFIDENCE_SIGNALS,
+  deriveAIPerceptualState,
+  getHighestPriorityState,
+  getConfidenceLevel,
+} from './ai-perception';
+
+// ============================================
 // SHELL & LAYOUT
 // ============================================
 export { ContentWorkSurfaceShell, type ContentWorkSurfaceShellProps } from './ContentWorkSurfaceShell';
@@ -48,6 +62,15 @@ export {
   type VersionEvent,
   type VersionEventType,
 } from './components/VersionHistoryPanel';
+
+// AI State Indicators (Phase 9A)
+export {
+  AmbientAIIndicator,
+  LocalAIIndicator,
+  AIStateRing,
+  AIProgressIndicator,
+  AIStateDot,
+} from './components/AIStateIndicator';
 
 // ============================================
 // HOOKS
