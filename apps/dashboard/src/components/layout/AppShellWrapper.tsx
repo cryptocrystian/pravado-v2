@@ -17,6 +17,7 @@ import type { ReactNode } from 'react';
 import { AppSidebar } from './AppSidebar';
 import { AIOrchestrationBar } from '@/components/orchestration';
 import { MSWProvider } from '@/mocks/MSWProvider';
+import { ModeProvider } from '@/lib/ModeContext';
 
 interface Org {
   id: string;
@@ -65,13 +66,14 @@ export function AppShellWrapper({
   if (usesCustomShell) {
     // Route handles its own layout (topbar shell) - render children directly
     // MSWProvider is handled by the route's own layout
-    return <>{children}</>;
+    return <ModeProvider>{children}</ModeProvider>;
   }
 
   // Default: render with sidebar + header + orchestration bar
   return (
-    <div className="min-h-screen bg-page flex">
-      <AppSidebar currentOrg={currentOrg} allOrgs={allOrgs} user={user} />
+    <ModeProvider>
+      <div className="min-h-screen bg-page flex">
+        <AppSidebar currentOrg={currentOrg} allOrgs={allOrgs} user={user} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -135,6 +137,7 @@ export function AppShellWrapper({
           <MSWProvider>{children}</MSWProvider>
         </main>
       </div>
-    </div>
+      </div>
+    </ModeProvider>
   );
 }
