@@ -67,6 +67,7 @@ export function AmbientAIIndicator({
       prevStateRef.current = state;
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [state]);
 
   const sizeClasses = {
@@ -212,6 +213,7 @@ export function AIStateRing({
       prevStateRef.current = state;
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [state]);
 
   // Idle state: minimal styling
@@ -235,7 +237,7 @@ export function AIStateRing({
       `}
     >
       {/* Accent bar for left edge state indication */}
-      {showAccentBar && state !== 'idle' && (
+      {showAccentBar && (
         <div
           className={`
             absolute left-0 top-0 bottom-0 w-[3px] rounded-l

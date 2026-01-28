@@ -39,7 +39,6 @@ import {
   deriveAIPerceptualState,
   AI_PERCEPTUAL_SIGNALS,
   AmbientAIIndicator,
-  AIStateDot,
   AIStateRing,
 } from '@/components/ai';
 
@@ -388,7 +387,7 @@ function ExecutionGravityPane({
     return deriveAIPerceptualState({
       isLoading,
       isValidating,
-      citeMindStatus: hasBlockedAction ? 'warning' : 'passed',
+      gateStatus: hasBlockedAction ? 'warning' : 'passed',
       isActionReady: hasReadyAction,
       hasUrgentDeadline: hasCriticalDeadline,
       priority: actions[0]?.priority,
@@ -744,14 +743,6 @@ function NextBestActionCard({
     medium: 'text-semantic-warning bg-semantic-warning/10',
     high: 'text-semantic-danger bg-semantic-danger/10',
     critical: 'text-semantic-danger bg-semantic-danger/10',
-  };
-
-  // Confidence band label
-  const getConfidenceLabel = (confidence: number | undefined): string => {
-    if (confidence === undefined) return '—';
-    if (confidence >= 80) return 'High';
-    if (confidence >= 50) return 'Med';
-    return 'Low';
   };
 
   // Mode ceiling label

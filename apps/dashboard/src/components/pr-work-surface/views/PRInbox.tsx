@@ -29,7 +29,6 @@ import { priorityStyles, modeStyles, eviDriverStyles } from '../prWorkSurfaceSty
 import {
   LocalAIIndicator,
   AIStateDot,
-  deriveAIPerceptualState,
   deriveUrgencyFromDeadline,
   type AIPerceptualState,
 } from '@/components/ai';

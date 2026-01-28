@@ -303,17 +303,16 @@ export function ContentWorkSurfaceShell({
   const [rightRailCollapsed, setRightRailCollapsed] = useState(false);
 
   const activeViewConfig = VIEW_TABS.find((t) => t.key === activeView);
-  const modeConfig = modeTokens[activeViewConfig?.modeCeiling || 'manual'];
 
   // DS v3 palette tokens (per DS_v3_1_EXPRESSION.md)
   // dark-bg: #0A0A0F (slate-0), dark-card: #13131A (slate-2), dark-border: #1F1F28
   return (
     <div className="min-h-screen bg-slate-0">
       {/* Header - gradient from slightly elevated to transparent */}
+      {/* Header - full-width shell per Phase 10A width continuity */}
       <div className="border-b border-[#1A1A24] bg-gradient-to-b from-slate-1 to-transparent">
         <div className="px-6 pt-6 pb-0">
-          <div className="max-w-[1600px] mx-auto">
-            {/* Title Row */}
+          {/* Title Row */}
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-start gap-4">
                 {/* Content Pillar Icon */}
@@ -397,17 +396,14 @@ export function ContentWorkSurfaceShell({
                 </button>
               ))}
             </div>
-          </div>
         </div>
       </div>
 
       {/* Content Area with Optional Right Rail */}
       <div className="flex">
-        {/* Main Content */}
+        {/* Main Content - full-width shell per Phase 10A width continuity */}
         <div className={`flex-1 px-6 py-6 ${showRightRail && !rightRailCollapsed ? 'lg:pr-0' : ''}`}>
-          <div className="max-w-[1600px] mx-auto">
-            {children}
-          </div>
+          {children}
         </div>
 
         {/* Right Rail (when enabled) */}
