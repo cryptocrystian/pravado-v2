@@ -21,7 +21,7 @@
  * @see /docs/canon/AUTOMATION_MODES_UX.md
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import type {
   AuthoritySignals,
   ContentClusterDTO,
@@ -876,28 +876,106 @@ function NextBestActionCard({
         </button>
       </div>
 
-      {/* Bottom row: CTA button */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 text-xs text-white/40">
-          {/* Orchestration ready indicator */}
-          {isOrchestrationReady && (
-            <span className="flex items-center gap-1 text-brand-iris text-[10px]">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Orchestration ready
+      {/* Bottom row: CTA with confidence-based confirmation */}
+      <ConfidenceAwareCTA
+        confidence={action.confidence}
+        isOrchestrationReady={isOrchestrationReady}
+        ctaLabel={typeConf.ctaLabel}
+        ctaClass={typeConf.ctaClass}
+        onClick={handleClick}
+      />
+    </div>
+  );
+}
+
+/**
+ * Confidence-Aware CTA Component
+ *
+ * Per AI_VISUAL_COMMUNICATION_CANON §3 (Confidence & Trust):
+ * - High confidence (≥80): Normal CTA
+ * - Moderate confidence (50-79): Normal CTA, reduced emphasis
+ * - Low confidence (<50): Inline "Confirm" toggle required before Execute
+ *
+ * No modals - confirmation is inline beside the CTA.
+ */
+function ConfidenceAwareCTA({
+  confidence,
+  isOrchestrationReady,
+  ctaLabel,
+  ctaClass,
+  onClick,
+}: {
+  confidence?: number;
+  isOrchestrationReady: boolean;
+  ctaLabel: string;
+  ctaClass: string;
+  onClick: () => void;
+}) {
+  const [confirmed, setConfirmed] = useState(false);
+  const isLowConfidence = confidence !== undefined && confidence < 50;
+  const isModerateConfidence = confidence !== undefined && confidence >= 50 && confidence < 80;
+
+  // Reset confirmation when confidence changes
+  useEffect(() => {
+    setConfirmed(false);
+  }, [confidence]);
+
+  // Determine if CTA is enabled
+  const ctaEnabled = !isLowConfidence || confirmed;
+
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3 text-xs text-white/40">
+        {/* Orchestration ready indicator */}
+        {isOrchestrationReady && (
+          <span className="flex items-center gap-1 text-brand-iris text-[10px]">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Orchestration ready
+          </span>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3">
+        {/* Low confidence: Inline confirmation toggle */}
+        {isLowConfidence && (
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <span className="text-[10px] text-white/50">
+              Low confidence — confirm?
             </span>
-          )}
-        </div>
+            <button
+              type="button"
+              onClick={() => setConfirmed(!confirmed)}
+              className={`
+                relative w-8 h-4 rounded-full transition-colors duration-200
+                ${confirmed ? 'bg-brand-iris' : 'bg-slate-4'}
+              `}
+            >
+              <span
+                className={`
+                  absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm
+                  transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]
+                  ${confirmed ? 'translate-x-4' : 'translate-x-0.5'}
+                `}
+              />
+            </button>
+          </label>
+        )}
+
+        {/* CTA Button */}
         <button
+          onClick={onClick}
+          disabled={!ctaEnabled}
           className={`
             px-4 py-2 text-sm font-semibold rounded-lg
             transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]
-            hover:scale-105 active:scale-95
-            ${typeConf.ctaClass}
+            ${ctaEnabled ? 'hover:scale-105 active:scale-95' : 'opacity-50 cursor-not-allowed'}
+            ${isModerateConfidence ? 'opacity-80' : ''}
+            ${ctaClass}
           `}
         >
-          {isOrchestrationReady ? 'Execute →' : typeConf.ctaLabel}
+          {isOrchestrationReady ? 'Execute →' : ctaLabel}
         </button>
       </div>
     </div>
