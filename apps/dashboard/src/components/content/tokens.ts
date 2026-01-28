@@ -95,6 +95,14 @@ export const card = {
 // STATUS TOKENS (CiteMind)
 // ============================================
 
+/**
+ * CiteMind status tokens
+ *
+ * Phase 9A note on motion:
+ * - Only 'analyzing' uses animate-pulse - this is intentional per AI_VISUAL_COMMUNICATION_CANON §2.1
+ * - 'analyzing' = AI actively working = "evaluating" perceptual state = subtle continuous signal
+ * - Other states (warning, blocked) do NOT pulse per §7.4 (no manufactured urgency)
+ */
 export const citeMindStatus = {
   pending: {
     bg: 'bg-slate-4',
@@ -106,6 +114,7 @@ export const citeMindStatus = {
     bg: 'bg-brand-cyan/10',
     text: 'text-brand-cyan',
     border: 'border-brand-cyan/20',
+    // Pulse is appropriate here - represents active AI work per §2.1
     dot: 'bg-brand-cyan animate-pulse',
   },
   passed: {
