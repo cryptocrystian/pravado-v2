@@ -168,56 +168,86 @@ function getMetricColor(value: number): string {
 }
 
 // ============================================
-// CTA CLUSTER
+// CTA CLUSTER (MODE-SHAPED)
 // ============================================
 
+/**
+ * Mode-shaped header CTAs per AUTOMATION_MODES_UX.md
+ *
+ * - Manual: primary "New Brief", secondary "Import Content"
+ * - Copilot: primary "Generate Draft", secondary "Create Brief with AI"
+ * - Autopilot: primary "Review Exceptions", secondary (contextual)
+ */
 function CTACluster({
+  mode,
   hasIssues,
   onGenerateBrief,
   onImportContent,
   onFixIssues,
   onGenerateDraft,
 }: {
+  mode: AutomationMode;
   hasIssues: boolean;
   onGenerateBrief?: () => void;
   onImportContent?: () => void;
   onFixIssues?: () => void;
   onGenerateDraft?: () => void;
 }) {
+  // Mode-specific CTA configurations
+  const ctaConfig = {
+    manual: {
+      primary: { label: '+ New Brief', action: onGenerateBrief, enabled: true },
+      secondary: { label: 'Import Content', action: onImportContent, enabled: true },
+    },
+    copilot: {
+      primary: { label: 'Generate Draft', action: onGenerateDraft, enabled: true },
+      secondary: { label: 'Create Brief with AI', action: onGenerateBrief, enabled: true },
+    },
+    autopilot: {
+      primary: { label: 'Review Exceptions', action: onFixIssues, enabled: hasIssues },
+      // Approve Queue is a future feature - show disabled with tooltip
+      secondary: { label: 'Approve Queue', action: undefined, enabled: false },
+    },
+  };
+
+  const config = ctaConfig[mode];
+
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      {/* Primary CTA */}
+    <div className="flex items-center gap-2 flex-shrink-0">
+      {/* Primary CTA (one only) */}
       <button
-        onClick={onGenerateBrief}
-        className="px-4 py-2 text-sm font-semibold text-white bg-brand-iris hover:bg-brand-iris/90 rounded-lg transition-colors shadow-[0_0_16px_rgba(168,85,247,0.25)]"
+        onClick={config.primary.enabled ? config.primary.action : undefined}
+        disabled={!config.primary.enabled && mode === 'autopilot'}
+        className={`
+          px-4 py-2 text-sm font-semibold rounded-lg
+          transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]
+          ${config.primary.enabled
+            ? 'text-white bg-brand-iris hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.25)]'
+            : 'text-white/40 bg-slate-4 cursor-not-allowed'
+          }
+        `}
+        title={!config.primary.enabled && mode === 'autopilot' ? 'No exceptions to review' : undefined}
       >
-        + New Brief
+        {config.primary.label}
       </button>
 
-      {/* Secondary CTAs */}
-      <button
-        onClick={onImportContent}
-        className="px-3 py-2 text-sm font-medium text-white/70 bg-slate-2 border border-border-subtle hover:border-brand-iris/40 rounded-lg transition-colors"
-      >
-        Import Content
-      </button>
-
-      {hasIssues && (
+      {/* Secondary CTA (max 1, contextual) */}
+      {config.secondary.enabled ? (
         <button
-          onClick={onFixIssues}
-          className="px-3 py-2 text-sm font-medium text-semantic-warning bg-semantic-warning/10 border border-semantic-warning/30 hover:bg-semantic-warning/15 rounded-lg transition-colors flex items-center gap-1.5"
+          onClick={config.secondary.action}
+          className="px-3 py-2 text-sm font-medium text-white/70 bg-slate-2 border border-border-subtle hover:border-brand-iris/40 rounded-lg transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-semantic-warning animate-pulse" />
-          Fix Issues
+          {config.secondary.label}
         </button>
-      )}
-
-      <button
-        onClick={onGenerateDraft}
-        className="px-3 py-2 text-sm font-medium text-white/70 bg-slate-2 border border-border-subtle hover:border-brand-iris/40 rounded-lg transition-colors"
-      >
-        Generate Draft
-      </button>
+      ) : config.secondary.label && mode === 'autopilot' ? (
+        <button
+          disabled
+          className="px-3 py-2 text-sm font-medium text-white/30 bg-slate-2/50 border border-border-subtle rounded-lg cursor-not-allowed"
+          title="Coming soon"
+        >
+          {config.secondary.label}
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -652,36 +682,45 @@ function UpNextActionCard({
 }
 
 // ============================================
-// SECONDARY ROW
+// CONTEXT PANEL (RIGHT COLUMN)
 // ============================================
 
-function SecondaryRow({
+/**
+ * ContextPanel - Stacked context widgets for the right column of cockpit layout.
+ * Displays pipeline, deadlines, cross-pillar impact, and CiteMind issues.
+ * Responsive: stacks below left column on smaller screens.
+ */
+function ContextPanel({
   pipelineCounts,
   upcomingDeadlines,
   crossPillarImpact,
+  citeMindIssueCount,
   onViewCalendar,
   onViewLibrary,
+  onFixIssues,
 }: {
   pipelineCounts: { draft: number; review: number; approved: number; published: number };
   upcomingDeadlines: { count: number; nextDate?: string };
   crossPillarImpact: { prHooks: number; seoHooks: number };
+  citeMindIssueCount: number;
   onViewCalendar?: () => void;
   onViewLibrary?: () => void;
+  onFixIssues?: () => void;
 }) {
   return (
-    <div className="grid grid-cols-3 gap-3">
-      {/* Pipeline Status */}
+    <>
+      {/* Pipeline Summary */}
       <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg">
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-xs font-semibold text-white/70">Pipeline</h4>
           <button
             onClick={onViewLibrary}
-            className="text-[10px] text-brand-iris hover:underline"
+            className="text-[10px] text-brand-iris hover:underline transition-colors"
           >
             View →
           </button>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="grid grid-cols-4 gap-2">
           <PipelineStat label="Draft" count={pipelineCounts.draft} color="text-white/50" />
           <PipelineStat label="Review" count={pipelineCounts.review} color="text-semantic-warning" />
           <PipelineStat label="Ready" count={pipelineCounts.approved} color="text-semantic-success" />
@@ -692,17 +731,17 @@ function SecondaryRow({
       {/* Upcoming Deadlines */}
       <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg">
         <div className="flex items-center justify-between mb-2">
-          <h4 className="text-xs font-semibold text-white/70">Upcoming</h4>
+          <h4 className="text-xs font-semibold text-white/70">Deadlines</h4>
           <button
             onClick={onViewCalendar}
-            className="text-[10px] text-brand-iris hover:underline"
+            className="text-[10px] text-brand-iris hover:underline transition-colors"
           >
             Calendar →
           </button>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-white">{upcomingDeadlines.count}</span>
-          <span className="text-xs text-white/40">deadlines this week</span>
+        <div className="flex items-baseline gap-2">
+          <span className="text-xl font-bold text-white">{upcomingDeadlines.count}</span>
+          <span className="text-xs text-white/40">this week</span>
         </div>
         {upcomingDeadlines.nextDate && (
           <p className="text-[10px] text-white/50 mt-1">
@@ -725,7 +764,28 @@ function SecondaryRow({
           </div>
         </div>
       </div>
-    </div>
+
+      {/* CiteMind Issues Module (only if issues exist) */}
+      {citeMindIssueCount > 0 && (
+        <div className="p-3 bg-semantic-warning/5 border border-semantic-warning/20 rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-semantic-warning animate-pulse" />
+              <h4 className="text-xs font-semibold text-semantic-warning">CiteMind Issues</h4>
+            </div>
+            <button
+              onClick={onFixIssues}
+              className="text-[10px] text-semantic-warning hover:underline transition-colors"
+            >
+              Fix →
+            </button>
+          </div>
+          <p className="text-xs text-white/60">
+            {citeMindIssueCount} {citeMindIssueCount === 1 ? 'piece needs' : 'pieces need'} attention
+          </p>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -1036,12 +1096,13 @@ export function ContentWorkQueueView({
 
   return (
     <div className="p-4 space-y-4">
-      {/* Top Row: Health Strip + CTA Cluster */}
+      {/* Top Row: Health Strip + Mode-shaped CTAs */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <HealthStrip signals={signals} citeMindIssueCount={citeMindIssueCount} />
         </div>
         <CTACluster
+          mode={mode}
           hasIssues={citeMindIssueCount > 0}
           onGenerateBrief={onGenerateBrief}
           onImportContent={onImportContent}
@@ -1050,32 +1111,39 @@ export function ContentWorkQueueView({
         />
       </div>
 
-      {/* Primary Region: Execution Gravity (Next Best Action + Up Next) */}
-      <section className="min-h-[280px]">
-        <ExecutionGravityPane
-          actions={actions}
-          mode={mode}
-          onLaunchOrchestrate={onLaunchOrchestrate}
-          onViewAll={onViewLibrary}
-        />
-      </section>
+      {/* Cockpit Layout: Left Queue + Right Context */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
+        {/* LEFT: Primary Queue (Next Best Action + Up Next) */}
+        <section className="min-h-[320px]">
+          <ExecutionGravityPane
+            actions={actions}
+            mode={mode}
+            onLaunchOrchestrate={onLaunchOrchestrate}
+            onViewAll={onViewLibrary}
+          />
+        </section>
 
-      {/* Secondary Row: Pipeline, Upcoming, Cross-Pillar */}
-      <SecondaryRow
-        pipelineCounts={pipelineCounts}
-        upcomingDeadlines={{
-          count: briefs.filter((b) => b.deadline).length,
-          nextDate: briefs.find((b) => b.deadline)?.deadline?.split('T')[0],
-        }}
-        crossPillarImpact={{
-          prHooks: 0, // TODO: Calculate from actual data
-          seoHooks: 0,
-        }}
-        onViewCalendar={onViewCalendar}
-        onViewLibrary={onViewLibrary}
-      />
+        {/* RIGHT: Context Panel (Pipeline, Deadlines, Cross-Pillar, Issues) */}
+        <aside className="space-y-3">
+          <ContextPanel
+            pipelineCounts={pipelineCounts}
+            upcomingDeadlines={{
+              count: briefs.filter((b) => b.deadline).length,
+              nextDate: briefs.find((b) => b.deadline)?.deadline?.split('T')[0],
+            }}
+            crossPillarImpact={{
+              prHooks: 0, // TODO: Calculate from actual data
+              seoHooks: 0,
+            }}
+            citeMindIssueCount={citeMindIssueCount}
+            onViewCalendar={onViewCalendar}
+            onViewLibrary={onViewLibrary}
+            onFixIssues={onFixIssues}
+          />
+        </aside>
+      </div>
 
-      {/* Quick Opportunities */}
+      {/* Quick Opportunities (below cockpit, full width) */}
       <QuickOpportunities
         clusters={clusters}
         gaps={gaps}
