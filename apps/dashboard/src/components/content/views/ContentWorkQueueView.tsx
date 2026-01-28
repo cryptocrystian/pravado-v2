@@ -21,7 +21,7 @@
  * @see /docs/canon/AUTOMATION_MODES_UX.md
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import type {
   AuthoritySignals,
   ContentClusterDTO,
@@ -34,6 +34,12 @@ import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
 import { ExplainabilityDrawer } from '../orchestration/ExplainabilityDrawer';
 import type { TriggerAction } from '../orchestration/OrchestrationEditorShell';
+import {
+  type AIPerceptualState,
+  deriveAIPerceptualState,
+  AI_PERCEPTUAL_SIGNALS,
+} from '../ai-perception';
+import { AmbientAIIndicator, AIStateDot, AIStateRing } from '../components/AIStateIndicator';
 
 // ============================================
 // TYPES
@@ -347,15 +353,43 @@ function ExecutionGravityPane({
   mode,
   onLaunchOrchestrate,
   onViewAll,
+  isLoading = false,
+  isValidating = false,
 }: {
   actions: ContentAction[];
   mode: AutomationMode;
   onLaunchOrchestrate?: (actionId: string) => void;
   onViewAll?: () => void;
+  /** SWR loading state for AI state derivation */
+  isLoading?: boolean;
+  /** SWR validating state for AI state derivation */
+  isValidating?: boolean;
 }) {
   // State for explain drawer
   const [explainDrawerOpen, setExplainDrawerOpen] = useState(false);
   const [explainAction, setExplainAction] = useState<ContentAction | null>(null);
+
+  // Derive AI perceptual state for ambient indicator (Phase 9A)
+  const aiState = useMemo((): AIPerceptualState => {
+    // Check for blocked/escalating based on action types
+    const hasBlockedAction = actions.some(a => a.type === 'issue');
+    const hasCriticalDeadline = actions.some(
+      a => a.priority === 'critical' && a.type === 'scheduled'
+    );
+    const hasReadyAction = actions.some(
+      a => a.type === 'execution' && a.orchestrateActionId
+    );
+
+    return deriveAIPerceptualState({
+      isLoading,
+      isValidating,
+      citeMindStatus: hasBlockedAction ? 'warning' : 'passed',
+      isActionReady: hasReadyAction,
+      hasUrgentDeadline: hasCriticalDeadline,
+      priority: actions[0]?.priority,
+      mode,
+    });
+  }, [actions, isLoading, isValidating, mode]);
 
   // Apply mode-aware filtering THEN priority scoring
   const modeFilteredActions = filterActionsByMode(actions, mode);
@@ -440,11 +474,13 @@ function ExecutionGravityPane({
   return (
     <>
       <div className="space-y-4">
-        {/* Header with mode indicator */}
+        {/* Header with mode indicator + AI state indicator (Phase 9A) */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h3 className="text-sm font-semibold text-white tracking-tight">{headerText}</h3>
             <ModeIndicator mode={mode} size="default" />
+            {/* Ambient AI State Indicator (Phase 9A) */}
+            <AmbientAIIndicator state={aiState} size="sm" showLabel={aiState !== 'idle'} />
             {headerSubtext && (
               <span className="text-[10px] text-brand-cyan/70">
                 ({headerSubtext})
@@ -463,13 +499,16 @@ function ExecutionGravityPane({
           {modeDescriptor[mode]}
         </p>
 
-        {/* DOMINANT: Next Best Action Card */}
-        <NextBestActionCard
-          action={nextBestAction}
-          mode={mode}
-          onLaunchOrchestrate={onLaunchOrchestrate}
-          onExplain={() => handleExplain(nextBestAction)}
-        />
+        {/* DOMINANT: Next Best Action Card with AI State Ring (Phase 9A) */}
+        <AIStateRing state={aiState} showAccentBar>
+          <NextBestActionCard
+            action={nextBestAction}
+            mode={mode}
+            aiState={aiState}
+            onLaunchOrchestrate={onLaunchOrchestrate}
+            onExplain={() => handleExplain(nextBestAction)}
+          />
+        </AIStateRing>
 
         {/* UP NEXT: Secondary actions (max 3, compact) */}
         {upNextActions.length > 0 && (
@@ -580,11 +619,14 @@ function ModeIndicator({ mode, size = 'default' }: { mode: AutomationMode; size?
 function NextBestActionCard({
   action,
   mode,
+  aiState = 'idle',
   onLaunchOrchestrate,
   onExplain,
 }: {
   action: ContentAction;
   mode: AutomationMode;
+  /** AI perceptual state for local indicator (Phase 9A) */
+  aiState?: AIPerceptualState;
   onLaunchOrchestrate?: (actionId: string) => void;
   onExplain?: () => void;
 }) {
@@ -734,10 +776,22 @@ function NextBestActionCard({
         </button>
       </div>
 
-      {/* Bottom row: CTA button (primary) */}
+      {/* Bottom row: AI state + CTA button (Phase 9A) */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs text-white/40">
-          {isOrchestrationReady && (
+        <div className="flex items-center gap-3 text-xs text-white/40">
+          {/* Local AI State Indicator (Phase 9A) */}
+          {aiState !== 'idle' && (
+            <span className={`
+              flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-medium
+              ${AI_PERCEPTUAL_SIGNALS[aiState].bg}
+              ${AI_PERCEPTUAL_SIGNALS[aiState].text}
+              ${AI_PERCEPTUAL_SIGNALS[aiState].transition}
+            `}>
+              <AIStateDot state={aiState} size="xs" />
+              {AI_PERCEPTUAL_SIGNALS[aiState].label}
+            </span>
+          )}
+          {isOrchestrationReady && aiState === 'idle' && (
             <span className="flex items-center gap-1 text-brand-iris">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1259,6 +1313,8 @@ export function ContentWorkQueueView({
         <section className="min-h-[320px]">
           <ExecutionGravityPane
             actions={actions}
+            isLoading={false} /* TODO: Wire to SWR isLoading when available */
+            isValidating={false} /* TODO: Wire to SWR isValidating when available */
             mode={mode}
             onLaunchOrchestrate={onLaunchOrchestrate}
             onViewAll={onViewLibrary}
