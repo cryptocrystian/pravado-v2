@@ -19,7 +19,6 @@ import { useState, type ReactNode } from 'react';
 import { modeStyles } from './prWorkSurfaceStyles';
 import {
   AmbientAIIndicator,
-  deriveAIPerceptualState,
   type AIPerceptualState,
 } from '@/components/ai';
 import { ModeSwitcher } from '@/components/shared/ModeSwitcher';
@@ -342,15 +341,14 @@ interface Props {
 export function PRWorkSurfaceShell({ activeTab, onTabChange, children, aiState = 'idle' }: Props) {
   const [isExplainOpen, setIsExplainOpen] = useState(false);
   const activeTabConfig = TABS.find((t) => t.id === activeTab);
-  const modeConfig = modeStyles[activeTabConfig?.modeCeiling || 'manual'];
 
   return (
     <div className="min-h-screen bg-[#0A0A0F]">
       {/* Header */}
+      {/* Header - full-width shell per Phase 10A width continuity */}
       <div className="border-b border-[#1A1A24] bg-gradient-to-b from-[#0D0D12] to-transparent">
         <div className="px-6 pt-6 pb-0">
-          <div className="max-w-[1600px] mx-auto">
-            {/* Title Row */}
+          {/* Title Row */}
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-start gap-4">
                 {/* PR Pillar Icon */}
@@ -448,15 +446,12 @@ export function PRWorkSurfaceShell({ activeTab, onTabChange, children, aiState =
                 </button>
               ))}
             </div>
-          </div>
         </div>
       </div>
 
-      {/* Content Area */}
+      {/* Content Area - full-width shell per Phase 10A width continuity */}
       <div className="px-6 py-6">
-        <div className="max-w-[1600px] mx-auto">
-          {children}
-        </div>
+        {children}
       </div>
 
       {/* Explain Drawer */}
