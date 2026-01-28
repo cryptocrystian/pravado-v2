@@ -430,6 +430,13 @@ function ExecutionGravityPane({
     ? `${filteredOutCount} auto-handled`
     : undefined;
 
+  // Mode descriptor microcopy (Phase 8A.5)
+  const modeDescriptor = {
+    manual: "You're in control — nothing executes without confirmation.",
+    copilot: 'AI prepares drafts; you approve state changes.',
+    autopilot: 'Routine work runs automatically; you review exceptions.',
+  };
+
   return (
     <>
       <div className="space-y-4">
@@ -450,6 +457,11 @@ function ExecutionGravityPane({
             </span>
           )}
         </div>
+
+        {/* Mode descriptor - subtle, visible (Phase 8A.5) */}
+        <p className="text-xs text-white/40 -mt-2">
+          {modeDescriptor[mode]}
+        </p>
 
         {/* DOMINANT: Next Best Action Card */}
         <NextBestActionCard
