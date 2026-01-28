@@ -21,10 +21,16 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from 'react';
 import { motion, citeMindStatus as citeMindTokens, surface, border, label as labelClass } from '../tokens';
 import type { AutomationMode, CiteMindStatus } from '../types';
 import { ModeSelector, ModeBehaviorBanner } from './ModeSelector';
+import {
+  type AIPerceptualState,
+  deriveAIPerceptualState,
+  AI_PERCEPTUAL_SIGNALS,
+} from '../ai-perception';
+import { AmbientAIIndicator, AIProgressIndicator } from '../components/AIStateIndicator';
 
 // ============================================
 // MICRO-INTERACTION HOOKS (Phase 6A.6)
@@ -502,10 +508,24 @@ export function OrchestrationEditorShell({
   const [isLeftPaneCollapsed, setIsLeftPaneCollapsed] = useState(false);
   const [isRightPaneCollapsed, setIsRightPaneCollapsed] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Micro-interaction hooks (Phase 6A.6)
   const { showFlash, triggerFlash } = useSaveFlash();
   const showModePulse = useModeChangePulse(currentMode);
+
+  // Derive AI perceptual state for ambient indicator (Phase 9A)
+  const aiState = useMemo((): AIPerceptualState => {
+    return deriveAIPerceptualState({
+      isLoading,
+      citeMindStatus: action.citeMindStatus,
+      isActionReady: action.citeMindStatus === 'passed',
+      isExecuting: isCompleting,
+      isSaving,
+      priority: action.priority === 'urgent' ? 'critical' : action.priority === 'high' ? 'high' : 'medium',
+      mode: currentMode,
+    });
+  }, [isLoading, action.citeMindStatus, action.priority, isCompleting, isSaving, currentMode]);
 
   // Handle mode change (only if handler provided)
   const handleModeChange = (newMode: AutomationMode) => {
@@ -514,11 +534,14 @@ export function OrchestrationEditorShell({
     }
   };
 
-  // Handle save with flash feedback
+  // Handle save with flash feedback and AI state tracking (Phase 9A)
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
+      setIsSaving(true);
       onSaveDraft();
       triggerFlash();
+      // Reset saving state after brief delay
+      setTimeout(() => setIsSaving(false), 500);
     }
   }, [onSaveDraft, triggerFlash]);
 
@@ -598,8 +621,11 @@ export function OrchestrationEditorShell({
                 </div>
               </div>
 
-              {/* Right: Mode + Actions */}
+              {/* Right: AI State + Mode + Actions */}
               <div className="flex items-center gap-2">
+                {/* Ambient AI State Indicator (Phase 9A) */}
+                <AmbientAIIndicator state={aiState} size="md" showLabel />
+
                 {/* Mode Selector (with ceiling enforcement + pulse effect) */}
                 <div className={`relative ${showModePulse ? 'animate-[pulse_0.5s_ease-out]' : ''}`}>
                   <ModeSelector
@@ -726,17 +752,26 @@ export function OrchestrationEditorShell({
 
         {/* Center Pane: Living Canvas */}
         <main className="flex-1 min-w-0 overflow-hidden flex flex-col bg-slate-0">
-          {/* Canvas Header */}
+          {/* Canvas Header with AI Progress (Phase 9A) */}
           <div className="px-4 py-2 border-b border-[#1A1A24] bg-slate-1/30 shrink-0">
             <div className="flex items-center justify-between">
               <h2 className={labelClass}>Living Canvas</h2>
-              {isLoading && (
+              {/* AI state label for evaluating/executing */}
+              {(aiState === 'evaluating' || aiState === 'executing') && (
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 border border-brand-iris/30 border-t-brand-iris rounded-full animate-spin" />
-                  <span className="text-[10px] text-white/40">Loading...</span>
+                  <span className={`
+                    w-2 h-2 rounded-full
+                    ${AI_PERCEPTUAL_SIGNALS[aiState].indicator}
+                    ${AI_PERCEPTUAL_SIGNALS[aiState].motion}
+                  `} />
+                  <span className={`text-[10px] ${AI_PERCEPTUAL_SIGNALS[aiState].text}`}>
+                    {aiState === 'evaluating' ? 'AI analyzing...' : 'Saving...'}
+                  </span>
                 </div>
               )}
             </div>
+            {/* AI Progress Indicator (Phase 9A) */}
+            <AIProgressIndicator state={aiState} className="mt-2" />
           </div>
 
           {/* Mode Behavior Banner */}
