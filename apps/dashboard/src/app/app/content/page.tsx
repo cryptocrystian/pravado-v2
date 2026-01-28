@@ -26,6 +26,7 @@ import {
   type ContentAsset,
   type AuthoritySignals,
 } from '@/components/content';
+import { useMode } from '@/lib/ModeContext';
 
 // ============================================
 // MOCK DATA (for development while API routes are built)
@@ -197,6 +198,9 @@ const MOCK_CLUSTERS = [
 export default function ContentPage() {
   const router = useRouter();
 
+  // Mode from context - Phase 10A user-controllable mode
+  const { effectiveMode } = useMode('content');
+
   // View state - default to 'work-queue' for execution-first entry (UX Continuity Canon)
   const [activeView, setActiveView] = useState<ContentView>('work-queue');
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
@@ -296,7 +300,7 @@ export default function ContentPage() {
             gaps={gaps}
             briefs={briefs}
             assets={items}
-            mode="copilot"
+            mode={effectiveMode}
             isLoading={isLoading}
             error={error}
             onViewLibrary={handleViewLibrary}

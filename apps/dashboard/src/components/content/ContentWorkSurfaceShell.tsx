@@ -20,6 +20,7 @@
 import { useState, type ReactNode } from 'react';
 import type { ContentView, AutomationMode } from './types';
 import { modeTokens } from './tokens';
+import { ModeSwitcher } from '@/components/shared/ModeSwitcher';
 
 // ============================================
 // TYPES
@@ -328,11 +329,11 @@ export function ContentWorkSurfaceShell({
                   </p>
                 </div>
 
-                {/* Mode Indicator */}
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${modeConfig.bg} ${modeConfig.border}`}>
-                  <ModeIcon mode={activeViewConfig?.modeCeiling || 'manual'} />
-                  <span className={`text-xs font-medium ${modeConfig.text}`}>{modeConfig.label}</span>
-                </div>
+                {/* Mode Switcher - Phase 10A user-controllable mode */}
+                <ModeSwitcher
+                  pillar="content"
+                  ceiling={activeViewConfig?.modeCeiling}
+                />
 
                 {/* AI Status Pill */}
                 {aiStatus !== 'idle' && (
