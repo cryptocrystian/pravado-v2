@@ -4,11 +4,12 @@
  * Content Work Queue View - Execution-First Landing Surface
  *
  * Phase 7: Content Execution Gravity Model implementation.
+ * Phase 8A: Cockpit layout + explainability chips + mode-shaped UX.
  *
  * LAYOUT (Execution-First Hierarchy):
  * 1) Next Best Action - Single dominant action card (no scroll required)
  * 2) Up Next - Max 3 secondary actions
- * 3) Secondary Widgets - Pipeline, deadlines, cross-pillar (non-competing)
+ * 3) Context Panel - Pipeline, deadlines, cross-pillar (right column)
  *
  * EXECUTION GRAVITY MODEL:
  * - ONE dominant "Next Best Action" (visually primary)
@@ -20,6 +21,7 @@
  * @see /docs/canon/AUTOMATION_MODES_UX.md
  */
 
+import { useState, useCallback } from 'react';
 import type {
   AuthoritySignals,
   ContentClusterDTO,
@@ -30,6 +32,8 @@ import type {
 } from '../types';
 import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
+import { ExplainabilityDrawer } from '../orchestration/ExplainabilityDrawer';
+import type { TriggerAction } from '../orchestration/OrchestrationEditorShell';
 
 // ============================================
 // TYPES
@@ -51,6 +55,17 @@ interface ContentAction {
   createdAt: string;
   /** For execution actions: the orchestration action ID */
   orchestrateActionId?: string;
+  /** Explainability payload chips (Phase 8A) */
+  impact?: {
+    authority?: number; // +X points
+    crossPillar?: number; // +Y hooks
+  };
+  /** Confidence band (0-100) per AUTOMATE_EXECUTION_MODEL */
+  confidence?: number;
+  /** Mode ceiling - highest automation level allowed */
+  modeCeiling?: AutomationMode;
+  /** Risk level per canon risk vocabulary */
+  risk?: 'low' | 'medium' | 'high' | 'critical';
 }
 
 interface ContentWorkQueueViewProps {
@@ -338,6 +353,10 @@ function ExecutionGravityPane({
   onLaunchOrchestrate?: (actionId: string) => void;
   onViewAll?: () => void;
 }) {
+  // State for explain drawer
+  const [explainDrawerOpen, setExplainDrawerOpen] = useState(false);
+  const [explainAction, setExplainAction] = useState<ContentAction | null>(null);
+
   // Apply mode-aware filtering THEN priority scoring
   const modeFilteredActions = filterActionsByMode(actions, mode);
   const prioritizedActions = selectPrioritizedActions(modeFilteredActions);
@@ -347,6 +366,30 @@ function ExecutionGravityPane({
 
   // Track how many actions were filtered out in Autopilot mode
   const filteredOutCount = mode === 'autopilot' ? actions.length - modeFilteredActions.length : 0;
+
+  // Handle "Why this now" click
+  const handleExplain = useCallback((action: ContentAction) => {
+    setExplainAction(action);
+    setExplainDrawerOpen(true);
+  }, []);
+
+  // Convert ContentAction to TriggerAction for ExplainabilityDrawer
+  const toTriggerAction = (action: ContentAction): TriggerAction => ({
+    id: action.id,
+    type: action.type === 'execution' ? 'brief_execution' : action.type === 'opportunity' ? 'derivative_generation' : 'authority_optimization',
+    title: action.title,
+    priority: action.priority === 'critical' ? 'urgent' : action.priority === 'high' ? 'high' : 'normal',
+    modeCeiling: action.modeCeiling || 'copilot',
+    citeMindStatus: action.type === 'issue' ? 'warning' : 'passed',
+    pillar: 'content',
+    createdAt: action.createdAt,
+    sourceContext: {
+      briefId: action.relatedEntityId,
+      briefTitle: action.title,
+      keyword: action.relatedEntityId || 'target keyword',
+      assetTitle: action.title,
+    },
+  });
 
   // Empty state - mode-aware messaging
   if (!nextBestAction) {
@@ -388,67 +431,80 @@ function ExecutionGravityPane({
     : undefined;
 
   return (
-    <div className="space-y-4">
-      {/* Header with mode indicator */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h3 className="text-sm font-semibold text-white tracking-tight">{headerText}</h3>
-          <ModeIndicator mode={mode} size="default" />
-          {headerSubtext && (
-            <span className="text-[10px] text-brand-cyan/70">
-              ({headerSubtext})
+    <>
+      <div className="space-y-4">
+        {/* Header with mode indicator */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h3 className="text-sm font-semibold text-white tracking-tight">{headerText}</h3>
+            <ModeIndicator mode={mode} size="default" />
+            {headerSubtext && (
+              <span className="text-[10px] text-brand-cyan/70">
+                ({headerSubtext})
+              </span>
+            )}
+          </div>
+          {prioritizedActions.length > 1 && (
+            <span className="text-[10px] text-white/40">
+              {prioritizedActions.length} {mode === 'autopilot' ? 'exception' : 'total'}{prioritizedActions.length !== 1 ? 's' : ''}
             </span>
           )}
         </div>
-        {prioritizedActions.length > 1 && (
-          <span className="text-[10px] text-white/40">
-            {prioritizedActions.length} {mode === 'autopilot' ? 'exception' : 'total'}{prioritizedActions.length !== 1 ? 's' : ''}
-          </span>
+
+        {/* DOMINANT: Next Best Action Card */}
+        <NextBestActionCard
+          action={nextBestAction}
+          mode={mode}
+          onLaunchOrchestrate={onLaunchOrchestrate}
+          onExplain={() => handleExplain(nextBestAction)}
+        />
+
+        {/* UP NEXT: Secondary actions (max 3, compact) */}
+        {upNextActions.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                {mode === 'autopilot' ? 'More Exceptions' : 'Up Next'}
+              </h4>
+              {remainingCount > 0 && (
+                <button
+                  onClick={onViewAll}
+                  className="text-[10px] text-brand-iris hover:underline transition-colors"
+                >
+                  +{remainingCount} more →
+                </button>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              {upNextActions.map((action) => (
+                <UpNextActionCard
+                  key={action.id}
+                  action={action}
+                  onLaunchOrchestrate={onLaunchOrchestrate}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Autopilot mode explainer - subtle bottom hint */}
+        {mode === 'autopilot' && prioritizedActions.length > 0 && (
+          <p className="text-[10px] text-white/30 text-center pt-2 border-t border-border-subtle">
+            Showing items that require manual review. Routine actions are handled automatically.
+          </p>
         )}
       </div>
 
-      {/* DOMINANT: Next Best Action Card */}
-      <NextBestActionCard
-        action={nextBestAction}
-        mode={mode}
-        onLaunchOrchestrate={onLaunchOrchestrate}
-      />
-
-      {/* UP NEXT: Secondary actions (max 3, compact) */}
-      {upNextActions.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xs font-medium text-white/50 uppercase tracking-wider">
-              {mode === 'autopilot' ? 'More Exceptions' : 'Up Next'}
-            </h4>
-            {remainingCount > 0 && (
-              <button
-                onClick={onViewAll}
-                className="text-[10px] text-brand-iris hover:underline transition-colors"
-              >
-                +{remainingCount} more →
-              </button>
-            )}
-          </div>
-          <div className="space-y-1.5">
-            {upNextActions.map((action) => (
-              <UpNextActionCard
-                key={action.id}
-                action={action}
-                onLaunchOrchestrate={onLaunchOrchestrate}
-              />
-            ))}
-          </div>
-        </div>
+      {/* Explainability Drawer (1-interaction access per UX Continuity Canon) */}
+      {explainAction && (
+        <ExplainabilityDrawer
+          isOpen={explainDrawerOpen}
+          onClose={() => setExplainDrawerOpen(false)}
+          action={toTriggerAction(explainAction)}
+          currentMode={mode}
+        />
       )}
-
-      {/* Autopilot mode explainer - subtle bottom hint */}
-      {mode === 'autopilot' && prioritizedActions.length > 0 && (
-        <p className="text-[10px] text-white/30 text-center pt-2 border-t border-border-subtle">
-          Showing items that require manual review. Routine actions are handled automatically.
-        </p>
-      )}
-    </div>
+    </>
   );
 }
 
@@ -506,26 +562,34 @@ function ModeIndicator({ mode, size = 'default' }: { mode: AutomationMode; size?
  * NextBestActionCard - The singular dominant action card.
  * Visually primary, no scroll required in default viewport.
  * DS v3.1 motion: cubic-bezier(0.16, 1, 0.3, 1)
+ *
+ * Phase 8A: Added explainability chips + "Why this now" affordance.
  */
 function NextBestActionCard({
   action,
   mode,
   onLaunchOrchestrate,
+  onExplain,
 }: {
   action: ContentAction;
   mode: AutomationMode;
   onLaunchOrchestrate?: (actionId: string) => void;
+  onExplain?: () => void;
 }) {
+  // Color semantics: iris for primary/recommended, amber for issues
+  const isIssue = action.type === 'issue';
+
   const priorityStyles = {
     critical: {
-      border: 'border-semantic-danger',
+      border: isIssue ? 'border-semantic-danger' : 'border-semantic-danger',
       glow: 'shadow-[0_0_24px_rgba(239,68,68,0.15)]',
       badge: 'bg-semantic-danger text-white',
     },
     high: {
-      border: 'border-semantic-warning',
-      glow: 'shadow-[0_0_20px_rgba(234,179,8,0.12)]',
-      badge: 'bg-semantic-warning text-black',
+      // Issues use amber, primary actions use iris
+      border: isIssue ? 'border-semantic-warning' : 'border-brand-iris',
+      glow: isIssue ? 'shadow-[0_0_20px_rgba(234,179,8,0.12)]' : 'shadow-[0_0_20px_rgba(168,85,247,0.15)]',
+      badge: isIssue ? 'bg-semantic-warning text-black' : 'bg-brand-iris/20 text-brand-iris',
     },
     medium: {
       border: 'border-brand-iris',
@@ -559,6 +623,28 @@ function NextBestActionCard({
     }
   };
 
+  // Risk color mapping
+  const riskColors = {
+    low: 'text-semantic-success bg-semantic-success/10',
+    medium: 'text-semantic-warning bg-semantic-warning/10',
+    high: 'text-semantic-danger bg-semantic-danger/10',
+    critical: 'text-semantic-danger bg-semantic-danger/10',
+  };
+
+  // Confidence band label
+  const getConfidenceLabel = (confidence: number | undefined): string => {
+    if (confidence === undefined) return '—';
+    if (confidence >= 80) return 'High';
+    if (confidence >= 50) return 'Med';
+    return 'Low';
+  };
+
+  // Mode ceiling label
+  const getModeCeilingLabel = (ceiling: AutomationMode | undefined): string => {
+    if (!ceiling) return '—';
+    return ceiling.charAt(0).toUpperCase() + ceiling.slice(1);
+  };
+
   return (
     <div
       onClick={handleClick}
@@ -588,9 +674,53 @@ function NextBestActionCard({
       </h3>
 
       {/* Summary */}
-      <p className="text-sm text-white/60 mb-4 line-clamp-2">
+      <p className="text-sm text-white/60 mb-3 line-clamp-2">
         {action.summary}
       </p>
+
+      {/* Explainability Chips Row (Phase 8A) */}
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        {/* Impact chip */}
+        <span className="px-2 py-0.5 text-[10px] font-medium text-white/60 bg-slate-4 rounded">
+          Impact: {action.impact?.authority !== undefined ? `+${action.impact.authority}` : '—'}
+          {action.impact?.crossPillar !== undefined && `, +${action.impact.crossPillar} hooks`}
+        </span>
+
+        {/* Confidence chip - TODO: Wire to actual confidence scores */}
+        <span className={`px-2 py-0.5 text-[10px] font-medium rounded ${
+          action.confidence !== undefined
+            ? action.confidence >= 80
+              ? 'text-semantic-success bg-semantic-success/10'
+              : action.confidence >= 50
+              ? 'text-semantic-warning bg-semantic-warning/10'
+              : 'text-white/50 bg-slate-4'
+            : 'text-white/40 bg-slate-4'
+        }`}>
+          Confidence: {getConfidenceLabel(action.confidence)}
+        </span>
+
+        {/* Risk / Mode ceiling chip */}
+        <span className={`px-2 py-0.5 text-[10px] font-medium rounded ${
+          action.risk ? riskColors[action.risk] : 'text-white/40 bg-slate-4'
+        }`}>
+          {action.modeCeiling
+            ? `Ceiling: ${getModeCeilingLabel(action.modeCeiling)}`
+            : action.risk
+            ? `Risk: ${action.risk}`
+            : 'Risk: —'}
+        </span>
+
+        {/* "Why this now" affordance (1-interaction to explainability per UX Continuity Canon) */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onExplain?.();
+          }}
+          className="px-2 py-0.5 text-[10px] font-medium text-brand-iris bg-brand-iris/10 hover:bg-brand-iris/20 rounded transition-colors"
+        >
+          Why this now?
+        </button>
+      </div>
 
       {/* Bottom row: CTA button (primary) */}
       <div className="flex items-center justify-between">
