@@ -738,25 +738,63 @@ function NextBestActionCard({
         {action.summary}
       </p>
 
-      {/* Explainability Chips Row (Phase 8A) */}
+      {/* FOCAL AI STATE ROW - Dedicated row per AI Visual Communication Canon §2 */}
+      <div className={`
+        mb-4 p-3 rounded-lg border
+        ${AI_PERCEPTUAL_SIGNALS[aiState].bg}
+        ${AI_PERCEPTUAL_SIGNALS[aiState].border}
+        ${AI_PERCEPTUAL_SIGNALS[aiState].transition}
+      `}>
+        <div className="flex items-center justify-between">
+          {/* State indicator with label */}
+          <div className="flex items-center gap-3">
+            {/* State dot with appropriate motion */}
+            <span className={`
+              w-3 h-3 rounded-full
+              ${AI_PERCEPTUAL_SIGNALS[aiState].indicator}
+              ${AI_PERCEPTUAL_SIGNALS[aiState].motion}
+            `} />
+            <div>
+              <span className={`text-sm font-semibold ${AI_PERCEPTUAL_SIGNALS[aiState].text}`}>
+                {aiState === 'idle' ? 'Awaiting Input' :
+                 aiState === 'evaluating' ? 'AI Analyzing...' :
+                 aiState === 'ready' ? 'Ready to Execute' :
+                 aiState === 'executing' ? 'Executing...' :
+                 aiState === 'blocked' ? 'Action Blocked' :
+                 'Urgent Attention Required'}
+              </span>
+              <p className="text-[10px] text-white/40 mt-0.5">
+                {aiState === 'idle' && 'System idle, no active AI processing'}
+                {aiState === 'evaluating' && 'AI is preparing recommendations...'}
+                {aiState === 'ready' && 'AI has a recommendation ready for you'}
+                {aiState === 'executing' && 'Action in progress, please wait'}
+                {aiState === 'blocked' && 'Cannot proceed — resolve issues first'}
+                {aiState === 'escalating' && 'Deadline approaching, action needed now'}
+              </p>
+            </div>
+          </div>
+
+          {/* Confidence badge (moved here for focal area) */}
+          {action.confidence !== undefined && (
+            <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${
+              action.confidence >= 80
+                ? 'text-semantic-success bg-semantic-success/15'
+                : action.confidence >= 50
+                ? 'text-semantic-warning bg-semantic-warning/15'
+                : 'text-white/60 bg-slate-4'
+            }`}>
+              {action.confidence >= 80 ? 'High' : action.confidence >= 50 ? 'Med' : 'Low'} Confidence
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Explainability Chips Row (Phase 8A) - condensed */}
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         {/* Impact chip */}
         <span className="px-2 py-0.5 text-[10px] font-medium text-white/60 bg-slate-4 rounded">
           Impact: {action.impact?.authority !== undefined ? `+${action.impact.authority}` : '—'}
           {action.impact?.crossPillar !== undefined && `, +${action.impact.crossPillar} hooks`}
-        </span>
-
-        {/* Confidence chip - TODO: Wire to actual confidence scores */}
-        <span className={`px-2 py-0.5 text-[10px] font-medium rounded ${
-          action.confidence !== undefined
-            ? action.confidence >= 80
-              ? 'text-semantic-success bg-semantic-success/10'
-              : action.confidence >= 50
-              ? 'text-semantic-warning bg-semantic-warning/10'
-              : 'text-white/50 bg-slate-4'
-            : 'text-white/40 bg-slate-4'
-        }`}>
-          Confidence: {getConfidenceLabel(action.confidence)}
         </span>
 
         {/* Risk / Mode ceiling chip */}
@@ -782,27 +820,16 @@ function NextBestActionCard({
         </button>
       </div>
 
-      {/* Bottom row: AI state + CTA button (Phase 9A) */}
+      {/* Bottom row: CTA button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 text-xs text-white/40">
-          {/* Local AI State Indicator (Phase 9A) */}
-          {aiState !== 'idle' && (
-            <span className={`
-              flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-medium
-              ${AI_PERCEPTUAL_SIGNALS[aiState].bg}
-              ${AI_PERCEPTUAL_SIGNALS[aiState].text}
-              ${AI_PERCEPTUAL_SIGNALS[aiState].transition}
-            `}>
-              <AIStateDot state={aiState} size="xs" />
-              {AI_PERCEPTUAL_SIGNALS[aiState].label}
-            </span>
-          )}
-          {isOrchestrationReady && aiState === 'idle' && (
-            <span className="flex items-center gap-1 text-brand-iris">
+          {/* Orchestration ready indicator */}
+          {isOrchestrationReady && (
+            <span className="flex items-center gap-1 text-brand-iris text-[10px]">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Ready to execute
+              Orchestration ready
             </span>
           )}
         </div>
