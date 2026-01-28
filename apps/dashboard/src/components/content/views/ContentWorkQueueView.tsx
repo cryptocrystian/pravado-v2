@@ -147,7 +147,9 @@ function HealthStrip({
       value: citeMindIssueCount,
       suffix: '',
       color: citeMindIssueCount > 0 ? 'text-semantic-warning' : 'text-semantic-success',
-      isAlert: citeMindIssueCount > 0,
+      // Phase 9A: Removed isAlert/animate-pulse per AI_VISUAL_COMMUNICATION_CANON §7.4
+      // "Pulsing indicators on items with no deadline" is manufactured urgency
+      // CiteMind issues have no inherent deadline - warning color alone is sufficient
     },
   ];
 
@@ -164,7 +166,8 @@ function HealthStrip({
             <span className="text-[10px] text-white/40 uppercase tracking-wider whitespace-nowrap">
               {metric.label}
             </span>
-            <span className={`text-lg font-bold ${metric.color} ${metric.isAlert ? 'animate-pulse' : ''}`}>
+            {/* Phase 9A: Removed animate-pulse from isAlert - per §7.4 no pulsing without deadline */}
+            <span className={`text-lg font-bold ${metric.color}`}>
               {metric.value}{metric.suffix}
             </span>
           </div>
@@ -715,8 +718,11 @@ function NextBestActionCard({
           <span className={`px-2 py-1 text-[10px] font-bold uppercase rounded ${style.badge}`}>
             {typeConf.label}
           </span>
+          {/* Phase 9A: Critical indicator without animate-pulse per §7.4
+              Pulse would only be appropriate if there's an actual deadline (escalating state).
+              The AI state indicator now handles urgency signaling semantically. */}
           {action.priority === 'critical' && (
-            <span className="w-2 h-2 rounded-full bg-semantic-danger animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-semantic-danger" />
           )}
         </div>
         <ModeIndicator mode={mode} size="small" />
@@ -826,8 +832,10 @@ function UpNextActionCard({
   action: ContentAction;
   onLaunchOrchestrate?: (actionId: string) => void;
 }) {
+  // Phase 9A: Removed animate-pulse from critical per §7.4 (manufactured urgency)
+  // AI state indicators now handle urgency semantically based on actual deadlines
   const priorityDot = {
-    critical: 'bg-semantic-danger animate-pulse',
+    critical: 'bg-semantic-danger',
     high: 'bg-semantic-warning',
     medium: 'bg-brand-cyan',
     low: 'bg-white/30',
@@ -966,7 +974,9 @@ function ContextPanel({
         <div className="p-3 bg-semantic-warning/5 border border-semantic-warning/20 rounded-lg">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-semantic-warning animate-pulse" />
+              {/* Phase 9A: Removed animate-pulse per §7.4 - no deadline = no pulsing
+                  Warning color alone communicates the blocked/warning state */}
+              <span className="w-2 h-2 rounded-full bg-semantic-warning" />
               <h4 className="text-xs font-semibold text-semantic-warning">CiteMind Issues</h4>
             </div>
             <button

@@ -545,43 +545,30 @@ export function OrchestrationEditorShell({
     }
   }, [onSaveDraft, triggerFlash]);
 
-  // Handle complete with animation
+  // Handle complete - triggers immediate completion with AI state feedback (Phase 9A)
+  // Removed theatrical delay per AI_VISUAL_COMMUNICATION_CANON §7.2
   const handleComplete = useCallback(() => {
     setIsCompleting(true);
-    // Brief delay to show completion animation
-    setTimeout(() => {
-      if (onComplete) {
-        onComplete();
-      }
-    }, 300);
+    // Execute immediately - AI state indicator shows "executing" state
+    if (onComplete) {
+      onComplete();
+    }
   }, [onComplete]);
 
   return (
     <div className="min-h-screen bg-slate-0 flex flex-col relative">
-      {/* Save Flash Overlay (Phase 6A.6) */}
-      {showFlash && (
-        <div
-          className="absolute inset-0 z-50 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at top, rgba(168, 85, 247, 0.1) 0%, transparent 50%)',
-            animation: 'fadeOut 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-          }}
-        />
-      )}
-
-      {/* Completion Overlay (Phase 6A.6) */}
-      {isCompleting && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-0/80 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-semantic-success/20 border-2 border-semantic-success flex items-center justify-center animate-[pulse_0.5s_ease-out]">
-              <svg className="w-6 h-6 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <span className="text-sm text-white/70">Action Complete</span>
-          </div>
-        </div>
-      )}
+      {/*
+       * Phase 9A: Removed theatrical overlays per AI_VISUAL_COMMUNICATION_CANON §7.2
+       *
+       * Previous: Full-screen save flash overlay + completion overlay with pulsing checkmark
+       * These violated §7.2: "Celebratory animations for routine completions"
+       *
+       * Current: Proportional inline feedback via:
+       * - Save: Button text changes to "Saved" with subtle checkmark (line ~660)
+       * - Complete: AI state indicator shows "executing" state (header ambient indicator)
+       *
+       * This maintains Progress Feedback Invariant (§8) while avoiding theatrical motion.
+       */}
 
       {/* Header */}
       <header className="border-b border-[#1A1A24] bg-gradient-to-b from-slate-1 to-transparent shrink-0">
