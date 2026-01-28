@@ -24,7 +24,7 @@ export { ContentWorkSurfaceShell, type ContentWorkSurfaceShellProps } from './Co
 // ============================================
 // VIEWS
 // ============================================
-export { ContentOverviewView } from './views/ContentOverviewView';
+export { ContentWorkQueueView } from './views/ContentWorkQueueView';
 export { ContentLibraryView, AssetDetailPreview } from './views/ContentLibraryView';
 export { ContentCalendarView, ContentAgendaView } from './views/ContentCalendarView';
 export { ContentInsightsView } from './views/ContentInsightsView';
