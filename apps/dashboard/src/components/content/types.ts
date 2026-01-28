@@ -19,7 +19,7 @@ export type BriefStatus = 'draft' | 'approved' | 'in_progress' | 'completed';
 export type SearchIntent = 'informational' | 'navigational' | 'commercial' | 'transactional';
 export type AutomationMode = 'manual' | 'copilot' | 'autopilot';
 export type DensityLevel = 'comfortable' | 'standard' | 'compact';
-export type ContentView = 'overview' | 'library' | 'calendar' | 'insights';
+export type ContentView = 'work-queue' | 'library' | 'calendar' | 'insights';
 
 // ============================================
 // AUTHORITY SIGNALS

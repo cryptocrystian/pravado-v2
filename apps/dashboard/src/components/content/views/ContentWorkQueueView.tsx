@@ -1,22 +1,23 @@
 'use client';
 
 /**
- * Content Overview View v2 - Execution-First Cockpit
+ * Content Work Queue View - Execution-First Landing Surface
  *
- * Phase 5B/5C redesign: Action-first dashboard for Content pillar.
+ * Phase 7: Content Execution Gravity Model implementation.
  *
- * LAYOUT (3 REGIONS):
- * 1) Health Strip - Compact metrics row (Authority Score, CiteMind Status, AI Readiness)
- * 2) Today's Work Action Stack - Primary region with 5-8 prioritized actions
- * 3) Secondary Row - Pipeline counts, Upcoming deadlines, Cross-Pillar Impact
+ * LAYOUT (Execution-First Hierarchy):
+ * 1) Next Best Action - Single dominant action card (no scroll required)
+ * 2) Up Next - Max 3 secondary actions
+ * 3) Secondary Widgets - Pipeline, deadlines, cross-pillar (non-competing)
  *
- * CTA CLUSTER:
- * - New Brief (primary)
- * - Import Content
- * - Fix Issues (if CiteMind issues exist)
- * - Generate Draft
+ * EXECUTION GRAVITY MODEL:
+ * - ONE dominant "Next Best Action" (visually primary)
+ * - Priority: Execution-ready > CiteMind issues > Authority gaps > Scheduled > Optional
+ * - Mode-aware: Autopilot shows only exception/manual-approval items
  *
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
+ * @see /docs/canon/UX_CONTINUITY_CANON.md (Entry Point Invariant)
+ * @see /docs/canon/AUTOMATION_MODES_UX.md
  */
 
 import type {
@@ -52,7 +53,7 @@ interface ContentAction {
   orchestrateActionId?: string;
 }
 
-interface ContentOverviewViewProps {
+interface ContentWorkQueueViewProps {
   /** Aggregate authority signals */
   signals: AuthoritySignals | null;
   /** Topic clusters (themes) */
@@ -63,7 +64,7 @@ interface ContentOverviewViewProps {
   briefs: ContentBrief[];
   /** Content assets (for pipeline counts) */
   assets?: ContentAsset[];
-  /** Current automation mode */
+  /** Current automation mode - determines filtering (Autopilot = exception queue) */
   mode?: AutomationMode;
   /** Loading state */
   isLoading: boolean;
@@ -79,7 +80,7 @@ interface ContentOverviewViewProps {
   onGenerateDraft?: () => void;
   onViewCluster?: (clusterId: string) => void;
   onViewCalendar?: () => void;
-  /** Launch orchestration editor for a specific action (Phase 6A.7) */
+  /** Launch orchestration editor for a specific action */
   onLaunchOrchestrate?: (actionId: string) => void;
 }
 
@@ -662,13 +663,13 @@ function ThemeOpportunityCard({
 // MAIN COMPONENT
 // ============================================
 
-export function ContentOverviewView({
+export function ContentWorkQueueView({
   signals,
   clusters,
   gaps,
   briefs,
   assets = [],
-  mode = 'copilot',
+  mode = 'manual', // Default to manual (most restrictive) per AUTOMATE governance
   isLoading,
   error,
   onViewLibrary,
@@ -681,7 +682,7 @@ export function ContentOverviewView({
   onViewCluster,
   onViewCalendar,
   onLaunchOrchestrate,
-}: ContentOverviewViewProps) {
+}: ContentWorkQueueViewProps) {
   // Loading state
   if (isLoading) {
     return <ContentLoadingSkeleton type="dashboard" />;
@@ -692,21 +693,21 @@ export function ContentOverviewView({
     return (
       <div className="p-4">
         <div className="p-4 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg">
-          <h4 className="text-sm font-semibold text-semantic-danger">Failed to load overview</h4>
+          <h4 className="text-sm font-semibold text-semantic-danger">Failed to load work queue</h4>
           <p className="text-xs text-white/55 mt-1">{error.message}</p>
         </div>
       </div>
     );
   }
 
-  // Empty state
+  // Empty state - execution-oriented messaging
   const hasData = signals || clusters.length > 0 || gaps.length > 0 || briefs.length > 0;
   if (!hasData) {
     return (
       <ContentEmptyState
-        view="overview"
-        onAction={onViewLibrary}
-        actionLabel="Create Content"
+        view="work-queue"
+        onAction={onGenerateBrief}
+        actionLabel="Create Your First Brief"
       />
     );
   }

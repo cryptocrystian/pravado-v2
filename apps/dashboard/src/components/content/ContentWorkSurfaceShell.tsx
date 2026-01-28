@@ -54,13 +54,13 @@ interface ViewTabConfig {
 
 const VIEW_TABS: ViewTabConfig[] = [
   {
-    key: 'overview',
-    label: 'Overview',
-    description: 'Authority signals and content health',
+    key: 'work-queue',
+    label: 'Work Queue',
+    description: 'Prioritized actions awaiting execution',
     modeCeiling: 'copilot',
     icon: (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
       </svg>
     ),
   },
@@ -104,16 +104,16 @@ const VIEW_TABS: ViewTabConfig[] = [
 // ============================================
 
 const PAGE_CONTEXT: Record<ContentView, { purpose: string; aiCapabilities: string[]; manualRequired: string[] }> = {
-  overview: {
-    purpose: 'Your content authority dashboard. Monitor signals, track health, and identify opportunities.',
+  'work-queue': {
+    purpose: 'Your execution command center. See the single most important action, approve proposals, and build authority through action.',
     aiCapabilities: [
-      'Calculate authority contribution scores',
-      'Detect content gaps and opportunities',
-      'Generate performance insights',
+      'Prioritize actions by impact and urgency',
+      'Propose next best content action',
+      'Generate execution-ready briefs',
     ],
     manualRequired: [
-      'Creating new briefs',
-      'Approving content for publication',
+      'Approving proposed actions',
+      'Executing high-risk content changes',
     ],
   },
   library: {

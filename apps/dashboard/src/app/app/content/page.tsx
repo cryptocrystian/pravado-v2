@@ -2,9 +2,10 @@
  * Content Pillar Dashboard
  *
  * Main entry point for the Content Work Surface.
- * Uses canon-required views: Overview, Library, Calendar, Insights.
+ * Uses canon-required views: Work Queue (execution-first), Library, Calendar, Insights.
  *
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
+ * @see /docs/canon/UX_CONTINUITY_CANON.md (Entry Point Invariant)
  */
 
 'use client';
@@ -16,7 +17,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ContentWorkSurfaceShell,
-  ContentOverviewView,
+  ContentWorkQueueView,
   ContentLibraryView,
   ContentCalendarView,
   ContentInsightsView,
@@ -196,8 +197,8 @@ const MOCK_CLUSTERS = [
 export default function ContentPage() {
   const router = useRouter();
 
-  // View state
-  const [activeView, setActiveView] = useState<ContentView>('overview');
+  // View state - default to 'work-queue' for execution-first entry (UX Continuity Canon)
+  const [activeView, setActiveView] = useState<ContentView>('work-queue');
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
 
   // Data hooks (using mock data for now, will use real hooks when API routes are ready)
@@ -287,9 +288,9 @@ export default function ContentPage() {
   // Render active view
   const renderActiveView = () => {
     switch (activeView) {
-      case 'overview':
+      case 'work-queue':
         return (
-          <ContentOverviewView
+          <ContentWorkQueueView
             signals={signals}
             clusters={clusters}
             gaps={gaps}
