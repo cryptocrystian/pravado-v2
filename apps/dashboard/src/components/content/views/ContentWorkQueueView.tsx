@@ -272,6 +272,31 @@ function selectPrioritizedActions(actions: ContentAction[]): ContentAction[] {
 // NEXT BEST ACTION + UP NEXT LAYOUT
 // ============================================
 
+/**
+ * Filter actions based on automation mode.
+ *
+ * MODE-AWARE FILTERING (AUTOMATE governance):
+ * - Manual/Copilot: Full priority model (all actions)
+ * - Autopilot: Exception queue only (issues + critical execution requiring manual approval)
+ *
+ * @see /docs/canon/AUTOMATION_MODES_UX.md
+ */
+function filterActionsByMode(actions: ContentAction[], mode: AutomationMode): ContentAction[] {
+  if (mode === 'autopilot') {
+    // Autopilot = Exception Queue: only manual-approval items
+    // - Issues (CiteMind, ingestibility) always require attention
+    // - Critical execution items that can't be auto-handled
+    return actions.filter(
+      (action) =>
+        action.type === 'issue' ||
+        (action.type === 'execution' && action.priority === 'critical') ||
+        action.priority === 'critical'
+    );
+  }
+  // Manual/Copilot: full priority model
+  return actions;
+}
+
 function ExecutionGravityPane({
   actions,
   mode,
@@ -283,13 +308,17 @@ function ExecutionGravityPane({
   onLaunchOrchestrate?: (actionId: string) => void;
   onViewAll?: () => void;
 }) {
-  // Apply priority scoring to get Next Best Action
-  const prioritizedActions = selectPrioritizedActions(actions);
+  // Apply mode-aware filtering THEN priority scoring
+  const modeFilteredActions = filterActionsByMode(actions, mode);
+  const prioritizedActions = selectPrioritizedActions(modeFilteredActions);
   const nextBestAction = prioritizedActions[0] || null;
   const upNextActions = prioritizedActions.slice(1, 4); // Max 3 "Up Next"
   const remainingCount = prioritizedActions.length - 4;
 
-  // Empty state - execution-oriented
+  // Track how many actions were filtered out in Autopilot mode
+  const filteredOutCount = mode === 'autopilot' ? actions.length - modeFilteredActions.length : 0;
+
+  // Empty state - mode-aware messaging
   if (!nextBestAction) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
@@ -298,25 +327,52 @@ function ExecutionGravityPane({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-white mb-1">All Clear</h3>
-        <p className="text-sm text-white/50 max-w-sm">
-          No pending actions. Your content authority is building steadily.
-        </p>
+        {mode === 'autopilot' ? (
+          <>
+            <h3 className="text-lg font-semibold text-white mb-1">Autopilot Active</h3>
+            <p className="text-sm text-white/50 max-w-sm">
+              No exceptions requiring manual attention.
+              {filteredOutCount > 0 && (
+                <span className="block mt-1 text-brand-cyan">
+                  {filteredOutCount} routine {filteredOutCount === 1 ? 'action' : 'actions'} being handled automatically.
+                </span>
+              )}
+            </p>
+          </>
+        ) : (
+          <>
+            <h3 className="text-lg font-semibold text-white mb-1">All Clear</h3>
+            <p className="text-sm text-white/50 max-w-sm">
+              No pending actions. Your content authority is building steadily.
+            </p>
+          </>
+        )}
       </div>
     );
   }
+
+  // Header text varies by mode
+  const headerText = mode === 'autopilot' ? 'Exception Queue' : 'Next Best Action';
+  const headerSubtext = mode === 'autopilot' && filteredOutCount > 0
+    ? `${filteredOutCount} auto-handled`
+    : undefined;
 
   return (
     <div className="space-y-4">
       {/* Header with mode indicator */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h3 className="text-sm font-semibold text-white tracking-tight">Next Best Action</h3>
+          <h3 className="text-sm font-semibold text-white tracking-tight">{headerText}</h3>
           <ModeIndicator mode={mode} size="default" />
+          {headerSubtext && (
+            <span className="text-[10px] text-brand-cyan/70">
+              ({headerSubtext})
+            </span>
+          )}
         </div>
         {prioritizedActions.length > 1 && (
           <span className="text-[10px] text-white/40">
-            {prioritizedActions.length} total
+            {prioritizedActions.length} {mode === 'autopilot' ? 'exception' : 'total'}{prioritizedActions.length !== 1 ? 's' : ''}
           </span>
         )}
       </div>
@@ -332,11 +388,13 @@ function ExecutionGravityPane({
       {upNextActions.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-medium text-white/50 uppercase tracking-wider">Up Next</h4>
+            <h4 className="text-xs font-medium text-white/50 uppercase tracking-wider">
+              {mode === 'autopilot' ? 'More Exceptions' : 'Up Next'}
+            </h4>
             {remainingCount > 0 && (
               <button
                 onClick={onViewAll}
-                className="text-[10px] text-brand-iris hover:underline"
+                className="text-[10px] text-brand-iris hover:underline transition-colors"
               >
                 +{remainingCount} more →
               </button>
@@ -353,22 +411,58 @@ function ExecutionGravityPane({
           </div>
         </div>
       )}
+
+      {/* Autopilot mode explainer - subtle bottom hint */}
+      {mode === 'autopilot' && prioritizedActions.length > 0 && (
+        <p className="text-[10px] text-white/30 text-center pt-2 border-t border-border-subtle">
+          Showing items that require manual review. Routine actions are handled automatically.
+        </p>
+      )}
     </div>
   );
 }
 
+/**
+ * ModeIndicator - Shows current automation mode with visual differentiation.
+ * DS v3.1 compliant with subtle iconography.
+ */
 function ModeIndicator({ mode, size = 'default' }: { mode: AutomationMode; size?: 'default' | 'small' }) {
   const modeConfig = {
-    manual: { label: 'Manual', color: 'text-white/60 bg-white/10 border-white/10', icon: '🔒' },
-    copilot: { label: 'Copilot', color: 'text-brand-cyan bg-brand-cyan/15 border-brand-cyan/20', icon: '🤝' },
-    autopilot: { label: 'Autopilot', color: 'text-semantic-success bg-semantic-success/15 border-semantic-success/20', icon: '⚡' },
+    manual: {
+      label: 'Manual',
+      color: 'text-white/60 bg-white/5 border-white/10',
+      icon: (
+        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+      ),
+    },
+    copilot: {
+      label: 'Copilot',
+      color: 'text-brand-cyan bg-brand-cyan/10 border-brand-cyan/20',
+      icon: (
+        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ),
+    },
+    autopilot: {
+      label: 'Autopilot',
+      color: 'text-semantic-success bg-semantic-success/10 border-semantic-success/20',
+      icon: (
+        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      ),
+    },
   };
 
   const config = modeConfig[mode];
-  const sizeClass = size === 'small' ? 'px-1.5 py-0.5 text-[9px]' : 'px-2 py-1 text-[10px]';
+  const sizeClass = size === 'small' ? 'px-1.5 py-0.5 text-[9px] gap-1' : 'px-2 py-1 text-[10px] gap-1.5';
 
   return (
-    <span className={`${sizeClass} font-medium uppercase rounded border ${config.color}`}>
+    <span className={`${sizeClass} font-medium uppercase rounded border flex items-center ${config.color} transition-colors duration-150`}>
+      {config.icon}
       {config.label}
     </span>
   );
