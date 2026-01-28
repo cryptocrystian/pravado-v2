@@ -17,6 +17,11 @@
 
 import { useState, type ReactNode } from 'react';
 import { modeStyles } from './prWorkSurfaceStyles';
+import {
+  AmbientAIIndicator,
+  deriveAIPerceptualState,
+  type AIPerceptualState,
+} from '@/components/ai';
 
 // Tab configuration
 export type PRTab = 'inbox' | 'overview' | 'database' | 'pitches' | 'coverage' | 'distribution' | 'settings';
@@ -329,9 +334,11 @@ interface Props {
   activeTab: PRTab;
   onTabChange: (tab: PRTab) => void;
   children: ReactNode;
+  /** Optional AI state for ambient indicator */
+  aiState?: AIPerceptualState;
 }
 
-export function PRWorkSurfaceShell({ activeTab, onTabChange, children }: Props) {
+export function PRWorkSurfaceShell({ activeTab, onTabChange, children, aiState = 'idle' }: Props) {
   const [isExplainOpen, setIsExplainOpen] = useState(false);
   const activeTabConfig = TABS.find((t) => t.id === activeTab);
   const modeConfig = modeStyles[activeTabConfig?.modeCeiling || 'manual'];
@@ -363,6 +370,9 @@ export function PRWorkSurfaceShell({ activeTab, onTabChange, children }: Props) 
                   <ModeIcon mode={activeTabConfig?.modeCeiling || 'manual'} />
                   <span className={`text-xs font-medium ${modeConfig.text}`}>{modeConfig.label}</span>
                 </div>
+
+                {/* Ambient AI State Indicator - per AI_VISUAL_COMMUNICATION_CANON §2 */}
+                <AmbientAIIndicator state={aiState} showLabel size="sm" />
               </div>
 
               {/* Quick Actions */}
