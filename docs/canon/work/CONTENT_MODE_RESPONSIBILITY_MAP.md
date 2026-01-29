@@ -37,6 +37,7 @@ This map defines what MUST be visible, editable, hidden, and primary-action per 
 |-------------------|--------|---------|-----------|-------|
 | **Queue ordering control** (re-rank/pin/batch) | REQUIRED | ALLOWED | SUPPRESSED | Per `AUTOMATION_MODE_CONTRACTS_CANON.md`: Manual = user controls ordering; Copilot = AI orders, user may override; Autopilot = only exceptions surface |
 | **Plan reasoning + step structure** | SUPPRESSED | REQUIRED | ALLOWED | Copilot must show AI reasoning prominently; Autopilot may show reasoning for exceptions only |
+| **Plan reasoning persistence** (after approval) | SUPPRESSED | REQUIRED (archived, collapsed) | ALLOWED | **RESOLVED:** After Copilot approval, reasoning is archived and collapsed (never removed); attached to action history/execution record |
 | **Approval gate / confirmation moments** | SUPPRESSED | REQUIRED | REQUIRED (for escalations) | Copilot requires explicit approval; Autopilot escalates high-risk actions |
 | **Inline editor (full editing)** | REQUIRED | ALLOWED | SUPPRESSED | Manual is editor-forward; Copilot editing is contextual/staged; Autopilot has no dense creation interfaces |
 | **Preview-only content view** | ALLOWED | REQUIRED | REQUIRED | Copilot/Autopilot show content as preview; user reviews rather than drafts |
@@ -44,13 +45,16 @@ This map defines what MUST be visible, editable, hidden, and primary-action per 
 | **CiteMind gating consequences** (blocked/warning states) | REQUIRED | REQUIRED | REQUIRED | Must always show why publishing is blocked or warned |
 | **Entity checklist + constraint satisfaction view** | REQUIRED | REQUIRED | ALLOWED | Brief constraints and entity associations visible for review; Autopilot surfaces only violations |
 | **Confidence + risk + reversibility signaling** | ALLOWED | REQUIRED | REQUIRED | Per `AI_VISUAL_COMMUNICATION_CANON.md`: users must perceive confidence and reversibility before action |
+| **Low-confidence fallback gate** (confidence < 0.70) | N/A | REQUIRED | N/A | **RESOLVED:** If Copilot confidence < 0.70, item auto-falls back to Manual-required posture. Treated as behavioral gate equivalent to mode ceiling. |
 | **Explainability access (Level 1: User Summary)** | ALLOWED | REQUIRED | REQUIRED | Per `AUTOMATE_EXECUTION_MODEL.md` Section 7.2: always available on demand |
 | **Explainability access (Level 2: Technical Detail)** | ALLOWED | ALLOWED | ALLOWED | Available on drill-down for all modes |
 | **Explainability access (Level 3: Causal Chain)** | SUPPRESSED | ALLOWED | REQUIRED | Autopilot users need causal understanding of automated actions |
 | **Audit log / "auto-handled" ledger** | ALLOWED | ALLOWED | REQUIRED | Autopilot must show audit trail prominently |
-| **Cross-pillar impact visibility** (PR/SEO hooks) | REQUIRED | REQUIRED | ALLOWED | Per `UX_CONTINUITY_CANON.md` Section 7: actions in one pillar visibly affect related pillars |
+| **Supervised items count** (proof-of-work) | SUPPRESSED | SUPPRESSED | REQUIRED (ambient) | **RESOLVED:** Quiet count shown even when exceptions=0; ambient system feedback (no CTA, no urgency, no pulse) |
+| **Cross-pillar impact visibility** (PR/SEO hooks) | REQUIRED | REQUIRED | READ-ONLY (collapsed) | **RESOLVED:** Per `UX_CONTINUITY_CANON.md` Section 7; Autopilot shows as compact summary, collapsed by default, expandable |
 | **Temporal urgency / deadlines** | REQUIRED | REQUIRED | REQUIRED | Time-sensitive actions must communicate urgency proportionally |
 | **Progress indication** (evaluating/executing states) | ALLOWED | REQUIRED | REQUIRED | Per `AI_VISUAL_COMMUNICATION_CANON.md`: AI states must be visually distinguishable |
+| **Mode ceiling enforcement** (Manual-only actions) | N/A | REQUIRED | REQUIRED | **RESOLVED:** Inline lock + one-interaction explanation + "Switch to Manual to continue". No blocking modal. |
 
 ---
 
@@ -63,16 +67,18 @@ For each Content surface, define which affordance becomes **dominant** (not layo
 | Mode | Dominant Affordance |
 |------|---------------------|
 | **Manual** | Full queue with direct manipulation, filter controls, density-adaptive cards, manual prioritization |
-| **Copilot** | AI-prioritized queue with reasoning badges, approval actions, plan summary overlay |
-| **Autopilot** | Exception-only list (blocked, failed, escalated), "all clear" empty state valid, audit summary |
+| **Copilot** | AI-prioritized queue with reasoning badges, approval actions, plan summary overlay; low-confidence items (<0.70) show Manual-required gate |
+| **Autopilot** | Exception-only list (blocked, failed, escalated), "all clear" empty state valid, audit summary, **ambient "supervised items" count** (proof-of-work indicator, no CTA/urgency) |
 
 ### 4.2 Orchestration Editor (`/app/content/orchestrate/[actionId]`)
+
+> **Contract Note:** This route is an **allowed execution surface** for the Content pillar. Requires update to `CONTENT_WORK_SURFACE_CONTRACT.md` to formally include the route.
 
 | Mode | Dominant Affordance |
 |------|---------------------|
 | **Manual** | Step-by-step manual configuration, entity binding controls, derivative target selection |
-| **Copilot** | AI-proposed plan with step breakdown, approve/reject per step, reasoning visible per step |
-| **Autopilot** | Read-only execution trace, escalation points highlighted, intervention affordances only at blocks |
+| **Copilot** | AI-proposed plan with step breakdown, approve/reject per step, reasoning visible per step, archived reasoning attached to execution record |
+| **Autopilot** | Read-only execution trace, escalation points highlighted, intervention affordances only at blocks, mode ceiling enforcement via inline lock |
 
 ### 4.3 Asset Work Surface (`/app/content/asset/[id]`)
 
@@ -118,33 +124,43 @@ For each Content surface, define which affordance becomes **dominant** (not layo
 1. User enters Copilot mode for Content pillar
 2. AI state: `evaluating` → scans briefs, deadlines, entity context
 3. AI state: `ready` → presents prioritized queue with reasoning badges
-4. User selects item → AI proposes plan (brief → draft → review → derivatives)
-5. Plan reasoning shown: "Recommended because: [signal], Confidence: 0.87, Risk: Low"
-6. User reviews plan steps → approves or modifies
-7. AI state: `executing` → generates draft
-8. AI state: `ready` → presents draft for approval
-9. User reviews draft in preview-forward view
-10. CiteMind gating visible → shows `passed` or escalates issues
-11. User approves final → AI generates derivatives
-12. Publishing still requires Manual mode (mode ceiling per `CONTENT_WORK_SURFACE_CONTRACT.md` Section 7.4)
+4. **Low-confidence gate:** Items with confidence < 0.70 show Manual-required indicator; user must switch to Manual to proceed with those items
+5. User selects eligible item → AI proposes plan (brief → draft → review → derivatives)
+6. Plan reasoning shown: "Recommended because: [signal], Confidence: 0.87, Risk: Low"
+7. User reviews plan steps → approves or modifies
+8. AI state: `executing` → generates draft
+9. AI state: `ready` → presents draft for approval
+10. User reviews draft in preview-forward view
+11. CiteMind gating visible → shows `passed` or escalates issues
+12. User approves final → **reasoning archived and collapsed** (attached to execution record) → AI generates derivatives
+13. **Mode ceiling enforcement:** Publishing shows inline lock + "Switch to Manual to continue" (no modal)
 
 **Flow 2: Brief Review**
 1. AI generates brief from strategy inputs
 2. AI state: `ready` → presents brief with reasoning
 3. User reviews strategic objective, allowed assertions, required citations
 4. Explainability Level 2 available: confidence scores per recommendation
-5. User approves or requests regeneration
+5. User approves → **reasoning archived and collapsed** in action history
+6. User requests regeneration if needed
+
+**Flow 3: Low-Confidence Fallback**
+1. AI evaluates item → confidence = 0.65 (below 0.70 threshold)
+2. Item displays Manual-required gate (behavioral gate equivalent to mode ceiling)
+3. User cannot approve in Copilot; must switch to Manual mode
+4. Reasoning shows: "Confidence below threshold. Manual review required."
 
 ### 5.3 Autopilot Mode Flow
 
 **Flow 1: Routine Monitoring**
 1. User enters Autopilot mode for Content pillar
 2. AI state: `executing` (background operations)
-3. Work Queue shows only: exceptions, failures, escalations
-4. "All clear" empty state is valid and expected
-5. Quality analysis runs automatically → results surface only if issues found
-6. Optimization suggestions generated → user sees recommendation cards
-7. Audit log shows "auto-handled" ledger with timestamps
+3. **Supervised items count** displayed as ambient indicator: "12 items supervised" (no CTA, no urgency, no pulse)
+4. Work Queue shows only: exceptions, failures, escalations
+5. "All clear" empty state is valid and expected; supervised count provides proof-of-work
+6. **Cross-pillar hooks** shown as READ-ONLY compact summary, collapsed by default; expandable for detail
+7. Quality analysis runs automatically → results surface only if issues found
+8. Optimization suggestions generated → user sees recommendation cards
+9. Audit log shows "auto-handled" ledger with timestamps
 
 **Flow 2: Exception Handling**
 1. AI state: `blocked` → CiteMind gate failure detected on scheduled content
@@ -152,6 +168,13 @@ For each Content surface, define which affordance becomes **dominant** (not layo
 3. Explainability Level 3 (Causal Chain) shown: "Signal → Analysis → Block reason"
 4. User reviews issue → resolves in Manual mode or delegates
 5. After resolution, item returns to autopilot flow
+
+**Flow 3: Mode Ceiling Encounter**
+1. User attempts Manual-only action (e.g., Publish) while in Autopilot
+2. **Inline lock** displayed on action affordance
+3. **One-interaction explanation:** "Publishing requires Manual mode for explicit approval"
+4. **Call-to-action:** "Switch to Manual to continue"
+5. No blocking modal; user retains context and can switch modes in place
 
 **Note:** Per `CONTENT_WORK_SURFACE_CONTRACT.md` Section 7.4, only quality analysis and optimization suggestions are Autopilot-eligible. Draft creation, brief generation, derivative generation, and publishing have lower mode ceilings.
 
@@ -173,19 +196,37 @@ For each Content surface, define which affordance becomes **dominant** (not layo
 | 10 | **Progress states ambiguous** | Evaluating looks like Ready looks like Executing | User cannot tell if AI is working or waiting; premature actions or missed windows |
 | 11 | **Reversibility unclear** | Irreversible actions (publish) feel casual | Users execute without understanding consequences; brand damage |
 | 12 | **Plan steps not inspectable** | Copilot shows outcome but not the plan structure | Users approve black box; cannot verify reasoning; accountability unclear |
+| 13 | **Autopilot feels dead** | Supervised items count missing; no proof-of-work visible | Users distrust Autopilot is actually working; revert to lower modes unnecessarily |
+| 14 | **Low-confidence items proceed unchecked** | Confidence <0.70 items proceed in Copilot without fallback gate | Users approve items AI is uncertain about; failure rate increases; trust erodes |
+| 15 | **Reasoning lost after approval** | Plan reasoning removed instead of archived | Cannot audit why decisions were made; compliance gap; no learning from history |
+| 16 | **Mode ceiling feels like error** | Modal blocks user; no explanation of why action requires different mode | Users frustrated; perceive system as broken rather than governed |
+| 17 | **Cross-pillar hooks dominate Autopilot** | Hooks shown prominently, expanded by default in Autopilot | Cognitive load increases; exception console becomes cluttered dashboard |
 
 ---
 
 ## 7. Open Questions
 
+All prior open questions have been resolved. See Resolved Decisions section below.
+
 | # | Question | Impact if Unresolved |
 |---|----------|---------------------|
-| 1 | **Should Autopilot show a "supervised items" count even when queue is empty?** | Without this, users may not trust that Autopilot is actually working. However, it may add noise. |
-| 2 | **When Copilot AI confidence is below 0.70, should the item fall back to Manual automatically or show a warning in Copilot?** | Per `AUTOMATE_EXECUTION_MODEL.md`, <0.70 is Manual-only, but UX for this transition is undefined. |
-| 3 | **How should the Orchestration Editor surface per mode?** | This route (`/app/content/orchestrate/[actionId]`) is not in `CONTENT_WORK_SURFACE_CONTRACT.md` routes—is it a planned addition or should it map to existing routes? ASSUMPTION: This is a future addition or a deep-link into action details. |
-| 4 | **Should cross-pillar hooks in Autopilot be suppressed or read-only?** | Autopilot should minimize cognitive load, but hiding cross-pillar effects may violate `UX_CONTINUITY_CANON.md` Section 7. |
-| 5 | **What is the UX for mode ceiling enforcement?** | When a user in Autopilot tries to publish (Manual-only action), how is the ceiling communicated? Inline? Modal? |
-| 6 | **Should plan reasoning persist after approval in Copilot?** | Once approved, is the reasoning archived, collapsed, or removed? Affects auditability vs. density. |
+| 1 | **What is the visual treatment for "supervised items" count?** | Implementation detail: typography, placement, icon choice. Does not affect behavior but needs design spec. |
+| 2 | **How should the Orchestration Editor route be added to the contract?** | Route is allowed per this spec; formal addition to `CONTENT_WORK_SURFACE_CONTRACT.md` is a procedural follow-up. |
+
+---
+
+## 7.1 Resolved Decisions
+
+The following questions were resolved with product decisions:
+
+| Original Question | Resolution |
+|-------------------|------------|
+| Should Autopilot show a "supervised items" count even when queue is empty? | **YES.** Display as ambient proof-of-work indicator. No CTA, no urgency, no pulse. |
+| When Copilot AI confidence is below 0.70, should the item fall back to Manual automatically or show a warning in Copilot? | **Auto-fallback.** Item auto-falls back to Manual-required posture. Treated as behavioral gate equivalent to mode ceiling. |
+| How should the Orchestration Editor surface per mode? | **Allowed execution surface.** Mark `/app/content/orchestrate/[actionId]` as allowed; requires update to `CONTENT_WORK_SURFACE_CONTRACT.md` to formally include. |
+| Should cross-pillar hooks in Autopilot be suppressed or read-only? | **READ-ONLY, collapsed by default.** Visible only as compact summary unless expanded. Preserves cross-pillar awareness without adding noise. |
+| What is the UX for mode ceiling enforcement? | **Inline lock + one-interaction explanation.** Show lock on action, explain why, offer "Switch to Manual to continue". No blocking modal. |
+| Should plan reasoning persist after approval in Copilot? | **Archived and collapsed (never removed).** Attach to action history/execution record for auditability. |
 
 ---
 
@@ -210,3 +251,4 @@ This working spec synthesizes the following canonical documents:
 | Date | Version | Change |
 |------|---------|--------|
 | 2026-01-29 | 0.1 | Initial working spec |
+| 2026-01-29 | 0.2 | Resolved open questions: Autopilot proof-of-work, low-confidence fallback, orchestration route, cross-pillar hooks, mode ceiling UX, reasoning persistence |
