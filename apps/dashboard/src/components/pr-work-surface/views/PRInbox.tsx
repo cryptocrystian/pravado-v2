@@ -29,9 +29,12 @@ import { priorityStyles, modeStyles, eviDriverStyles } from '../prWorkSurfaceSty
 import {
   LocalAIIndicator,
   AIStateDot,
+  AmbientAIIndicator,
   deriveUrgencyFromDeadline,
   type AIPerceptualState,
 } from '@/components/ai';
+import { useMode } from '@/lib/ModeContext';
+import type { AutomationMode } from '@/lib/mode-preferences';
 
 // ============================================
 // API TYPES & FETCHER
@@ -345,6 +348,257 @@ const MOCK_INBOX_ITEMS: InboxItem[] = [
 ];
 
 // ============================================
+// MODE-EXPRESSIVE COMPONENTS (Phase 10B)
+// ============================================
+
+/**
+ * Mock queue reasoning data for Copilot mode.
+ * Shows top 3 reasons why the current ordering was chosen.
+ */
+const MOCK_PR_QUEUE_REASONING = [
+  {
+    id: 'reason-1',
+    factor: 'Deadline Urgency',
+    explanation: 'TechCrunch inquiry has 3-hour deadline, prioritizing time-sensitive responses.',
+    weight: 'High',
+  },
+  {
+    id: 'reason-2',
+    factor: 'Relationship Value',
+    explanation: 'Sarah Chen is a Tier-1 contact with 85% relationship score.',
+    weight: 'High',
+  },
+  {
+    id: 'reason-3',
+    factor: 'EVI Impact',
+    explanation: 'Coverage opportunity contributes +8 EVI points to visibility driver.',
+    weight: 'Medium',
+  },
+];
+
+/**
+ * Mock audit log entries for Autopilot mode.
+ * Shows recently auto-handled items.
+ */
+const MOCK_PR_AUDIT_LOG = [
+  { id: 'audit-1', title: 'Follow-up sent to Michael Park', type: 'follow_up', time: '3 min ago', status: 'completed' },
+  { id: 'audit-2', title: 'Coverage attributed to pitch', type: 'coverage', time: '8 min ago', status: 'completed' },
+  { id: 'audit-3', title: 'Data enrichment applied', type: 'data', time: '15 min ago', status: 'completed' },
+  { id: 'audit-4', title: 'Relationship score updated', type: 'relationship', time: '22 min ago', status: 'completed' },
+  { id: 'audit-5', title: 'Draft pitch generated', type: 'draft', time: '30 min ago', status: 'pending_approval' },
+];
+
+/**
+ * Queue Reasoning Panel - Copilot mode explainability
+ * Shows why AI ordered the queue this way.
+ */
+function QueueReasoningPanel({
+  isOpen,
+  onClose,
+  reasons = MOCK_PR_QUEUE_REASONING,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  reasons?: typeof MOCK_PR_QUEUE_REASONING;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="mb-4 p-4 bg-brand-magenta/5 border border-brand-magenta/20 rounded-lg">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="w-4 h-4 text-brand-magenta" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+          <span className="text-sm font-semibold text-brand-magenta">Why This Ordering</span>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-1 text-white/40 hover:text-white rounded transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div className="space-y-2">
+        {reasons.map((reason, index) => (
+          <div key={reason.id} className="flex items-start gap-3 p-2 bg-[#111116] rounded">
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-magenta/20 text-brand-magenta text-[10px] font-bold shrink-0">
+              {index + 1}
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-white">{reason.factor}</span>
+                <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded ${
+                  reason.weight === 'High' ? 'text-brand-magenta bg-brand-magenta/10' : 'text-white/50 bg-white/5'
+                }`}>
+                  {reason.weight}
+                </span>
+              </div>
+              <p className="text-[11px] text-white/50 mt-0.5">{reason.explanation}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="text-[10px] text-white/30 mt-3 text-center">
+        AI re-evaluates ordering when new actions arrive or context changes.
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Audit Log Panel - Autopilot mode transparency
+ * Shows recently auto-handled items for user awareness.
+ */
+function AuditLogPanel({ entries = MOCK_PR_AUDIT_LOG }: { entries?: typeof MOCK_PR_AUDIT_LOG }) {
+  const typeIcons: Record<string, JSX.Element> = {
+    follow_up: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+    coverage: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>,
+    data: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>,
+    relationship: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+    draft: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
+  };
+
+  return (
+    <div className="pt-3 border-t border-[#1A1A24]">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+            Audit Log
+          </h4>
+          <span className="px-1.5 py-0.5 text-[9px] font-medium text-semantic-success bg-semantic-success/10 rounded">
+            Live
+          </span>
+        </div>
+        <span className="text-[10px] text-white/30">Auto-executed by AUTOMATE</span>
+      </div>
+      <div className="space-y-1 max-h-[180px] overflow-y-auto">
+        {entries.slice(0, 5).map((item) => (
+          <div
+            key={item.id}
+            className="flex items-center justify-between px-2.5 py-2 bg-[#111116] hover:bg-[#151520] rounded text-[10px] transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <span className={item.status === 'completed' ? 'text-semantic-success' : 'text-semantic-warning'}>
+                {typeIcons[item.type] || typeIcons.draft}
+              </span>
+              <span className="text-white/60">{item.title}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className={`px-1 py-0.5 rounded text-[8px] font-medium ${
+                item.status === 'completed' ? 'text-semantic-success bg-semantic-success/10' :
+                item.status === 'pending_approval' ? 'text-semantic-warning bg-semantic-warning/10' :
+                'text-white/40 bg-white/5'
+              }`}>
+                {item.status === 'pending_approval' ? 'needs approval' : item.status}
+              </span>
+              <span className="text-white/30">{item.time}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button className="w-full mt-2 py-1.5 text-[10px] text-brand-magenta hover:bg-brand-magenta/5 rounded transition-colors">
+        View Full Audit Log →
+      </button>
+    </div>
+  );
+}
+
+/**
+ * Mode behavior configuration for PR Inbox.
+ * Per UX_CONTINUITY_CANON: Mode must be perceptible by observing for 3 seconds.
+ */
+const PR_MODE_BEHAVIOR = {
+  manual: {
+    descriptor: 'You triage and decide. AI assists only when asked.',
+    showQueueReasoning: false,
+    showApprovePlan: false,
+    showAuditLog: false,
+    filterExceptionsOnly: false,
+    showAllItemsToggle: false,
+  },
+  copilot: {
+    descriptor: 'AI prioritized this queue. Review and approve before acting.',
+    showQueueReasoning: true,
+    showApprovePlan: true,
+    showAuditLog: false,
+    filterExceptionsOnly: false,
+    showAllItemsToggle: false,
+  },
+  autopilot: {
+    descriptor: 'Showing exceptions only — routine tasks run automatically.',
+    showQueueReasoning: false,
+    showApprovePlan: false,
+    showAuditLog: true,
+    filterExceptionsOnly: true,
+    showAllItemsToggle: true,
+  },
+};
+
+/**
+ * Get mode-specific CTA label.
+ * Per AUTOMATION_MODES_UX: Different verbs for different modes.
+ */
+function getModeCtaLabel(baseLabel: string, mode: AutomationMode, itemType: InboxItemType): string {
+  if (mode === 'copilot') {
+    if (itemType === 'approval_queue') return 'Review & Approve';
+    if (itemType === 'inquiry') return 'Review Response';
+    return 'Review →';
+  }
+  if (mode === 'autopilot') {
+    if (itemType === 'inquiry') return 'Approve';
+    if (itemType === 'approval_queue') return 'Approve';
+    return 'Resolve';
+  }
+  return baseLabel; // Manual mode uses original labels
+}
+
+/**
+ * Filter items based on mode.
+ * Autopilot: Show only exceptions (inquiries, critical, approval_queue, relationship_decay).
+ */
+function filterItemsByMode(items: InboxItem[], mode: AutomationMode): InboxItem[] {
+  if (mode === 'autopilot') {
+    // Exception queue: only items requiring manual attention
+    return items.filter(
+      (item) =>
+        item.type === 'inquiry' || // Always need human response
+        item.type === 'approval_queue' || // Requires explicit approval
+        item.priority === 'critical' || // Critical items bubble up
+        (item.type === 'relationship_decay' && item.risk === 'high') // High-risk decay
+    );
+  }
+  return items;
+}
+
+/**
+ * Mode icon for AutomationMode (header badge).
+ */
+function ModeIconHeader({ mode }: { mode: AutomationMode }) {
+  if (mode === 'manual') {
+    return (
+      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+    );
+  }
+  if (mode === 'copilot') {
+    return (
+      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    );
+  }
+  return (
+    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+    </svg>
+  );
+}
+
+// ============================================
 // SECTION NAV COMPONENT (Left Panel)
 // ============================================
 
@@ -587,6 +841,7 @@ const MOCK_TIMELINE_EVENTS = [
 
 interface DetailPanelProps {
   item: InboxItem;
+  mode: AutomationMode;
   onPrimaryAction: () => void;
   onSnooze: () => void;
   onDismiss: () => void;
@@ -594,7 +849,7 @@ interface DetailPanelProps {
   onAddNote: () => void;
 }
 
-function DetailPanel({ item, onPrimaryAction, onSnooze, onDismiss, onOpenContact, onAddNote }: DetailPanelProps) {
+function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenContact, onAddNote }: DetailPanelProps) {
   const typeConfig = INBOX_TYPE_CONFIG[item.type];
   const pConfig = priorityStyles[item.priority];
   const mConfig = modeStyles[item.modeCeiling];
@@ -835,13 +1090,13 @@ function DetailPanel({ item, onPrimaryAction, onSnooze, onDismiss, onOpenContact
       {/* Sticky Action Bar */}
       <div className="p-3 border-t border-[#1A1A24] bg-[#0D0D12]">
         <div className="flex items-center gap-3">
-          {/* Primary CTA */}
+          {/* Primary CTA - Mode-specific label per AUTOMATION_MODES_UX */}
           <button
             type="button"
             onClick={onPrimaryAction}
             className="flex-1 px-4 py-2 bg-brand-magenta text-white text-sm font-semibold rounded-lg hover:bg-brand-magenta/90 transition-all shadow-[0_0_16px_rgba(232,121,249,0.15)]"
           >
-            {item.primaryAction.label}
+            {getModeCtaLabel(item.primaryAction.label, mode, item.type)}
           </button>
 
           {/* Secondary actions - text only */}
@@ -955,6 +1210,10 @@ export function PRInbox() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Phase 10B: Get current mode from context
+  const { effectiveMode } = useMode('pr');
+  const modeBehavior = PR_MODE_BEHAVIOR[effectiveMode];
+
   // Fetch inbox items from real API
   const { data: inboxData, error: inboxError, isLoading } = useSWR<InboxResponse>(
     '/api/pr/inbox',
@@ -963,13 +1222,62 @@ export function PRInbox() {
   );
 
   // Use real data with fallback to mock data if API returns empty or errors
-  const items = useMemo(() => {
+  const allItems = useMemo(() => {
     if (inboxData?.items && inboxData.items.length > 0) {
       return inboxData.items;
     }
     // Fallback to mock data if API returns empty
     return MOCK_INBOX_ITEMS;
   }, [inboxData]);
+
+  // Phase 10B: Mode-based state
+  const [queueReasoningOpen, setQueueReasoningOpen] = useState(false);
+  const [planApproved, setPlanApproved] = useState(false);
+  const [showAllItems, setShowAllItems] = useState(false);
+  const [isSimulatingEvaluate, setIsSimulatingEvaluate] = useState(false);
+
+  // Phase 10B: Simulate evaluating state when mode changes
+  useEffect(() => {
+    if (effectiveMode === 'copilot' || effectiveMode === 'autopilot') {
+      setIsSimulatingEvaluate(true);
+      const timer = setTimeout(() => setIsSimulatingEvaluate(false), 1200);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [effectiveMode]);
+
+  // Reset plan approval when mode changes
+  useEffect(() => {
+    setPlanApproved(false);
+    setShowAllItems(false);
+  }, [effectiveMode]);
+
+  // Phase 10B: Filter items based on mode
+  const items = useMemo(() => {
+    if (effectiveMode === 'autopilot' && !showAllItems) {
+      return filterItemsByMode(allItems, effectiveMode);
+    }
+    return allItems;
+  }, [allItems, effectiveMode, showAllItems]);
+
+  // Track filtered out count for Autopilot mode
+  const filteredOutCount = useMemo(() => {
+    if (effectiveMode === 'autopilot') {
+      return allItems.length - filterItemsByMode(allItems, effectiveMode).length;
+    }
+    return 0;
+  }, [allItems, effectiveMode]);
+
+  // Phase 10B: Derive AI perceptual state
+  const globalAIState = useMemo((): AIPerceptualState => {
+    if (isSimulatingEvaluate) return 'evaluating';
+    if (isLoading) return 'evaluating';
+    const hasCritical = items.some(i => i.priority === 'critical');
+    const hasUrgent = items.some(i => deriveUrgencyFromDeadline(i.dueAt));
+    if (hasCritical && hasUrgent) return 'escalating';
+    if (items.some(i => i.type === 'approval_queue')) return 'ready';
+    return 'idle';
+  }, [items, isLoading, isSimulatingEvaluate]);
 
   const [selectedId, setSelectedId] = useState<string | null>(() => {
     return searchParams?.get('item') || null;
@@ -1066,25 +1374,73 @@ export function PRInbox() {
     console.log('Add note:', selectedId);
   }, [selectedId]);
 
-  if (items.length === 0) {
+  if (items.length === 0 && effectiveMode !== 'autopilot') {
     return <InboxZeroState />;
   }
 
+  // Autopilot empty state is different
+  if (items.length === 0 && effectiveMode === 'autopilot') {
+    return (
+      <div className="h-[calc(100vh-200px)] min-h-[500px] flex flex-col items-center justify-center p-8">
+        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-semantic-success/10 flex items-center justify-center">
+          <svg className="w-10 h-10 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-white mb-2">Autopilot Active</h3>
+        <p className="text-sm text-white/50 max-w-xs mx-auto text-center">
+          No exceptions requiring attention.
+          {filteredOutCount > 0 && (
+            <span className="block mt-1 text-brand-magenta">
+              {filteredOutCount} routine {filteredOutCount === 1 ? 'item' : 'items'} handled automatically.
+            </span>
+          )}
+        </p>
+        {/* Audit Log in empty state */}
+        <div className="w-full max-w-md mt-6">
+          <AuditLogPanel />
+        </div>
+      </div>
+    );
+  }
+
+  // Mode indicator badge styling
+  const modeTokens = {
+    manual: { bg: 'bg-white/5', border: 'border-white/10', text: 'text-white/60' },
+    copilot: { bg: 'bg-brand-cyan/10', border: 'border-brand-cyan/30', text: 'text-brand-cyan' },
+    autopilot: { bg: 'bg-brand-iris/10', border: 'border-brand-iris/30', text: 'text-brand-iris' },
+  };
+  const currentModeTokens = modeTokens[effectiveMode];
+
   return (
     <div className="h-[calc(100vh-200px)] min-h-[500px]">
-      {/* Stats Header */}
+      {/* Stats Header with Mode Indicator */}
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-3">
-          <h2 className="text-base font-semibold text-white">Work Queue</h2>
-          <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-white/10 text-white/70">
-            {isLoading ? 'Loading...' : `${items.length} items`}
+          <h2 className="text-base font-semibold text-white">
+            {effectiveMode === 'autopilot' ? 'Exception Queue' : 'Work Queue'}
+          </h2>
+          {/* Mode badge */}
+          <span className={`flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-bold uppercase rounded border ${currentModeTokens.bg} ${currentModeTokens.border} ${currentModeTokens.text}`}>
+            <ModeIconHeader mode={effectiveMode} />
+            {effectiveMode}
           </span>
+          {/* AI state indicator */}
+          <AmbientAIIndicator state={globalAIState} size="sm" showLabel={globalAIState !== 'idle'} />
+          <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-white/10 text-white/70">
+            {isLoading ? 'Loading...' : `${items.length} ${effectiveMode === 'autopilot' ? 'exception' : 'item'}${items.length !== 1 ? 's' : ''}`}
+          </span>
+          {effectiveMode === 'autopilot' && filteredOutCount > 0 && (
+            <span className="text-[10px] text-brand-iris/70">
+              ({filteredOutCount} auto-handled)
+            </span>
+          )}
           {criticalCount > 0 && (
             <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-semantic-danger/15 text-semantic-danger">
               {criticalCount} critical
             </span>
           )}
-          {highCount > 0 && (
+          {highCount > 0 && effectiveMode !== 'autopilot' && (
             <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-semantic-warning/15 text-semantic-warning">
               {highCount} high
             </span>
@@ -1105,8 +1461,70 @@ export function PRInbox() {
         </div>
       )}
 
-      {/* Primary Outcome */}
-      <p className="text-[13px] text-white/40 mb-4">Your highest-impact PR actions right now</p>
+      {/* Mode Descriptor - behavior-specific microcopy */}
+      <p className="text-[13px] text-white/40 mb-2">{modeBehavior.descriptor}</p>
+
+      {/* Phase 10B: Copilot mode - Queue Reasoning + Approve Plan affordances */}
+      {modeBehavior.showQueueReasoning && (
+        <div className="flex items-center gap-3 mb-4">
+          <button
+            onClick={() => setQueueReasoningOpen(!queueReasoningOpen)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-brand-magenta hover:bg-brand-magenta/10 border border-brand-magenta/20 rounded-lg transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Why this ordering?
+          </button>
+          {modeBehavior.showApprovePlan && (
+            <button
+              onClick={() => setPlanApproved(!planApproved)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                planApproved
+                  ? 'bg-semantic-success/20 text-semantic-success border border-semantic-success/30'
+                  : 'bg-brand-magenta/10 text-brand-magenta border border-brand-magenta/20 hover:bg-brand-magenta/20'
+              }`}
+            >
+              {planApproved ? (
+                <>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Queue Approved
+                </>
+              ) : (
+                <>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Approve Queue
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Phase 10B: Queue Reasoning Panel (Copilot) */}
+      <QueueReasoningPanel
+        isOpen={queueReasoningOpen}
+        onClose={() => setQueueReasoningOpen(false)}
+      />
+
+      {/* Phase 10B: Autopilot - Show all items toggle */}
+      {modeBehavior.showAllItemsToggle && filteredOutCount > 0 && (
+        <div className="flex items-center justify-between mb-4 p-2 bg-[#111116] rounded-lg">
+          <span className="text-xs text-white/50">
+            {showAllItems ? 'Showing all items' : `${filteredOutCount} routine items hidden`}
+          </span>
+          <button
+            onClick={() => setShowAllItems(!showAllItems)}
+            className="text-xs text-brand-magenta hover:underline"
+          >
+            {showAllItems ? 'Show exceptions only' : 'Show all items'}
+          </button>
+        </div>
+      )}
 
       {/* 3-Panel Layout */}
       <div className="flex gap-4 h-[calc(100%-40px)]">
@@ -1142,6 +1560,7 @@ export function PRInbox() {
           {selectedItem ? (
             <DetailPanel
               item={selectedItem}
+              mode={effectiveMode}
               onPrimaryAction={handlePrimaryAction}
               onSnooze={handleSnooze}
               onDismiss={handleDismiss}
@@ -1153,6 +1572,13 @@ export function PRInbox() {
           )}
         </div>
       </div>
+
+      {/* Phase 10B: Autopilot Audit Log (below main layout) */}
+      {modeBehavior.showAuditLog && (
+        <div className="mt-4">
+          <AuditLogPanel />
+        </div>
+      )}
     </div>
   );
 }
