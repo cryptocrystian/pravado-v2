@@ -389,66 +389,6 @@ const MOCK_PR_AUDIT_LOG = [
 ];
 
 /**
- * Queue Reasoning Panel - Copilot mode explainability
- * Shows why AI ordered the queue this way.
- */
-function QueueReasoningPanel({
-  isOpen,
-  onClose,
-  reasons = MOCK_PR_QUEUE_REASONING,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  reasons?: typeof MOCK_PR_QUEUE_REASONING;
-}) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="mb-4 p-4 bg-brand-magenta/5 border border-brand-magenta/20 rounded-lg">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <svg className="w-4 h-4 text-brand-magenta" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-          </svg>
-          <span className="text-sm font-semibold text-brand-magenta">Why This Ordering</span>
-        </div>
-        <button
-          onClick={onClose}
-          className="p-1 text-white/40 hover:text-white rounded transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div className="space-y-2">
-        {reasons.map((reason, index) => (
-          <div key={reason.id} className="flex items-start gap-3 p-2 bg-[#111116] rounded">
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-magenta/20 text-brand-magenta text-[10px] font-bold shrink-0">
-              {index + 1}
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-white">{reason.factor}</span>
-                <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded ${
-                  reason.weight === 'High' ? 'text-brand-magenta bg-brand-magenta/10' : 'text-white/50 bg-white/5'
-                }`}>
-                  {reason.weight}
-                </span>
-              </div>
-              <p className="text-[11px] text-white/50 mt-0.5">{reason.explanation}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <p className="text-[10px] text-white/30 mt-3 text-center">
-        AI re-evaluates ordering when new actions arrive or context changes.
-      </p>
-    </div>
-  );
-}
-
-/**
  * Audit Log Panel - Autopilot mode transparency
  * Shows recently auto-handled items for user awareness.
  */
@@ -506,34 +446,262 @@ function AuditLogPanel({ entries = MOCK_PR_AUDIT_LOG }: { entries?: typeof MOCK_
   );
 }
 
+// ============================================
+// POSTURE COMPONENTS (Phase 10B Enhanced)
+// ============================================
+
+/**
+ * Queue Controls Band - Manual mode "Workbench" posture
+ * Provides direct queue manipulation controls
+ */
+function PRQueueControlsBand({
+  itemCount,
+  onReorderByPriority,
+  onReorderByDue,
+  onBatchSnooze,
+}: {
+  itemCount: number;
+  onReorderByPriority: () => void;
+  onReorderByDue: () => void;
+  onBatchSnooze: () => void;
+}) {
+  return (
+    <div className="mb-4 p-3 bg-white/5 border border-white/10 rounded-lg">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
+            <span className="text-xs font-bold uppercase tracking-wider text-white/60">Queue Controls</span>
+          </div>
+          <span className="px-2 py-0.5 text-[10px] font-medium text-white/40 bg-white/5 rounded">
+            {itemCount} items
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onReorderByPriority}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-white/70 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+            </svg>
+            By Priority
+          </button>
+          <button
+            onClick={onReorderByDue}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-white/70 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            By Due
+          </button>
+          <button
+            onClick={onBatchSnooze}
+            className="px-2.5 py-1.5 text-xs font-medium text-white/50 hover:text-white hover:bg-white/5 border border-white/10 rounded-lg transition-colors"
+          >
+            Snooze All Low
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Plan Panel - Copilot mode "Plan Review" posture
+ * Shows AI's reasoning for queue order, positioned above queue
+ */
+function PRPlanPanel({
+  isExpanded,
+  onToggle,
+  onApprove,
+  isApproved,
+  isEvaluating,
+  reasons = MOCK_PR_QUEUE_REASONING,
+}: {
+  isExpanded: boolean;
+  onToggle: () => void;
+  onApprove: () => void;
+  isApproved: boolean;
+  isEvaluating: boolean;
+  reasons?: typeof MOCK_PR_QUEUE_REASONING;
+}) {
+  return (
+    <div className={`mb-4 rounded-lg border overflow-hidden transition-all ${
+      isApproved
+        ? 'bg-semantic-success/5 border-semantic-success/30'
+        : 'bg-brand-magenta/5 border-brand-magenta/20'
+    }`}>
+      <div className="p-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold ${
+            isEvaluating
+              ? 'bg-brand-magenta/20 text-brand-magenta animate-pulse'
+              : isApproved
+              ? 'bg-semantic-success/20 text-semantic-success'
+              : 'bg-brand-magenta/20 text-brand-magenta'
+          }`}>
+            {isEvaluating ? '...' : isApproved ? '✓' : '1'}
+          </div>
+          <div>
+            <span className="text-sm font-semibold text-white">
+              {isEvaluating ? 'Evaluating Queue...' : 'AI Plan Ready'}
+            </span>
+            <p className="text-[10px] text-white/40">
+              {isEvaluating
+                ? 'Analyzing priorities and context'
+                : isApproved
+                ? 'Plan approved — execute when ready'
+                : 'Review the reasoning below'}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {!isApproved && !isEvaluating && (
+            <button
+              onClick={onApprove}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-brand-magenta hover:bg-brand-magenta/90 rounded-lg shadow-[0_0_12px_rgba(232,121,249,0.25)] transition-all"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Approve Plan
+            </button>
+          )}
+          {isApproved && (
+            <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-semantic-success bg-semantic-success/10 rounded-lg">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Approved
+            </span>
+          )}
+          <button
+            onClick={onToggle}
+            className="p-1.5 text-white/40 hover:text-white hover:bg-white/5 rounded transition-colors"
+          >
+            <svg className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {isExpanded && !isEvaluating && (
+        <div className="px-3 pb-3 border-t border-white/5">
+          <div className="pt-3 space-y-2">
+            {reasons.map((reason, index) => (
+              <div key={reason.id} className="flex items-start gap-3 p-2 bg-[#111116] rounded">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-magenta/20 text-brand-magenta text-[10px] font-bold shrink-0">
+                  {index + 1}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-white">{reason.factor}</span>
+                    <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded ${
+                      reason.weight === 'High' ? 'text-brand-magenta bg-brand-magenta/10' : 'text-white/50 bg-white/5'
+                    }`}>
+                      {reason.weight}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-white/50 mt-0.5">{reason.explanation}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-white/30 mt-3 text-center">
+            Step 2: Review items in queue. Step 3: Execute actions.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Guardrails Card - Autopilot mode "Exception Console" posture
+ * Shows active guardrails that trigger exceptions
+ */
+function PRGuardrailsCard() {
+  const guardrails = [
+    { id: 'g1', name: 'Journalist Inquiries', description: 'All inbound inquiries require response', active: true },
+    { id: 'g2', name: 'Approval Queue', description: 'AI drafts need explicit approval', active: true },
+    { id: 'g3', name: 'Critical Priority', description: 'Critical items always surface', active: true },
+    { id: 'g4', name: 'High-Risk Decay', description: 'Tier-1 relationships at risk', active: true },
+  ];
+
+  return (
+    <div className="p-3 bg-brand-iris/5 border border-brand-iris/20 rounded-lg">
+      <div className="flex items-center gap-2 mb-2">
+        <svg className="w-4 h-4 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        <h4 className="text-xs font-bold uppercase tracking-wider text-brand-iris">Active Guardrails</h4>
+      </div>
+      <div className="space-y-1.5">
+        {guardrails.filter(g => g.active).map((guardrail) => (
+          <div key={guardrail.id} className="flex items-start gap-2 p-2 bg-[#111116] rounded">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
+            <div>
+              <span className="text-[11px] font-medium text-white">{guardrail.name}</span>
+              <p className="text-[10px] text-white/40">{guardrail.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button className="w-full mt-2 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
+        Configure Guardrails →
+      </button>
+    </div>
+  );
+}
+
 /**
  * Mode behavior configuration for PR Inbox.
  * Per UX_CONTINUITY_CANON: Mode must be perceptible by observing for 3 seconds.
+ * Each mode represents a distinct "work posture".
  */
 const PR_MODE_BEHAVIOR = {
   manual: {
-    descriptor: 'You triage and decide. AI assists only when asked.',
+    // WORKBENCH posture: Full control, user-driven prioritization
+    posture: 'workbench',
+    descriptor: 'Workbench — you control the queue. Triage, prioritize, and act at your pace.',
+    showQueueControls: true,
     showQueueReasoning: false,
     showApprovePlan: false,
     showAuditLog: false,
     filterExceptionsOnly: false,
     showAllItemsToggle: false,
+    showGuardrails: false,
   },
   copilot: {
-    descriptor: 'AI prioritized this queue. Review and approve before acting.',
+    // PLAN REVIEW posture: AI proposes, user approves
+    posture: 'plan-review',
+    descriptor: 'Plan Review — AI prioritized this queue. Review the rationale, then approve.',
+    showQueueControls: false,
     showQueueReasoning: true,
     showApprovePlan: true,
     showAuditLog: false,
     filterExceptionsOnly: false,
     showAllItemsToggle: false,
+    showGuardrails: false,
   },
   autopilot: {
-    descriptor: 'Showing exceptions only — routine tasks run automatically.',
+    // EXCEPTION CONSOLE posture: Only exceptions surface
+    posture: 'exception-console',
+    descriptor: 'Exception Console — showing only items that need your attention.',
+    showQueueControls: false,
     showQueueReasoning: false,
     showApprovePlan: false,
     showAuditLog: true,
     filterExceptionsOnly: true,
     showAllItemsToggle: true,
+    showGuardrails: true,
   },
 };
 
@@ -1238,8 +1406,8 @@ export function PRInbox() {
     return MOCK_INBOX_ITEMS;
   }, [inboxData]);
 
-  // Phase 10B: Mode-based state
-  const [queueReasoningOpen, setQueueReasoningOpen] = useState(false);
+  // Phase 10B: Mode-based state - queueReasoningOpen defaults expanded in Copilot
+  const [queueReasoningOpen, setQueueReasoningOpen] = useState(() => effectiveMode === 'copilot');
   const [planApproved, setPlanApproved] = useState(false);
   const [showAllItems, setShowAllItems] = useState(false);
   const [isSimulatingEvaluate, setIsSimulatingEvaluate] = useState(false);
@@ -1255,11 +1423,13 @@ export function PRInbox() {
     return undefined;
   }, [safeMode, hasMounted]);
 
-  // Reset plan approval when mode changes
+  // Reset mode-specific states when mode changes
   useEffect(() => {
     if (!hasMounted) return;
     setPlanApproved(false);
     setShowAllItems(false);
+    // Plan Panel expanded by default in Copilot mode
+    setQueueReasoningOpen(safeMode === 'copilot');
   }, [safeMode, hasMounted]);
 
   // Phase 10B: Filter items based on mode
@@ -1427,8 +1597,13 @@ export function PRInbox() {
       {/* Stats Header with Mode Indicator */}
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-3">
+          {/* Posture-specific header (3-second rule) */}
           <h2 className="text-base font-semibold text-white">
-            {safeMode === 'autopilot' ? 'Exception Queue' : 'Work Queue'}
+            {safeMode === 'manual'
+              ? 'PR Inbox'
+              : safeMode === 'copilot'
+              ? 'AI Queue Plan'
+              : 'Exception Queue'}
           </h2>
           {/* Mode badge */}
           <span className={`flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-bold uppercase rounded border ${currentModeTokens.bg} ${currentModeTokens.border} ${currentModeTokens.text}`}>
@@ -1474,52 +1649,35 @@ export function PRInbox() {
       {/* Mode Descriptor - behavior-specific microcopy */}
       <p className="text-[13px] text-white/40 mb-2">{modeBehavior.descriptor}</p>
 
-      {/* Phase 10B: Copilot mode - Queue Reasoning + Approve Plan affordances */}
+      {/* POSTURE: Manual "Workbench" - Queue Controls Band */}
+      {modeBehavior.showQueueControls && (
+        <PRQueueControlsBand
+          itemCount={items.length}
+          onReorderByPriority={() => console.log('Reorder by priority')}
+          onReorderByDue={() => console.log('Reorder by due date')}
+          onBatchSnooze={() => console.log('Batch snooze low priority')}
+        />
+      )}
+
+      {/* POSTURE: Copilot "Plan Review" - Plan Panel ABOVE queue */}
       {modeBehavior.showQueueReasoning && (
-        <div className="flex items-center gap-3 mb-4">
-          <button
-            onClick={() => setQueueReasoningOpen(!queueReasoningOpen)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-brand-magenta hover:bg-brand-magenta/10 border border-brand-magenta/20 rounded-lg transition-colors"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Why this ordering?
-          </button>
-          {modeBehavior.showApprovePlan && (
-            <button
-              onClick={() => setPlanApproved(!planApproved)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                planApproved
-                  ? 'bg-semantic-success/20 text-semantic-success border border-semantic-success/30'
-                  : 'bg-brand-magenta/10 text-brand-magenta border border-brand-magenta/20 hover:bg-brand-magenta/20'
-              }`}
-            >
-              {planApproved ? (
-                <>
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Queue Approved
-                </>
-              ) : (
-                <>
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Approve Queue
-                </>
-              )}
-            </button>
-          )}
+        <PRPlanPanel
+          isExpanded={queueReasoningOpen}
+          onToggle={() => setQueueReasoningOpen(!queueReasoningOpen)}
+          onApprove={() => setPlanApproved(true)}
+          isApproved={planApproved}
+          isEvaluating={isSimulatingEvaluate}
+        />
+      )}
+
+      {/* POSTURE: Autopilot "Exception Console" - Guardrails Card */}
+      {modeBehavior.showGuardrails && (
+        <div className="mb-4">
+          <PRGuardrailsCard />
         </div>
       )}
 
-      {/* Phase 10B: Queue Reasoning Panel (Copilot) */}
-      <QueueReasoningPanel
-        isOpen={queueReasoningOpen}
-        onClose={() => setQueueReasoningOpen(false)}
-      />
+      {/* Legacy QueueReasoningPanel - hidden when PlanPanel is shown */}
 
       {/* Phase 10B: Autopilot - Show all items toggle */}
       {modeBehavior.showAllItemsToggle && filteredOutCount > 0 && (
