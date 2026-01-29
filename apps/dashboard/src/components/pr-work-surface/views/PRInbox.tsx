@@ -1210,9 +1210,17 @@ export function PRInbox() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Hydration safety: track when component has mounted
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   // Phase 10B: Get current mode from context
   const { effectiveMode } = useMode('pr');
-  const modeBehavior = PR_MODE_BEHAVIOR[effectiveMode];
+  // Use 'manual' during SSR to prevent hydration mismatch
+  const safeMode = hasMounted ? effectiveMode : 'manual';
+  const modeBehavior = PR_MODE_BEHAVIOR[safeMode];
 
   // Fetch inbox items from real API
   const { data: inboxData, error: inboxError, isLoading } = useSWR<InboxResponse>(
@@ -1238,35 +1246,37 @@ export function PRInbox() {
 
   // Phase 10B: Simulate evaluating state when mode changes
   useEffect(() => {
-    if (effectiveMode === 'copilot' || effectiveMode === 'autopilot') {
+    if (!hasMounted) return undefined;
+    if (safeMode === 'copilot' || safeMode === 'autopilot') {
       setIsSimulatingEvaluate(true);
       const timer = setTimeout(() => setIsSimulatingEvaluate(false), 1200);
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [effectiveMode]);
+  }, [safeMode, hasMounted]);
 
   // Reset plan approval when mode changes
   useEffect(() => {
+    if (!hasMounted) return;
     setPlanApproved(false);
     setShowAllItems(false);
-  }, [effectiveMode]);
+  }, [safeMode, hasMounted]);
 
   // Phase 10B: Filter items based on mode
   const items = useMemo(() => {
-    if (effectiveMode === 'autopilot' && !showAllItems) {
-      return filterItemsByMode(allItems, effectiveMode);
+    if (safeMode === 'autopilot' && !showAllItems) {
+      return filterItemsByMode(allItems, safeMode);
     }
     return allItems;
-  }, [allItems, effectiveMode, showAllItems]);
+  }, [allItems, safeMode, showAllItems]);
 
   // Track filtered out count for Autopilot mode
   const filteredOutCount = useMemo(() => {
-    if (effectiveMode === 'autopilot') {
-      return allItems.length - filterItemsByMode(allItems, effectiveMode).length;
+    if (safeMode === 'autopilot') {
+      return allItems.length - filterItemsByMode(allItems, safeMode).length;
     }
     return 0;
-  }, [allItems, effectiveMode]);
+  }, [allItems, safeMode]);
 
   // Phase 10B: Derive AI perceptual state
   const globalAIState = useMemo((): AIPerceptualState => {
@@ -1374,12 +1384,12 @@ export function PRInbox() {
     console.log('Add note:', selectedId);
   }, [selectedId]);
 
-  if (items.length === 0 && effectiveMode !== 'autopilot') {
+  if (items.length === 0 && safeMode !== 'autopilot') {
     return <InboxZeroState />;
   }
 
   // Autopilot empty state is different
-  if (items.length === 0 && effectiveMode === 'autopilot') {
+  if (items.length === 0 && safeMode === 'autopilot') {
     return (
       <div className="h-[calc(100vh-200px)] min-h-[500px] flex flex-col items-center justify-center p-8">
         <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-semantic-success/10 flex items-center justify-center">
@@ -1410,7 +1420,7 @@ export function PRInbox() {
     copilot: { bg: 'bg-brand-cyan/10', border: 'border-brand-cyan/30', text: 'text-brand-cyan' },
     autopilot: { bg: 'bg-brand-iris/10', border: 'border-brand-iris/30', text: 'text-brand-iris' },
   };
-  const currentModeTokens = modeTokens[effectiveMode];
+  const currentModeTokens = modeTokens[safeMode];
 
   return (
     <div className="h-[calc(100vh-200px)] min-h-[500px]">
@@ -1418,19 +1428,19 @@ export function PRInbox() {
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-3">
           <h2 className="text-base font-semibold text-white">
-            {effectiveMode === 'autopilot' ? 'Exception Queue' : 'Work Queue'}
+            {safeMode === 'autopilot' ? 'Exception Queue' : 'Work Queue'}
           </h2>
           {/* Mode badge */}
           <span className={`flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-bold uppercase rounded border ${currentModeTokens.bg} ${currentModeTokens.border} ${currentModeTokens.text}`}>
-            <ModeIconHeader mode={effectiveMode} />
-            {effectiveMode}
+            <ModeIconHeader mode={safeMode} />
+            {safeMode}
           </span>
           {/* AI state indicator */}
           <AmbientAIIndicator state={globalAIState} size="sm" showLabel={globalAIState !== 'idle'} />
           <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-white/10 text-white/70">
-            {isLoading ? 'Loading...' : `${items.length} ${effectiveMode === 'autopilot' ? 'exception' : 'item'}${items.length !== 1 ? 's' : ''}`}
+            {isLoading ? 'Loading...' : `${items.length} ${safeMode === 'autopilot' ? 'exception' : 'item'}${items.length !== 1 ? 's' : ''}`}
           </span>
-          {effectiveMode === 'autopilot' && filteredOutCount > 0 && (
+          {safeMode === 'autopilot' && filteredOutCount > 0 && (
             <span className="text-[10px] text-brand-iris/70">
               ({filteredOutCount} auto-handled)
             </span>
@@ -1440,7 +1450,7 @@ export function PRInbox() {
               {criticalCount} critical
             </span>
           )}
-          {highCount > 0 && effectiveMode !== 'autopilot' && (
+          {highCount > 0 && safeMode !== 'autopilot' && (
             <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-semantic-warning/15 text-semantic-warning">
               {highCount} high
             </span>
@@ -1560,7 +1570,7 @@ export function PRInbox() {
           {selectedItem ? (
             <DetailPanel
               item={selectedItem}
-              mode={effectiveMode}
+              mode={safeMode}
               onPrimaryAction={handlePrimaryAction}
               onSnooze={handleSnooze}
               onDismiss={handleDismiss}
