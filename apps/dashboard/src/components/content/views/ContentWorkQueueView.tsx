@@ -381,61 +381,259 @@ const MOCK_QUEUE_REASONING = [
   },
 ];
 
-function QueueReasoningPanel({
-  isOpen,
-  onClose,
-  reasons = MOCK_QUEUE_REASONING,
+// ============================================
+// QUEUE CONTROLS BAND (Phase 10B - Manual Workbench)
+// ============================================
+
+/**
+ * Queue Controls Band - Manual mode "Workbench" posture
+ * Provides direct queue manipulation: Re-rank, Pin to Next, Batch select
+ * Per UX_CONTINUITY_CANON: Mode perceptible within 3 seconds
+ */
+function QueueControlsBand({
+  itemCount,
+  selectedCount,
+  onRerank,
+  onClearSelection,
+  onBatchAction,
 }: {
-  isOpen: boolean;
-  onClose: () => void;
-  reasons?: typeof MOCK_QUEUE_REASONING;
+  itemCount: number;
+  selectedCount: number;
+  onRerank: () => void;
+  onClearSelection: () => void;
+  onBatchAction: (action: 'defer' | 'snooze' | 'archive') => void;
 }) {
-  if (!isOpen) return null;
+  return (
+    <div className="mb-4 p-3 bg-white/5 border border-white/10 rounded-lg">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {/* Workbench label */}
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
+            <span className="text-xs font-bold uppercase tracking-wider text-white/60">Queue Controls</span>
+          </div>
+
+          {/* Item count */}
+          <span className="px-2 py-0.5 text-[10px] font-medium text-white/40 bg-white/5 rounded">
+            {itemCount} items
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Re-rank button */}
+          <button
+            onClick={onRerank}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-white/70 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+            </svg>
+            Re-rank
+          </button>
+
+          {/* Batch selection indicator/actions */}
+          {selectedCount > 0 ? (
+            <div className="flex items-center gap-2 pl-2 border-l border-white/10">
+              <span className="text-xs text-brand-iris font-medium">{selectedCount} selected</span>
+              <button
+                onClick={() => onBatchAction('defer')}
+                className="px-2 py-1 text-[10px] font-medium text-white/60 hover:text-white hover:bg-white/5 rounded transition-colors"
+              >
+                Defer
+              </button>
+              <button
+                onClick={() => onBatchAction('snooze')}
+                className="px-2 py-1 text-[10px] font-medium text-white/60 hover:text-white hover:bg-white/5 rounded transition-colors"
+              >
+                Snooze
+              </button>
+              <button
+                onClick={onClearSelection}
+                className="p-1 text-white/40 hover:text-white rounded transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <span className="text-[10px] text-white/30">Click items to select for batch actions</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// PLAN PANEL (Phase 10B - Copilot Plan Review)
+// ============================================
+
+/**
+ * Plan Panel - Copilot mode "Plan Review" posture
+ * Shows AI's reasoning for queue order with step numbers
+ * Positioned ABOVE NextBestAction card per requirements
+ */
+function PlanPanel({
+  isExpanded,
+  onToggle,
+  onApprove,
+  isApproved,
+  reasons = MOCK_QUEUE_REASONING,
+  aiState,
+}: {
+  isExpanded: boolean;
+  onToggle: () => void;
+  onApprove: () => void;
+  isApproved: boolean;
+  reasons?: typeof MOCK_QUEUE_REASONING;
+  aiState: AIPerceptualState;
+}) {
+  return (
+    <div className={`mb-4 rounded-lg border overflow-hidden transition-all ${
+      isApproved
+        ? 'bg-semantic-success/5 border-semantic-success/30'
+        : 'bg-brand-cyan/5 border-brand-cyan/20'
+    }`}>
+      {/* Panel Header - Always visible */}
+      <div className="p-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {/* Step indicator */}
+          <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold ${
+            aiState === 'evaluating'
+              ? 'bg-brand-cyan/20 text-brand-cyan animate-pulse'
+              : isApproved
+              ? 'bg-semantic-success/20 text-semantic-success'
+              : 'bg-brand-cyan/20 text-brand-cyan'
+          }`}>
+            {aiState === 'evaluating' ? '...' : isApproved ? '✓' : '1'}
+          </div>
+          <div>
+            <span className="text-sm font-semibold text-white">
+              {aiState === 'evaluating' ? 'Evaluating Queue...' : 'AI Plan Ready'}
+            </span>
+            <p className="text-[10px] text-white/40">
+              {aiState === 'evaluating'
+                ? 'Analyzing priorities and context'
+                : isApproved
+                ? 'Plan approved — execute when ready'
+                : 'Review the reasoning below'}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Approve Plan CTA */}
+          {!isApproved && aiState !== 'evaluating' && (
+            <button
+              onClick={onApprove}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-brand-cyan hover:bg-brand-cyan/90 rounded-lg shadow-[0_0_12px_rgba(34,211,238,0.25)] transition-all"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Approve Plan
+            </button>
+          )}
+          {isApproved && (
+            <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-semantic-success bg-semantic-success/10 rounded-lg">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Approved
+            </span>
+          )}
+
+          {/* Toggle expand/collapse */}
+          <button
+            onClick={onToggle}
+            className="p-1.5 text-white/40 hover:text-white hover:bg-white/5 rounded transition-colors"
+          >
+            <svg className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Reasoning Details - Collapsible */}
+      {isExpanded && aiState !== 'evaluating' && (
+        <div className="px-3 pb-3 border-t border-white/5">
+          <div className="pt-3 space-y-2">
+            {reasons.map((reason, index) => (
+              <div key={reason.id} className="flex items-start gap-3 p-2 bg-slate-2/50 rounded">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold shrink-0">
+                  {index + 1}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-white">{reason.factor}</span>
+                    <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded ${
+                      reason.weight === 'High' ? 'text-brand-cyan bg-brand-cyan/10' : 'text-white/50 bg-white/5'
+                    }`}>
+                      {reason.weight}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-white/50 mt-0.5">{reason.explanation}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-white/30 mt-3 text-center">
+            AI re-evaluates when context changes. Step 2: Review items. Step 3: Execute.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================
+// GUARDRAILS CARD (Phase 10B - Autopilot)
+// ============================================
+
+/**
+ * Guardrails Card - Autopilot mode "Exception Console" posture
+ * Shows active guardrails that trigger exceptions
+ * Displayed in right rail for context
+ */
+function GuardrailsCard() {
+  const guardrails = [
+    { id: 'g1', name: 'Critical Priority', description: 'Items marked critical always surface', active: true },
+    { id: 'g2', name: 'CiteMind Issues', description: 'Quality issues require manual review', active: true },
+    { id: 'g3', name: 'Deadline < 24h', description: 'Urgent deadlines need confirmation', active: true },
+    { id: 'g4', name: 'High-Risk Actions', description: 'Actions above risk threshold pause', active: false },
+  ];
 
   return (
-    <div className="mt-3 p-4 bg-brand-cyan/5 border border-brand-cyan/20 rounded-lg">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <svg className="w-4 h-4 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-          </svg>
-          <span className="text-sm font-semibold text-brand-cyan">Why This Ordering</span>
-        </div>
-        <button
-          onClick={onClose}
-          className="p-1 text-white/40 hover:text-white rounded transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+    <div className="p-3 bg-brand-iris/5 border border-brand-iris/20 rounded-lg">
+      <div className="flex items-center gap-2 mb-2">
+        <svg className="w-4 h-4 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        <h4 className="text-xs font-bold uppercase tracking-wider text-brand-iris">Active Guardrails</h4>
       </div>
-      <div className="space-y-2">
-        {reasons.map((reason, index) => (
-          <div key={reason.id} className="flex items-start gap-3 p-2 bg-slate-2/50 rounded">
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold shrink-0">
-              {index + 1}
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-white">{reason.factor}</span>
-                <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded ${
-                  reason.weight === 'High' ? 'text-brand-cyan bg-brand-cyan/10' : 'text-white/50 bg-white/5'
-                }`}>
-                  {reason.weight}
-                </span>
-              </div>
-              <p className="text-[11px] text-white/50 mt-0.5">{reason.explanation}</p>
+      <div className="space-y-1.5">
+        {guardrails.filter(g => g.active).map((guardrail) => (
+          <div key={guardrail.id} className="flex items-start gap-2 p-2 bg-slate-2/50 rounded">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
+            <div>
+              <span className="text-[11px] font-medium text-white">{guardrail.name}</span>
+              <p className="text-[10px] text-white/40">{guardrail.description}</p>
             </div>
           </div>
         ))}
       </div>
-      <p className="text-[10px] text-white/30 mt-3 text-center">
-        AI re-evaluates ordering when new actions arrive or context changes.
-      </p>
+      <button className="w-full mt-2 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
+        Configure Guardrails →
+      </button>
     </div>
   );
 }
+
+// QueueReasoningPanel replaced by PlanPanel for Copilot posture
 
 // ============================================
 // EXECUTION GRAVITY PANE
@@ -461,8 +659,8 @@ function ExecutionGravityPane({
   // State for explain drawer
   const [explainDrawerOpen, setExplainDrawerOpen] = useState(false);
   const [explainAction, setExplainAction] = useState<ContentAction | null>(null);
-  // Phase 10B: Queue reasoning panel state (Copilot mode)
-  const [queueReasoningOpen, setQueueReasoningOpen] = useState(false);
+  // Phase 10B: Queue reasoning panel state (Copilot mode) - default expanded in Copilot
+  const [queueReasoningOpen, setQueueReasoningOpen] = useState(mode === 'copilot');
   // Phase 10B: Plan approval state (Copilot mode)
   const [planApproved, setPlanApproved] = useState(false);
   // Phase 10B: Show all items toggle (Autopilot mode)
@@ -471,6 +669,10 @@ function ExecutionGravityPane({
   const [pinnedActionId, setPinnedActionId] = useState<string | null>(null);
   // Phase 10B: Simulated AI evaluating state (for queue recalculation)
   const [isSimulatingEvaluate, setIsSimulatingEvaluate] = useState(false);
+  // Phase 10B: Batch selection state (Manual mode)
+  const [selectedBatchIds, setSelectedBatchIds] = useState<Set<string>>(new Set());
+  // Phase 10B: Audit log collapsed state (Autopilot mode)
+  const [auditLogCollapsed, setAuditLogCollapsed] = useState(false);
 
   // Phase 10B: Simulate evaluating state when mode changes
   useEffect(() => {
@@ -482,10 +684,14 @@ function ExecutionGravityPane({
     return undefined;
   }, [mode]);
 
-  // Reset plan approval when mode changes
+  // Reset mode-specific states when mode changes
   useEffect(() => {
     setPlanApproved(false);
     setPinnedActionId(null);
+    setSelectedBatchIds(new Set());
+    // Open reasoning panel by default in Copilot mode
+    setQueueReasoningOpen(mode === 'copilot');
+    setAuditLogCollapsed(false);
   }, [mode]);
 
   // Derive AI perceptual state for ambient indicator (Phase 9A + 10B enhancements)
@@ -535,8 +741,10 @@ function ExecutionGravityPane({
   }, [modeFilteredActions, pinnedActionId]);
 
   const nextBestAction = sortedActions[0] || null;
-  const upNextActions = sortedActions.slice(1, 4); // Max 3 "Up Next"
-  const remainingCount = sortedActions.length - 4;
+  // Posture-specific upNextLimit: Manual=5 (Workbench), Copilot=3, Autopilot=3
+  const upNextLimit = mode === 'manual' ? 5 : 3;
+  const upNextActions = sortedActions.slice(1, 1 + upNextLimit);
+  const remainingCount = sortedActions.length - 1 - upNextLimit;
 
   // Track how many actions were filtered out in Autopilot mode
   const filteredOutCount = mode === 'autopilot' ? actions.length - filterActionsByMode(actions, mode).length : 0;
@@ -598,40 +806,67 @@ function ExecutionGravityPane({
     );
   }
 
-  // Header text varies by mode
-  const headerText = mode === 'autopilot' ? 'Exception Queue' : 'Next Best Action';
+  // Header text varies by posture (3-second rule: immediately recognizable)
+  const headerText = mode === 'manual'
+    ? 'Work Queue'
+    : mode === 'copilot'
+    ? 'AI Plan'
+    : 'Top Exception';
   const headerSubtext = mode === 'autopilot' && filteredOutCount > 0
     ? `${filteredOutCount} auto-handled`
     : undefined;
 
   // Mode behavior configuration (Phase 10B: Mode-Expressive Mechanics)
+  // Per UX_CONTINUITY_CANON: Each mode is a distinct "work posture"
   const modeBehavior = {
     manual: {
-      descriptor: 'You decide priority. AI assists only when asked.',
+      // WORKBENCH posture: Full control, user-driven prioritization
+      posture: 'workbench',
+      descriptor: 'Workbench — you control the queue. Reorder, pin, and triage as you see fit.',
+      showQueueControls: true,      // Queue Controls band (Re-rank, Pin to Next, Batch select)
       showRerank: true,
       showPinToNext: true,
+      showBatchSelect: true,
+      showInlineTriageActions: true, // Bump up, defer, snooze per item
       showQueueReasoning: false,
       showApprovePlan: false,
       showRecentlyHandled: false,
       showAllItemsToggle: false,
+      showGuardrails: false,
+      upNextLimit: 5,               // Show more items in Manual
     },
     copilot: {
-      descriptor: 'AI prepared this queue. Review and approve to proceed.',
+      // PLAN REVIEW posture: AI proposes, user approves
+      posture: 'plan-review',
+      descriptor: 'Plan Review — AI prepared this queue. Review the rationale, then approve.',
+      showQueueControls: false,
       showRerank: false,
       showPinToNext: false,
-      showQueueReasoning: true,
+      showBatchSelect: false,
+      showInlineTriageActions: false,
+      showQueueReasoning: true,     // Plan Panel ABOVE NextBestAction
       showApprovePlan: true,
       showRecentlyHandled: false,
       showAllItemsToggle: false,
+      showGuardrails: false,
+      upNextLimit: 3,               // Standard count
+      planPanelExpanded: true,      // Default expanded
     },
     autopilot: {
-      descriptor: 'Showing exceptions only — routine actions run automatically.',
+      // EXCEPTION CONSOLE posture: Only exceptions surface
+      posture: 'exception-console',
+      descriptor: 'Exception Console — showing only items that need your attention.',
+      showQueueControls: false,
       showRerank: false,
       showPinToNext: false,
+      showBatchSelect: false,
+      showInlineTriageActions: false,
       showQueueReasoning: false,
       showApprovePlan: false,
-      showRecentlyHandled: true,
+      showRecentlyHandled: true,    // Auto-handled today ledger
       showAllItemsToggle: true,
+      showGuardrails: true,         // Guardrails card in right rail
+      upNextLimit: 3,
     },
   };
 
@@ -688,52 +923,27 @@ function ExecutionGravityPane({
           {behavior.descriptor}
         </p>
 
-        {/* Phase 10B: Copilot - Queue Reasoning + Approve Plan affordances */}
-        {behavior.showQueueReasoning && (
-          <div className="flex items-center gap-3 -mt-1">
-            <button
-              onClick={() => setQueueReasoningOpen(!queueReasoningOpen)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-brand-cyan hover:bg-brand-cyan/10 border border-brand-cyan/20 rounded-lg transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Why this ordering?
-            </button>
-            {behavior.showApprovePlan && (
-              <button
-                onClick={() => setPlanApproved(!planApproved)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                  planApproved
-                    ? 'bg-semantic-success/20 text-semantic-success border border-semantic-success/30'
-                    : 'bg-brand-iris/10 text-brand-iris border border-brand-iris/20 hover:bg-brand-iris/20'
-                }`}
-              >
-                {planApproved ? (
-                  <>
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Plan Approved
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Approve Plan
-                  </>
-                )}
-              </button>
-            )}
-          </div>
+        {/* POSTURE: Manual "Workbench" - Queue Controls Band */}
+        {behavior.showQueueControls && (
+          <QueueControlsBand
+            itemCount={sortedActions.length}
+            selectedCount={selectedBatchIds.size}
+            onRerank={() => {/* TODO: Open re-rank modal */}}
+            onClearSelection={() => setSelectedBatchIds(new Set())}
+            onBatchAction={(action) => console.log('Batch action:', action, selectedBatchIds)}
+          />
         )}
 
-        {/* Phase 10B: Queue Reasoning Panel (Copilot) */}
-        <QueueReasoningPanel
-          isOpen={queueReasoningOpen}
-          onClose={() => setQueueReasoningOpen(false)}
-        />
+        {/* POSTURE: Copilot "Plan Review" - Plan Panel ABOVE Next Best Action */}
+        {behavior.showQueueReasoning && (
+          <PlanPanel
+            isExpanded={queueReasoningOpen}
+            onToggle={() => setQueueReasoningOpen(!queueReasoningOpen)}
+            onApprove={() => setPlanApproved(true)}
+            isApproved={planApproved}
+            aiState={aiState}
+          />
+        )}
 
         {/* Phase 10B: Autopilot - Show all items toggle */}
         {behavior.showAllItemsToggle && filteredOutCount > 0 && (
@@ -792,57 +1002,68 @@ function ExecutionGravityPane({
           </div>
         )}
 
-        {/* Phase 10B: Autopilot Audit Log (enhanced with action types) */}
+        {/* POSTURE: Autopilot "Exception Console" - Auto-handled Today Ledger */}
         {behavior.showRecentlyHandled && (
           <div className="pt-3 border-t border-border-subtle">
-            <div className="flex items-center justify-between mb-2">
+            <button
+              onClick={() => setAuditLogCollapsed(!auditLogCollapsed)}
+              className="w-full flex items-center justify-between mb-2 group"
+            >
               <div className="flex items-center gap-2">
-                <h4 className="text-[10px] font-medium text-white/40 uppercase tracking-wider">
-                  Audit Log
+                <svg className={`w-3.5 h-3.5 text-white/40 transition-transform ${auditLogCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
+                  Auto-handled Today
                 </h4>
                 <span className="px-1.5 py-0.5 text-[9px] font-medium text-semantic-success bg-semantic-success/10 rounded">
-                  Live
+                  {recentlyHandled.length}
                 </span>
               </div>
-              <span className="text-[10px] text-white/30">Auto-executed by AUTOMATE</span>
-            </div>
-            <div className="space-y-1 max-h-[180px] overflow-y-auto">
-              {recentlyHandled.slice(0, 5).map((item) => {
-                const typeIcons: Record<string, JSX.Element> = {
-                  scheduled: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
-                  derivative: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
-                  execution: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
-                  validation: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-                  sync: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
-                };
-                return (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between px-2.5 py-2 bg-slate-2/30 hover:bg-slate-2/50 rounded text-[10px] transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-semantic-success">
-                        {typeIcons[item.type] || typeIcons.execution}
-                      </span>
-                      <span className="text-white/60">{item.title}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-1 py-0.5 rounded text-[8px] font-medium ${
-                        item.status === 'completed' ? 'text-semantic-success bg-semantic-success/10' :
-                        item.status === 'passed' ? 'text-brand-cyan bg-brand-cyan/10' :
-                        'text-white/40 bg-white/5'
-                      }`}>
-                        {item.status}
-                      </span>
-                      <span className="text-white/30">{item.time}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <button className="w-full mt-2 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
-              View Full Audit Log →
+              <span className="text-[10px] text-white/30">by AUTOMATE</span>
             </button>
+            {/* Collapsible content */}
+            {!auditLogCollapsed && (
+              <>
+                <div className="space-y-1 max-h-[180px] overflow-y-auto">
+                  {recentlyHandled.slice(0, 5).map((item) => {
+                    const typeIcons: Record<string, JSX.Element> = {
+                      scheduled: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
+                      derivative: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
+                      execution: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+                      validation: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+                      sync: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
+                    };
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between px-2.5 py-2 bg-slate-2/30 hover:bg-slate-2/50 rounded text-[10px] transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-semantic-success">
+                            {typeIcons[item.type] || typeIcons.execution}
+                          </span>
+                          <span className="text-white/60">{item.title}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-1 py-0.5 rounded text-[8px] font-medium ${
+                            item.status === 'completed' ? 'text-semantic-success bg-semantic-success/10' :
+                            item.status === 'passed' ? 'text-brand-cyan bg-brand-cyan/10' :
+                            'text-white/40 bg-white/5'
+                          }`}>
+                            {item.status}
+                          </span>
+                          <span className="text-white/30">{item.time}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <button className="w-full mt-2 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
+                  View Full Audit Log →
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -1344,6 +1565,7 @@ function ContextPanel({
   upcomingDeadlines,
   crossPillarImpact,
   citeMindIssueCount,
+  showGuardrails = false,
   onViewCalendar,
   onViewLibrary,
   onFixIssues,
@@ -1352,12 +1574,17 @@ function ContextPanel({
   upcomingDeadlines: { count: number; nextDate?: string };
   crossPillarImpact: { prHooks: number; seoHooks: number };
   citeMindIssueCount: number;
+  /** Autopilot posture: show Guardrails card */
+  showGuardrails?: boolean;
   onViewCalendar?: () => void;
   onViewLibrary?: () => void;
   onFixIssues?: () => void;
 }) {
   return (
     <>
+      {/* POSTURE: Autopilot - Guardrails Card (first in Exception Console) */}
+      {showGuardrails && <GuardrailsCard />}
+
       {/* Pipeline Summary */}
       <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg">
         <div className="flex items-center justify-between mb-2">
@@ -1789,6 +2016,7 @@ export function ContentWorkQueueView({
               seoHooks: 0,
             }}
             citeMindIssueCount={citeMindIssueCount}
+            showGuardrails={mode === 'autopilot'}
             onViewCalendar={onViewCalendar}
             onViewLibrary={onViewLibrary}
             onFixIssues={onFixIssues}
