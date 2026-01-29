@@ -54,7 +54,8 @@ These files define WHAT Pravado is and HOW it should work:
 | `CORE_UX_FLOWS.md` | The 7 canonical user flows |
 | `DS_v3_PRINCIPLES.md` | Design system principles |
 | `DS_v3_1_EXPRESSION.md` | Design tokens and expression |
-| `AUTOMATION_MODES_UX.md` | Manual/Copilot/Autopilot modes |
+| `AUTOMATION_MODES_UX.md` | Manual/Copilot/Autopilot UX patterns |
+| `AUTOMATION_MODE_CONTRACTS_CANON.md` | Mode semantic + behavioral contracts (authority boundaries) |
 | `AI_VISUAL_COMMUNICATION_CANON.md` | AI state, confidence, and motion principles |
 | `PLANS_LIMITS_ENTITLEMENTS.md` | Pricing tiers and limits |
 | `PR_PILLAR_MODEL.md` | PR pillar operating model (Influence Orchestration) |
