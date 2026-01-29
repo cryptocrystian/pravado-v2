@@ -352,6 +352,95 @@ function filterActionsByMode(actions: ContentAction[], mode: AutomationMode): Co
   return actions;
 }
 
+// ============================================
+// QUEUE REASONING PANEL (Phase 10B - Copilot)
+// ============================================
+
+/**
+ * Mock queue reasoning data for Copilot mode.
+ * Shows top 3 reasons why the current ordering was chosen.
+ */
+const MOCK_QUEUE_REASONING = [
+  {
+    id: 'reason-1',
+    factor: 'Deadline Proximity',
+    explanation: 'Brief has a deadline within 48 hours, prioritizing time-sensitive work.',
+    weight: 'High',
+  },
+  {
+    id: 'reason-2',
+    factor: 'Authority Impact',
+    explanation: 'Executing this brief contributes +15 to authority score based on target keywords.',
+    weight: 'High',
+  },
+  {
+    id: 'reason-3',
+    factor: 'Cross-Pillar Synergy',
+    explanation: 'Content aligns with pending PR pitch, creating amplification opportunity.',
+    weight: 'Medium',
+  },
+];
+
+function QueueReasoningPanel({
+  isOpen,
+  onClose,
+  reasons = MOCK_QUEUE_REASONING,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  reasons?: typeof MOCK_QUEUE_REASONING;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="mt-3 p-4 bg-brand-cyan/5 border border-brand-cyan/20 rounded-lg">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="w-4 h-4 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+          <span className="text-sm font-semibold text-brand-cyan">Why This Ordering</span>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-1 text-white/40 hover:text-white rounded transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div className="space-y-2">
+        {reasons.map((reason, index) => (
+          <div key={reason.id} className="flex items-start gap-3 p-2 bg-slate-2/50 rounded">
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold shrink-0">
+              {index + 1}
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-white">{reason.factor}</span>
+                <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded ${
+                  reason.weight === 'High' ? 'text-brand-cyan bg-brand-cyan/10' : 'text-white/50 bg-white/5'
+                }`}>
+                  {reason.weight}
+                </span>
+              </div>
+              <p className="text-[11px] text-white/50 mt-0.5">{reason.explanation}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="text-[10px] text-white/30 mt-3 text-center">
+        AI re-evaluates ordering when new actions arrive or context changes.
+      </p>
+    </div>
+  );
+}
+
+// ============================================
+// EXECUTION GRAVITY PANE
+// ============================================
+
 function ExecutionGravityPane({
   actions,
   mode,
@@ -372,9 +461,40 @@ function ExecutionGravityPane({
   // State for explain drawer
   const [explainDrawerOpen, setExplainDrawerOpen] = useState(false);
   const [explainAction, setExplainAction] = useState<ContentAction | null>(null);
+  // Phase 10B: Queue reasoning panel state (Copilot mode)
+  const [queueReasoningOpen, setQueueReasoningOpen] = useState(false);
+  // Phase 10B: Plan approval state (Copilot mode)
+  const [planApproved, setPlanApproved] = useState(false);
+  // Phase 10B: Show all items toggle (Autopilot mode)
+  const [showAllItems, setShowAllItems] = useState(false);
+  // Phase 10B: Pinned action ID (Manual mode)
+  const [pinnedActionId, setPinnedActionId] = useState<string | null>(null);
+  // Phase 10B: Simulated AI evaluating state (for queue recalculation)
+  const [isSimulatingEvaluate, setIsSimulatingEvaluate] = useState(false);
 
-  // Derive AI perceptual state for ambient indicator (Phase 9A)
+  // Phase 10B: Simulate evaluating state when mode changes
+  useEffect(() => {
+    if (mode === 'copilot' || mode === 'autopilot') {
+      setIsSimulatingEvaluate(true);
+      const timer = setTimeout(() => setIsSimulatingEvaluate(false), 1200);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [mode]);
+
+  // Reset plan approval when mode changes
+  useEffect(() => {
+    setPlanApproved(false);
+    setPinnedActionId(null);
+  }, [mode]);
+
+  // Derive AI perceptual state for ambient indicator (Phase 9A + 10B enhancements)
   const aiState = useMemo((): AIPerceptualState => {
+    // Phase 10B: Simulated evaluating state takes precedence
+    if (isSimulatingEvaluate) {
+      return 'evaluating';
+    }
+
     // Check for blocked/escalating based on action types
     const hasBlockedAction = actions.some(a => a.type === 'issue');
     const hasCriticalDeadline = actions.some(
@@ -393,17 +513,33 @@ function ExecutionGravityPane({
       priority: actions[0]?.priority,
       mode,
     });
-  }, [actions, isLoading, isValidating, mode]);
+  }, [actions, isLoading, isValidating, mode, isSimulatingEvaluate]);
 
   // Apply mode-aware filtering THEN priority scoring
-  const modeFilteredActions = filterActionsByMode(actions, mode);
-  const prioritizedActions = selectPrioritizedActions(modeFilteredActions);
-  const nextBestAction = prioritizedActions[0] || null;
-  const upNextActions = prioritizedActions.slice(1, 4); // Max 3 "Up Next"
-  const remainingCount = prioritizedActions.length - 4;
+  // Phase 10B: Respect showAllItems toggle in Autopilot mode
+  const modeFilteredActions = (mode === 'autopilot' && showAllItems)
+    ? actions
+    : filterActionsByMode(actions, mode);
+
+  // Phase 10B: Handle pinned actions (Manual mode)
+  const sortedActions = useMemo(() => {
+    const prioritized = selectPrioritizedActions(modeFilteredActions);
+    if (pinnedActionId) {
+      const pinnedIndex = prioritized.findIndex(a => a.id === pinnedActionId);
+      if (pinnedIndex > 0) {
+        const [pinned] = prioritized.splice(pinnedIndex, 1);
+        prioritized.unshift(pinned);
+      }
+    }
+    return prioritized;
+  }, [modeFilteredActions, pinnedActionId]);
+
+  const nextBestAction = sortedActions[0] || null;
+  const upNextActions = sortedActions.slice(1, 4); // Max 3 "Up Next"
+  const remainingCount = sortedActions.length - 4;
 
   // Track how many actions were filtered out in Autopilot mode
-  const filteredOutCount = mode === 'autopilot' ? actions.length - modeFilteredActions.length : 0;
+  const filteredOutCount = mode === 'autopilot' ? actions.length - filterActionsByMode(actions, mode).length : 0;
 
   // Handle "Why this now" click
   const handleExplain = useCallback((action: ContentAction) => {
@@ -468,32 +604,46 @@ function ExecutionGravityPane({
     ? `${filteredOutCount} auto-handled`
     : undefined;
 
-  // Mode behavior configuration (Phase 9A.2)
+  // Mode behavior configuration (Phase 10B: Mode-Expressive Mechanics)
   const modeBehavior = {
     manual: {
-      descriptor: 'You decide priority.',
+      descriptor: 'You decide priority. AI assists only when asked.',
       showRerank: true,
+      showPinToNext: true,
+      showQueueReasoning: false,
+      showApprovePlan: false,
       showRecentlyHandled: false,
+      showAllItemsToggle: false,
     },
     copilot: {
-      descriptor: 'AI prepared this queue; you approve transitions.',
+      descriptor: 'AI prepared this queue. Review and approve to proceed.',
       showRerank: false,
+      showPinToNext: false,
+      showQueueReasoning: true,
+      showApprovePlan: true,
       showRecentlyHandled: false,
+      showAllItemsToggle: false,
     },
     autopilot: {
       descriptor: 'Showing exceptions only — routine actions run automatically.',
       showRerank: false,
+      showPinToNext: false,
+      showQueueReasoning: false,
+      showApprovePlan: false,
       showRecentlyHandled: true,
+      showAllItemsToggle: true,
     },
   };
 
   const behavior = modeBehavior[mode];
 
-  // Mock recently handled items for autopilot mode
+  // Phase 10B: Enhanced audit log entries for Autopilot mode
   const recentlyHandled = [
-    { id: 'recent-1', title: 'Auto-scheduled blog post', time: '2 min ago' },
-    { id: 'recent-2', title: 'Derivative generated for SEO', time: '5 min ago' },
-    { id: 'recent-3', title: 'Brief execution completed', time: '12 min ago' },
+    { id: 'recent-1', title: 'Auto-scheduled blog post', type: 'scheduled', time: '2 min ago', status: 'completed' },
+    { id: 'recent-2', title: 'Derivative generated for SEO', type: 'derivative', time: '5 min ago', status: 'completed' },
+    { id: 'recent-3', title: 'Brief execution completed', type: 'execution', time: '12 min ago', status: 'completed' },
+    { id: 'recent-4', title: 'CiteMind quality check', type: 'validation', time: '18 min ago', status: 'passed' },
+    { id: 'recent-5', title: 'Cross-pillar sync to PR', type: 'sync', time: '25 min ago', status: 'completed' },
   ];
 
   return (
@@ -514,7 +664,7 @@ function ExecutionGravityPane({
           </div>
           <div className="flex items-center gap-3">
             {/* Re-rank affordance for Manual mode */}
-            {behavior.showRerank && prioritizedActions.length > 1 && (
+            {behavior.showRerank && sortedActions.length > 1 && (
               <button
                 onClick={() => {/* TODO: Open re-rank modal/popover */}}
                 className="flex items-center gap-1 px-2 py-1 text-[10px] text-white/50 hover:text-white hover:bg-white/5 rounded transition-colors"
@@ -525,9 +675,9 @@ function ExecutionGravityPane({
                 Re-rank
               </button>
             )}
-            {prioritizedActions.length > 1 && (
+            {sortedActions.length > 1 && (
               <span className="text-[10px] text-white/40">
-                {prioritizedActions.length} {mode === 'autopilot' ? 'exception' : 'total'}{prioritizedActions.length !== 1 ? 's' : ''}
+                {sortedActions.length} {mode === 'autopilot' ? 'exception' : 'total'}{sortedActions.length !== 1 ? 's' : ''}
               </span>
             )}
           </div>
@@ -537,6 +687,68 @@ function ExecutionGravityPane({
         <p className="text-xs text-white/40 -mt-2">
           {behavior.descriptor}
         </p>
+
+        {/* Phase 10B: Copilot - Queue Reasoning + Approve Plan affordances */}
+        {behavior.showQueueReasoning && (
+          <div className="flex items-center gap-3 -mt-1">
+            <button
+              onClick={() => setQueueReasoningOpen(!queueReasoningOpen)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-brand-cyan hover:bg-brand-cyan/10 border border-brand-cyan/20 rounded-lg transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Why this ordering?
+            </button>
+            {behavior.showApprovePlan && (
+              <button
+                onClick={() => setPlanApproved(!planApproved)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                  planApproved
+                    ? 'bg-semantic-success/20 text-semantic-success border border-semantic-success/30'
+                    : 'bg-brand-iris/10 text-brand-iris border border-brand-iris/20 hover:bg-brand-iris/20'
+                }`}
+              >
+                {planApproved ? (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Plan Approved
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Approve Plan
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Phase 10B: Queue Reasoning Panel (Copilot) */}
+        <QueueReasoningPanel
+          isOpen={queueReasoningOpen}
+          onClose={() => setQueueReasoningOpen(false)}
+        />
+
+        {/* Phase 10B: Autopilot - Show all items toggle */}
+        {behavior.showAllItemsToggle && filteredOutCount > 0 && (
+          <div className="flex items-center justify-between -mt-1 p-2 bg-slate-2/50 rounded-lg">
+            <span className="text-xs text-white/50">
+              {showAllItems ? 'Showing all items' : `${filteredOutCount} routine items hidden`}
+            </span>
+            <button
+              onClick={() => setShowAllItems(!showAllItems)}
+              className="text-xs text-brand-iris hover:underline"
+            >
+              {showAllItems ? 'Show exceptions only' : 'Show all items'}
+            </button>
+          </div>
+        )}
 
         {/* DOMINANT: Next Best Action Card with AI State Ring (Phase 9A) */}
         <AIStateRing state={aiState} showAccentBar>
@@ -570,38 +782,67 @@ function ExecutionGravityPane({
                 <UpNextActionCard
                   key={action.id}
                   action={action}
+                  mode={mode}
+                  isPinned={pinnedActionId === action.id}
                   onLaunchOrchestrate={onLaunchOrchestrate}
+                  onPinToNext={behavior.showPinToNext ? setPinnedActionId : undefined}
                 />
               ))}
             </div>
           </div>
         )}
 
-        {/* Autopilot: Recently handled log (read-only, 3 items max) */}
+        {/* Phase 10B: Autopilot Audit Log (enhanced with action types) */}
         {behavior.showRecentlyHandled && (
           <div className="pt-3 border-t border-border-subtle">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-[10px] font-medium text-white/40 uppercase tracking-wider">
-                Recently Handled
-              </h4>
-              <span className="text-[10px] text-white/30">Auto-executed</span>
+              <div className="flex items-center gap-2">
+                <h4 className="text-[10px] font-medium text-white/40 uppercase tracking-wider">
+                  Audit Log
+                </h4>
+                <span className="px-1.5 py-0.5 text-[9px] font-medium text-semantic-success bg-semantic-success/10 rounded">
+                  Live
+                </span>
+              </div>
+              <span className="text-[10px] text-white/30">Auto-executed by AUTOMATE</span>
             </div>
-            <div className="space-y-1">
-              {recentlyHandled.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between px-2 py-1.5 bg-slate-2/30 rounded text-[10px]"
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-3 h-3 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-white/60">{item.title}</span>
+            <div className="space-y-1 max-h-[180px] overflow-y-auto">
+              {recentlyHandled.slice(0, 5).map((item) => {
+                const typeIcons: Record<string, JSX.Element> = {
+                  scheduled: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
+                  derivative: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
+                  execution: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+                  validation: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+                  sync: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
+                };
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between px-2.5 py-2 bg-slate-2/30 hover:bg-slate-2/50 rounded text-[10px] transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-semantic-success">
+                        {typeIcons[item.type] || typeIcons.execution}
+                      </span>
+                      <span className="text-white/60">{item.title}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-1 py-0.5 rounded text-[8px] font-medium ${
+                        item.status === 'completed' ? 'text-semantic-success bg-semantic-success/10' :
+                        item.status === 'passed' ? 'text-brand-cyan bg-brand-cyan/10' :
+                        'text-white/40 bg-white/5'
+                      }`}>
+                        {item.status}
+                      </span>
+                      <span className="text-white/30">{item.time}</span>
+                    </div>
                   </div>
-                  <span className="text-white/30">{item.time}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
+            <button className="w-full mt-2 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
+              View Full Audit Log →
+            </button>
           </div>
         )}
       </div>
@@ -717,12 +958,26 @@ function NextBestActionCard({
     },
   };
 
+  // Phase 10B: Mode-specific CTA labels
+  // Manual: "Execute →" | Copilot: "Review & Approve →" | Autopilot: "Approve" (only when needed)
+  const getModeCtaLabel = (baseLabel: string): string => {
+    if (mode === 'copilot') {
+      if (action.type === 'execution') return 'Review & Approve →';
+      return 'Review →';
+    }
+    if (mode === 'autopilot') {
+      if (action.type === 'issue') return 'Approve Fix';
+      return 'Approve';
+    }
+    return baseLabel; // Manual mode uses base labels
+  };
+
   const typeConfig = {
-    execution: { label: 'Execute Brief', ctaLabel: 'Execute →', ctaClass: 'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]' },
-    issue: { label: 'Fix Issue', ctaLabel: 'Fix Issue →', ctaClass: 'bg-semantic-warning text-black' },
-    opportunity: { label: 'Opportunity', ctaLabel: 'Create Brief →', ctaClass: 'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]' },
-    scheduled: { label: 'Deadline', ctaLabel: 'Review →', ctaClass: 'bg-brand-cyan text-black' },
-    sage_proposal: { label: 'SAGE Proposal', ctaLabel: 'View →', ctaClass: 'bg-white/10 text-white' },
+    execution: { label: 'Execute Brief', ctaLabel: getModeCtaLabel('Execute →'), ctaClass: 'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]' },
+    issue: { label: 'Fix Issue', ctaLabel: getModeCtaLabel('Fix Issue →'), ctaClass: 'bg-semantic-warning text-black' },
+    opportunity: { label: 'Opportunity', ctaLabel: getModeCtaLabel('Create Brief →'), ctaClass: 'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]' },
+    scheduled: { label: 'Deadline', ctaLabel: getModeCtaLabel('Review →'), ctaClass: 'bg-brand-cyan text-black' },
+    sage_proposal: { label: 'SAGE Proposal', ctaLabel: getModeCtaLabel('View →'), ctaClass: 'bg-white/10 text-white' },
   };
 
   const style = priorityStyles[action.priority];
@@ -981,10 +1236,16 @@ function ConfidenceAwareCTA({
 
 function UpNextActionCard({
   action,
+  mode,
+  isPinned = false,
   onLaunchOrchestrate,
+  onPinToNext,
 }: {
   action: ContentAction;
+  mode: AutomationMode;
+  isPinned?: boolean;
   onLaunchOrchestrate?: (actionId: string) => void;
+  onPinToNext?: (actionId: string) => void;
 }) {
   // Phase 9A: Removed animate-pulse from critical per §7.4 (manufactured urgency)
   // AI state indicators now handle urgency semantically based on actual deadlines
@@ -1013,17 +1274,30 @@ function UpNextActionCard({
     }
   };
 
+  // Phase 10B: Mode-specific CTA labels
+  const getCtaLabel = () => {
+    if (mode === 'copilot') return 'Review →';
+    if (mode === 'autopilot') return action.type === 'issue' ? 'Resolve' : 'View';
+    return action.cta.label;
+  };
+
   return (
     <div
       onClick={handleClick}
       className={`
-        p-2.5 bg-slate-2/50 border border-border-subtle rounded-lg
+        p-2.5 bg-slate-2/50 border rounded-lg
         hover:bg-slate-2 hover:border-brand-iris/30
         transition-all duration-150 cursor-pointer
         flex items-center justify-between gap-3
+        ${isPinned ? 'border-brand-iris/40 bg-brand-iris/5' : 'border-border-subtle'}
       `}
     >
       <div className="flex items-center gap-2 min-w-0 flex-1">
+        {isPinned && (
+          <svg className="w-3 h-3 text-brand-iris shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 2a1 1 0 00-1 1v1.323l-3.954 1.582A1.5 1.5 0 004 7.323V16a1 1 0 001 1h4v-5a1 1 0 112 0v5h4a1 1 0 001-1V7.323a1.5 1.5 0 00-1.046-1.418L11 4.323V3a1 1 0 00-1-1z" />
+          </svg>
+        )}
         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${priorityDot[action.priority]}`} />
         <span className="text-[10px] font-medium text-white/40 uppercase shrink-0">
           {typeLabels[action.type]}
@@ -1032,9 +1306,26 @@ function UpNextActionCard({
           {action.title}
         </span>
       </div>
-      <button className="text-[10px] font-medium text-brand-iris hover:underline shrink-0">
-        {action.cta.label}
-      </button>
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Phase 10B: Pin to Next action (Manual mode only) */}
+        {mode === 'manual' && onPinToNext && !isPinned && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPinToNext(action.id);
+            }}
+            className="p-1 text-white/30 hover:text-brand-iris rounded transition-colors"
+            title="Set as Next"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
+        )}
+        <button className="text-[10px] font-medium text-brand-iris hover:underline">
+          {getCtaLabel()}
+        </button>
+      </div>
     </div>
   );
 }
