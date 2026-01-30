@@ -591,6 +591,44 @@ function PlanPanel({
 }
 
 // ============================================
+// SUPERVISED ITEMS COUNT (P1.3 - Autopilot Proof-of-Work)
+// ============================================
+
+/**
+ * SupervisedItemsCount - Ambient proof-of-work indicator for Autopilot mode.
+ *
+ * Per CONTENT_MODE_RESPONSIBILITY_MAP.md §4.1:
+ * - Must show even when exceptions = 0
+ * - Quiet presentation (no pulse, no urgency, no CTA)
+ * - Provides proof that Autopilot is actively working
+ *
+ * @see /docs/canon/work/CONTENT_MODE_RESPONSIBILITY_MAP.md §4.1
+ * @see /docs/canon/work/CONTENT_SURFACE_ARCHITECTURE_MAP.md §5.1 (S10 surface)
+ */
+function SupervisedItemsCount({
+  routineCount,
+  exceptionCount,
+}: {
+  /** Number of routine items being handled automatically */
+  routineCount: number;
+  /** Number of exceptions requiring attention */
+  exceptionCount: number;
+}) {
+  // Phrasing per spec: "Running: X routine • Y exceptions"
+  // Quiet: no pulse, muted colors, informational only
+  return (
+    <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-2/50 border border-slate-4/50 rounded text-[10px]">
+      <span className="text-white/40">Running:</span>
+      <span className="text-white/60 font-medium">{routineCount} routine</span>
+      <span className="text-white/30">•</span>
+      <span className={`font-medium ${exceptionCount > 0 ? 'text-semantic-warning' : 'text-white/40'}`}>
+        {exceptionCount} {exceptionCount === 1 ? 'exception' : 'exceptions'}
+      </span>
+    </div>
+  );
+}
+
+// ============================================
 // GUARDRAILS CARD (Phase 10B - Autopilot)
 // ============================================
 
@@ -895,6 +933,13 @@ function ExecutionGravityPane({
               <span className="text-[10px] text-brand-cyan/70">
                 ({headerSubtext})
               </span>
+            )}
+            {/* P1.3: Autopilot Proof-of-Work Indicator - ambient supervised items count */}
+            {mode === 'autopilot' && (
+              <SupervisedItemsCount
+                routineCount={filteredOutCount}
+                exceptionCount={sortedActions.length}
+              />
             )}
           </div>
           <div className="flex items-center gap-3">
