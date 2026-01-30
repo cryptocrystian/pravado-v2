@@ -343,3 +343,45 @@ export interface CiteMindStatusIndicatorProps {
   issues?: CiteMindIssue[];
   onViewIssues?: () => void;
 }
+
+// ============================================
+// AUDIT LEDGER (P2.6 - AUTOMATE_EXECUTION_MODEL)
+// ============================================
+
+/**
+ * Audit Ledger Entry - Structured execution record per AUTOMATE_EXECUTION_MODEL
+ *
+ * P2.6: Upgrade Autopilot "recently handled" to structured execution ledger shape.
+ * Provides transparent audit trail for all automated actions.
+ *
+ * @see /docs/canon/AUTOMATE_EXECUTION_MODEL.md
+ */
+export interface AuditLedgerEntry {
+  /** Unique entry identifier */
+  id: string;
+  /** ISO 8601 timestamp of execution */
+  timestamp: string;
+  /** Who performed the action: system (AUTOMATE) or user */
+  actor: 'system' | 'user';
+  /** Type of action performed */
+  actionType: 'brief_execution' | 'derivative_generation' | 'citemind_check' | 'cross_pillar_sync' | 'scheduling' | 'status_change';
+  /** Human-readable summary of the action */
+  summary: string;
+  /** Outcome of the action */
+  outcome: 'completed' | 'passed' | 'failed' | 'pending';
+  /** Optional provenance information for deep audit */
+  provenance?: {
+    /** Confidence score at time of execution (0-1) */
+    confidence?: number;
+    /** Risk class per AUTOMATE Section 5 */
+    riskClass?: 'low' | 'medium' | 'high' | 'critical';
+    /** Source pillar if cross-pillar action */
+    sourcePillar?: 'content' | 'pr' | 'seo';
+    /** Target pillar if cross-pillar action */
+    targetPillar?: 'content' | 'pr' | 'seo';
+    /** Related entity ID */
+    relatedEntityId?: string;
+    /** Automation mode at time of execution */
+    mode?: AutomationMode;
+  };
+}
