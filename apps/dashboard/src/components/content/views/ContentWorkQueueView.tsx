@@ -43,6 +43,14 @@ import {
   AIStateRing,
 } from '@/components/ai';
 
+// Phase 11A: Selection-driven triage components
+import {
+  QueueList,
+  WorkbenchCanvas,
+  ContextRail,
+  type QueueItem,
+} from '../work-queue';
+
 // ============================================
 // TYPES
 // ============================================
@@ -677,10 +685,12 @@ function GuardrailsCard() {
 // QueueReasoningPanel replaced by PlanPanel for Copilot posture
 
 // ============================================
-// EXECUTION GRAVITY PANE
+// EXECUTION GRAVITY PANE (Legacy - preserved for reference)
+// Phase 11A replaced this with selection-driven triage layout
 // ============================================
 
-function ExecutionGravityPane({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _ExecutionGravityPane({
   actions,
   mode,
   onLaunchOrchestrate,
@@ -1733,7 +1743,8 @@ function UpNextActionCard({
 }
 
 // ============================================
-// CONTEXT PANEL (RIGHT COLUMN)
+// CONTEXT PANEL (Legacy - preserved for reference)
+// Phase 11A replaced this with ContextRail component
 // ============================================
 
 /**
@@ -1741,7 +1752,8 @@ function UpNextActionCard({
  * Displays pipeline, deadlines, cross-pillar impact, and CiteMind issues.
  * Responsive: stacks below left column on smaller screens.
  */
-function ContextPanel({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _ContextPanel({
   pipelineCounts,
   upcomingDeadlines,
   crossPillarImpact,
@@ -1866,10 +1878,12 @@ function PipelineStat({
 }
 
 // ============================================
-// QUICK OPPORTUNITIES (Themes + Gaps with CTAs)
+// QUICK OPPORTUNITIES (Legacy - preserved for reference)
+// Phase 11A moved opportunities to ContextRail
 // ============================================
 
-function QuickOpportunities({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _QuickOpportunities({
   clusters,
   gaps,
   onViewCluster,
@@ -2020,17 +2034,41 @@ export function ContentWorkQueueView({
   isLoading,
   error,
   onViewLibrary,
-  onViewGap,
+  onViewGap: _onViewGap, // Phase 11A: Reserved for future Quick Opportunities integration
   onViewBrief,
   onGenerateBrief,
   onImportContent,
   onFixIssues,
   onGenerateDraft,
-  onViewCluster,
+  onViewCluster: _onViewCluster, // Phase 11A: Reserved for future Quick Opportunities integration
   onViewCalendar,
   onLaunchOrchestrate,
   onSwitchToManual,
 }: ContentWorkQueueViewProps) {
+  // Phase 11A: Selection state for triage layout
+  const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
+  const [pinnedActionId, setPinnedActionId] = useState<string | null>(null);
+  const [isPlanApproved, setIsPlanApproved] = useState(false);
+  const [explainDrawerOpen, setExplainDrawerOpen] = useState(false);
+  const [isSimulatingEvaluate, setIsSimulatingEvaluate] = useState(false);
+
+  // Simulate AI evaluation on mode change
+  useEffect(() => {
+    if (mode === 'copilot' || mode === 'autopilot') {
+      setIsSimulatingEvaluate(true);
+      const timer = setTimeout(() => setIsSimulatingEvaluate(false), 1200);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [mode]);
+
+  // Reset states on mode change
+  useEffect(() => {
+    setSelectedActionId(null);
+    setPinnedActionId(null);
+    setIsPlanApproved(false);
+  }, [mode]);
+
   // Loading state
   if (isLoading) {
     return <ContentLoadingSkeleton type="dashboard" />;
@@ -2093,8 +2131,10 @@ export function ContentWorkQueueView({
         },
         mode: mode,
         createdAt: brief.createdAt,
-        // Map brief ID to orchestration action ID (using mock IDs for now)
         orchestrateActionId: `action-${(i % 3) + 1}`,
+        confidence: 75 + Math.floor(Math.random() * 20), // Mock confidence
+        impact: { authority: 12 + i * 3, crossPillar: 2 },
+        risk: 'low',
       })),
     // High-opportunity gaps
     ...gaps
@@ -2114,6 +2154,8 @@ export function ContentWorkQueueView({
         },
         mode: mode,
         createdAt: new Date().toISOString(),
+        confidence: 60 + Math.floor(Math.random() * 25),
+        impact: { authority: gap.seoOpportunityScore / 10 },
       })),
     // Briefs needing attention (draft status)
     ...briefs
@@ -2133,6 +2175,7 @@ export function ContentWorkQueueView({
         },
         mode: mode,
         createdAt: brief.createdAt,
+        confidence: 70,
       })),
     // CiteMind issues
     ...(citeMindIssueCount > 0
@@ -2149,72 +2192,245 @@ export function ContentWorkQueueView({
             },
             mode: mode,
             createdAt: new Date().toISOString(),
+            confidence: 95,
+            risk: 'medium' as const,
           },
         ]
       : []),
   ];
 
+  // Apply mode filtering and priority scoring
+  const filteredActions = filterActionsByMode(actions, mode);
+  const sortedActions = selectPrioritizedActions(filteredActions);
+
+  // Handle pinned items in Manual mode
+  const finalActions = (() => {
+    if (pinnedActionId) {
+      const pinnedIndex = sortedActions.findIndex(a => a.id === pinnedActionId);
+      if (pinnedIndex > 0) {
+        const copy = [...sortedActions];
+        const [pinned] = copy.splice(pinnedIndex, 1);
+        copy.unshift(pinned);
+        return copy;
+      }
+    }
+    return sortedActions;
+  })();
+
+  // Convert to QueueItem format for new components
+  const queueItems: QueueItem[] = finalActions.map((action): QueueItem => ({
+    id: action.id,
+    title: action.title,
+    summary: action.summary,
+    priority: action.priority,
+    type: action.type,
+    relatedEntityId: action.relatedEntityId,
+    relatedEntityType: action.relatedEntityType,
+    mode: action.mode,
+    createdAt: action.createdAt,
+    orchestrateActionId: action.orchestrateActionId,
+    confidence: action.confidence,
+    modeCeiling: action.modeCeiling,
+    risk: action.risk,
+    impact: action.impact,
+  }));
+
+  // Get selected item
+  const selectedItem = selectedActionId
+    ? queueItems.find(item => item.id === selectedActionId) || null
+    : queueItems[0] || null; // Auto-select first item if none selected
+
+  const selectedAction = selectedActionId
+    ? finalActions.find(a => a.id === selectedActionId) || null
+    : finalActions[0] || null;
+
+  // Routine count for Autopilot
+  const routineCount = mode === 'autopilot' ? actions.length - filteredActions.length : 0;
+
+  // Derive AI state
+  const aiState: AIPerceptualState = (() => {
+    if (isSimulatingEvaluate) return 'evaluating';
+    const hasBlockedAction = finalActions.some(a => a.type === 'issue');
+    const hasCriticalDeadline = finalActions.some(a => a.priority === 'critical' && a.type === 'scheduled');
+    const hasReadyAction = finalActions.some(a => a.type === 'execution' && a.orchestrateActionId);
+    return deriveAIPerceptualState({
+      isLoading: false,
+      isValidating: false,
+      gateStatus: hasBlockedAction ? 'warning' : 'passed',
+      isActionReady: hasReadyAction,
+      hasUrgentDeadline: hasCriticalDeadline,
+      priority: finalActions[0]?.priority,
+      mode,
+    });
+  })();
+
+  // Convert to TriggerAction for ExplainabilityDrawer
+  const toTriggerAction = (action: ContentAction): TriggerAction => ({
+    id: action.id,
+    type: action.type === 'execution' ? 'brief_execution' : action.type === 'opportunity' ? 'derivative_generation' : 'authority_optimization',
+    title: action.title,
+    priority: action.priority === 'critical' ? 'urgent' : action.priority === 'high' ? 'high' : 'normal',
+    modeCeiling: action.modeCeiling || 'copilot',
+    citeMindStatus: action.type === 'issue' ? 'warning' : 'passed',
+    pillar: 'content',
+    createdAt: action.createdAt,
+    sourceContext: {
+      briefId: action.relatedEntityId,
+      briefTitle: action.title,
+      keyword: action.relatedEntityId || 'target keyword',
+      assetTitle: action.title,
+    },
+  });
+
+  // Mock audit ledger for Autopilot
+  const auditLedger: AuditLedgerEntry[] = mode === 'autopilot' ? [
+    {
+      id: 'audit-1',
+      timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
+      actor: 'system',
+      actionType: 'scheduling',
+      summary: 'Auto-scheduled blog post',
+      outcome: 'completed',
+    },
+    {
+      id: 'audit-2',
+      timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+      actor: 'system',
+      actionType: 'derivative_generation',
+      summary: 'Generated AEO snippet',
+      outcome: 'completed',
+    },
+    {
+      id: 'audit-3',
+      timestamp: new Date(Date.now() - 12 * 60 * 1000).toISOString(),
+      actor: 'system',
+      actionType: 'citemind_check',
+      summary: 'CiteMind check passed',
+      outcome: 'passed',
+    },
+  ] : [];
+
+  // Handlers
+  const handleSelect = useCallback((id: string) => {
+    setSelectedActionId(id);
+  }, []);
+
+  const handleExecute = useCallback(() => {
+    if (selectedAction) {
+      selectedAction.cta.action();
+    }
+  }, [selectedAction]);
+
+  const handleExplain = useCallback(() => {
+    setExplainDrawerOpen(true);
+  }, []);
+
+  // Phase 11A: Selection-driven triage layout (3-pane)
   return (
-    <div className="p-4 space-y-4">
-      {/* Top Row: Health Strip + Mode-shaped CTAs */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <HealthStrip signals={signals} citeMindIssueCount={citeMindIssueCount} />
+    <div className="flex flex-col h-full">
+      {/* Top bar: Health strip + CTAs */}
+      <div className="px-4 py-3 border-b border-slate-4 shrink-0">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <HealthStrip signals={signals} citeMindIssueCount={citeMindIssueCount} />
+          </div>
+          <CTACluster
+            mode={mode}
+            hasIssues={citeMindIssueCount > 0}
+            onGenerateBrief={onGenerateBrief}
+            onImportContent={onImportContent}
+            onFixIssues={onFixIssues}
+            onGenerateDraft={onGenerateDraft}
+          />
         </div>
-        <CTACluster
-          mode={mode}
-          hasIssues={citeMindIssueCount > 0}
-          onGenerateBrief={onGenerateBrief}
-          onImportContent={onImportContent}
-          onFixIssues={onFixIssues}
-          onGenerateDraft={onGenerateDraft}
-        />
       </div>
 
-      {/* Cockpit Layout: Left Queue + Right Context */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
-        {/* LEFT: Primary Queue (Next Best Action + Up Next) */}
-        <section className="min-h-[320px]">
-          <ExecutionGravityPane
-            actions={actions}
-            isLoading={false} /* TODO: Wire to SWR isLoading when available */
-            isValidating={false} /* TODO: Wire to SWR isValidating when available */
-            mode={mode}
-            onLaunchOrchestrate={onLaunchOrchestrate}
-            onViewAll={onViewLibrary}
-            onSwitchToManual={onSwitchToManual}
+      {/* Plan Panel for Copilot (above main content) */}
+      {mode === 'copilot' && (
+        <div className="px-4 py-2 border-b border-slate-4 shrink-0">
+          <PlanPanel
+            isExpanded={!isPlanApproved}
+            onToggle={() => {}}
+            onApprove={() => setIsPlanApproved(true)}
+            isApproved={isPlanApproved}
+            aiState={aiState}
           />
-        </section>
+        </div>
+      )}
 
-        {/* RIGHT: Context Panel (Pipeline, Deadlines, Cross-Pillar, Issues) */}
-        <aside className="space-y-3">
-          <ContextPanel
+      {/* Main 3-pane triage layout */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[280px_1fr_300px] min-h-0">
+        {/* LEFT PANE: QueueList */}
+        <div className="border-r border-slate-4 overflow-hidden">
+          <QueueList
+            items={queueItems}
+            selectedId={selectedItem?.id || null}
+            onSelect={handleSelect}
+            mode={mode}
+            routineCount={routineCount}
+            pinnedId={pinnedActionId}
+            onPinToggle={mode === 'manual' ? (id) => setPinnedActionId(id === pinnedActionId ? null : id) : undefined}
+          />
+        </div>
+
+        {/* CENTER PANE: WorkbenchCanvas */}
+        <div className="overflow-hidden">
+          <WorkbenchCanvas
+            item={selectedItem}
+            mode={mode}
+            aiState={aiState}
+            onExecute={handleExecute}
+            onLaunchOrchestrate={onLaunchOrchestrate}
+            onExplain={handleExplain}
+            onSwitchToManual={onSwitchToManual}
+            isPlanApproved={isPlanApproved}
+          />
+        </div>
+
+        {/* RIGHT PANE: ContextRail */}
+        <div className="border-l border-slate-4 overflow-hidden">
+          <ContextRail
+            mode={mode}
+            citeMindStatus={citeMindIssueCount > 0 ? 'warning' : 'passed'}
+            citeMindIssues={assets
+              .filter(a => a.citeMindIssues && a.citeMindIssues.length > 0)
+              .flatMap(a => a.citeMindIssues || [])}
+            entities={selectedAction?.relatedEntityId ? [selectedAction.relatedEntityId] : []}
+            derivatives={[
+              { type: 'pr_pitch_excerpt', valid: true },
+              { type: 'aeo_snippet', valid: true },
+              { type: 'ai_summary', valid: false },
+            ]}
+            crossPillar={{ prHooks: 0, seoHooks: 0 }}
             pipelineCounts={pipelineCounts}
             upcomingDeadlines={{
               count: briefs.filter((b) => b.deadline).length,
               nextDate: briefs.find((b) => b.deadline)?.deadline?.split('T')[0],
             }}
-            crossPillarImpact={{
-              prHooks: 0, // TODO: Calculate from actual data
-              seoHooks: 0,
-            }}
-            citeMindIssueCount={citeMindIssueCount}
-            showGuardrails={mode === 'autopilot'}
+            auditLedger={auditLedger}
             onViewCalendar={onViewCalendar}
             onViewLibrary={onViewLibrary}
             onFixIssues={onFixIssues}
           />
-        </aside>
+        </div>
       </div>
 
-      {/* Quick Opportunities (below cockpit, full width) */}
-      <QuickOpportunities
-        clusters={clusters}
-        gaps={gaps}
-        onViewCluster={onViewCluster}
-        onViewGap={onViewGap}
-        onGenerateBrief={onGenerateBrief}
-      />
+      {/* Explainability Drawer */}
+      {selectedAction && (
+        <ExplainabilityDrawer
+          isOpen={explainDrawerOpen}
+          onClose={() => setExplainDrawerOpen(false)}
+          action={toTriggerAction(selectedAction)}
+          currentMode={mode}
+        />
+      )}
     </div>
   );
 }
+
+// Phase 11A: Legacy component references (preserved for potential future use/rollback)
+// These components were replaced by selection-driven triage layout.
+// Suppress unused warnings by referencing them.
+void _ExecutionGravityPane;
+void _ContextPanel;
+void _QuickOpportunities;
