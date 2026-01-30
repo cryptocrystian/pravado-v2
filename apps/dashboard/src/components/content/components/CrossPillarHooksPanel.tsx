@@ -112,6 +112,11 @@ export interface CrossPillarHooksPanelProps {
   onActionComplete?: (action: ExplainableAction) => void;
   /** Compact mode */
   compact?: boolean;
+  /**
+   * P1.4: Default collapsed state - collapsed by default in Autopilot mode
+   * @see /docs/canon/work/CONTENT_MODE_RESPONSIBILITY_MAP.md §3
+   */
+  defaultCollapsed?: boolean;
 }
 
 interface HookAction {
@@ -362,11 +367,24 @@ export function CrossPillarHooksPanel({
   onAddToCommandCenter,
   onActionComplete,
   compact = false,
+  defaultCollapsed,
 }: CrossPillarHooksPanelProps) {
   const [loadingActions, setLoadingActions] = useState<Set<string>>(new Set());
   const [completedActions, setCompletedActions] = useState<Set<string>>(new Set());
   const [lastAction, setLastAction] = useState<ExplainableAction | null>(null);
   const [isCausalChainExpanded, setIsCausalChainExpanded] = useState(false);
+
+  /**
+   * P1.4: Autopilot mode behavior per CONTENT_MODE_RESPONSIBILITY_MAP.md §3:
+   * - READ-ONLY: Actions are disabled (informational view only)
+   * - Collapsed by default: Reduces cognitive load in exception console posture
+   *
+   * @see /docs/canon/work/CONTENT_MODE_RESPONSIBILITY_MAP.md §3 (Cross-pillar impact visibility)
+   */
+  const isAutopilotMode = automationMode === 'autopilot';
+  const isReadOnly = isAutopilotMode;
+  // Default to collapsed in Autopilot, or use explicit defaultCollapsed prop
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed ?? isAutopilotMode);
 
   const isBlocked = citeMindStatus === 'blocked';
 
@@ -443,22 +461,60 @@ export function CrossPillarHooksPanel({
 
   return (
     <div className={`${compact ? 'p-3' : 'p-4'}`}>
-      <div className="flex items-center justify-between mb-3">
-        <h3 className={label}>Cross-Pillar Hooks</h3>
+      {/* Header - clickable to expand/collapse in Autopilot mode */}
+      <button
+        onClick={() => isAutopilotMode && setIsCollapsed(!isCollapsed)}
+        className={`w-full flex items-center justify-between mb-3 ${isAutopilotMode ? 'cursor-pointer' : 'cursor-default'}`}
+        disabled={!isAutopilotMode}
+      >
+        <div className="flex items-center gap-2">
+          {/* P1.4: Collapse chevron in Autopilot mode */}
+          {isAutopilotMode && (
+            <svg
+              className={`w-3.5 h-3.5 text-white/40 transition-transform ${isCollapsed ? '' : 'rotate-90'}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          )}
+          <h3 className={label}>Cross-Pillar Hooks</h3>
+          {/* P1.4: Compact summary count when collapsed in Autopilot */}
+          {isAutopilotMode && isCollapsed && (
+            <span className="text-[9px] text-white/40">
+              ({HOOK_ACTIONS.length} {HOOK_ACTIONS.length === 1 ? 'hook' : 'hooks'} available)
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           <ModeBadge mode={automationMode} compact />
+          {/* P1.4: READ-ONLY badge in Autopilot mode */}
+          {isReadOnly && (
+            <span className="px-2 py-0.5 text-[10px] font-medium text-white/50 bg-white/5 border border-white/10 rounded-full flex items-center gap-1">
+              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Read-Only
+            </span>
+          )}
           {isBlocked && (
             <span className="px-2 py-0.5 text-[10px] font-medium text-semantic-danger bg-semantic-danger/10 border border-semantic-danger/20 rounded-full">
               Blocked
             </span>
           )}
         </div>
-      </div>
+      </button>
 
-      {/* Info text */}
-      <p className={`text-[10px] ${text.hint} mb-3`}>
-        Connect this content to other pillars for orchestrated marketing.
-      </p>
+      {/* Collapsible content - hidden when collapsed in Autopilot */}
+      {!isCollapsed && (
+        <>
+          {/* Info text */}
+          <p className={`text-[10px] ${text.hint} mb-3`}>
+            {isReadOnly
+              ? 'Cross-pillar integrations are available. Switch to Manual mode to take action.'
+              : 'Connect this content to other pillars for orchestrated marketing.'}
+          </p>
 
       {/* Actions */}
       <div className="space-y-2">
@@ -467,7 +523,8 @@ export function CrossPillarHooksPanel({
           const isLoading = loadingActions.has(action.id);
           const isCompleted = completedActions.has(action.id);
           const hasRequiredDerivative = hasDerivative(action.requiresDerivative);
-          const isDisabled = isBlocked || isLoading || !hasRequiredDerivative;
+          // P1.4: Add isReadOnly to disable all actions in Autopilot mode
+          const isDisabled = isBlocked || isLoading || !hasRequiredDerivative || isReadOnly;
           const effectiveMode = getEffectiveMode(action);
 
           return (
@@ -506,7 +563,11 @@ export function CrossPillarHooksPanel({
                   <RiskIndicator riskClass={action.riskClass} />
                 </div>
                 <p className={`text-[10px] ${text.hint} truncate`}>
-                  {!hasRequiredDerivative ? 'Generate derivative first' : action.description}
+                  {isReadOnly
+                    ? 'Read-only in Autopilot'
+                    : !hasRequiredDerivative
+                    ? 'Generate derivative first'
+                    : action.description}
                 </p>
               </div>
 
@@ -597,6 +658,8 @@ export function CrossPillarHooksPanel({
         <p className={`text-[10px] text-semantic-danger text-center mt-3`}>
           Resolve CiteMind issues to enable cross-pillar hooks
         </p>
+      )}
+        </>
       )}
     </div>
   );
