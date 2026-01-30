@@ -29,6 +29,7 @@ import type {
   ContentBrief,
   ContentAsset,
   AutomationMode,
+  AuditLedgerEntry,
 } from '../types';
 import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
@@ -104,6 +105,8 @@ interface ContentWorkQueueViewProps {
   onViewCalendar?: () => void;
   /** Launch orchestration editor for a specific action */
   onLaunchOrchestrate?: (actionId: string) => void;
+  /** P1.5: Callback to switch to Manual mode for low-confidence gate */
+  onSwitchToManual?: () => void;
 }
 
 // ============================================
@@ -682,6 +685,7 @@ function ExecutionGravityPane({
   mode,
   onLaunchOrchestrate,
   onViewAll,
+  onSwitchToManual,
   isLoading = false,
   isValidating = false,
 }: {
@@ -689,6 +693,8 @@ function ExecutionGravityPane({
   mode: AutomationMode;
   onLaunchOrchestrate?: (actionId: string) => void;
   onViewAll?: () => void;
+  /** P1.5: Callback to switch to Manual mode for low-confidence gate */
+  onSwitchToManual?: () => void;
   /** SWR loading state for AI state derivation */
   isLoading?: boolean;
   /** SWR validating state for AI state derivation */
@@ -910,13 +916,54 @@ function ExecutionGravityPane({
 
   const behavior = modeBehavior[mode];
 
-  // Phase 10B: Enhanced audit log entries for Autopilot mode
-  const recentlyHandled = [
-    { id: 'recent-1', title: 'Auto-scheduled blog post', type: 'scheduled', time: '2 min ago', status: 'completed' },
-    { id: 'recent-2', title: 'Derivative generated for SEO', type: 'derivative', time: '5 min ago', status: 'completed' },
-    { id: 'recent-3', title: 'Brief execution completed', type: 'execution', time: '12 min ago', status: 'completed' },
-    { id: 'recent-4', title: 'CiteMind quality check', type: 'validation', time: '18 min ago', status: 'passed' },
-    { id: 'recent-5', title: 'Cross-pillar sync to PR', type: 'sync', time: '25 min ago', status: 'completed' },
+  // P2.6: Structured audit ledger entries per AUTOMATE_EXECUTION_MODEL
+  // Type: { id, timestamp, actor, actionType, summary, outcome, provenance? }
+  const recentlyHandled: AuditLedgerEntry[] = [
+    {
+      id: 'audit-1',
+      timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString(), // 2 min ago
+      actor: 'system',
+      actionType: 'scheduling',
+      summary: 'Auto-scheduled blog post for publication',
+      outcome: 'completed',
+      provenance: { confidence: 0.92, riskClass: 'low', mode: 'autopilot' },
+    },
+    {
+      id: 'audit-2',
+      timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 min ago
+      actor: 'system',
+      actionType: 'derivative_generation',
+      summary: 'Generated AEO snippet for SEO pillar',
+      outcome: 'completed',
+      provenance: { confidence: 0.88, riskClass: 'low', mode: 'autopilot', targetPillar: 'seo' },
+    },
+    {
+      id: 'audit-3',
+      timestamp: new Date(Date.now() - 12 * 60 * 1000).toISOString(), // 12 min ago
+      actor: 'system',
+      actionType: 'brief_execution',
+      summary: 'Brief execution completed successfully',
+      outcome: 'completed',
+      provenance: { confidence: 0.85, riskClass: 'low', mode: 'autopilot' },
+    },
+    {
+      id: 'audit-4',
+      timestamp: new Date(Date.now() - 18 * 60 * 1000).toISOString(), // 18 min ago
+      actor: 'system',
+      actionType: 'citemind_check',
+      summary: 'CiteMind quality check passed',
+      outcome: 'passed',
+      provenance: { confidence: 0.95, riskClass: 'low', mode: 'autopilot' },
+    },
+    {
+      id: 'audit-5',
+      timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString(), // 25 min ago
+      actor: 'system',
+      actionType: 'cross_pillar_sync',
+      summary: 'Cross-pillar sync to PR pillar',
+      outcome: 'completed',
+      provenance: { confidence: 0.90, riskClass: 'low', mode: 'autopilot', sourcePillar: 'content', targetPillar: 'pr' },
+    },
   ];
 
   return (
@@ -1013,6 +1060,7 @@ function ExecutionGravityPane({
             aiState={aiState}
             onLaunchOrchestrate={onLaunchOrchestrate}
             onExplain={() => handleExplain(nextBestAction)}
+            onSwitchToManual={onSwitchToManual}
           />
         </AIStateRing>
 
@@ -1067,38 +1115,62 @@ function ExecutionGravityPane({
               </div>
               <span className="text-[10px] text-white/30">by AUTOMATE</span>
             </button>
-            {/* Collapsible content */}
+            {/* Collapsible content - P2.6: Structured audit ledger display */}
             {!auditLogCollapsed && (
               <>
                 <div className="space-y-1 max-h-[180px] overflow-y-auto">
-                  {recentlyHandled.slice(0, 5).map((item) => {
-                    const typeIcons: Record<string, JSX.Element> = {
-                      scheduled: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
-                      derivative: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
-                      execution: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
-                      validation: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-                      sync: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
+                  {recentlyHandled.slice(0, 5).map((entry) => {
+                    // P2.6: Icons mapped to actionType per AUTOMATE_EXECUTION_MODEL
+                    const typeIcons: Record<AuditLedgerEntry['actionType'], JSX.Element> = {
+                      scheduling: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
+                      derivative_generation: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
+                      brief_execution: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+                      citemind_check: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+                      cross_pillar_sync: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
+                      status_change: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>,
                     };
+
+                    // Format timestamp as relative time
+                    const formatRelativeTime = (timestamp: string): string => {
+                      const diff = Date.now() - new Date(timestamp).getTime();
+                      const minutes = Math.floor(diff / 60000);
+                      if (minutes < 1) return 'Just now';
+                      if (minutes < 60) return `${minutes} min ago`;
+                      const hours = Math.floor(minutes / 60);
+                      if (hours < 24) return `${hours}h ago`;
+                      return new Date(timestamp).toLocaleDateString();
+                    };
+
                     return (
                       <div
-                        key={item.id}
+                        key={entry.id}
                         className="flex items-center justify-between px-2.5 py-2 bg-slate-2/30 hover:bg-slate-2/50 rounded text-[10px] transition-colors"
                       >
-                        <div className="flex items-center gap-2">
-                          <span className="text-semantic-success">
-                            {typeIcons[item.type] || typeIcons.execution}
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          {/* Actor indicator: system (robot) or user */}
+                          <span className={entry.actor === 'system' ? 'text-semantic-success' : 'text-brand-iris'}>
+                            {typeIcons[entry.actionType]}
                           </span>
-                          <span className="text-white/60">{item.title}</span>
+                          <span className="text-white/60 truncate">{entry.summary}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
+                          {/* Actor badge */}
                           <span className={`px-1 py-0.5 rounded text-[8px] font-medium ${
-                            item.status === 'completed' ? 'text-semantic-success bg-semantic-success/10' :
-                            item.status === 'passed' ? 'text-brand-cyan bg-brand-cyan/10' :
+                            entry.actor === 'system' ? 'text-brand-cyan bg-brand-cyan/10' : 'text-brand-iris bg-brand-iris/10'
+                          }`}>
+                            {entry.actor === 'system' ? '🤖' : '👤'}
+                          </span>
+                          {/* Outcome badge */}
+                          <span className={`px-1 py-0.5 rounded text-[8px] font-medium ${
+                            entry.outcome === 'completed' ? 'text-semantic-success bg-semantic-success/10' :
+                            entry.outcome === 'passed' ? 'text-brand-cyan bg-brand-cyan/10' :
+                            entry.outcome === 'failed' ? 'text-semantic-danger bg-semantic-danger/10' :
                             'text-white/40 bg-white/5'
                           }`}>
-                            {item.status}
+                            {entry.outcome}
                           </span>
-                          <span className="text-white/30">{item.time}</span>
+                          {/* Timestamp */}
+                          <span className="text-white/30 text-[9px]">{formatRelativeTime(entry.timestamp)}</span>
                         </div>
                       </div>
                     );
@@ -1189,6 +1261,7 @@ function NextBestActionCard({
   aiState = 'idle',
   onLaunchOrchestrate,
   onExplain,
+  onSwitchToManual,
 }: {
   action: ContentAction;
   mode: AutomationMode;
@@ -1196,6 +1269,8 @@ function NextBestActionCard({
   aiState?: AIPerceptualState;
   onLaunchOrchestrate?: (actionId: string) => void;
   onExplain?: () => void;
+  /** P1.5: Callback to switch to Manual mode for low-confidence gate */
+  onSwitchToManual?: () => void;
 }) {
   // Color semantics: iris for primary/recommended, amber for issues
   const isIssue = action.type === 'issue';
@@ -1391,13 +1466,18 @@ function NextBestActionCard({
       </div>
 
       {/* Bottom row: CTA with confidence-based confirmation */}
-      <ConfidenceAwareCTA
-        confidence={action.confidence}
-        isOrchestrationReady={isOrchestrationReady}
-        ctaLabel={typeConf.ctaLabel}
-        ctaClass={typeConf.ctaClass}
-        onClick={handleClick}
-      />
+      <div className="relative">
+        <ConfidenceAwareCTA
+          confidence={action.confidence}
+          isOrchestrationReady={isOrchestrationReady}
+          ctaLabel={typeConf.ctaLabel}
+          ctaClass={typeConf.ctaClass}
+          onClick={handleClick}
+          mode={mode}
+          onSwitchToManual={onSwitchToManual}
+          risk={action.risk}
+        />
+      </div>
     </div>
   );
 }
@@ -1407,8 +1487,12 @@ function NextBestActionCard({
  *
  * Per AI_VISUAL_COMMUNICATION_CANON §3 (Confidence & Trust):
  * - High confidence (≥80): Normal CTA
- * - Moderate confidence (50-79): Normal CTA, reduced emphasis
- * - Low confidence (<50): Inline "Confirm" toggle required before Execute
+ * - Moderate confidence (70-79): Normal CTA, reduced emphasis
+ * - Low confidence (<70): "Manual required" gate - Copilot items require mode switch
+ *
+ * P1.5: Manual-required gate for low-confidence items
+ * @see /docs/canon/work/CONTENT_MODE_RESPONSIBILITY_MAP.md
+ * @see /docs/canon/AUTOMATION_MODE_CONTRACTS_CANON.md
  *
  * No modals - confirmation is inline beside the CTA.
  */
@@ -1418,30 +1502,39 @@ function ConfidenceAwareCTA({
   ctaLabel,
   ctaClass,
   onClick,
+  mode,
+  onSwitchToManual,
+  risk,
+  reversibility,
 }: {
   confidence?: number;
   isOrchestrationReady: boolean;
   ctaLabel: string;
   ctaClass: string;
   onClick: () => void;
+  /** Current automation mode */
+  mode?: AutomationMode;
+  /** Callback to switch to Manual mode (pillar-scoped) */
+  onSwitchToManual?: () => void;
+  /** Risk level for explanation */
+  risk?: 'low' | 'medium' | 'high' | 'critical';
+  /** Reversibility for explanation */
+  reversibility?: 'fully_reversible' | 'partially_reversible' | 'irreversible';
 }) {
-  const [confirmed, setConfirmed] = useState(false);
-  const isLowConfidence = confidence !== undefined && confidence < 50;
-  const isModerateConfidence = confidence !== undefined && confidence >= 50 && confidence < 80;
+  const [showExplanation, setShowExplanation] = useState(false);
 
-  // Reset confirmation when confidence changes
-  useEffect(() => {
-    setConfirmed(false);
-  }, [confidence]);
+  // P1.5: Low confidence threshold is 0.70 (70) per AUTOMATION_MODE_CONTRACTS_CANON
+  const isLowConfidence = confidence !== undefined && confidence < 70;
+  const isModerateConfidence = confidence !== undefined && confidence >= 70 && confidence < 80;
 
-  // Determine if CTA is enabled
-  const ctaEnabled = !isLowConfidence || confirmed;
+  // P1.5: In Copilot mode with low confidence, require manual mode switch
+  const requiresManualGate = isLowConfidence && mode === 'copilot';
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3 text-xs text-white/40">
         {/* Orchestration ready indicator */}
-        {isOrchestrationReady && (
+        {isOrchestrationReady && !requiresManualGate && (
           <span className="flex items-center gap-1 text-brand-iris text-[10px]">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1452,45 +1545,88 @@ function ConfidenceAwareCTA({
       </div>
 
       <div className="flex items-center gap-3">
-        {/* Low confidence: Inline confirmation toggle */}
-        {isLowConfidence && (
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <span className="text-[10px] text-white/50">
-              Low confidence — confirm?
-            </span>
+        {/* P1.5: Manual-required gate for low confidence in Copilot mode */}
+        {requiresManualGate ? (
+          <div className="flex items-center gap-2">
+            {/* Lock badge + Manual required label */}
             <button
-              type="button"
-              onClick={() => setConfirmed(!confirmed)}
+              onClick={() => setShowExplanation(!showExplanation)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-medium text-white/50 bg-slate-4/50 border border-slate-5 rounded-lg hover:bg-slate-4 transition-colors"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Manual required
+              <svg className={`w-2.5 h-2.5 transition-transform ${showExplanation ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* Explanation popover (1-interaction reveal) */}
+            {showExplanation && (
+              <div className="absolute right-0 top-full mt-2 w-64 p-3 bg-slate-2 border border-slate-4 rounded-lg shadow-lg z-10">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-semantic-warning" />
+                    <span className="text-xs font-medium text-white">Low Confidence</span>
+                    {confidence !== undefined && (
+                      <span className="text-[10px] text-white/40">({confidence}%)</span>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-white/60">
+                    This action requires human judgment. AI confidence is below the 70% threshold for automated execution.
+                  </p>
+                  {(risk || reversibility) && (
+                    <div className="flex items-center gap-3 text-[9px] text-white/40">
+                      {risk && <span>Risk: {risk}</span>}
+                      {reversibility && (
+                        <span>
+                          {reversibility === 'fully_reversible' ? 'Reversible' :
+                           reversibility === 'partially_reversible' ? 'Partially reversible' :
+                           'Irreversible'}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <div className="pt-2 border-t border-slate-4">
+                    <button
+                      onClick={() => {
+                        onSwitchToManual?.();
+                        setShowExplanation(false);
+                      }}
+                      className="w-full px-3 py-1.5 text-[10px] font-medium text-white bg-white/10 hover:bg-white/15 border border-white/20 rounded transition-colors"
+                    >
+                      Switch to Manual to continue
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* Moderate confidence indicator (informational, not blocking) */}
+            {isModerateConfidence && (
+              <span className="text-[10px] text-white/40">
+                Moderate confidence
+              </span>
+            )}
+
+            {/* CTA Button */}
+            <button
+              onClick={onClick}
               className={`
-                relative w-8 h-4 rounded-full transition-colors duration-200
-                ${confirmed ? 'bg-brand-iris' : 'bg-slate-4'}
+                px-4 py-2 text-sm font-semibold rounded-lg
+                transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]
+                hover:scale-105 active:scale-95
+                ${isModerateConfidence ? 'opacity-80' : ''}
+                ${ctaClass}
               `}
             >
-              <span
-                className={`
-                  absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm
-                  transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]
-                  ${confirmed ? 'translate-x-4' : 'translate-x-0.5'}
-                `}
-              />
+              {isOrchestrationReady ? 'Execute →' : ctaLabel}
             </button>
-          </label>
+          </>
         )}
-
-        {/* CTA Button */}
-        <button
-          onClick={onClick}
-          disabled={!ctaEnabled}
-          className={`
-            px-4 py-2 text-sm font-semibold rounded-lg
-            transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]
-            ${ctaEnabled ? 'hover:scale-105 active:scale-95' : 'opacity-50 cursor-not-allowed'}
-            ${isModerateConfidence ? 'opacity-80' : ''}
-            ${ctaClass}
-          `}
-        >
-          {isOrchestrationReady ? 'Execute →' : ctaLabel}
-        </button>
       </div>
     </div>
   );
@@ -1893,6 +2029,7 @@ export function ContentWorkQueueView({
   onViewCluster,
   onViewCalendar,
   onLaunchOrchestrate,
+  onSwitchToManual,
 }: ContentWorkQueueViewProps) {
   // Loading state
   if (isLoading) {
@@ -2045,6 +2182,7 @@ export function ContentWorkQueueView({
             mode={mode}
             onLaunchOrchestrate={onLaunchOrchestrate}
             onViewAll={onViewLibrary}
+            onSwitchToManual={onSwitchToManual}
           />
         </section>
 
