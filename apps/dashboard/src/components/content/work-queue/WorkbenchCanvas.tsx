@@ -116,23 +116,23 @@ const PRIORITY_STYLES = {
 // CTA LABELS BY MODE
 // ============================================
 
-function getCtaLabel(type: QueueItem['type'], mode: AutomationMode): string {
+function getCtaLabel(itemType: QueueItem['type'], mode: AutomationMode): string {
   if (mode === 'copilot') {
-    if (type === 'execution') return 'Review & Approve';
+    if (itemType === 'execution') return 'Review & Approve';
     return 'Review';
   }
   if (mode === 'autopilot') {
-    if (type === 'issue') return 'Approve Fix';
+    if (itemType === 'issue') return 'Approve Fix';
     return 'Approve';
   }
   // Manual mode
-  if (type === 'execution') return 'Execute';
-  if (type === 'issue') return 'Fix Issue';
-  if (type === 'opportunity') return 'Create Brief';
+  if (itemType === 'execution') return 'Execute';
+  if (itemType === 'issue') return 'Fix Issue';
+  if (itemType === 'opportunity') return 'Create Brief';
   return 'View';
 }
 
-function getCtaStyle(type: QueueItem['type'], isIssue: boolean): string {
+function getCtaStyle(isIssue: boolean): string {
   if (isIssue) {
     return 'bg-semantic-warning text-black hover:bg-semantic-warning/90';
   }
@@ -187,7 +187,7 @@ export function WorkbenchCanvas({
   const priorityBorder = PRIORITY_STYLES[item.priority];
   const isIssue = item.type === 'issue';
   const ctaLabel = getCtaLabel(item.type, mode);
-  const ctaStyle = getCtaStyle(item.type, isIssue);
+  const ctaStyle = getCtaStyle(isIssue);
 
   // Confidence gate logic (P1.5)
   const isLowConfidence = item.confidence !== undefined && item.confidence < 70;
