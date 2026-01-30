@@ -199,7 +199,12 @@ export default function ContentPage() {
   const router = useRouter();
 
   // Mode from context - Phase 10A user-controllable mode
-  const { effectiveMode } = useMode('content');
+  const { effectiveMode, setMode } = useMode('content');
+
+  // P1.5: Handler to switch to Manual mode for low-confidence gate
+  const handleSwitchToManual = useCallback(() => {
+    setMode('manual');
+  }, [setMode]);
 
   // View state - default to 'work-queue' for execution-first entry (UX Continuity Canon)
   const [activeView, setActiveView] = useState<ContentView>('work-queue');
@@ -313,6 +318,7 @@ export default function ContentPage() {
             onViewCluster={handleViewCluster}
             onViewCalendar={handleViewCalendar}
             onLaunchOrchestrate={handleLaunchOrchestrate}
+            onSwitchToManual={handleSwitchToManual}
           />
         );
       case 'library':
