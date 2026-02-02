@@ -1,5 +1,5 @@
 # PRAVADO v2 — CANON INDEX
-Version: v1.5
+Version: v1.6
 
 ## Purpose
 This index lists every canonical file that must exist, what it's for, and its category.
@@ -57,6 +57,10 @@ These files define WHAT Pravado is and HOW it should work:
 | `AUTOMATION_MODES_UX.md` | Manual/Copilot/Autopilot UX patterns |
 | `AUTOMATION_MODE_CONTRACTS_CANON.md` | Mode semantic + behavioral contracts (authority boundaries) |
 | `AI_VISUAL_COMMUNICATION_CANON.md` | AI state, confidence, and motion principles |
+| `CONTENT_MODE_UX_THESIS.md` | User mental models per automation mode (Content pillar) |
+| `EDITOR_IDENTITY_CANON.md` | What constitutes an editor context; editor vs non-editor boundaries |
+| `INFORMATION_DENSITY_HIERARCHY_CANON.md` | Typography minimums, density ceilings, spatial discipline |
+| `ACTION_GRAVITY_CTA_CANON.md` | CTA placement, proximity rules, dead-space limits |
 | `PLANS_LIMITS_ENTITLEMENTS.md` | Pricing tiers and limits |
 | `PR_PILLAR_MODEL.md` | PR pillar operating model (Influence Orchestration) |
 | `CONTENT_PILLAR_CANON.md` | Authoritative specification for Content work surface |
