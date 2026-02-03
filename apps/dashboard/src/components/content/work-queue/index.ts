@@ -14,3 +14,4 @@ export { QueueList, type QueueListProps } from './QueueList';
 export { QueueRow, type QueueItem, type QueueRowProps } from './QueueRow';
 export { WorkbenchCanvas, type WorkbenchCanvasProps } from './WorkbenchCanvas';
 export { ContextRail, type ContextRailProps } from './ContextRail';
+export { ManualWorkbench, type ManualWorkbenchProps } from './ManualWorkbench';
