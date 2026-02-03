@@ -189,8 +189,8 @@ function TaskList({ items, selectedId, onSelect, isLoading }: TaskListProps) {
               {/* Priority bar */}
               <div className={`w-0.5 h-6 rounded-full ${priorityColor[item.priority]} shrink-0`} />
 
-              {/* Type badge - compact */}
-              <span className={`text-[10px] font-bold uppercase shrink-0 ${type.color}`}>
+              {/* Type badge - compact (12px floor per INFORMATION_DENSITY_CANON) */}
+              <span className={`text-xs font-bold uppercase shrink-0 ${type.color}`}>
                 {type.label}
               </span>
 
@@ -302,7 +302,7 @@ function EditorCanvas({ item, onSaveDraft, onMarkReady, onExecute, onCreateNew }
             </span>
             {/* Priority */}
             {item.priority === 'critical' && (
-              <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase text-semantic-danger bg-semantic-danger/10 rounded shrink-0">
+              <span className="px-1.5 py-0.5 text-xs font-bold uppercase text-semantic-danger bg-semantic-danger/10 rounded shrink-0">
                 Critical
               </span>
             )}
@@ -470,7 +470,7 @@ function ContextRailCompact({ item, isCollapsed, onToggleCollapse, contextData }
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
           </svg>
-          <span className="text-[10px] font-medium uppercase tracking-wider [writing-mode:vertical-lr]">Context</span>
+          <span className="text-xs font-medium uppercase tracking-wider [writing-mode:vertical-lr]">Context</span>
         </div>
       </button>
     );
@@ -517,7 +517,7 @@ function ContextRailCompact({ item, isCollapsed, onToggleCollapse, contextData }
           }`}>
             <div className="flex items-center gap-2 mb-1">
               <h4 className="text-xs font-bold uppercase tracking-wider text-white/50">CiteMind</h4>
-              <span className={`px-1.5 py-0.5 text-[10px] font-bold uppercase rounded ${
+              <span className={`px-1.5 py-0.5 text-xs font-bold uppercase rounded ${
                 contextData.citeMindStatus === 'passed' ? 'text-semantic-success bg-semantic-success/10' :
                 contextData.citeMindStatus === 'warning' ? 'text-semantic-warning bg-semantic-warning/10' :
                 'text-white/50 bg-white/5'
