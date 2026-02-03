@@ -48,6 +48,7 @@ import {
   QueueList,
   WorkbenchCanvas,
   ContextRail,
+  ManualWorkbench,
   type QueueItem,
 } from '../work-queue';
 
@@ -483,9 +484,11 @@ function QueueControlsBand({
 // ============================================
 
 /**
- * Plan Panel - Copilot mode "Plan Review" posture
- * Shows AI's reasoning for queue order with step numbers
- * Positioned ABOVE NextBestAction card per requirements
+ * PlanSummaryBar - Compact Copilot plan indicator (collapsed by default)
+ *
+ * Phase 11A.1 VIEWPORT-FIRST: Collapsed summary with expand control.
+ * Does NOT push main action below fold.
+ * "Approve Plan" stays always visible in the bar.
  */
 function PlanPanel({
   isExpanded,
@@ -502,99 +505,85 @@ function PlanPanel({
   reasons?: typeof MOCK_QUEUE_REASONING;
   aiState: AIPerceptualState;
 }) {
+  // Collapsed summary: show top 3 factor names as bullets
+  const summaryBullets = reasons.slice(0, 3).map(r => r.factor);
+
   return (
-    <div className={`mb-4 rounded-lg border overflow-hidden transition-all ${
+    <div className={`rounded-lg border transition-all ${
       isApproved
         ? 'bg-semantic-success/5 border-semantic-success/30'
         : 'bg-brand-cyan/5 border-brand-cyan/20'
     }`}>
-      {/* Panel Header - Always visible */}
-      <div className="p-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {/* Step indicator */}
-          <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold ${
+      {/* Compact header bar - always visible */}
+      <div className="px-3 py-2 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          {/* State indicator */}
+          <div className={`flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold shrink-0 ${
             aiState === 'evaluating'
               ? 'bg-brand-cyan/20 text-brand-cyan animate-pulse'
               : isApproved
               ? 'bg-semantic-success/20 text-semantic-success'
               : 'bg-brand-cyan/20 text-brand-cyan'
           }`}>
-            {aiState === 'evaluating' ? '...' : isApproved ? '✓' : '1'}
+            {aiState === 'evaluating' ? '•' : isApproved ? '✓' : 'AI'}
           </div>
-          <div>
-            <span className="text-sm font-semibold text-white">
-              {aiState === 'evaluating' ? 'Evaluating Queue...' : 'AI Plan Ready'}
-            </span>
-            <p className="text-[10px] text-white/40">
-              {aiState === 'evaluating'
-                ? 'Analyzing priorities and context'
-                : isApproved
-                ? 'Plan approved — execute when ready'
-                : 'Review the reasoning below'}
-            </p>
+
+          {/* Label + summary bullets (collapsed) */}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-white whitespace-nowrap">
+                {aiState === 'evaluating' ? 'Analyzing...' : isApproved ? 'Plan Approved' : 'AI Plan'}
+              </span>
+              {!isExpanded && !isApproved && aiState !== 'evaluating' && (
+                <span className="text-[10px] text-white/40 truncate">
+                  {summaryBullets.join(' · ')}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Approve Plan CTA */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Approve CTA - always visible */}
           {!isApproved && aiState !== 'evaluating' && (
             <button
               onClick={onApprove}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-brand-cyan hover:bg-brand-cyan/90 rounded-lg shadow-[0_0_12px_rgba(34,211,238,0.25)] transition-all"
+              className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold text-white bg-brand-cyan hover:bg-brand-cyan/90 rounded transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              Approve Plan
+              Approve
             </button>
           )}
-          {isApproved && (
-            <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-semantic-success bg-semantic-success/10 rounded-lg">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Approved
-            </span>
-          )}
 
-          {/* Toggle expand/collapse */}
-          <button
-            onClick={onToggle}
-            className="p-1.5 text-white/40 hover:text-white hover:bg-white/5 rounded transition-colors"
-          >
-            <svg className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+          {/* Expand toggle */}
+          {!isApproved && aiState !== 'evaluating' && (
+            <button
+              onClick={onToggle}
+              className="p-1 text-white/40 hover:text-white hover:bg-white/5 rounded transition-colors"
+              title={isExpanded ? 'Collapse' : 'Show reasoning'}
+            >
+              <svg className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Reasoning Details - Collapsible */}
-      {isExpanded && aiState !== 'evaluating' && (
-        <div className="px-3 pb-3 border-t border-white/5">
-          <div className="pt-3 space-y-2">
+      {/* Expanded reasoning - only when explicitly expanded */}
+      {isExpanded && !isApproved && aiState !== 'evaluating' && (
+        <div className="px-3 pb-2 border-t border-white/5">
+          <div className="pt-2 space-y-1.5">
             {reasons.map((reason, index) => (
-              <div key={reason.id} className="flex items-start gap-3 p-2 bg-slate-2/50 rounded">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold shrink-0">
-                  {index + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-white">{reason.factor}</span>
-                    <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded ${
-                      reason.weight === 'High' ? 'text-brand-cyan bg-brand-cyan/10' : 'text-white/50 bg-white/5'
-                    }`}>
-                      {reason.weight}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-white/50 mt-0.5">{reason.explanation}</p>
-                </div>
+              <div key={reason.id} className="flex items-start gap-2 text-[10px]">
+                <span className="text-brand-cyan font-bold">{index + 1}.</span>
+                <span className="text-white/70">{reason.factor}</span>
+                <span className="text-white/40">— {reason.explanation}</span>
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-white/30 mt-3 text-center">
-            AI re-evaluates when context changes. Step 2: Review items. Step 3: Execute.
-          </p>
         </div>
       )}
     </div>
@@ -928,10 +917,11 @@ function _ExecutionGravityPane({
 
   // P2.6: Structured audit ledger entries per AUTOMATE_EXECUTION_MODEL
   // Type: { id, timestamp, actor, actionType, summary, outcome, provenance? }
+  // Note: Use stable timestamps to avoid hydration mismatch
   const recentlyHandled: AuditLedgerEntry[] = [
     {
       id: 'audit-1',
-      timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString(), // 2 min ago
+      timestamp: '2025-01-15T10:58:00Z', // Stable timestamp
       actor: 'system',
       actionType: 'scheduling',
       summary: 'Auto-scheduled blog post for publication',
@@ -940,7 +930,7 @@ function _ExecutionGravityPane({
     },
     {
       id: 'audit-2',
-      timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 min ago
+      timestamp: '2025-01-15T10:55:00Z', // Stable timestamp
       actor: 'system',
       actionType: 'derivative_generation',
       summary: 'Generated AEO snippet for SEO pillar',
@@ -949,7 +939,7 @@ function _ExecutionGravityPane({
     },
     {
       id: 'audit-3',
-      timestamp: new Date(Date.now() - 12 * 60 * 1000).toISOString(), // 12 min ago
+      timestamp: '2025-01-15T10:48:00Z', // Stable timestamp
       actor: 'system',
       actionType: 'brief_execution',
       summary: 'Brief execution completed successfully',
@@ -958,7 +948,7 @@ function _ExecutionGravityPane({
     },
     {
       id: 'audit-4',
-      timestamp: new Date(Date.now() - 18 * 60 * 1000).toISOString(), // 18 min ago
+      timestamp: '2025-01-15T10:42:00Z', // Stable timestamp
       actor: 'system',
       actionType: 'citemind_check',
       summary: 'CiteMind quality check passed',
@@ -967,7 +957,7 @@ function _ExecutionGravityPane({
     },
     {
       id: 'audit-5',
-      timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString(), // 25 min ago
+      timestamp: '2025-01-15T10:35:00Z', // Stable timestamp
       actor: 'system',
       actionType: 'cross_pillar_sync',
       summary: 'Cross-pillar sync to PR pillar',
@@ -1140,15 +1130,12 @@ function _ExecutionGravityPane({
                       status_change: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>,
                     };
 
-                    // Format timestamp as relative time
-                    const formatRelativeTime = (timestamp: string): string => {
-                      const diff = Date.now() - new Date(timestamp).getTime();
-                      const minutes = Math.floor(diff / 60000);
-                      if (minutes < 1) return 'Just now';
-                      if (minutes < 60) return `${minutes} min ago`;
-                      const hours = Math.floor(minutes / 60);
-                      if (hours < 24) return `${hours}h ago`;
-                      return new Date(timestamp).toLocaleDateString();
+                    // Format timestamp - use stable UTC format to avoid hydration mismatch
+                    const formatTime = (timestamp: string): string => {
+                      const d = new Date(timestamp);
+                      const h = d.getUTCHours().toString().padStart(2, '0');
+                      const m = d.getUTCMinutes().toString().padStart(2, '0');
+                      return `${h}:${m}`;
                     };
 
                     return (
@@ -1180,7 +1167,7 @@ function _ExecutionGravityPane({
                             {entry.outcome}
                           </span>
                           {/* Timestamp */}
-                          <span className="text-white/30 text-[9px]">{formatRelativeTime(entry.timestamp)}</span>
+                          <span className="text-white/30 text-[9px]">{formatTime(entry.timestamp)}</span>
                         </div>
                       </div>
                     );
@@ -2132,7 +2119,7 @@ export function ContentWorkQueueView({
         mode: mode,
         createdAt: brief.createdAt,
         orchestrateActionId: `action-${(i % 3) + 1}`,
-        confidence: 75 + Math.floor(Math.random() * 20), // Mock confidence
+        confidence: 75 + (i * 5), // Deterministic mock confidence
         impact: { authority: 12 + i * 3, crossPillar: 2 },
         risk: 'low',
       })),
@@ -2153,8 +2140,8 @@ export function ContentWorkQueueView({
           action: () => onGenerateBrief?.(),
         },
         mode: mode,
-        createdAt: new Date().toISOString(),
-        confidence: 60 + Math.floor(Math.random() * 25),
+        createdAt: '2025-01-15T09:00:00Z', // Stable timestamp to avoid hydration mismatch
+        confidence: 65 + (i * 5), // Deterministic mock confidence
         impact: { authority: gap.seoOpportunityScore / 10 },
       })),
     // Briefs needing attention (draft status)
@@ -2191,7 +2178,7 @@ export function ContentWorkQueueView({
               action: () => onFixIssues?.(),
             },
             mode: mode,
-            createdAt: new Date().toISOString(),
+            createdAt: '2025-01-15T08:00:00Z', // Stable timestamp to avoid hydration mismatch
             confidence: 95,
             risk: 'medium' as const,
           },
@@ -2282,11 +2269,11 @@ export function ContentWorkQueueView({
     },
   });
 
-  // Mock audit ledger for Autopilot
+  // Mock audit ledger for Autopilot - use stable timestamps to avoid hydration mismatch
   const auditLedger: AuditLedgerEntry[] = mode === 'autopilot' ? [
     {
       id: 'audit-1',
-      timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
+      timestamp: '2025-01-15T10:30:00Z',
       actor: 'system',
       actionType: 'scheduling',
       summary: 'Auto-scheduled blog post',
@@ -2294,7 +2281,7 @@ export function ContentWorkQueueView({
     },
     {
       id: 'audit-2',
-      timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+      timestamp: '2025-01-15T10:25:00Z',
       actor: 'system',
       actionType: 'derivative_generation',
       summary: 'Generated AEO snippet',
@@ -2302,7 +2289,7 @@ export function ContentWorkQueueView({
     },
     {
       id: 'audit-3',
-      timestamp: new Date(Date.now() - 12 * 60 * 1000).toISOString(),
+      timestamp: '2025-01-15T10:15:00Z',
       actor: 'system',
       actionType: 'citemind_check',
       summary: 'CiteMind check passed',
@@ -2325,7 +2312,78 @@ export function ContentWorkQueueView({
     setExplainDrawerOpen(true);
   }, []);
 
-  // Phase 11A: Selection-driven triage layout (3-pane)
+  // MANUAL MODE: Use dedicated ManualWorkbench with dominant editor
+  // Per CONTENT_MODE_UX_THESIS.md: Manual = "I Am Creating"
+  if (mode === 'manual') {
+    return (
+      <div className="flex flex-col h-full">
+        {/* Top bar: Health strip + CTAs */}
+        <div className="px-4 py-3 border-b border-slate-4 shrink-0">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <HealthStrip signals={signals} citeMindIssueCount={citeMindIssueCount} />
+            </div>
+            <CTACluster
+              mode={mode}
+              hasIssues={citeMindIssueCount > 0}
+              onGenerateBrief={onGenerateBrief}
+              onImportContent={onImportContent}
+              onFixIssues={onFixIssues}
+              onGenerateDraft={onGenerateDraft}
+            />
+          </div>
+        </div>
+
+        {/* Manual Workbench: Dominant editor + dense task list */}
+        <div className="flex-1 p-4 min-h-0">
+          <ManualWorkbench
+            items={queueItems}
+            selectedId={selectedActionId}
+            onSelect={handleSelect}
+            onExecute={(item) => {
+              const action = finalActions.find(a => a.id === item.id);
+              if (action) {
+                if (action.orchestrateActionId && onLaunchOrchestrate) {
+                  onLaunchOrchestrate(action.orchestrateActionId);
+                } else {
+                  action.cta.action();
+                }
+              }
+            }}
+            onSaveDraft={() => console.log('Save draft')}
+            onMarkReady={() => console.log('Mark ready')}
+            onCreateNew={onGenerateBrief}
+            isLoading={isLoading}
+            contextData={{
+              citeMindStatus: citeMindIssueCount > 0 ? 'warning' : 'passed',
+              citeMindIssues: assets
+                .filter(a => a.citeMindIssues && a.citeMindIssues.length > 0)
+                .flatMap(a => a.citeMindIssues || []),
+              entities: selectedAction?.relatedEntityId ? [selectedAction.relatedEntityId] : [],
+              derivatives: [
+                { type: 'pr_pitch_excerpt', valid: true },
+                { type: 'aeo_snippet', valid: true },
+                { type: 'ai_summary', valid: false },
+              ],
+              crossPillar: { prHooks: 0, seoHooks: 0 },
+            }}
+          />
+        </div>
+
+        {/* Explainability Drawer */}
+        {selectedAction && (
+          <ExplainabilityDrawer
+            isOpen={explainDrawerOpen}
+            onClose={() => setExplainDrawerOpen(false)}
+            action={toTriggerAction(selectedAction)}
+            currentMode={mode}
+          />
+        )}
+      </div>
+    );
+  }
+
+  // COPILOT/AUTOPILOT: Use existing 3-pane triage layout
   return (
     <div className="flex flex-col h-full">
       {/* Top bar: Health strip + CTAs */}
@@ -2345,20 +2403,7 @@ export function ContentWorkQueueView({
         </div>
       </div>
 
-      {/* Plan Panel for Copilot (above main content) */}
-      {mode === 'copilot' && (
-        <div className="px-4 py-2 border-b border-slate-4 shrink-0">
-          <PlanPanel
-            isExpanded={!isPlanApproved}
-            onToggle={() => {}}
-            onApprove={() => setIsPlanApproved(true)}
-            isApproved={isPlanApproved}
-            aiState={aiState}
-          />
-        </div>
-      )}
-
-      {/* Main 3-pane triage layout */}
+      {/* Main 3-pane triage layout - Plan Panel moved into WorkbenchCanvas */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-[280px_1fr_300px] min-h-0">
         {/* LEFT PANE: QueueList */}
         <div className="border-r border-slate-4 overflow-hidden">
@@ -2369,11 +2414,11 @@ export function ContentWorkQueueView({
             mode={mode}
             routineCount={routineCount}
             pinnedId={pinnedActionId}
-            onPinToggle={mode === 'manual' ? (id) => setPinnedActionId(id === pinnedActionId ? null : id) : undefined}
+            onPinToggle={undefined}
           />
         </div>
 
-        {/* CENTER PANE: WorkbenchCanvas */}
+        {/* CENTER PANE: WorkbenchCanvas with inline Plan */}
         <div className="overflow-hidden">
           <WorkbenchCanvas
             item={selectedItem}
@@ -2384,6 +2429,7 @@ export function ContentWorkQueueView({
             onExplain={handleExplain}
             onSwitchToManual={onSwitchToManual}
             isPlanApproved={isPlanApproved}
+            onApprovePlan={() => setIsPlanApproved(true)}
           />
         </div>
 

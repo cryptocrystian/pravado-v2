@@ -19,7 +19,7 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import type { QueueItem } from './QueueRow';
-import type { AutomationMode, CiteMindStatus, CiteMindIssue, DerivativeType } from '../types';
+import type { CiteMindStatus, CiteMindIssue, DerivativeType } from '../types';
 
 // ============================================
 // TYPES
@@ -159,7 +159,7 @@ function TaskList({ items, selectedId, onSelect, isLoading }: TaskListProps) {
 
       {/* Scrollable list - dense rows */}
       <div ref={listRef} className="flex-1 overflow-y-auto p-1.5 space-y-0.5" role="listbox">
-        {items.map((item, index) => {
+        {items.map((item) => {
           const isSelected = selectedId === item.id;
           const type = typeConfig[item.type];
 
