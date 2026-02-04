@@ -32,13 +32,16 @@ import { useMode } from '@/lib/ModeContext';
 // MOCK DATA (for development while API routes are built)
 // ============================================
 
+// Stable timestamps to avoid hydration mismatch
+const STABLE_NOW = '2025-01-15T12:00:00Z';
+
 const MOCK_SIGNALS: AuthoritySignals = {
   authorityContributionScore: 72,
   citationEligibilityScore: 65,
   aiIngestionLikelihood: 78,
   crossPillarImpact: 54,
   competitiveAuthorityDelta: 8,
-  measuredAt: new Date().toISOString(),
+  measuredAt: STABLE_NOW,
 };
 
 const MOCK_ASSETS: ContentAsset[] = [
@@ -58,11 +61,11 @@ const MOCK_ASSETS: ContentAsset[] = [
       aiIngestionLikelihood: 82,
       crossPillarImpact: 65,
       competitiveAuthorityDelta: 12,
-      measuredAt: new Date().toISOString(),
+      measuredAt: STABLE_NOW,
     },
-    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: '2024-12-16T12:00:00Z',
+    updatedAt: '2025-01-10T12:00:00Z',
+    publishedAt: '2025-01-10T12:00:00Z',
   },
   {
     id: '2',
@@ -83,10 +86,10 @@ const MOCK_ASSETS: ContentAsset[] = [
       aiIngestionLikelihood: 70,
       crossPillarImpact: 48,
       competitiveAuthorityDelta: 3,
-      measuredAt: new Date().toISOString(),
+      measuredAt: STABLE_NOW,
     },
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: '2025-01-08T12:00:00Z',
+    updatedAt: '2025-01-14T12:00:00Z',
   },
   {
     id: '3',
@@ -104,10 +107,10 @@ const MOCK_ASSETS: ContentAsset[] = [
       aiIngestionLikelihood: 75,
       crossPillarImpact: 60,
       competitiveAuthorityDelta: 5,
-      measuredAt: new Date().toISOString(),
+      measuredAt: STABLE_NOW,
     },
-    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: '2025-01-01T12:00:00Z',
+    updatedAt: '2025-01-13T12:00:00Z',
   },
 ];
 
@@ -118,9 +121,9 @@ const MOCK_BRIEFS = [
     title: 'AI-Powered Content Creation Guide',
     status: 'draft' as const,
     targetKeyword: 'AI content creation',
-    deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    deadline: '2025-01-22T12:00:00Z',
+    createdAt: '2025-01-12T12:00:00Z',
+    updatedAt: '2025-01-14T12:00:00Z',
   },
   {
     id: 'brief-2',
@@ -128,9 +131,9 @@ const MOCK_BRIEFS = [
     title: 'B2B Email Marketing Playbook',
     status: 'approved' as const,
     targetKeyword: 'B2B email marketing',
-    deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    deadline: '2025-01-29T12:00:00Z',
+    createdAt: '2025-01-05T12:00:00Z',
+    updatedAt: '2025-01-13T12:00:00Z',
   },
 ];
 
@@ -165,8 +168,8 @@ const MOCK_CLUSTERS = [
       organizationId: 'org-1',
       name: 'Marketing Automation',
       description: 'Content about marketing automation tools and strategies',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: STABLE_NOW,
+      updatedAt: STABLE_NOW,
     },
     topics: [
       { id: 't1', name: 'Email Automation', organizationId: 'org-1', createdAt: '', updatedAt: '' },
@@ -180,8 +183,8 @@ const MOCK_CLUSTERS = [
       organizationId: 'org-1',
       name: 'Content Strategy',
       description: 'Strategic content planning and optimization',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: STABLE_NOW,
+      updatedAt: STABLE_NOW,
     },
     topics: [
       { id: 't3', name: 'Content Calendar', organizationId: 'org-1', createdAt: '', updatedAt: '' },

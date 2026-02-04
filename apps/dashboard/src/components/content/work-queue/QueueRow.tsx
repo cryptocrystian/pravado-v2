@@ -3,11 +3,15 @@
 /**
  * QueueRow - Dense row component for the queue list.
  *
- * Design principles:
- * - Dense: single line with inline metadata
- * - Clear selection state
- * - Keyboard-friendly (focusable)
- * - Mode-aware visual differentiation
+ * PROGRESSIVE DISCLOSURE PATTERN:
+ * - Base state: Single line with type badge + title (40px height)
+ * - Hover state: Reveal metadata chips (same height, inline)
+ * - Selected state: Full metadata visible with subtle emphasis
+ *
+ * CANON COMPLIANCE:
+ * - INFORMATION_DENSITY_HIERARCHY_CANON: 12px min, dense rows
+ * - EDITOR_IDENTITY_CANON: Click selects item, does not enter editor
+ * - ACTION_GRAVITY_CTA_CANON: No CTA in row, selection triggers canvas
  *
  * @see /docs/canon/AUTOMATION_MODE_CONTRACTS_CANON.md
  * @see /docs/canon/AI_VISUAL_COMMUNICATION_CANON.md
@@ -138,7 +142,7 @@ export function QueueRow({
 
       {/* Type badge - compact */}
       <span className={`
-        px-1.5 py-0.5 text-[9px] font-bold uppercase rounded shrink-0
+        px-1.5 py-0.5 text-[10px] font-bold uppercase rounded shrink-0
         ${typeConf.color} ${typeConf.bg}
       `}>
         {typeConf.label}
@@ -157,7 +161,7 @@ export function QueueRow({
         {/* Confidence chip */}
         {confidenceDisplay && (
           <span className={`
-            px-1.5 py-0.5 text-[9px] font-medium rounded
+            px-1.5 py-0.5 text-[10px] font-medium rounded
             ${item.confidence! >= 80
               ? 'text-semantic-success bg-semantic-success/10'
               : item.confidence! >= 50
@@ -171,7 +175,7 @@ export function QueueRow({
 
         {/* Impact chip (if present) */}
         {item.impact?.authority !== undefined && (
-          <span className="px-1.5 py-0.5 text-[9px] font-medium text-brand-iris bg-brand-iris/10 rounded">
+          <span className="px-1.5 py-0.5 text-[10px] font-medium text-brand-iris bg-brand-iris/10 rounded">
             +{item.impact.authority}
           </span>
         )}

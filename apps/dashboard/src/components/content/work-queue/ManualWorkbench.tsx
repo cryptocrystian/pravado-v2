@@ -3,18 +3,38 @@
 /**
  * ManualWorkbench - Clean-room Manual mode implementation
  *
- * LAYOUT SPINE (per CONTENT_WORK_SURFACE_RECONSTRUCTION.md):
- * - Left: Dense Task List (240-280px) - selection rail
- * - Center: Dominant Editor Canvas - unmistakably an editor
- * - Right: Compact Context Rail (optional, collapsible)
+ * ARCHITECTURAL PATTERN (EDITOR_ACTION_PERSISTENCE_CANON §3 + EDITOR_FOCUS_LAYOUT_CANON):
+ *
+ * DEFAULT STATE (Preview):
+ * ┌─────────────────────────────────────────────────────────────────────┐
+ * │  TASK LIST (260px)  │    EDITOR CANVAS (flex-1)     │ CONTEXT (240px)│
+ * └─────────────────────────────────────────────────────────────────────┘
+ *
+ * FOCUS STATE (Editing) - per EDITOR_FOCUS_LAYOUT_CANON §3:
+ * ┌─────────────────────────────────────────────────────────────────────┐
+ * │  LIST (220px)  │         EDITOR (flex-1, dominant)        │ CTX(40px)│
+ * │  compressed    │  reduced chrome, no nested boxes         │ collapsed│
+ * └─────────────────────────────────────────────────────────────────────┘
+ *
+ * CRITICAL INVARIANTS:
+ * 1. Action Bar is ALWAYS visible - enforced via shrink-0 + flex column
+ * 2. Content scrolls WITHIN the Editor Body - not the page
+ * 3. Editor uses h-full to fill available space - no calc() brittle math
+ * 4. Primary CTA is singular and visible without scrolling
+ * 5. FOCUS STATE: When editing, editor >= 70% of center width
+ * 6. FOCUS STATE: Context rail collapses unless hard blocker exists
+ * 7. FOCUS STATE: Left queue compresses to reclaim editor space
  *
  * CANON COMPLIANCE:
- * - CONTENT_MODE_UX_THESIS.md: Manual = "I Am Creating"
- * - EDITOR_IDENTITY_CANON.md: Clear editor boundaries, explicit entry/exit
- * - INFORMATION_DENSITY_HIERARCHY_CANON.md: 14px body min, ≤50% dead space
- * - ACTION_GRAVITY_CTA_CANON.md: CTA proximate to content, no runway footers
+ * ✓ EDITOR_ACTION_PERSISTENCE_CANON: Actions never scroll
+ * ✓ EDITOR_FOCUS_LAYOUT_CANON: Focus state dominance + rail suppression
+ * ✓ CONTENT_MODE_UX_THESIS: Manual = "I Am Creating"
+ * ✓ EDITOR_IDENTITY_CANON: Clear boundaries, explicit entry/exit
+ * ✓ INFORMATION_DENSITY_HIERARCHY_CANON: 12px body min, dense task list
+ * ✓ ACTION_GRAVITY_CTA_CANON: CTA proximate to content, no runway footer
  *
- * @see /docs/canon/work/CONTENT_WORK_SURFACE_RECONSTRUCTION.md
+ * @see /docs/canon/EDITOR_ACTION_PERSISTENCE_CANON.md
+ * @see /docs/canon/work/EDITOR_FOCUS_LAYOUT_CANON.md
  */
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
@@ -66,6 +86,7 @@ interface TaskListProps {
 function TaskList({ items, selectedId, onSelect, isLoading }: TaskListProps) {
   const listRef = useRef<HTMLDivElement>(null);
   const [focusedIndex, setFocusedIndex] = useState(0);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   // Keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -108,6 +129,9 @@ function TaskList({ items, selectedId, onSelect, isLoading }: TaskListProps) {
     scheduled: { label: 'Due', color: 'text-semantic-danger' },
     sage_proposal: { label: 'AI', color: 'text-white/50' },
   };
+
+  // Progressive disclosure: show metadata only for selected/hovered items
+  const shouldShowMetadata = (itemId: string) => itemId === selectedId || itemId === hoveredId;
 
   if (isLoading) {
     return (
@@ -157,10 +181,11 @@ function TaskList({ items, selectedId, onSelect, isLoading }: TaskListProps) {
         </div>
       </div>
 
-      {/* Scrollable list - dense rows */}
+      {/* Scrollable list - dense rows with progressive disclosure */}
       <div ref={listRef} className="flex-1 overflow-y-auto p-1.5 space-y-0.5" role="listbox">
         {items.map((item) => {
           const isSelected = selectedId === item.id;
+          const showMeta = shouldShowMetadata(item.id);
           const type = typeConfig[item.type];
 
           return (
@@ -170,6 +195,8 @@ function TaskList({ items, selectedId, onSelect, isLoading }: TaskListProps) {
               aria-selected={isSelected}
               tabIndex={0}
               onClick={() => onSelect(item.id)}
+              onMouseEnter={() => setHoveredId(item.id)}
+              onMouseLeave={() => setHoveredId(null)}
               onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
@@ -177,8 +204,8 @@ function TaskList({ items, selectedId, onSelect, isLoading }: TaskListProps) {
                 }
               }}
               className={`
-                group flex items-center gap-2 px-2.5 py-2 rounded cursor-pointer
-                transition-colors duration-100
+                group flex flex-col gap-1 px-2.5 py-2 rounded cursor-pointer
+                transition-all duration-100
                 focus:outline-none focus-visible:ring-1 focus-visible:ring-brand-iris/50
                 ${isSelected
                   ? 'bg-brand-iris/15 border border-brand-iris/30'
@@ -186,22 +213,54 @@ function TaskList({ items, selectedId, onSelect, isLoading }: TaskListProps) {
                 }
               `}
             >
-              {/* Priority bar */}
-              <div className={`w-0.5 h-6 rounded-full ${priorityColor[item.priority]} shrink-0`} />
+              {/* Primary row - always dense */}
+              <div className="flex items-center gap-2">
+                {/* Priority bar */}
+                <div className={`w-0.5 h-5 rounded-full ${priorityColor[item.priority]} shrink-0`} />
 
-              {/* Type badge - compact (12px floor per INFORMATION_DENSITY_CANON) */}
-              <span className={`text-xs font-bold uppercase shrink-0 ${type.color}`}>
-                {type.label}
-              </span>
+                {/* Type badge - compact (12px floor per INFORMATION_DENSITY_CANON) */}
+                <span className={`text-xs font-bold uppercase shrink-0 ${type.color}`}>
+                  {type.label}
+                </span>
 
-              {/* Title - truncate */}
-              <span className={`flex-1 text-sm truncate ${isSelected ? 'text-white' : 'text-white/70'}`}>
-                {item.title}
-              </span>
+                {/* Title - truncate */}
+                <span className={`flex-1 text-sm truncate ${isSelected ? 'text-white' : 'text-white/70'}`}>
+                  {item.title}
+                </span>
 
-              {/* Selection dot */}
-              {isSelected && (
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-iris shrink-0" />
+                {/* Selection dot */}
+                {isSelected && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-iris shrink-0" />
+                )}
+              </div>
+
+              {/* Progressive disclosure: metadata row (selected/hovered only) */}
+              {showMeta && (
+                <div className="flex items-center gap-2 pl-3 animate-in fade-in slide-in-from-top-1 duration-150">
+                  {item.confidence !== undefined && (
+                    <span className={`px-1.5 py-0.5 text-xs font-medium rounded ${
+                      item.confidence >= 80 ? 'text-semantic-success bg-semantic-success/10' :
+                      item.confidence >= 50 ? 'text-semantic-warning bg-semantic-warning/10' :
+                      'text-white/40 bg-white/5'
+                    }`}>
+                      {item.confidence}%
+                    </span>
+                  )}
+                  {item.impact?.authority !== undefined && (
+                    <span className="px-1.5 py-0.5 text-xs font-medium text-brand-iris bg-brand-iris/10 rounded">
+                      +{item.impact.authority}
+                    </span>
+                  )}
+                  {item.risk && (
+                    <span className={`px-1.5 py-0.5 text-xs font-medium rounded ${
+                      item.risk === 'low' ? 'text-semantic-success/70 bg-semantic-success/5' :
+                      item.risk === 'medium' ? 'text-semantic-warning/70 bg-semantic-warning/5' :
+                      'text-semantic-danger/70 bg-semantic-danger/5'
+                    }`}>
+                      {item.risk}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
           );
@@ -222,21 +281,31 @@ function TaskList({ items, selectedId, onSelect, isLoading }: TaskListProps) {
 
 interface EditorCanvasProps {
   item: QueueItem | null;
+  /** Lifted editing state from parent (Focus State) */
+  isEditing: boolean;
+  /** Callback to update editing state in parent */
+  onEditingChange: (editing: boolean) => void;
   onSaveDraft?: () => void;
   onMarkReady?: () => void;
   onExecute?: () => void;
   onCreateNew?: () => void;
 }
 
-function EditorCanvas({ item, onSaveDraft, onMarkReady, onExecute, onCreateNew }: EditorCanvasProps) {
-  const [isEditing, setIsEditing] = useState(false);
+function EditorCanvas({ item, isEditing, onEditingChange, onSaveDraft, onMarkReady, onExecute, onCreateNew }: EditorCanvasProps) {
   const [content, setContent] = useState('');
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  // Reset state when item changes
+  // Reset content when item changes (editing state is reset by parent)
   useEffect(() => {
-    setIsEditing(false);
     setContent(item?.summary || '');
+    setHasUnsavedChanges(false);
   }, [item?.id]);
+
+  // Track unsaved changes
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent);
+    setHasUnsavedChanges(newContent !== (item?.summary || ''));
+  };
 
   // Empty state - no selection
   if (!item) {
@@ -292,8 +361,15 @@ function EditorCanvas({ item, onSaveDraft, onMarkReady, onExecute, onCreateNew }
 
   return (
     <div className="h-full flex flex-col bg-slate-1">
-      {/* EDITOR HEADER - Title + state line (per EDITOR_IDENTITY_CANON) */}
-      <div className="px-5 py-4 border-b border-slate-4 bg-slate-2 shrink-0">
+      {/* ═══════════════════════════════════════════════════════════════════
+          EDITOR HEADER (shrink-0) - Always visible, never scrolls
+          Per EDITOR_IDENTITY_CANON: Clear boundary, explicit entry/exit
+          ═══════════════════════════════════════════════════════════════════ */}
+      <div className={`px-5 py-4 border-b shrink-0 transition-colors duration-150 ${
+        isEditing
+          ? 'bg-brand-iris/5 border-brand-iris/20'
+          : 'bg-slate-2 border-slate-4'
+      }`}>
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             {/* Type badge */}
@@ -306,24 +382,47 @@ function EditorCanvas({ item, onSaveDraft, onMarkReady, onExecute, onCreateNew }
                 Critical
               </span>
             )}
-            {/* Edit state indicator */}
-            <span className={`text-xs font-medium ${isEditing ? 'text-brand-iris' : 'text-white/40'}`}>
-              {isEditing ? '● Editing' : '○ View mode'}
+            {/* Edit state indicator - more decisive per EDITOR_IDENTITY_CANON §5 */}
+            <span className={`flex items-center gap-1.5 px-2 py-0.5 text-xs font-semibold rounded ${
+              isEditing
+                ? 'text-brand-iris bg-brand-iris/10 border border-brand-iris/20'
+                : 'text-white/40 bg-white/5'
+            }`}>
+              {isEditing ? (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-iris animate-pulse" />
+                  Editing
+                </>
+              ) : (
+                'Preview'
+              )}
             </span>
+            {/* Unsaved changes indicator */}
+            {hasUnsavedChanges && (
+              <span className="px-1.5 py-0.5 text-xs font-medium text-semantic-warning bg-semantic-warning/10 rounded">
+                Unsaved
+              </span>
+            )}
           </div>
 
           {/* Edit toggle - explicit entry per EDITOR_IDENTITY_CANON §5 */}
           {!isEditing ? (
             <button
-              onClick={() => setIsEditing(true)}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-white/10 hover:bg-white/15 border border-white/10 rounded transition-colors"
+              onClick={() => onEditingChange(true)}
+              className="px-4 py-2 text-sm font-semibold text-white bg-brand-iris hover:bg-brand-iris/90 rounded-lg transition-colors shadow-[0_0_12px_rgba(168,85,247,0.15)]"
             >
               Edit
             </button>
           ) : (
             <button
-              onClick={() => setIsEditing(false)}
-              className="px-3 py-1.5 text-sm font-medium text-white/60 hover:text-white bg-transparent border border-white/10 rounded transition-colors"
+              onClick={() => {
+                if (hasUnsavedChanges) {
+                  // TODO: Add confirmation dialog per EDITOR_IDENTITY_CANON §5.3
+                }
+                onEditingChange(false);
+                setHasUnsavedChanges(false);
+              }}
+              className="px-3 py-1.5 text-sm font-medium text-white/60 hover:text-white bg-transparent border border-white/20 rounded transition-colors"
             >
               Cancel
             </button>
@@ -336,13 +435,17 @@ function EditorCanvas({ item, onSaveDraft, onMarkReady, onExecute, onCreateNew }
         </h2>
       </div>
 
-      {/* EDITOR BODY - Writing surface with visible affordance */}
-      <div className="flex-1 overflow-y-auto p-5">
+      {/* ═══════════════════════════════════════════════════════════════════
+          EDITOR BODY (flex-1, overflow-y-auto) - Scrollable content area
+          Per EDITOR_ACTION_PERSISTENCE_CANON §3.1: Content scrolls here
+          This region NEVER contains the primary CTA
+          ═══════════════════════════════════════════════════════════════════ */}
+      <div className="flex-1 overflow-y-auto min-h-0">
         {isEditing ? (
-          /* Active editor state - clear boundary per EDITOR_IDENTITY_CANON §5 */
-          <div className="h-full">
-            {/* Editor toolbar stub */}
-            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-4">
+          /* Active editor state - unmistakable writing surface per EDITOR_IDENTITY_CANON §5 */
+          <div className="h-full flex flex-col p-5">
+            {/* Editor toolbar - sticky at top of scroll area */}
+            <div className="flex items-center gap-2 pb-3 mb-3 border-b border-brand-iris/20 shrink-0">
               <button className="p-1.5 text-white/40 hover:text-white hover:bg-white/5 rounded">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 5h2M12 5h8M6 12h8m-8 7h12" />
@@ -356,20 +459,22 @@ function EditorCanvas({ item, onSaveDraft, onMarkReady, onExecute, onCreateNew }
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
                 </svg>
               </button>
+              <span className="w-px h-4 bg-slate-4 mx-1" />
+              <span className="text-xs text-white/30 ml-auto">Markdown supported</span>
             </div>
 
-            {/* Editable textarea - clear writing surface */}
+            {/* Editable textarea - fills remaining space, scrolls internally */}
             <textarea
               value={content}
-              onChange={e => setContent(e.target.value)}
+              onChange={e => handleContentChange(e.target.value)}
               placeholder="Start writing your content..."
-              className="w-full h-[calc(100%-60px)] min-h-[300px] p-4 text-base leading-relaxed text-white bg-slate-2 border border-slate-4 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-iris/30 focus:border-brand-iris/50 placeholder:text-white/30"
+              className="flex-1 min-h-[200px] p-4 text-base leading-relaxed text-white bg-slate-2 border border-brand-iris/30 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-iris/30 focus:border-brand-iris/50 placeholder:text-white/30"
               autoFocus
             />
           </div>
         ) : (
           /* Preview state - read-only display */
-          <div className="space-y-4">
+          <div className="p-5 space-y-4">
             {/* Summary section */}
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-white/40 mb-2">Summary</h4>
@@ -401,20 +506,34 @@ function EditorCanvas({ item, onSaveDraft, onMarkReady, onExecute, onCreateNew }
               )}
             </div>
 
-            {/* Content preview placeholder */}
-            <div className="mt-6 p-4 bg-slate-2 border border-slate-4 rounded-lg">
-              <p className="text-sm text-white/40 text-center">
-                Click "Edit" to start writing
+            {/* Content preview - call to action */}
+            <div className="mt-6 p-6 bg-slate-2 border border-dashed border-slate-4 rounded-lg text-center">
+              <p className="text-sm text-white/50 mb-3">
+                No content yet
               </p>
+              <button
+                onClick={() => onEditingChange(true)}
+                className="px-4 py-2 text-sm font-semibold text-brand-iris bg-brand-iris/10 hover:bg-brand-iris/20 border border-brand-iris/20 rounded-lg transition-colors"
+              >
+                Start Writing
+              </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* EDITOR ACTION DOCK - CTA proximate to content (not runway footer) */}
-      <div className="px-5 py-3 border-t border-slate-4 bg-slate-2 shrink-0">
+      {/* ═══════════════════════════════════════════════════════════════════
+          ACTION BAR (shrink-0) - ALWAYS visible, NEVER scrolls
+          Per EDITOR_ACTION_PERSISTENCE_CANON §3.2: Fixed at bottom
+          Per ACTION_GRAVITY_CTA_CANON: Single primary CTA, proximate to content
+          ═══════════════════════════════════════════════════════════════════ */}
+      <div className={`px-5 py-3 border-t shrink-0 transition-colors duration-150 ${
+        isEditing
+          ? 'bg-brand-iris/5 border-brand-iris/20'
+          : 'bg-slate-2 border-slate-4'
+      }`}>
         <div className="flex items-center justify-between gap-3">
-          {/* Secondary actions (left) */}
+          {/* Secondary actions (left) - only visible in edit mode */}
           <div className="flex items-center gap-2">
             {isEditing && (
               <>
@@ -432,9 +551,13 @@ function EditorCanvas({ item, onSaveDraft, onMarkReady, onExecute, onCreateNew }
                 </button>
               </>
             )}
+            {/* Unsaved changes reminder */}
+            {hasUnsavedChanges && !isEditing && (
+              <span className="text-xs text-semantic-warning">Unsaved changes</span>
+            )}
           </div>
 
-          {/* Primary CTA (right) - always visible per ACTION_GRAVITY_CTA_CANON */}
+          {/* Primary CTA (right) - ALWAYS visible per ACTION_GRAVITY_CTA_CANON */}
           <button
             onClick={primaryCTA.action}
             className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${primaryCTA.style}`}
@@ -456,9 +579,11 @@ interface ContextRailCompactProps {
   isCollapsed: boolean;
   onToggleCollapse: () => void;
   contextData?: ManualWorkbenchProps['contextData'];
+  /** Issue count for badge display when collapsed */
+  issueCount?: number;
 }
 
-function ContextRailCompact({ item, isCollapsed, onToggleCollapse, contextData }: ContextRailCompactProps) {
+function ContextRailCompact({ item, isCollapsed, onToggleCollapse, contextData, issueCount = 0 }: ContextRailCompactProps) {
   if (isCollapsed) {
     return (
       <button
@@ -466,7 +591,13 @@ function ContextRailCompact({ item, isCollapsed, onToggleCollapse, contextData }
         className="h-full w-10 flex items-center justify-center text-white/40 hover:text-brand-iris transition-colors"
         aria-label="Expand context"
       >
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2 relative">
+          {/* Issue count badge per EDITOR_FOCUS_LAYOUT_CANON §4.2 */}
+          {issueCount > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-xs font-bold text-white bg-semantic-warning rounded-full">
+              {issueCount > 9 ? '9+' : issueCount}
+            </span>
+          )}
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
           </svg>
@@ -605,11 +736,52 @@ export function ManualWorkbench({
   isLoading,
   contextData,
 }: ManualWorkbenchProps) {
-  const [contextCollapsed, setContextCollapsed] = useState(false);
+  // ═══════════════════════════════════════════════════════════════════
+  // FOCUS STATE MANAGEMENT (lifted from EditorCanvas)
+  // Per EDITOR_FOCUS_LAYOUT_CANON §3: Focus State activates when isEditing
+  // ═══════════════════════════════════════════════════════════════════
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Context rail collapsed by default - expands only when relevant context exists
+  // Per EDITOR_FOCUS_LAYOUT_CANON §3.3: Rail suppression during Focus State
+  // Per EDITOR_FOCUS_LAYOUT_CANON §4: Auto-expand ONLY for hard blockers
+  const [contextCollapsed, setContextCollapsed] = useState(true);
 
   const selectedItem = useMemo(() => {
     return items.find(item => item.id === selectedId) || null;
   }, [items, selectedId]);
+
+  // Reset editing state when selection changes
+  useEffect(() => {
+    setIsEditing(false);
+  }, [selectedId]);
+
+  // Detect hard blockers (CiteMind errors/warnings) per EDITOR_FOCUS_LAYOUT_CANON §4.1
+  const hasHardBlockers = useMemo(() => {
+    if (!contextData) return false;
+    return (
+      (contextData.citeMindStatus && contextData.citeMindStatus !== 'passed') ||
+      (contextData.citeMindIssues && contextData.citeMindIssues.some(i => i.severity === 'error'))
+    );
+  }, [contextData]);
+
+  // Count context issues for badge display
+  const contextIssueCount = useMemo(() => {
+    if (!contextData?.citeMindIssues) return 0;
+    return contextData.citeMindIssues.length;
+  }, [contextData]);
+
+  // FOCUS STATE: Force context rail collapse when editing, UNLESS hard blockers exist
+  // Per EDITOR_FOCUS_LAYOUT_CANON §4.1: Auto-expand ONLY for hard blockers
+  useEffect(() => {
+    if (isEditing) {
+      // In Focus State: collapse rail unless hard blockers present
+      setContextCollapsed(!hasHardBlockers);
+    } else if (selectedItem && hasHardBlockers) {
+      // Not editing but blockers exist: expand to show issues
+      setContextCollapsed(false);
+    }
+  }, [isEditing, selectedItem?.id, hasHardBlockers]);
 
   const handleExecute = useCallback(() => {
     if (selectedItem && onExecute) {
@@ -630,9 +802,15 @@ export function ManualWorkbench({
   }, [selectedItem, onMarkReady]);
 
   return (
-    <div className="h-[calc(100vh-180px)] flex bg-slate-0 rounded-lg border border-slate-4 overflow-hidden">
-      {/* LEFT: Task List - Dense selection rail (240-280px) */}
-      <div className="w-[260px] shrink-0 border-r border-slate-4 bg-slate-1">
+    <div className="h-full flex bg-slate-0 rounded-lg border border-slate-4 overflow-hidden">
+      {/* ═══════════════════════════════════════════════════════════════════
+          LEFT: Task List - Dense selection rail with progressive disclosure
+          Per INFORMATION_DENSITY_HIERARCHY_CANON: Medium density, 12px min
+          Per EDITOR_FOCUS_LAYOUT_CANON §3.3: Compress width in Focus State
+          ═══════════════════════════════════════════════════════════════════ */}
+      <div className={`shrink-0 border-r border-slate-4 bg-slate-1 transition-all duration-200 ${
+        isEditing ? 'w-[220px]' : 'w-[260px]'
+      }`}>
         <TaskList
           items={items}
           selectedId={selectedId}
@@ -641,10 +819,18 @@ export function ManualWorkbench({
         />
       </div>
 
-      {/* CENTER: Editor Canvas - Dominant */}
-      <div className="flex-1 min-w-0">
+      {/* ═══════════════════════════════════════════════════════════════════
+          CENTER: Editor Canvas - Dominant creation surface
+          Per CONTENT_MODE_UX_THESIS: Manual = "I Am Creating"
+          Per EDITOR_IDENTITY_CANON: Unmistakable editor, clear boundaries
+          Per EDITOR_FOCUS_LAYOUT_CANON §3.1: Editor >= 70% of center width
+          h-full ensures the flex column layout fills available space
+          ═══════════════════════════════════════════════════════════════════ */}
+      <div className="flex-1 min-w-0 h-full">
         <EditorCanvas
           item={selectedItem}
+          isEditing={isEditing}
+          onEditingChange={setIsEditing}
           onSaveDraft={handleSaveDraft}
           onMarkReady={handleMarkReady}
           onExecute={handleExecute}
@@ -652,7 +838,12 @@ export function ManualWorkbench({
         />
       </div>
 
-      {/* RIGHT: Context Rail - Compact, collapsible */}
+      {/* ═══════════════════════════════════════════════════════════════════
+          RIGHT: Context Rail - Compact, collapsed by default
+          Per ACTION_GRAVITY_CTA_CANON: Never compete with editor
+          Per EDITOR_FOCUS_LAYOUT_CANON §3.3 + §4: Collapse in Focus State
+          unless hard blockers exist
+          ═══════════════════════════════════════════════════════════════════ */}
       <div className={`shrink-0 border-l border-slate-4 bg-slate-1 transition-all duration-200 ${
         contextCollapsed ? 'w-10' : 'w-[240px]'
       }`}>
@@ -661,6 +852,7 @@ export function ManualWorkbench({
           isCollapsed={contextCollapsed}
           onToggleCollapse={() => setContextCollapsed(!contextCollapsed)}
           contextData={contextData}
+          issueCount={contextIssueCount}
         />
       </div>
     </div>

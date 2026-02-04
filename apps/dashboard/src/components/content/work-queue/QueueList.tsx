@@ -155,24 +155,24 @@ export function QueueList({
               <h3 className="text-xs font-bold uppercase tracking-wider text-white/60">
                 {displayLabel}
               </h3>
-              <span className="px-1.5 py-0.5 text-[9px] font-medium text-white/40 bg-white/5 rounded">
+              <span className="px-1.5 py-0.5 text-[10px] font-medium text-white/40 bg-white/5 rounded">
                 {items.length}
               </span>
             </div>
 
             {/* Mode-specific indicators */}
             {mode === 'autopilot' && routineCount > 0 && (
-              <span className="text-[10px] text-semantic-success">
+              <span className="text-xs text-semantic-success">
                 +{routineCount} auto-handled
               </span>
             )}
             {mode === 'copilot' && (
-              <span className="text-[10px] text-brand-cyan">
+              <span className="text-xs text-brand-cyan">
                 AI-ranked
               </span>
             )}
           </div>
-          <p className="text-[10px] text-white/30 mt-0.5">
+          <p className="text-xs text-white/30 mt-0.5">
             {headerConfig.sublabel}
           </p>
         </div>
@@ -214,7 +214,7 @@ export function QueueList({
       {/* Footer with batch controls (Manual mode only) */}
       {mode === 'manual' && items.length > 1 && (
         <div className="px-3 py-2 border-t border-slate-4 shrink-0">
-          <div className="flex items-center justify-between text-[10px]">
+          <div className="flex items-center justify-between text-xs">
             <span className="text-white/30">
               ↑↓ navigate · Enter select
             </span>
