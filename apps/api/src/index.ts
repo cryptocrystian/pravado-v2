@@ -3,6 +3,8 @@
  * Fastify backend server
  */
 
+import 'dotenv/config';
+
 import { createLogger } from '@pravado/utils';
 import { validateEnv, apiEnvSchema } from '@pravado/validators';
 
