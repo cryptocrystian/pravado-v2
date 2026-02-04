@@ -55,7 +55,7 @@ const STORAGE_KEY = 'pravado:mode-preferences';
 const DEFAULT_PREFERENCES: ModePreferences = {
   globalMode: 'manual',
   pillarOverrides: {},
-  updatedAt: new Date().toISOString(),
+  updatedAt: '1970-01-01T00:00:00.000Z', // Static epoch for hydration safety
 };
 
 /** Mode autonomy order (lower index = less autonomy) */
