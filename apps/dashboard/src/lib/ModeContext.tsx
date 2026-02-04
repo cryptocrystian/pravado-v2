@@ -34,8 +34,8 @@ import {
   setGlobalMode,
   setPillarMode,
   clearPillarOverride,
-  hasPillarOverride,
-  resolveMode,
+  // Note: hasPillarOverride and resolveMode from mode-preferences read localStorage directly,
+  // which causes hydration mismatches. This provider reimplements them using React state.
 } from './mode-preferences';
 
 // ============================================
@@ -67,11 +67,28 @@ interface ModeProviderProps {
   children: ReactNode;
 }
 
+// Static default preferences for SSR/hydration consistency
+const DEFAULT_PREFERENCES: ModePreferences = {
+  globalMode: 'manual',
+  pillarOverrides: {},
+  updatedAt: '1970-01-01T00:00:00.000Z', // Static epoch for hydration safety
+};
+
 export function ModeProvider({ children }: ModeProviderProps) {
-  const [preferences, setPreferences] = useState<ModePreferences>(() => getModePreferences());
+  // Initialize with static default to avoid hydration mismatch (SSR has no localStorage)
+  const [preferences, setPreferences] = useState<ModePreferences>(DEFAULT_PREFERENCES);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Sync from localStorage AFTER hydration (client-only)
+  useEffect(() => {
+    setPreferences(getModePreferences());
+    setIsHydrated(true);
+  }, []);
 
   // Sync with localStorage changes (e.g., from other tabs)
   useEffect(() => {
+    if (!isHydrated) return;
+
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'pravado:mode-preferences') {
         setPreferences(getModePreferences());
@@ -80,7 +97,7 @@ export function ModeProvider({ children }: ModeProviderProps) {
 
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
-  }, []);
+  }, [isHydrated]);
 
   const handleSetGlobalMode = useCallback((mode: AutomationMode) => {
     setGlobalMode(mode);
@@ -97,13 +114,53 @@ export function ModeProvider({ children }: ModeProviderProps) {
     setPreferences(getModePreferences());
   }, []);
 
+  // Use state-based check to avoid hydration mismatch (don't call hasPillarOverride which reads localStorage)
   const handleHasPillarOverride = useCallback((pillar: Pillar) => {
-    return hasPillarOverride(pillar);
-  }, []);
+    return pillar in preferences.pillarOverrides;
+  }, [preferences.pillarOverrides]);
 
-  const handleResolveMode = useCallback((pillar: Pillar, ceiling?: AutomationMode) => {
-    return resolveMode(pillar, ceiling);
-  }, []);
+  // Use state-based resolution to avoid hydration mismatch
+  // This mirrors the logic in resolveMode but uses React state instead of localStorage
+  const handleResolveMode = useCallback((pillar: Pillar, ceiling?: AutomationMode): ModeResolutionResult => {
+    // Determine selected mode from state (not localStorage)
+    let selectedMode: AutomationMode;
+    let source: ModeResolutionResult['source'];
+
+    if (preferences.pillarOverrides[pillar]) {
+      selectedMode = preferences.pillarOverrides[pillar]!;
+      source = 'pillar-override';
+    } else if (preferences.globalMode) {
+      selectedMode = preferences.globalMode;
+      source = 'global';
+    } else {
+      selectedMode = 'manual';
+      source = 'default';
+    }
+
+    // Apply ceiling if provided
+    if (ceiling) {
+      // Mode autonomy order: manual < copilot < autopilot
+      const modeOrder: AutomationMode[] = ['manual', 'copilot', 'autopilot'];
+      const selectedIndex = modeOrder.indexOf(selectedMode);
+      const ceilingIndex = modeOrder.indexOf(ceiling);
+      const effectiveMode = selectedIndex <= ceilingIndex ? selectedMode : ceiling;
+
+      return {
+        selectedMode,
+        effectiveMode,
+        ceilingApplied: effectiveMode !== selectedMode,
+        ceiling,
+        source,
+      };
+    }
+
+    return {
+      selectedMode,
+      effectiveMode: selectedMode,
+      ceilingApplied: false,
+      source,
+    };
+  }, [preferences]);
 
   const value: ModeContextValue = {
     preferences,
@@ -196,11 +253,7 @@ export function useModePreferences() {
 
   if (!context) {
     return {
-      preferences: {
-        globalMode: 'manual' as AutomationMode,
-        pillarOverrides: {},
-        updatedAt: new Date().toISOString(),
-      },
+      preferences: DEFAULT_PREFERENCES,
       setGlobalMode: () => {},
       setPillarMode: () => {},
       clearPillarOverride: () => {},

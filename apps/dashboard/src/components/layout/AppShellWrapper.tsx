@@ -42,6 +42,9 @@ interface AppShellWrapperProps {
 // These routes render with DS v3 topbar work surface pattern
 const CUSTOM_SHELL_ROUTES = ['/app/command-center', '/app/calendar', '/app/pr', '/app/content'];
 
+// Routes that redirect immediately - show nothing to avoid flash
+const REDIRECT_ROUTES = ['/app'];
+
 // AI Presence Dot
 const AIPresenceDot = () => (
   <span
@@ -57,6 +60,18 @@ export function AppShellWrapper({
   user,
 }: AppShellWrapperProps) {
   const pathname = usePathname();
+
+  // Check if current route is a redirect route - show nothing to prevent flash
+  const isRedirectRoute = REDIRECT_ROUTES.some((route) => pathname === route);
+
+  if (isRedirectRoute) {
+    // Route will redirect - show minimal loading state to prevent old DS flash
+    return (
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-brand-cyan/30 border-t-brand-cyan rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   // Check if current route uses a custom shell
   const usesCustomShell = CUSTOM_SHELL_ROUTES.some((route) =>
