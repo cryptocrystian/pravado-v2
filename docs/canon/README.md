@@ -1,5 +1,5 @@
 # PRAVADO v2 — CANON INDEX
-Version: v1.6
+Version: v1.7
 
 ## Purpose
 This index lists every canonical file that must exist, what it's for, and its category.
@@ -61,10 +61,20 @@ These files define WHAT Pravado is and HOW it should work:
 | `EDITOR_IDENTITY_CANON.md` | What constitutes an editor context; editor vs non-editor boundaries |
 | `INFORMATION_DENSITY_HIERARCHY_CANON.md` | Typography minimums, density ceilings, spatial discipline |
 | `ACTION_GRAVITY_CTA_CANON.md` | CTA placement, proximity rules, dead-space limits |
+| `EDITOR_ACTION_PERSISTENCE_CANON.md` | Actions never scroll; fixed action bars in editors |
 | `PLANS_LIMITS_ENTITLEMENTS.md` | Pricing tiers and limits |
 | `PR_PILLAR_MODEL.md` | PR pillar operating model (Influence Orchestration) |
 | `CONTENT_PILLAR_CANON.md` | Authoritative specification for Content work surface |
 | `CONTENT_PILLAR_SYSTEM.md` | Content pillar system model (objects, views, agents, playbooks) |
+
+### Work Surfaces (Product Canon)
+
+These files define layout and interaction patterns specific to work surfaces:
+
+| File | Purpose |
+|------|---------|
+| `work/CONTENT_WORK_SURFACE_RECONSTRUCTION.md` | Content work surface reconstruction from canon sources |
+| `work/EDITOR_FOCUS_LAYOUT_CANON.md` | Focus layout behavior for Manual mode editors |
 
 ---
 
