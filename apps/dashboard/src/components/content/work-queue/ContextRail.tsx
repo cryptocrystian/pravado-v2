@@ -172,14 +172,14 @@ export function ContextRail({
             <div className="flex items-center gap-2 mb-2">
               <span className={citeMindConf.color}>{citeMindConf.icon}</span>
               <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">CiteMind</h4>
-              <span className={`ml-auto px-1.5 py-0.5 text-[9px] font-bold rounded ${citeMindConf.color} ${citeMindConf.bg}`}>
+              <span className={`ml-auto px-1.5 py-0.5 text-[10px] font-bold rounded ${citeMindConf.color} ${citeMindConf.bg}`}>
                 {citeMindConf.label}
               </span>
             </div>
             {citeMindIssues.length > 0 && (
               <div className="space-y-1.5">
                 {citeMindIssues.slice(0, 3).map((issue, i) => (
-                  <div key={i} className="flex items-start gap-2 text-[10px]">
+                  <div key={i} className="flex items-start gap-2 text-xs">
                     <span className={issue.severity === 'error' ? 'text-semantic-danger' : 'text-semantic-warning'}>
                       {issue.severity === 'error' ? '!' : '?'}
                     </span>
@@ -189,7 +189,7 @@ export function ContextRail({
                 {citeMindIssues.length > 3 && (
                   <button
                     onClick={onFixIssues}
-                    className="text-[10px] text-brand-iris hover:underline"
+                    className="text-xs text-brand-iris hover:underline"
                   >
                     +{citeMindIssues.length - 3} more issues
                   </button>
@@ -205,7 +205,7 @@ export function ContextRail({
             <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-2">Pipeline</h4>
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(pipelineCounts).map(([status, count]) => (
-                <div key={status} className="flex items-center justify-between text-[11px]">
+                <div key={status} className="flex items-center justify-between text-xs">
                   <span className="text-white/50 capitalize">{status}</span>
                   <span className="font-medium text-white/70">{count}</span>
                 </div>
@@ -213,7 +213,7 @@ export function ContextRail({
             </div>
             <button
               onClick={onViewLibrary}
-              className="w-full mt-2 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors"
+              className="w-full mt-2 py-1.5 text-xs text-brand-iris hover:bg-brand-iris/5 rounded transition-colors"
             >
               View Library →
             </button>
@@ -232,12 +232,12 @@ export function ContextRail({
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-white/70">{upcomingDeadlines.count} upcoming</span>
               {upcomingDeadlines.nextDate && (
-                <span className="text-[10px] text-semantic-warning">Next: {upcomingDeadlines.nextDate}</span>
+                <span className="text-xs text-semantic-warning">Next: {upcomingDeadlines.nextDate}</span>
               )}
             </div>
             <button
               onClick={onViewCalendar}
-              className="w-full mt-2 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors"
+              className="w-full mt-2 py-1.5 text-xs text-brand-iris hover:bg-brand-iris/5 rounded transition-colors"
             >
               View Calendar →
             </button>
@@ -252,7 +252,7 @@ export function ContextRail({
               {entities.map((entity) => (
                 <span
                   key={entity}
-                  className="px-2 py-0.5 text-[10px] font-medium text-white/60 bg-white/5 rounded"
+                  className="px-2 py-0.5 text-xs font-medium text-white/60 bg-white/5 rounded"
                 >
                   {entity}
                 </span>
@@ -267,7 +267,7 @@ export function ContextRail({
             <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-2">Derivatives</h4>
             <div className="space-y-1.5">
               {derivatives.map((d) => (
-                <div key={d.type} className="flex items-center justify-between text-[11px]">
+                <div key={d.type} className="flex items-center justify-between text-xs">
                   <span className="text-white/60">{DERIVATIVE_LABELS[d.type]}</span>
                   <span className={d.valid ? 'text-semantic-success' : 'text-white/30'}>
                     {d.valid ? '✓ Ready' : '—'}
@@ -292,23 +292,23 @@ export function ContextRail({
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">Cross-Pillar</h4>
               </div>
               {isAutopilotReadOnly && (
-                <span className="px-1.5 py-0.5 text-[8px] font-medium text-white/30 bg-white/5 rounded">
+                <span className="px-1.5 py-0.5 text-[10px] font-medium text-white/30 bg-white/5 rounded">
                   Read-Only
                 </span>
               )}
             </button>
             {!crossPillarCollapsed && (
               <div className="mt-2 space-y-2">
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-xs">
                   <span className="text-white/50">PR Hooks</span>
                   <span className="font-medium text-white/70">{crossPillar.prHooks}</span>
                 </div>
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-xs">
                   <span className="text-white/50">SEO Hooks</span>
                   <span className="font-medium text-white/70">{crossPillar.seoHooks}</span>
                 </div>
                 {!isAutopilotReadOnly && (
-                  <button className="w-full mt-1 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
+                  <button className="w-full mt-1 py-1.5 text-xs text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
                     Manage Hooks →
                   </button>
                 )}
@@ -331,8 +331,8 @@ export function ContextRail({
                 <div key={guardrail.id} className="flex items-start gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
                   <div>
-                    <span className="text-[11px] font-medium text-white/70">{guardrail.name}</span>
-                    <p className="text-[9px] text-white/40">{guardrail.description}</p>
+                    <span className="text-xs font-medium text-white/70">{guardrail.name}</span>
+                    <p className="text-[10px] text-white/40">{guardrail.description}</p>
                   </div>
                 </div>
               ))}
@@ -352,7 +352,7 @@ export function ContextRail({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">Auto-handled</h4>
-                <span className="px-1.5 py-0.5 text-[9px] font-medium text-semantic-success bg-semantic-success/10 rounded">
+                <span className="px-1.5 py-0.5 text-[10px] font-medium text-semantic-success bg-semantic-success/10 rounded">
                   {auditLedger.length}
                 </span>
               </div>
@@ -360,10 +360,13 @@ export function ContextRail({
             {!auditLogCollapsed && (
               <div className="mt-2 space-y-1.5 max-h-[150px] overflow-y-auto">
                 {auditLedger.slice(0, 5).map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between text-[10px] px-2 py-1.5 bg-slate-3/50 rounded">
+                  <div key={entry.id} className="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-3/50 rounded">
                     <span className="text-white/60 truncate flex-1">{entry.summary}</span>
                     <span className="text-white/30 shrink-0 ml-2">
-                      {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {(() => {
+                        const d = new Date(entry.timestamp);
+                        return `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`;
+                      })()}
                     </span>
                   </div>
                 ))}
