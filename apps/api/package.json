@@ -27,6 +27,7 @@
     "@supabase/supabase-js": "^2.39.3",
     "@types/cheerio": "^1.0.0",
     "cheerio": "^1.1.2",
+    "dotenv": "^17.2.3",
     "fast-xml-parser": "^5.3.3",
     "fastify": "^4.25.2",
     "fastify-plugin": "^5.1.0",
