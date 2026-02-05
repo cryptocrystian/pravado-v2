@@ -104,13 +104,13 @@ function TaskList({ items, selectedId, onSelect, isLoading }: TaskListProps) {
     low: 'bg-white/20',
   };
 
-  // Type badge config
+  // Type badge config - user-facing content types
   const typeConfig: Record<QueueItem['type'], { label: string; color: string }> = {
-    execution: { label: 'Brief', color: 'text-brand-iris' },
-    issue: { label: 'Issue', color: 'text-semantic-warning' },
-    opportunity: { label: 'Gap', color: 'text-brand-cyan' },
+    execution: { label: 'Article', color: 'text-brand-iris' },
+    issue: { label: 'Fix', color: 'text-semantic-warning' },
+    opportunity: { label: 'Opportunity', color: 'text-brand-cyan' },
     scheduled: { label: 'Due', color: 'text-semantic-danger' },
-    sage_proposal: { label: 'AI', color: 'text-white/50' },
+    sage_proposal: { label: 'AI Draft', color: 'text-white/50' },
   };
 
   // Progressive disclosure: show metadata only for selected/hovered items
@@ -290,6 +290,18 @@ function EditorCanvas({ item, isEditing, onEditingChange, onSaveDraft, onMarkRea
     setHasUnsavedChanges(newContent !== (item?.summary || ''));
   };
 
+  // Create menu state
+  const [createMenuOpen, setCreateMenuOpen] = useState(false);
+
+  // Content types for Create menu
+  const contentTypes = [
+    { key: 'article', label: 'Long-form Article', icon: '📄' },
+    { key: 'social', label: 'Social Post', icon: '📱' },
+    { key: 'campaign', label: 'Social Campaign', icon: '📣' },
+    { key: 'email', label: 'Email', icon: '✉️' },
+    { key: 'landing', label: 'Landing Page', icon: '🌐' },
+  ];
+
   // Empty state - no selection
   if (!item) {
     return (
@@ -301,41 +313,63 @@ function EditorCanvas({ item, isEditing, onEditingChange, onSaveDraft, onMarkRea
         </div>
         <h3 className="text-lg font-semibold text-white/70 mb-1">Select an item to edit</h3>
         <p className="text-sm text-white/40 mb-6 max-w-sm">
-          Choose from the work queue to open the editor and start creating.
+          Choose from the work queue, or create new content.
         </p>
         {onCreateNew && (
-          <button
-            onClick={onCreateNew}
-            className="px-4 py-2 text-sm font-semibold text-white bg-brand-iris hover:bg-brand-iris/90 rounded-lg transition-colors shadow-[0_0_16px_rgba(168,85,247,0.25)]"
-          >
-            + New Brief
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setCreateMenuOpen(!createMenuOpen)}
+              className="px-4 py-2 text-sm font-semibold text-white bg-brand-iris hover:bg-brand-iris/90 rounded-lg transition-colors shadow-[0_0_16px_rgba(168,85,247,0.25)] flex items-center gap-2"
+            >
+              <span>+ Create</span>
+              <svg className={`w-4 h-4 transition-transform ${createMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {createMenuOpen && (
+              <div className="absolute top-full left-0 mt-2 w-56 bg-slate-2 border border-slate-4 rounded-lg shadow-xl z-50 overflow-hidden">
+                {contentTypes.map((ct) => (
+                  <button
+                    key={ct.key}
+                    onClick={() => {
+                      setCreateMenuOpen(false);
+                      onCreateNew();
+                    }}
+                    className="w-full px-4 py-2.5 text-left text-sm text-white/80 hover:bg-brand-iris/10 hover:text-white flex items-center gap-3 transition-colors"
+                  >
+                    <span className="text-base">{ct.icon}</span>
+                    <span>{ct.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
     );
   }
 
-  // Type badge config
+  // Type badge config - user-facing content types
   const typeConfig: Record<QueueItem['type'], { label: string; color: string; bg: string }> = {
-    execution: { label: 'Brief', color: 'text-brand-iris', bg: 'bg-brand-iris/10' },
-    issue: { label: 'Issue', color: 'text-semantic-warning', bg: 'bg-semantic-warning/10' },
-    opportunity: { label: 'Gap', color: 'text-brand-cyan', bg: 'bg-brand-cyan/10' },
-    scheduled: { label: 'Deadline', color: 'text-semantic-danger', bg: 'bg-semantic-danger/10' },
-    sage_proposal: { label: 'SAGE', color: 'text-white/60', bg: 'bg-white/5' },
+    execution: { label: 'Article Draft', color: 'text-brand-iris', bg: 'bg-brand-iris/10' },
+    issue: { label: 'Fix Required', color: 'text-semantic-warning', bg: 'bg-semantic-warning/10' },
+    opportunity: { label: 'Content Gap', color: 'text-brand-cyan', bg: 'bg-brand-cyan/10' },
+    scheduled: { label: 'Due Soon', color: 'text-semantic-danger', bg: 'bg-semantic-danger/10' },
+    sage_proposal: { label: 'AI Suggestion', color: 'text-white/60', bg: 'bg-white/5' },
   };
 
   const type = typeConfig[item.type];
 
-  // Get primary CTA based on item type
+  // Get primary CTA based on item type - user-friendly labels
   const getPrimaryCTA = () => {
     if (item.type === 'execution') {
-      return { label: 'Execute', action: onExecute, style: 'bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_12px_rgba(168,85,247,0.2)]' };
+      return { label: 'Publish', action: onExecute, style: 'bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_12px_rgba(168,85,247,0.2)]' };
     }
     if (item.type === 'issue') {
-      return { label: 'Fix Issue', action: onExecute, style: 'bg-semantic-warning text-black hover:bg-semantic-warning/90' };
+      return { label: 'Apply Fix', action: onExecute, style: 'bg-semantic-warning text-black hover:bg-semantic-warning/90' };
     }
     if (item.type === 'opportunity') {
-      return { label: 'Create Brief', action: onExecute, style: 'bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_12px_rgba(168,85,247,0.2)]' };
+      return { label: 'Start Writing', action: onExecute, style: 'bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_12px_rgba(168,85,247,0.2)]' };
     }
     return { label: 'View', action: onExecute, style: 'bg-white/10 text-white hover:bg-white/15' };
   };
@@ -768,9 +802,9 @@ export function ManualWorkbench({
 
   return (
     <div className="h-full flex bg-slate-1 overflow-hidden">
-      {/* LEFT: Task List - Dense selection rail */}
+      {/* LEFT: Task List - wider for readability (320-340px) */}
       <div className={`shrink-0 border-r border-slate-4 bg-slate-2 transition-all duration-200 ${
-        isEditing ? 'w-[220px]' : 'w-[256px]'
+        isEditing ? 'w-[300px]' : 'w-[340px]'
       }`}>
         <TaskList
           items={items}

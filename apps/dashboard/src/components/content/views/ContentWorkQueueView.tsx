@@ -2334,8 +2334,8 @@ export function ContentWorkQueueView({
           </div>
         </div>
 
-        {/* Manual Workbench: Dominant editor + dense task list */}
-        <div className="flex-1 p-4 min-h-0">
+        {/* Manual Workbench: fills remaining viewport, no padding wrapper */}
+        <div className="flex-1 min-h-0">
           <ManualWorkbench
             items={queueItems}
             selectedId={selectedActionId}
