@@ -1,5 +1,5 @@
 # PRAVADO v2 — CANON INDEX
-Version: v1.7
+Version: v1.8
 
 ## Purpose
 This index lists every canonical file that must exist, what it's for, and its category.
@@ -57,11 +57,11 @@ These files define WHAT Pravado is and HOW it should work:
 | `AUTOMATION_MODES_UX.md` | Manual/Copilot/Autopilot UX patterns |
 | `AUTOMATION_MODE_CONTRACTS_CANON.md` | Mode semantic + behavioral contracts (authority boundaries) |
 | `AI_VISUAL_COMMUNICATION_CANON.md` | AI state, confidence, and motion principles |
-| `CONTENT_MODE_UX_THESIS.md` | User mental models per automation mode (Content pillar) |
-| `EDITOR_IDENTITY_CANON.md` | What constitutes an editor context; editor vs non-editor boundaries |
-| `INFORMATION_DENSITY_HIERARCHY_CANON.md` | Typography minimums, density ceilings, spatial discipline |
-| `ACTION_GRAVITY_CTA_CANON.md` | CTA placement, proximity rules, dead-space limits |
-| `EDITOR_ACTION_PERSISTENCE_CANON.md` | Actions never scroll; fixed action bars in editors |
+| `CONTENT_MODE_UX_THESIS.md` | ~~User mental models~~ **SUPERSEDED** |
+| `EDITOR_IDENTITY_CANON.md` | ~~Editor boundaries~~ **SUPERSEDED** |
+| `INFORMATION_DENSITY_HIERARCHY_CANON.md` | ~~Typography, density~~ **SUPERSEDED** |
+| `ACTION_GRAVITY_CTA_CANON.md` | ~~CTA placement~~ **SUPERSEDED** |
+| `EDITOR_ACTION_PERSISTENCE_CANON.md` | ~~Action persistence~~ **SUPERSEDED** |
 | `PLANS_LIMITS_ENTITLEMENTS.md` | Pricing tiers and limits |
 | `PR_PILLAR_MODEL.md` | PR pillar operating model (Influence Orchestration) |
 | `CONTENT_PILLAR_CANON.md` | Authoritative specification for Content work surface |
@@ -73,8 +73,13 @@ These files define layout and interaction patterns specific to work surfaces:
 
 | File | Purpose |
 |------|---------|
+| `work/WORK_SURFACE_CONTRACT.md` | **AUTHORITATIVE** - Consolidated work surface requirements |
+| `work/WORK_SURFACE_QA_GATE.md` | **AUTHORITATIVE** - Pass/fail verification checks |
 | `work/CONTENT_WORK_SURFACE_RECONSTRUCTION.md` | Content work surface reconstruction from canon sources |
-| `work/EDITOR_FOCUS_LAYOUT_CANON.md` | Focus layout behavior for Manual mode editors |
+| `work/EDITOR_FOCUS_LAYOUT_CANON.md` | ~~Focus layout~~ **SUPERSEDED** |
+
+> **Note:** `WORK_SURFACE_CONTRACT.md` consolidates and supersedes multiple micro-canons.
+> See the contract for the list of superseded documents.
 
 ---
 

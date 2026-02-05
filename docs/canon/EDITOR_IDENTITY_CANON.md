@@ -1,7 +1,9 @@
 # Editor Identity Canon
 
+> **STATUS: SUPERSEDED by /docs/canon/work/WORK_SURFACE_CONTRACT.md**
+
 **Version:** 1.0
-**Status:** Canonical
+**Status:** Superseded
 **Last Updated:** 2026-02-02
 
 ---
