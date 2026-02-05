@@ -1,6 +1,8 @@
 # EDITOR_FOCUS_LAYOUT_CANON
 
-**Status:** Canon (Work Surfaces)
+> **STATUS: SUPERSEDED by /docs/canon/work/WORK_SURFACE_CONTRACT.md**
+
+**Status:** Superseded
 **Applies to:** Manual mode editor surfaces across pillars (Content first)
 **Last Updated:** 2026-02-04
 

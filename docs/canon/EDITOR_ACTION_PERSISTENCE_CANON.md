@@ -1,5 +1,7 @@
 # EDITOR_ACTION_PERSISTENCE_CANON.md
 
+> **STATUS: SUPERSEDED by /docs/canon/work/WORK_SURFACE_CONTRACT.md**
+
 **Purpose:**
 Guarantee that primary user actions are never hidden, displaced, or subordinated by content growth—especially during creation and review workflows.
 
