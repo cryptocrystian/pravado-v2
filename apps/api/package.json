@@ -7,9 +7,9 @@
   "main": "./dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "echo 'API uses tsx runtime — no compile step required'",
     "start": "tsx src/index.ts",
-    "start:prod": "node --import tsx dist/index.js",
+    "start:prod": "node --import tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "lint": "eslint src",
