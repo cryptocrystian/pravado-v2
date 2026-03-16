@@ -225,7 +225,7 @@ export default function BriefingGenerationForm({
                   <span>{getFormatIcon(f)}</span>
                   <span className="text-sm font-medium">{getFormatLabel(f)}</span>
                 </div>
-                <span className="text-[11px] text-muted-foreground line-clamp-2">
+                <span className="text-xs text-white/50 line-clamp-2">
                   {formatDescriptions[f]}
                 </span>
               </button>

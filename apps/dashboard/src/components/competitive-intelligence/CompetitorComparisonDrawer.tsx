@@ -93,7 +93,7 @@ export function CompetitorComparisonDrawer({
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <Loader2 className="h-8 w-8 animate-spin text-white/50" />
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
@@ -114,7 +114,7 @@ export function CompetitorComparisonDrawer({
                     <CardContent>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-muted-foreground">Advantage Score</p>
+                          <p className="text-sm text-white/50">Advantage Score</p>
                           <p
                             className={cn(
                               'text-3xl font-bold',
@@ -154,7 +154,7 @@ export function CompetitorComparisonDrawer({
                             ))}
                           </ul>
                         ) : (
-                          <p className="text-sm text-muted-foreground">No clear advantages</p>
+                          <p className="text-sm text-white/50">No clear advantages</p>
                         )}
                       </CardContent>
                     </Card>
@@ -176,7 +176,7 @@ export function CompetitorComparisonDrawer({
                             ))}
                           </ul>
                         ) : (
-                          <p className="text-sm text-muted-foreground">No significant threats</p>
+                          <p className="text-sm text-white/50">No significant threats</p>
                         )}
                       </CardContent>
                     </Card>
@@ -248,7 +248,7 @@ export function CompetitorComparisonDrawer({
                     <CardContent>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-muted-foreground">Overlap Score</p>
+                          <p className="text-sm text-white/50">Overlap Score</p>
                           <p
                             className={cn(
                               'text-2xl font-bold',
@@ -259,7 +259,7 @@ export function CompetitorComparisonDrawer({
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Exclusivity</p>
+                          <p className="text-sm text-white/50">Exclusivity</p>
                           <p className="text-2xl font-bold">
                             {formatOverlapPercentage(overlap.exclusivityScore)}
                           </p>
@@ -272,19 +272,19 @@ export function CompetitorComparisonDrawer({
                     <Card>
                       <CardContent className="pt-4 text-center">
                         <p className="text-2xl font-bold text-green-600">{overlap.brandExclusiveCount}</p>
-                        <p className="text-xs text-muted-foreground">Your Exclusive</p>
+                        <p className="text-xs text-white/50">Your Exclusive</p>
                       </CardContent>
                     </Card>
                     <Card>
                       <CardContent className="pt-4 text-center">
                         <p className="text-2xl font-bold text-yellow-600">{overlap.sharedCount}</p>
-                        <p className="text-xs text-muted-foreground">Shared</p>
+                        <p className="text-xs text-white/50">Shared</p>
                       </CardContent>
                     </Card>
                     <Card>
                       <CardContent className="pt-4 text-center">
                         <p className="text-2xl font-bold text-red-600">{overlap.competitorExclusiveCount}</p>
-                        <p className="text-xs text-muted-foreground">Competitor Only</p>
+                        <p className="text-xs text-white/50">Competitor Only</p>
                       </CardContent>
                     </Card>
                   </div>
@@ -293,7 +293,7 @@ export function CompetitorComparisonDrawer({
                     <Card className="bg-muted">
                       <CardContent className="pt-4">
                         <p className="text-sm font-medium">Recommendation</p>
-                        <p className="mt-1 text-sm text-muted-foreground">{overlap.recommendation}</p>
+                        <p className="mt-1 text-sm text-white/50">{overlap.recommendation}</p>
                       </CardContent>
                     </Card>
                   )}
@@ -340,11 +340,11 @@ function MetricComparisonRow({
       </div>
       <div className="text-center">
         <p className="text-sm font-medium">{format(brandValue)}</p>
-        <p className="text-xs text-muted-foreground">You</p>
+        <p className="text-xs text-white/50">You</p>
       </div>
       <div className="text-center">
         <p className="text-sm font-medium">{format(competitorValue)}</p>
-        <p className="text-xs text-muted-foreground">Them</p>
+        <p className="text-xs text-white/50">Them</p>
       </div>
       <div className="text-right">
         <Badge variant={isPositive ? 'success' : 'destructive'} className="text-xs">

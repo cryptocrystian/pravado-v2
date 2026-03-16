@@ -125,7 +125,7 @@ export default function CrisisDetectionPanel({
             <CardTitle className="text-lg">Crisis Detection</CardTitle>
           </div>
           {lastRunAt && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1 text-xs text-white/50">
               <Clock className="h-3 w-3" />
               <span>Last run: {formatTimeAgo(lastRunAt)}</span>
             </div>
@@ -202,7 +202,7 @@ export default function CrisisDetectionPanel({
                   </Badge>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-white/50">
                 Leave empty to scan all sources
               </p>
             </div>
@@ -211,7 +211,7 @@ export default function CrisisDetectionPanel({
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="forceRefresh">Force Refresh</Label>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white/50">
                   Re-process already scanned events
                 </p>
               </div>
@@ -237,30 +237,30 @@ export default function CrisisDetectionPanel({
                 <div className="text-2xl font-bold text-gray-700">
                   {displayResults.eventsProcessed}
                 </div>
-                <div className="text-xs text-muted-foreground">Events Processed</div>
+                <div className="text-xs text-white/50">Events Processed</div>
               </div>
               <div className="p-3 bg-orange-50 rounded-lg text-center">
                 <div className="text-2xl font-bold text-orange-600">
                   {displayResults.signalsGenerated}
                 </div>
-                <div className="text-xs text-muted-foreground">Signals Generated</div>
+                <div className="text-xs text-white/50">Signals Generated</div>
               </div>
               <div className="p-3 bg-red-50 rounded-lg text-center">
                 <div className="text-2xl font-bold text-red-600">
                   {displayResults.incidentsCreated}
                 </div>
-                <div className="text-xs text-muted-foreground">Incidents Created</div>
+                <div className="text-xs text-white/50">Incidents Created</div>
               </div>
               <div className="p-3 bg-purple-50 rounded-lg text-center">
                 <div className="text-2xl font-bold text-purple-600">
                   {displayResults.escalationsTriggered}
                 </div>
-                <div className="text-xs text-muted-foreground">Escalations</div>
+                <div className="text-xs text-white/50">Escalations</div>
               </div>
             </div>
 
             {/* Processing Time */}
-            <div className="flex items-center justify-between text-xs text-muted-foreground pt-2">
+            <div className="flex items-center justify-between text-xs text-white/50 pt-2">
               <span className="flex items-center gap-1">
                 <Zap className="h-3 w-3" />
                 Processing time
@@ -300,7 +300,7 @@ export default function CrisisDetectionPanel({
 
         {/* No Previous Results */}
         {!displayResults && !isRunning && (
-          <div className="text-center py-6 text-muted-foreground">
+          <div className="text-center py-6 text-white/50">
             <Radar className="h-12 w-12 mx-auto mb-3 text-gray-300" />
             <p className="text-sm">No detection runs yet</p>
             <p className="text-xs mt-1">

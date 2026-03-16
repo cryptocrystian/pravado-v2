@@ -127,7 +127,7 @@ export function NodeInspectorDrawer({
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <Loader2 className="h-8 w-8 animate-spin text-white/50" />
           </div>
         ) : data ? (
           <div className="space-y-6 mt-6">
@@ -182,7 +182,7 @@ export function NodeInspectorDrawer({
               <TabsContent value="details" className="space-y-4 mt-4">
                 {/* Description */}
                 <div>
-                  <Label className="text-sm text-muted-foreground">Description</Label>
+                  <Label className="text-sm text-white/50">Description</Label>
                   {editMode ? (
                     <Textarea
                       value={formData.description}
@@ -199,7 +199,7 @@ export function NodeInspectorDrawer({
 
                 {/* Tags */}
                 <div>
-                  <Label className="text-sm text-muted-foreground flex items-center gap-1">
+                  <Label className="text-sm text-white/50 flex items-center gap-1">
                     <Tag className="h-3 w-3" />
                     Tags
                   </Label>
@@ -219,7 +219,7 @@ export function NodeInspectorDrawer({
                           </Badge>
                         ))
                       ) : (
-                        <span className="text-sm text-muted-foreground">No tags</span>
+                        <span className="text-sm text-white/50">No tags</span>
                       )}
                     </div>
                   )}
@@ -228,7 +228,7 @@ export function NodeInspectorDrawer({
                 {/* Source Info */}
                 {data.node.sourceSystem && (
                   <div>
-                    <Label className="text-sm text-muted-foreground">Source</Label>
+                    <Label className="text-sm text-white/50">Source</Label>
                     <p className="text-sm mt-1">
                       {data.node.sourceSystem}
                       {data.node.sourceTable && ` / ${data.node.sourceTable}`}
@@ -239,11 +239,11 @@ export function NodeInspectorDrawer({
                 {/* Timestamps */}
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <Label className="text-muted-foreground">Created</Label>
+                    <Label className="text-white/50">Created</Label>
                     <p>{new Date(data.node.createdAt).toLocaleString()}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground">Updated</Label>
+                    <Label className="text-white/50">Updated</Label>
                     <p>{new Date(data.node.updatedAt).toLocaleString()}</p>
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export function NodeInspectorDrawer({
                 {/* Incoming Edges */}
                 {data.incomingEdges.length > 0 && (
                   <div>
-                    <Label className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
+                    <Label className="text-sm text-white/50 flex items-center gap-1 mb-2">
                       <GitBranch className="h-3 w-3" />
                       Incoming ({data.incomingEdges.length})
                     </Label>
@@ -281,7 +281,7 @@ export function NodeInspectorDrawer({
                 {/* Outgoing Edges */}
                 {data.outgoingEdges.length > 0 && (
                   <div>
-                    <Label className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
+                    <Label className="text-sm text-white/50 flex items-center gap-1 mb-2">
                       <GitBranch className="h-3 w-3 rotate-180" />
                       Outgoing ({data.outgoingEdges.length})
                     </Label>
@@ -307,7 +307,7 @@ export function NodeInspectorDrawer({
                 )}
 
                 {data.incomingEdges.length === 0 && data.outgoingEdges.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-4">
+                  <p className="text-sm text-white/50 text-center py-4">
                     No connections
                   </p>
                 )}
@@ -318,8 +318,8 @@ export function NodeInspectorDrawer({
                   <Card>
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-2 mb-1">
-                        <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Degree Centrality</span>
+                        <BarChart3 className="h-4 w-4 text-white/50" />
+                        <span className="text-sm text-white/50">Degree Centrality</span>
                       </div>
                       <p className="text-2xl font-bold">
                         {formatCentrality(data.node.degreeCentrality)}
@@ -329,8 +329,8 @@ export function NodeInspectorDrawer({
                   <Card>
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-2 mb-1">
-                        <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">PageRank</span>
+                        <BarChart3 className="h-4 w-4 text-white/50" />
+                        <span className="text-sm text-white/50">PageRank</span>
                       </div>
                       <p className="text-2xl font-bold">
                         {formatCentrality(data.node.pagerankScore)}
@@ -340,8 +340,8 @@ export function NodeInspectorDrawer({
                   <Card>
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-2 mb-1">
-                        <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Betweenness</span>
+                        <BarChart3 className="h-4 w-4 text-white/50" />
+                        <span className="text-sm text-white/50">Betweenness</span>
                       </div>
                       <p className="text-2xl font-bold">
                         {formatCentrality(data.node.betweennessCentrality)}
@@ -351,8 +351,8 @@ export function NodeInspectorDrawer({
                   <Card>
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-2 mb-1">
-                        <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Closeness</span>
+                        <BarChart3 className="h-4 w-4 text-white/50" />
+                        <span className="text-sm text-white/50">Closeness</span>
                       </div>
                       <p className="text-2xl font-bold">
                         {formatCentrality(data.node.closenessCentrality)}
@@ -363,14 +363,14 @@ export function NodeInspectorDrawer({
 
                 {data.node.clusterId && (
                   <div>
-                    <Label className="text-sm text-muted-foreground">Cluster ID</Label>
+                    <Label className="text-sm text-white/50">Cluster ID</Label>
                     <p className="text-sm font-mono mt-1">{data.node.clusterId}</p>
                   </div>
                 )}
 
                 {data.node.confidenceScore != null && (
                   <div>
-                    <Label className="text-sm text-muted-foreground">Confidence Score</Label>
+                    <Label className="text-sm text-white/50">Confidence Score</Label>
                     <p className="text-sm mt-1">
                       {((data.node.confidenceScore ?? 0) * 100).toFixed(1)}%
                     </p>
@@ -381,7 +381,7 @@ export function NodeInspectorDrawer({
           </div>
         ) : (
           <div className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground">Node not found</p>
+            <p className="text-white/50">Node not found</p>
           </div>
         )}
       </SheetContent>

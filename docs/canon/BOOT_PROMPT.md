@@ -11,8 +11,9 @@ You are operating on the PRAVADO v2 codebase.
 6) /docs/canon/AUTOMATION_MODES_UX.md
 7) /docs/canon/UX_SURFACES.md + surface specs
 8) /docs/canon/PLANS_LIMITS_ENTITLEMENTS.md
-9) /docs/canon/CHANGE_CONTROL.md + DECISIONS_LOG.md
-10) /contracts/* (OpenAPI + JSON Schemas + Examples) once established
+9) /docs/canon/CHANGE_CONTROL.md + DECISIONS_LOG.md (now populated — read before making decisions)
+10) /docs/PRAVADO_V2_STATUS.md — actual build state (read before planning any work)
+11) /contracts/* (OpenAPI + JSON Schemas + Examples) once established
 
 ## Operating Rules
 - If a requirement is not in the CANON docs above, it is not a requirement.

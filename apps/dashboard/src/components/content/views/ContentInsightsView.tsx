@@ -5,7 +5,7 @@
  *
  * Analytics and insights view for the Content pillar.
  * Shows authority trends, performance metrics, and recommendations.
- * CTAs route to: create brief, open asset for revision, regenerate derivatives.
+ * CTAs route to: create content, open asset for revision, regenerate derivatives.
  *
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
  */
@@ -75,10 +75,10 @@ export function ContentInsightsView({
     onViewAsset?.(assetId);
   };
 
-  // Handle navigation to create brief
+  // Handle navigation to create content
   const handleCreateBrief = (_keyword?: string) => {
     // In production, pass keyword to pre-fill brief
-    router.push('/app/content/brief/new');
+    router.push('/app/content/new');
     onGenerateBrief?.();
   };
 
@@ -151,8 +151,8 @@ export function ContentInsightsView({
       {topAssets.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-white">Top Performing Content</h3>
-            <span className="text-[10px] text-white/40">By authority score</span>
+            <h3 className="text-sm font-semibold text-white/95">Top Performing Content</h3>
+            <span className="text-xs text-white/40">By authority score</span>
           </div>
           <div className="space-y-2">
             {topAssets.slice(0, 5).map((asset, index) => (
@@ -172,8 +172,8 @@ export function ContentInsightsView({
       {gaps.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-white">Content Opportunities</h3>
-            <span className="text-[10px] text-white/40">{gaps.length} gaps identified</span>
+            <h3 className="text-sm font-semibold text-white/95">Content Opportunities</h3>
+            <span className="text-xs text-white/40">{gaps.length} gaps identified</span>
           </div>
           <div className="space-y-2">
             {gaps.slice(0, 5).map((gap, index) => (
@@ -205,7 +205,7 @@ export function ContentInsightsView({
             title="High-value keyword gap detected"
             description="Create content for 'marketing automation ROI' - high search volume, low competition"
             actions={[
-              { label: 'Create Brief', primary: true, onClick: () => handleCreateBrief('marketing automation ROI') },
+              { label: 'Start Writing', primary: true, onClick: () => handleCreateBrief('marketing automation ROI') },
             ]}
           />
           <RecommendationCard
@@ -260,7 +260,7 @@ interface InsightMetricCardProps {
 function InsightMetricCard({ label, value, trend, description }: InsightMetricCardProps) {
   return (
     <div className="p-4 bg-slate-2 border border-border-subtle rounded-lg">
-      <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">{label}</div>
+      <div className="text-xs text-white/40 uppercase tracking-wider mb-2">{label}</div>
       <div className="flex items-baseline gap-2">
         <span className={`text-2xl font-bold ${getScoreColor(value)}`}>{value}</span>
         {trend !== undefined && (
@@ -274,13 +274,13 @@ function InsightMetricCard({ label, value, trend, description }: InsightMetricCa
           </span>
         )}
       </div>
-      <div className="mt-2 h-1.5 bg-[#1A1A24] rounded-full overflow-hidden">
+      <div className="mt-2 h-1.5 bg-slate-4 rounded-full overflow-hidden">
         <div
           className={`h-full ${getScoreBgColor(value)} transition-all duration-500`}
           style={{ width: `${value}%` }}
         />
       </div>
-      <p className="text-[10px] text-white/30 mt-2">{description}</p>
+      <p className="text-xs text-white/30 mt-2">{description}</p>
     </div>
   );
 }
@@ -304,11 +304,11 @@ function TopAssetRow({ rank, asset, onOpenForRevision, onRegenerateDerivatives }
       <span className="text-lg font-bold text-white/30 w-6 text-center">#{rank}</span>
       <div className="flex-1 min-w-0">
         <h4 className="text-sm font-medium text-white truncate">{asset.title}</h4>
-        <p className="text-[10px] text-white/40">{asset.status}</p>
+        <p className="text-xs text-white/40">{asset.status}</p>
       </div>
       <div className="text-right mr-2">
         <span className={`text-lg font-bold ${getScoreColor(score)}`}>{score}</span>
-        <p className="text-[9px] text-white/30 uppercase">Authority</p>
+        <p className="text-xs text-white/30 uppercase">Authority</p>
       </div>
       {/* Action buttons - visible on hover */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -356,8 +356,8 @@ function GapOpportunityRow({ gap, onCreateBrief, onViewDetails }: GapOpportunity
   return (
     <div className="flex items-center justify-between p-3 bg-slate-2 border border-border-subtle rounded-lg group hover:border-brand-iris/40 transition-colors">
       <div className="flex-1 min-w-0" onClick={onViewDetails} role="button" tabIndex={0}>
-        <h4 className="text-sm font-medium text-white">{gap.keyword}</h4>
-        <div className="flex items-center gap-2 text-[10px] text-white/40 mt-0.5">
+        <h4 className="text-sm font-medium text-white/95">{gap.keyword}</h4>
+        <div className="flex items-center gap-2 text-xs text-white/40 mt-0.5">
           {gap.intent && <span className="capitalize">{gap.intent}</span>}
           <span>·</span>
           <span>{gap.existingContentCount} existing</span>
@@ -370,14 +370,14 @@ function GapOpportunityRow({ gap, onCreateBrief, onViewDetails }: GapOpportunity
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${scoreColor}`}>
+        <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${scoreColor}`}>
           {gap.seoOpportunityScore}
         </span>
         <button
           onClick={onCreateBrief}
-          className="px-2 py-1 text-[10px] font-medium text-brand-iris bg-brand-iris/10 hover:bg-brand-iris/20 rounded transition-colors opacity-0 group-hover:opacity-100"
+          className="px-2 py-1 text-xs font-medium text-brand-iris bg-brand-iris/10 hover:bg-brand-iris/20 rounded transition-colors opacity-0 group-hover:opacity-100"
         >
-          Create Brief
+          Start Writing
         </button>
       </div>
     </div>

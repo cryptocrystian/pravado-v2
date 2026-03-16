@@ -130,34 +130,34 @@ export function GraphEdgeCard({
         <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
           <div className="flex-1 text-center">
             <p className="font-medium truncate">{sourceLabel || 'Source Node'}</p>
-            <p className="text-xs text-muted-foreground truncate">
+            <p className="text-xs text-white/50 truncate">
               {edge.sourceNodeId.slice(0, 8)}...
             </p>
           </div>
           <DirectionIcon className={`h-5 w-5 flex-shrink-0 ${typeColor}`} />
           <div className="flex-1 text-center">
             <p className="font-medium truncate">{targetLabel || 'Target Node'}</p>
-            <p className="text-xs text-muted-foreground truncate">
+            <p className="text-xs text-white/50 truncate">
               {edge.targetNodeId.slice(0, 8)}...
             </p>
           </div>
         </div>
 
         {edge.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2">
+          <p className="text-sm text-white/50 line-clamp-2">
             {edge.description}
           </p>
         )}
 
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
-            <Scale className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">Weight:</span>
+            <Scale className="h-4 w-4 text-white/50" />
+            <span className="text-white/50">Weight:</span>
             <span className="font-medium">{formatWeight(edge.weight)}</span>
           </div>
           {edge.confidenceScore != null && (
             <div className="flex items-center gap-1">
-              <span className="text-muted-foreground">Confidence:</span>
+              <span className="text-white/50">Confidence:</span>
               <span className="font-medium">
                 {((edge.confidenceScore ?? 0) * 100).toFixed(0)}%
               </span>
@@ -166,7 +166,7 @@ export function GraphEdgeCard({
         </div>
 
         {edge.sourceSystem && (
-          <div className="text-xs text-muted-foreground pt-2 border-t">
+          <div className="text-xs text-white/50 pt-2 border-t">
             Source: {edge.sourceSystem}
             {edge.inferenceMethod && ` (${edge.inferenceMethod})`}
           </div>

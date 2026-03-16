@@ -61,6 +61,13 @@ export const apiEnvSchema = baseEnvSchema.extend({
     .enum(['true', 'false', '1', '0'])
     .default('false')
     .transform((val) => val === 'true' || val === '1'),
+  // Observability (S-INT-08)
+  SENTRY_DSN: z.string().optional(),
+  // Hunter.io (S-INT-06)
+  HUNTER_API_KEY: z.string().optional(),
+  // GSC (S-INT-06)
+  GSC_CLIENT_ID: z.string().optional(),
+  GSC_CLIENT_SECRET: z.string().optional(),
 });
 
 export const dashboardEnvSchema = baseEnvSchema.extend({

@@ -3,7 +3,7 @@
 > **Status:** CANONICAL (V1 FREEZE)
 > **Authority:** This document defines the V1 frozen contract for the PR Work Surface.
 > **Classification:** V1 Release Specification
-> **Last Updated:** 2026-01-14
+> **Last Updated:** 2026-02-26
 
 ---
 
@@ -289,27 +289,48 @@ The primary distribution path in V1:
 
 | Entity | Description | Key Fields |
 |--------|-------------|------------|
-| **Journalist** | Media contact | id, name, email, outlet, beat, status |
-| **Outlet** | Media outlet | id, name, tier, domain, type |
-| **Pitch** | Outreach message | id, journalist_id, subject, body, status, sent_at |
-| **Release** | Press release | id, title, body, schema, status, published_at |
-| **Coverage** | Earned media | id, url, headline, outlet_id, journalist_id, attribution |
-| **Interaction** | Timeline entry | id, journalist_id, type, timestamp, notes |
+| **MediaContact** | Unified contact record (all four types) | id, contact_type, name, contact_state, pitch_eligibility_score, vector_embedding |
+| **ContactEmail** | JIT-enriched ephemeral email record — never stored from static scrapes | id, contact_id, email, email_verified_at, email_source, is_stale |
+| **OutletAffiliation** | Many-to-many contact-to-outlet junction | id, contact_id, outlet_id, role, is_primary, beat_at_outlet, start_date, end_date |
+| **Outlet** | Media outlet | id, name, tier, domain, type, domain_authority |
+| **Pitch** | Outreach message | id, contact_id, subject, body, status, sent_at, personalization_score |
+| **Release** | Press release | id, title, body, schema, status, published_at, distribution_path |
+| **Coverage** | Earned media | id, url, headline, outlet_id, contact_id, attribution |
+| **Interaction** | Timeline entry | id, contact_id, type, timestamp, notes |
+| **PlatformPitchEvent** | Platform-wide anonymized pitch event for saturation scoring | id, contact_id, org_id, event_type, occurred_at |
 
 ### 8.2 Key Relationships
 
 ```
-Journalist ─┬─ belongs_to ─── Outlet
-            ├─ has_many ───── Pitch
-            ├─ has_many ───── Coverage
-            └─ has_many ───── Interaction
+MediaContact ─┬─ has_many ───── OutletAffiliation ──── Outlet
+              ├─ has_one ────── ContactEmail (ephemeral/JIT)
+              ├─ has_many ───── Pitch
+              ├─ has_many ───── Coverage
+              └─ has_many ───── Interaction
 
-Release ────┬─ has_many ───── Coverage (attributed)
-            └─ has_one ────── Distribution (Newsroom or Wire)
+Release ──────┬─ has_many ───── Coverage (attributed)
+              └─ has_one ────── Distribution (Newsroom or Wire)
 
-Pitch ──────┬─ belongs_to ─── Journalist
-            └─ may_have ───── Coverage (attributed)
+Pitch ────────┬─ belongs_to ─── MediaContact
+              └─ may_have ───── Coverage (attributed)
+
+PlatformPitchEvent ─ belongs_to ─── MediaContact (anonymized org_id)
 ```
+
+### 8.3 Contact State Machine
+
+The simple `status: enum(Active/Paused/Blocked)` field is replaced by a full state machine. See `JOURNALIST_DATABASE_GOVERNANCE.md` for complete transition rules.
+
+| State | Description | Pitch Eligible |
+|-------|-------------|----------------|
+| `identity_only` | Name/outlet only, no email | No |
+| `enrichment_queued` | JIT enrichment in progress | No |
+| `enriched` | Valid email returned, quality gates pending | No |
+| `pitch_eligible` | Meets all quality gates | **Yes** |
+| `stale` | Email unverified > 60 days | No — re-verification required |
+| `suppressed` | Opted out — permanent and global | Never |
+| `bounced` | Hard bounce received | Never |
+| `do_not_contact` | Org-level flag | No — org-scoped, reversible |
 
 ---
 
@@ -631,3 +652,4 @@ PR actions emit EVI attribution data that powers:
 | 2026-01-14 | 1.0 | Initial V1 PR Work Surface Contract |
 | 2026-01-14 | 1.1 | Added V1.1 Best-in-Class Upgrades section |
 | 2026-01-21 | 1.2 | Added V1.2 Operational Workflows (CRUD, Manual Send, EVI attribution) |
+| 2026-02-26 | 1.3 | Data model updated: Journalist → MediaContact (four contact types); email field replaced with JIT ContactEmail entity; OutletAffiliation junction added for many-to-many outlets; PlatformPitchEvent entity added; contact state machine added replacing simple status enum |

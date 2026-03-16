@@ -34,7 +34,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 export function AttentionQueue({ items, onActionClick }: Props) {
   if (items.length === 0) {
     return (
-      <div className="p-8 text-center rounded-xl border border-dashed border-[#1A1A24]">
+      <div className="p-8 text-center rounded-xl border border-dashed border-border-subtle">
         <svg className="w-12 h-12 mx-auto text-white/40 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -48,7 +48,7 @@ export function AttentionQueue({ items, onActionClick }: Props) {
       {items.map((item) => (
         <div
           key={item.id}
-          className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24] hover:border-[#2A2A36] transition-colors"
+          className="p-4 rounded-xl bg-panel border border-border-subtle hover:border-slate-5 transition-colors"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
@@ -60,13 +60,13 @@ export function AttentionQueue({ items, onActionClick }: Props) {
                   </span>
                 )}
               </div>
-              <h3 className="font-medium text-white">{item.title}</h3>
+              <h3 className="font-medium text-white/95">{item.title}</h3>
               <p className="text-sm text-white/55 mt-1">{item.description}</p>
             </div>
             <button
               type="button"
               onClick={() => onActionClick?.(item)}
-              className="shrink-0 px-4 py-2 text-sm font-medium text-white bg-brand-iris rounded-lg hover:bg-brand-iris/90 transition-colors"
+              className="shrink-0 px-4 py-2 text-sm font-medium text-white/90 bg-brand-iris rounded-lg hover:bg-brand-iris/90 transition-colors"
             >
               {item.actionLabel}
             </button>

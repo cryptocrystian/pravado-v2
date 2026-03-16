@@ -41,6 +41,8 @@ interface OutlineSection {
 
 const MOCK_BRIEF: ContentBrief & {
   entities: string[];
+  allowedAssertions: string[];
+  requiredCitations: string[];
   allowedClaims: string[];
   outline: { introduction: string; sections: OutlineSection[]; conclusion: string };
   acceptanceCriteria: string[];
@@ -49,6 +51,7 @@ const MOCK_BRIEF: ContentBrief & {
   organizationId: 'org-1',
   title: 'AI-Powered Content Creation Guide',
   status: 'draft',
+  contentType: 'article',
   targetKeyword: 'AI content creation',
   targetIntent: 'informational',
   strategicObjective: 'Establish thought leadership in AI-assisted content creation',
@@ -104,8 +107,9 @@ const MOCK_BRIEF: ContentBrief & {
   updatedAt: '2025-01-24T12:00:00.000Z',
 };
 
-const MOCK_CITEMIND_PREVIEW: { status: CiteMindStatus; issues: CiteMindIssue[] } = {
+const MOCK_CITEMIND_PREVIEW: { status: CiteMindStatus; issues: CiteMindIssue[]; aeoScore: number } = {
   status: 'warning',
+  aeoScore: 54,
   issues: [
     { type: 'unverified_claim', severity: 'warning', message: 'Claim about 40-60% time savings needs specific source', section: 'Benefits' },
   ],
@@ -131,12 +135,29 @@ function ConstraintCard({
   accentColor?: 'iris' | 'cyan' | 'magenta';
 }) {
   const [newItem, setNewItem] = useState('');
-  const colorMap = {
-    iris: 'brand-iris',
-    cyan: 'brand-cyan',
-    magenta: 'brand-magenta',
+
+  // Static class maps — Tailwind JIT requires complete class strings at compile time
+  const accentClasses = {
+    iris: {
+      itemBg: 'bg-brand-iris/5 border border-brand-iris/20',
+      dot: 'bg-brand-iris',
+      btnText: 'text-brand-iris',
+      btnBg: 'bg-brand-iris/10 hover:bg-brand-iris/20',
+    },
+    cyan: {
+      itemBg: 'bg-brand-cyan/5 border border-brand-cyan/20',
+      dot: 'bg-brand-cyan',
+      btnText: 'text-brand-cyan',
+      btnBg: 'bg-brand-cyan/10 hover:bg-brand-cyan/20',
+    },
+    magenta: {
+      itemBg: 'bg-brand-magenta/5 border border-brand-magenta/20',
+      dot: 'bg-brand-magenta',
+      btnText: 'text-brand-magenta',
+      btnBg: 'bg-brand-magenta/10 hover:bg-brand-magenta/20',
+    },
   };
-  const color = colorMap[accentColor];
+  const ac = accentClasses[accentColor];
 
   const handleAdd = () => {
     if (newItem.trim() && onAdd) {
@@ -152,14 +173,14 @@ function ConstraintCard({
         {items.map((item, index) => (
           <div
             key={index}
-            className={`flex items-start gap-2 p-2 bg-${color}/5 border border-${color}/20 rounded-lg`}
+            className={`flex items-start gap-2 p-2 rounded-lg ${ac.itemBg}`}
           >
-            <span className={`w-1.5 h-1.5 mt-1.5 rounded-full bg-${color} shrink-0`} />
+            <span className={`w-1.5 h-1.5 mt-1.5 rounded-full ${ac.dot} shrink-0`} />
             <p className={`flex-1 text-xs ${text.secondary}`}>{item}</p>
             {onRemove && (
               <button
                 onClick={() => onRemove(index)}
-                className={`p-1 ${text.hint} hover:${text.secondary} transition-colors`}
+                className={`p-1 ${text.hint} hover:text-white/60 transition-colors`}
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -180,7 +201,7 @@ function ConstraintCard({
             />
             <button
               onClick={handleAdd}
-              className={`px-3 py-1.5 text-xs font-medium text-${color} bg-${color}/10 hover:bg-${color}/20 rounded-lg transition-colors`}
+              className={`px-3 py-1.5 text-xs font-medium ${ac.btnText} ${ac.btnBg} rounded-lg transition-colors`}
             >
               Add
             </button>
@@ -283,15 +304,29 @@ function OutlineEditor({
 function CiteMindPreviewPanel({
   status,
   issues,
+  aeoScore,
 }: {
   status: CiteMindStatus;
   issues: CiteMindIssue[];
+  aeoScore: number;
 }) {
   const tokens = statusTokens[status];
+  const scoreColor = aeoScore >= 41 ? 'text-semantic-success' : 'text-semantic-danger';
 
   return (
     <div className="p-4">
       <h3 className={`${label} mb-3`}>CiteMind Preview</h3>
+
+      {/* AEO Score — advisory pre-check */}
+      <div className="flex items-center justify-between p-3 rounded-lg bg-slate-2 border border-slate-4 mb-3">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-white/50">AEO Score</p> {/* typography-allow: system label */}
+          <p className="text-xs text-white/40 mt-0.5">
+            {aeoScore >= 41 ? 'Likely to be cited by AI' : 'Below citation threshold (41)'}
+          </p>
+        </div>
+        <span className={`text-2xl font-bold tabular-nums ${scoreColor}`}>{aeoScore}</span>
+      </div>
 
       {/* Status */}
       <div className={`p-3 rounded-lg border ${tokens.bg} ${tokens.border} mb-3`}>
@@ -303,12 +338,12 @@ function CiteMindPreviewPanel({
         </div>
         <p className={`text-xs ${text.secondary} mt-1`}>
           {status === 'passed'
-            ? 'Brief passes all CiteMind constraints'
+            ? 'Content passes all CiteMind constraints'
             : status === 'warning'
             ? 'Some constraints need attention'
             : status === 'blocked'
             ? 'Critical issues must be resolved'
-            : 'Analyzing brief constraints...'}
+            : 'Analyzing content constraints...'}
         </p>
       </div>
 
@@ -405,7 +440,7 @@ export default function BriefWorkSurfacePage({ params }: BriefPageProps) {
       <div className={`min-h-screen ${surface.page} flex items-center justify-center`}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 border-2 border-brand-iris border-t-transparent rounded-full animate-spin" />
-          <span className={text.secondary}>Loading brief...</span>
+          <span className={text.secondary}>Loading content...</span>
         </div>
       </div>
     );
@@ -435,11 +470,11 @@ export default function BriefWorkSurfacePage({ params }: BriefPageProps) {
                   value={editedTitle}
                   onChange={(e) => setEditedTitle(e.target.value)}
                   className={`text-xl font-semibold ${text.primary} bg-transparent border-none focus:outline-none flex-1`}
-                  placeholder="Brief title..."
+                  placeholder="Title..."
                 />
                 <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${
-                  brief.status === 'approved' ? 'bg-semantic-success/10 text-semantic-success border border-semantic-success/20' :
-                  brief.status === 'in_progress' ? 'bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20' :
+                  brief.status === 'ready' ? 'bg-semantic-success/10 text-semantic-success border border-semantic-success/20' :
+                  brief.status === 'needs_review' ? 'bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20' :
                   'bg-slate-4 text-white/60 border border-slate-5'
                 }`}>
                   {brief.status.replace('_', ' ')}
@@ -522,7 +557,7 @@ export default function BriefWorkSurfacePage({ params }: BriefPageProps) {
         <div className={`w-[320px] border-l ${border.default} bg-slate-1 overflow-y-auto`}>
           {/* Brief Details */}
           <div className="p-4 space-y-3">
-            <h3 className={label}>Brief Details</h3>
+            <h3 className={label}>Content Details</h3>
 
             <div>
               <p className={`text-[10px] ${text.hint}`}>Target Keyword</p>
@@ -551,6 +586,7 @@ export default function BriefWorkSurfacePage({ params }: BriefPageProps) {
           <CiteMindPreviewPanel
             status={citeMindPreview.status}
             issues={citeMindPreview.issues}
+            aeoScore={citeMindPreview.aeoScore}
           />
 
           <div className={`border-t ${border.default}`} />

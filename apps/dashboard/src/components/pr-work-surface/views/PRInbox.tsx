@@ -35,6 +35,26 @@ import {
 } from '@/components/ai';
 import { useMode } from '@/lib/ModeContext';
 import type { AutomationMode } from '@/lib/mode-preferences';
+import {
+  Tray,
+  Clock,
+  Newspaper,
+  TrendDown,
+  CheckCircle,
+  Database,
+  List,
+  SortAscending,
+  Check,
+  CaretDown,
+  ShieldCheck,
+  Lock,
+  User,
+  Lightning,
+  CursorClick,
+  Envelope,
+  CaretRight,
+  Warning,
+} from '@phosphor-icons/react';
 
 // ============================================
 // API TYPES & FETCHER
@@ -74,9 +94,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     pluralLabel: 'Inbound Inquiries',
     description: 'Journalist requests requiring response',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-      </svg>
+      <Tray weight="regular" className="w-4 h-4" />
     ),
     color: 'text-semantic-warning',
     bgColor: 'bg-semantic-warning/10',
@@ -86,9 +104,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     pluralLabel: 'Follow-ups Due',
     description: 'Pitches in optimal follow-up window',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
+      <Clock weight="regular" className="w-4 h-4" />
     ),
     color: 'text-brand-cyan',
     bgColor: 'bg-brand-cyan/10',
@@ -98,9 +114,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     pluralLabel: 'Coverage Triage',
     description: 'New mentions requiring review',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-      </svg>
+      <Newspaper weight="regular" className="w-4 h-4" />
     ),
     color: 'text-semantic-success',
     bgColor: 'bg-semantic-success/10',
@@ -110,9 +124,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     pluralLabel: 'Relationship Decay',
     description: 'Contacts losing engagement momentum',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-      </svg>
+      <TrendDown weight="regular" className="w-4 h-4" />
     ),
     color: 'text-semantic-danger',
     bgColor: 'bg-semantic-danger/10',
@@ -122,9 +134,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     pluralLabel: 'Approval Queue',
     description: 'AI drafts awaiting your review',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
+      <CheckCircle weight="regular" className="w-4 h-4" />
     ),
     color: 'text-brand-iris',
     bgColor: 'bg-brand-iris/10',
@@ -134,9 +144,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     pluralLabel: 'Data Hygiene',
     description: 'Contact updates and enrichment',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-      </svg>
+      <Database weight="regular" className="w-4 h-4" />
     ),
     color: 'text-white/50',
     bgColor: 'bg-white/5',
@@ -394,31 +402,31 @@ const MOCK_PR_AUDIT_LOG = [
  */
 function AuditLogPanel({ entries = MOCK_PR_AUDIT_LOG }: { entries?: typeof MOCK_PR_AUDIT_LOG }) {
   const typeIcons: Record<string, JSX.Element> = {
-    follow_up: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-    coverage: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>,
-    data: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>,
-    relationship: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
-    draft: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
+    follow_up: <Clock weight="regular" className="w-3 h-3" />,
+    coverage: <Newspaper weight="regular" className="w-3 h-3" />,
+    data: <Database weight="regular" className="w-3 h-3" />,
+    relationship: <User weight="regular" className="w-3 h-3" />,
+    draft: <Envelope weight="regular" className="w-3 h-3" />,
   };
 
   return (
-    <div className="pt-3 border-t border-[#1A1A24]">
+    <div className="pt-3 border-t border-border-subtle">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+          <h4 className="text-[12px] font-bold uppercase tracking-wider text-white/40">
             Audit Log
           </h4>
-          <span className="px-1.5 py-0.5 text-[9px] font-medium text-semantic-success bg-semantic-success/10 rounded">
+          <span className="px-1.5 py-0.5 text-[13px] font-semibold text-semantic-success bg-semantic-success/10 rounded">
             Live
           </span>
         </div>
-        <span className="text-[10px] text-white/30">Auto-executed by AUTOMATE</span>
+        <span className="text-[13px] text-white/30">Auto-executed by AUTOMATE</span>
       </div>
       <div className="space-y-1 max-h-[180px] overflow-y-auto">
         {entries.slice(0, 5).map((item) => (
           <div
             key={item.id}
-            className="flex items-center justify-between px-2.5 py-2 bg-[#111116] hover:bg-[#151520] rounded text-[10px] transition-colors"
+            className="flex items-center justify-between px-2.5 py-2 bg-panel hover:bg-panel rounded text-[13px] transition-colors"
           >
             <div className="flex items-center gap-2">
               <span className={item.status === 'completed' ? 'text-semantic-success' : 'text-semantic-warning'}>
@@ -427,7 +435,7 @@ function AuditLogPanel({ entries = MOCK_PR_AUDIT_LOG }: { entries?: typeof MOCK_
               <span className="text-white/60">{item.title}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`px-1 py-0.5 rounded text-[8px] font-medium ${
+              <span className={`px-1 py-0.5 rounded text-[13px] font-semibold ${
                 item.status === 'completed' ? 'text-semantic-success bg-semantic-success/10' :
                 item.status === 'pending_approval' ? 'text-semantic-warning bg-semantic-warning/10' :
                 'text-white/40 bg-white/5'
@@ -439,7 +447,7 @@ function AuditLogPanel({ entries = MOCK_PR_AUDIT_LOG }: { entries?: typeof MOCK_
           </div>
         ))}
       </div>
-      <button className="w-full mt-2 py-1.5 text-[10px] text-brand-magenta hover:bg-brand-magenta/5 rounded transition-colors">
+      <button className="w-full mt-2 py-1.5 text-[13px] text-brand-magenta hover:bg-brand-magenta/5 rounded transition-colors">
         View Full Audit Log →
       </button>
     </div>
@@ -470,12 +478,10 @@ function PRQueueControlsBand({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-            </svg>
+            <List weight="regular" className="w-4 h-4 text-white/60" />
             <span className="text-xs font-bold uppercase tracking-wider text-white/60">Queue Controls</span>
           </div>
-          <span className="px-2 py-0.5 text-[10px] font-medium text-white/40 bg-white/5 rounded">
+          <span className="px-2 py-0.5 text-[13px] font-medium text-white/40 bg-white/5 rounded">
             {itemCount} items
           </span>
         </div>
@@ -485,18 +491,14 @@ function PRQueueControlsBand({
             onClick={onReorderByPriority}
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-white/70 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-            </svg>
+            <SortAscending weight="regular" className="w-3.5 h-3.5" />
             By Priority
           </button>
           <button
             onClick={onReorderByDue}
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-white/70 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <Clock weight="regular" className="w-3.5 h-3.5" />
             By Due
           </button>
           <button
@@ -538,7 +540,7 @@ function PRPlanPanel({
     }`}>
       <div className="p-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold ${
+          <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[13px] font-bold ${
             isEvaluating
               ? 'bg-brand-magenta/20 text-brand-magenta animate-pulse'
               : isApproved
@@ -548,10 +550,10 @@ function PRPlanPanel({
             {isEvaluating ? '...' : isApproved ? '✓' : '1'}
           </div>
           <div>
-            <span className="text-sm font-semibold text-white">
+            <span className="text-sm font-semibold text-white/95">
               {isEvaluating ? 'Evaluating Queue...' : 'AI Plan Ready'}
             </span>
-            <p className="text-[10px] text-white/40">
+            <p className="text-[13px] text-white/40">
               {isEvaluating
                 ? 'Analyzing priorities and context'
                 : isApproved
@@ -565,19 +567,15 @@ function PRPlanPanel({
           {!isApproved && !isEvaluating && (
             <button
               onClick={onApprove}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-brand-magenta hover:bg-brand-magenta/90 rounded-lg shadow-[0_0_12px_rgba(232,121,249,0.25)] transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white/95 bg-brand-magenta hover:bg-brand-magenta/90 rounded-lg shadow-[0_0_12px_rgba(232,121,249,0.25)] transition-all"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+              <Check weight="bold" className="w-3.5 h-3.5" />
               Approve Plan
             </button>
           )}
           {isApproved && (
             <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-semantic-success bg-semantic-success/10 rounded-lg">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+              <Check weight="bold" className="w-3.5 h-3.5" />
               Approved
             </span>
           )}
@@ -585,9 +583,7 @@ function PRPlanPanel({
             onClick={onToggle}
             className="p-1.5 text-white/40 hover:text-white hover:bg-white/5 rounded transition-colors"
           >
-            <svg className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+            <CaretDown weight="regular" className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
           </button>
         </div>
       </div>
@@ -596,25 +592,25 @@ function PRPlanPanel({
         <div className="px-3 pb-3 border-t border-white/5">
           <div className="pt-3 space-y-2">
             {reasons.map((reason, index) => (
-              <div key={reason.id} className="flex items-start gap-3 p-2 bg-[#111116] rounded">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-magenta/20 text-brand-magenta text-[10px] font-bold shrink-0">
+              <div key={reason.id} className="flex items-start gap-3 p-2 bg-panel rounded">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-magenta/20 text-brand-magenta text-[13px] font-bold shrink-0">
                   {index + 1}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-white">{reason.factor}</span>
-                    <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded ${
+                    <span className="text-xs font-medium text-white/90">{reason.factor}</span>
+                    <span className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${
                       reason.weight === 'High' ? 'text-brand-magenta bg-brand-magenta/10' : 'text-white/50 bg-white/5'
                     }`}>
                       {reason.weight}
                     </span>
                   </div>
-                  <p className="text-[11px] text-white/50 mt-0.5">{reason.explanation}</p>
+                  <p className="text-[13px] text-white/50 mt-0.5">{reason.explanation}</p>
                 </div>
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-white/30 mt-3 text-center">
+          <p className="text-[13px] text-white/30 mt-3 text-center">
             Step 2: Review items in queue. Step 3: Execute actions.
           </p>
         </div>
@@ -638,23 +634,21 @@ function PRGuardrailsCard() {
   return (
     <div className="p-3 bg-brand-iris/5 border border-brand-iris/20 rounded-lg">
       <div className="flex items-center gap-2 mb-2">
-        <svg className="w-4 h-4 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
+        <ShieldCheck weight="regular" className="w-4 h-4 text-brand-iris" />
         <h4 className="text-xs font-bold uppercase tracking-wider text-brand-iris">Active Guardrails</h4>
       </div>
       <div className="space-y-1.5">
         {guardrails.filter(g => g.active).map((guardrail) => (
-          <div key={guardrail.id} className="flex items-start gap-2 p-2 bg-[#111116] rounded">
+          <div key={guardrail.id} className="flex items-start gap-2 p-2 bg-panel rounded">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
             <div>
-              <span className="text-[11px] font-medium text-white">{guardrail.name}</span>
-              <p className="text-[10px] text-white/40">{guardrail.description}</p>
+              <span className="text-[13px] font-medium text-white/90">{guardrail.name}</span>
+              <p className="text-[13px] text-white/40">{guardrail.description}</p>
             </div>
           </div>
         ))}
       </div>
-      <button className="w-full mt-2 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
+      <button className="w-full mt-2 py-1.5 text-[13px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
         Configure Guardrails →
       </button>
     </div>
@@ -747,22 +741,16 @@ function filterItemsByMode(items: InboxItem[], mode: AutomationMode): InboxItem[
 function ModeIconHeader({ mode }: { mode: AutomationMode }) {
   if (mode === 'manual') {
     return (
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-      </svg>
+      <Lock weight="regular" className="w-3 h-3" />
     );
   }
   if (mode === 'copilot') {
     return (
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
+      <User weight="regular" className="w-3 h-3" />
     );
   }
   return (
-    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-    </svg>
+    <Lightning weight="regular" className="w-3 h-3" />
   );
 }
 
@@ -788,9 +776,9 @@ function SectionNav({ activeSection, counts, onSectionChange }: SectionNavProps)
   ];
 
   return (
-    <div className="w-40 shrink-0 bg-[#0D0D12] rounded-xl border border-[#1A1A24] overflow-hidden">
-      <div className="p-3 border-b border-[#1A1A24]">
-        <h3 className="text-[10px] font-bold uppercase tracking-wider text-white/50">Queue Sections</h3>
+    <div className="w-40 shrink-0 bg-slate-1 rounded-xl border border-border-subtle overflow-hidden">
+      <div className="p-3 border-b border-border-subtle">
+        <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50">Queue Sections</h3>
       </div>
       <div className="p-2 space-y-0.5">
         {sections.map((section) => {
@@ -804,12 +792,12 @@ function SectionNav({ activeSection, counts, onSectionChange }: SectionNavProps)
                 onClick={() => onSectionChange(section)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
                   isActive
-                    ? 'bg-brand-magenta/10 text-white ring-1 ring-brand-magenta/30'
+                    ? 'bg-brand-magenta/10 text-white/95 ring-1 ring-brand-magenta/30'
                     : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <span className="font-medium">All Items</span>
-                <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${
+                <span className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${
                   isActive ? 'bg-brand-magenta/20 text-brand-magenta' : 'bg-white/10 text-white/50'
                 }`}>
                   {counts.all}
@@ -827,13 +815,13 @@ function SectionNav({ activeSection, counts, onSectionChange }: SectionNavProps)
               onClick={() => onSectionChange(section)}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
                 isActive
-                  ? `${config.bgColor} text-white ring-1 ring-white/10`
+                  ? `${config.bgColor} text-white/95 ring-1 ring-white/10`
                   : 'text-white/60 hover:text-white hover:bg-white/5'
               }`}
             >
               <span className={isActive ? config.color : 'text-white/40'}>{config.icon}</span>
               <span className="flex-1 text-left truncate">{config.label}</span>
-              <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${
+              <span className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${
                 isActive ? `${config.bgColor} ${config.color}` : 'bg-white/10 text-white/50'
               }`}>
                 {count}
@@ -981,16 +969,12 @@ function QueueItem({ item, isSelected, onClick }: QueueItemProps) {
         </div>
 
         {/* Chevron */}
-        <svg
+        <CaretRight
+          weight="regular"
           className={`w-4 h-4 shrink-0 mt-1 transition-colors ${
             isSelected ? 'text-brand-magenta' : 'text-white/20 group-hover:text-white/40'
           }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
+        />
       </div>
     </button>
   );
@@ -1076,7 +1060,7 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-[#1A1A24]">
+      <div className="p-4 border-b border-border-subtle">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
           <span className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-bold uppercase border ${typeConfig.bgColor} ${typeConfig.color} border-transparent`}>
             {typeConfig.icon}
@@ -1092,7 +1076,7 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
           {/* Local AI State Indicator - per AI_VISUAL_COMMUNICATION_CANON §2 */}
           <LocalAIIndicator state={aiState} />
         </div>
-        <h2 className="text-base font-semibold text-white leading-tight">{item.title}</h2>
+        <h2 className="text-base font-semibold text-white/95 leading-tight">{item.title}</h2>
         {timeRemaining && (
           <p className={`text-[13px] mt-1 ${timeRemaining === 'Overdue' ? 'text-semantic-danger font-medium' : 'text-white/50'}`}>
             {timeRemaining === 'Overdue' ? 'Overdue' : `Due in ${timeRemaining}`}
@@ -1105,7 +1089,7 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
         {/* Why This Matters Now - Prominent */}
         <div className="p-3 rounded-lg bg-brand-magenta/5 border border-brand-magenta/20">
           <div className="flex items-center justify-between mb-1.5">
-            <h3 className="text-[10px] font-bold uppercase tracking-wider text-brand-magenta/70">Why This Matters Now</h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-brand-magenta/70">Why This Matters Now</h3>
             {/* Copilot Reasoning Label - visible without hover */}
             {copilotReasoning && (
               <span className={`text-[13px] font-medium ${copilotReasoning.color}`}>
@@ -1117,8 +1101,8 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
         </div>
 
         {/* Context */}
-        <div className="p-3 rounded-lg bg-[#111116] border border-[#1A1A24]">
-          <h3 className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1.5">Context</h3>
+        <div className="p-3 rounded-lg bg-panel border border-border-subtle">
+          <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-1.5">Context</h3>
           <p className="text-sm text-white/70 leading-relaxed">{item.description}</p>
         </div>
 
@@ -1126,8 +1110,8 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
         <div className="grid grid-cols-2 gap-3">
           {/* EVI Impact Module */}
           {item.eviImpact && (
-            <div className="p-3 rounded-lg bg-[#111116] border border-[#1A1A24]">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2">EVI Impact</h3>
+            <div className="p-3 rounded-lg bg-panel border border-border-subtle">
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">EVI Impact</h3>
               <div className="flex items-center gap-2">
                 <div className={`p-1.5 rounded-md ${eviDriverStyles[item.eviImpact.driver as keyof typeof eviDriverStyles]?.bg || 'bg-white/5'}`}>
                   <span className={`text-lg font-bold ${
@@ -1158,8 +1142,8 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
 
           {/* SAGE Rationale Module */}
           {item.sageContributions && item.sageContributions.length > 0 && (
-            <div className="p-3 rounded-lg bg-[#111116] border border-[#1A1A24]">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2">SAGE Signal</h3>
+            <div className="p-3 rounded-lg bg-panel border border-border-subtle">
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">SAGE Signal</h3>
               <div className="flex gap-1.5">
                 {item.sageContributions.map((contrib) => {
                   const sage = SAGE_LABELS[contrib.dimension];
@@ -1171,7 +1155,7 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
                       }`}
                       title={sage.description}
                     >
-                      <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${
+                      <span className={`w-5 h-5 rounded flex items-center justify-center text-[13px] font-bold ${
                         contrib.isPrimary ? 'bg-brand-magenta/20 text-brand-magenta' : 'bg-white/10 text-white/50'
                       }`}>
                         {sage.short}
@@ -1187,14 +1171,14 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
 
         {/* Relationship Timeline Preview */}
         {item.relatedContactId && (
-          <div className="p-3 rounded-lg bg-[#111116] border border-[#1A1A24]">
-            <h3 className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2">Relationship Timeline</h3>
+          <div className="p-3 rounded-lg bg-panel border border-border-subtle">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">Relationship Timeline</h3>
             <div className="relative pl-3">
-              <div className="absolute left-0.5 top-0 bottom-0 w-px bg-[#1A1A24]" />
+              <div className="absolute left-0.5 top-0 bottom-0 w-px bg-slate-4" />
               <div className="space-y-2">
                 {MOCK_TIMELINE_EVENTS.slice(0, 3).map((event, idx) => (
                   <div key={idx} className="relative flex items-center gap-2">
-                    <div className={`absolute -left-[9px] w-2 h-2 rounded-full ${idx === 0 ? 'bg-brand-magenta' : 'bg-[#2A2A36]'}`} />
+                    <div className={`absolute -left-[9px] w-2 h-2 rounded-full ${idx === 0 ? 'bg-brand-magenta' : 'bg-slate-5'}`} />
                     <span className="text-[13px] text-white/70">{event.label}</span>
                     <span className="text-[13px] text-white/40 ml-auto">{event.date}</span>
                   </div>
@@ -1206,12 +1190,12 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
 
         {/* Confidence (if available) */}
         {item.confidence && (
-          <div className="p-3 rounded-lg bg-[#111116] border border-[#1A1A24]">
+          <div className="p-3 rounded-lg bg-panel border border-border-subtle">
             <div className="flex items-center justify-between mb-1.5">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-white/50">AI Confidence</h3>
-              <span className="text-[13px] font-bold text-white">{item.confidence}%</span>
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50">AI Confidence</h3>
+              <span className="text-[13px] font-bold text-white/95">{item.confidence}%</span>
             </div>
-            <div className="h-1.5 rounded-full bg-[#1A1A24] overflow-hidden">
+            <div className="h-1.5 rounded-full bg-slate-4 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all ${
                   item.confidence >= 80 ? 'bg-semantic-success' :
@@ -1228,27 +1212,21 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
           {item.relatedContactId && (
             <button
               onClick={onOpenContact}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#111116] border border-[#1A1A24] hover:border-[#2A2A36] text-[13px] text-white/70 hover:text-white transition-all"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-panel border border-border-subtle hover:border-slate-5 text-[13px] text-white/70 hover:text-white transition-all"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+              <User weight="regular" className="w-3.5 h-3.5" />
               Contact
             </button>
           )}
           {item.relatedPitchId && (
-            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#111116] border border-[#1A1A24] hover:border-[#2A2A36] text-[13px] text-white/70 hover:text-white transition-all">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-panel border border-border-subtle hover:border-slate-5 text-[13px] text-white/70 hover:text-white transition-all">
+              <Envelope weight="regular" className="w-3.5 h-3.5" />
               Pitch
             </button>
           )}
           {item.relatedCoverageId && (
-            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#111116] border border-[#1A1A24] hover:border-[#2A2A36] text-[13px] text-white/70 hover:text-white transition-all">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-              </svg>
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-panel border border-border-subtle hover:border-slate-5 text-[13px] text-white/70 hover:text-white transition-all">
+              <Newspaper weight="regular" className="w-3.5 h-3.5" />
               Coverage
             </button>
           )}
@@ -1256,13 +1234,13 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
       </div>
 
       {/* Sticky Action Bar */}
-      <div className="p-3 border-t border-[#1A1A24] bg-[#0D0D12]">
+      <div className="p-3 border-t border-border-subtle bg-slate-1">
         <div className="flex items-center gap-3">
           {/* Primary CTA - Mode-specific label per AUTOMATION_MODES_UX */}
           <button
             type="button"
             onClick={onPrimaryAction}
-            className="flex-1 px-4 py-2 bg-brand-magenta text-white text-sm font-semibold rounded-lg hover:bg-brand-magenta/90 transition-all shadow-[0_0_16px_rgba(232,121,249,0.15)]"
+            className="flex-1 px-4 py-2 bg-brand-magenta text-white/95 text-sm font-semibold rounded-lg hover:bg-brand-magenta/90 transition-all shadow-[0_0_16px_rgba(232,121,249,0.15)]"
           >
             {getModeCtaLabel(item.primaryAction.label, mode, item.type)}
           </button>
@@ -1313,22 +1291,16 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
 function ModeIcon({ mode }: { mode: Mode }) {
   if (mode === 'manual') {
     return (
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-      </svg>
+      <Lock weight="regular" className="w-3 h-3" />
     );
   }
   if (mode === 'copilot') {
     return (
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
+      <User weight="regular" className="w-3 h-3" />
     );
   }
   return (
-    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-    </svg>
+    <Lightning weight="regular" className="w-3 h-3" />
   );
 }
 
@@ -1341,11 +1313,9 @@ function EmptyDetailPanel() {
     <div className="h-full flex items-center justify-center p-8">
       <div className="text-center">
         <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-brand-magenta/10 flex items-center justify-center">
-          <svg className="w-8 h-8 text-brand-magenta/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-          </svg>
+          <CursorClick weight="regular" className="w-8 h-8 text-brand-magenta/50" />
         </div>
-        <h3 className="text-sm font-medium text-white mb-1">Select an item</h3>
+        <h3 className="text-sm font-medium text-white/90 mb-1">Select an item</h3>
         <p className="text-[13px] text-white/50">Choose from the queue to see details and take action</p>
       </div>
     </div>
@@ -1357,11 +1327,9 @@ function InboxZeroState() {
     <div className="h-full flex items-center justify-center p-8">
       <div className="text-center">
         <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-semantic-success/10 flex items-center justify-center">
-          <svg className="w-10 h-10 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <CheckCircle weight="regular" className="w-10 h-10 text-semantic-success" />
         </div>
-        <h3 className="text-lg font-semibold text-white mb-2">Inbox Zero!</h3>
+        <h3 className="text-lg font-semibold text-white/95 mb-2">Inbox Zero!</h3>
         <p className="text-sm text-white/50 max-w-xs mx-auto">
           All caught up. Check back later for new items requiring your attention.
         </p>
@@ -1529,6 +1497,15 @@ export function PRInbox() {
     window.history.replaceState({}, '', url.toString());
   }, []);
 
+  // Auto-select first item on load if nothing is selected (no empty right panel)
+  useEffect(() => {
+    if (!hasMounted) return;
+    if (selectedId) return;
+    if (filteredItems.length > 0) {
+      handleSelectItem(filteredItems[0].id);
+    }
+  }, [hasMounted, filteredItems.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handlePrimaryAction = useCallback(() => {
     if (selectedItem) {
       router.push(selectedItem.primaryAction.targetRoute);
@@ -1563,11 +1540,9 @@ export function PRInbox() {
     return (
       <div className="h-[calc(100vh-200px)] min-h-[500px] flex flex-col items-center justify-center p-8">
         <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-semantic-success/10 flex items-center justify-center">
-          <svg className="w-10 h-10 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
+          <Lightning weight="regular" className="w-10 h-10 text-semantic-success" />
         </div>
-        <h3 className="text-lg font-semibold text-white mb-2">Autopilot Active</h3>
+        <h3 className="text-lg font-semibold text-white/95 mb-2">Autopilot Active</h3>
         <p className="text-sm text-white/50 max-w-xs mx-auto text-center">
           No exceptions requiring attention.
           {filteredOutCount > 0 && (
@@ -1598,7 +1573,7 @@ export function PRInbox() {
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-3">
           {/* Posture-specific header (3-second rule) */}
-          <h2 className="text-base font-semibold text-white">
+          <h2 className="text-base font-semibold text-white/95">
             {safeMode === 'manual'
               ? 'PR Inbox'
               : safeMode === 'copilot'
@@ -1612,21 +1587,21 @@ export function PRInbox() {
           </span>
           {/* AI state indicator */}
           <AmbientAIIndicator state={globalAIState} size="sm" showLabel={globalAIState !== 'idle'} />
-          <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-white/10 text-white/70">
+          <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-white/10 text-white/70">
             {isLoading ? 'Loading...' : `${items.length} ${safeMode === 'autopilot' ? 'exception' : 'item'}${items.length !== 1 ? 's' : ''}`}
           </span>
           {safeMode === 'autopilot' && filteredOutCount > 0 && (
-            <span className="text-[10px] text-brand-iris/70">
+            <span className="text-[13px] text-brand-iris/70">
               ({filteredOutCount} auto-handled)
             </span>
           )}
           {criticalCount > 0 && (
-            <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-semantic-danger/15 text-semantic-danger">
+            <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-danger/15 text-semantic-danger">
               {criticalCount} critical
             </span>
           )}
           {highCount > 0 && safeMode !== 'autopilot' && (
-            <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-semantic-warning/15 text-semantic-warning">
+            <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning">
               {highCount} high
             </span>
           )}
@@ -1636,11 +1611,9 @@ export function PRInbox() {
 
       {/* Error State */}
       {inboxError && (
-        <div className="mb-4 p-3 rounded-lg bg-semantic-error/10 border border-semantic-error/30">
-          <div className="flex items-center gap-2 text-semantic-error">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+        <div className="mb-4 p-3 rounded-lg bg-semantic-danger/10 border border-semantic-danger/30">
+          <div className="flex items-center gap-2 text-semantic-danger">
+            <Warning weight="regular" className="w-4 h-4" />
             <span className="text-xs font-medium">Failed to load inbox from server. Showing demo data.</span>
           </div>
         </div>
@@ -1681,7 +1654,7 @@ export function PRInbox() {
 
       {/* Phase 10B: Autopilot - Show all items toggle */}
       {modeBehavior.showAllItemsToggle && filteredOutCount > 0 && (
-        <div className="flex items-center justify-between mb-4 p-2 bg-[#111116] rounded-lg">
+        <div className="flex items-center justify-between mb-4 p-2 bg-panel rounded-lg">
           <span className="text-xs text-white/50">
             {showAllItems ? 'Showing all items' : `${filteredOutCount} routine items hidden`}
           </span>
@@ -1704,12 +1677,12 @@ export function PRInbox() {
         />
 
         {/* Middle: Queue List */}
-        <div className="w-80 shrink-0 bg-[#0D0D12] rounded-xl border border-[#1A1A24] overflow-hidden flex flex-col">
-          <div className="p-3 border-b border-[#1A1A24] flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-white/50">
+        <div className="w-80 shrink-0 bg-slate-1 rounded-xl border border-border-subtle overflow-hidden flex flex-col">
+          <div className="p-3 border-b border-border-subtle flex items-center justify-between">
+            <span className="text-[12px] font-bold uppercase tracking-wider text-white/50">
               {activeSection === 'all' ? 'All Items' : INBOX_TYPE_CONFIG[activeSection].pluralLabel}
             </span>
-            <span className="text-[10px] text-white/40">{filteredItems.length}</span>
+            <span className="text-[13px] text-white/40">{filteredItems.length}</span>
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-1">
             {filteredItems.map(item => (
@@ -1724,7 +1697,7 @@ export function PRInbox() {
         </div>
 
         {/* Right: Detail Panel */}
-        <div className="flex-1 bg-[#0D0D12] rounded-xl border border-[#1A1A24] overflow-hidden">
+        <div className="flex-1 bg-slate-1 rounded-xl border border-border-subtle overflow-hidden">
           {selectedItem ? (
             <DetailPanel
               item={selectedItem}

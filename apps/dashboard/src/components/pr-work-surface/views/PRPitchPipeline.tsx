@@ -326,25 +326,25 @@ function PipelineCard({ item, onAction }: PipelineCardProps) {
   const cta = getPrimaryCTA();
 
   const ctaStyles = {
-    primary: 'bg-brand-magenta text-white hover:bg-brand-magenta/90 shadow-[0_0_12px_rgba(232,121,249,0.25)]',
+    primary: 'bg-brand-magenta text-white/95 hover:bg-brand-magenta/90 shadow-[0_0_12px_rgba(232,121,249,0.25)]',
     secondary: 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10 border border-white/10',
     success: 'bg-semantic-success/20 text-semantic-success hover:bg-semantic-success/30 border border-semantic-success/30',
   };
 
   return (
-    <div className={`p-3 rounded-xl bg-[#0D0D12] border ${stageConfig.borderColor} hover:border-[#2A2A36] transition-all duration-200 ${item.isOverdue ? 'ring-1 ring-semantic-danger/30' : ''}`}>
+    <div className={`p-3 rounded-xl bg-panel border ${stageConfig.borderColor} hover:border-slate-5 transition-all duration-200 ${item.isOverdue ? 'ring-1 ring-semantic-danger/30' : ''}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <span className={`px-2 py-0.5 text-[10px] font-medium rounded ${stageConfig.bgColor} ${stageConfig.color}`}>
+        <span className={`px-2 py-0.5 text-[13px] font-medium rounded ${stageConfig.bgColor} ${stageConfig.color}`}>
           {item.contact.outlet}
         </span>
-        <span className="text-[10px] text-white/50">
+        <span className="text-[13px] text-white/50">
           {item.daysSinceLastActivity}d {item.isOverdue && <span className="text-semantic-danger font-medium">(Overdue)</span>}
         </span>
       </div>
 
       {/* Contact */}
-      <div className="text-sm font-medium text-white mb-1 truncate">
+      <div className="text-sm font-medium text-white/90 mb-1 truncate">
         {item.contact.name}
       </div>
 
@@ -354,7 +354,7 @@ function PipelineCard({ item, onAction }: PipelineCardProps) {
       </div>
 
       {/* Impact Strip */}
-      <div className="mb-3 p-2 rounded-lg bg-[#0A0A0F] border border-[#1A1A24]">
+      <div className="mb-3 p-2 rounded-lg bg-slate-1 border border-border-subtle">
         <ImpactStrip
           sageContributions={item.sageContributions}
           eviImpact={item.eviImpact}
@@ -365,7 +365,7 @@ function PipelineCard({ item, onAction }: PipelineCardProps) {
 
       {/* Follow-up indicator */}
       {item.followUpWindow && (
-        <div className="mb-3 flex items-center gap-2 text-[11px]">
+      <div className="mb-3 flex items-center gap-2 text-[13px]">
           <span className="text-white/50">Follow-up:</span>
           <span className="text-brand-magenta font-medium">{item.followUpCount}/{item.maxFollowUps}</span>
           {item.followUpWindow.suggestedTemplates && (
@@ -421,11 +421,11 @@ function StageColumn({ stage, items, onAction }: StageColumnProps) {
       <div className={`mb-3 p-3 rounded-xl border ${config.borderColor} ${config.bgColor} ${hasActiveItems && config.glowOnActive ? 'shadow-[0_0_16px_rgba(232,121,249,0.15)]' : ''}`}>
         <div className="flex items-center justify-between">
           <span className={`text-sm font-semibold ${config.color}`}>{config.label}</span>
-          <span className={`px-2 py-0.5 text-[11px] font-bold rounded-full bg-[#0A0A0F] ${config.color}`}>
+          <span className={`px-2 py-0.5 text-[13px] font-bold rounded-full bg-slate-1 ${config.color}`}>
             {items.length}
           </span>
         </div>
-        <p className="text-[11px] text-white/50 mt-1">{config.description}</p>
+        <p className="text-[13px] text-white/50 mt-1">{config.description}</p>
       </div>
 
       {/* Cards */}
@@ -434,8 +434,8 @@ function StageColumn({ stage, items, onAction }: StageColumnProps) {
           <PipelineCard key={item.id} item={item} onAction={onAction} />
         ))}
         {items.length === 0 && (
-          <div className="p-6 text-center border border-dashed border-[#1A1A24] rounded-xl">
-            <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-[#0D0D12] flex items-center justify-center">
+          <div className="p-6 text-center border border-dashed border-border-subtle rounded-xl">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-panel flex items-center justify-center">
               <svg className="w-5 h-5 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
               </svg>
@@ -466,10 +466,10 @@ function ComposeDrawer({ isOpen, onClose, initialContact }: ComposeDrawerProps) 
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-[#0A0A0F]/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-xl bg-[#0D0D12] border-l border-[#1A1A24] flex flex-col">
+      <div className="absolute inset-0 bg-page/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-xl bg-panel border-l border-border-subtle flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-[#1A1A24]">
+        <div className="p-6 border-b border-border-subtle">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 rounded-xl ${prAccent.bg} flex items-center justify-center`}>
@@ -498,15 +498,15 @@ function ComposeDrawer({ isOpen, onClose, initialContact }: ComposeDrawerProps) 
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {/* Recipient */}
           <div>
-            <label className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2 block">To</label>
-            <div className="px-4 py-3 rounded-lg bg-[#0A0A0F] border border-[#1A1A24]">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2 block">To</label>
+            <div className="px-4 py-3 rounded-lg bg-slate-1 border border-border-subtle">
               {initialContact ? (
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-brand-magenta/15 flex items-center justify-center text-brand-magenta text-sm font-medium">
                     {initialContact.name.charAt(0)}
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-white">{initialContact.name}</div>
+                    <div className="text-sm font-medium text-white/90">{initialContact.name}</div>
                     <div className="text-xs text-white/50">{initialContact.outlet}</div>
                   </div>
                 </div>
@@ -522,25 +522,25 @@ function ComposeDrawer({ isOpen, onClose, initialContact }: ComposeDrawerProps) 
 
           {/* Subject */}
           <div>
-            <label className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2 block">Subject</label>
+            <label className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2 block">Subject</label>
             <input
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Enter subject line..."
-              className="w-full px-4 py-3 rounded-lg bg-[#0A0A0F] border border-[#1A1A24] text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50 transition-colors"
+              className="w-full px-4 py-3 rounded-lg bg-slate-1 border border-border-subtle text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50 transition-colors"
             />
           </div>
 
           {/* Body */}
           <div className="flex-1">
-            <label className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2 block">Message</label>
+            <label className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2 block">Message</label>
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="Compose your pitch..."
               rows={12}
-              className="w-full px-4 py-3 rounded-lg bg-[#0A0A0F] border border-[#1A1A24] text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50 transition-colors resize-none"
+              className="w-full px-4 py-3 rounded-lg bg-slate-1 border border-border-subtle text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50 transition-colors resize-none"
             />
           </div>
 
@@ -567,7 +567,7 @@ function ComposeDrawer({ isOpen, onClose, initialContact }: ComposeDrawerProps) 
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-[#1A1A24]">
+        <div className="p-6 border-t border-border-subtle">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4 text-xs text-white/50">
               <span>Personalization: <span className="text-brand-magenta font-medium">--</span></span>
@@ -682,18 +682,18 @@ export function PRPitchPipeline() {
         </div>
         <div className="flex items-center gap-3">
           {/* View Toggle */}
-          <div className="flex items-center p-1 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
+          <div className="flex items-center p-1 bg-panel border border-border-subtle rounded-lg">
             <button
               type="button"
               onClick={() => setViewMode('column')}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-all ${viewMode === 'column' ? 'bg-brand-magenta text-white' : 'text-white/55 hover:text-white'}`}
+              className={`px-3 py-1.5 text-xs font-medium rounded transition-all ${viewMode === 'column' ? 'bg-brand-magenta text-white/95' : 'text-white/55 hover:text-white'}`}
             >
               Board
             </button>
             <button
               type="button"
               onClick={() => setViewMode('table')}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-all ${viewMode === 'table' ? 'bg-brand-magenta text-white' : 'text-white/55 hover:text-white'}`}
+              className={`px-3 py-1.5 text-xs font-medium rounded transition-all ${viewMode === 'table' ? 'bg-brand-magenta text-white/95' : 'text-white/55 hover:text-white'}`}
             >
               List
             </button>
@@ -715,8 +715,8 @@ export function PRPitchPipeline() {
 
       {/* Safe Bulk Actions Bar */}
       {selectedItems.size > 0 && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
-          <span className="text-sm text-white/70"><span className="font-medium text-white">{selectedItems.size}</span> selected</span>
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-panel border border-border-subtle">
+          <span className="text-sm text-white/70"><span className="font-medium text-white/90">{selectedItems.size}</span> selected</span>
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -766,10 +766,10 @@ export function PRPitchPipeline() {
 
       {/* Table View */}
       {viewMode === 'table' && (
-        <div className="overflow-hidden rounded-xl border border-[#1A1A24]">
+        <div className="overflow-hidden rounded-xl border border-border-subtle">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#0D0D12]">
+              <tr className="bg-panel">
                 <th className="w-8 px-3 py-3">
                   <input
                     type="checkbox"
@@ -780,22 +780,22 @@ export function PRPitchPipeline() {
                         setSelectedItems(new Set());
                       }
                     }}
-                    className="rounded border-[#2A2A36] bg-[#0A0A0F]"
+                    className="rounded border-slate-5 bg-slate-1"
                   />
                 </th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Contact</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Subject</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Stage</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Days</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Impact</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Action</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-white/50">Contact</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-white/50">Subject</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-white/50">Stage</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-white/50">Days</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-white/50">Impact</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-white/50">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1A1A24]">
+            <tbody className="divide-y divide-border-subtle">
               {items.map((item) => {
                 const stageConfig = STAGE_CONFIG[item.stage];
                 return (
-                  <tr key={item.id} className="bg-[#0A0A0F] hover:bg-[#111116] transition-colors">
+                  <tr key={item.id} className="bg-slate-1 hover:bg-slate-2 transition-colors">
                     <td className="px-3 py-3">
                       <input
                         type="checkbox"
@@ -809,18 +809,18 @@ export function PRPitchPipeline() {
                           }
                           setSelectedItems(next);
                         }}
-                        className="rounded border-[#2A2A36] bg-[#0A0A0F]"
+                        className="rounded border-slate-5 bg-slate-1"
                       />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="text-sm text-white">{item.contact.name}</div>
+                      <div className="text-sm text-white/90">{item.contact.name}</div>
                       <div className="text-xs text-white/50">{item.contact.outlet}</div>
                     </td>
                     <td className="px-4 py-3 text-sm text-white/55 max-w-xs truncate">
                       {item.pitch.subject}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-1 text-[11px] font-medium rounded border ${stageConfig.bgColor} ${stageConfig.color} ${stageConfig.borderColor}`}>
+                      <span className={`px-2 py-1 text-[13px] font-medium rounded border ${stageConfig.bgColor} ${stageConfig.color} ${stageConfig.borderColor}`}>
                         {stageConfig.label}
                       </span>
                     </td>

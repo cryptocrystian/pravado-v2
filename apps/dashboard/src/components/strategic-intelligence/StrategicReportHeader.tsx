@@ -100,7 +100,7 @@ export function StrategicReportHeader({
               </Badge>
             </div>
             {report.description && (
-              <p className="text-muted-foreground mt-1">{report.description}</p>
+              <p className="text-white/50 mt-1">{report.description}</p>
             )}
           </div>
         </div>
@@ -173,7 +173,7 @@ export function StrategicReportHeader({
       </div>
 
       {/* Metadata row */}
-      <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-6 text-sm text-white/50">
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           <span>{getFormatLabel(report.format)}</span>
@@ -238,13 +238,13 @@ interface ScoreCardProps {
 
 function ScoreCard({ icon: Icon, label, score }: ScoreCardProps) {
   const scoreColor = getScoreColor(score);
-  const colorClass = score !== null ? `text-${scoreColor}-600` : 'text-muted-foreground';
+  const colorClass = score !== null ? `text-${scoreColor}-600` : 'text-white/50';
 
   return (
     <div className="p-4 border rounded-lg">
       <div className="flex items-center gap-2 mb-2">
-        <Icon className="h-4 w-4 text-muted-foreground" />
-        <span className="text-xs text-muted-foreground">{label}</span>
+        <Icon className="h-4 w-4 text-white/50" />
+        <span className="text-xs text-white/50">{label}</span>
       </div>
       <div className={`text-2xl font-bold ${colorClass}`}>
         {formatScore(score)}

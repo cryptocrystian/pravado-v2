@@ -208,7 +208,7 @@ export default function CrisisActionList({
         {/* Progress Bar */}
         {totalCount > 0 && (
           <div className="mt-3 space-y-1">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="flex items-center justify-between text-xs text-white/50">
               <span>
                 {completedCount} of {totalCount} completed
               </span>
@@ -222,7 +222,7 @@ export default function CrisisActionList({
       <CardContent className="flex-1 p-0">
         <ScrollArea style={{ maxHeight }} className="px-4 pb-4">
           {filteredActions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-12 text-white/50">
               <CheckCircle2 className="h-12 w-12 mb-3 text-green-500" />
               <p className="text-sm">No pending actions</p>
               <p className="text-xs mt-1">All caught up!</p>
@@ -274,14 +274,14 @@ export default function CrisisActionList({
                           >
                             {URGENCY_LABELS[urgency]}
                           </Badge>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-white/50">
                             {ACTION_TYPE_LABELS[action.actionType]}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-1 shrink-0">
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-white/50">
                           P{action.priorityScore.toFixed(0)}
                         </span>
                         <Button
@@ -304,7 +304,7 @@ export default function CrisisActionList({
                       <div className="mt-3 pt-3 border-t space-y-3">
                         {/* Description */}
                         {action.description && (
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-white/50">
                             {action.description}
                           </p>
                         )}
@@ -312,25 +312,25 @@ export default function CrisisActionList({
                         {/* Meta Info */}
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           {action.dueAt && (
-                            <div className="flex items-center gap-1 text-muted-foreground">
+                            <div className="flex items-center gap-1 text-white/50">
                               <Clock className="h-3 w-3" />
                               <span>Due: {formatTimeAgo(action.dueAt)}</span>
                             </div>
                           )}
                           {action.assignedTo && (
-                            <div className="flex items-center gap-1 text-muted-foreground">
+                            <div className="flex items-center gap-1 text-white/50">
                               <User className="h-3 w-3" />
                               <span>Assigned</span>
                             </div>
                           )}
                           {action.estimatedDurationMins && (
-                            <div className="flex items-center gap-1 text-muted-foreground">
+                            <div className="flex items-center gap-1 text-white/50">
                               <Clock className="h-3 w-3" />
                               <span>~{action.estimatedDurationMins} min</span>
                             </div>
                           )}
                           {action.confidenceScore !== undefined && (
-                            <div className="text-muted-foreground">
+                            <div className="text-white/50">
                               Confidence: {(action.confidenceScore * 100).toFixed(0)}%
                             </div>
                           )}

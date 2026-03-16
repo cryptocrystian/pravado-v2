@@ -29,7 +29,7 @@ export function TopicCurrencyIndicator({ currency, showLabel = false, size = 'sm
 
   return (
     <div className="flex items-center gap-2">
-      <div className={`${widthClasses} ${heightClasses} rounded-full bg-[#1A1A24] overflow-hidden`}>
+      <div className={`${widthClasses} ${heightClasses} rounded-full bg-slate-4 overflow-hidden`}>
         <div
           className={`h-full rounded-full transition-all ${bar}`}
           style={{ width: `${currency}%` }}

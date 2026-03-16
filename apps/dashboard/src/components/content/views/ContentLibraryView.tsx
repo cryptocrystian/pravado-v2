@@ -165,7 +165,7 @@ export function ContentLibraryView({
           {filteredAssets.length} {filteredAssets.length === 1 ? 'asset' : 'assets'}
           {(statusFilter || typeFilter || entityFilter || searchQuery) && ' (filtered)'}
         </span>
-        <span className="text-[10px] text-white/30 uppercase tracking-wider">
+        <span className="text-xs text-white/30 uppercase tracking-wider">
           {density} density
         </span>
       </div>
@@ -216,7 +216,7 @@ export function ContentLibraryView({
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 text-xs text-white/70 bg-[#1A1A24] hover:bg-slate-4 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
+            className="px-3 py-1.5 text-xs text-white/70 bg-slate-4 hover:bg-slate-3 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
           >
             Previous
           </button>
@@ -226,7 +226,7 @@ export function ContentLibraryView({
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1.5 text-xs text-white/70 bg-[#1A1A24] hover:bg-slate-4 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
+            className="px-3 py-1.5 text-xs text-white/70 bg-slate-4 hover:bg-slate-3 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
           >
             Next
           </button>
@@ -270,14 +270,14 @@ export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPrevie
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Status */}
         <div>
-          <span className="text-[10px] text-white/40 uppercase tracking-wider">Status</span>
+          <span className="text-xs text-white/40 uppercase tracking-wider">Status</span>
           <p className="text-sm text-white capitalize mt-1">{asset.status}</p>
         </div>
 
         {/* Authority Intent */}
         {asset.authorityIntent && (
           <div>
-            <span className="text-[10px] text-white/40 uppercase tracking-wider">Authority Intent</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider">Authority Intent</span>
             <p className="text-sm text-white/70 mt-1">{asset.authorityIntent}</p>
           </div>
         )}
@@ -285,7 +285,7 @@ export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPrevie
         {/* Metrics */}
         {asset.authoritySignals && (
           <div>
-            <span className="text-[10px] text-white/40 uppercase tracking-wider">Authority Metrics</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider">Authority Metrics</span>
             <div className="mt-2 grid grid-cols-2 gap-2">
               <MetricItem label="Authority" value={asset.authoritySignals.authorityContributionScore} />
               <MetricItem label="Citation" value={asset.authoritySignals.citationEligibilityScore} />
@@ -298,12 +298,12 @@ export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPrevie
         {/* Entity Associations */}
         {asset.entityAssociations && asset.entityAssociations.length > 0 && (
           <div>
-            <span className="text-[10px] text-white/40 uppercase tracking-wider">Entities</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider">Entities</span>
             <div className="flex flex-wrap gap-1 mt-2">
               {asset.entityAssociations.map((entity, i) => (
                 <span
                   key={i}
-                  className="px-2 py-0.5 text-[10px] bg-brand-iris/10 text-brand-iris rounded"
+                  className="px-2 py-0.5 text-xs bg-brand-iris/10 text-brand-iris rounded"
                 >
                   {entity}
                 </span>
@@ -315,17 +315,17 @@ export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPrevie
         {/* Word Count */}
         {asset.wordCount && (
           <div>
-            <span className="text-[10px] text-white/40 uppercase tracking-wider">Word Count</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider">Word Count</span>
             <p className="text-sm text-white mt-1">{asset.wordCount.toLocaleString()}</p>
           </div>
         )}
 
         {/* Timestamps */}
         <div className="pt-2 border-t border-slate-4">
-          <div className="text-[10px] text-white/30">
+          <div className="text-xs text-white/30">
             Created: {new Date(asset.createdAt).toLocaleDateString()}
           </div>
-          <div className="text-[10px] text-white/30">
+          <div className="text-xs text-white/30">
             Updated: {new Date(asset.updatedAt).toLocaleDateString()}
           </div>
         </div>
@@ -357,7 +357,7 @@ function MetricItem({ label, value }: { label: string; value: number }) {
   return (
     <div className="p-2 bg-slate-2 border border-border-subtle rounded-lg text-center">
       <div className={`text-sm font-bold ${getColor(value)}`}>{value}</div>
-      <div className="text-[9px] text-white/40 uppercase">{label}</div>
+      <div className="text-xs text-white/40 uppercase">{label}</div>
     </div>
   );
 }

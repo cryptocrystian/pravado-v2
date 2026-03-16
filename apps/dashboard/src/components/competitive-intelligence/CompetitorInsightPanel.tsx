@@ -126,12 +126,12 @@ export function CompetitorInsightPanel({
       <CardContent className="space-y-3">
         {(isExpanded || !compact) && (
           <>
-            <p className="text-sm text-muted-foreground">{insight.description}</p>
+            <p className="text-sm text-white/50">{insight.description}</p>
 
             {insight.recommendation && (
               <div className="rounded-md bg-muted p-3">
                 <p className="text-sm font-medium">Recommendation</p>
-                <p className="mt-1 text-sm text-muted-foreground">{insight.recommendation}</p>
+                <p className="mt-1 text-sm text-white/50">{insight.recommendation}</p>
               </div>
             )}
 
@@ -139,7 +139,7 @@ export function CompetitorInsightPanel({
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {Object.entries(insight.supportingMetrics).map(([key, value]) => (
                   <div key={key} className="rounded bg-muted/50 p-2">
-                    <span className="text-muted-foreground capitalize">
+                    <span className="text-white/50 capitalize">
                       {key.replace(/_/g, ' ')}:
                     </span>{' '}
                     <span className="font-medium">{String(value)}</span>
@@ -169,7 +169,7 @@ export function CompetitorInsightPanel({
               size="sm"
               onClick={handleDismiss}
               disabled={isLoading}
-              className="text-xs text-muted-foreground"
+              className="text-xs text-white/50"
             >
               <X className="mr-1 h-3 w-3" />
               Dismiss
@@ -197,7 +197,7 @@ export function CompetitorInsightPanel({
             </Button>
           )}
 
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-white/50">
             {insight.generatedBy === 'llm' && 'AI Generated'}
             {insight.generatedBy === 'rule' && 'Rule Based'}
             {insight.generatedBy === 'hybrid' && 'AI + Rules'}
@@ -231,7 +231,7 @@ export function CompetitorInsightList({
   if (sortedInsights.length === 0) {
     return (
       <Card className={cn('p-6 text-center', className)}>
-        <p className="text-muted-foreground">No insights available</p>
+        <p className="text-white/50">No insights available</p>
       </Card>
     );
   }

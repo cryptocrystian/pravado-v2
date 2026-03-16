@@ -45,15 +45,15 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { ActionCard, type DensityLevel } from './ActionCard';
 import type { ActionItem, ActionStreamResponse, EVIFilterState, Priority } from './types';
 
 interface ActionStreamPaneProps {
-  data: ActionStreamResponse | null;
-  isLoading: boolean;
-  error: Error | null;
+  data?: ActionStreamResponse | null;
+  isLoading?: boolean;
+  error?: Error | null;
   onReview?: (action: ActionItem) => void; // Opens modal for investigation
   onPrimaryAction?: (action: ActionItem) => void; // Executes action
   selectedActionId?: string | null;
@@ -161,7 +161,7 @@ function LoadingSkeleton({ density }: { density: DensityLevel }) {
   return (
     <div className={density === 'compact' ? 'p-2 space-y-1' : 'p-3 space-y-2.5'}>
       {Array.from({ length: skeletonCount }).map((_, i) => (
-        <div key={i} className={`${skeletonHeight} bg-[#0D0D12] border-l-[3px] border-l-white/10 border border-[#1A1A24] border-l-0 rounded-lg animate-pulse`} />
+        <div key={i} className={`${skeletonHeight} bg-slate-1 border-l-[3px] border-l-white/10 border border-border-subtle border-l-0 rounded-lg animate-pulse`} />
       ))}
     </div>
   );
@@ -170,7 +170,7 @@ function LoadingSkeleton({ density }: { density: DensityLevel }) {
 function ErrorState({ error }: { error: Error }) {
   return (
     <div className="p-3">
-      <div className="p-3 bg-semantic-danger/8 border border-semantic-danger/20 rounded-lg">
+      <div className="p-3 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg">
         <div className="flex items-start gap-2">
           <svg className="w-4 h-4 text-semantic-danger flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -188,7 +188,7 @@ function ErrorState({ error }: { error: Error }) {
 function EmptyState({ isHistory }: { isHistory: boolean }) {
   return (
     <div className="p-6 text-center">
-      <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-[#1A1A24] flex items-center justify-center">
+      <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-slate-3 flex items-center justify-center">
         {isHistory ? (
           <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -210,9 +210,9 @@ function EmptyState({ isHistory }: { isHistory: boolean }) {
 }
 
 export function ActionStreamPane({
-  data,
-  isLoading,
-  error,
+  data: propData,
+  isLoading: propIsLoading,
+  error: propError,
   onReview,
   onPrimaryAction,
   selectedActionId,
@@ -221,6 +221,30 @@ export function ActionStreamPane({
   onClearEviFilter,
   onHoverActionChange,
 }: ActionStreamPaneProps) {
+  // Self-fetching from MSW endpoint
+  const [fetchedData, setFetchedData] = useState<ActionStreamResponse | null>(null);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    fetch('/api/command-center/action-stream')
+      .then(r => r.json())
+      .then((d: ActionStreamResponse) => {
+        setFetchedData(d);
+        setFetchLoading(false);
+      })
+      .catch((e) => {
+        setFetchError(e instanceof Error ? e : new Error(String(e)));
+        setFetchLoading(false);
+      });
+  }, []);
+
+  // Props override fetched data when explicitly provided
+  const data = propData !== undefined ? propData : fetchedData;
+  const isLoading = propIsLoading !== undefined ? propIsLoading : fetchLoading;
+  const error = propError !== undefined ? propError : fetchError;
+
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [lifecycleBucket, setLifecycleBucket] = useState<LifecycleBucket>('active');
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
@@ -388,10 +412,14 @@ export function ActionStreamPane({
   }, [onReview]);
 
   const handlePrimaryActionClick = useCallback((action: ActionItem) => {
-    // Primary CTA executes - NEVER opens modal
-    console.log('[ActionStream] Primary action:', action.cta.primary, action.id);
+    // If action has a deep link, navigate to it (e.g. View Crisis Hub → /app/pr/crisis)
+    if (action.deep_link?.href) {
+      router.push(action.deep_link.href);
+      return;
+    }
+    // Otherwise fall back to the parent-provided execute handler
     onPrimaryAction?.(action);
-  }, [onPrimaryAction]);
+  }, [onPrimaryAction, router]);
 
   // v5: Handle hover state changes for single-hover coordination
   // v2 Entity Map: Also notify parent for cross-pane coordination
@@ -422,20 +450,20 @@ export function ActionStreamPane({
   return (
     <div className="flex flex-col h-full">
       {/* Active/History Toggle - Primary navigation */}
-      <div className="flex items-center gap-1 px-2 py-2 border-b border-[#1A1A24] bg-[#0D0D12] flex-shrink-0">
+      <div className="flex items-center gap-1 px-2 py-2 border-b border-border-subtle bg-slate-1 flex-shrink-0">
         <button
           onClick={() => setLifecycleBucket('active')}
           className={`
             flex-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200
             ${lifecycleBucket === 'active'
               ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
-              : 'text-white/55 hover:text-white/90 hover:bg-[#1A1A24] border border-transparent'
+              : 'text-white/55 hover:text-white/90 hover:bg-slate-3 border border-transparent'
             }
           `}
         >
           Active
           {bucketCounts.active > 0 && (
-            <span className={`ml-1.5 px-1.5 py-0.5 text-[10px] font-bold rounded ${
+            <span className={`ml-1.5 px-1.5 py-0.5 text-[11px] font-bold tabular-nums rounded ${
               lifecycleBucket === 'active' ? 'bg-brand-cyan/20' : 'bg-white/10'
             }`}>
               {bucketCounts.active}
@@ -448,13 +476,13 @@ export function ActionStreamPane({
             flex-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200
             ${lifecycleBucket === 'history'
               ? 'bg-white/10 text-white/90 border border-white/20'
-              : 'text-white/55 hover:text-white/90 hover:bg-[#1A1A24] border border-transparent'
+              : 'text-white/55 hover:text-white/90 hover:bg-slate-3 border border-transparent'
             }
           `}
         >
           History
           {bucketCounts.history > 0 && (
-            <span className={`ml-1.5 px-1.5 py-0.5 text-[10px] font-bold rounded ${
+            <span className={`ml-1.5 px-1.5 py-0.5 text-[11px] font-bold tabular-nums rounded ${
               lifecycleBucket === 'history' ? 'bg-white/15' : 'bg-white/10'
             }`}>
               {bucketCounts.history}
@@ -487,7 +515,7 @@ export function ActionStreamPane({
       )}
 
       {/* Header with Filter Tabs + Density Toggle */}
-      <div className="flex items-center justify-between gap-2 px-2 py-1.5 border-b border-[#1A1A24] bg-[#0A0A0F] flex-shrink-0">
+      <div className="flex items-center justify-between gap-2 px-2 py-1.5 border-b border-border-subtle bg-page flex-shrink-0">
         {/* Filter Tabs */}
         <div className="flex items-center gap-0.5 overflow-x-auto">
           {filterTabs.map((tab) => {
@@ -502,7 +530,7 @@ export function ActionStreamPane({
                   transition-all duration-200 ease-out whitespace-nowrap
                   ${isActive
                     ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
-                    : 'text-white/55 hover:text-white/90 hover:bg-[#1A1A24]'
+                    : 'text-white/55 hover:text-white/90 hover:bg-slate-3'
                   }
                 `}
               >
@@ -521,18 +549,18 @@ export function ActionStreamPane({
         <div className="flex items-center gap-1 flex-shrink-0">
           {/* Override indicator */}
           {hasValidOverride && (
-            <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase bg-semantic-warning/20 text-semantic-warning rounded">
+            <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase bg-semantic-warning/20 text-semantic-warning rounded">
               DEV
             </span>
           )}
-          <div className="flex items-center bg-[#0D0D12] rounded p-0.5 border border-[#1A1A24]">
+          <div className="flex items-center bg-slate-1 rounded p-0.5 border border-border-subtle">
             {(['auto', 'comfortable', 'compact'] as DensityMode[]).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setDensityMode(mode)}
                 disabled={hasValidOverride}
                 className={`
-                  px-1.5 py-0.5 text-[11px] font-medium rounded transition-colors
+                  px-1.5 py-0.5 text-xs font-medium rounded transition-colors
                   ${hasValidOverride ? 'opacity-50 cursor-not-allowed' : ''}
                   ${densityMode === mode ? 'bg-white/10 text-white/90' : 'text-white/45 hover:text-white/75'}
                 `}
@@ -551,6 +579,31 @@ export function ActionStreamPane({
 
       {/* Content */}
       <div ref={listRef} className="flex-1 overflow-y-auto">
+        {/* ── SAGE Daily Brief card — shows real data or empty state ── */}
+        <div className="mx-3 mt-3 mb-1 rounded-xl border border-brand-iris/25
+          bg-gradient-to-br from-brand-iris/8 to-transparent overflow-hidden">
+          <div className="flex items-center gap-2 px-3 pt-3 pb-2
+            border-b border-brand-iris/15">
+            <span className="w-2 h-2 rounded-full bg-brand-iris
+              shadow-[0_0_8px_rgba(168,85,247,0.8)] animate-pulse" />
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-iris">
+              SAGE Daily Brief
+            </span>
+            {data?.daily_brief && (
+              <span className="ml-auto text-xs text-white/30">
+                {new Date(data.generated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              </span>
+            )}
+          </div>
+          <div className="px-3 py-2.5">
+            <p className="text-sm text-white/70 leading-relaxed">
+              {data?.daily_brief
+                ? data.daily_brief
+                : 'SAGE is analyzing your signals. Your first daily brief will appear here once enough data has been collected.'}
+            </p>
+          </div>
+        </div>
+
         {isLoading ? (
           <LoadingSkeleton density={effectiveDensity} />
         ) : error ? (
@@ -600,9 +653,9 @@ export function ActionStreamPane({
                   />
                   {showDivider && (
                     <div className="flex items-center gap-1.5 px-1 py-1 mt-1.5">
-                      <div className="flex-1 h-px bg-[#1A1A24]" />
+                      <div className="flex-1 h-px bg-border-subtle" />
                       <span className="text-xs text-white/35 uppercase tracking-wider">Other Actions</span>
-                      <div className="flex-1 h-px bg-[#1A1A24]" />
+                      <div className="flex-1 h-px bg-border-subtle" />
                     </div>
                   )}
                 </div>
@@ -611,11 +664,11 @@ export function ActionStreamPane({
 
             {/* LOCKED ACTIONS: Upgrade Opportunities Section */}
             {lockedItems.length > 0 && lifecycleBucket === 'active' && (
-              <div className="mt-4 pt-3 border-t border-[#1A1A24]">
+              <div className="mt-4 pt-3 border-t border-border-subtle">
                 {/* Collapsible Header */}
                 <button
                   onClick={() => setIsLockedSectionOpen(!isLockedSectionOpen)}
-                  className="w-full flex items-center justify-between px-2 py-2 rounded-lg hover:bg-[#1A1A24] transition-colors group"
+                  className="w-full flex items-center justify-between px-2 py-2 rounded-lg hover:bg-slate-3 transition-colors group"
                 >
                   <div className="flex items-center gap-2">
                     <svg className="w-4 h-4 text-brand-iris/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -624,7 +677,7 @@ export function ActionStreamPane({
                     <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">
                       Upgrade Opportunities
                     </span>
-                    <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-brand-iris/20 text-brand-iris">
+                    <span className="px-1.5 py-0.5 text-[11px] font-bold tabular-nums rounded bg-brand-iris/20 text-brand-iris">
                       {lockedItems.length}
                     </span>
                   </div>

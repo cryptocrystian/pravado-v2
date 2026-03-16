@@ -386,19 +386,19 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
         {results && (
           <div className="p-3 bg-muted rounded-lg">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Results</span>
+              <span className="text-white/50">Results</span>
               <span className="font-medium">{results.total} nodes found</span>
             </div>
             {results.paths && results.paths.length > 0 && (
               <div className="flex items-center justify-between text-sm mt-1">
-                <span className="text-muted-foreground">Paths</span>
+                <span className="text-white/50">Paths</span>
                 <span className="font-medium">{results.paths.length} paths</span>
               </div>
             )}
             {pathExplanation && (
               <div className="mt-3 pt-3 border-t">
                 <p className="text-sm font-medium mb-1">Path Explanation</p>
-                <p className="text-sm text-muted-foreground">{pathExplanation}</p>
+                <p className="text-sm text-white/50">{pathExplanation}</p>
               </div>
             )}
           </div>

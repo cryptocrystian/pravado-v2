@@ -376,6 +376,32 @@ export class PRService {
   }
 
   // --------------------------------------------
+  // COVERAGE (earned_mentions)
+  // --------------------------------------------
+
+  async listCoverage(options?: {
+    limit?: number;
+  }): Promise<{ rows: Record<string, unknown>[]; total: number }> {
+    const limit = options?.limit ?? 50;
+
+    const { data, error, count } = await this.client
+      .from('earned_mentions')
+      .select('*', { count: 'exact' })
+      .eq('org_id', this.orgId)
+      .order('published_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      throw new Error(`Failed to list coverage: ${error.message}`);
+    }
+
+    return {
+      rows: data || [],
+      total: count || 0,
+    };
+  }
+
+  // --------------------------------------------
   // MEDIA LISTS
   // --------------------------------------------
 

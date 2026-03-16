@@ -8,6 +8,7 @@
  */
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { OrgSwitcher } from '@/components/OrgSwitcher';
 
 interface Org {
@@ -88,8 +89,7 @@ const navItems = [
   { name: 'PR', href: '/app/pr', icon: icons.pr },
   { name: 'Content', href: '/app/content', icon: icons.content },
   { name: 'SEO', href: '/app/seo', icon: icons.seo },
-  { name: 'Playbooks', href: '/app/playbooks', icon: icons.playbooks },
-  { name: 'Agents', href: '/app/agents', icon: icons.agents },
+  { name: 'Calendar', href: '/app/calendar', icon: icons.commandCenter },
   { name: 'Analytics', href: '/app/analytics', icon: icons.analytics },
 ];
 
@@ -99,6 +99,15 @@ const settingsItems = [
 ];
 
 export function AppSidebar({ currentOrg, allOrgs, user }: AppSidebarProps) {
+  const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (href === '/app/command-center') {
+      return pathname === '/app/command-center' || pathname?.startsWith('/app/command-center/');
+    }
+    return pathname?.startsWith(href);
+  };
+
   return (
     <aside className="w-72 bg-slate-1 border-r border-border-subtle flex flex-col flex-shrink-0">
       {/* Logo */}
@@ -116,31 +125,38 @@ export function AppSidebar({ currentOrg, allOrgs, user }: AppSidebarProps) {
 
       {/* Main Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-6 hover:text-white hover:bg-slate-4/50 transition-all duration-sm group"
-          >
-            <span className="text-muted group-hover:text-brand-cyan transition-colors duration-sm">
-              {item.icon}
-            </span>
-            <span>{item.name}</span>
-          </Link>
-        ))}
+        {navItems.map((item) => {
+          const active = isActive(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-sm group ${
+                active
+                  ? 'bg-brand-cyan/10 text-white/90 border border-brand-cyan/20'
+                  : 'text-white/55 hover:text-white/90 hover:bg-slate-4/50'
+              }`}
+            >
+              <span className={`transition-colors duration-sm ${active ? 'text-brand-cyan' : 'text-white/55 group-hover:text-brand-cyan'}`}>
+                {item.icon}
+              </span>
+              <span>{item.name}</span>
+            </Link>
+          );
+        })}
 
         {/* Settings Section */}
         <div className="pt-4 mt-4 border-t border-border-subtle">
-          <p className="px-3 mb-2 text-xs font-medium text-muted uppercase tracking-wider">
+          <p className="px-3 mb-2 text-xs font-medium text-white/55 uppercase tracking-wider">
             Settings
           </p>
           {settingsItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-6 hover:text-white hover:bg-slate-4/50 transition-all duration-sm group"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/55 hover:text-white/90 hover:bg-slate-4/50 transition-all duration-sm group"
             >
-              <span className="text-muted group-hover:text-brand-cyan transition-colors duration-sm">
+              <span className="text-white/55 group-hover:text-brand-cyan transition-colors duration-sm">
                 {item.icon}
               </span>
               <span>{item.name}</span>
@@ -159,12 +175,12 @@ export function AppSidebar({ currentOrg, allOrgs, user }: AppSidebarProps) {
               className="w-9 h-9 rounded-full ring-2 ring-slate-4"
             />
           ) : (
-            <div className="w-9 h-9 bg-slate-4 rounded-full flex items-center justify-center text-muted text-sm font-medium ring-2 ring-slate-5">
+            <div className="w-9 h-9 bg-slate-4 rounded-full flex items-center justify-center text-white/55 text-sm font-medium ring-2 ring-slate-5">
               {user.fullName?.charAt(0).toUpperCase() || 'U'}
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">
+            <p className="text-sm font-medium text-white/90 truncate">
               {user.fullName || 'User'}
             </p>
           </div>

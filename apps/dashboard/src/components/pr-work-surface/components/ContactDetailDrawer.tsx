@@ -25,17 +25,17 @@ export function ContactDetailDrawer({ contact, timeline = [], onClose }: Props) 
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-page/70 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-lg bg-[#0D0D12] border-l border-[#1A1A24] overflow-y-auto">
+      <div className="relative w-full max-w-lg bg-panel border-l border-border-subtle overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-[#0D0D12] border-b border-[#1A1A24] px-6 py-4">
+        <div className="sticky top-0 z-10 bg-panel border-b border-border-subtle px-6 py-4">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-white">{contact.name}</h2>
+              <h2 className="text-lg font-semibold text-white/95">{contact.name}</h2>
               <div className="flex items-center gap-2 mt-1">
                 {contact.outlet && (
                   <span className="text-sm text-brand-cyan">{contact.outlet}</span>
@@ -59,13 +59,13 @@ export function ContactDetailDrawer({ contact, timeline = [], onClose }: Props) 
         <div className="p-6 space-y-6">
           {/* Quick Stats */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-[#13131A] border border-[#1A1A24]">
+            <div className="p-4 rounded-xl bg-slate-2 border border-border-subtle">
               <div className="text-xs text-white/55 mb-1">Topic Currency</div>
               <TopicCurrencyIndicator currency={contact.topicCurrency} showLabel />
             </div>
-            <div className="p-4 rounded-xl bg-[#13131A] border border-[#1A1A24]">
+            <div className="p-4 rounded-xl bg-slate-2 border border-border-subtle">
               <div className="text-xs text-white/55 mb-1">Pitch Score</div>
-              <div className="text-xl font-bold text-white">{contact.pitchEligibilityScore}</div>
+              <div className="text-xl font-bold text-white/95">{contact.pitchEligibilityScore}</div>
             </div>
           </div>
 
@@ -79,7 +79,7 @@ export function ContactDetailDrawer({ contact, timeline = [], onClose }: Props) 
                 <svg className="w-4 h-4 text-white/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span className="text-white">{contact.email}</span>
+                <span className="text-white/90">{contact.email}</span>
               </div>
             )}
             <div className="flex items-center gap-2 text-sm">
@@ -118,7 +118,7 @@ export function ContactDetailDrawer({ contact, timeline = [], onClose }: Props) 
                 {timeline.map((entry) => (
                   <div
                     key={entry.id}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-[#13131A]"
+                    className="flex items-start gap-3 p-3 rounded-lg bg-slate-2"
                   >
                     <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
                       <svg className="w-4 h-4 text-white/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +126,7 @@ export function ContactDetailDrawer({ contact, timeline = [], onClose }: Props) 
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm text-white">{entry.title}</div>
+                      <div className="text-sm text-white/90">{entry.title}</div>
                       {entry.description && (
                         <div className="text-xs text-white/55 mt-0.5">{entry.description}</div>
                       )}
@@ -138,7 +138,7 @@ export function ContactDetailDrawer({ contact, timeline = [], onClose }: Props) 
                 ))}
               </div>
             ) : (
-              <div className="p-4 text-center text-sm text-white/55 rounded-lg border border-dashed border-[#1A1A24]">
+              <div className="p-4 text-center text-sm text-white/55 rounded-lg border border-dashed border-border-subtle">
                 No recent activity
               </div>
             )}
@@ -155,16 +155,16 @@ export function ContactDetailDrawer({ contact, timeline = [], onClose }: Props) 
           )}
 
           {/* Actions */}
-          <div className="pt-4 border-t border-[#1A1A24] space-y-3">
+          <div className="pt-4 border-t border-border-subtle space-y-3">
             <button
               type="button"
-              className="w-full px-4 py-2 bg-brand-iris text-white text-sm font-medium rounded-lg hover:bg-brand-iris/90 transition-colors"
+              className="w-full px-4 py-2 bg-brand-iris text-white/90 text-sm font-medium rounded-lg hover:bg-brand-iris/90 transition-colors"
             >
               Create Pitch
             </button>
             <button
               type="button"
-              className="w-full px-4 py-2 bg-white/10 text-white text-sm font-medium rounded-lg hover:bg-white/15 transition-colors"
+              className="w-full px-4 py-2 bg-white/10 text-white/90 text-sm font-medium rounded-lg hover:bg-white/15 transition-colors"
             >
               Edit Contact
             </button>

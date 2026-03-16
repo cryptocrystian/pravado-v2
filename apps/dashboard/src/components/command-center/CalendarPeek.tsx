@@ -121,11 +121,11 @@ function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => v
   return (
     <button
       onClick={onClick}
-      className="calendar-agenda-item w-full flex items-center gap-2 p-2 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg hover:border-[#2A2A36] hover:shadow-[0_0_8px_rgba(0,217,255,0.05)] transition-all duration-200 group text-left"
+      className="calendar-agenda-item w-full flex items-center gap-2 p-2 bg-page border border-border-subtle rounded-lg hover:border-slate-5 hover:shadow-[0_0_8px_rgba(0,217,255,0.05)] transition-all duration-200 group text-left"
     >
       {/* Time */}
       <div className="text-center w-10 flex-shrink-0">
-        <p className="text-[11px] font-bold text-white/90">{item.time}</p>
+        <p className="text-xs font-bold text-white/90">{item.time}</p>
       </div>
 
       {/* Pillar Accent Bar */}
@@ -137,7 +137,7 @@ function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => v
           <span className={`px-1 py-0.5 text-[11px] font-semibold rounded uppercase tracking-wide ${pillarStyle.bg} ${pillarStyle.text}`}>
             {item.pillar}
           </span>
-          <span className={`px-1 py-0.5 text-[11px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}>
+          <span className={`px-1 py-0.5 text-xs font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}>
             {statusStyle.label}
           </span>
         </div>
@@ -187,13 +187,13 @@ function CalendarDayCell({
           ? 'bg-brand-cyan/20 border border-brand-cyan/40 shadow-[0_0_12px_rgba(0,217,255,0.15)]'
           : isToday
             ? 'bg-brand-iris/10 border border-brand-iris/30'
-            : 'hover:bg-[#1A1A24] border border-transparent hover:border-[#2A2A36]'
+            : 'hover:bg-slate-4 border border-transparent hover:border-slate-5'
         }
         ${!isCurrentMonth ? 'opacity-40' : ''}
       `}
     >
       <span className={`
-        text-[11px] font-medium
+        text-xs font-medium
         ${isSelected ? 'text-brand-cyan' : isToday ? 'text-brand-iris' : isCurrentMonth ? 'text-white/90' : 'text-white/30'}
       `}>
         {day}
@@ -212,7 +212,7 @@ function CalendarDayCell({
       {itemCount > 0 && (
         <span className={`
           absolute flex items-center justify-center font-bold bg-brand-cyan text-black rounded-full
-          ${compact ? '-top-0.5 -right-0.5 w-3.5 h-3.5 text-[11px]' : '-top-0.5 -right-0.5 w-4 h-4 text-[11px]'}
+          ${compact ? '-top-0.5 -right-0.5 w-3.5 h-3.5 text-[11px] tabular-nums' : '-top-0.5 -right-0.5 w-4 h-4 text-[11px] tabular-nums'}
         `}> {/* typography-allow: badge */}
           {itemCount > 9 ? '9+' : itemCount}
         </span>
@@ -260,21 +260,21 @@ function DayTimelineView({
   return (
     <div className="h-full flex flex-col">
       {/* Day Header with Nav */}
-      <div className="flex items-center justify-between px-2 py-1.5 border-b border-[#1A1A24] bg-[#0A0A0F]">
+      <div className="flex items-center justify-between px-2 py-1.5 border-b border-border-subtle bg-page">
         <button
           onClick={() => {
             const prev = new Date(selectedDate);
             prev.setDate(prev.getDate() - 1);
             onDateSelect(prev);
           }}
-          className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
+          className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         <div className="text-center">
-          <p className={`text-[11px] font-semibold ${isToday ? 'text-brand-cyan' : 'text-white/90'}`}>
+          <p className={`text-xs font-semibold ${isToday ? 'text-brand-cyan' : 'text-white/90'}`}>
             {isToday ? 'Today' : dateLabel}
           </p>
         </div>
@@ -284,7 +284,7 @@ function DayTimelineView({
             next.setDate(next.getDate() + 1);
             onDateSelect(next);
           }}
-          className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
+          className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -296,7 +296,7 @@ function DayTimelineView({
       <div className="flex-1 overflow-y-auto px-2 py-1.5">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="w-6 h-6 rounded-lg bg-[#1A1A24] flex items-center justify-center mb-1.5">
+            <div className="w-6 h-6 rounded-lg bg-slate-4 flex items-center justify-center mb-1.5">
               <svg className="w-3 h-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -315,7 +315,7 @@ function DayTimelineView({
             {/* Timeline rail */}
             <div className="absolute left-12 right-0 top-0 bottom-0">
               {/* Vertical time line */}
-              <div className="absolute left-0 top-1 bottom-1 w-0.5 bg-[#1A1A24] rounded-full" />
+              <div className="absolute left-0 top-1 bottom-1 w-0.5 bg-slate-4 rounded-full" />
 
               {/* Event markers on the rail */}
               {sortedItems.map((item) => {
@@ -332,7 +332,7 @@ function DayTimelineView({
                       transition-all duration-200 group
                       ${isSelected
                         ? `${pillarStyle.bg} border ${pillarStyle.border} shadow-[0_0_8px_rgba(0,217,255,0.1)]`
-                        : 'hover:bg-[#1A1A24]'
+                        : 'hover:bg-slate-4'
                       }
                     `}
                     style={{ top: `${position}%` }}
@@ -364,7 +364,7 @@ function DayDetailsPanel({
   if (!selectedItem) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-3">
-        <div className="w-8 h-8 rounded-lg bg-[#1A1A24] flex items-center justify-center mb-2">
+        <div className="w-8 h-8 rounded-lg bg-slate-4 flex items-center justify-center mb-2">
           <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
           </svg>
@@ -382,14 +382,14 @@ function DayDetailsPanel({
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-2 py-1.5 border-b border-[#1A1A24]">
+      <div className="flex items-center justify-between px-2 py-1.5 border-b border-border-subtle">
         <div className="flex items-center gap-1.5">
           <span className={`w-1.5 h-1.5 rounded-full ${pillarStyle.dot}`} />
           <span className="text-xs font-semibold text-white/90">Details</span>
         </div>
         <button
           onClick={onClose}
-          className="p-0.5 text-white/40 hover:text-white/70 hover:bg-[#1A1A24] rounded transition-colors"
+          className="p-0.5 text-white/40 hover:text-white/70 hover:bg-slate-4 rounded transition-colors"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -407,7 +407,7 @@ function DayDetailsPanel({
           <span className={`px-1.5 py-0.5 text-[11px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}> {/* typography-allow: badge */}
             {statusStyle.label}
           </span>
-          <span className={`flex items-center gap-0.5 px-1.5 py-0.5 text-[11px] rounded bg-[#1A1A24] ${modeInfo.color}`}> {/* typography-allow: badge */}
+          <span className={`flex items-center gap-0.5 px-1.5 py-0.5 text-[11px] rounded bg-slate-4 ${modeInfo.color}`}> {/* typography-allow: badge */}
             {modeInfo.icon}
             <span>{modeInfo.label}</span>
           </span>
@@ -430,7 +430,7 @@ function DayDetailsPanel({
         )}
 
         {/* Quick info */}
-        <div className="pt-1 border-t border-[#1A1A24] space-y-1">
+        <div className="pt-1 border-t border-border-subtle space-y-1">
           <div className="flex items-center justify-between text-[11px]"> {/* typography-allow: meta */}
             <span className="text-white/40">Owner</span>
             <span className="text-white/70">{selectedItem.details?.owner || 'Unassigned'}</span>
@@ -445,7 +445,7 @@ function DayDetailsPanel({
       </div>
 
       {/* Action button */}
-      <div className="px-2 pb-2 pt-1 border-t border-[#1A1A24]">
+      <div className="px-2 pb-2 pt-1 border-t border-border-subtle">
         <button className={`w-full px-2 py-1.5 text-[11px] font-semibold rounded ${pillarStyle.bg} ${pillarStyle.text} border ${pillarStyle.border} hover:brightness-110 transition-all`}> {/* typography-allow: button */}
           Open Full View
         </button>
@@ -512,10 +512,10 @@ function WeekView({
   return (
     <div className="h-full flex flex-col">
       {/* Week Header with Nav */}
-      <div className="flex items-center justify-between px-2 py-1 border-b border-[#1A1A24] bg-[#0A0A0F]">
+      <div className="flex items-center justify-between px-2 py-1 border-b border-border-subtle bg-page">
         <button
           onClick={() => navigateWeek(-1)}
-          className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
+          className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
           aria-label="Previous week"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -525,7 +525,7 @@ function WeekView({
         <span className="text-xs font-medium text-white/70">{weekLabel}</span>
         <button
           onClick={() => navigateWeek(1)}
-          className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
+          className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
           aria-label="Next week"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -535,7 +535,7 @@ function WeekView({
       </div>
 
       {/* Week Strip */}
-      <div className="flex items-center gap-0.5 p-1.5 bg-[#0A0A0F] border-b border-[#1A1A24]">
+      <div className="flex items-center gap-0.5 p-1.5 bg-page border-b border-border-subtle">
         {days.map((date) => {
           const dateKey = formatDateKey(date);
           const dayItems = itemsByDate.get(dateKey) || [];
@@ -570,7 +570,7 @@ function WeekView({
           <span className="text-xs font-semibold text-white/90">
             {selectedKey === today ? 'Today' : selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
           </span>
-          <span className="text-[11px] text-white/50">{items.length} items</span>
+          <span className="text-xs text-white/50">{items.length} items</span>
         </div>
         {items.length === 0 ? (
           <p className="text-xs text-white/50 text-center py-4">No items scheduled</p>
@@ -643,13 +643,13 @@ function MonthView({
             prev.setMonth(prev.getMonth() - 1);
             onDateSelect(prev);
           }}
-          className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
+          className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <span className="text-[11px] font-semibold text-white/90">
+        <span className="text-xs font-semibold text-white/90">
           {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </span>
         <button
@@ -658,7 +658,7 @@ function MonthView({
             next.setMonth(next.getMonth() + 1);
             onDateSelect(next);
           }}
-          className="p-1 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded transition-colors"
+          className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -669,7 +669,7 @@ function MonthView({
       {/* Day headers */}
       <div className="grid grid-cols-7 gap-0.5 mb-1">
         {days.map((d, i) => (
-          <span key={i} className="text-[11px] text-white/50 text-center font-medium py-0.5">{d}</span>
+          <span key={i} className="text-xs text-white/50 text-center font-medium py-0.5">{d}</span>
         ))}
       </div>
 
@@ -725,19 +725,19 @@ function AgendaPanel({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-2 py-1.5 border-b border-[#1A1A24]">
+      <div className="flex items-center justify-between px-2 py-1.5 border-b border-border-subtle">
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
           <span className="text-xs font-semibold text-white/90">{dateLabel}</span>
         </div>
-        <span className="text-[11px] text-white/50">{items.length} items</span>
+        <span className="text-xs text-white/50">{items.length} items</span>
       </div>
 
       {/* Items */}
       <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
         {sortedItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-6 text-center">
-            <div className="w-8 h-8 rounded-lg bg-[#1A1A24] flex items-center justify-center mb-2">
+            <div className="w-8 h-8 rounded-lg bg-slate-4 flex items-center justify-center mb-2">
               <svg className="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -802,12 +802,12 @@ function ScheduleDrawer({
   return (
     <div className="fixed inset-0 z-[100]">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-page/70 backdrop-blur-sm" onClick={onClose} />
 
       {/* Drawer - slides from right */}
-      <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#0D0D12] border-l border-[#1A1A24] shadow-2xl shadow-black/50 overflow-hidden flex flex-col">
+      <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-slate-1 border-l border-border-subtle shadow-2xl shadow-black/50 overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#1A1A24] bg-[#0A0A0F]">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-page">
           <div className="flex items-center gap-2">
             <div className={`w-8 h-8 rounded-lg ${pillarStyle.bg} border ${pillarStyle.border} flex items-center justify-center`}>
               <svg className={`w-4 h-4 ${pillarStyle.text}`} fill="currentColor" viewBox="0 0 20 20">
@@ -821,7 +821,7 @@ function ScheduleDrawer({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-white/50 hover:text-white/90 hover:bg-[#1A1A24] rounded-lg transition-colors"
+            className="p-1.5 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded-lg transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -832,7 +832,7 @@ function ScheduleDrawer({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* Item Header */}
-          <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+          <div className="p-3 bg-page border border-border-subtle rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <span className={`px-1.5 py-0.5 text-[11px] font-semibold rounded uppercase ${pillarStyle.bg} ${pillarStyle.text}`}> {/* typography-allow: badge */}
                 {item.pillar}
@@ -848,7 +848,7 @@ function ScheduleDrawer({
           {/* Date & Time */}
           <div>
             <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Schedule</h4>
-            <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg flex items-center justify-between">
+            <div className="p-3 bg-page border border-border-subtle rounded-lg flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-white/90">
                   {itemDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
@@ -876,7 +876,7 @@ function ScheduleDrawer({
                       p-2 rounded-lg border transition-all text-center
                       ${isSelected
                         ? `bg-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'white'}/10 border-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'white'}/30`
-                        : 'bg-[#0A0A0F] border-[#1A1A24] hover:border-[#2A2A36]'
+                        : 'bg-page border-border-subtle hover:border-slate-5'
                       }
                     `}
                   >
@@ -893,7 +893,7 @@ function ScheduleDrawer({
           {/* Details */}
           <div>
             <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Details</h4>
-            <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg space-y-2">
+            <div className="p-3 bg-page border border-border-subtle rounded-lg space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-white/50">Owner</span>
                 <span className="text-xs text-white/90">{item.details.owner}</span>
@@ -923,7 +923,7 @@ function ScheduleDrawer({
                   <button className="flex-1 px-3 py-1.5 text-xs font-semibold text-white/90 bg-semantic-success/10 border border-semantic-success/30 rounded hover:bg-semantic-success/20 transition-colors">
                     Approve
                   </button>
-                  <button className="flex-1 px-3 py-1.5 text-xs font-semibold text-white/50 bg-[#1A1A24] border border-[#2A2A36] rounded hover:text-white/90 transition-colors">
+                  <button className="flex-1 px-3 py-1.5 text-xs font-semibold text-white/50 bg-slate-4 border border-slate-5 rounded hover:text-white/90 transition-colors">
                     Reject
                   </button>
                 </div>
@@ -940,9 +940,9 @@ function ScheduleDrawer({
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-3 border-t border-[#1A1A24] bg-[#0A0A0F]">
+        <div className="px-4 py-3 border-t border-border-subtle bg-page">
           <p className="text-xs text-white/50 text-center">
-            Press <kbd className="px-1 py-0.5 bg-[#1A1A24] rounded text-white/50">Esc</kbd> to close
+            Press <kbd className="px-1 py-0.5 bg-slate-4 rounded text-white/50">Esc</kbd> to close
           </p>
         </div>
       </div>
@@ -952,16 +952,16 @@ function ScheduleDrawer({
 
 function LoadingSkeleton() {
   return (
-    <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg h-[280px]">
+    <div className="p-3 bg-panel border border-border-subtle rounded-lg h-[280px]">
       <div className="flex items-center justify-between mb-3">
         <div className="h-4 w-20 bg-white/5 rounded animate-pulse" />
         <div className="h-4 w-16 bg-white/5 rounded animate-pulse" />
       </div>
       <div className="grid grid-cols-2 gap-2 h-[200px]">
-        <div className="bg-[#0A0A0F] border border-[#1F1F28] rounded-lg animate-pulse" />
+        <div className="bg-page border border-border-subtle rounded-lg animate-pulse" />
         <div className="space-y-1.5">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-10 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg animate-pulse" />
+            <div key={i} className="h-10 bg-page border border-border-subtle rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
@@ -1019,7 +1019,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
 
   if (error) {
     return (
-      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg h-[280px]">
+      <div className="p-3 bg-panel border border-border-subtle rounded-lg h-[280px]">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs font-semibold text-white/90">Calendar</h3>
         </div>
@@ -1032,7 +1032,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
 
   if (!data || data.items.length === 0) {
     return (
-      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg h-[280px]">
+      <div className="p-3 bg-panel border border-border-subtle rounded-lg h-[280px]">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs font-semibold text-white/90">Calendar</h3>
         </div>
@@ -1046,7 +1046,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
   return (
     <>
       {/* FIXED HEIGHT CONTAINER - Outlook-like contract */}
-      <div className="p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg h-[280px] flex flex-col">
+      <div className="p-3 bg-panel border border-border-subtle rounded-lg h-[280px] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between mb-2 flex-shrink-0">
           <div className="flex items-center gap-2">
@@ -1057,7 +1057,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
             {!isToday && (
               <button
                 onClick={goToToday}
-                className="px-1.5 py-0.5 text-[11px] font-medium text-brand-cyan bg-brand-cyan/10 border border-brand-cyan/20 rounded hover:bg-brand-cyan/15 transition-colors"
+                className="px-1.5 py-0.5 text-xs font-medium text-brand-cyan bg-brand-cyan/10 border border-brand-cyan/20 rounded hover:bg-brand-cyan/15 transition-colors"
               >
                 Today
               </button>
@@ -1065,13 +1065,13 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
           </div>
 
           {/* View Toggle - Desktop */}
-          <div className="hidden sm:flex items-center bg-[#0A0A0F] rounded p-0.5 border border-[#1A1A24]">
+          <div className="hidden sm:flex items-center bg-page rounded p-0.5 border border-border-subtle">
             {(['day', 'week', 'month'] as ViewMode[]).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
                 className={`
-                  px-2 py-0.5 text-[11px] font-medium rounded transition-colors
+                  px-2 py-0.5 text-xs font-medium rounded transition-colors
                   ${viewMode === mode ? 'bg-brand-cyan/20 text-brand-cyan' : 'text-white/50 hover:text-white/90'}
                 `}
               >
@@ -1081,13 +1081,13 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
           </div>
 
           {/* Mobile Tab Switcher */}
-          <div className="sm:hidden flex items-center bg-[#0A0A0F] rounded p-0.5 border border-[#1A1A24]">
+          <div className="sm:hidden flex items-center bg-page rounded p-0.5 border border-border-subtle">
             {(['calendar', 'agenda'] as MobileTab[]).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setMobileTab(tab)}
                 className={`
-                  px-2 py-0.5 text-[11px] font-medium rounded transition-colors
+                  px-2 py-0.5 text-xs font-medium rounded transition-colors
                   ${mobileTab === tab ? 'bg-brand-cyan/20 text-brand-cyan' : 'text-white/50 hover:text-white/90'}
                 `}
               >
@@ -1104,7 +1104,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
             {viewMode === 'day' && (
               <div className="h-full grid grid-cols-2 gap-2">
                 {/* LEFT: Day timeline with event markers */}
-                <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                <div className="bg-page border border-border-subtle rounded-lg overflow-hidden">
                   <DayTimelineView
                     selectedDate={selectedDate}
                     onDateSelect={handleDateSelect}
@@ -1114,7 +1114,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
                   />
                 </div>
                 {/* RIGHT: Details panel for selected event */}
-                <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                <div className="bg-page border border-border-subtle rounded-lg overflow-hidden">
                   <DayDetailsPanel
                     selectedItem={dayViewSelectedItem}
                     onClose={() => setDayViewSelectedItem(null)}
@@ -1123,7 +1123,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
               </div>
             )}
             {viewMode === 'week' && (
-              <div className="h-full bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+              <div className="h-full bg-page border border-border-subtle rounded-lg overflow-hidden">
                 <WeekView
                   selectedDate={selectedDate}
                   onDateSelect={handleDateSelect}
@@ -1135,14 +1135,14 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
             )}
             {viewMode === 'month' && (
               <div className="h-full grid grid-cols-2 gap-2">
-                <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                <div className="bg-page border border-border-subtle rounded-lg overflow-hidden">
                   <MonthView
                     selectedDate={selectedDate}
                     onDateSelect={handleDateSelect}
                     itemsByDate={itemsByDate}
                   />
                 </div>
-                <div className="bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+                <div className="bg-page border border-border-subtle rounded-lg overflow-hidden">
                   <AgendaPanel
                     selectedDate={selectedDate}
                     items={selectedDateItems}
@@ -1156,7 +1156,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
           {/* Mobile: Tab-based View */}
           <div className="sm:hidden h-full">
             {mobileTab === 'calendar' && (
-              <div className="h-full bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+              <div className="h-full bg-page border border-border-subtle rounded-lg overflow-hidden">
                 <MonthView
                   selectedDate={selectedDate}
                   onDateSelect={handleDateSelect}
@@ -1165,7 +1165,7 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
               </div>
             )}
             {mobileTab === 'agenda' && (
-              <div className="h-full bg-[#0A0A0F] border border-[#1A1A24] rounded-lg overflow-hidden">
+              <div className="h-full bg-page border border-border-subtle rounded-lg overflow-hidden">
                 <AgendaPanel
                   selectedDate={selectedDate}
                   items={selectedDateItems}

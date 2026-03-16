@@ -149,7 +149,7 @@ export default function CrisisBriefPanel({
         <CardContent className="flex-1 flex items-center justify-center">
           <div className="text-center py-12">
             <AlertTriangle className="h-12 w-12 mx-auto mb-3 text-orange-400" />
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-white/50 mb-4">
               No crisis brief has been generated yet
             </p>
             {onGenerate && (
@@ -186,7 +186,7 @@ export default function CrisisBriefPanel({
               <CardTitle className="text-lg truncate">{brief.title}</CardTitle>
             </div>
             {brief.subtitle && (
-              <p className="text-sm text-muted-foreground truncate">
+              <p className="text-sm text-white/50 truncate">
                 {brief.subtitle}
               </p>
             )}
@@ -206,7 +206,7 @@ export default function CrisisBriefPanel({
         </div>
 
         {/* Quick Stats */}
-        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-4 mt-2 text-xs text-white/50">
           <span>{BRIEF_FORMAT_LABELS[brief.format]}</span>
           <span className="text-gray-300">|</span>
           <span>{sections.length} sections</span>
@@ -227,7 +227,7 @@ export default function CrisisBriefPanel({
                   <Sparkles className="h-4 w-4 text-blue-600" />
                   Executive Summary
                 </h3>
-                <p className="text-sm text-muted-foreground whitespace-pre-line">
+                <p className="text-sm text-white/50 whitespace-pre-line">
                   {brief.executiveSummary}
                 </p>
               </div>
@@ -251,7 +251,7 @@ export default function CrisisBriefPanel({
                       )}
                     >
                       <div className="font-medium text-sm">{takeaway.title}</div>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      <p className="text-sm text-white/50 mt-1">
                         {takeaway.content}
                       </p>
                     </div>
@@ -308,7 +308,7 @@ export default function CrisisBriefPanel({
                       <div className="p-4 pt-0 border-t">
                         {/* Summary */}
                         {section.summary && (
-                          <p className="text-sm text-muted-foreground mb-3">
+                          <p className="text-sm text-white/50 mb-3">
                             {section.summary}
                           </p>
                         )}
@@ -338,7 +338,7 @@ export default function CrisisBriefPanel({
                                 <div>
                                   <span>{bp.text}</span>
                                   {bp.subPoints && bp.subPoints.length > 0 && (
-                                    <ul className="mt-1 ml-4 space-y-1 text-muted-foreground">
+                                    <ul className="mt-1 ml-4 space-y-1 text-white/50">
                                       {bp.subPoints.map((sp, spIdx) => (
                                         <li key={spIdx}>- {sp}</li>
                                       ))}
@@ -381,7 +381,7 @@ export default function CrisisBriefPanel({
       {/* Footer Actions */}
       <div className="px-4 py-3 border-t bg-gray-50 shrink-0">
         <div className="flex items-center justify-between">
-          <div className="text-xs text-muted-foreground">
+          <div className="text-xs text-white/50">
             {brief.totalTokensUsed.toLocaleString()} tokens used
             {brief.generationDurationMs &&
               ` · ${(brief.generationDurationMs / 1000).toFixed(1)}s`}

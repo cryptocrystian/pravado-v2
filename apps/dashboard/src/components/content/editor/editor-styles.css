@@ -1,0 +1,426 @@
+/**
+ * TiptapEditor Styles
+ *
+ * Typography and block styling for the ProseMirror editor.
+ * Uses Pravado DS v3.1 tokens (dark theme, Inter font).
+ * Designed to feel like a premium writing environment.
+ */
+
+/* ============================================
+   EDITOR CONTAINER
+   ============================================ */
+
+.prose-editor {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.75;
+  font-size: 16px;
+  caret-color: #a855f7;
+  min-height: 100%;
+  /* Enough room to scroll the last line to mid-screen, but not so much
+     that the page feels like an empty void. */
+  padding-bottom: 20vh;
+}
+
+/* ============================================
+   PLACEHOLDER — writing coach tone
+   ============================================ */
+
+.prose-editor.is-editor-empty::before {
+  content: attr(data-placeholder);
+  color: rgba(255, 255, 255, 0.12);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  font-style: italic;
+}
+
+.prose-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: rgba(255, 255, 255, 0.14);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  font-style: italic;
+}
+
+/* ============================================
+   HEADINGS
+   ============================================ */
+
+.prose-editor h1 {
+  font-size: 1.875em;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.prose-editor h1:first-child {
+  margin-top: 0;
+}
+
+.prose-editor h2 {
+  font-size: 1.375em;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+.prose-editor h3 {
+  font-size: 1.125em;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 1.25em;
+  margin-bottom: 0.35em;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+}
+
+/* ============================================
+   PARAGRAPHS
+   ============================================ */
+
+.prose-editor p {
+  margin-top: 0;
+  margin-bottom: 0.75em;
+}
+
+.prose-editor p:last-child {
+  margin-bottom: 0;
+}
+
+/* Empty paragraph placeholder */
+.prose-editor p.is-empty::before {
+  content: attr(data-placeholder);
+  color: rgba(255, 255, 255, 0.15);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Empty heading placeholders — encourage structure */
+.prose-editor h1.is-empty::before {
+  content: 'Heading 1';
+  color: rgba(255, 255, 255, 0.1);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.prose-editor h2.is-empty::before {
+  content: 'Heading 2';
+  color: rgba(255, 255, 255, 0.1);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.prose-editor h3.is-empty::before {
+  content: 'Heading 3';
+  color: rgba(255, 255, 255, 0.1);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ============================================
+   INLINE FORMATTING
+   ============================================ */
+
+.prose-editor strong {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.prose-editor em {
+  font-style: italic;
+}
+
+.prose-editor u {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-editor s {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.prose-editor code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875em;
+  background: rgba(168, 85, 247, 0.1);
+  color: #c4b5fd;
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  border: 1px solid rgba(168, 85, 247, 0.15);
+}
+
+/* ============================================
+   LISTS
+   ============================================ */
+
+.prose-editor ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.75em;
+}
+
+.prose-editor ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.75em;
+}
+
+.prose-editor li {
+  margin-bottom: 0.25em;
+}
+
+.prose-editor li p {
+  margin-bottom: 0.15em;
+}
+
+.prose-editor ul ul,
+.prose-editor ol ol,
+.prose-editor ul ol,
+.prose-editor ol ul {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+/* ============================================
+   BLOCKQUOTE
+   ============================================ */
+
+.prose-editor blockquote {
+  border-left: 2px solid rgba(168, 85, 247, 0.3);
+  padding-left: 1em;
+  margin-left: 0;
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+/* ============================================
+   HORIZONTAL RULE
+   ============================================ */
+
+.prose-editor hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 1.5em 0;
+}
+
+/* ============================================
+   CODE BLOCK
+   ============================================ */
+
+.prose-editor pre {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875em;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  padding: 1em 1.25em;
+  margin: 0.75em 0;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.prose-editor pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: inherit;
+}
+
+/* ============================================
+   LINKS
+   ============================================ */
+
+.prose-editor a {
+  color: #a855f7;
+  text-decoration: underline;
+  text-decoration-color: rgba(168, 85, 247, 0.4);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s;
+}
+
+.prose-editor a:hover {
+  text-decoration-color: #a855f7;
+}
+
+/* ============================================
+   SELECTION
+   ============================================ */
+
+.prose-editor ::selection {
+  background: rgba(168, 85, 247, 0.3);
+}
+
+/* ============================================
+   DROPCURSOR
+   ============================================ */
+
+.ProseMirror-dropcursor {
+  color: #a855f7 !important;
+  width: 2px !important;
+}
+
+/* ============================================
+   GAPCURSOR
+   ============================================ */
+
+.ProseMirror-gapcursor::after {
+  border-top-color: rgba(168, 85, 247, 0.5) !important;
+}
+
+/* ============================================
+   FOCUS RING (disabled - we handle focus via caret)
+   ============================================ */
+
+.ProseMirror:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Override global focus-visible ring inside editor */
+.ProseMirror:focus-visible {
+  outline: none;
+  box-shadow: none;
+  --tw-ring-shadow: none;
+  --tw-ring-offset-shadow: none;
+}
+
+/* ============================================
+   CITEMIND MARK
+   Underline-style visual indicator for flagged claims.
+   Applied via Tiptap Mark extension.
+   ============================================ */
+
+.prose-editor .citemind-flag {
+  text-decoration: underline wavy;
+  text-decoration-color: rgba(234, 179, 8, 0.5);
+  text-underline-offset: 3px;
+  cursor: help;
+  transition: background-color 0.15s ease;
+}
+
+.prose-editor .citemind-flag:hover {
+  background-color: rgba(234, 179, 8, 0.08);
+}
+
+.prose-editor .citemind-flag-error {
+  text-decoration-color: rgba(239, 68, 68, 0.5);
+}
+
+.prose-editor .citemind-flag-error:hover {
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+/* ============================================
+   SAGE INLINE SUGGESTIONS (Phase 2 stubs)
+   No runtime behavior. CSS-only preparation.
+   ============================================ */
+
+/* Ghost text for AI-suggested continuations */
+.sage-suggestion {
+  color: rgba(168, 85, 247, 0.35);
+  font-style: italic;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Positioned annotation in right gutter */
+.sage-margin-note {
+  position: absolute;
+  right: -240px;
+  width: 220px;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(19, 19, 26, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  pointer-events: auto;
+}
+
+/* Fade-out when suggestion is dismissed */
+.sage-suggestion-dismissed {
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+/* ============================================
+   CALLOUT BLOCK (Editor v2)
+   Visual container for tips, notes, warnings.
+   ============================================ */
+
+.prose-editor .callout-block {
+  background: rgba(168, 85, 247, 0.05);
+  border-left: 3px solid rgba(168, 85, 247, 0.3);
+  border-radius: 0 6px 6px 0;
+  padding: 0.75em 1em;
+  margin: 0.75em 0;
+}
+
+.prose-editor .callout-block > *:first-child {
+  margin-top: 0;
+}
+
+.prose-editor .callout-block > *:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   BLOCK HOVER AFFORDANCES (Editor v2)
+   Subtle visual feedback making blocks feel discrete.
+   Applied only when prose-editor-v2 class is present.
+   ============================================ */
+
+.prose-editor-v2 > p,
+.prose-editor-v2 > h1,
+.prose-editor-v2 > h2,
+.prose-editor-v2 > h3,
+.prose-editor-v2 > ul,
+.prose-editor-v2 > ol,
+.prose-editor-v2 > blockquote,
+.prose-editor-v2 > pre,
+.prose-editor-v2 > .callout-block,
+.prose-editor-v2 > hr {
+  border-radius: 2px;
+  transition: background-color 0.12s ease;
+  padding-left: 2px;
+  padding-right: 2px;
+  margin-left: -2px;
+  margin-right: -2px;
+}
+
+.prose-editor-v2 > p:hover,
+.prose-editor-v2 > h1:hover,
+.prose-editor-v2 > h2:hover,
+.prose-editor-v2 > h3:hover,
+.prose-editor-v2 > ul:hover,
+.prose-editor-v2 > ol:hover,
+.prose-editor-v2 > pre:hover,
+.prose-editor-v2 > .callout-block:hover {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+/* Heading decoration — subtle left accent on hover */
+.prose-editor-v2 > h1:hover,
+.prose-editor-v2 > h2:hover,
+.prose-editor-v2 > h3:hover {
+  box-shadow: -3px 0 0 0 rgba(168, 85, 247, 0.12);
+}

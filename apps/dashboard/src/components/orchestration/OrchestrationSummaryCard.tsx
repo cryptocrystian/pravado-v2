@@ -72,7 +72,7 @@ function PillarBadge({ pillar }: { pillar: PillarStatus }) {
       <AIDot status={pillar.status} />
       <div className="flex-1 min-w-0">
         <p className={`text-sm font-medium ${colors.text}`}>{pillar.name}</p>
-        <p className="text-xs text-muted">{pillar.activeStreams} active streams</p>
+        <p className="text-xs text-white/55">{pillar.activeStreams} active streams</p>
       </div>
     </div>
   );
@@ -88,11 +88,11 @@ function ConnectionLine({ connection }: { connection: ConnectionFlow }) {
       <span className={`px-2 py-0.5 rounded ${fromColors.bg} ${fromColors.text}`}>
         {connection.from}
       </span>
-      <span className={`flex items-center gap-1 ${connection.isActive ? 'text-brand-cyan' : 'text-muted'}`}>
+      <span className={`flex items-center gap-1 ${connection.isActive ? 'text-brand-cyan' : 'text-white/55'}`}>
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg>
-        <span className="text-[10px] uppercase tracking-wider">{connection.type}</span>
+        <span className="text-xs uppercase tracking-wider">{connection.type}</span>
       </span>
       <span className={`px-2 py-0.5 rounded ${toColors.bg} ${toColors.text}`}>
         {connection.to}
@@ -225,7 +225,7 @@ export function OrchestrationSummaryCard() {
   }, []);
 
   return (
-    <div className="panel-card">
+    <div className="bg-panel border border-border-subtle rounded-xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -233,8 +233,8 @@ export function OrchestrationSummaryCard() {
             <AIDot status="active" size="md" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">AI Orchestration</h3>
-            <p className="text-xs text-muted">System Overview</p>
+            <h3 className="text-sm font-semibold text-white/95">AI Orchestration</h3>
+            <p className="text-xs text-white/55">System Overview</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -255,22 +255,22 @@ export function OrchestrationSummaryCard() {
       {/* Stats Row */}
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="text-center p-2 bg-slate-3/50 rounded-lg">
-          <p className="text-lg font-semibold text-white">{overview.pillars.length}</p>
-          <p className="text-xs text-muted">Pillars</p>
+          <p className="text-lg font-semibold text-white/95">{overview.pillars.length}</p>
+          <p className="text-xs text-white/55">Pillars</p>
         </div>
         <div className="text-center p-2 bg-slate-3/50 rounded-lg">
           <p className="text-lg font-semibold text-brand-cyan">{overview.totalStreams}</p>
-          <p className="text-xs text-muted">Streams</p>
+          <p className="text-xs text-white/55">Streams</p>
         </div>
         <div className="text-center p-2 bg-slate-3/50 rounded-lg">
           <p className="text-lg font-semibold text-brand-iris">{overview.activeConnections}</p>
-          <p className="text-xs text-muted">Connections</p>
+          <p className="text-xs text-white/55">Connections</p>
         </div>
       </div>
 
       {/* Active Pillars */}
       <div className="mb-4">
-        <h4 className="text-xs font-medium text-muted uppercase tracking-wider mb-2">Active Pillars</h4>
+        <h4 className="text-xs font-medium text-white/55 uppercase tracking-wider mb-2">Active Pillars</h4>
         <div className="grid grid-cols-2 gap-2">
           {overview.pillars.slice(0, 4).map((pillar) => (
             <PillarBadge key={pillar.id} pillar={pillar} />
@@ -281,7 +281,7 @@ export function OrchestrationSummaryCard() {
       {/* Cross-Pillar Flows */}
       {overview.connections.length > 0 && (
         <div className="mb-4">
-          <h4 className="text-xs font-medium text-muted uppercase tracking-wider mb-2">
+          <h4 className="text-xs font-medium text-white/55 uppercase tracking-wider mb-2">
             Cross-Pillar Intelligence
           </h4>
           <div className="space-y-2">
@@ -294,7 +294,7 @@ export function OrchestrationSummaryCard() {
 
       {/* Footer */}
       <div className="pt-3 border-t border-border-subtle flex items-center justify-between">
-        <span className="text-xs text-muted">
+        <span className="text-xs text-white/55">
           AI monitoring {overview.totalStreams} intelligence streams
         </span>
         <Link href="/app/scenarios" className="text-xs text-brand-cyan hover:underline">

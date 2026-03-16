@@ -38,10 +38,18 @@ const config: Config = {
         panel: 'var(--panel-bg)',
         text: 'var(--text)',
 
+        // Command Center surface tokens
+        cc: {
+          page: 'var(--cc-page)',
+          surface: 'var(--cc-surface)',
+          cyan: 'var(--cc-cyan)',
+        },
+
         // Brand Accents
         brand: {
           iris: 'var(--brand-iris)',
           cyan: 'var(--brand-cyan)',
+          violet: 'var(--brand-violet)',
           teal: 'var(--brand-teal)',
           magenta: 'var(--brand-magenta)',
           amber: 'var(--brand-amber)',
@@ -171,7 +179,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('@tailwindcss/typography'), require('tailwindcss-animate')],
 };
 
 export default config;

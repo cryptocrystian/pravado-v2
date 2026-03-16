@@ -65,7 +65,7 @@ export default function BriefingCard({
               <CardTitle className="text-lg truncate">{briefing.title}</CardTitle>
             </div>
             {briefing.subtitle && (
-              <p className="text-sm text-muted-foreground truncate">{briefing.subtitle}</p>
+              <p className="text-sm text-white/50 truncate">{briefing.subtitle}</p>
             )}
           </div>
 
@@ -85,7 +85,7 @@ export default function BriefingCard({
 
       <CardContent className="space-y-4">
         {/* Format & Tone */}
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+        <div className="flex items-center gap-3 text-sm text-white/50">
           <span className="flex items-center gap-1">
             <FileText className="h-4 w-4" />
             {getFormatLabel(briefing.format)}
@@ -97,21 +97,21 @@ export default function BriefingCard({
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-3 py-2 border-t border-b">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-muted-foreground">
+            <div className="flex items-center justify-center gap-1 text-white/50">
               <Layers className="h-3 w-3" />
               <span className="text-xs">Sections</span>
             </div>
             <div className="text-lg font-semibold">{sectionsCount}</div>
           </div>
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-muted-foreground">
+            <div className="flex items-center justify-center gap-1 text-white/50">
               <MessageSquare className="h-3 w-3" />
               <span className="text-xs">Points</span>
             </div>
             <div className="text-lg font-semibold">{talkingPointsCount}</div>
           </div>
           <div className="text-center">
-            <div className="text-xs text-muted-foreground">Confidence</div>
+            <div className="text-xs text-white/50">Confidence</div>
             <div className={cn('text-sm font-semibold', getConfidenceScoreColor(briefing.confidenceScore))}>
               {briefing.confidenceScore ? `${briefing.confidenceScore.toFixed(0)}%` : 'N/A'}
             </div>
@@ -149,7 +149,7 @@ export default function BriefingCard({
               </Badge>
             ))}
             {briefing.focusAreas.length > 3 && (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-white/50">
                 +{briefing.focusAreas.length - 3} more
               </span>
             )}
@@ -158,7 +158,7 @@ export default function BriefingCard({
 
         {/* Actions */}
         <div className="flex items-center justify-between pt-2 border-t">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1 text-xs text-white/50">
             <Clock className="h-3 w-3" />
             {formatRelativeTime(briefing.updatedAt)}
           </div>

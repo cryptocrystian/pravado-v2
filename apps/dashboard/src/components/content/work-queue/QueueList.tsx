@@ -47,8 +47,8 @@ export interface QueueListProps {
 
 const MODE_HEADERS = {
   manual: {
-    label: 'Work Queue',
-    sublabel: 'Select an item to begin',
+    label: 'Content',
+    sublabel: 'Select an item to edit',
   },
   copilot: {
     label: 'AI-Ranked Queue',
@@ -155,7 +155,7 @@ export function QueueList({
               <h3 className="text-xs font-bold uppercase tracking-wider text-white/60">
                 {displayLabel}
               </h3>
-              <span className="px-1.5 py-0.5 text-[10px] font-medium text-white/40 bg-white/5 rounded">
+              <span className="px-1.5 py-0.5 text-[11px] tabular-nums font-medium text-white/40 bg-white/5 rounded">
                 {items.length}
               </span>
             </div>

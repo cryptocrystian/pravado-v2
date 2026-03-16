@@ -17,12 +17,8 @@ CREATE TABLE IF NOT EXISTS public.seo_page_audits (
   notes TEXT,
   snapshot_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org_id consistency between audit and page
-  CONSTRAINT fk_audit_page_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.seo_pages WHERE id = page_id)
-  )
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  -- org_id consistency enforced at application layer
 );
 
 -- Indexes for performance

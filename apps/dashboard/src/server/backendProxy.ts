@@ -106,11 +106,24 @@ export async function backendFetch<T = unknown>(
     headers['Content-Type'] = 'application/json';
   }
 
-  const response = await fetch(url, {
-    ...init,
-    headers,
-    cache: 'no-store',
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...init,
+      headers,
+      cache: 'no-store',
+    });
+  } catch (fetchErr) {
+    const cause = fetchErr instanceof Error ? fetchErr.cause ?? fetchErr : fetchErr;
+    const detail = cause instanceof Error ? cause.message : String(cause);
+    console.error(`[backendProxy] Fetch failed for ${method} ${url}:`, detail);
+    throw new BackendProxyError({
+      status: 502,
+      message: `Backend unreachable: ${detail}`,
+      path,
+      code: 'BACKEND_FETCH_FAILED',
+    });
+  }
 
   debugLog('Backend response', {
     status: response.status,
@@ -186,11 +199,23 @@ export async function backendFetchRaw(
     headers['Content-Type'] = 'application/json';
   }
 
-  return fetch(url, {
-    ...init,
-    headers,
-    cache: 'no-store',
-  });
+  try {
+    return await fetch(url, {
+      ...init,
+      headers,
+      cache: 'no-store',
+    });
+  } catch (fetchErr) {
+    const cause = fetchErr instanceof Error ? fetchErr.cause ?? fetchErr : fetchErr;
+    const detail = cause instanceof Error ? cause.message : String(cause);
+    console.error(`[backendProxy] Raw fetch failed for ${url}:`, detail);
+    throw new BackendProxyError({
+      status: 502,
+      message: `Backend unreachable: ${detail}`,
+      path,
+      code: 'BACKEND_FETCH_FAILED',
+    });
+  }
 }
 
 /**

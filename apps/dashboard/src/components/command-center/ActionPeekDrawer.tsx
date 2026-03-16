@@ -47,7 +47,7 @@ function ConfidenceImpactMeter({
         </span>
         <span className="text-sm font-bold text-white">{percentage}%</span>
       </div>
-      <div className="h-2 bg-[#1F1F28] rounded-full overflow-hidden">
+      <div className="h-2 bg-slate-4 rounded-full overflow-hidden">
         <div
           className={`h-full ${color} rounded-full transition-all duration-500 ease-out`}
           style={{ width: `${percentage}%` }}
@@ -103,7 +103,7 @@ function GateWarning({ gate }: { gate: ActionItem['gate'] }) {
 
 function DiffPlaceholder() {
   return (
-    <div className="p-4 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg">
+    <div className="p-4 bg-page border border-border-subtle rounded-lg">
       <div className="flex items-center gap-2 mb-3">
         <svg
           className="w-4 h-4 text-white/50"
@@ -123,10 +123,10 @@ function DiffPlaceholder() {
         </span>
       </div>
       <div className="space-y-2">
-        <div className="h-3 w-full bg-[#1F1F28] rounded animate-pulse" />
-        <div className="h-3 w-4/5 bg-[#1F1F28] rounded animate-pulse" />
-        <div className="h-3 w-3/5 bg-[#1F1F28] rounded animate-pulse" />
-        <div className="h-3 w-2/3 bg-[#1F1F28] rounded animate-pulse" />
+        <div className="h-3 w-full bg-slate-4 rounded animate-pulse" />
+        <div className="h-3 w-4/5 bg-slate-4 rounded animate-pulse" />
+        <div className="h-3 w-3/5 bg-slate-4 rounded animate-pulse" />
+        <div className="h-3 w-2/3 bg-slate-4 rounded animate-pulse" />
       </div>
       <p className="text-[13px] text-white/50 mt-3 text-center italic">
         Detailed content preview coming soon
@@ -146,7 +146,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md bg-[#13131A] border-l border-[#1F1F28] p-0 overflow-hidden"
+        className="w-full sm:max-w-md bg-panel border-l border-border-subtle p-0 overflow-hidden"
       >
         {/* Header with pillar accent */}
         <div
@@ -163,7 +163,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
               </span>
 
               {/* Priority badge */}
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-[#1F1F28] rounded">
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-4 rounded">
                 <span
                   className={`w-2 h-2 rounded-full ${priorityStyle.dot}`}
                 />
@@ -223,7 +223,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
           </div>
 
           {/* Metadata */}
-          <div className="pt-4 border-t border-[#1F1F28]">
+          <div className="pt-4 border-t border-border-subtle">
             <div className="flex items-center justify-between text-[13px] text-white/50">
               <span>Action ID: {action.id.slice(0, 8)}...</span>
               <span>
@@ -240,7 +240,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
         </div>
 
         {/* Footer with CTAs - sticky at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 px-6 py-4 bg-[#13131A] border-t border-[#1F1F28]">
+        <div className="absolute bottom-0 left-0 right-0 px-6 py-4 bg-panel border-t border-border-subtle">
           <div className="flex gap-3">
             <button
               className={`
@@ -259,7 +259,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
               {action.cta.primary}
             </button>
             <button
-              className="px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white bg-[#1F1F28] hover:bg-[#2A2A36] rounded-lg transition-colors"
+              className="px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white bg-slate-4 hover:bg-slate-5 rounded-lg transition-colors"
               onClick={() => {
                 // TODO: Implement secondary action
                 console.log('Secondary CTA:', action.cta.secondary);

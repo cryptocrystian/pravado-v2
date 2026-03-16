@@ -201,7 +201,7 @@ export function CompetitorForm({
                     <SelectItem key={option.value} value={option.value}>
                       <div className="flex flex-col">
                         <span>{option.label}</span>
-                        <span className="text-xs text-muted-foreground">{option.description}</span>
+                        <span className="text-xs text-white/50">{option.description}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -234,7 +234,7 @@ export function CompetitorForm({
           {/* Keywords */}
           <div className="space-y-2">
             <Label>Tracking Keywords *</Label>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white/50">
               Keywords used to identify competitor mentions in media coverage
             </p>
             <div className="flex gap-2">
@@ -272,7 +272,7 @@ export function CompetitorForm({
           {/* Additional Domains */}
           <div className="space-y-2">
             <Label>Additional Domains</Label>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white/50">
               Other domains associated with this competitor
             </p>
             <div className="flex gap-2">
@@ -312,7 +312,7 @@ export function CompetitorForm({
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <Label htmlFor="isActive">Active Tracking</Label>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white/50">
                   Enable or disable competitor tracking
                 </p>
               </div>

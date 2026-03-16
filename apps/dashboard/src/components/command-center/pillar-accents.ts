@@ -26,9 +26,11 @@ export const pillarAccents: Record<
     solidBg: string;
     text: string;
     border: string;
+    borderLeft: string;  // For left-accent border (action cards)
     borderHover: string;
     glow: string;
     gradient: string;
+    badge: string;       // Pre-composed badge class
   }
 > = {
   pr: {
@@ -37,9 +39,11 @@ export const pillarAccents: Record<
     solidBg: 'bg-brand-magenta',
     text: 'text-brand-magenta',
     border: 'border-brand-magenta/30',
+    borderLeft: 'border-l-brand-magenta',
     borderHover: 'border-brand-magenta/60',
     glow: 'shadow-[0_0_12px_rgba(232,121,249,0.15)]',
     gradient: 'from-brand-magenta/20 to-transparent',
+    badge: 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30',
   },
   content: {
     bg: 'bg-brand-iris/10',
@@ -47,9 +51,11 @@ export const pillarAccents: Record<
     solidBg: 'bg-brand-iris',
     text: 'text-brand-iris',
     border: 'border-brand-iris/30',
+    borderLeft: 'border-l-brand-iris',
     borderHover: 'border-brand-iris/60',
     glow: 'shadow-[0_0_12px_rgba(168,85,247,0.15)]',
     gradient: 'from-brand-iris/20 to-transparent',
+    badge: 'bg-brand-iris/15 text-brand-iris border-brand-iris/30',
   },
   seo: {
     bg: 'bg-brand-cyan/10',
@@ -57,9 +63,11 @@ export const pillarAccents: Record<
     solidBg: 'bg-brand-cyan',
     text: 'text-brand-cyan',
     border: 'border-brand-cyan/30',
+    borderLeft: 'border-l-brand-cyan',
     borderHover: 'border-brand-cyan/60',
     glow: 'shadow-[0_0_12px_rgba(0,217,255,0.15)]',
     gradient: 'from-brand-cyan/20 to-transparent',
+    badge: 'bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30',
   },
 };
 
@@ -95,7 +103,7 @@ export const priorityStyles: Record<
   },
   low: {
     dot: 'bg-white/30',
-    bg: 'bg-white/30/10',
+    bg: 'bg-white/5',
     text: 'text-white/50',
     label: 'Low',
   },
@@ -103,12 +111,14 @@ export const priorityStyles: Record<
 
 /**
  * Mode styling for manual/copilot/autopilot
+ * Matches MODE_UX_ARCHITECTURE.md badge color contracts exactly.
  */
 export const modeStyles: Record<
   Mode,
   {
     bg: string;
     text: string;
+    border: string;
     icon: string;
     label: string;
   }
@@ -116,47 +126,37 @@ export const modeStyles: Record<
   autopilot: {
     bg: 'bg-brand-cyan/10',
     text: 'text-brand-cyan',
+    border: 'border-brand-cyan/30',
     icon: 'bolt',
     label: 'Autopilot',
   },
   copilot: {
     bg: 'bg-brand-iris/10',
     text: 'text-brand-iris',
+    border: 'border-brand-iris/30',
     icon: 'user',
     label: 'Copilot',
   },
   manual: {
-    bg: 'bg-white/20/50',
-    text: 'text-white/30',
+    bg: 'bg-white/5',
+    text: 'text-white/70',
+    border: 'border-white/20',
     icon: 'clock',
     label: 'Manual',
   },
 };
 
-/**
- * DS v3.1 Surface tokens
- */
-export const surfaceTokens = {
-  // Background levels
-  page: '#0A0A0F',
-  card: '#13131A',
-  cardElevated: '#1A1A24',
-  // Borders
-  border: '#1F1F28',
-  borderSubtle: '#16161E',
-  borderHover: '#2A2A36',
-  // Interactive states
-  hoverOverlay: 'rgba(255, 255, 255, 0.02)',
-  focusRing: 'ring-brand-cyan/30',
-};
+// surfaceTokens REMOVED — banned pattern (JS hex object bypasses Tailwind DS).
+// Use Tailwind classes directly: bg-page, bg-panel, bg-slate-3, border-border-subtle, border-slate-5, etc.
+// See docs/skills/PRAVADO_DESIGN_SKILL.md for the full token quick-reference.
 
 /**
  * Card base classes for consistent styling
  */
 export const cardClasses = {
-  base: 'bg-[#13131A] border border-[#1F1F28] rounded-lg',
-  hover: 'hover:border-[#2A2A36] transition-all duration-200',
-  interactive: 'cursor-pointer hover:bg-[#16161E]',
+  base: 'bg-panel border border-border-subtle rounded-lg',
+  hover: 'hover:border-slate-5 transition-all duration-200',
+  interactive: 'cursor-pointer hover:bg-slate-3',
   glow: 'hover:shadow-[0_0_20px_rgba(0,217,255,0.08)]',
 };
 

@@ -25,6 +25,8 @@ interface TriPaneShellProps {
   actionPane: ReactNode;
   intelligencePane: ReactNode;
   strategyPane: ReactNode;
+  greeting?: string;
+  date?: string;
 }
 
 type MobilePane = 'action' | 'intelligence' | 'strategy';
@@ -33,6 +35,8 @@ export function TriPaneShell({
   actionPane,
   intelligencePane,
   strategyPane,
+  greeting,
+  date,
 }: TriPaneShellProps) {
   const [activePane, setActivePane] = useState<MobilePane>('action');
   const [leftCollapsed, setLeftCollapsed] = useState(false);
@@ -69,9 +73,9 @@ export function TriPaneShell({
   ];
 
   return (
-    <div className="h-full flex flex-col bg-[#050508]">
+    <div className="h-full flex flex-col bg-page">
       {/* Mobile Segmented Control */}
-      <div className="lg:hidden flex items-center justify-center gap-1 p-2 bg-[#0A0A0F] border-b border-[#1A1A24]">
+      <div className="lg:hidden flex items-center justify-center gap-1 p-2 bg-page border-b border-border-subtle">
         {mobileSegments.map((segment) => (
           <button
             key={segment.key}
@@ -81,7 +85,7 @@ export function TriPaneShell({
               ${
                 activePane === segment.key
                   ? 'bg-gradient-to-r from-brand-cyan/20 to-brand-cyan/10 text-brand-cyan border border-brand-cyan/40 shadow-[0_0_20px_rgba(0,217,255,0.15)]'
-                  : 'text-white/50 hover:text-white hover:bg-[#13131A]'
+                  : 'text-white/50 hover:text-white hover:bg-panel'
               }
             `}
           >
@@ -96,9 +100,9 @@ export function TriPaneShell({
         {/* Left Pane - Action Stream */}
         <div
           className={`
-            hidden lg:flex flex-col border-r border-[#1A1A24] bg-[#0A0A0F]
+            hidden lg:flex flex-col border-r border-border-subtle bg-page
             transition-all duration-300 ease-out
-            ${leftCollapsed ? 'w-12' : 'w-[320px] xl:w-[360px]'}
+            ${leftCollapsed ? 'w-12' : 'w-[360px]'}
           `}
         >
           {leftCollapsed ? (
@@ -116,20 +120,28 @@ export function TriPaneShell({
             </button>
           ) : (
             <>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#1A1A24] bg-gradient-to-r from-[#0A0A0F] to-[#0D0D12]">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
-                  <h2 className="text-sm font-semibold text-white tracking-tight">Action Stream</h2>
+              <div className="border-b border-border-subtle bg-gradient-to-r from-page to-slate-1">
+                {greeting && (
+                  <div className="flex items-center justify-between px-4 pt-3 pb-1">
+                    <span className="text-sm font-semibold text-white/90">{greeting}</span>
+                    {date && <span className="text-[11px] text-white/40">{date}</span>}
+                  </div>
+                )}
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
+                    <h2 className="text-lg font-semibold text-white/90 tracking-tight">Action Stream</h2>
+                  </div>
+                  <button
+                    onClick={() => setLeftCollapsed(true)}
+                    className="p-1.5 text-white/50 hover:text-white hover:bg-slate-3 rounded transition-colors"
+                    aria-label="Collapse Action Stream"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
                 </div>
-                <button
-                  onClick={() => setLeftCollapsed(true)}
-                  className="p-1.5 text-white/50 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
-                  aria-label="Collapse Action Stream"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
               </div>
               <div className="flex-1 overflow-y-auto cc-scrollbar">
                 {actionPane}
@@ -139,11 +151,11 @@ export function TriPaneShell({
         </div>
 
         {/* Center Pane - Intelligence Canvas */}
-        <div className="hidden md:flex flex-1 flex-col bg-[#050508] min-w-0">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#1A1A24] bg-gradient-to-r from-[#0A0A0F] to-[#0D0D12]">
+        <div className="hidden md:flex flex-1 flex-col bg-page min-w-0">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-gradient-to-r from-page to-slate-1">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-brand-iris animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
-              <h2 className="text-sm font-semibold text-white tracking-tight">Intelligence Canvas</h2>
+              <h2 className="text-lg font-semibold text-white/90 tracking-tight">Intelligence Canvas</h2>
             </div>
             <div className="flex items-center gap-1 text-[11px] text-white/50"> {/* typography-allow: status indicator */}
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -152,7 +164,7 @@ export function TriPaneShell({
               Live
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto cc-scrollbar">
+          <div className="flex-1 min-h-0 overflow-hidden">
             {intelligencePane}
           </div>
         </div>
@@ -160,9 +172,9 @@ export function TriPaneShell({
         {/* Right Pane - Strategy Panel */}
         <div
           className={`
-            hidden lg:flex flex-col border-l border-[#1A1A24] bg-[#0A0A0F]
+            hidden lg:flex flex-col border-l border-border-subtle bg-page
             transition-all duration-300 ease-out
-            ${rightCollapsed ? 'w-12' : 'w-[300px] xl:w-[340px]'}
+            ${rightCollapsed ? 'w-12' : 'w-[340px]'}
           `}
         >
           {rightCollapsed ? (
@@ -180,14 +192,14 @@ export function TriPaneShell({
             </button>
           ) : (
             <>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#1A1A24] bg-gradient-to-r from-[#0D0D12] to-[#0A0A0F]">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-gradient-to-r from-slate-1 to-page">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-brand-magenta animate-pulse shadow-[0_0_8px_rgba(232,121,249,0.6)]" />
-                  <h2 className="text-sm font-semibold text-white tracking-tight">Strategy Panel</h2>
+                  <h2 className="text-lg font-semibold text-white/90 tracking-tight">Strategy Panel</h2>
                 </div>
                 <button
                   onClick={() => setRightCollapsed(true)}
-                  className="p-1.5 text-white/50 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
+                  className="p-1.5 text-white/50 hover:text-white hover:bg-slate-3 rounded transition-colors"
                   aria-label="Collapse Strategy Panel"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,7 +215,7 @@ export function TriPaneShell({
         </div>
 
         {/* Mobile: Single pane based on segment */}
-        <div className="lg:hidden md:hidden flex-1 overflow-y-auto cc-scrollbar bg-[#050508]">
+        <div className="lg:hidden md:hidden flex-1 overflow-y-auto cc-scrollbar bg-page">
           {activePane === 'action' && actionPane}
           {activePane === 'intelligence' && intelligencePane}
           {activePane === 'strategy' && strategyPane}
@@ -219,11 +231,11 @@ export function TriPaneShell({
           background: transparent;
         }
         .cc-scrollbar::-webkit-scrollbar-thumb {
-          background: #1A1A24;
+          background: var(--slate-3);
           border-radius: 2px;
         }
         .cc-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #2A2A36;
+          background: var(--slate-5);
         }
       `}</style>
     </div>

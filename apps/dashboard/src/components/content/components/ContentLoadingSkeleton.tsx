@@ -45,7 +45,7 @@ export function ContentLoadingSkeleton({
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <div
             key={i}
-            className="h-12 bg-[#13131A] rounded-lg animate-pulse border border-[#1A1A24]"
+            className="h-12 bg-slate-2 rounded-lg animate-pulse border border-slate-4"
           />
         ))}
       </div>
@@ -58,37 +58,37 @@ export function ContentLoadingSkeleton({
       {Array.from({ length: skeletonCount }).map((_, i) => (
         <div
           key={i}
-          className={`${config.height} bg-[#13131A] rounded-lg animate-pulse border border-[#1A1A24]`}
+          className={`${config.height} bg-slate-2 rounded-lg animate-pulse border border-slate-4`}
         >
           {density === 'comfortable' && (
             <div className="p-4 h-full flex flex-col">
               {/* Header row */}
               <div className="flex items-start justify-between mb-3">
-                <div className="h-5 w-48 bg-[#1A1A24] rounded" />
-                <div className="h-5 w-16 bg-[#1A1A24] rounded-full" />
+                <div className="h-5 w-48 bg-slate-4 rounded" />
+                <div className="h-5 w-16 bg-slate-4 rounded-full" />
               </div>
               {/* Metrics row */}
               <div className="flex gap-4 mb-3">
-                <div className="h-4 w-20 bg-[#1A1A24] rounded" />
-                <div className="h-4 w-20 bg-[#1A1A24] rounded" />
-                <div className="h-4 w-20 bg-[#1A1A24] rounded" />
+                <div className="h-4 w-20 bg-slate-4 rounded" />
+                <div className="h-4 w-20 bg-slate-4 rounded" />
+                <div className="h-4 w-20 bg-slate-4 rounded" />
               </div>
               {/* Tags row */}
               <div className="flex gap-2 mt-auto">
-                <div className="h-5 w-16 bg-[#1A1A24] rounded-md" />
-                <div className="h-5 w-20 bg-[#1A1A24] rounded-md" />
+                <div className="h-5 w-16 bg-slate-4 rounded-md" />
+                <div className="h-5 w-20 bg-slate-4 rounded-md" />
               </div>
             </div>
           )}
           {density === 'standard' && (
             <div className="p-3 h-full flex flex-col justify-between">
               <div className="flex items-center justify-between">
-                <div className="h-4 w-40 bg-[#1A1A24] rounded" />
-                <div className="h-4 w-12 bg-[#1A1A24] rounded-full" />
+                <div className="h-4 w-40 bg-slate-4 rounded" />
+                <div className="h-4 w-12 bg-slate-4 rounded-full" />
               </div>
               <div className="flex gap-3">
-                <div className="h-3 w-16 bg-[#1A1A24] rounded" />
-                <div className="h-3 w-16 bg-[#1A1A24] rounded" />
+                <div className="h-3 w-16 bg-slate-4 rounded" />
+                <div className="h-3 w-16 bg-slate-4 rounded" />
               </div>
             </div>
           )}
@@ -224,26 +224,26 @@ function CalendarSkeleton() {
     <div className="p-4">
       {/* Calendar header */}
       <div className="flex items-center justify-between mb-4">
-        <div className="h-6 w-32 bg-[#1A1A24] rounded animate-pulse" />
+        <div className="h-6 w-32 bg-slate-4 rounded animate-pulse" />
         <div className="flex gap-2">
-          <div className="h-8 w-8 bg-[#1A1A24] rounded animate-pulse" />
-          <div className="h-8 w-8 bg-[#1A1A24] rounded animate-pulse" />
+          <div className="h-8 w-8 bg-slate-4 rounded animate-pulse" />
+          <div className="h-8 w-8 bg-slate-4 rounded animate-pulse" />
         </div>
       </div>
 
       {/* Calendar grid */}
-      <div className="bg-[#13131A] rounded-lg border border-[#1A1A24] p-4 animate-pulse">
+      <div className="bg-slate-2 rounded-lg border border-slate-4 p-4 animate-pulse">
         {/* Day headers */}
         <div className="grid grid-cols-7 gap-2 mb-4">
           {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-            <div key={i} className="h-4 bg-[#1A1A24] rounded" />
+            <div key={i} className="h-4 bg-slate-4 rounded" />
           ))}
         </div>
 
         {/* Calendar cells */}
         <div className="grid grid-cols-7 gap-2">
           {Array.from({ length: 35 }).map((_, i) => (
-            <div key={i} className="h-20 bg-[#1A1A24] rounded-lg" />
+            <div key={i} className="h-20 bg-slate-4 rounded-lg" />
           ))}
         </div>
       </div>

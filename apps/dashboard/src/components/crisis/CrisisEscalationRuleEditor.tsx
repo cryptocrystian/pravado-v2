@@ -229,7 +229,7 @@ export default function CrisisEscalationRuleEditor({
         <CardContent className="flex-1 p-0">
           <ScrollArea className="h-[400px] px-4 pb-4">
             {rules.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+              <div className="flex flex-col items-center justify-center py-12 text-white/50">
                 <Shield className="h-12 w-12 mb-3 text-gray-300" />
                 <p className="text-sm">No escalation rules configured</p>
                 <Button
@@ -278,7 +278,7 @@ export default function CrisisEscalationRuleEditor({
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-xs text-muted-foreground truncate">
+                            <p className="text-xs text-white/50 truncate">
                               {formatConditions(rule.conditions)}
                             </p>
                           </div>
@@ -301,7 +301,7 @@ export default function CrisisEscalationRuleEditor({
                         <div className="p-3 pt-0 border-t space-y-3">
                           {/* Description */}
                           {rule.description && (
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-white/50">
                               {rule.description}
                             </p>
                           )}
@@ -309,22 +309,22 @@ export default function CrisisEscalationRuleEditor({
                           {/* Details Grid */}
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div>
-                              <span className="text-muted-foreground">Type:</span>
+                              <span className="text-white/50">Type:</span>
                               <span className="ml-1 capitalize">
                                 {rule.ruleType.replace('_', ' ')}
                               </span>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Cooldown:</span>
+                              <span className="text-white/50">Cooldown:</span>
                               <span className="ml-1">{rule.cooldownMinutes}min</span>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Triggers:</span>
+                              <span className="text-white/50">Triggers:</span>
                               <span className="ml-1">{rule.triggerCount}</span>
                             </div>
                             {rule.lastTriggeredAt && (
                               <div>
-                                <span className="text-muted-foreground">Last:</span>
+                                <span className="text-white/50">Last:</span>
                                 <span className="ml-1">
                                   {new Date(rule.lastTriggeredAt).toLocaleDateString()}
                                 </span>
@@ -334,7 +334,7 @@ export default function CrisisEscalationRuleEditor({
 
                           {/* Actions Summary */}
                           <div className="text-xs">
-                            <span className="text-muted-foreground">Actions:</span>
+                            <span className="text-white/50">Actions:</span>
                             <span className="ml-1 capitalize">
                               {formatActions(rule.escalationActions)}
                             </span>
@@ -489,7 +489,7 @@ export default function CrisisEscalationRuleEditor({
 
               {/* Severity Threshold */}
               <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">
+                <Label className="text-xs text-white/50">
                   Minimum Severity
                 </Label>
                 <Select
@@ -520,7 +520,7 @@ export default function CrisisEscalationRuleEditor({
 
               {/* Sentiment Threshold */}
               <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">
+                <Label className="text-xs text-white/50">
                   Sentiment Score (max)
                 </Label>
                 <Input
@@ -546,7 +546,7 @@ export default function CrisisEscalationRuleEditor({
 
               {/* Mention Velocity */}
               <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">
+                <Label className="text-xs text-white/50">
                   Mention Velocity (min per hour)
                 </Label>
                 <Input
@@ -583,7 +583,7 @@ export default function CrisisEscalationRuleEditor({
                   })
                 }
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-white/50">
                 Prevent re-triggering within this period
               </p>
             </div>

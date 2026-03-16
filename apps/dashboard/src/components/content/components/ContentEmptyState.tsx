@@ -27,9 +27,9 @@ const EMPTY_STATE_CONFIG: Record<
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
       </svg>
     ),
-    title: 'Ready to build authority',
-    subtitle: 'No actions pending. Create your first brief to start building authority through structured execution.',
-    actionLabel: 'Create Your First Brief',
+    title: 'Ready to create',
+    subtitle: 'No content in progress. Start writing your first article, email, or social post.',
+    actionLabel: 'Create Content',
   },
   library: {
     icon: (
@@ -67,9 +67,9 @@ const EMPTY_STATE_CONFIG: Record<
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
     ),
-    title: 'No briefs created',
-    subtitle: 'Generate a brief to plan content strategically',
-    actionLabel: 'Generate Brief',
+    title: 'No content created yet',
+    subtitle: 'Create an article, email, or social post to get started',
+    actionLabel: 'Create Content',
   },
   gaps: {
     icon: (

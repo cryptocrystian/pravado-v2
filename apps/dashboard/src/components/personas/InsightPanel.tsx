@@ -126,7 +126,7 @@ export function InsightPanel({ insights, onInsightClick }: InsightPanelProps) {
 
           {/* Insights list */}
           {sortedInsights.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="text-center py-8 text-white/50">
               <p>No insights available</p>
             </div>
           ) : (
@@ -142,7 +142,7 @@ export function InsightPanel({ insights, onInsightClick }: InsightPanelProps) {
                       <div className="mt-1">{getIconForType(insight.insightType)}</div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm">{insight.title}</h4>
-                        <p className="text-xs text-muted-foreground line-clamp-1">
+                        <p className="text-xs text-white/50 line-clamp-1">
                           {insight.description}
                         </p>
                       </div>
@@ -180,7 +180,7 @@ export function InsightPanel({ insights, onInsightClick }: InsightPanelProps) {
                       {insight.evidence && insight.evidence.length > 0 && (
                         <div className="mt-2">
                           <h5 className="text-xs font-medium mb-1">Evidence:</h5>
-                          <ul className="text-xs space-y-1 text-muted-foreground">
+                          <ul className="text-xs space-y-1 text-white/50">
                             {insight.evidence.map((ev: Record<string, any>, idx: number) => (
                               <li key={idx} className="list-disc list-inside">
                                 {typeof ev === 'string' ? ev : JSON.stringify(ev)}
@@ -193,7 +193,7 @@ export function InsightPanel({ insights, onInsightClick }: InsightPanelProps) {
                       {insight.recommendedActions && insight.recommendedActions.length > 0 && (
                         <div className="mt-2">
                           <h5 className="text-xs font-medium mb-1">Recommended Actions:</h5>
-                          <ul className="text-xs space-y-1 text-muted-foreground">
+                          <ul className="text-xs space-y-1 text-white/50">
                             {insight.recommendedActions.map((action, idx) => (
                               <li key={idx} className="list-disc list-inside">
                                 {action}

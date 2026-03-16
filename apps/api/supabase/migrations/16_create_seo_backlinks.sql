@@ -17,12 +17,8 @@ CREATE TABLE IF NOT EXISTS public.seo_backlinks (
   lost_at TIMESTAMPTZ, -- NULL if still active, set when link is no longer detected
   referring_domain_id UUID REFERENCES public.seo_referring_domains(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org_id consistency when page_id is set
-  CONSTRAINT fk_backlink_page_org_consistency CHECK (
-    page_id IS NULL OR org_id = (SELECT org_id FROM public.seo_pages WHERE id = page_id)
-  )
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  -- org_id consistency enforced at application layer
 );
 
 -- Indexes for performance

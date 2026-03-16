@@ -68,7 +68,7 @@ export default function NarrativeCard({
           <div className="flex-1 min-w-0">
             <CardTitle className="text-lg truncate">{narrative.title}</CardTitle>
             {narrative.subtitle && (
-              <p className="text-sm text-muted-foreground truncate mt-1">
+              <p className="text-sm text-white/50 truncate mt-1">
                 {narrative.subtitle}
               </p>
             )}
@@ -81,7 +81,7 @@ export default function NarrativeCard({
         {/* Type & Period */}
         <div className="flex items-center gap-3">
           <NarrativeTypeBadge type={narrative.narrativeType} />
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1 text-xs text-white/50">
             <Calendar className="h-3 w-3" />
             {periodLabel}
           </div>
@@ -94,13 +94,13 @@ export default function NarrativeCard({
               <Badge
                 key={system}
                 variant="outline"
-                className="text-[10px] px-1.5 py-0"
+                className="text-xs px-1.5 py-0"
               >
                 {system.replace(/_/g, ' ')}
               </Badge>
             ))}
             {narrative.sourceSystems.length > 4 && (
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+              <Badge variant="outline" className="text-[11px] tabular-nums px-1.5 py-0">
                 +{narrative.sourceSystems.length - 4}
               </Badge>
             )}
@@ -110,14 +110,14 @@ export default function NarrativeCard({
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-3 py-2 border-t border-b">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-muted-foreground">
+            <div className="flex items-center justify-center gap-1 text-white/50">
               <Database className="h-3 w-3" />
               <span className="text-xs">Sources</span>
             </div>
             <div className="text-lg font-semibold">{sourceCount}</div>
           </div>
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-muted-foreground">
+            <div className="flex items-center justify-center gap-1 text-white/50">
               <FileText className="h-3 w-3" />
               <span className="text-xs">Words</span>
             </div>
@@ -126,7 +126,7 @@ export default function NarrativeCard({
             </div>
           </div>
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-muted-foreground">
+            <div className="flex items-center justify-center gap-1 text-white/50">
               <span className="text-xs">Confidence</span>
             </div>
             <div className="text-lg font-semibold">
@@ -146,7 +146,7 @@ export default function NarrativeCard({
               </Badge>
             ))}
             {narrative.tags.length > 3 && (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-white/50">
                 +{narrative.tags.length - 3} more
               </span>
             )}
@@ -155,7 +155,7 @@ export default function NarrativeCard({
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-white/50">
             {narrative.createdBy && (
               <div className="flex items-center gap-1">
                 <User className="h-3 w-3" />

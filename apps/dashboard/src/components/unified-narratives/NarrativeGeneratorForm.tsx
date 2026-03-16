@@ -252,7 +252,7 @@ export default function NarrativeGeneratorForm({
           {/* Source Systems */}
           <div className="space-y-2">
             <Label>Source Systems</Label>
-            <p className="text-xs text-muted-foreground mb-2">
+            <p className="text-xs text-white/50 mb-2">
               Select which intelligence systems to pull data from
             </p>
             <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 border rounded-md">

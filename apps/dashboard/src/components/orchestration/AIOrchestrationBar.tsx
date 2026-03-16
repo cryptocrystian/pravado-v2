@@ -81,7 +81,7 @@ function DependencyFlow({ dependency }: { dependency: CrossPillarDependency }) {
       <span className={`px-2 py-0.5 rounded ${sourceColors.bg} ${sourceColors.text}`}>
         {dependency.source}
       </span>
-      <span className="text-muted flex items-center gap-1">
+      <span className="text-white/55 flex items-center gap-1">
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg>
@@ -243,14 +243,14 @@ export function AIOrchestrationBar() {
 
             {!expanded && (
               <>
-                <span className="text-xs text-muted">|</span>
-                <span className="text-xs text-muted">
+                <span className="text-xs text-white/55">|</span>
+                <span className="text-xs text-white/55">
                   {activeCount} streams active
                 </span>
                 {orchestration.dependencies.length > 0 && (
                   <>
-                    <span className="text-xs text-muted">|</span>
-                    <span className="text-xs text-muted">
+                    <span className="text-xs text-white/55">|</span>
+                    <span className="text-xs text-white/55">
                       {orchestration.dependencies.length} cross-pillar connections
                     </span>
                   </>
@@ -264,7 +264,7 @@ export function AIOrchestrationBar() {
               <StreamItem key={stream.id} stream={stream} />
             ))}
             <svg
-              className={`w-4 h-4 text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 text-white/55 transition-transform ${expanded ? 'rotate-180' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -281,7 +281,7 @@ export function AIOrchestrationBar() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Active Streams */}
             <div>
-              <h4 className="text-xs font-medium text-muted uppercase tracking-wider mb-3">
+              <h4 className="text-xs font-medium text-white/55 uppercase tracking-wider mb-3">
                 Active Intelligence Streams
               </h4>
               <div className="flex flex-wrap gap-2">
@@ -293,14 +293,14 @@ export function AIOrchestrationBar() {
 
             {/* Cross-Pillar Dependencies */}
             <div>
-              <h4 className="text-xs font-medium text-muted uppercase tracking-wider mb-3">
+              <h4 className="text-xs font-medium text-white/55 uppercase tracking-wider mb-3">
                 Cross-Pillar Influence
               </h4>
               <div className="space-y-3">
                 {orchestration.dependencies.map((dep) => (
                   <div key={dep.id}>
                     <DependencyFlow dependency={dep} />
-                    <p className="text-xs text-slate-6 mt-1 ml-2">{dep.description}</p>
+                    <p className="text-xs text-white/55 mt-1 ml-2">{dep.description}</p>
                   </div>
                 ))}
               </div>
@@ -312,7 +312,7 @@ export function AIOrchestrationBar() {
             <div className="mt-4 pt-4 border-t border-border-subtle">
               <div className="flex items-center gap-2">
                 <AIDot status="active" />
-                <span className="text-xs text-muted">{orchestration.currentActivity}</span>
+                <span className="text-xs text-white/55">{orchestration.currentActivity}</span>
               </div>
             </div>
           )}

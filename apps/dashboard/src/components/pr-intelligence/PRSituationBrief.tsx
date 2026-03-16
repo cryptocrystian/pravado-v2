@@ -163,10 +163,10 @@ export function PRSituationBrief({
 
   if (loading) {
     return (
-      <div className="panel-card p-6 shadow-lg shadow-slate-1/20">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6 shadow-lg shadow-slate-1/20">
         <div className="flex items-center justify-center py-16">
           <AIDot status="analyzing" />
-          <span className="ml-3 text-muted">Analyzing PR landscape...</span>
+          <span className="ml-3 text-white/55">Analyzing PR landscape...</span>
         </div>
       </div>
     );
@@ -174,12 +174,12 @@ export function PRSituationBrief({
 
   if (!data) {
     return (
-      <div className="panel-card p-6 shadow-lg shadow-slate-1/20">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6 shadow-lg shadow-slate-1/20">
         <div className="text-center py-12">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-brand-iris/10 flex items-center justify-center">
             <AIDot status="idle" size="md" />
           </div>
-          <p className="text-muted font-medium">No PR data available</p>
+          <p className="text-white/55 font-medium">No PR data available</p>
           <p className="text-sm text-slate-10 mt-1">Connect your media monitoring to get started</p>
           {onRefresh && (
             <button
@@ -199,7 +199,7 @@ export function PRSituationBrief({
   const highRisks = data.signals.filter(s => s.type === 'risk' && s.severity >= 70);
 
   return (
-    <div className="panel-card overflow-hidden shadow-lg shadow-slate-1/20">
+    <div className="bg-panel border border-border-subtle rounded-xl overflow-hidden shadow-lg shadow-slate-1/20">
       {/* Header */}
       <div className="px-6 py-5 border-b border-border-subtle bg-gradient-to-r from-slate-3/50 to-slate-3/30">
         <div className="flex items-center justify-between">
@@ -211,7 +211,7 @@ export function PRSituationBrief({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-white tracking-tight">PR Situation Brief</h2>
+                <h2 className="text-xl font-bold text-white/95 tracking-tight">PR Situation Brief</h2>
                 <AIDot status="idle" size="md" />
               </div>
               <p className="text-sm text-slate-10 mt-0.5">
@@ -225,7 +225,7 @@ export function PRSituationBrief({
               <button
                 onClick={onRefresh}
                 disabled={refreshing}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-4/50 hover:bg-slate-4 text-muted hover:text-white transition-all border border-border-subtle"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-4/50 hover:bg-slate-4 text-white/55 hover:text-white/90 transition-all border border-border-subtle"
               >
                 <svg className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -352,7 +352,7 @@ export function PRSituationBrief({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <p className="font-medium text-white">All Clear</p>
+                <p className="font-medium text-white/95">All Clear</p>
                 <p className="text-sm text-slate-10 mt-1">No items require immediate PR attention</p>
               </div>
             ) : (
@@ -385,7 +385,7 @@ export function PRSituationBrief({
                             </span>
                           )}
                         </div>
-                        <h4 className="font-semibold text-white text-base leading-snug">{item.title}</h4>
+                        <h4 className="font-semibold text-white/95 text-base leading-snug">{item.title}</h4>
                         <p className="text-sm text-slate-11 mt-1.5 leading-relaxed">{item.description}</p>
                       </div>
                       <Link
@@ -410,7 +410,7 @@ export function PRSituationBrief({
         {activeTab === 'signals' && (
           <div className="space-y-4">
             {data.signals.length === 0 ? (
-              <div className="text-center py-12 text-muted">
+              <div className="text-center py-12 text-white/55">
                 <p>No emerging signals detected</p>
               </div>
             ) : (
@@ -446,7 +446,7 @@ export function PRSituationBrief({
                           <span className="text-xs text-slate-10">{signal.confidence}% confidence</span>
                           <span className="text-xs text-slate-10">· {signal.severity}% severity</span>
                         </div>
-                        <h4 className="font-semibold text-white text-base leading-snug">{signal.title}</h4>
+                        <h4 className="font-semibold text-white/95 text-base leading-snug">{signal.title}</h4>
                         <p className="text-sm text-slate-11 mt-1.5 leading-relaxed">{signal.description}</p>
                         {signal.affectedPillars.length > 0 && (
                           <div className="flex items-center gap-2 mt-3">
@@ -465,7 +465,7 @@ export function PRSituationBrief({
                       {signal.actionUrl && (
                         <Link
                           href={signal.actionUrl}
-                          className="flex-shrink-0 p-2 rounded-lg hover:bg-slate-4/50 text-muted hover:text-white transition-colors"
+                          className="flex-shrink-0 p-2 rounded-lg hover:bg-slate-4/50 text-white/55 hover:text-white/90 transition-colors"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
@@ -484,7 +484,7 @@ export function PRSituationBrief({
         {activeTab === 'changes' && (
           <div className="space-y-4">
             {data.changes.length === 0 ? (
-              <div className="text-center py-12 text-muted">
+              <div className="text-center py-12 text-white/55">
                 <p>No changes detected since last review</p>
               </div>
             ) : (
@@ -517,13 +517,13 @@ export function PRSituationBrief({
                             {new Date(change.timestamp).toLocaleTimeString()}
                           </span>
                         </div>
-                        <h4 className="font-semibold text-white">{change.title}</h4>
+                        <h4 className="font-semibold text-white/95">{change.title}</h4>
                         <p className="text-sm text-slate-11 mt-1">{change.description}</p>
                       </div>
                       {change.linkUrl && (
                         <Link
                           href={change.linkUrl}
-                          className="flex-shrink-0 p-2 rounded-lg hover:bg-slate-4/50 text-muted hover:text-white transition-colors"
+                          className="flex-shrink-0 p-2 rounded-lg hover:bg-slate-4/50 text-white/55 hover:text-white/90 transition-colors"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

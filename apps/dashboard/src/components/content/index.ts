@@ -39,6 +39,9 @@ export { ContentWorkSurfaceShell, type ContentWorkSurfaceShellProps } from './Co
 // VIEWS
 // ============================================
 export { ContentWorkQueueView } from './views/ContentWorkQueueView';
+export { ManualModeView } from './views/ManualModeView';
+export { CopilotModeView } from './views/CopilotModeView';
+export { AutopilotModeView } from './views/AutopilotModeView';
 export { ContentLibraryView, AssetDetailPreview } from './views/ContentLibraryView';
 export { ContentCalendarView, ContentAgendaView } from './views/ContentCalendarView';
 export { ContentInsightsView } from './views/ContentInsightsView';
@@ -54,6 +57,7 @@ export { AuthorityDashboard, AuthorityStrip } from './components/AuthorityDashbo
 export { CiteMindStatusIndicator, CiteMindGatePanel } from './components/CiteMindStatusIndicator';
 export { DerivativesPanel, type DerivativesPanelProps } from './components/DerivativesPanel';
 export { CiteMindGatingPanel, type CiteMindGatingPanelProps } from './components/CiteMindGatingPanel';
+export { CiteMindPublishGate, type CiteMindPublishGateProps } from './components/CiteMindPublishGate';
 export { LifecycleStepper, type LifecycleStatus, type LifecycleStepperProps } from './components/LifecycleStepper';
 export { CrossPillarHooksPanel, type CrossPillarHooksPanelProps } from './components/CrossPillarHooksPanel';
 export {
@@ -71,6 +75,27 @@ export {
   AIProgressIndicator,
   AIStateDot,
 } from './components/AIStateIndicator';
+
+// ============================================
+// EDITOR (Phase 1 - Block Editor)
+// ============================================
+export {
+  TiptapEditor,
+  type TiptapEditorProps,
+  type TiptapEditorHandle,
+  type HeadingNode,
+  type SaveState,
+  DocumentOutline,
+  type DocumentOutlineProps,
+  ArticleEditor,
+  type ArticleEditorProps,
+  PravadoEditor,
+  type PravadoEditorProps,
+  DocumentRail,
+  type DocumentRailProps,
+  ContextRailEditor,
+  type ContextRailEditorProps,
+} from './editor';
 
 // ============================================
 // HOOKS

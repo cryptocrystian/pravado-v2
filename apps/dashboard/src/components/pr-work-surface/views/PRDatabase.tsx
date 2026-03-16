@@ -503,7 +503,7 @@ function RelationshipBadge({ stage }: { stage: RelationshipStage }) {
     advocate: { color: 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30', label: 'Advocate' },
   };
   const { color, label } = config[stage];
-  return <span className={`px-2 py-0.5 text-[11px] font-medium rounded border ${color}`}>{label}</span>;
+  return <span className={`px-2 py-0.5 text-[13px] font-medium rounded border ${color}`}>{label}</span>;
 }
 
 function EntityTypeBadge({ type }: { type: EntityType }) {
@@ -523,7 +523,7 @@ function EntityTypeBadge({ type }: { type: EntityType }) {
     outlet: 'Outlet',
   };
   return (
-    <span className={`px-2 py-0.5 text-[11px] font-medium rounded border ${color}`}>
+    <span className={`px-2 py-0.5 text-[13px] font-medium rounded border ${color}`}>
       {labels[type]}
     </span>
   );
@@ -531,14 +531,14 @@ function EntityTypeBadge({ type }: { type: EntityType }) {
 
 function VerificationBadge({ status }: { status: VerificationStatus }) {
   const config = {
-    verified: { color: 'bg-semantic-success text-white', icon: 'check' },
+    verified: { color: 'bg-semantic-success text-white/95', icon: 'check' },
     unverified: { color: 'bg-white/20 text-white/60', icon: 'question' },
-    outdated: { color: 'bg-semantic-warning text-white', icon: 'alert' },
-    needs_review: { color: 'bg-semantic-danger text-white', icon: 'alert' },
+    outdated: { color: 'bg-semantic-warning text-white/95', icon: 'alert' },
+    needs_review: { color: 'bg-semantic-danger text-white/95', icon: 'alert' },
   };
   const { color, icon } = config[status];
   return (
-    <span className={`w-5 h-5 flex items-center justify-center text-[10px] rounded ${color}`}>
+    <span className={`w-5 h-5 flex items-center justify-center text-[13px] rounded ${color}`}>
       {icon === 'check' && (
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -555,7 +555,7 @@ function TopicCurrencyIndicator({ value, showLabel = true }: { value: number; sh
   const textColor = value >= 80 ? 'text-semantic-success' : value >= 50 ? 'text-semantic-warning' : 'text-semantic-danger';
   return (
     <div className="flex items-center gap-2">
-      <div className="w-16 h-1.5 rounded-full bg-[#1A1A24] overflow-hidden">
+      <div className="w-16 h-1.5 rounded-full bg-slate-4 overflow-hidden">
         <div className={`h-full rounded-full ${color}`} style={{ width: `${value}%` }} />
       </div>
       {showLabel && <span className={`text-xs font-medium ${textColor}`}>{value}%</span>}
@@ -585,7 +585,7 @@ function FilterChip({
       className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all duration-200 ${
         active
           ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30 shadow-[0_0_12px_rgba(232,121,249,0.15)]'
-          : 'bg-white/5 text-white/55 border-[#1A1A24] hover:text-white/80 hover:border-[#2A2A36]'
+          : 'bg-white/5 text-white/55 border-border-subtle hover:text-white/80 hover:border-slate-5'
       }`}
     >
       {label}
@@ -596,7 +596,7 @@ function FilterChip({
 
 function ActiveFilterTag({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-full bg-brand-magenta/15 text-brand-magenta border border-brand-magenta/30">
+    <span className="inline-flex items-center gap-1 px-2 py-1 text-[13px] font-medium rounded-full bg-brand-magenta/15 text-brand-magenta border border-brand-magenta/30">
       {label}
       <button type="button" onClick={onRemove} className="hover:text-white transition-colors">
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -643,10 +643,10 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-[#0A0A0F]/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-[#0D0D12] border-l border-[#1A1A24] overflow-y-auto">
+      <div className="absolute inset-0 bg-page/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-md bg-panel border-l border-border-subtle overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-[#0D0D12] border-b border-[#1A1A24] px-6 py-4">
+        <div className="sticky top-0 z-10 bg-panel border-b border-border-subtle px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-lg ${prAccent.bg} flex items-center justify-center`}>
@@ -681,7 +681,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                     localFilters.geos.includes(geo)
                       ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
-                      : 'bg-white/5 text-white/55 border-[#1A1A24] hover:text-white/80'
+                      : 'bg-white/5 text-white/55 border-border-subtle hover:text-white/80'
                   }`}
                 >
                   {geo}
@@ -702,7 +702,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                     localFilters.languages.includes(lang)
                       ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
-                      : 'bg-white/5 text-white/55 border-[#1A1A24] hover:text-white/80'
+                      : 'bg-white/5 text-white/55 border-border-subtle hover:text-white/80'
                   }`}
                 >
                   {lang.toUpperCase()}
@@ -723,7 +723,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                     localFilters.outletTypes.includes(opt.value)
                       ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
-                      : 'bg-white/5 text-white/55 border-[#1A1A24] hover:text-white/80'
+                      : 'bg-white/5 text-white/55 border-border-subtle hover:text-white/80'
                   }`}
                 >
                   {opt.label}
@@ -744,11 +744,11 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                   className={`w-full px-3 py-2.5 text-left rounded-lg border transition-all ${
                     localFilters.outletTiers.includes(opt.value)
                       ? 'bg-brand-magenta/10 border-brand-magenta/30'
-                      : 'bg-white/5 border-[#1A1A24] hover:border-[#2A2A36]'
+                      : 'bg-white/5 border-border-subtle hover:border-slate-5'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className={`text-sm font-medium ${localFilters.outletTiers.includes(opt.value) ? 'text-brand-magenta' : 'text-white'}`}>
+                    <span className={`text-sm font-medium ${localFilters.outletTiers.includes(opt.value) ? 'text-brand-magenta' : 'text-white/90'}`}>
                       {opt.label}
                     </span>
                     {localFilters.outletTiers.includes(opt.value) && (
@@ -775,7 +775,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                     localFilters.beatTags.includes(beat)
                       ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
-                      : 'bg-white/5 text-white/55 border-[#1A1A24] hover:text-white/80'
+                      : 'bg-white/5 text-white/55 border-border-subtle hover:text-white/80'
                   }`}
                 >
                   {beat}
@@ -799,7 +799,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                     topicCurrencyRange: { ...localFilters.topicCurrencyRange, min: Number(e.target.value) || undefined },
                   })
                 }
-                className="w-full h-2 bg-[#1A1A24] rounded-lg appearance-none cursor-pointer accent-brand-magenta"
+                className="w-full h-2 bg-slate-4 rounded-lg appearance-none cursor-pointer accent-brand-magenta"
               />
               <div className="flex items-center justify-between text-xs text-white/55">
                 <span>Min: {localFilters.topicCurrencyRange.min ?? 0}%</span>
@@ -824,7 +824,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                     pitchScoreRange: { ...localFilters.pitchScoreRange, min: e.target.value ? Number(e.target.value) : undefined },
                   })
                 }
-                className="w-20 px-3 py-2 text-sm rounded-lg bg-[#0A0A0F] border border-[#1A1A24] text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50"
+                className="w-20 px-3 py-2 text-sm rounded-lg bg-slate-1 border border-border-subtle text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50"
               />
               <span className="text-white/55">to</span>
               <input
@@ -839,7 +839,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                     pitchScoreRange: { ...localFilters.pitchScoreRange, max: e.target.value ? Number(e.target.value) : undefined },
                   })
                 }
-                className="w-20 px-3 py-2 text-sm rounded-lg bg-[#0A0A0F] border border-[#1A1A24] text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50"
+                className="w-20 px-3 py-2 text-sm rounded-lg bg-slate-1 border border-border-subtle text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50"
               />
             </div>
           </div>
@@ -857,7 +857,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                     lastTouchRange: { ...localFilters.lastTouchRange, from: e.target.value || undefined },
                   })
                 }
-                className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0A0A0F] border border-[#1A1A24] text-white focus:outline-none focus:border-brand-magenta/50"
+                className="flex-1 px-3 py-2 text-sm rounded-lg bg-slate-1 border border-border-subtle text-white focus:outline-none focus:border-brand-magenta/50"
               />
               <span className="text-white/55">to</span>
               <input
@@ -869,7 +869,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                     lastTouchRange: { ...localFilters.lastTouchRange, to: e.target.value || undefined },
                   })
                 }
-                className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0A0A0F] border border-[#1A1A24] text-white focus:outline-none focus:border-brand-magenta/50"
+                className="flex-1 px-3 py-2 text-sm rounded-lg bg-slate-1 border border-border-subtle text-white focus:outline-none focus:border-brand-magenta/50"
               />
             </div>
           </div>
@@ -896,7 +896,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                     className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                       isActive
                         ? colorClasses[opt.color as keyof typeof colorClasses]
-                        : 'bg-white/5 text-white/55 border-[#1A1A24] hover:text-white/80'
+                        : 'bg-white/5 text-white/55 border-border-subtle hover:text-white/80'
                     }`}
                   >
                     {opt.label}
@@ -918,7 +918,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                     localFilters.audienceSignals.includes(opt.value)
                       ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
-                      : 'bg-white/5 text-white/55 border-[#1A1A24] hover:text-white/80'
+                      : 'bg-white/5 text-white/55 border-border-subtle hover:text-white/80'
                   }`}
                 >
                   {opt.label}
@@ -929,7 +929,7 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
         </div>
 
         {/* Footer Actions */}
-        <div className="sticky bottom-0 bg-[#0D0D12] border-t border-[#1A1A24] px-6 py-4 flex items-center justify-between">
+        <div className="sticky bottom-0 bg-panel border-t border-border-subtle px-6 py-4 flex items-center justify-between">
           <button type="button" onClick={handleReset} className="text-sm text-white/55 hover:text-white transition-colors">
             Reset all
           </button>
@@ -976,7 +976,7 @@ function SavedSegmentsPanel({ segments, activeSegmentId, onSelectSegment, onSave
   };
 
   return (
-    <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+    <div className="p-4 rounded-xl bg-panel border border-border-subtle">
       <div className="flex items-center justify-between mb-3">
         <h3 className={typography.titleSmall}>Saved Segments</h3>
         <button
@@ -995,11 +995,11 @@ function SavedSegmentsPanel({ segments, activeSegmentId, onSelectSegment, onSave
           className={`w-full px-3 py-2.5 text-left rounded-lg border transition-all ${
             activeSegmentId === null
               ? 'bg-white/10 border-white/20'
-              : 'bg-white/5 border-transparent hover:border-[#1A1A24]'
+              : 'bg-white/5 border-transparent hover:border-border-subtle'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className={`text-sm font-medium ${activeSegmentId === null ? 'text-white' : 'text-white/70'}`}>All Contacts</span>
+            <span className={`text-sm font-medium ${activeSegmentId === null ? 'text-white/90' : 'text-white/70'}`}>All Contacts</span>
           </div>
         </button>
 
@@ -1012,12 +1012,12 @@ function SavedSegmentsPanel({ segments, activeSegmentId, onSelectSegment, onSave
             className={`w-full px-3 py-2.5 text-left rounded-lg border transition-all ${
               activeSegmentId === segment.id
                 ? colorMap[segment.color || 'magenta']
-                : 'bg-white/5 border-transparent hover:border-[#1A1A24]'
+                : 'bg-white/5 border-transparent hover:border-border-subtle'
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {segment.isPinned && <span className="text-[10px]">*</span>}
+                {segment.isPinned && <span className="text-[13px]">*</span>}
                 <span className={`text-sm font-medium ${activeSegmentId === segment.id ? '' : 'text-white/70'}`}>{segment.name}</span>
               </div>
               <span className="text-xs text-white/50">{segment.contactCount}</span>
@@ -1045,12 +1045,12 @@ function DataQualityPanel({ stats, isDataQualityMode, onToggle }: DataQualityPan
   const qualityBg = stats.qualityScore >= 80 ? 'bg-semantic-success' : stats.qualityScore >= 60 ? 'bg-semantic-warning' : 'bg-semantic-danger';
 
   return (
-    <div className={`p-4 rounded-xl border transition-colors ${isDataQualityMode ? 'bg-semantic-warning/10 border-semantic-warning/30' : 'bg-[#0D0D12] border-[#1A1A24]'}`}>
+    <div className={`p-4 rounded-xl border transition-colors ${isDataQualityMode ? 'bg-semantic-warning/10 border-semantic-warning/30' : 'bg-panel border-border-subtle'}`}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           <h3 className={typography.titleSmall}>Data Quality</h3>
           <div className="flex items-center gap-2">
-            <div className={`w-8 h-2 rounded-full bg-[#1A1A24] overflow-hidden`}>
+            <div className={`w-8 h-2 rounded-full bg-slate-4 overflow-hidden`}>
               <div className={`h-full rounded-full ${qualityBg}`} style={{ width: `${stats.qualityScore}%` }} />
             </div>
             <span className={`text-sm font-bold ${qualityColor}`}>{stats.qualityScore}%</span>
@@ -1059,10 +1059,10 @@ function DataQualityPanel({ stats, isDataQualityMode, onToggle }: DataQualityPan
         <button
           type="button"
           onClick={onToggle}
-          className={`px-3 py-1.5 text-[11px] font-medium rounded-lg border transition-all ${
+          className={`px-3 py-1.5 text-[13px] font-medium rounded-lg border transition-all ${
             isDataQualityMode
               ? 'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30'
-              : 'bg-white/5 text-white/55 border-[#1A1A24] hover:text-white/80'
+              : 'bg-white/5 text-white/55 border-border-subtle hover:text-white/80'
           }`}
         >
           {isDataQualityMode ? 'Exit' : 'Enter'} Quality Mode
@@ -1071,21 +1071,21 @@ function DataQualityPanel({ stats, isDataQualityMode, onToggle }: DataQualityPan
 
       {isDataQualityMode && (
         <div className="grid grid-cols-2 gap-2 mt-3">
-          <div className="p-2 rounded-lg bg-[#0A0A0F]">
+          <div className="p-2 rounded-lg bg-slate-1">
             <div className="text-lg font-bold text-semantic-success">{stats.verifiedCount}</div>
-            <div className="text-[11px] text-white/50">Verified</div>
+            <div className="text-[13px] text-white/50">Verified</div>
           </div>
-          <div className="p-2 rounded-lg bg-[#0A0A0F]">
+          <div className="p-2 rounded-lg bg-slate-1">
             <div className="text-lg font-bold text-semantic-warning">{stats.outdatedCount}</div>
-            <div className="text-[11px] text-white/50">Outdated</div>
+            <div className="text-[13px] text-white/50">Outdated</div>
           </div>
-          <div className="p-2 rounded-lg bg-[#0A0A0F]">
+          <div className="p-2 rounded-lg bg-slate-1">
             <div className="text-lg font-bold text-semantic-danger">{stats.missingEmailCount}</div>
-            <div className="text-[11px] text-white/50">Missing Email</div>
+            <div className="text-[13px] text-white/50">Missing Email</div>
           </div>
-          <div className="p-2 rounded-lg bg-[#0A0A0F]">
+          <div className="p-2 rounded-lg bg-slate-1">
             <div className="text-lg font-bold text-white/55">{stats.lowTopicCurrencyCount}</div>
-            <div className="text-[11px] text-white/50">Low Currency</div>
+            <div className="text-[13px] text-white/50">Low Currency</div>
           </div>
         </div>
       )}
@@ -1119,7 +1119,7 @@ function ColumnChooser({ columns, onToggleColumn, density, onDensityChange }: Co
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-white/55 border border-[#1A1A24] rounded-lg hover:text-white/80 hover:border-[#2A2A36] transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-white/55 border border-border-subtle rounded-lg hover:text-white/80 hover:border-slate-5 transition-colors"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
@@ -1130,17 +1130,17 @@ function ColumnChooser({ columns, onToggleColumn, density, onDensityChange }: Co
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 w-64 p-4 bg-[#13131A] border border-[#1F1F28] rounded-xl shadow-elev-2 z-50">
+          <div className="absolute right-0 top-full mt-2 w-64 p-4 bg-slate-2 border border-slate-4 rounded-xl shadow-elev-2 z-50">
             {/* Density Toggle */}
-            <div className="mb-4 pb-4 border-b border-[#1A1A24]">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2">Density</p>
+            <div className="mb-4 pb-4 border-b border-border-subtle">
+              <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-2">Density</p>
               <div className="flex gap-1">
                 {(['compact', 'comfortable', 'spacious'] as DensityMode[]).map((d) => (
                   <button
                     key={d}
                     type="button"
                     onClick={() => onDensityChange(d)}
-                    className={`flex-1 px-2 py-1.5 text-[11px] font-medium rounded transition-all ${
+                    className={`flex-1 px-2 py-1.5 text-[13px] font-medium rounded transition-all ${
                       density === d
                         ? 'bg-brand-magenta/15 text-brand-magenta'
                         : 'text-white/55 hover:text-white/80'
@@ -1153,7 +1153,7 @@ function ColumnChooser({ columns, onToggleColumn, density, onDensityChange }: Co
             </div>
 
             {/* Column Toggles */}
-            <p className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2">Visible Columns</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-2">Visible Columns</p>
             <div className="space-y-1">
               {columns.map((col) => (
                 <button
@@ -1532,7 +1532,7 @@ export function PRDatabase() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h2 className="text-base font-semibold text-white">Media Database</h2>
+        <h2 className="text-base font-semibold text-white/95">Media Database</h2>
         <p className="text-xs text-white/40 mt-0.5">
           Select the right relationships to engage
           {isLoading && <span className="ml-2 text-brand-magenta">Loading...</span>}
@@ -1541,8 +1541,8 @@ export function PRDatabase() {
 
       {/* Error State */}
       {hasError && (
-        <div className="p-4 rounded-lg bg-semantic-error/10 border border-semantic-error/30">
-          <div className="flex items-center gap-2 text-semantic-error">
+        <div className="p-4 rounded-lg bg-semantic-danger/10 border border-semantic-danger/30">
+          <div className="flex items-center gap-2 text-semantic-danger">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -1565,7 +1565,7 @@ export function PRDatabase() {
               setFilters((prev) => ({ ...prev, searchQuery: e.target.value }));
               setActiveSegmentId(null);
             }}
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#0D0D12] border border-[#1A1A24] text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50 focus:ring-1 focus:ring-brand-magenta/30 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-panel border border-border-subtle text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50 focus:ring-1 focus:ring-brand-magenta/30 transition-all"
           />
         </div>
         <button
@@ -1574,7 +1574,7 @@ export function PRDatabase() {
           className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-all ${
             activeFilterCount > 0
               ? `${prAccent.bg} ${prAccent.border} ${prAccent.text} ${prAccent.glow}`
-              : 'bg-white/5 border-[#1A1A24] text-white/55 hover:text-white/80 hover:border-[#2A2A36]'
+              : 'bg-white/5 border-border-subtle text-white/55 hover:text-white/80 hover:border-slate-5'
           }`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1582,7 +1582,7 @@ export function PRDatabase() {
           </svg>
           Filters
           {activeFilterCount > 0 && (
-            <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-brand-magenta text-white">{activeFilterCount}</span>
+            <span className="px-1.5 py-0.5 text-[13px] font-bold rounded-full bg-brand-magenta text-white/95">{activeFilterCount}</span>
           )}
         </button>
         <ColumnChooser
@@ -1602,7 +1602,7 @@ export function PRDatabase() {
 
       {/* Quick Filter Chips */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-white/50 mr-2">Type:</span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-white/55 mr-2">Type:</span>
         {ENTITY_TYPE_OPTIONS.map((opt) => (
           <FilterChip
             key={opt.value}
@@ -1611,8 +1611,8 @@ export function PRDatabase() {
             onClick={() => toggleEntityType(opt.value)}
           />
         ))}
-        <div className="w-px h-5 bg-[#1A1A24] mx-2" />
-        <span className="text-[10px] font-bold uppercase tracking-wider text-white/50 mr-2">Stage:</span>
+        <div className="w-px h-5 bg-slate-4 mx-2" />
+        <span className="text-xs font-semibold uppercase tracking-wide text-white/55 mr-2">Stage:</span>
         {RELATIONSHIP_STAGE_OPTIONS.map((opt) => (
           <FilterChip
             key={opt.value}
@@ -1677,7 +1677,7 @@ export function PRDatabase() {
             <button
               type="button"
               onClick={handleBulkAddToSegment}
-              className="px-3 py-1.5 text-xs font-medium text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-[#1A1A24] transition-colors"
+              className="px-3 py-1.5 text-xs font-medium text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-border-subtle transition-colors"
             >
               Add to segment
             </button>
@@ -1716,10 +1716,10 @@ export function PRDatabase() {
           </div>
 
           {/* Table */}
-          <div className="rounded-xl border border-[#1A1A24] overflow-hidden">
+          <div className="rounded-xl border border-border-subtle overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#0D0D12]">
+                <tr className="bg-panel">
                   {/* Bulk Select Checkbox */}
                   <th className="w-10 px-3 py-3">
                     <button
@@ -1744,30 +1744,30 @@ export function PRDatabase() {
                     </button>
                   </th>
                   {visibleColumns.some((c) => c.id === 'contact') && (
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Contact</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Contact</th>
                   )}
                   {visibleColumns.some((c) => c.id === 'type') && (
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Type</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Type</th>
                   )}
                   {visibleColumns.some((c) => c.id === 'beats') && (
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Beats</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Beats</th>
                   )}
                   {visibleColumns.some((c) => c.id === 'currency') && (
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Currency</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Currency</th>
                   )}
                   {visibleColumns.some((c) => c.id === 'relationship') && (
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Relationship</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Relationship</th>
                   )}
                   {visibleColumns.some((c) => c.id === 'score') && (
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Score</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Score</th>
                   )}
                   {visibleColumns.some((c) => c.id === 'lastTouch') && (
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/50">Last Touch</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Last Touch</th>
                   )}
-                  <th className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-white/50">Actions</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-white/55">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1A1A24]">
+              <tbody className="divide-y divide-border-subtle">
                 {filteredContacts.map((contact) => (
                   <tr
                     key={contact.id}
@@ -1776,7 +1776,7 @@ export function PRDatabase() {
                         ? 'bg-brand-magenta/5'
                         : isDataQualityMode && contact.verificationStatus !== 'verified'
                         ? 'bg-semantic-warning/5 hover:bg-semantic-warning/10'
-                        : 'bg-[#0A0A0F] hover:bg-[#111116]'
+                        : 'bg-slate-1 hover:bg-slate-2'
                     }`}
                     onClick={() => setSelectedContactId(contact.id)}
                   >
@@ -1803,7 +1803,7 @@ export function PRDatabase() {
                         <div className="flex items-start gap-2">
                           {contact.verificationStatus && <VerificationBadge status={contact.verificationStatus} />}
                           <div>
-                            <div className="font-medium text-white">{contact.name}</div>
+                            <div className="font-medium text-white/90">{contact.name}</div>
                             {contact.outlet && <div className="text-sm text-white/55">{contact.outlet}</div>}
                             {contact.email && <div className="text-xs text-white/40">{contact.email}</div>}
                             {!contact.email && isDataQualityMode && (
@@ -1822,12 +1822,12 @@ export function PRDatabase() {
                       <td className={`px-4 ${rowPadding[density]}`}>
                         <div className="flex flex-wrap gap-1">
                           {contact.beats.slice(0, 2).map((beat) => (
-                            <span key={beat} className="px-2 py-0.5 text-[11px] rounded bg-white/5 text-white/55 border border-[#1A1A24]">
+                            <span key={beat} className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle">
                               {beat}
                             </span>
                           ))}
                           {contact.beats.length > 2 && (
-                            <span className="px-2 py-0.5 text-[11px] rounded bg-white/5 text-white/55 border border-[#1A1A24]">+{contact.beats.length - 2}</span>
+                            <span className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle">+{contact.beats.length - 2}</span>
                           )}
                         </div>
                       </td>
@@ -1903,8 +1903,8 @@ export function PRDatabase() {
             </table>
 
             {filteredContacts.length === 0 && (
-              <div className="p-12 text-center bg-[#0A0A0F]">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#0D0D12] border border-[#1A1A24] flex items-center justify-center">
+              <div className="p-12 text-center bg-slate-1">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-panel border border-border-subtle flex items-center justify-center">
                   <svg className="w-8 h-8 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
@@ -1931,8 +1931,8 @@ export function PRDatabase() {
 
       {/* Contact Detail Drawer (DS3) */}
       {selectedContactId && (
-        <div className="fixed inset-0 bg-[#0A0A0F]/80 backdrop-blur-sm z-50 flex justify-end">
-          <div className="w-full max-w-lg bg-[#0D0D12] border-l border-[#1A1A24] overflow-y-auto">
+        <div className="fixed inset-0 bg-page/70 backdrop-blur-sm z-50 flex justify-end">
+          <div className="w-full max-w-lg bg-panel border-l border-border-subtle overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className={typography.titleLarge}>Contact Details</h2>
@@ -1954,7 +1954,7 @@ export function PRDatabase() {
                     <div className="flex items-start gap-3">
                       {contact.verificationStatus && <VerificationBadge status={contact.verificationStatus} />}
                       <div>
-                        <h3 className="text-xl font-bold text-white">{contact.name}</h3>
+                        <h3 className="text-xl font-bold text-white/95">{contact.name}</h3>
                         {contact.outlet && <p className="text-white/55">{contact.outlet}</p>}
                       </div>
                     </div>
@@ -1962,30 +1962,30 @@ export function PRDatabase() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <EntityTypeBadge type={contact.entityType} />
                       <RelationshipBadge stage={contact.relationshipStage} />
-                      {contact.geo && <span className="px-2 py-0.5 text-[11px] rounded bg-white/5 text-white/55 border border-[#1A1A24]">{contact.geo}</span>}
+                      {contact.geo && <span className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle">{contact.geo}</span>}
                       {contact.outletTier && (
-                        <span className="px-2 py-0.5 text-[11px] rounded bg-white/5 text-white/55 border border-[#1A1A24]">
+                        <span className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle">
                           {OUTLET_TIER_OPTIONS.find((o) => o.value === contact.outletTier)?.label}
                         </span>
                       )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3 rounded-lg bg-[#0A0A0F] border border-[#1A1A24]">
+                      <div className="p-3 rounded-lg bg-slate-1 border border-border-subtle">
                         <div className="text-xs text-white/50">Pitch Score</div>
-                        <div className="text-2xl font-bold text-white">{contact.pitchEligibilityScore}</div>
+                        <div className="text-2xl font-bold text-white/95">{contact.pitchEligibilityScore}</div>
                       </div>
-                      <div className="p-3 rounded-lg bg-[#0A0A0F] border border-[#1A1A24]">
+                      <div className="p-3 rounded-lg bg-slate-1 border border-border-subtle">
                         <div className="text-xs text-white/50">Topic Currency</div>
-                        <div className="text-2xl font-bold text-white">{contact.topicCurrency}%</div>
+                        <div className="text-2xl font-bold text-white/95">{contact.topicCurrency}%</div>
                       </div>
-                      <div className="p-3 rounded-lg bg-[#0A0A0F] border border-[#1A1A24]">
+                      <div className="p-3 rounded-lg bg-slate-1 border border-border-subtle">
                         <div className="text-xs text-white/50">AI Citation Score</div>
-                        <div className="text-2xl font-bold text-white">{contact.aiCitationScore || 'N/A'}</div>
+                        <div className="text-2xl font-bold text-white/95">{contact.aiCitationScore || 'N/A'}</div>
                       </div>
-                      <div className="p-3 rounded-lg bg-[#0A0A0F] border border-[#1A1A24]">
+                      <div className="p-3 rounded-lg bg-slate-1 border border-border-subtle">
                         <div className="text-xs text-white/50">Audience Signal</div>
-                        <div className="text-lg font-bold text-white capitalize">
+                        <div className="text-lg font-bold text-white/95 capitalize">
                           {contact.audienceSignal || 'Unknown'}
                         </div>
                       </div>
@@ -2004,28 +2004,28 @@ export function PRDatabase() {
 
                     <div>
                       <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">Contact Info</h4>
-                      <div className="space-y-2 p-3 rounded-lg bg-[#0A0A0F] border border-[#1A1A24]">
+                      <div className="space-y-2 p-3 rounded-lg bg-slate-1 border border-border-subtle">
                         {contact.email && (
                           <div className="flex items-center gap-2 text-sm">
                             <span className="text-white/50">Email:</span>
-                            <span className="text-white">{contact.email}</span>
+                            <span className="text-white/90">{contact.email}</span>
                           </div>
                         )}
                         <div className="flex items-center gap-2 text-sm">
                           <span className="text-white/50">Preferred:</span>
-                          <span className="text-white capitalize">{contact.preferredChannels.join(', ')}</span>
+                          <span className="text-white/90 capitalize">{contact.preferredChannels.join(', ')}</span>
                         </div>
                       </div>
                     </div>
 
                     <div>
                       <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">Timeline</h4>
-                      <div className="text-sm text-white/50 italic p-4 rounded-lg bg-[#0A0A0F] border border-[#1A1A24]">
+                      <div className="text-sm text-white/50 italic p-4 rounded-lg bg-slate-1 border border-border-subtle">
                         Interaction history timeline would appear here
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t border-[#1A1A24] space-y-3">
+                    <div className="pt-4 border-t border-border-subtle space-y-3">
                       <button
                         type="button"
                         className={`w-full ${buttonStyles.primary}`}

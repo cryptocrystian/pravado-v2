@@ -65,9 +65,9 @@ interface MetricCardProps {
 function MetricCard({ label, value, description, isDelta = false, isLoading = false }: MetricCardProps) {
   if (isLoading) {
     return (
-      <div className="bg-[#13131A] border border-[#1F1F28] rounded-lg p-4 animate-pulse">
-        <div className="h-3 w-20 bg-[#1A1A24] rounded mb-3" />
-        <div className="h-8 w-12 bg-[#1A1A24] rounded" />
+      <div className="bg-slate-2 border border-slate-4 rounded-lg p-4 animate-pulse">
+        <div className="h-3 w-20 bg-slate-4 rounded mb-3" />
+        <div className="h-8 w-12 bg-slate-4 rounded" />
       </div>
     );
   }
@@ -77,8 +77,8 @@ function MetricCard({ label, value, description, isDelta = false, isLoading = fa
   const bgColorClass = isDelta ? '' : getScoreBgColor(value);
 
   return (
-    <div className="bg-[#13131A] border border-[#1F1F28] rounded-lg p-4 hover:border-[#2A2A36] transition-colors">
-      <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">{label}</div>
+    <div className="bg-slate-2 border border-slate-4 rounded-lg p-4 hover:border-slate-5 transition-colors">
+      <div className="text-xs text-white/40 uppercase tracking-wider mb-2">{label}</div>
       <div className="flex items-baseline gap-1">
         {isDelta && (
           <span className={`text-lg ${colorClass}`}>{getDeltaIcon(value)}</span>
@@ -91,7 +91,7 @@ function MetricCard({ label, value, description, isDelta = false, isLoading = fa
         )}
       </div>
       {!isDelta && (
-        <div className="mt-2 h-1.5 bg-[#1A1A24] rounded-full overflow-hidden">
+        <div className="mt-2 h-1.5 bg-slate-4 rounded-full overflow-hidden">
           <div
             className={`h-full ${bgColorClass} transition-all duration-500`}
             style={{ width: `${value}%` }}
@@ -99,7 +99,7 @@ function MetricCard({ label, value, description, isDelta = false, isLoading = fa
         </div>
       )}
       {description && (
-        <div className="text-[10px] text-white/30 mt-2">{description}</div>
+        <div className="text-xs text-white/30 mt-2">{description}</div>
       )}
     </div>
   );
@@ -123,8 +123,8 @@ export function AuthorityDashboard({ signals, isLoading = false }: AuthorityDash
 
         {isLoading ? (
           <div className="animate-pulse">
-            <div className="h-12 w-20 bg-[#1A1A24] rounded mb-2" />
-            <div className="h-2 w-full bg-[#1A1A24] rounded" />
+            <div className="h-12 w-20 bg-slate-4 rounded mb-2" />
+            <div className="h-2 w-full bg-slate-4 rounded" />
           </div>
         ) : (
           <>
@@ -134,13 +134,13 @@ export function AuthorityDashboard({ signals, isLoading = false }: AuthorityDash
               </span>
               <span className="text-sm text-white/30">/100</span>
             </div>
-            <div className="mt-3 h-2 bg-[#1A1A24] rounded-full overflow-hidden">
+            <div className="mt-3 h-2 bg-slate-4 rounded-full overflow-hidden">
               <div
                 className={`h-full ${getScoreBgColor(signals.authorityContributionScore)} transition-all duration-500`}
                 style={{ width: `${signals.authorityContributionScore}%` }}
               />
             </div>
-            <p className="text-[10px] text-white/40 mt-2">
+            <p className="text-xs text-white/40 mt-2">
               Primary content authority metric across all assets
             </p>
           </>
@@ -178,7 +178,7 @@ export function AuthorityDashboard({ signals, isLoading = false }: AuthorityDash
 
       {/* Measurement timestamp */}
       {!isLoading && signals.measuredAt && (
-        <div className="text-[10px] text-white/30 text-center">
+        <div className="text-xs text-white/30 text-center">
           Last measured: {new Date(signals.measuredAt).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
@@ -207,39 +207,39 @@ export function AuthorityStrip({ signals, compact = false }: AuthorityStripProps
         <span className={`text-sm font-bold ${getScoreColor(signals.authorityContributionScore)}`}>
           {signals.authorityContributionScore}
         </span>
-        <span className="text-[10px] text-white/40">Authority</span>
+        <span className="text-xs text-white/40">Authority</span>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-4 p-3 bg-[#13131A] border border-[#1F1F28] rounded-lg">
+    <div className="flex items-center gap-4 p-3 bg-slate-2 border border-slate-4 rounded-lg">
       <div className="text-center">
         <div className={`text-lg font-bold ${getScoreColor(signals.authorityContributionScore)}`}>
           {signals.authorityContributionScore}
         </div>
-        <div className="text-[9px] text-white/40 uppercase">Authority</div>
+        <div className="text-xs text-white/40 uppercase">Authority</div>
       </div>
-      <div className="w-px h-8 bg-[#1F1F28]" />
+      <div className="w-px h-8 bg-slate-4" />
       <div className="text-center">
         <div className={`text-lg font-bold ${getScoreColor(signals.citationEligibilityScore)}`}>
           {signals.citationEligibilityScore}
         </div>
-        <div className="text-[9px] text-white/40 uppercase">Citation</div>
+        <div className="text-xs text-white/40 uppercase">Citation</div>
       </div>
-      <div className="w-px h-8 bg-[#1F1F28]" />
+      <div className="w-px h-8 bg-slate-4" />
       <div className="text-center">
         <div className={`text-lg font-bold ${getScoreColor(signals.aiIngestionLikelihood)}`}>
           {signals.aiIngestionLikelihood}
         </div>
-        <div className="text-[9px] text-white/40 uppercase">AI Ready</div>
+        <div className="text-xs text-white/40 uppercase">AI Ready</div>
       </div>
-      <div className="w-px h-8 bg-[#1F1F28]" />
+      <div className="w-px h-8 bg-slate-4" />
       <div className="text-center">
         <div className={`text-sm font-bold ${getDeltaColor(signals.competitiveAuthorityDelta)}`}>
           {getDeltaIcon(signals.competitiveAuthorityDelta)}{Math.abs(signals.competitiveAuthorityDelta)}
         </div>
-        <div className="text-[9px] text-white/40 uppercase">vs Comp</div>
+        <div className="text-xs text-white/40 uppercase">vs Comp</div>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { ErrorBoundary } from './ErrorBoundary';
+import { PostHogProvider } from '@/providers/PostHogProvider';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
@@ -26,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${inter.variable}`} suppressHydrationWarning>
       <body className="min-h-screen font-sans antialiased bg-[#0A0A0F]">
-        <ErrorBoundary>{children}</ErrorBoundary>
+        <PostHogProvider>
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </PostHogProvider>
       </body>
     </html>
   );

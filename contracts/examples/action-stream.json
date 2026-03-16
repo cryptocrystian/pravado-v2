@@ -311,6 +311,46 @@
       },
       "updated_at": "2026-01-07T08:00:00.000Z",
       "evi_driver": "visibility"
+    },
+    {
+      "id": "act_09I6J7K8L9M0N1O2P3Q4R5S6",
+      "pillar": "seo",
+      "type": "alert",
+      "priority": "high",
+      "title": "Share of Model declining in 'AI Marketing' cluster",
+      "summary": "SAGE detected a 12% SoM decline across 3 major AI models for the 'AI Marketing' topic cluster over the past 14 days.",
+      "why": "Perplexity, ChatGPT, and Claude have shifted citations toward Clearbit and HubSpot content in the 'AI Marketing' cluster. Your Share of Model dropped from 23% to 11%. SAGE recommends publishing 2 authority pieces targeting high-citation query patterns to recapture lost ground.",
+      "recommended_next_step": "Review SAGE's recommended content plan and approve the 2-piece authority sprint.",
+      "signals": [
+        { "label": "SoM Delta", "value": "-12%", "tone": "critical" },
+        { "label": "Models", "value": "3 affected", "tone": "warning" },
+        { "label": "Recovery", "value": "2-3 wks", "tone": "neutral" }
+      ],
+      "guardrails": [],
+      "evidence": [
+        { "type": "metric", "label": "SoM before", "value": "23.4% (14 days ago)" },
+        { "type": "metric", "label": "SoM now", "value": "11.2% (current)" },
+        { "type": "citation", "label": "Lost citation", "value": "Perplexity now cites Clearbit for 'AI marketing tools' queries" }
+      ],
+      "deep_link": {
+        "label": "Open in SEO Command",
+        "href": "/app/seo"
+      },
+      "controls": ["schedule", "edit"],
+      "confidence": 0.87,
+      "impact": 0.81,
+      "mode": "copilot",
+      "gate": {
+        "required": false,
+        "reason": null,
+        "min_plan": null
+      },
+      "cta": {
+        "primary": "View Plan",
+        "secondary": "Review"
+      },
+      "updated_at": "2026-01-07T09:30:00.000Z",
+      "evi_driver": "authority"
     }
   ]
 }

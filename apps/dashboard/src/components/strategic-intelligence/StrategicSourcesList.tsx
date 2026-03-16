@@ -69,7 +69,7 @@ export function StrategicSourcesList({
   if (sources.length === 0) {
     return (
       <Card>
-        <CardContent className="py-8 text-center text-muted-foreground">
+        <CardContent className="py-8 text-center text-white/50">
           <p>No data sources linked yet.</p>
           <p className="text-sm">Generate the report to automatically aggregate data sources.</p>
         </CardContent>
@@ -96,7 +96,7 @@ export function StrategicSourcesList({
           <Card key={system}>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                <IconComponent className="h-5 w-5 text-muted-foreground" />
+                <IconComponent className="h-5 w-5 text-white/50" />
                 {getSourceLabel(system as StrategicSource['sourceSystem'])}
                 <Badge variant="secondary">{systemSources.length}</Badge>
               </CardTitle>
@@ -157,10 +157,10 @@ function SourceItem({ source, onClick }: SourceItemProps) {
       <div className="grid grid-cols-2 gap-4 mb-2">
         {source.relevanceScore !== null && (
           <div>
-            <p className="text-xs text-muted-foreground mb-1">Relevance</p>
+            <p className="text-xs text-white/50 mb-1">Relevance</p>
             <div className="flex items-center gap-2">
               <Progress value={source.relevanceScore} className="flex-1 h-2" />
-              <span className="text-xs text-muted-foreground w-8">
+              <span className="text-xs text-white/50 w-8">
                 {Math.round(source.relevanceScore)}%
               </span>
             </div>
@@ -168,10 +168,10 @@ function SourceItem({ source, onClick }: SourceItemProps) {
         )}
         {source.dataQualityScore !== null && (
           <div>
-            <p className="text-xs text-muted-foreground mb-1">Data Quality</p>
+            <p className="text-xs text-white/50 mb-1">Data Quality</p>
             <div className="flex items-center gap-2">
               <Progress value={source.dataQualityScore} className="flex-1 h-2" />
-              <span className="text-xs text-muted-foreground w-8">
+              <span className="text-xs text-white/50 w-8">
                 {Math.round(source.dataQualityScore)}%
               </span>
             </div>
@@ -179,7 +179,7 @@ function SourceItem({ source, onClick }: SourceItemProps) {
         )}
       </div>
 
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="flex items-center justify-between text-xs text-white/50">
         <span>Extracted {formatRelativeTime(source.extractionTimestamp)}</span>
         {source.sectionsUsing.length > 0 && (
           <span>Used in {source.sectionsUsing.length} section(s)</span>
@@ -227,7 +227,7 @@ export function StrategicSourcesCompact({
       </div>
 
       {primaryCount > 0 && (
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1 text-xs text-white/50">
           <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
           <span>{primaryCount} primary source(s)</span>
         </div>

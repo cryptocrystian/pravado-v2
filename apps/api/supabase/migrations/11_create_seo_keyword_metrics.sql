@@ -19,10 +19,8 @@ CREATE TABLE IF NOT EXISTS public.seo_keyword_metrics (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-  -- Ensure org_id consistency between metric and keyword
-  CONSTRAINT fk_keyword_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.seo_keywords WHERE id = keyword_id)
-  )
+  -- org_id consistency enforced at application layer (subqueries not allowed in CHECK)
+  UNIQUE (id, org_id)
 );
 
 -- Index for faster lookups

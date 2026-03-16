@@ -24,7 +24,7 @@ const HoverCardContent = React.forwardRef<
     align={align}
     sideOffset={sideOffset}
     className={cn(
-      'z-50 w-72 rounded-lg border border-[#2A2A36] bg-[#0D0D12] p-4 shadow-xl shadow-black/30 outline-none',
+      'z-50 w-72 rounded-lg border border-slate-5 bg-panel p-4 shadow-xl shadow-black/30 outline-none',
       'data-[state=open]:animate-in data-[state=closed]:animate-out',
       'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -45,7 +45,7 @@ const HoverCardArrow = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <HoverCardPrimitive.Arrow
     ref={ref}
-    className={cn('fill-[#0D0D12]', className)}
+    className={cn('fill-panel', className)}
     {...props}
   />
 ));

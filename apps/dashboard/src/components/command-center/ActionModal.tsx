@@ -107,7 +107,7 @@ function ConfidenceImpactMeter({
         </span>
         <span className="text-sm font-bold text-white">{percentage}%</span>
       </div>
-      <div className="h-2 bg-[#1F1F28] rounded-full overflow-hidden">
+      <div className="h-2 bg-slate-4 rounded-full overflow-hidden">
         <div
           className={`h-full ${color} rounded-full transition-all duration-500 ease-out`}
           style={{ width: `${percentage}%` }}
@@ -303,7 +303,7 @@ export function ActionModal({
     >
       {/* Backdrop - clickable to dismiss */}
       <div
-        className={`absolute inset-0 bg-black/70 backdrop-blur-sm ${isExecuting ? 'cursor-wait' : 'cursor-pointer'}`}
+        className={`absolute inset-0 bg-page/70 backdrop-blur-sm ${isExecuting ? 'cursor-wait' : 'cursor-pointer'}`}
         onMouseDown={handleBackdropMouseDown}
         aria-hidden="true"
       />
@@ -313,7 +313,7 @@ export function ActionModal({
         ref={modalRef}
         tabIndex={-1}
         onMouseDown={handleModalMouseDown}
-        className="action-modal-v3 relative z-10 w-full max-w-lg bg-[#13131A] rounded-xl border border-[#1F1F28] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+        className="action-modal-v3 relative z-10 w-full max-w-lg bg-panel rounded-xl border border-border-subtle shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
       >
         {/* Header with pillar gradient */}
         <div className={`px-5 pt-5 pb-4 bg-gradient-to-b ${pillarStyle.gradient} relative flex-shrink-0`}>
@@ -339,7 +339,7 @@ export function ActionModal({
             </span>
 
             {/* Priority badge */}
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-[#1F1F28] rounded">
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-4 rounded">
               <span className={`w-2 h-2 rounded-full ${priorityStyle.dot}`} />
               <span className="text-xs text-white/70">{priorityStyle.label}</span>
             </div>
@@ -498,7 +498,7 @@ export function ActionModal({
               </h3>
               <div className="flex flex-wrap gap-3">
                 {action.signals.map((signal, idx) => (
-                  <div key={idx} className="px-3 py-2 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg">
+                  <div key={idx} className="px-3 py-2 bg-page border border-border-subtle rounded-lg">
                     <span className="text-xs text-white/50 block mb-0.5">{signal.label}</span>
                     <span className={`text-sm font-bold ${signalToneColors[signal.tone]}`}>
                       {signal.value}
@@ -552,7 +552,7 @@ export function ActionModal({
               </h3>
               <div className="space-y-2">
                 {action.evidence.map((item, idx) => (
-                  <div key={idx} className="p-3 bg-[#0A0A0F] border border-[#1F1F28] rounded-lg">
+                  <div key={idx} className="p-3 bg-page border border-border-subtle rounded-lg">
                     <div className="flex items-start gap-2">
                       <span className="text-white/40 flex-shrink-0">
                         {evidenceIcons[item.type]}
@@ -596,15 +596,15 @@ export function ActionModal({
         </div>
 
         {/* STICKY Footer with Decision CTAs (v3.0 REQUIREMENT) */}
-        <div className="px-5 py-4 bg-[#0D0D12] border-t border-[#1F1F28] flex-shrink-0">
+        <div className="px-5 py-4 bg-slate-1 border-t border-border-subtle flex-shrink-0">
           {/* Controls row (optional) - Left side */}
           {action.controls && action.controls.length > 0 && !isCompleted && (
-            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-[#1F1F28]">
+            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border-subtle">
               {action.controls.includes('schedule') && (
                 <button
                   onClick={() => {/* TODO: Open schedule picker */}}
                   disabled={isExecuting}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white bg-[#1F1F28] hover:bg-[#2A2A36] rounded-lg transition-colors ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white bg-slate-4 hover:bg-slate-5 rounded-lg transition-colors ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -615,7 +615,7 @@ export function ActionModal({
               {action.controls.includes('edit') && action.deep_link && (
                 <a
                   href={action.deep_link.href}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white bg-[#1F1F28] hover:bg-[#2A2A36] rounded-lg transition-colors ${isExecuting ? 'pointer-events-none opacity-50' : ''}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white bg-slate-4 hover:bg-slate-5 rounded-lg transition-colors ${isExecuting ? 'pointer-events-none opacity-50' : ''}`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -627,7 +627,7 @@ export function ActionModal({
                 <button
                   onClick={() => {/* TODO: Open assignee picker */}}
                   disabled={isExecuting}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white bg-[#1F1F28] hover:bg-[#2A2A36] rounded-lg transition-colors ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white bg-slate-4 hover:bg-slate-5 rounded-lg transition-colors ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -722,7 +722,7 @@ export function ActionModal({
             <button
               onClick={onClose}
               disabled={isExecuting}
-              className={`modal-close-cta px-4 py-2.5 text-sm font-medium text-white/60 hover:text-white bg-[#1F1F28] hover:bg-[#2A2A36] rounded-lg transition-colors ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`modal-close-cta px-4 py-2.5 text-sm font-medium text-white/60 hover:text-white bg-slate-4 hover:bg-slate-5 rounded-lg transition-colors ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               Close
             </button>

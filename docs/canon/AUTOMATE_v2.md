@@ -19,6 +19,18 @@ AUTOMATE is Pravado's execution and governance layer:
 3) Executors (agents) per domain
 4) Audit logs + telemetry
 5) Orchestration Calendar as primary execution surface
+6) Entity Map gap → Action Stream record creation (D016)
+
+## Entity Map Action Stream Coherence (D016)
+When SAGE detects a new Entity Map gap node, AUTOMATE is responsible for materializing the corresponding Action Stream record. SAGE generates the proposal; AUTOMATE creates the record.
+
+Trigger chain:
+- SAGE emits `gap_node_detected` event: `{ entity_id, ring, pillar, proposal_id, confidence }`
+- AUTOMATE subscribes and creates Action Stream record
+- Initial status: `Priority` if confidence ≥ 0.7, `Pending` otherwise
+- AUTOMATE writes `linked_action_id` back to the entity node record
+
+This is an architectural invariant: every Entity Map gap node must have a corresponding Action Stream record. A gap node without `linked_action_id` is a system error. AUTOMATE is the enforcement layer for this invariant, not SAGE.
 
 ## Risk and Approval
 Actions are classified by:

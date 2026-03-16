@@ -12,7 +12,7 @@
  *
  * NAVIGATION BEHAVIOR NOTE:
  * This Content Calendar differs from the Orchestration Calendar in click behavior:
- * - Content Calendar: Click navigates to the asset/brief detail page (work surface)
+ * - Content Calendar: Click navigates to the asset/content detail page (work surface)
  * - Orchestration Calendar: Click opens a day-view drawer/modal (per ORCHESTRATION_CALENDAR_CONTRACT §3.2)
  *
  * This distinction is intentional:
@@ -31,13 +31,13 @@ import { useState, useMemo } from 'react';
 import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
 import { modeTokens } from '../tokens';
-import type { ContentAsset, ContentBrief, AutomationMode, CrossPillarDependency } from '../types';
+import type { ContentAsset, ContentItem, ContentType, AutomationMode, CrossPillarDependency } from '../types';
 
 interface ContentCalendarViewProps {
   /** Published/scheduled assets */
   assets: ContentAsset[];
   /** Briefs with deadlines */
-  briefs: ContentBrief[];
+  briefs: ContentItem[];
   /** Loading state */
   isLoading: boolean;
   /** Error state */
@@ -49,19 +49,15 @@ interface ContentCalendarViewProps {
 }
 
 // ============================================
-// CONTENT FORMAT TYPES
+// CONTENT FORMAT CONFIG
 // ============================================
 
-type ContentFormat = 'long_form' | 'blog_post' | 'case_study' | 'whitepaper' | 'video' | 'infographic' | 'social';
-
-const FORMAT_CONFIG: Record<ContentFormat, { label: string; color: string; bgColor: string }> = {
-  long_form: { label: 'Long Form', color: 'text-brand-iris', bgColor: 'bg-brand-iris/10' },
-  blog_post: { label: 'Blog', color: 'text-brand-cyan', bgColor: 'bg-brand-cyan/10' },
-  case_study: { label: 'Case Study', color: 'text-brand-magenta', bgColor: 'bg-brand-magenta/10' },
-  whitepaper: { label: 'Whitepaper', color: 'text-semantic-success', bgColor: 'bg-semantic-success/10' },
-  video: { label: 'Video', color: 'text-semantic-warning', bgColor: 'bg-semantic-warning/10' },
-  infographic: { label: 'Infographic', color: 'text-brand-cyan', bgColor: 'bg-brand-cyan/10' },
-  social: { label: 'Social', color: 'text-white/60', bgColor: 'bg-slate-4' },
+const FORMAT_CONFIG: Record<ContentType, { label: string; color: string; bgColor: string }> = {
+  article: { label: 'Article', color: 'text-brand-iris', bgColor: 'bg-brand-iris/10' },
+  email: { label: 'Email', color: 'text-brand-cyan', bgColor: 'bg-brand-cyan/10' },
+  social_post: { label: 'Social Post', color: 'text-brand-magenta', bgColor: 'bg-brand-magenta/10' },
+  landing_page: { label: 'Landing Page', color: 'text-semantic-success', bgColor: 'bg-semantic-success/10' },
+  campaign: { label: 'Campaign', color: 'text-semantic-warning', bgColor: 'bg-semantic-warning/10' },
 };
 
 // ============================================
@@ -132,7 +128,7 @@ export function ContentCalendarView({
 }: ContentCalendarViewProps) {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedFormat, setSelectedFormat] = useState<ContentFormat | 'all'>('all');
+  const [selectedFormat, setSelectedFormat] = useState<ContentType | 'all'>('all');
   const today = new Date();
 
   // Get days for current month
@@ -146,7 +142,7 @@ export function ContentCalendarView({
 
   // Group items by date
   const itemsByDate = useMemo(() => {
-    const map = new Map<string, { assets: ContentAsset[]; briefs: ContentBrief[] }>();
+    const map = new Map<string, { assets: ContentAsset[]; briefs: ContentItem[] }>();
 
     // Group assets by publish date
     filteredAssets.forEach((asset) => {
@@ -194,9 +190,9 @@ export function ContentCalendarView({
     onSelectAsset?.(assetId);
   };
 
-  // Handle brief click - navigate to brief page
+  // Handle brief click - navigate to content page
   const handleBriefClick = (briefId: string) => {
-    router.push(`/app/content/brief/${briefId}`);
+    router.push(`/app/content/${briefId}`);
     onSelectBrief?.(briefId);
   };
 
@@ -222,7 +218,7 @@ export function ContentCalendarView({
       <ContentEmptyState
         view="calendar"
         onAction={onCreateBrief}
-        actionLabel="Create Brief"
+        actionLabel="Create Content"
       />
     );
   }
@@ -257,7 +253,7 @@ export function ContentCalendarView({
           {/* Format Filter */}
           <select
             value={selectedFormat}
-            onChange={(e) => setSelectedFormat(e.target.value as ContentFormat | 'all')}
+            onChange={(e) => setSelectedFormat(e.target.value as ContentType | 'all')}
             className="px-2 py-1 text-xs bg-slate-2 border border-border-subtle rounded-lg text-white/70 focus:outline-none focus:border-brand-iris/40"
           >
             <option value="all">All Formats</option>
@@ -280,8 +276,8 @@ export function ContentCalendarView({
         {Object.entries(FORMAT_CONFIG).map(([key, config]) => (
           <button
             key={key}
-            onClick={() => setSelectedFormat(selectedFormat === key ? 'all' : key as ContentFormat)}
-            className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-medium transition-colors ${
+            onClick={() => setSelectedFormat(selectedFormat === key ? 'all' : key as ContentType)}
+            className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium transition-colors ${
               selectedFormat === key
                 ? `${config.bgColor} ${config.color} ring-1 ring-current`
                 : 'bg-slate-4/50 text-white/40 hover:text-white/60'
@@ -296,7 +292,7 @@ export function ContentCalendarView({
       {/* Day Headers */}
       <div className="grid grid-cols-7 border-b border-slate-4">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-          <div key={day} className="px-2 py-2 text-center text-[10px] text-white/40 uppercase tracking-wider">
+          <div key={day} className="px-2 py-2 text-center text-xs text-white/40 uppercase tracking-wider">
             {day}
           </div>
         ))}
@@ -332,22 +328,22 @@ export function ContentCalendarView({
 
       {/* Campaign Legend */}
       <div className="px-4 py-2 flex items-center gap-4 border-t border-slate-4">
-        <span className="text-[10px] text-white/40 uppercase">Campaigns:</span>
+        <span className="text-xs text-white/40 uppercase">Campaigns:</span>
         {MOCK_CAMPAIGNS.map((campaign) => (
           <div key={campaign.id} className="flex items-center gap-1.5">
             <div className={`w-2 h-2 rounded-full ${campaign.color}`} />
-            <span className="text-[10px] text-white/40">{campaign.name}</span>
+            <span className="text-xs text-white/40">{campaign.name}</span>
           </div>
         ))}
         <div className="flex-1" />
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-semantic-success" />
-            <span className="text-[10px] text-white/40">Published</span>
+            <span className="text-xs text-white/40">Published</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-brand-iris" />
-            <span className="text-[10px] text-white/40">Brief Due</span>
+            <span className="text-xs text-white/40">Due</span>
           </div>
         </div>
       </div>
@@ -374,8 +370,8 @@ function CalendarEntryCard({
   crossPillarDeps = [],
   onClick,
 }: CalendarEntryCardProps) {
-  const format = (asset.contentType || 'long_form') as ContentFormat;
-  const formatConfig = FORMAT_CONFIG[format] || FORMAT_CONFIG.long_form;
+  const format: ContentType = asset.contentType || 'article';
+  const formatConfig = FORMAT_CONFIG[format] || FORMAT_CONFIG.article;
   const modeConfig = modeTokens[automationMode];
 
   // Check for cross-pillar dependencies
@@ -385,14 +381,14 @@ function CalendarEntryCard({
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left px-1.5 py-1 text-[10px] rounded transition-colors ${formatConfig.bgColor} ${formatConfig.color} hover:opacity-80 group`}
+      className={`w-full text-left px-1.5 py-1 text-xs rounded transition-colors ${formatConfig.bgColor} ${formatConfig.color} hover:opacity-80 group`}
       title={`Click to open: ${asset.title}`}
     >
       <div className="flex items-center gap-1">
         <span className={`w-1 h-1 rounded-full shrink-0 ${formatConfig.bgColor.replace('/10', '')}`} />
         <span className="truncate flex-1">{asset.title}</span>
         {/* Mode badge */}
-        <span className={`px-1 py-0.5 text-[7px] font-medium rounded ${modeConfig.bg} ${modeConfig.text} opacity-0 group-hover:opacity-100 transition-opacity`}>
+        <span className={`px-1 py-0.5 text-xs font-medium rounded ${modeConfig.bg} ${modeConfig.text} opacity-0 group-hover:opacity-100 transition-opacity`}>
           {modeConfig.label.charAt(0)}
         </span>
       </div>
@@ -400,12 +396,12 @@ function CalendarEntryCard({
       {(hasPRDeps || hasSEODeps) && (
         <div className="flex items-center gap-1 mt-0.5 pl-2">
           {hasPRDeps && (
-            <span className="text-[7px] text-brand-magenta" title="PR dependency">
+            <span className="text-xs text-brand-magenta" title="PR dependency">
               PR
             </span>
           )}
           {hasSEODeps && (
-            <span className="text-[7px] text-brand-cyan" title="SEO dependency">
+            <span className="text-xs text-brand-cyan" title="SEO dependency">
               SEO
             </span>
           )}
@@ -423,7 +419,7 @@ interface CalendarCellProps {
   day: number;
   isToday: boolean;
   assets: ContentAsset[];
-  briefs: ContentBrief[];
+  briefs: ContentItem[];
   onSelectAsset?: (assetId: string) => void;
   onSelectBrief?: (briefId: string) => void;
   /** Cross-pillar dependencies by asset ID */
@@ -464,7 +460,7 @@ function CalendarCell({
           {day}
         </span>
         {isToday && (
-          <span className="px-1 py-0.5 text-[8px] bg-brand-iris/20 text-brand-iris rounded">
+          <span className="px-1 py-0.5 text-xs bg-brand-iris/20 text-brand-iris rounded">
             Today
           </span>
         )}
@@ -489,14 +485,14 @@ function CalendarCell({
             key={brief.id}
             onClick={() => onSelectBrief?.(brief.id)}
             className={`
-              w-full text-left px-1.5 py-1 text-[10px] rounded truncate transition-colors
+              w-full text-left px-1.5 py-1 text-xs rounded truncate transition-colors
               ${
                 brief.status === 'draft'
                   ? 'bg-semantic-warning/10 text-semantic-warning hover:bg-semantic-warning/20'
                   : 'bg-brand-iris/10 text-brand-iris hover:bg-brand-iris/20'
               }
             `}
-            title={`Brief: ${brief.title}`}
+            title={brief.title}
           >
             <span className="flex items-center gap-1">
               <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
@@ -510,7 +506,7 @@ function CalendarCell({
 
         {/* Overflow indicator */}
         {(assets.length > 2 || briefs.length > 2) && (
-          <span className="text-[9px] text-white/40">
+          <span className="text-xs text-white/40">
             +{assets.length + briefs.length - 4} more
           </span>
         )}
@@ -525,7 +521,7 @@ function CalendarCell({
 
 interface ContentAgendaViewProps {
   assets: ContentAsset[];
-  briefs: ContentBrief[];
+  briefs: ContentItem[];
   isLoading: boolean;
   onSelectAsset?: (assetId: string) => void;
   onSelectBrief?: (briefId: string) => void;
@@ -546,9 +542,9 @@ export function ContentAgendaView({
     onSelectAsset?.(assetId);
   };
 
-  // Handle brief click - navigate to brief page
+  // Handle brief click - navigate to content page
   const handleBriefClick = (briefId: string) => {
-    router.push(`/app/content/brief/${briefId}`);
+    router.push(`/app/content/${briefId}`);
     onSelectBrief?.(briefId);
   };
 
@@ -557,7 +553,7 @@ export function ContentAgendaView({
     const items: Array<{
       date: Date;
       type: 'asset' | 'brief';
-      item: ContentAsset | ContentBrief;
+      item: ContentAsset | ContentItem;
     }> = [];
 
     assets.forEach((asset) => {
@@ -621,8 +617,8 @@ export function ContentAgendaView({
           </h4>
           <div className="space-y-2">
             {items.map((item, index) => {
-              const format = item.type === 'asset'
-                ? ((item.item as ContentAsset).contentType || 'long_form') as ContentFormat
+              const format: ContentType | null = item.type === 'asset'
+                ? ((item.item as ContentAsset).contentType || 'article')
                 : null;
               const formatConfig = format ? FORMAT_CONFIG[format] : null;
 
@@ -649,16 +645,16 @@ export function ContentAgendaView({
                         item.type === 'asset' ? 'bg-semantic-success' : 'bg-brand-iris'
                       }`}
                     />
-                    <span className="text-[10px] text-white/40 uppercase">
-                      {item.type === 'asset' ? 'Published' : 'Brief Due'}
+                    <span className="text-xs text-white/40 uppercase">
+                      {item.type === 'asset' ? 'Published' : 'Due'}
                     </span>
                     {formatConfig && (
-                      <span className={`px-1.5 py-0.5 text-[9px] rounded-full ${formatConfig.bgColor} ${formatConfig.color}`}>
+                      <span className={`px-1.5 py-0.5 text-xs rounded-full ${formatConfig.bgColor} ${formatConfig.color}`}>
                         {formatConfig.label}
                       </span>
                     )}
                   </div>
-                  <h5 className="text-sm font-medium text-white">{item.item.title}</h5>
+                  <h5 className="text-sm font-medium text-white/95">{item.item.title}</h5>
                 </button>
               );
             })}

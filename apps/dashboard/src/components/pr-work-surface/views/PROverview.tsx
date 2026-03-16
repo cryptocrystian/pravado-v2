@@ -132,18 +132,18 @@ interface MetricCardProps {
 
 function MetricCard({ label, value, subLabel, trend, comparison, accent = 'default' }: MetricCardProps) {
   const accentStyles = {
-    default: 'text-white',
+    default: 'text-white/95',
     success: 'text-semantic-success',
     warning: 'text-semantic-warning',
     danger: 'text-semantic-danger',
   };
 
   return (
-    <div className="p-3 rounded-xl bg-[#0D0D12] border border-[#1A1A24] hover:border-[#2A2A36] transition-all">
+    <div className="p-3 rounded-xl bg-panel border border-border-subtle hover:border-slate-5 transition-all">
       <div className="flex items-baseline justify-between">
         <div className={`text-xl font-bold ${accentStyles[accent]}`}>{value}</div>
         {trend && (
-          <span className={`flex items-center gap-0.5 text-[11px] font-semibold ${
+          <span className={`flex items-center gap-0.5 text-[13px] font-semibold ${
             trend.direction === 'up' ? 'text-semantic-success' :
             trend.direction === 'down' ? 'text-semantic-danger' : 'text-white/50'
           }`}>
@@ -154,7 +154,7 @@ function MetricCard({ label, value, subLabel, trend, comparison, accent = 'defau
       </div>
       <span className="text-xs text-white/50">{label}</span>
       {(comparison || subLabel) && (
-        <p className="text-[10px] text-white/35 mt-0.5">{comparison || subLabel}</p>
+        <p className="text-[13px] text-white/35 mt-0.5">{comparison || subLabel}</p>
       )}
     </div>
   );
@@ -213,23 +213,23 @@ function SignalCard({ type, title, description, severity, ctaLabel, ctaHref }: S
   const style = typeStyles[type];
 
   return (
-    <div className={`p-3 rounded-xl bg-[#0D0D12] border ${style.border} hover:border-[#2A2A36] transition-all`}>
+    <div className={`p-3 rounded-xl bg-panel border ${style.border} hover:border-slate-5 transition-all`}>
       <div className="flex items-start gap-2 mb-2">
         <div className={`p-1.5 rounded-md ${style.bg}`}>
           <span className={style.color}>{style.icon}</span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`text-[10px] font-bold uppercase ${style.color}`}>{type}</span>
-            <span className="text-[10px] text-white/40">{severity}%</span>
+            <span className={`text-[13px] font-semibold ${style.color}`}>{type}</span>
+            <span className="text-[13px] text-white/40">{severity}%</span>
           </div>
         </div>
       </div>
-      <h3 className="text-sm font-medium text-white mb-1 line-clamp-2">{title}</h3>
-      <p className="text-[11px] text-white/50 leading-relaxed line-clamp-2 mb-3">{description}</p>
+      <h3 className="text-sm font-medium text-white/90 mb-1 line-clamp-2">{title}</h3>
+      <p className="text-[13px] text-white/50 leading-relaxed line-clamp-2 mb-3">{description}</p>
       <Link
         href={ctaHref}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium ${style.color} ${style.ctaBg} transition-colors`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium ${style.color} ${style.ctaBg} transition-colors`}
       >
         {ctaLabel}
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,20 +254,20 @@ function RelationshipHealthPanel() {
   ];
 
   return (
-    <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+    <div className="p-4 rounded-xl bg-panel border border-border-subtle">
       <div className="flex items-center gap-2 mb-3">
         <svg className="w-4 h-4 text-brand-magenta" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
-        <h3 className="text-sm font-semibold text-white">Relationship Health</h3>
-        <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-brand-magenta/15 text-brand-magenta ml-auto">
+        <h3 className="text-sm font-semibold text-white/95">Relationship Health</h3>
+        <span className="px-1.5 py-0.5 text-[13px] font-semibold rounded bg-brand-magenta/15 text-brand-magenta ml-auto">
           {total} contacts
         </span>
       </div>
 
       {/* Distribution bar with inline labels */}
       <div className="relative mb-3">
-        <div className="h-6 rounded-lg bg-[#1A1A24] overflow-hidden flex">
+        <div className="h-6 rounded-lg bg-slate-4 overflow-hidden flex">
           {segments.map((seg) => (
             <div
               key={seg.label}
@@ -275,7 +275,7 @@ function RelationshipHealthPanel() {
               style={{ width: `${seg.pct}%` }}
             >
               {seg.pct >= 12 && (
-                <span className="text-[10px] font-bold text-white/90 drop-shadow-sm">
+                <span className="text-[13px] font-bold text-white/90 drop-shadow-sm">
                   {seg.count}
                 </span>
               )}
@@ -289,27 +289,27 @@ function RelationshipHealthPanel() {
         {segments.map((seg) => (
           <div key={seg.label} className="flex items-center gap-1">
             <span className={`w-2 h-2 rounded-sm ${seg.color}`} />
-            <span className={`text-[10px] font-medium ${seg.textColor}`}>{seg.label}</span>
-            <span className="text-[10px] text-white/35">({seg.count})</span>
+            <span className={`text-[13px] font-medium ${seg.textColor}`}>{seg.label}</span>
+            <span className="text-[13px] text-white/35">({seg.count})</span>
           </div>
         ))}
       </div>
 
       {/* Stats row */}
-      <div className="pt-3 border-t border-[#1A1A24] grid grid-cols-2 gap-3">
+      <div className="pt-3 border-t border-border-subtle grid grid-cols-2 gap-3">
         <div>
           <span className="text-base font-bold text-brand-cyan">{RELATIONSHIP_HEALTH.avgResponseRate}%</span>
-          <p className="text-[10px] text-white/50">Response rate</p>
+          <p className="text-[13px] text-white/50">Response rate</p>
         </div>
         <div>
-          <span className="text-base font-bold text-white">{RELATIONSHIP_HEALTH.avgTimeToResponse}</span>
-          <p className="text-[10px] text-white/50">Avg reply time</p>
+          <span className="text-base font-bold text-white/95">{RELATIONSHIP_HEALTH.avgTimeToResponse}</span>
+          <p className="text-[13px] text-white/50">Avg reply time</p>
         </div>
       </div>
 
       <Link
         href="/app/pr?tab=database"
-        className="mt-3 flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-white/60 hover:text-white transition-all"
+        className="mt-3 flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[13px] text-white/60 hover:text-white transition-all"
       >
         View Database
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -326,22 +326,22 @@ function RelationshipHealthPanel() {
 
 function AttentionItemsPanel({ items }: { items: PRSituationBrief['attentionItems'] }) {
   return (
-    <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+    <div className="p-4 rounded-xl bg-panel border border-border-subtle">
       <div className="flex items-center gap-2 mb-4">
         <svg className="w-5 h-5 text-semantic-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
-        <h3 className="text-sm font-semibold text-white">Requires Attention</h3>
-        <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-semantic-warning/15 text-semantic-warning">
+        <h3 className="text-sm font-semibold text-white/95">Requires Attention</h3>
+        <span className="px-1.5 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning">
           {items.length}
         </span>
       </div>
 
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.id} className="p-3 rounded-lg bg-[#111116] border border-[#1A1A24]">
+          <div key={item.id} className="p-3 rounded-lg bg-slate-2 border border-border-subtle">
             <div className="flex items-center gap-2 mb-2">
-              <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded ${
+              <span className={`px-2 py-0.5 text-[13px] font-semibold rounded ${
                 item.priority === 'critical' ? 'bg-semantic-danger/15 text-semantic-danger' :
                 item.priority === 'high' ? 'bg-semantic-warning/15 text-semantic-warning' :
                 'bg-white/10 text-white/60'
@@ -349,12 +349,12 @@ function AttentionItemsPanel({ items }: { items: PRSituationBrief['attentionItem
                 {item.priority}
               </span>
               {item.dueBy && (
-                <span className="text-[10px] text-white/50">
+                <span className="text-[13px] text-white/50">
                   Due {new Date(item.dueBy).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               )}
             </div>
-            <h4 className="text-sm font-medium text-white">{item.title}</h4>
+            <h4 className="text-sm font-medium text-white/90">{item.title}</h4>
             <p className="text-xs text-white/50 mt-1">{item.description}</p>
             {item.actionUrl && (
               <Link
@@ -380,7 +380,7 @@ function AttentionItemsPanel({ items }: { items: PRSituationBrief['attentionItem
 
 function CommandCenterPreview() {
   return (
-    <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+    <div className="p-4 rounded-xl bg-panel border border-border-subtle">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -391,7 +391,7 @@ function CommandCenterPreview() {
         </div>
         <Link
           href="/app/command-center?pillar=pr"
-          className="text-[10px] text-brand-iris hover:underline"
+          className="text-[13px] text-brand-iris hover:underline"
         >
           View all →
         </Link>
@@ -399,7 +399,7 @@ function CommandCenterPreview() {
 
       {/* Info notice */}
       <div className="p-2 rounded-lg bg-brand-iris/5 border border-brand-iris/10 mb-3">
-        <p className="text-[10px] text-white/50">
+        <p className="text-[13px] text-white/50">
           <span className="text-brand-iris">Cross-pillar orchestration</span> happens in Command Center.
         </p>
       </div>
@@ -442,9 +442,9 @@ export function PROverview() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-white">Situation Brief</h2>
+          <h2 className="text-base font-semibold text-white/95">Situation Brief</h2>
           <p className="text-xs text-white/40 mt-0.5">Understand what matters before acting</p>
-          <p className="text-[10px] text-white/30 mt-0.5">
+          <p className="text-[13px] text-white/30 mt-0.5">
             Generated {new Date(brief.generatedAt).toLocaleTimeString()}
           </p>
         </div>
@@ -495,15 +495,15 @@ export function PROverview() {
 
       {/* Intelligence Signals Grid */}
       <div>
-        <h3 className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-3">Intelligence Signals</h3>
+        <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-3">Intelligence Signals</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Opportunities */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success">
-                Opportunities
+              <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-success/15 text-semantic-success">
+              Opportunities
               </span>
-              <span className="text-[10px] text-white/40">{opportunities.length}</span>
+              <span className="text-[13px] text-white/40">{opportunities.length}</span>
             </div>
             {opportunities.map((signal) => (
               <SignalCard
@@ -521,10 +521,10 @@ export function PROverview() {
           {/* Risks */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-semantic-danger/15 text-semantic-danger">
-                Risks
+              <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-danger/15 text-semantic-danger">
+              Risks
               </span>
-              <span className="text-[10px] text-white/40">{risks.length}</span>
+              <span className="text-[13px] text-white/40">{risks.length}</span>
             </div>
             {risks.map((signal) => (
               <SignalCard
@@ -542,10 +542,10 @@ export function PROverview() {
           {/* Trends */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-brand-cyan/15 text-brand-cyan">
-                Trends
+              <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-brand-cyan/15 text-brand-cyan">
+              Trends
               </span>
-              <span className="text-[10px] text-white/40">{trends.length}</span>
+              <span className="text-[13px] text-white/40">{trends.length}</span>
             </div>
             {trends.map((signal) => (
               <SignalCard

@@ -233,7 +233,7 @@ function LedgerEventCard({ event }: LedgerEventCardProps) {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium text-white">{event.title}</span>
+          <span className="text-sm font-medium text-white/95">{event.title}</span>
           <span className="text-xs text-white/55 flex-shrink-0">{timeAgo}</span>
         </div>
 
@@ -243,7 +243,7 @@ function LedgerEventCard({ event }: LedgerEventCardProps) {
 
         {/* Change explainability */}
         {hasChange && isScoreChange && (
-          <div className="mt-2 p-2 rounded-lg bg-[#13131A] border border-[#1A1A24]">
+          <div className="mt-2 p-2 rounded-lg bg-slate-2 border border-border-subtle">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs text-white/55">
                 {String(event.change!.previousValue)} → {String(event.change!.newValue)}
@@ -257,7 +257,7 @@ function LedgerEventCard({ event }: LedgerEventCardProps) {
 
         {/* Actor */}
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-[10px] text-white/55">
+          <span className="text-[13px] text-white/55">
             {event.actor.type === 'user' ? event.actor.name || 'You' : event.actor.type === 'system' ? 'System' : 'Contact'}
           </span>
         </div>
@@ -291,11 +291,11 @@ function NextBestActionCard({ nba, onAction, onDismiss }: NextBestActionCardProp
         />
       </div>
 
-      <h4 className="text-sm font-medium text-white mb-2">{nba.title}</h4>
+      <h4 className="text-sm font-medium text-white/95 mb-2">{nba.title}</h4>
       <p className="text-xs text-white/55 mb-3">{nba.description}</p>
 
       {nba.rationale && (
-        <p className="text-xs text-white/55 mb-3 p-2 rounded bg-[#13131A]">
+        <p className="text-xs text-white/55 mb-3 p-2 rounded bg-slate-2">
           <span className="text-brand-cyan">Why:</span> {nba.rationale}
         </p>
       )}
@@ -304,7 +304,7 @@ function NextBestActionCard({ nba, onAction, onDismiss }: NextBestActionCardProp
         <button
           type="button"
           onClick={() => onAction(nba)}
-          className="flex-1 px-3 py-2 bg-brand-iris text-white text-xs font-medium rounded-lg hover:bg-brand-iris/90 transition-colors"
+          className="flex-1 px-3 py-2 bg-brand-iris text-white/90 text-xs font-medium rounded-lg hover:bg-brand-iris/90 transition-colors"
         >
           {nba.primaryAction.label}
         </button>
@@ -368,7 +368,7 @@ export function ContactRelationshipLedger({
       </div>
 
       {/* Timeline */}
-      <div className="divide-y divide-[#1A1A24]">
+      <div className="divide-y divide-border-subtle">
         {sortedEvents.length > 0 ? (
           sortedEvents.map((event) => (
             <LedgerEventCard key={event.id} event={event} />

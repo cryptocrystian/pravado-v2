@@ -1,3 +1,15 @@
+import { withSentryConfig } from '@sentry/nextjs';
+
+// Security headers (S-INT-10)
+const securityHeaders = [
+  { key: 'X-DNS-Prefetch-Control', value: 'on' },
+  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -42,6 +54,38 @@ const nextConfig = {
   },
   // Enable experimental features if needed
   experimental: {},
+  // Security headers (S-INT-10)
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: securityHeaders,
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: '/app/settings/integrations',
+        destination: '/app/settings',
+        permanent: false,
+      },
+      {
+        source: '/app/settings/notifications',
+        destination: '/app/settings',
+        permanent: false,
+      },
+    ];
+  },
 };
 
-export default nextConfig;
+// Wrap with Sentry (S-INT-08) — only applies when SENTRY_AUTH_TOKEN is set
+export default withSentryConfig(nextConfig, {
+  // Suppresses source maps uploading logs during build
+  silent: true,
+  // Hide source maps from production builds
+  hideSourceMaps: true,
+  // Disable Sentry webpack plugin when no auth token (local dev)
+  disableServerWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+  disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+});

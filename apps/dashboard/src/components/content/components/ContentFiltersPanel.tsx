@@ -31,19 +31,19 @@ interface ContentFiltersPanelProps {
 const STATUS_OPTIONS: { value: ContentStatus | ''; label: string }[] = [
   { value: '', label: 'All Status' },
   { value: 'draft', label: 'Draft' },
-  { value: 'review', label: 'In Review' },
-  { value: 'approved', label: 'Approved' },
+  { value: 'needs_review', label: 'Needs Review' },
+  { value: 'ready', label: 'Ready' },
   { value: 'published', label: 'Published' },
   { value: 'archived', label: 'Archived' },
 ];
 
 const TYPE_OPTIONS: { value: ContentType | ''; label: string }[] = [
   { value: '', label: 'All Types' },
-  { value: 'blog_post', label: 'Blog Post' },
-  { value: 'long_form', label: 'Long Form' },
+  { value: 'article', label: 'Article' },
+  { value: 'email', label: 'Email' },
+  { value: 'social_post', label: 'Social Post' },
   { value: 'landing_page', label: 'Landing Page' },
-  { value: 'guide', label: 'Guide' },
-  { value: 'case_study', label: 'Case Study' },
+  { value: 'campaign', label: 'Campaign' },
 ];
 
 export function ContentFiltersPanel({
@@ -71,7 +71,7 @@ export function ContentFiltersPanel({
   };
 
   return (
-    <div className="p-4 space-y-4 border-b border-[#1A1A24]">
+    <div className="p-4 space-y-4 border-b border-slate-4">
       {/* Search */}
       <div className="relative">
         <svg
@@ -92,7 +92,7 @@ export function ContentFiltersPanel({
           placeholder="Search content..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 text-sm text-white bg-[#13131A] border border-[#1F1F28] rounded-lg placeholder:text-white/40 focus:outline-none focus:border-brand-iris/40 focus:ring-1 focus:ring-brand-iris/20 transition-colors"
+          className="w-full pl-10 pr-4 py-2.5 text-sm text-white bg-slate-2 border border-slate-4 rounded-lg placeholder:text-white/40 focus:outline-none focus:border-brand-iris/40 focus:ring-1 focus:ring-brand-iris/20 transition-colors"
         />
         {searchQuery && (
           <button
@@ -112,7 +112,7 @@ export function ContentFiltersPanel({
         <select
           value={statusFilter}
           onChange={(e) => onStatusChange(e.target.value as ContentStatus | '')}
-          className="flex-1 px-3 py-2 text-sm text-white bg-[#13131A] border border-[#1F1F28] rounded-lg focus:outline-none focus:border-brand-iris/40 appearance-none cursor-pointer hover:border-[#2A2A36] transition-colors"
+          className="flex-1 px-3 py-2 text-sm text-white bg-slate-2 border border-slate-4 rounded-lg focus:outline-none focus:border-brand-iris/40 appearance-none cursor-pointer hover:border-slate-5 transition-colors"
         >
           {STATUS_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
@@ -125,7 +125,7 @@ export function ContentFiltersPanel({
         <select
           value={typeFilter}
           onChange={(e) => onTypeChange(e.target.value as ContentType | '')}
-          className="flex-1 px-3 py-2 text-sm text-white bg-[#13131A] border border-[#1F1F28] rounded-lg focus:outline-none focus:border-brand-iris/40 appearance-none cursor-pointer hover:border-[#2A2A36] transition-colors"
+          className="flex-1 px-3 py-2 text-sm text-white bg-slate-2 border border-slate-4 rounded-lg focus:outline-none focus:border-brand-iris/40 appearance-none cursor-pointer hover:border-slate-5 transition-colors"
         >
           {TYPE_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
@@ -140,7 +140,7 @@ export function ContentFiltersPanel({
         <select
           value={entityFilter || ''}
           onChange={(e) => onEntityChange(e.target.value)}
-          className="w-full px-3 py-2 text-sm text-white bg-[#13131A] border border-[#1F1F28] rounded-lg focus:outline-none focus:border-brand-iris/40 appearance-none cursor-pointer hover:border-[#2A2A36] transition-colors"
+          className="w-full px-3 py-2 text-sm text-white bg-slate-2 border border-slate-4 rounded-lg focus:outline-none focus:border-brand-iris/40 appearance-none cursor-pointer hover:border-slate-5 transition-colors"
         >
           <option value="">All Entities</option>
           {availableEntities.map((entity) => (
@@ -156,7 +156,7 @@ export function ContentFiltersPanel({
         <select
           value={themeFilter || ''}
           onChange={(e) => onThemeChange(e.target.value)}
-          className="w-full px-3 py-2 text-sm text-white bg-[#13131A] border border-[#1F1F28] rounded-lg focus:outline-none focus:border-brand-iris/40 appearance-none cursor-pointer hover:border-[#2A2A36] transition-colors"
+          className="w-full px-3 py-2 text-sm text-white bg-slate-2 border border-slate-4 rounded-lg focus:outline-none focus:border-brand-iris/40 appearance-none cursor-pointer hover:border-slate-5 transition-colors"
         >
           <option value="">All Themes</option>
           {availableThemes.map((theme) => (
@@ -214,7 +214,7 @@ export function ContentFiltersPanel({
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] bg-brand-iris/10 text-brand-iris rounded-full">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-brand-iris/10 text-brand-iris rounded-full">
       {label}
       <button
         onClick={onRemove}
@@ -247,7 +247,7 @@ export function QuickFilterBar({ activeFilter, onFilterChange, counts = {} }: Qu
   ];
 
   return (
-    <div className="flex items-center gap-1 p-2 bg-[#0A0A0F] border-b border-[#1A1A24]">
+    <div className="flex items-center gap-1 p-2 bg-slate-0 border-b border-slate-4">
       {filters.map((filter) => (
         <button
           key={filter.key}
@@ -257,13 +257,13 @@ export function QuickFilterBar({ activeFilter, onFilterChange, counts = {} }: Qu
             ${
               activeFilter === filter.key
                 ? 'bg-brand-iris/15 text-brand-iris'
-                : 'text-white/50 hover:text-white hover:bg-[#13131A]'
+                : 'text-white/50 hover:text-white hover:bg-slate-2'
             }
           `}
         >
           {filter.label}
           {counts[filter.key] !== undefined && (
-            <span className="ml-1 text-[10px] opacity-60">({counts[filter.key]})</span>
+            <span className="ml-1 text-[11px] tabular-nums opacity-60">({counts[filter.key]})</span>
           )}
         </button>
       ))}

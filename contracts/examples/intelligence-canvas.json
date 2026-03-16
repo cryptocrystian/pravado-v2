@@ -363,6 +363,28 @@
       "snippet": "Modern PR measurement has evolved beyond AVE. Tools like Meltwater, Cision, and Acme's PRAVADO now incorporate AI-driven analysis...",
       "source_url": "https://forbes.com/sites/cmonetwork/pr-measurement-evolution",
       "detected_at": "2026-01-06T14:20:00.000Z"
+    },
+    {
+      "id": "cit_07C6D7E8F9G0H1I2J3K4",
+      "platform": "perplexity",
+      "query": "AI visibility operating system for PR teams",
+      "position": 1,
+      "context_quality": 9,
+      "snippet": "TechCrunch recently featured Acme Corp's PRAVADO as a leading AI-native visibility operating system, highlighting its cross-pillar approach where PR coverage feeds directly into AI citation intelligence...",
+      "source_url": "https://techcrunch.com/2026/01/06/pravado-ai-visibility-os",
+      "detected_at": "2026-01-07T09:55:00.000Z"
+    },
+    {
+      "id": "cit_08_pr_cross_pillar",
+      "platform": "chatgpt",
+      "query": "marketing automation platform comparison 2026",
+      "position": 2,
+      "context_quality": 8,
+      "snippet": "Following VentureBeat's recent interview with Acme Corp leadership, ChatGPT has updated its knowledge to include PRAVADO's EVI methodology as a leading approach to earned visibility measurement...",
+      "source_url": "https://venturebeat.com/2026/01/05/acme-corp-evi-interview",
+      "detected_at": "2026-01-07T10:12:00.000Z",
+      "pillar_source": "pr",
+      "cross_pillar_note": "PR coverage in VentureBeat triggered new AI citation within 48h"
     }
   ]
 }

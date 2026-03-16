@@ -1,5 +1,6 @@
 'use client';
 
+import * as Sentry from '@sentry/nextjs';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 /**
@@ -42,6 +43,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Update state with error info
     this.setState({ errorInfo });
+
+    // Report to Sentry (S-INT-08)
+    Sentry.captureException(error, {
+      contexts: { react: { componentStack: errorInfo.componentStack ?? undefined } },
+    });
 
     // Log error to API
     this.logErrorToApi(error, errorInfo);
@@ -103,44 +109,39 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         return this.props.fallback;
       }
 
-      // Default branded fallback UI
+      // Default branded fallback UI (DS v3.1 dark theme — S-INT-08)
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-slate-0 px-4">
           <div className="max-w-md w-full text-center">
-            {/* Pravado Logo/Brand */}
             <div className="mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-semantic-danger/10 border border-semantic-danger/20 mb-4">
                 <svg
-                  className="w-8 h-8 text-blue-600"
+                  className="w-8 h-8 text-semantic-danger"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                   />
                 </svg>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900">Something went wrong</h1>
+              <h1 className="text-[24px] font-bold text-white">Something went wrong</h1>
             </div>
 
-            {/* Error Message */}
-            <p className="text-gray-600 mb-6">
-              We apologize for the inconvenience. An unexpected error has occurred.
-              Our team has been notified.
+            <p className="text-[14px] text-white/50 mb-6 leading-relaxed">
+              An unexpected error occurred. Our team has been notified and is looking into it.
             </p>
 
-            {/* Error Details (collapsed by default in production) */}
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="mb-6 text-left bg-gray-100 rounded-lg p-4">
-                <summary className="cursor-pointer text-sm font-medium text-gray-700">
+              <details className="mb-6 text-left bg-slate-2 border border-slate-4 rounded-xl p-4">
+                <summary className="cursor-pointer text-[13px] font-medium text-white/60">
                   Error Details
                 </summary>
-                <pre className="mt-2 text-xs text-red-600 overflow-auto max-h-40">
+                <pre className="mt-2 text-[11px] text-semantic-danger/80 overflow-auto max-h-40 whitespace-pre-wrap">
                   {this.state.error.message}
                   {'\n\n'}
                   {this.state.error.stack}
@@ -148,33 +149,26 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               </details>
             )}
 
-            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={this.handleReset}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                className="px-6 py-2.5 bg-slate-2 border border-slate-4 rounded-xl text-white/70 text-[14px] font-medium hover:border-slate-5 transition-colors"
               >
                 Try Again
               </button>
               <button
                 onClick={this.handleReload}
-                className="px-4 py-2 bg-blue-600 rounded-lg text-white font-medium hover:bg-blue-700 transition-colors"
+                className="px-6 py-2.5 bg-brand-iris rounded-xl text-white text-[14px] font-medium hover:bg-brand-iris/90 transition-colors"
               >
                 Reload Page
               </button>
             </div>
 
-            {/* Support Link */}
-            <p className="mt-8 text-sm text-gray-500">
-              If this problem persists, please contact{' '}
-              <a href="mailto:support@pravado.com" className="text-blue-600 hover:underline">
+            <p className="mt-8 text-[12px] text-white/30">
+              If this problem persists, contact{' '}
+              <a href="mailto:support@pravado.com" className="text-brand-iris hover:underline">
                 support@pravado.com
               </a>
-            </p>
-
-            {/* Version Info */}
-            <p className="mt-4 text-xs text-gray-400">
-              Pravado v1.0.0-rc1
             </p>
           </div>
         </div>

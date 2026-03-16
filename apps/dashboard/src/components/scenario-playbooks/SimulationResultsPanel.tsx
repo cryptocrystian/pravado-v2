@@ -37,7 +37,7 @@ export function SimulationResultsPanel({
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white">Simulation Results</h3>
+            <h3 className="text-lg font-semibold text-white/95">Simulation Results</h3>
             <p className="text-sm text-blue-100">
               Simulated at {new Date(result.simulatedAt).toLocaleString()}
             </p>

@@ -113,7 +113,7 @@ export function AmbientAIIndicator({
 
       {/* Optional label */}
       {showLabel && (
-        <span className={`text-[10px] font-medium ${signal.text}`}>
+        <span className={`text-xs font-medium ${signal.text}`}>
           {signal.label}
         </span>
       )}
@@ -166,7 +166,7 @@ export function LocalAIIndicator({ state, className = '' }: LocalAIIndicatorProp
           ${signal.motion}
         `}
       />
-      <span className={`text-[10px] font-medium ${signal.text}`}>
+      <span className={`text-xs font-medium ${signal.text}`}>
         {signal.label}
       </span>
     </div>

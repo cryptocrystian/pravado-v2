@@ -73,7 +73,7 @@ const influenceLabels: Record<string, string> = {
 const priorityColors: Record<string, string> = {
   high: 'bg-semantic-danger/10 text-semantic-danger',
   medium: 'bg-brand-amber/10 text-brand-amber',
-  low: 'bg-slate-5/50 text-muted',
+  low: 'bg-slate-5/50 text-white/55',
 };
 
 interface AIReasoningPopoverProps {
@@ -147,7 +147,7 @@ export function AIReasoningPopover({
         onClick={() => setIsOpen(!isOpen)}
         className={
           variant === 'icon'
-            ? 'p-1 rounded hover:bg-slate-4/50 text-muted hover:text-brand-cyan transition-colors'
+            ? 'p-1 rounded hover:bg-slate-4/50 text-white/55 hover:text-brand-cyan transition-colors'
             : 'text-xs text-brand-cyan hover:underline cursor-pointer'
         }
         aria-label="Why am I seeing this?"
@@ -180,7 +180,7 @@ export function AIReasoningPopover({
                 <AIDot status="active" />
                 <span className="text-sm font-medium text-white">AI Reasoning</span>
                 {context.confidence && (
-                  <span className="ml-auto text-xs text-muted">
+                  <span className="ml-auto text-xs text-white/55">
                     {context.confidence}% confidence
                   </span>
                 )}
@@ -191,7 +191,7 @@ export function AIReasoningPopover({
             <div className="p-4 space-y-4">
               {/* Trigger Source */}
               <div>
-                <h4 className="text-xs font-medium text-muted uppercase tracking-wider mb-2">
+                <h4 className="text-xs font-medium text-white/55 uppercase tracking-wider mb-2">
                   Trigger Source
                 </h4>
                 <div className={`px-3 py-2 rounded-lg border ${sourceColors.bg} ${sourceColors.border}`}>
@@ -199,7 +199,7 @@ export function AIReasoningPopover({
                     {context.triggerSource}
                   </p>
                   {context.triggerDescription && (
-                    <p className="text-xs text-muted mt-1">{context.triggerDescription}</p>
+                    <p className="text-xs text-white/55 mt-1">{context.triggerDescription}</p>
                   )}
                 </div>
               </div>
@@ -207,7 +207,7 @@ export function AIReasoningPopover({
               {/* Related Pillars */}
               {context.relatedPillars && context.relatedPillars.length > 0 && (
                 <div>
-                  <h4 className="text-xs font-medium text-muted uppercase tracking-wider mb-2">
+                  <h4 className="text-xs font-medium text-white/55 uppercase tracking-wider mb-2">
                     Cross-Pillar Influence
                   </h4>
                   <div className="space-y-2">
@@ -215,7 +215,7 @@ export function AIReasoningPopover({
                       const colors = pillarColors[rel.pillar] || pillarColors.pr;
                       return (
                         <div key={idx} className="flex items-center gap-2 text-xs">
-                          <span className="text-muted">{influenceLabels[rel.influence]}</span>
+                          <span className="text-white/55">{influenceLabels[rel.influence]}</span>
                           <span className={`px-2 py-0.5 rounded ${colors.bg} ${colors.text}`}>
                             {colors.label}
                           </span>
@@ -229,7 +229,7 @@ export function AIReasoningPopover({
               {/* Next Actions */}
               {context.nextActions && context.nextActions.length > 0 && (
                 <div>
-                  <h4 className="text-xs font-medium text-muted uppercase tracking-wider mb-2">
+                  <h4 className="text-xs font-medium text-white/55 uppercase tracking-wider mb-2">
                     Suggested Actions
                   </h4>
                   <div className="space-y-2">
@@ -243,7 +243,7 @@ export function AIReasoningPopover({
                           {action.label}
                         </span>
                         {action.priority && (
-                          <span className={`text-[10px] px-2 py-0.5 rounded ${priorityColors[action.priority]}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded ${priorityColors[action.priority]}`}>
                             {action.priority}
                           </span>
                         )}
@@ -255,7 +255,7 @@ export function AIReasoningPopover({
 
               {/* Generated timestamp */}
               {context.generatedAt && (
-                <p className="text-[10px] text-slate-6 text-center">
+                <p className="text-xs text-white/55 text-center">
                   Generated {new Date(context.generatedAt).toLocaleString()}
                 </p>
               )}

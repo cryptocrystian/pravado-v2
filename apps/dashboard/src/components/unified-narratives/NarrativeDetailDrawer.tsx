@@ -112,7 +112,7 @@ export default function NarrativeDetailDrawer({
                   <NarrativeStatusBadge status={narrative.status} />
                 </div>
                 {narrative.subtitle && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white/50">
                     {narrative.subtitle}
                   </p>
                 )}
@@ -125,17 +125,17 @@ export default function NarrativeDetailDrawer({
             {/* Quick Info */}
             <div className="flex flex-wrap items-center gap-4 mt-3 text-sm">
               <NarrativeTypeBadge type={narrative.narrativeType} />
-              <div className="flex items-center gap-1 text-muted-foreground">
+              <div className="flex items-center gap-1 text-white/50">
                 <Calendar className="h-4 w-4" />
                 {periodLabel}
               </div>
               {narrative.createdBy && (
-                <div className="flex items-center gap-1 text-muted-foreground">
+                <div className="flex items-center gap-1 text-white/50">
                   <User className="h-4 w-4" />
                   {narrative.createdBy}
                 </div>
               )}
-              <div className="flex items-center gap-1 text-muted-foreground">
+              <div className="flex items-center gap-1 text-white/50">
                 <Clock className="h-4 w-4" />
                 Updated {formatNarrativeDate(narrative.updatedAt)}
               </div>
@@ -189,7 +189,7 @@ export default function NarrativeDetailDrawer({
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
                   </div>
                 ) : sections.length === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">
+                  <div className="text-center py-12 text-white/50">
                     <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
                     <p className="text-lg font-medium">No content yet</p>
                     <p className="text-sm mt-1">
@@ -209,8 +209,8 @@ export default function NarrativeDetailDrawer({
                           <NarrativeSectionTypeBadge
                             sectionType={sectionType as UnifiedNarrativeSection['sectionType']}
                           />
-                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground">
+                          <ChevronRight className="h-4 w-4 text-white/50" />
+                          <span className="text-sm text-white/50">
                             {typeSections.length} section(s)
                           </span>
                         </div>
@@ -270,7 +270,7 @@ export default function NarrativeDetailDrawer({
                             <p className="font-medium">
                               {system.replace(/_/g, ' ')}
                             </p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-white/50">
                               Intelligence system
                             </p>
                           </div>
@@ -279,26 +279,26 @@ export default function NarrativeDetailDrawer({
                       ))}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground">
+                    <p className="text-white/50">
                       No source systems configured.
                     </p>
                   )}
 
                   {/* Statistics */}
                   <div className="mt-6 pt-6 border-t">
-                    <h4 className="text-sm font-semibold text-muted-foreground uppercase mb-3">
+                    <h4 className="text-sm font-semibold text-white/50 uppercase mb-3">
                       Statistics
                     </h4>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-3 bg-gray-50 rounded-lg">
                         <p className="text-2xl font-bold">{sections.length}</p>
-                        <p className="text-sm text-muted-foreground">Sections</p>
+                        <p className="text-sm text-white/50">Sections</p>
                       </div>
                       <div className="p-3 bg-gray-50 rounded-lg">
                         <p className="text-2xl font-bold">
                           {narrative.keyInsights?.length || 0}
                         </p>
-                        <p className="text-sm text-muted-foreground">Insights</p>
+                        <p className="text-sm text-white/50">Insights</p>
                       </div>
                       <div className="p-3 bg-gray-50 rounded-lg">
                         <p className="text-2xl font-bold">
@@ -306,13 +306,13 @@ export default function NarrativeDetailDrawer({
                             ? `${Math.round(narrative.confidenceScore * 100)}%`
                             : 'N/A'}
                         </p>
-                        <p className="text-sm text-muted-foreground">Confidence</p>
+                        <p className="text-sm text-white/50">Confidence</p>
                       </div>
                       <div className="p-3 bg-gray-50 rounded-lg">
                         <p className="text-2xl font-bold">
                           {narrative.totalTokensUsed || 0}
                         </p>
-                        <p className="text-sm text-muted-foreground">Tokens Used</p>
+                        <p className="text-sm text-white/50">Tokens Used</p>
                       </div>
                     </div>
                   </div>
@@ -320,7 +320,7 @@ export default function NarrativeDetailDrawer({
                   {/* Tags */}
                   {narrative.tags && narrative.tags.length > 0 && (
                     <div className="mt-6 pt-6 border-t">
-                      <h4 className="text-sm font-semibold text-muted-foreground uppercase mb-2">
+                      <h4 className="text-sm font-semibold text-white/50 uppercase mb-2">
                         Tags
                       </h4>
                       <div className="flex flex-wrap gap-2">
@@ -335,33 +335,33 @@ export default function NarrativeDetailDrawer({
 
                   {/* Timestamps */}
                   <div className="mt-6 pt-6 border-t">
-                    <h4 className="text-sm font-semibold text-muted-foreground uppercase mb-2">
+                    <h4 className="text-sm font-semibold text-white/50 uppercase mb-2">
                       Timeline
                     </h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Created:</span>
+                        <span className="text-white/50">Created:</span>
                         <span>{formatNarrativeDate(narrative.createdAt)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Updated:</span>
+                        <span className="text-white/50">Updated:</span>
                         <span>{formatNarrativeDate(narrative.updatedAt)}</span>
                       </div>
                       {narrative.generatedAt && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Generated:</span>
+                          <span className="text-white/50">Generated:</span>
                           <span>{formatNarrativeDate(narrative.generatedAt)}</span>
                         </div>
                       )}
                       {narrative.approvedAt && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Approved:</span>
+                          <span className="text-white/50">Approved:</span>
                           <span>{formatNarrativeDate(narrative.approvedAt)}</span>
                         </div>
                       )}
                       {narrative.publishedAt && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Published:</span>
+                          <span className="text-white/50">Published:</span>
                           <span>{formatNarrativeDate(narrative.publishedAt)}</span>
                         </div>
                       )}

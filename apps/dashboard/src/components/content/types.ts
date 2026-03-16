@@ -11,15 +11,171 @@
 // ENUMS & UNIONS
 // ============================================
 
-export type ContentStatus = 'draft' | 'review' | 'approved' | 'published' | 'archived';
-export type ContentType = 'blog_post' | 'long_form' | 'landing_page' | 'guide' | 'case_study';
+/**
+ * Content lifecycle status - visible, simple states
+ * Every content item clearly shows its state
+ */
+export type ContentStatus = 'draft' | 'needs_review' | 'ready' | 'published' | 'archived';
+
+/**
+ * Content types used across existing components and mock data
+ */
+export type ContentType = 'article' | 'email' | 'social_post' | 'landing_page' | 'campaign';
+
+/**
+ * Content types for the creation overlay (new creation flow)
+ */
+export type CreationContentType = 'blog_post' | 'long_form_article' | 'newsletter' | 'social_series' | 'press_release';
+
+/**
+ * Entry path for content creation (SAGE brief or manual)
+ */
+export type CreationEntryPath = 'sage_brief' | 'manual';
+
+/**
+ * Config for creation content types (used in creation overlay)
+ */
+export interface CreationTypeConfig {
+  label: string;
+  iconName: string;
+  description: string;
+  sageDriven: boolean;
+  crossPillarNote?: string;
+}
+
+export const CREATION_TYPE_CONFIG: Record<CreationContentType, CreationTypeConfig> = {
+  blog_post: {
+    label: 'Blog Post',
+    iconName: 'Article',
+    description: '800\u20131,500 words. SEO-oriented, frequent cadence.',
+    sageDriven: false,
+  },
+  long_form_article: {
+    label: 'Long-Form Article',
+    iconName: 'BookOpenText',
+    description: '2,000+ words. Thought leadership, byline-eligible.',
+    sageDriven: false,
+  },
+  newsletter: {
+    label: 'Newsletter',
+    iconName: 'EnvelopeSimple',
+    description: 'Section-based, owned audience, scheduled cadence.',
+    sageDriven: false,
+  },
+  social_series: {
+    label: 'Social Series',
+    iconName: 'ShareNetwork',
+    description: 'LinkedIn carousel, X thread, Instagram sequence.',
+    sageDriven: false,
+  },
+  press_release: {
+    label: 'Press Release',
+    iconName: 'Megaphone',
+    description: 'Creates a linked draft in your PR surface automatically.',
+    sageDriven: false,
+    crossPillarNote: 'Syncs to PR surface \u2192',
+  },
+};
+
+/**
+ * Outline section for AI scaffold stage
+ */
+export interface OutlineSection {
+  id: string;
+  title: string;
+  status: 'pending' | 'generating' | 'complete';
+}
+
+/**
+ * Legacy content type mapping for backward compatibility
+ * Maps old types to new creation types
+ */
+export const LEGACY_CONTENT_TYPE_MAP: Record<string, CreationContentType> = {
+  'article': 'long_form_article',
+  'email': 'newsletter',
+  'social_post': 'social_series',
+  'landing_page': 'blog_post',
+  'campaign': 'blog_post',
+  'blog_post': 'blog_post',
+  'long_form': 'long_form_article',
+  'guide': 'long_form_article',
+  'case_study': 'long_form_article',
+};
+
 export type CiteMindStatus = 'pending' | 'analyzing' | 'passed' | 'warning' | 'blocked';
 export type DerivativeType = 'pr_pitch_excerpt' | 'aeo_snippet' | 'ai_summary' | 'social_fragment';
-export type BriefStatus = 'draft' | 'approved' | 'in_progress' | 'completed';
 export type SearchIntent = 'informational' | 'navigational' | 'commercial' | 'transactional';
 export type AutomationMode = 'manual' | 'copilot' | 'autopilot';
 export type DensityLevel = 'comfortable' | 'standard' | 'compact';
-export type ContentView = 'work-queue' | 'library' | 'calendar' | 'insights';
+export type ContentView = 'work-queue' | 'library' | 'calendar' | 'insights' | 'editor';
+
+/**
+ * Data passed from creation flow (Stage 3) to the editor view (Stage 4).
+ */
+export interface EditorInitData {
+  title: string;
+  topic: string;
+  keyword: string;
+  audience: string;
+  tone: string;
+  contentType: CreationContentType | null;
+  outline: OutlineSection[];
+}
+
+/**
+ * User-friendly content type labels and metadata
+ * Used for display in UI, dropdowns, and type badges
+ */
+export interface ContentTypeConfig {
+  label: string;
+  icon: string;
+  placeholder: string;
+  description: string;
+}
+
+export const CONTENT_TYPE_CONFIG: Record<ContentType, ContentTypeConfig> = {
+  article: {
+    label: 'Article',
+    icon: '📝',
+    placeholder: 'Write your headline...',
+    description: 'Long-form content for blogs, guides, and thought leadership',
+  },
+  email: {
+    label: 'Email',
+    icon: '✉️',
+    placeholder: 'Subject line...',
+    description: 'Email campaigns, newsletters, and outreach',
+  },
+  social_post: {
+    label: 'Social Post',
+    icon: '📱',
+    placeholder: 'Hook your audience...',
+    description: 'Social media content for any platform',
+  },
+  landing_page: {
+    label: 'Landing Page',
+    icon: '🌐',
+    placeholder: 'Your headline goes here...',
+    description: 'Conversion-focused web pages',
+  },
+  campaign: {
+    label: 'Campaign',
+    icon: '📣',
+    placeholder: 'Campaign name...',
+    description: 'Container for organizing related content',
+  },
+};
+
+/**
+ * Content status labels for display
+ */
+export const CONTENT_STATUS_CONFIG: Record<ContentStatus, { label: string; color: string }> = {
+  draft: { label: 'Draft', color: 'text-white/50' },
+  needs_review: { label: 'Needs Review', color: 'text-amber-400' },
+  ready: { label: 'Ready', color: 'text-brand-cyan' },
+  published: { label: 'Published', color: 'text-green-400' },
+  archived: { label: 'Archived', color: 'text-white/30' },
+};
 
 // ============================================
 // AUTHORITY SIGNALS
@@ -79,7 +235,7 @@ export interface ContentAsset {
 }
 
 // ============================================
-// CONTENT BRIEF
+// CONTENT ITEM (Primary content entity)
 // ============================================
 
 export interface DerivativeMap {
@@ -87,32 +243,49 @@ export interface DerivativeMap {
   expectedDerivatives: DerivativeType[];
 }
 
-export interface ContentBrief {
+/**
+ * ContentItem - The primary content entity users create and edit
+ *
+ * This replaces the previous "Brief" concept with a direct, user-friendly
+ * content object that opens directly into an editor.
+ */
+export interface ContentItem {
   id: string;
   organizationId?: string;
+  /** User-visible title */
   title: string;
-  status: BriefStatus;
-  /** Primary keyword to target */
+  /** Content type - determines editor scaffolding */
+  contentType: ContentType;
+  /** Lifecycle status */
+  status: ContentStatus;
+  /** Main content body */
+  body?: string;
+  /** Primary keyword to target (optional metadata) */
   targetKeyword?: string;
-  /** Search intent type */
+  /** Search intent type (optional metadata) */
   targetIntent?: SearchIntent;
-  /** SAGE-derived objective */
+  /** SAGE-derived objective (optional metadata) */
   strategicObjective?: string;
-  /** Allowed claims */
-  allowedAssertions?: string[];
-  /** Required sources */
-  requiredCitations?: string[];
   /** Derivative surface map */
   derivativeMap?: DerivativeMap;
   /** Target audience */
   targetAudience?: string;
   /** Content tone */
   tone?: string;
-  /** Due date for the brief */
+  /** Due date */
   deadline?: string;
+  /** Last edited timestamp for display */
+  lastEditedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * @deprecated Use ContentItem instead
+ * Kept for backward compatibility during migration
+ */
+export type ContentBrief = ContentItem;
+export type BriefStatus = ContentStatus;
 
 // ============================================
 // DERIVATIVE SURFACE
@@ -207,10 +380,13 @@ export interface ContentItemsResponse {
   pageSize: number;
 }
 
-export interface ContentBriefsResponse {
-  items: ContentBrief[];
+export interface ContentItemsListResponse {
+  items: ContentItem[];
   total: number;
 }
+
+/** @deprecated Use ContentItemsListResponse */
+export type ContentBriefsResponse = ContentItemsListResponse;
 
 export interface ContentGapsResponse {
   items: ContentGap[];
@@ -237,15 +413,18 @@ export interface ContentClusterDTO {
 }
 
 // ============================================
-// BRIEF WITH CONTEXT (Expanded response)
+// CONTENT ITEM WITH CONTEXT (Expanded response)
 // ============================================
 
-export interface ContentBriefWithContext {
-  brief: ContentBrief;
+export interface ContentItemWithContext {
+  item: ContentItem;
   suggestedKeywords: string[];
   relatedTopics: { id: string; name: string }[];
   relatedAssets?: ContentAsset[];
 }
+
+/** @deprecated Use ContentItemWithContext */
+export type ContentBriefWithContext = ContentItemWithContext;
 
 // ============================================
 // FILTER & PARAMS TYPES
@@ -261,10 +440,14 @@ export interface ContentItemsParams {
   theme?: string;
 }
 
-export interface ContentBriefsParams {
+export interface ContentItemsQueryParams {
   limit?: number;
-  status?: BriefStatus;
+  status?: ContentStatus;
+  contentType?: ContentType;
 }
+
+/** @deprecated Use ContentItemsQueryParams */
+export type ContentBriefsParams = ContentItemsQueryParams;
 
 export interface ContentGapsParams {
   limit?: number;

@@ -97,12 +97,12 @@ export function OrgSwitcher({ currentOrg, allOrgs }: OrgSwitcherProps) {
           <p className="text-sm font-medium text-white truncate">
             {currentOrg.name}
           </p>
-          <p className="text-xs text-muted truncate">
+          <p className="text-xs text-white/55 truncate">
             {currentOrg.name === 'Pravado Demo Org' ? 'Demo Organization' : 'Organization'}
           </p>
         </div>
         <svg
-          className={`w-4 h-4 text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-white/55 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -123,7 +123,7 @@ export function OrgSwitcher({ currentOrg, allOrgs }: OrgSwitcherProps) {
           {/* Dropdown Menu */}
           <div className="absolute left-0 right-0 mt-2 bg-slate-2 border border-border-subtle rounded-lg shadow-lg z-50 overflow-hidden">
             <div className="p-2">
-              <p className="text-xs font-medium text-muted uppercase px-2 py-1">
+              <p className="text-xs font-medium text-white/55 uppercase px-2 py-1">
                 Your Organizations
               </p>
 
@@ -146,7 +146,7 @@ export function OrgSwitcher({ currentOrg, allOrgs }: OrgSwitcherProps) {
                     className={`w-6 h-6 rounded flex items-center justify-center text-xs font-semibold ${
                       org.id === currentOrg.id
                         ? 'bg-brand-iris text-white'
-                        : 'bg-slate-4 text-muted'
+                        : 'bg-slate-4 text-white/55'
                     }`}
                   >
                     {org.name.charAt(0).toUpperCase()}
@@ -160,7 +160,7 @@ export function OrgSwitcher({ currentOrg, allOrgs }: OrgSwitcherProps) {
                     </svg>
                   )}
                   {org.name === 'Pravado Demo Org' && (
-                    <span className="text-[10px] px-1.5 py-0.5 bg-brand-cyan/10 text-brand-cyan rounded">
+                    <span className="text-xs px-1.5 py-0.5 bg-brand-cyan/10 text-brand-cyan rounded">
                       Demo
                     </span>
                   )}

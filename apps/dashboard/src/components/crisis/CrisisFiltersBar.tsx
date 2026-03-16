@@ -185,7 +185,7 @@ export default function CrisisFiltersBar({
       <div className="flex flex-wrap items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 min-w-[200px] max-w-[300px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
           <Input
             placeholder="Search incidents..."
             value={filters.searchQuery || ''}
@@ -350,7 +350,7 @@ export default function CrisisFiltersBar({
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 text-muted-foreground"
+            className="h-9 text-white/50"
             onClick={clearFilters}
           >
             <X className="h-4 w-4 mr-1" />
@@ -363,12 +363,12 @@ export default function CrisisFiltersBar({
       <div className="flex items-center justify-between text-sm">
         <div className="flex items-center gap-2">
           {hasActiveFilters && (
-            <span className="text-muted-foreground">
+            <span className="text-white/50">
               Showing {filteredCount} of {totalCount} incidents
             </span>
           )}
           {!hasActiveFilters && (
-            <span className="text-muted-foreground">
+            <span className="text-white/50">
               {totalCount} incidents
             </span>
           )}

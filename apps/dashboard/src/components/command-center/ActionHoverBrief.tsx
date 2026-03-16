@@ -103,7 +103,7 @@ export function ActionHoverBrief({
             <svg className="w-3.5 h-3.5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-white/50">Why Now</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Why Now</span>
           </div>
           <p className="text-[13px] text-white/75 leading-relaxed line-clamp-3">
             {action.why}
@@ -118,7 +118,7 @@ export function ActionHoverBrief({
             <svg className="w-3.5 h-3.5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-white/50">Next Step</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Next Step</span>
           </div>
           <p className="text-[13px] text-white/80 leading-snug line-clamp-2">
             {action.recommended_next_step}
@@ -133,7 +133,7 @@ export function ActionHoverBrief({
             <svg className="w-3.5 h-3.5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-white/50">Signals</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Signals</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {action.signals.slice(0, 3).map((signal, idx) => (
@@ -141,7 +141,7 @@ export function ActionHoverBrief({
                 key={idx}
                 className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5 border border-white/10"
               >
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/50">{signal.label}</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">{signal.label}</span>
                 <span className={`text-xs font-bold ${signalToneColors[signal.tone]}`}>
                   {signal.value}
                 </span>
@@ -158,7 +158,7 @@ export function ActionHoverBrief({
             <svg className="w-3.5 h-3.5 text-semantic-warning/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-semantic-warning/70">Guardrails</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-semantic-warning/70">Guardrails</span>
           </div>
           <div className="space-y-1">
             {action.guardrails.slice(0, 2).map((guardrail, idx) => (
@@ -166,7 +166,7 @@ export function ActionHoverBrief({
                 key={idx}
                 className="flex items-start gap-1.5 text-[13px] text-semantic-warning/80"
               >
-                <span className="text-[10px] mt-0.5">⚠</span>
+                <span className="text-xs mt-0.5">⚠</span>
                 <span className="line-clamp-2">{guardrail}</span>
               </div>
             ))}
@@ -255,14 +255,14 @@ export function ActionHoverBrief({
 
         {/* Fallback hint for non-locked without action handler */}
         {!onPrimaryAction && !isCompleted && !isLocked && (
-          <p className="text-[10px] text-white/40 text-center">
+          <p className="text-xs text-white/40 text-center">
             Click card to review full details
           </p>
         )}
 
         {/* Locked action hint */}
         {isLocked && (
-          <p className="text-[10px] text-white/40 text-center">
+          <p className="text-xs text-white/40 text-center">
             Click &ldquo;Unlock Pro&rdquo; to upgrade
           </p>
         )}

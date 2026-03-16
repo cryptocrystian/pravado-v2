@@ -46,7 +46,7 @@ export default function NarrativeSectionTypeBadge({
       variant="outline"
       className={cn(
         'font-medium',
-        size === 'sm' ? 'text-[10px] px-1.5 py-0' : 'text-xs',
+        size === 'sm' ? 'text-xs px-1.5 py-0' : 'text-xs',
         colorClass,
         className
       )}

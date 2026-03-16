@@ -33,6 +33,7 @@ import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { ContentService } from '../../services/contentService';
+import { enqueueCiteMindScore } from '../../queue/bullmqQueue';
 
 /**
  * Helper to get user's org ID
@@ -300,6 +301,11 @@ export async function contentRoutes(server: FastifyInstance) {
             message: 'Content item not found',
           },
         });
+      }
+
+      // Fire-and-forget: enqueue CiteMind scoring if body was updated
+      if (updates.body) {
+        enqueueCiteMindScore(id, orgId).catch(() => { /* non-critical */ });
       }
 
       return reply.send({

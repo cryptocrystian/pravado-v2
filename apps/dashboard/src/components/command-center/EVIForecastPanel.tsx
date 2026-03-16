@@ -43,7 +43,7 @@ function ScenarioCard({
         w-full p-3 rounded-lg border text-left transition-all
         ${isActive
           ? 'bg-brand-cyan/5 border-brand-cyan/30'
-          : 'bg-[#0A0A0F] border-[#1A1A24] hover:border-[#2A2A34]'
+          : 'bg-page border-border-subtle hover:border-slate-5'
         }
       `}
     >
@@ -62,7 +62,7 @@ function ScenarioCard({
             {scenario.drivers.map((driver) => (
               <span
                 key={driver}
-                className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border ${driverColors[driver]}`}
+                className={`text-[11px] font-bold uppercase px-1.5 py-0.5 rounded border ${driverColors[driver]}`}
               >
                 {driver}
               </span>
@@ -113,7 +113,7 @@ function ForecastBar({
         <span className="text-[13px] text-white/50">{label}</span>
         <span className="text-sm font-bold text-white">{expected.toFixed(1)}</span>
       </div>
-      <div className="relative h-2 bg-[#1A1A24] rounded-full overflow-hidden">
+      <div className="relative h-2 bg-slate-4 rounded-full overflow-hidden">
         {/* Range bar */}
         <div
           className="absolute h-full bg-brand-cyan/30 rounded-full"
@@ -130,7 +130,7 @@ function ForecastBar({
           style={{ left: `${Math.min(Math.max(currentPct, 0), 100)}%`, transform: 'translateX(-50%)' }}
         />
       </div>
-      <div className="flex justify-between text-[10px] text-white/30">
+      <div className="flex justify-between text-xs text-white/30">
         <span>{low.toFixed(0)}</span>
         <span>{high.toFixed(0)}</span>
       </div>
@@ -142,11 +142,11 @@ function ForecastBar({
 function LoadingSkeleton() {
   return (
     <div className="p-4 space-y-4">
-      <div className="h-6 bg-[#1A1A24] rounded animate-pulse w-1/3" />
-      <div className="h-16 bg-[#1A1A24] rounded animate-pulse" />
+      <div className="h-6 bg-slate-4 rounded animate-pulse w-1/3" />
+      <div className="h-16 bg-slate-4 rounded animate-pulse" />
       <div className="space-y-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-20 bg-[#1A1A24] rounded animate-pulse" />
+          <div key={i} className="h-20 bg-slate-4 rounded animate-pulse" />
         ))}
       </div>
     </div>
@@ -196,7 +196,7 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
   if (!forecast || !projectedForecast) {
     return (
       <div className="p-4 text-center">
-        <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-[#1A1A24] flex items-center justify-center">
+        <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-slate-4 flex items-center justify-center">
           <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
           </svg>
@@ -214,7 +214,7 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
           <span className="text-[11px] text-white/50 uppercase tracking-wide font-semibold">
             30-Day Forecast
           </span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-brand-iris/10 text-brand-iris border border-brand-iris/30">
+          <span className="text-[11px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-iris/10 text-brand-iris border border-brand-iris/30">
             BETA
           </span>
         </div>
@@ -225,12 +225,12 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
 
       {/* Current vs Projected */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
-          <div className="text-[11px] text-white/50 mb-1">Current EVI</div>
+        <div className="p-3 bg-page border border-border-subtle rounded-lg">
+          <div className="text-xs text-white/50 mb-1">Current EVI</div>
           <div className="text-2xl font-bold text-white">{forecast.current_score.toFixed(1)}</div>
         </div>
         <div className="p-3 bg-brand-cyan/5 border border-brand-cyan/20 rounded-lg">
-          <div className="text-[11px] text-brand-cyan mb-1">Projected EVI</div>
+          <div className="text-xs text-brand-cyan mb-1">Projected EVI</div>
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold text-brand-cyan">
               {projectedForecast.withScenarios.expected.toFixed(1)}
@@ -245,7 +245,7 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
       </div>
 
       {/* Forecast Bar */}
-      <div className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+      <div className="p-3 bg-page border border-border-subtle rounded-lg">
         <ForecastBar
           label="30d projection"
           low={projectedForecast.withScenarios.low}
@@ -275,7 +275,7 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
       )}
 
       {/* Disclaimer */}
-      <p className="text-[10px] text-white/30 text-center">
+      <p className="text-xs text-white/30 text-center">
         Forecasts are based on historical patterns and active scenarios. Actual results may vary.
       </p>
     </div>

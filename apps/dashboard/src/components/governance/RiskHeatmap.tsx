@@ -176,7 +176,7 @@ export function RiskHeatmap({ data, loading, onCellClick, className }: RiskHeatm
                         <div className="flex items-center gap-0.5">
                           {getTrendIcon(cell.trend)}
                           {cell.findingsCount > 0 && (
-                            <span className="text-[10px] opacity-75">{cell.findingsCount}</span>
+                            <span className="text-[11px] tabular-nums opacity-75">{cell.findingsCount}</span>
                           )}
                         </div>
                       </div>

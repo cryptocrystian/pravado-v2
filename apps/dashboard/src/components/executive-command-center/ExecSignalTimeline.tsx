@@ -189,10 +189,10 @@ export function ExecSignalTimeline({
 
   if (loading) {
     return (
-      <div className="panel-card p-6">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6">
         <div className="flex items-center justify-center py-12">
           <AIDot status="analyzing" />
-          <span className="ml-3 text-muted">Loading signal timeline...</span>
+          <span className="ml-3 text-white/55">Loading signal timeline...</span>
         </div>
       </div>
     );
@@ -200,34 +200,34 @@ export function ExecSignalTimeline({
 
   if (!data || data.signals.length === 0) {
     return (
-      <div className="panel-card p-6">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6">
         <div className="text-center py-8">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-4/50 flex items-center justify-center">
-            <svg className="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-white/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <p className="text-muted">No signals in this time period</p>
+          <p className="text-white/55">No signals in this time period</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="panel-card overflow-hidden">
+    <div className="bg-panel border border-border-subtle rounded-xl overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 border-b border-border-subtle bg-slate-3/30">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <AIDot status="idle" />
             <div>
-              <h2 className="text-lg font-semibold text-white">Cross-Pillar Signal Timeline</h2>
-              <p className="text-xs text-muted mt-0.5">
+              <h2 className="text-lg font-semibold text-white/95">Cross-Pillar Signal Timeline</h2>
+              <p className="text-xs text-white/55 mt-0.5">
                 {filteredSignals.length} signals from {selectedPillars.size} pillars
               </p>
             </div>
           </div>
-          <span className="text-xs text-slate-6">
+          <span className="text-xs text-white/55">
             {data.timeWindow === 'today' ? 'Today' : data.timeWindow === 'week' ? 'This Week' : 'This Month'}
           </span>
         </div>
@@ -241,7 +241,7 @@ export function ExecSignalTimeline({
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 selectedPillars.has(key)
                   ? `${colors.bg} ${colors.text} border ${colors.border}/30`
-                  : 'bg-slate-4/30 text-slate-6 border border-transparent'
+                  : 'bg-slate-4/30 text-white/55 border border-transparent'
               }`}
             >
               <span className={`w-2 h-2 rounded-full ${selectedPillars.has(key) ? colors.dot : 'bg-slate-6'}`} />
@@ -259,10 +259,10 @@ export function ExecSignalTimeline({
               className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-all ${
                 selectedTypes.has(type as SignalType)
                   ? 'bg-slate-4 text-white'
-                  : 'bg-slate-4/30 text-slate-6'
+                  : 'bg-slate-4/30 text-white/55'
               }`}
             >
-              <span className="text-[10px]">{style.icon}</span>
+              <span className="text-xs">{style.icon}</span>
               {style.label}
             </button>
           ))}
@@ -272,7 +272,7 @@ export function ExecSignalTimeline({
       {/* Timeline */}
       <div className="p-4 max-h-[600px] overflow-y-auto">
         {filteredSignals.length === 0 ? (
-          <div className="text-center py-8 text-muted">
+          <div className="text-center py-8 text-white/55">
             <p>No signals match the selected filters</p>
           </div>
         ) : (
@@ -280,11 +280,11 @@ export function ExecSignalTimeline({
             <div key={dateLabel} className="mb-6 last:mb-0">
               {/* Date Header */}
               <div className="flex items-center gap-3 mb-3">
-                <span className="text-xs font-medium text-muted uppercase tracking-wider">
+                <span className="text-xs font-medium text-white/55 uppercase tracking-wider">
                   {dateLabel}
                 </span>
                 <div className="flex-1 h-px bg-border-subtle" />
-                <span className="text-xs text-slate-6">{signals.length} signals</span>
+                <span className="text-xs text-white/55">{signals.length} signals</span>
               </div>
 
               {/* Signals */}
@@ -327,7 +327,7 @@ export function ExecSignalTimeline({
                                 <span className={`text-xs font-medium ${pillar.text}`}>
                                   {pillar.label}
                                 </span>
-                                <span className="text-xs text-slate-6">
+                                <span className="text-xs text-white/55">
                                   {formatRelativeTime(signal.timestamp)}
                                 </span>
                                 {signal.aiGenerated && (
@@ -337,7 +337,7 @@ export function ExecSignalTimeline({
                                   </span>
                                 )}
                                 {signal.severity !== 'info' && signal.severity !== 'low' && (
-                                  <span className={`text-[10px] px-1.5 py-0.5 rounded ${severity.bg} ${
+                                  <span className={`text-xs px-1.5 py-0.5 rounded ${severity.bg} ${
                                     signal.severity === 'critical' ? 'text-semantic-danger' :
                                     signal.severity === 'high' ? 'text-brand-amber' : 'text-brand-cyan'
                                   }`}>
@@ -347,16 +347,16 @@ export function ExecSignalTimeline({
                               </div>
 
                               {/* Title */}
-                              <h4 className="font-medium text-white text-sm">{signal.title}</h4>
+                              <h4 className="font-medium text-white/95 text-sm">{signal.title}</h4>
 
                               {/* Related Pillars */}
                               {signal.relatedPillars && signal.relatedPillars.length > 0 && (
                                 <div className="flex items-center gap-1.5 mt-2">
-                                  <span className="text-[10px] text-slate-6">Affects:</span>
+                                  <span className="text-xs text-white/55">Affects:</span>
                                   {signal.relatedPillars.map(p => {
                                     const pc = pillarColors[p];
                                     return (
-                                      <span key={p} className={`text-[10px] px-1.5 py-0.5 rounded ${pc.bg} ${pc.text}`}>
+                                      <span key={p} className={`text-xs px-1.5 py-0.5 rounded ${pc.bg} ${pc.text}`}>
                                         {pc.label.split(' ')[0]}
                                       </span>
                                     );
@@ -369,7 +369,7 @@ export function ExecSignalTimeline({
                             <div className="flex items-center gap-1 flex-shrink-0">
                               <AIReasoningPopover context={buildReasoningContext(signal)} position="left" />
                               <svg
-                                className={`w-4 h-4 text-muted transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                className={`w-4 h-4 text-white/55 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -385,7 +385,7 @@ export function ExecSignalTimeline({
                           <div className="px-4 pb-4 pt-0 border-t border-border-subtle">
                             <p className="text-sm text-slate-11 mt-3">{signal.description}</p>
                             <div className="flex items-center justify-between mt-3">
-                              <span className="text-xs text-slate-6">Source: {signal.sourceSystem}</span>
+                              <span className="text-xs text-white/55">Source: {signal.sourceSystem}</span>
                               {signal.linkUrl && (
                                 <Link
                                   href={signal.linkUrl}

@@ -250,11 +250,11 @@ export default function CrisisIncidentDetailDrawer({
               <Radio className="h-3 w-3 mr-1" />
               {incident.propagationLevel}
             </Badge>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-white/50">
               <Activity className="h-3 w-3 inline mr-1" />
               {incident.mentionCount} mentions
             </span>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-white/50">
               <Users className="h-3 w-3 inline mr-1" />
               {formatReach(incident.estimatedReach)} reach
             </span>
@@ -287,7 +287,7 @@ export default function CrisisIncidentDetailDrawer({
                   {incident.description && (
                     <div>
                       <h3 className="text-sm font-medium mb-2">Description</h3>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-white/50">
                         {incident.description}
                       </p>
                     </div>
@@ -300,7 +300,7 @@ export default function CrisisIncidentDetailDrawer({
                         <FileText className="h-4 w-4 text-purple-600" />
                         AI Summary
                       </h3>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-white/50">
                         {incident.llmGeneratedSummary}
                       </p>
                     </div>
@@ -312,7 +312,7 @@ export default function CrisisIncidentDetailDrawer({
                       <h3 className="text-sm font-medium">Risk Assessment</h3>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div className="p-3 bg-gray-50 rounded text-center">
-                          <div className="text-xs text-muted-foreground mb-1">
+                          <div className="text-xs text-white/50 mb-1">
                             Overall
                           </div>
                           <div className="text-xl font-bold">
@@ -320,7 +320,7 @@ export default function CrisisIncidentDetailDrawer({
                           </div>
                         </div>
                         <div className="p-3 bg-gray-50 rounded text-center">
-                          <div className="text-xs text-muted-foreground mb-1">
+                          <div className="text-xs text-white/50 mb-1">
                             Reputation
                           </div>
                           <div className="text-xl font-bold">
@@ -328,7 +328,7 @@ export default function CrisisIncidentDetailDrawer({
                           </div>
                         </div>
                         <div className="p-3 bg-gray-50 rounded text-center">
-                          <div className="text-xs text-muted-foreground mb-1">
+                          <div className="text-xs text-white/50 mb-1">
                             Financial
                           </div>
                           <div className="text-xl font-bold">
@@ -336,7 +336,7 @@ export default function CrisisIncidentDetailDrawer({
                           </div>
                         </div>
                         <div className="p-3 bg-gray-50 rounded text-center">
-                          <div className="text-xs text-muted-foreground mb-1">
+                          <div className="text-xs text-white/50 mb-1">
                             Legal
                           </div>
                           <div className="text-xl font-bold">
@@ -398,7 +398,7 @@ export default function CrisisIncidentDetailDrawer({
                   <div>
                     <h3 className="text-sm font-medium mb-2">Timeline</h3>
                     <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="flex items-center gap-2 text-white/50">
                         <Clock className="h-4 w-4" />
                         <span>First Detected:</span>
                         <span className="text-foreground">
@@ -467,7 +467,7 @@ export default function CrisisIncidentDetailDrawer({
         {/* Footer Actions */}
         <div className="px-6 py-4 border-t bg-gray-50 shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-white/50">
               <Clock className="h-4 w-4" />
               Updated {formatTimeAgo(incident.updatedAt)}
             </div>

@@ -80,7 +80,7 @@ export default function CrisisDashboardStats({
   if (!stats && !isLoading) {
     return (
       <Card className={cn('flex items-center justify-center min-h-[200px]', className)}>
-        <div className="text-center text-muted-foreground">
+        <div className="text-center text-white/50">
           <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
           <p className="text-sm">No crisis data available</p>
         </div>
@@ -116,7 +116,7 @@ export default function CrisisDashboardStats({
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Active Incidents</p>
+                <p className="text-sm text-white/50">Active Incidents</p>
                 <p
                   className={cn(
                     'text-3xl font-bold',
@@ -151,7 +151,7 @@ export default function CrisisDashboardStats({
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Active Signals</p>
+                <p className="text-sm text-white/50">Active Signals</p>
                 <p
                   className={cn(
                     'text-3xl font-bold',
@@ -183,7 +183,7 @@ export default function CrisisDashboardStats({
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Pending Actions</p>
+                <p className="text-sm text-white/50">Pending Actions</p>
                 <p className="text-3xl font-bold text-blue-600">
                   {isLoading ? '-' : stats?.pendingActions || 0}
                 </p>
@@ -202,7 +202,7 @@ export default function CrisisDashboardStats({
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Escalated</p>
+                <p className="text-sm text-white/50">Escalated</p>
                 <p
                   className={cn(
                     'text-3xl font-bold',
@@ -253,7 +253,7 @@ export default function CrisisDashboardStats({
                       <span className={cn('capitalize font-medium', colors.text)}>
                         {severity}
                       </span>
-                      <span className="text-muted-foreground">{count}</span>
+                      <span className="text-white/50">{count}</span>
                     </div>
                     <Progress
                       value={percentage}
@@ -312,7 +312,7 @@ export default function CrisisDashboardStats({
                 {TRAJECTORY_ORDER.every(
                   (t) => (stats?.byTrajectory[t] || 0) === 0
                 ) && (
-                  <div className="col-span-2 text-center text-sm text-muted-foreground py-4">
+                  <div className="col-span-2 text-center text-sm text-white/50 py-4">
                     No trajectory data
                   </div>
                 )}
@@ -394,10 +394,10 @@ export default function CrisisDashboardStats({
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground truncate">
+                        <p className="text-xs text-white/50 truncate">
                           {activity.description}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                        <p className="text-xs text-white/50 mt-0.5">
                           {formatTimeAgo(activity.timestamp)}
                         </p>
                       </div>
@@ -406,7 +406,7 @@ export default function CrisisDashboardStats({
                 })}
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+              <div className="flex items-center justify-center h-full text-white/50 text-sm">
                 No recent activity
               </div>
             )}

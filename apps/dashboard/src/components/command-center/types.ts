@@ -107,16 +107,17 @@ export interface ActionItem {
 export interface ActionStreamResponse {
   generated_at: string;
   items: ActionItem[];
+  /** SAGE-generated daily brief narrative (optional — empty when no data yet) */
+  daily_brief?: string | null;
 }
 
-// Intelligence Canvas types
+// Intelligence Canvas types (v3 — concentric ring model)
 export type NodeKind =
   | 'brand'
+  | 'topic_cluster'
   | 'journalist'
-  | 'outlet'
-  | 'ai_model'
-  | 'topic'
-  | 'competitor';
+  | 'publication'
+  | 'ai_engine';
 
 export interface NodeMeta {
   [key: string]: string | number | boolean | null;
@@ -156,54 +157,100 @@ export interface IntelligenceCanvasResponse {
 }
 
 // ============================================
-// ENTITY MAP (SAGE-Native)
-// @see /docs/canon/ENTITY-MAP-SAGE.md
+// ENTITY MAP v3 (Concentric Ring Architecture)
+// @see /docs/canon/ENTITY_MAP_SPEC.md v2.0
+// @see /docs/canon/ENTITY-MAP-SAGE.md v3.0
 // ============================================
 
 /**
- * Zone-based positioning for SAGE-native layout
+ * Edge states for Entity Map v3
+ * @see ENTITY_MAP_SPEC.md §4 Edge Semantics
  */
-export type EntityZone = 'authority' | 'signal' | 'growth' | 'exposure';
+export type EdgeState = 'verified_solid' | 'verified_pending' | 'gap' | 'in_progress';
 
 /**
- * Entity Node - SAGE-native node with zone positioning
+ * Edge relationship types for concentric ring model
+ */
+export type EdgeRel =
+  | 'topic_to_brand'     // Ring 1 → Core
+  | 'earned_from_topic'  // Ring 1 → Ring 2
+  | 'journalist_covers'  // Ring 2 → Core
+  | 'cites_brand'        // Ring 3 → Core
+  | 'journalist_to_ai'   // Ring 2 → Ring 3 (cross-ring synergy)
+  | 'topic_to_ai';       // Ring 1 → Ring 3 (cross-ring synergy)
+
+/**
+ * Entity Node v3 — Concentric ring model
+ *
+ * ring: 0 = Brand Core (center), 1 = Owned (topic clusters),
+ *        2 = Earned (journalists/publications), 3 = Perceived (AI engines)
+ *
+ * @see ENTITY_MAP_SPEC.md §11 Data Model
  */
 export interface EntityNode {
   id: string;
   kind: NodeKind;
   label: string;
-  /** SAGE zone for layout positioning */
-  zone: EntityZone;
-  /** Pillar for styling */
-  pillar: Pillar;
-  meta: NodeMeta;
+  /** Ring placement: 0 (core), 1 (owned), 2 (earned), 3 (perceived) */
+  ring: 0 | 1 | 2 | 3;
+  /** Pillar for styling — null for brand core */
+  pillar: string | null;
+  /** Drives angular position within ring (0-100, top = highest) */
+  affinity_score: number;
+  /** Drives node size (0-100) */
+  authority_weight: number;
+  /** Current radial edge state */
+  connection_status: EdgeState;
+  /** FK to Action Stream — null = system error for gap nodes */
+  linked_action_id: string | null;
+  /** SAGE-generated insight. Max 160 chars. Required for gap nodes. */
+  entity_insight: string;
+  /** All pillars this node's actions affect */
+  impact_pillars: string[];
+  last_updated: string;
+  meta: Record<string, string | number | boolean | null>;
 }
 
 /**
- * Edge relationship types for Entity Map
- */
-export type EdgeRel =
-  | 'covers'       // journalist → topic/brand
-  | 'writes_for'   // journalist → outlet
-  | 'competes'     // competitor → brand
-  | 'competes_on'  // competitor → topic
-  | 'cited_by'     // brand → ai_model
-  | 'mentioned_in' // brand → outlet
-  | 'authority_on' // brand → topic
-  | 'relates_to';  // topic → topic
-
-/**
- * Entity Edge - SAGE-native edge with pillar styling
+ * Entity Edge v3 — state-driven edge with pillar styling
+ * @see ENTITY_MAP_SPEC.md §4 Edge Semantics
  */
 export interface EntityEdge {
   id: string;
   from: string;
   to: string;
   rel: EdgeRel;
-  /** Edge strength 0-1 */
+  /** Visual state of the edge */
+  state: EdgeState;
+  /** Edge strength 0-100 (drives stroke weight) */
   strength: number;
-  /** Pillar for styling */
-  pillar: Pillar;
+  /** Pillar for color */
+  pillar: string;
+  /** ISO timestamp or null if not yet verified */
+  verified_at: string | null;
+}
+
+/**
+ * CiteMind daily scan output — fires on session load (D013)
+ * @see ENTITY_MAP_SPEC.md §7 Animation Rules
+ */
+export interface SessionCitationEvent {
+  entity_id_source: string;
+  entity_id_perceiver: string;
+  detected_at: string;
+  citation_type: 'direct' | 'paraphrase';
+  confidence: number;
+}
+
+/**
+ * Entity Map Payload v3 — concentric ring graph data
+ */
+export interface EntityMapPayload {
+  generated_at: string;
+  layout_version: 'v3';
+  nodes: EntityNode[];
+  edges: EntityEdge[];
+  session_events: SessionCitationEvent[];
 }
 
 /**
@@ -217,19 +264,6 @@ export interface ActionImpactMap {
   impacted_nodes: string[];
   /** All impacted edges (receive highlight/pulse) */
   impacted_edges: string[];
-}
-
-/**
- * Entity Map Response - SAGE-native graph payload
- */
-export interface EntityMapResponse {
-  generated_at: string;
-  /** Deterministic layout seed for stable positioning */
-  layout_seed: string;
-  nodes: EntityNode[];
-  edges: EntityEdge[];
-  /** Maps action IDs to their entity impacts */
-  action_impacts: Record<string, ActionImpactMap>;
 }
 
 // ============================================

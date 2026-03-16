@@ -12,6 +12,8 @@
 
 import { useState, useCallback } from 'react';
 
+import { useCiteMindScore, useCiteMindTrigger } from '@/lib/useCiteMind';
+
 import { citeMindStatus as statusTokens, card, text, label, interactive } from '../tokens';
 import type { CiteMindStatus, CiteMindIssue } from '../types';
 
@@ -38,6 +40,8 @@ export interface CiteMindGatingPanelProps {
   isAnalyzing?: boolean;
   /** Last analyzed timestamp */
   lastAnalyzedAt?: string;
+  /** Content item ID for real API integration (S-INT-04) */
+  contentItemId?: string;
 }
 
 // ============================================
@@ -119,11 +123,11 @@ function IssueItem({
           <p className={`text-xs font-medium ${isError ? 'text-semantic-danger' : 'text-semantic-warning'}`}>
             {issue.type.replace(/_/g, ' ')}
           </p>
-          <p className={`text-[10px] ${text.secondary} truncate`}>
+          <p className={`text-xs ${text.secondary} truncate`}>
             {issue.message}
           </p>
           {issue.section && (
-            <p className={`text-[10px] ${text.hint} mt-0.5`}>
+            <p className={`text-xs ${text.hint} mt-0.5`}>
               Section: {issue.section}
             </p>
           )}
@@ -150,9 +154,19 @@ export function CiteMindGatingPanel({
   onAnalyze,
   isAnalyzing = false,
   lastAnalyzedAt,
+  contentItemId,
 }: CiteMindGatingPanelProps) {
   const [localAcknowledged, setLocalAcknowledged] = useState(warningAcknowledged);
-  const tokens = statusTokens[status];
+
+  // Real API integration: use hook when contentItemId provided
+  const { score: realScore } = useCiteMindScore(contentItemId);
+  const { triggerScore, isScoring } = useCiteMindTrigger();
+
+  // Use real data when available
+  const effectiveStatus = realScore ? (realScore.gate_status as CiteMindStatus) : status;
+  const effectiveAnalyzing = isScoring || isAnalyzing;
+  const effectiveLastAnalyzed = realScore?.scored_at || lastAnalyzedAt;
+  const tokens = statusTokens[effectiveStatus];
 
   const errorCount = issues.filter((i) => i.severity === 'error').length;
   const warningCount = issues.filter((i) => i.severity === 'warning').length;
@@ -165,7 +179,7 @@ export function CiteMindGatingPanel({
 
   // Get status message
   const getStatusMessage = () => {
-    switch (status) {
+    switch (effectiveStatus) {
       case 'passed':
         return 'Content meets all CiteMind requirements';
       case 'warning':
@@ -184,9 +198,9 @@ export function CiteMindGatingPanel({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className={label}>CiteMind Governance</h3>
-        {lastAnalyzedAt && (
-          <span className={`text-[10px] ${text.hint}`}>
-            Last: {new Date(lastAnalyzedAt).toLocaleTimeString()}
+        {effectiveLastAnalyzed && (
+          <span className={`text-xs ${text.hint}`}>
+            Last: {new Date(effectiveLastAnalyzed).toLocaleTimeString()}
           </span>
         )}
       </div>
@@ -195,12 +209,12 @@ export function CiteMindGatingPanel({
       <div className={`p-3 rounded-lg border ${tokens.bg} ${tokens.border}`}>
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-lg ${tokens.bg} ${tokens.text}`}>
-            <StatusIcon status={status} />
+            <StatusIcon status={effectiveStatus} />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <span className={`text-sm font-semibold ${tokens.text} capitalize`}>
-                {status === 'passed' ? 'Approved' : status}
+                {effectiveStatus === 'passed' ? 'Approved' : effectiveStatus}
               </span>
               <span className={`w-2 h-2 rounded-full ${tokens.dot}`} />
             </div>
@@ -250,7 +264,7 @@ export function CiteMindGatingPanel({
       )}
 
       {/* Warning Acknowledgment */}
-      {status === 'warning' && (
+      {effectiveStatus === 'warning' && (
         <div className={`p-3 rounded-lg border ${statusTokens.warning.bg} ${statusTokens.warning.border}`}>
           <label className="flex items-start gap-3 cursor-pointer">
             <input
@@ -263,7 +277,7 @@ export function CiteMindGatingPanel({
               <p className="text-xs font-medium text-semantic-warning">
                 Acknowledge warnings to proceed
               </p>
-              <p className={`text-[10px] ${text.secondary} mt-0.5`}>
+              <p className={`text-xs ${text.secondary} mt-0.5`}>
                 I understand the content has warnings and choose to proceed with actions.
               </p>
             </div>
@@ -273,15 +287,21 @@ export function CiteMindGatingPanel({
 
       {/* Re-analyze Button */}
       <button
-        onClick={onAnalyze}
-        disabled={isAnalyzing}
+        onClick={() => {
+          if (contentItemId) {
+            triggerScore(contentItemId);
+          } else {
+            onAnalyze?.();
+          }
+        }}
+        disabled={effectiveAnalyzing}
         className={`w-full px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-          isAnalyzing
+          effectiveAnalyzing
             ? 'bg-brand-iris/20 text-brand-iris cursor-wait'
             : interactive.button
         }`}
       >
-        {isAnalyzing ? (
+        {effectiveAnalyzing ? (
           <span className="flex items-center justify-center gap-2">
             <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

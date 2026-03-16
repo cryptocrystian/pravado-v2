@@ -112,7 +112,7 @@ export default function TalkingPointCard({
             variant="ghost"
             size="sm"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-1 h-6 px-2 text-xs text-muted-foreground"
+            className="mt-1 h-6 px-2 text-xs text-white/50"
           >
             {isExpanded ? (
               <>
@@ -136,7 +136,7 @@ export default function TalkingPointCard({
                   <span className="text-blue-500 mt-0.5">•</span>
                   <span>{fact.fact}</span>
                   {fact.verifiable && (
-                    <Badge variant="outline" className="text-[10px] ml-auto shrink-0">
+                    <Badge variant="outline" className="text-xs ml-auto shrink-0">
                       Verifiable
                     </Badge>
                   )}
@@ -157,7 +157,7 @@ export default function TalkingPointCard({
         {/* Use Case */}
         {isExpanded && talkingPoint.useCase && (
           <div className="mt-2">
-            <span className="text-xs text-muted-foreground">Use when: </span>
+            <span className="text-xs text-white/50">Use when: </span>
             <span className="text-xs text-gray-700">{talkingPoint.useCase}</span>
           </div>
         )}
@@ -165,7 +165,7 @@ export default function TalkingPointCard({
         {/* Target Audience */}
         {isExpanded && talkingPoint.targetAudience && (
           <div className="mt-1">
-            <span className="text-xs text-muted-foreground">Audience: </span>
+            <span className="text-xs text-white/50">Audience: </span>
             <span className="text-xs text-gray-700">{talkingPoint.targetAudience}</span>
           </div>
         )}
@@ -215,7 +215,7 @@ export default function TalkingPointCard({
 
         {/* Generation Badge */}
         {talkingPoint.isGenerated && (
-          <div className="mt-2 text-[10px] text-muted-foreground">
+          <div className="mt-2 text-xs text-white/50">
             AI Generated{talkingPoint.llmModel && ` • ${talkingPoint.llmModel}`}
           </div>
         )}

@@ -1,13 +1,18 @@
 'use client';
 
 /**
- * CiteMind Status Indicator
+ * CiteMind Status Indicator (Sprint S-INT-04)
  *
- * Displays the CiteMind qualification status for content assets.
+ * Displays real CiteMind qualification status for content assets.
  * Shows pending/analyzing/passed/warning/blocked states.
+ * When expanded, shows 6-factor breakdown and recommendations.
+ *
+ * Wired to GET /api/citemind/score/[id] via useCiteMindScore hook.
  *
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
  */
+
+import { useState } from 'react';
 
 import type { CiteMindStatus, CiteMindIssue } from '../types';
 
@@ -16,6 +21,17 @@ interface CiteMindStatusIndicatorProps {
   issues?: CiteMindIssue[];
   compact?: boolean;
   onViewIssues?: () => void;
+  /** Real score data from API (S-INT-04) */
+  scoreData?: {
+    overall_score: number;
+    entity_density_score: number;
+    claim_verifiability_score: number;
+    structural_clarity_score: number;
+    topical_authority_score: number;
+    schema_markup_score: number;
+    citation_pattern_score: number;
+    recommendations: string[];
+  } | null;
 }
 
 // ============================================
@@ -107,6 +123,30 @@ const STATUS_CONFIG: Record<
 };
 
 // ============================================
+// FACTOR BAR
+// ============================================
+
+function FactorBar({ label, score }: { label: string; score: number }) {
+  const color =
+    score >= 75 ? 'bg-semantic-success' :
+    score >= 55 ? 'bg-semantic-warning' :
+    'bg-semantic-danger';
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-white/50 w-20 shrink-0 truncate">{label}</span>
+      <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-300 ${color}`}
+          style={{ width: `${Math.min(score, 100)}%` }}
+        />
+      </div>
+      <span className="text-xs tabular-nums text-white/60 w-7 text-right">{Math.round(score)}</span>
+    </div>
+  );
+}
+
+// ============================================
 // MAIN COMPONENT
 // ============================================
 
@@ -115,13 +155,15 @@ export function CiteMindStatusIndicator({
   issues,
   compact = false,
   onViewIssues,
+  scoreData,
 }: CiteMindStatusIndicatorProps) {
   const config = STATUS_CONFIG[status];
+  const [expanded, setExpanded] = useState(false);
 
   if (compact) {
     return (
       <span
-        className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${config.bg} ${config.color}`}
+        className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium ${config.bg} ${config.color}`}
         title={config.description}
       >
         {config.icon}
@@ -131,17 +173,59 @@ export function CiteMindStatusIndicator({
   }
 
   return (
-    <div className={`p-3 rounded-lg border ${config.bg} border-current/20`}>
-      <div className="flex items-center gap-2">
-        <span className={config.color}>{config.icon}</span>
-        <span className={`text-sm font-medium ${config.color}`}>
-          CiteMind: {config.label}
-        </span>
-      </div>
-      <p className="text-xs text-white/55 mt-1">{config.description}</p>
+    <div className={`rounded-lg border ${config.bg} border-current/20`}>
+      {/* Header — clickable to expand */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full p-3 text-left"
+      >
+        <div className="flex items-center gap-2">
+          <span className={config.color}>{config.icon}</span>
+          <span className={`text-sm font-medium ${config.color} flex-1`}>
+            CiteMind: {config.label}
+            {scoreData && (
+              <span className="ml-1 text-xs text-white/40">({Math.round(scoreData.overall_score)}/100)</span>
+            )}
+          </span>
+          <svg
+            className={`w-3 h-3 text-white/30 transition-transform ${expanded ? 'rotate-180' : ''}`}
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        <p className="text-xs text-white/55 mt-1">{config.description}</p>
+      </button>
 
-      {issues && issues.length > 0 && (
-        <div className="mt-3 space-y-2">
+      {/* Expanded: Factor Breakdown */}
+      {expanded && scoreData && (
+        <div className="px-3 pb-3 space-y-2 border-t border-white/5 pt-2">
+          <FactorBar label="Entities" score={scoreData.entity_density_score} />
+          <FactorBar label="Claims" score={scoreData.claim_verifiability_score} />
+          <FactorBar label="Structure" score={scoreData.structural_clarity_score} />
+          <FactorBar label="Authority" score={scoreData.topical_authority_score} />
+          <FactorBar label="Schema" score={scoreData.schema_markup_score} />
+          <FactorBar label="Citation" score={scoreData.citation_pattern_score} />
+
+          {/* Recommendations */}
+          {scoreData.recommendations.length > 0 && (
+            <div className="mt-2 pt-2 border-t border-white/5">
+              <p className="text-xs font-medium text-white/50 mb-1">Recommendations</p>
+              <ul className="space-y-1">
+                {scoreData.recommendations.map((rec, i) => (
+                  <li key={i} className="text-xs text-white/40 leading-relaxed">
+                    {rec}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Issues (non-expanded) */}
+      {!expanded && issues && issues.length > 0 && (
+        <div className="px-3 pb-3 space-y-2">
           {issues.slice(0, 3).map((issue, i) => (
             <div
               key={i}
@@ -158,20 +242,22 @@ export function CiteMindStatusIndicator({
             </div>
           ))}
           {issues.length > 3 && (
-            <p className="text-[10px] text-white/40">
+            <p className="text-xs text-white/40">
               +{issues.length - 3} more issues
             </p>
           )}
         </div>
       )}
 
-      {onViewIssues && (status === 'warning' || status === 'blocked') && (
-        <button
-          onClick={onViewIssues}
-          className={`mt-3 text-xs font-medium ${config.color} hover:underline`}
-        >
-          View Issues →
-        </button>
+      {onViewIssues && (status === 'warning' || status === 'blocked') && !expanded && (
+        <div className="px-3 pb-3">
+          <button
+            onClick={onViewIssues}
+            className={`text-xs font-medium ${config.color} hover:underline`}
+          >
+            View Issues
+          </button>
+        </div>
       )}
     </div>
   );
@@ -239,7 +325,7 @@ export function CiteMindGatePanel({
         {issues && issues.length > 0 && (
           <ul className="text-xs text-semantic-danger space-y-1 mb-3">
             {issues.map((issue, i) => (
-              <li key={i}>• {issue.message}</li>
+              <li key={i}>{issue.message}</li>
             ))}
           </ul>
         )}
@@ -247,7 +333,7 @@ export function CiteMindGatePanel({
           {onViewIssues && (
             <button
               onClick={onViewIssues}
-              className="flex-1 px-3 py-2 text-xs font-medium text-white/70 bg-[#1A1A24] hover:bg-[#2A2A36] rounded-lg transition-colors"
+              className="flex-1 px-3 py-2 text-xs font-medium text-white/70 bg-slate-3 hover:bg-slate-4 rounded-lg transition-colors"
             >
               View Issues
             </button>
@@ -280,7 +366,7 @@ export function CiteMindGatePanel({
         {issues && issues.length > 0 && (
           <ul className="text-xs text-semantic-warning space-y-1 mb-3">
             {issues.map((issue, i) => (
-              <li key={i}>• {issue.message}</li>
+              <li key={i}>{issue.message}</li>
             ))}
           </ul>
         )}
@@ -288,7 +374,7 @@ export function CiteMindGatePanel({
           {onViewIssues && (
             <button
               onClick={onViewIssues}
-              className="flex-1 px-3 py-2 text-xs font-medium text-white/70 bg-[#1A1A24] hover:bg-[#2A2A36] rounded-lg transition-colors"
+              className="flex-1 px-3 py-2 text-xs font-medium text-white/70 bg-slate-3 hover:bg-slate-4 rounded-lg transition-colors"
             >
               View Issues
             </button>

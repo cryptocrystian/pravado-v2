@@ -1,12 +1,12 @@
 services:
   - type: web
-    name: pravado-api-staging
+    name: pravado-api
     runtime: node
     region: oregon
     plan: starter
     branch: main
-    healthCheckPath: /health/live
-    buildCommand: npm install -g pnpm && pnpm install --prod=false && pnpm build
+    healthCheckPath: /health
+    buildCommand: npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @pravado/api build
     startCommand: pnpm --filter @pravado/api start:prod
     envVars:
       - key: NODE_VERSION

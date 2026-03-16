@@ -137,7 +137,7 @@ export function CompetitorTrendChart({
         {/* Summary stats */}
         <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
           <div className="rounded bg-muted p-2">
-            <p className="text-muted-foreground">Latest</p>
+            <p className="text-white/50">Latest</p>
             <p className="font-medium">
               {metric === 'reach'
                 ? formatNumber(chartData[chartData.length - 1])
@@ -146,7 +146,7 @@ export function CompetitorTrendChart({
             </p>
           </div>
           <div className="rounded bg-muted p-2">
-            <p className="text-muted-foreground">Average</p>
+            <p className="text-white/50">Average</p>
             <p className="font-medium">
               {metric === 'reach'
                 ? formatNumber(chartData.reduce((a, b) => a + b, 0) / chartData.length)
@@ -155,7 +155,7 @@ export function CompetitorTrendChart({
             </p>
           </div>
           <div className="rounded bg-muted p-2">
-            <p className="text-muted-foreground">Peak</p>
+            <p className="text-white/50">Peak</p>
             <p className="font-medium">
               {metric === 'reach' ? formatNumber(maxValue) : maxValue.toFixed(1)}
               {metricLabels[metric].unit}

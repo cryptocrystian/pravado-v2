@@ -18,12 +18,8 @@ CREATE TABLE IF NOT EXISTS public.seo_serp_results (
   snapshot_id UUID REFERENCES public.seo_snapshots(id) ON DELETE SET NULL,
   last_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org_id consistency
-  CONSTRAINT fk_serp_keyword_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.seo_keywords WHERE id = keyword_id)
-  )
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  -- org_id consistency enforced at application layer
 );
 
 -- Indexes for performance

@@ -141,12 +141,12 @@ function DerivativeItem({
             <h4 className={`text-sm font-medium ${hasContent ? text.primary : text.muted}`}>
               {config.label}
             </h4>
-            <p className={`text-[10px] ${text.hint}`}>{config.description}</p>
+            <p className={`text-xs ${text.hint}`}>{config.description}</p>
           </div>
         </div>
 
         {/* Status Badge */}
-        <span className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${statusStyle.bg} ${statusStyle.text} border ${statusStyle.border}`}>
+        <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${statusStyle.bg} ${statusStyle.text} border ${statusStyle.border}`}>
           {statusStyle.label}
         </span>
       </div>
@@ -174,7 +174,7 @@ function DerivativeItem({
 
       {/* Timestamp */}
       {derivative?.generatedAt && (
-        <p className={`text-[10px] ${text.hint} mb-2`}>
+        <p className={`text-xs ${text.hint} mb-2`}>
           Generated {new Date(derivative.generatedAt).toLocaleDateString()}
         </p>
       )}
@@ -222,7 +222,7 @@ function DerivativeItem({
 
       {/* Blocked Warning */}
       {isBlocked && (
-        <p className="mt-2 text-[10px] text-semantic-danger">
+        <p className="mt-2 text-xs text-semantic-danger">
           CiteMind blocked — resolve issues before generating
         </p>
       )}
@@ -308,7 +308,7 @@ export function DerivativesPanel({
       <div className="flex items-center justify-between mb-3">
         <h3 className={label}>Multi-Surface Derivatives</h3>
         {parentEdited && (
-          <span className="px-2 py-0.5 text-[10px] font-medium text-semantic-warning bg-semantic-warning/10 border border-semantic-warning/20 rounded-full">
+          <span className="px-2 py-0.5 text-xs font-medium text-semantic-warning bg-semantic-warning/10 border border-semantic-warning/20 rounded-full">
             Parent edited
           </span>
         )}
