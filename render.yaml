@@ -6,7 +6,7 @@ services:
     plan: starter
     branch: main
     healthCheckPath: /health
-    buildCommand: npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @pravado/api build
+    buildCommand: npm install -g pnpm && pnpm install && pnpm --filter './packages/*' build
     startCommand: pnpm --filter @pravado/api start:prod
     envVars:
       - key: NODE_VERSION
