@@ -78,7 +78,7 @@ export function StrategicReportListItem({
           </Badge>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-white/50">
           <div className="flex items-center gap-1">
             <FileText className="h-4 w-4" />
             <span>{getFormatLabel(report.format)}</span>
@@ -98,7 +98,7 @@ export function StrategicReportListItem({
           )}
         </div>
 
-        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-4 mt-2 text-xs text-white/50">
           <span>{report.sectionCount} sections</span>
           <span>Updated {formatRelativeTime(report.updatedAt)}</span>
         </div>
@@ -108,14 +108,14 @@ export function StrategicReportListItem({
         {report.overallStrategicScore !== null && (
           <div className="text-center">
             <div className="flex items-center gap-1">
-              <Target className="h-4 w-4 text-muted-foreground" />
+              <Target className="h-4 w-4 text-white/50" />
               <span
                 className={`text-lg font-bold text-${getScoreColor(report.overallStrategicScore)}-600`}
               >
                 {formatScore(report.overallStrategicScore)}
               </span>
             </div>
-            <span className="text-xs text-muted-foreground">Score</span>
+            <span className="text-xs text-white/50">Score</span>
           </div>
         )}
 

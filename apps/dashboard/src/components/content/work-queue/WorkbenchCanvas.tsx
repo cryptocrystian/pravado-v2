@@ -53,7 +53,7 @@ export interface WorkbenchCanvasProps {
 
 const TYPE_CONFIG = {
   execution: {
-    label: 'Brief',
+    label: 'Content',
     icon: (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -120,7 +120,7 @@ function getCtaLabel(itemType: QueueItem['type'], mode: AutomationMode): string 
   // Manual mode
   if (itemType === 'execution') return 'Execute';
   if (itemType === 'issue') return 'Fix Issue';
-  if (itemType === 'opportunity') return 'Create Brief';
+  if (itemType === 'opportunity') return 'Start Writing';
   return 'View';
 }
 
@@ -137,7 +137,7 @@ function getCtaStyle(isIssue: boolean): string {
 
 // Default plan reasons for demo
 const DEFAULT_PLAN_REASONS = [
-  { id: 'r1', factor: 'Deadline Proximity', explanation: 'Brief has a deadline within 48 hours' },
+  { id: 'r1', factor: 'Deadline Proximity', explanation: 'Content has a deadline within 48 hours' },
   { id: 'r2', factor: 'Authority Impact', explanation: 'Contributes +15 to authority score' },
   { id: 'r3', factor: 'Cross-Pillar Synergy', explanation: 'Aligns with pending PR pitch' },
 ];
@@ -207,7 +207,7 @@ export function WorkbenchCanvas({
               {typeConf.label}
             </span>
             {item.priority === 'critical' && (
-              <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase text-semantic-danger bg-semantic-danger/10 rounded">
+              <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase text-semantic-danger bg-semantic-danger/10 rounded">
                 Critical
               </span>
             )}
@@ -253,7 +253,7 @@ export function WorkbenchCanvas({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               ) : (
-                <span className="text-[10px] font-bold">AI</span>
+                <span className="text-xs font-bold">AI</span>
               )}
             </div>
 
@@ -341,7 +341,7 @@ export function WorkbenchCanvas({
             <div className="p-2.5 bg-slate-3/50 border border-slate-4 rounded-lg">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs font-medium text-white/50">Preview</span>
-                <span className="text-[10px] text-white/30">Full editor in detail view</span>
+                <span className="text-xs text-white/30">Full editor in detail view</span>
               </div>
               <div className="h-12 bg-slate-2 rounded border border-dashed border-slate-4 flex items-center justify-center">
                 <span className="text-sm text-white/30">Content preview...</span>

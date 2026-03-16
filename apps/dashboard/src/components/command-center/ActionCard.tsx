@@ -46,48 +46,11 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import type { ActionItem, Pillar, Priority } from './types';
+import type { ActionItem, Priority } from './types';
 import { HoverCard, HoverCardContent, HoverCardTrigger, HoverCardArrow } from '../ui/hover-card';
 import { ActionHoverBrief } from './ActionHoverBrief';
-
-// Pillar accent system - DS v3
-const pillarAccents: Record<Pillar, {
-  border: string;
-  bg: string;
-  bgHover: string;
-  text: string;
-  glow: string;
-  badge: string;
-  solidBg: string;
-}> = {
-  pr: {
-    border: 'border-l-brand-magenta',
-    bg: 'bg-brand-magenta/5',
-    bgHover: 'hover:bg-brand-magenta/8',
-    text: 'text-brand-magenta',
-    glow: 'shadow-[0_0_16px_rgba(232,121,249,0.15)]',
-    badge: 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30',
-    solidBg: 'bg-brand-magenta',
-  },
-  content: {
-    border: 'border-l-brand-iris',
-    bg: 'bg-brand-iris/5',
-    bgHover: 'hover:bg-brand-iris/8',
-    text: 'text-brand-iris',
-    glow: 'shadow-[0_0_16px_rgba(168,85,247,0.15)]',
-    badge: 'bg-brand-iris/15 text-brand-iris border-brand-iris/30',
-    solidBg: 'bg-brand-iris',
-  },
-  seo: {
-    border: 'border-l-brand-cyan',
-    bg: 'bg-brand-cyan/5',
-    bgHover: 'hover:bg-brand-cyan/8',
-    text: 'text-brand-cyan',
-    glow: 'shadow-[0_0_16px_rgba(0,217,255,0.15)]',
-    badge: 'bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30',
-    solidBg: 'bg-brand-cyan',
-  },
-};
+import { pillarAccents } from './pillar-accents';
+import { Lock, CaretRight, Check } from '@phosphor-icons/react';
 
 // Priority styling
 const priorityConfig: Record<Priority, {
@@ -174,6 +137,16 @@ function isReadyState(action: ActionItem): boolean {
   return action.confidence >= 0.8 && !action.gate.required;
 }
 
+/**
+ * Determines if action is a crisis/alert that should use danger styling
+ * instead of success green for its CTA. Any alert-type action uses
+ * semantic-danger (critical) or semantic-warning (non-critical) —
+ * crisis actions are never styled as success/green.
+ */
+function isCrisisAction(action: ActionItem): boolean {
+  return action.type === 'alert';
+}
+
 
 /**
  * ActionCard v8 - Anchored HoverCard Micro-Brief (v5 Pattern)
@@ -194,6 +167,7 @@ export function ActionCard({
   const pillar = pillarAccents[action.pillar];
   const priority = priorityConfig[action.priority];
   const ready = isReadyState(action);
+  const crisis = isCrisisAction(action);
   const isExecuting = executionState === 'executing';
   const isCompleted = executionState === 'success';
   const hasError = executionState === 'error';
@@ -238,12 +212,12 @@ export function ActionCard({
         }}
         className={`
           action-card-v8
-          group relative bg-[#0D0D12] rounded-lg overflow-hidden cursor-pointer
-          border-l-[3px] ${pillar.border}
-          border border-[#1A1A24] border-l-0
+          group relative bg-slate-1 rounded-lg overflow-hidden cursor-pointer
+          border-l-[3px] ${pillar.borderLeft}
+          border border-border-subtle border-l-0
           transition-all duration-150
-          hover:bg-[#111116] hover:border-[#2A2A36]
-          ${isSelected ? `${pillar.glow} border-[#2A2A36]` : ''}
+          hover:bg-slate-2 hover:border-slate-5
+          ${isSelected ? `${pillar.glow} border-slate-5` : ''}
           ${isExecuting ? 'animate-pulse' : ''}
           ${isCompleted ? 'border-semantic-success/30' : ''}
           ${hasError ? 'border-semantic-danger/30' : ''}
@@ -257,24 +231,33 @@ export function ActionCard({
 
           {/* Lock icon for locked cards */}
           {isLocked && (
-            <svg className="w-3.5 h-3.5 text-white/40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+            <Lock weight="regular" className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
           )}
 
           {/* Pillar badge */}
-          <span className={`px-1.5 py-0.5 text-[10px] font-bold uppercase rounded border flex-shrink-0 ${pillar.badge}`}>
+          <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border flex-shrink-0 ${pillar.badge}`}>
             {action.pillar}
           </span>
 
+          {/* Mode badge — all three modes */}
+          {!isCompleted && (
+            <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border flex-shrink-0 ${
+              action.mode === 'autopilot' ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30' :
+              action.mode === 'copilot'   ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30' :
+                                            'bg-white/5 text-white/70 border-white/20'
+            }`}>
+              {action.mode === 'autopilot' ? 'Auto' : action.mode === 'copilot' ? 'Copilot' : 'Manual'}
+            </span>
+          )}
+
           {/* Execution state badge */}
           {isCompleted && (
-            <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30 flex-shrink-0">
+            <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30 flex-shrink-0">
               Done
             </span>
           )}
           {hasError && (
-            <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30 flex-shrink-0">
+            <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30 flex-shrink-0">
               Error
             </span>
           )}
@@ -296,9 +279,7 @@ export function ActionCard({
                 bg-white/10 text-white/70 hover:bg-white/15 hover:text-white/90
                 border border-white/20"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
+              <Lock weight="regular" className="w-3 h-3" />
               Unlock Pro
             </button>
           ) : (
@@ -313,10 +294,14 @@ export function ActionCard({
                 transition-all duration-150 flex items-center gap-1.5
                 ${isExecuting ? 'opacity-70 cursor-wait' : ''}
                 ${action.gate.required ? 'opacity-50 cursor-not-allowed' : ''}
-                ${ready && !isCompleted
-                  ? 'bg-semantic-success text-white hover:bg-semantic-success/90'
-                  : isCompleted
+                ${isCompleted
                   ? 'bg-semantic-success/20 text-semantic-success'
+                  : crisis && action.priority === 'critical'
+                  ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90'
+                  : crisis
+                  ? 'bg-semantic-warning text-white hover:bg-semantic-warning/90'
+                  : ready
+                  ? 'bg-semantic-success text-white hover:bg-semantic-success/90'
                   : `${pillar.solidBg} text-white hover:opacity-90`
                 }
               `}
@@ -332,14 +317,10 @@ export function ActionCard({
           )}
 
           {/* Chevron hint for modal */}
-          <svg
+          <CaretRight
+            weight="regular"
             className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors flex-shrink-0"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+          />
         </div>
       </div>
     );
@@ -354,13 +335,12 @@ export function ActionCard({
       <div
         className={`
           action-card-v8
-          group relative bg-[#0D0D12] rounded-lg overflow-hidden
-          border-l-[3px] ${pillar.border}
-          border border-[#1A1A24] border-l-0
+          group relative bg-slate-1 rounded-lg overflow-hidden
+          border-l-[3px] ${pillar.borderLeft}
+          border border-border-subtle border-l-0
           transition-all duration-200
-          min-h-[120px]
-          hover:bg-[#111116] hover:border-[#2A2A36]
-          ${isSelected ? `${pillar.glow} border-[#2A2A36]` : ''}
+          hover:bg-slate-2 hover:border-slate-5
+          ${isSelected ? `${pillar.glow} border-slate-5` : ''}
           ${isExecuting ? 'animate-pulse' : ''}
           ${isCompleted ? 'border-semantic-success/30' : ''}
           ${dimmedClass}
@@ -371,34 +351,42 @@ export function ActionCard({
 
         <div className="relative p-3 h-full flex flex-col">
           {/* Row 1: Header */}
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-2">
               {/* Priority dot - muted for locked */}
               <span className={`w-2 h-2 rounded-full ${isLocked ? lockedPriorityStyle.dot : priority.dot}`} />
               {/* Lock icon for locked cards */}
               {isLocked && (
-                <svg className="w-3.5 h-3.5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                <Lock weight="regular" className="w-3.5 h-3.5 text-white/40" />
               )}
-              <span className={`px-1.5 py-0.5 text-[10px] font-bold uppercase rounded border ${pillar.badge}`}>
+              <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border ${pillar.badge}`}>
                 {action.pillar}
               </span>
-              <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded border ${isLocked ? lockedPriorityStyle.badge : priority.badge}`}>
+              <span className={`px-1.5 py-0.5 text-xs font-semibold rounded border ${isLocked ? lockedPriorityStyle.badge : priority.badge}`}>
                 {priority.label}
               </span>
               {ready && !isCompleted && !isLocked && (
-                <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded border ${successBadge}`}>
+                <span className={`px-1.5 py-0.5 text-xs font-semibold rounded border ${successBadge}`}>
                   Ready
                 </span>
               )}
               {isCompleted && (
-                <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30">
+                <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30">
                   Completed
                 </span>
               )}
+              {/* Mode badge — all three modes */}
+              {!isCompleted && (
+                <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${
+                  action.mode === 'autopilot' ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30' :
+                  action.mode === 'copilot'   ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30' :
+                                                'bg-white/5 text-white/70 border-white/20'
+                }`}>
+                  {action.mode === 'autopilot' ? 'Auto' : action.mode === 'copilot' ? 'Copilot' : 'Manual'}
+                </span>
+              )}
             </div>
-            <span className="text-[11px] text-white/50">{formatTimestamp(action.updated_at)}</span>
+            <span className="text-xs text-white/50">{formatTimestamp(action.updated_at)}</span>
           </div>
 
           {/* Row 2: Title - clickable for modal */}
@@ -412,7 +400,7 @@ export function ActionCard({
                 onReview?.();
               }
             }}
-            className="text-sm font-semibold text-white/90 mb-1.5 leading-snug line-clamp-1 cursor-pointer hover:text-brand-cyan transition-colors"
+            className="text-sm font-semibold text-white/90 mb-1 leading-snug line-clamp-1 cursor-pointer hover:text-brand-cyan transition-colors"
           >
             {action.title}
           </h3>
@@ -421,7 +409,7 @@ export function ActionCard({
           <p className="text-xs text-white/55 line-clamp-2 mb-auto">{action.summary}</p>
 
           {/* Row 4: CTAs - FIXED POSITION at bottom */}
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-2 mt-1.5">
             {/* Primary CTA - "Unlock Pro" for locked, Execute for active */}
             {isLocked ? (
               <button
@@ -434,9 +422,7 @@ export function ActionCard({
                   bg-white/10 text-white/70 hover:bg-white/15 hover:text-white/90
                   border border-white/20"
               >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                <Lock weight="regular" className="w-3 h-3" />
                 Unlock Pro
               </button>
             ) : (
@@ -451,11 +437,15 @@ export function ActionCard({
                   transition-all duration-150
                   ${isExecuting ? 'opacity-70 cursor-wait' : ''}
                   ${action.gate.required ? 'opacity-50 cursor-not-allowed' : ''}
-                  ${ready && !isCompleted
-                    ? 'bg-semantic-success text-white hover:bg-semantic-success/90 shadow-[0_0_12px_rgba(34,197,94,0.25)]'
-                    : isCompleted
+                  ${isCompleted
                     ? 'bg-semantic-success/20 text-semantic-success'
-                    : `${pillar.bg} ${pillar.text} border ${pillar.border.replace('border-l-', 'border-')} hover:${pillar.bgHover}`
+                    : crisis && action.priority === 'critical'
+                    ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90 shadow-[0_0_12px_rgba(239,68,68,0.15)]'
+                    : crisis
+                    ? 'bg-semantic-warning text-white hover:bg-semantic-warning/90 shadow-[0_0_12px_rgba(245,158,11,0.15)]'
+                    : ready
+                    ? 'bg-semantic-success text-white hover:bg-semantic-success/90 shadow-[0_0_12px_rgba(34,197,94,0.15)]'
+                    : `${pillar.bg} ${pillar.text} border ${pillar.border} hover:${pillar.bgHover}`
                   }
                 `}
               >
@@ -503,7 +493,7 @@ export function ActionCard({
           {cardContent}
         </HoverCardTrigger>
         <HoverCardContent side="left" align="start" sideOffset={8} className="w-[280px]">
-          <HoverCardArrow className="fill-[#1A1A24]" />
+          <HoverCardArrow className="fill-slate-3" />
           <ActionHoverBrief
             action={action}
             onPrimaryAction={isLocked ? undefined : onPrimaryAction}
@@ -523,34 +513,31 @@ export function ActionCard({
     <div
       className={`
         action-card-v8
-        group relative bg-[#0D0D12] rounded-xl overflow-hidden
-        border-l-4 ${pillar.border}
-        border border-[#1A1A24] border-l-0
+        group relative bg-slate-1 rounded-xl overflow-hidden
+        border-l-4 ${pillar.borderLeft}
+        border border-border-subtle border-l-0
         transition-all duration-200
-        min-h-[180px]
-        hover:bg-[#111118] hover:border-[#2A2A36]
-        ${isSelected ? `${pillar.glow} border-[#2A2A36]` : ''}
+        hover:bg-slate-2 hover:border-slate-5
+        ${isSelected ? `${pillar.glow} border-slate-5` : ''}
         ${isExecuting ? 'animate-pulse' : ''}
         ${isCompleted ? 'border-semantic-success/30' : ''}
         ${dimmedClass}
         ${lockedClass}
-      `}
-    >
-      {/* Hover overlay */}
-      <div className={`absolute inset-0 ${pillar.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl`} />
+        `}
+        >
+        {/* Hover overlay */}
+        <div className={`absolute inset-0 ${pillar.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl`} />
 
-      <div className="relative p-4 h-full flex flex-col">
+      <div className="relative px-4 py-2.5 h-full flex flex-col">
         {/* Row 1: Status badges */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
             {/* Priority with severity indicator - muted for locked */}
             <div className="flex items-center gap-1.5">
               <span className={`w-2.5 h-2.5 rounded-full ${isLocked ? lockedPriorityStyle.dot : priority.dot}`} />
               {/* Lock icon for locked cards */}
               {isLocked && (
-                <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                <Lock weight="regular" className="w-4 h-4 text-white/40" />
               )}
               <span className={`px-2 py-1 text-[11px] font-bold uppercase rounded border ${isLocked ? lockedPriorityStyle.badge : priority.badge}`}>
                 {priority.label}
@@ -572,9 +559,7 @@ export function ActionCard({
             {/* Execution state badges */}
             {isCompleted && (
               <span className="px-2 py-1 text-[11px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30 flex items-center gap-1">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+                <Check weight="regular" className="w-3 h-3" />
                 Completed
               </span>
             )}
@@ -584,10 +569,14 @@ export function ActionCard({
               </span>
             )}
 
-            {/* Mode badge */}
-            {action.mode === 'autopilot' && !isCompleted && (
-              <span className="px-2 py-1 text-[11px] font-medium uppercase rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/25">
-                Auto
+            {/* Mode badge — all three modes shown per MODE_UX_ARCHITECTURE.md */}
+            {!isCompleted && (
+              <span className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border ${
+                action.mode === 'autopilot' ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30' :
+                action.mode === 'copilot'   ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30' :
+                                              'bg-white/5 text-white/70 border-white/20'
+              }`}>
+                {action.mode === 'autopilot' ? 'Auto' : action.mode === 'copilot' ? 'Copilot' : 'Manual'}
               </span>
             )}
           </div>
@@ -605,16 +594,16 @@ export function ActionCard({
               onReview?.();
             }
           }}
-          className="text-base font-semibold text-white mb-2 leading-snug line-clamp-2 cursor-pointer hover:text-brand-cyan transition-colors"
+          className="text-base font-semibold text-white mb-1.5 leading-snug line-clamp-2 cursor-pointer hover:text-brand-cyan transition-colors"
         >
           {action.title}
         </h3>
 
         {/* Row 3: Summary (static in v5, hover details in popover) */}
-        <p className="text-sm text-white/65 line-clamp-2 mb-auto">{action.summary}</p>
+        <p className="text-xs text-white/55 line-clamp-2 mb-auto">{action.summary}</p>
 
-        {/* Row 4: CTAs - FIXED POSITION at bottom (DOMINANT PRIMARY) */}
-        <div className="flex items-center gap-3 mt-4">
+        {/* Row 4: CTAs - FIXED POSITION at bottom */}
+        <div className="flex items-center gap-2 mt-1.5">
           {/* PRIMARY CTA - "Unlock Pro" for locked, Execute for active */}
           {isLocked ? (
             <button
@@ -622,14 +611,12 @@ export function ActionCard({
                 e.stopPropagation();
                 onReview?.(); // Opens modal which shows upgrade option
               }}
-              className="px-5 py-2.5 text-sm font-bold rounded-lg flex items-center gap-2
+              className="px-4 py-1.5 text-sm font-bold rounded-lg flex items-center gap-2
                 transition-all duration-200
                 bg-white/10 text-white/70 hover:bg-white/15 hover:text-white/90
                 border border-white/20"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
+              <Lock weight="regular" className="w-4 h-4" />
               Unlock Pro
             </button>
           ) : (
@@ -640,19 +627,23 @@ export function ActionCard({
               }}
               disabled={isExecuting || action.gate.required || isCompleted}
               className={`
-                px-5 py-2.5 text-sm font-bold rounded-lg flex items-center gap-2
+                px-4 py-1.5 text-sm font-bold rounded-lg flex items-center gap-2
                 transition-all duration-200
                 ${isExecuting ? 'opacity-70 cursor-wait' : ''}
                 ${action.gate.required ? 'opacity-50 cursor-not-allowed' : ''}
                 ${isCompleted
                   ? 'bg-semantic-success/20 text-semantic-success cursor-default'
+                  : crisis && action.priority === 'critical'
+                  ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90 shadow-[0_0_16px_rgba(239,68,68,0.15)]'
+                  : crisis
+                  ? 'bg-semantic-warning text-white hover:bg-semantic-warning/90 shadow-[0_0_16px_rgba(245,158,11,0.15)]'
                   : ready
-                  ? 'bg-semantic-success text-white hover:bg-semantic-success/90 shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_24px_rgba(34,197,94,0.4)]'
+                  ? 'bg-semantic-success text-white hover:bg-semantic-success/90 shadow-[0_0_16px_rgba(34,197,94,0.15)]'
                   : action.pillar === 'pr'
-                  ? 'bg-brand-magenta text-white hover:bg-brand-magenta/90 shadow-[0_0_16px_rgba(232,121,249,0.25)]'
+                  ? 'bg-brand-magenta text-white hover:bg-brand-magenta/90 shadow-[0_0_16px_rgba(232,121,249,0.15)]'
                   : action.pillar === 'content'
-                  ? 'bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.25)]'
-                  : 'bg-brand-cyan text-white hover:bg-brand-cyan/90 shadow-[0_0_16px_rgba(0,217,255,0.25)]'
+                  ? 'bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.15)]'
+                  : 'bg-brand-cyan text-white hover:bg-brand-cyan/90 shadow-[0_0_16px_rgba(0,217,255,0.15)]'
                 }
               `}
             >
@@ -663,9 +654,7 @@ export function ActionCard({
                 </svg>
               )}
               {isCompleted && (
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+                <Check weight="regular" className="w-4 h-4" />
               )}
               {isCompleted ? 'Completed' : isExecuting ? 'Executing...' : action.cta.primary}
             </button>
@@ -677,7 +666,7 @@ export function ActionCard({
               e.stopPropagation();
               onReview?.();
             }}
-            className="px-4 py-2.5 text-sm font-medium text-white/60 hover:text-white/90 border border-white/10 hover:border-white/20 rounded-lg transition-all"
+            className="px-3 py-1.5 text-sm font-medium text-white/60 hover:text-white/90 border border-white/10 hover:border-white/20 rounded-lg transition-all"
           >
             {isLocked ? 'Preview' : 'Review'}
           </button>
@@ -698,7 +687,7 @@ export function ActionCard({
         {comfortableCardContent}
       </HoverCardTrigger>
       <HoverCardContent side="left" align="start" sideOffset={12} className="w-[300px]">
-        <HoverCardArrow className="fill-[#1A1A24]" />
+        <HoverCardArrow className="fill-slate-3" />
         <ActionHoverBrief
           action={action}
           onPrimaryAction={isLocked ? undefined : onPrimaryAction}

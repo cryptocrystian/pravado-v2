@@ -128,14 +128,14 @@ export function ContactFormModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-page/70 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg bg-[#0D0D12] border border-[#1A1A24] rounded-xl shadow-2xl">
+      <div className="relative w-full max-w-lg bg-panel border border-border-subtle rounded-xl shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1A1A24]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
           <h2 className={typography.titleLarge}>
             {mode === 'create' ? 'New Contact' : 'Edit Contact'}
           </h2>
@@ -162,12 +162,12 @@ export function ContactFormModal({
               value={formData.fullName}
               onChange={(e) => handleChange('fullName', e.target.value)}
               placeholder="e.g., Sarah Chen"
-              className={`w-full px-4 py-2.5 bg-[#13131A] border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
-                errors.fullName ? 'border-red-500 focus:ring-red-500/30' : 'border-[#1A1A24] focus:ring-brand-magenta/30 focus:border-brand-magenta'
+              className={`w-full px-4 py-2.5 bg-slate-2 border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
+                errors.fullName ? 'border-semantic-danger focus:ring-semantic-danger/30' : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
               }`}
             />
             {errors.fullName && (
-              <p className="mt-1 text-xs text-red-400">{errors.fullName}</p>
+              <p className="mt-1 text-[13px] text-semantic-danger">{errors.fullName}</p>
             )}
           </div>
 
@@ -181,12 +181,12 @@ export function ContactFormModal({
               value={formData.primaryEmail}
               onChange={(e) => handleChange('primaryEmail', e.target.value)}
               placeholder="e.g., sarah@techcrunch.com"
-              className={`w-full px-4 py-2.5 bg-[#13131A] border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
-                errors.primaryEmail ? 'border-red-500 focus:ring-red-500/30' : 'border-[#1A1A24] focus:ring-brand-magenta/30 focus:border-brand-magenta'
+              className={`w-full px-4 py-2.5 bg-slate-2 border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
+                errors.primaryEmail ? 'border-semantic-danger focus:ring-semantic-danger/30' : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
               }`}
             />
             {errors.primaryEmail && (
-              <p className="mt-1 text-xs text-red-400">{errors.primaryEmail}</p>
+              <p className="mt-1 text-[13px] text-semantic-danger">{errors.primaryEmail}</p>
             )}
           </div>
 
@@ -200,12 +200,12 @@ export function ContactFormModal({
               value={formData.primaryOutlet}
               onChange={(e) => handleChange('primaryOutlet', e.target.value)}
               placeholder="e.g., TechCrunch"
-              className={`w-full px-4 py-2.5 bg-[#13131A] border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
-                errors.primaryOutlet ? 'border-red-500 focus:ring-red-500/30' : 'border-[#1A1A24] focus:ring-brand-magenta/30 focus:border-brand-magenta'
+              className={`w-full px-4 py-2.5 bg-slate-2 border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
+                errors.primaryOutlet ? 'border-semantic-danger focus:ring-semantic-danger/30' : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
               }`}
             />
             {errors.primaryOutlet && (
-              <p className="mt-1 text-xs text-red-400">{errors.primaryOutlet}</p>
+              <p className="mt-1 text-[13px] text-semantic-danger">{errors.primaryOutlet}</p>
             )}
           </div>
 
@@ -219,7 +219,7 @@ export function ContactFormModal({
               value={formData.beat}
               onChange={(e) => handleChange('beat', e.target.value)}
               placeholder="e.g., Enterprise AI, SaaS"
-              className="w-full px-4 py-2.5 bg-[#13131A] border border-[#1A1A24] rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-brand-magenta/30 focus:border-brand-magenta transition-colors"
+              className="w-full px-4 py-2.5 bg-slate-2 border border-border-subtle rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-brand-magenta/30 focus:border-brand-magenta transition-colors"
             />
           </div>
 
@@ -234,12 +234,12 @@ export function ContactFormModal({
                 value={formData.twitterHandle}
                 onChange={(e) => handleChange('twitterHandle', e.target.value)}
                 placeholder="@handle"
-                className={`w-full px-4 py-2.5 bg-[#13131A] border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
-                  errors.twitterHandle ? 'border-red-500 focus:ring-red-500/30' : 'border-[#1A1A24] focus:ring-brand-magenta/30 focus:border-brand-magenta'
+                className={`w-full px-4 py-2.5 bg-slate-2 border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
+                  errors.twitterHandle ? 'border-semantic-danger focus:ring-semantic-danger/30' : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
                 }`}
               />
               {errors.twitterHandle && (
-                <p className="mt-1 text-xs text-red-400">{errors.twitterHandle}</p>
+                <p className="mt-1 text-[13px] text-semantic-danger">{errors.twitterHandle}</p>
               )}
             </div>
             <div>
@@ -251,20 +251,20 @@ export function ContactFormModal({
                 value={formData.linkedinUrl}
                 onChange={(e) => handleChange('linkedinUrl', e.target.value)}
                 placeholder="linkedin.com/in/..."
-                className={`w-full px-4 py-2.5 bg-[#13131A] border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
-                  errors.linkedinUrl ? 'border-red-500 focus:ring-red-500/30' : 'border-[#1A1A24] focus:ring-brand-magenta/30 focus:border-brand-magenta'
+                className={`w-full px-4 py-2.5 bg-slate-2 border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
+                  errors.linkedinUrl ? 'border-semantic-danger focus:ring-semantic-danger/30' : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
                 }`}
               />
               {errors.linkedinUrl && (
-                <p className="mt-1 text-xs text-red-400">{errors.linkedinUrl}</p>
+                <p className="mt-1 text-[13px] text-semantic-danger">{errors.linkedinUrl}</p>
               )}
             </div>
           </div>
 
           {/* Error Message */}
           {submitError && (
-            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-              <p className="text-sm text-red-400">{submitError}</p>
+            <div className="p-3 bg-semantic-danger/10 border border-semantic-danger/30 rounded-lg">
+              <p className="text-sm text-semantic-danger">{submitError}</p>
             </div>
           )}
 

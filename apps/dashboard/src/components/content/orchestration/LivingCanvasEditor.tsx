@@ -223,18 +223,18 @@ export function LivingCanvasEditor({
 
         {/* Phantom Accept Hint */}
         {mode === 'copilot' && phantomText && isFocused && (
-          <div className="absolute bottom-2 right-2 flex items-center gap-1.5 px-2 py-1 bg-slate-2/90 border border-slate-4 rounded text-[10px] text-white/50">
-            <kbd className="px-1 py-0.5 bg-slate-4 rounded text-[9px] font-mono">Tab</kbd>
+          <div className="absolute bottom-2 right-2 flex items-center gap-1.5 px-2 py-1 bg-slate-2/90 border border-slate-4 rounded text-xs text-white/50">
+            <kbd className="px-1 py-0.5 bg-slate-4 rounded text-xs font-mono">Tab</kbd>
             <span>to accept</span>
             <span className="text-white/30">|</span>
-            <kbd className="px-1 py-0.5 bg-slate-4 rounded text-[9px] font-mono">Esc</kbd>
+            <kbd className="px-1 py-0.5 bg-slate-4 rounded text-xs font-mono">Esc</kbd>
             <span>to dismiss</span>
           </div>
         )}
       </div>
 
       {/* Footer Stats */}
-      <div className="flex items-center justify-between px-1 py-2 text-[10px] text-white/40">
+      <div className="flex items-center justify-between px-1 py-2 text-xs text-white/40">
         <div className="flex items-center gap-4">
           <span>{wordCount} words</span>
           <span>{charCount} characters</span>
@@ -276,7 +276,7 @@ export function AutopilotDraftPreview({ content, onAccept, onReject, onEdit }: R
           <span className="w-2 h-2 rounded-full bg-brand-iris animate-pulse" />
           <span className="text-xs font-medium text-brand-iris">Autopilot Draft</span>
         </div>
-        <span className="text-[10px] text-white/50">Review required before publishing</span>
+        <span className="text-xs text-white/50">Review required before publishing</span>
       </div>
 
       {/* Content Preview */}

@@ -321,7 +321,7 @@ function ModeBadge({ mode, compact = false }: { mode: AutomationMode; compact?: 
   const config = modeTokens[mode];
   return (
     <span
-      className={`inline-flex items-center gap-1 ${compact ? 'px-1 py-0.5 text-[8px]' : 'px-1.5 py-0.5 text-[9px]'} font-medium rounded ${config.bg} ${config.text}`}
+      className={`inline-flex items-center gap-1 ${compact ? 'px-1 py-0.5 text-xs' : 'px-1.5 py-0.5 text-xs'} font-medium rounded ${config.bg} ${config.text}`}
       title={config.description}
     >
       {config.label}
@@ -342,7 +342,7 @@ function RiskIndicator({ riskClass }: { riskClass: HookAction['riskClass'] }) {
   };
 
   return (
-    <span className={`text-[8px] ${config[riskClass].color}`} title={config[riskClass].label}>
+    <span className={`text-xs ${config[riskClass].color}`} title={config[riskClass].label}>
       {riskClass === 'low' && '●'}
       {riskClass === 'medium' && '●●'}
       {riskClass === 'high' && '●●●'}
@@ -482,7 +482,7 @@ export function CrossPillarHooksPanel({
           <h3 className={label}>Cross-Pillar Hooks</h3>
           {/* P1.4: Compact summary count when collapsed in Autopilot */}
           {isAutopilotMode && isCollapsed && (
-            <span className="text-[9px] text-white/40">
+            <span className="text-xs text-white/40">
               ({HOOK_ACTIONS.length} {HOOK_ACTIONS.length === 1 ? 'hook' : 'hooks'} available)
             </span>
           )}
@@ -491,7 +491,7 @@ export function CrossPillarHooksPanel({
           <ModeBadge mode={automationMode} compact />
           {/* P1.4: READ-ONLY badge in Autopilot mode */}
           {isReadOnly && (
-            <span className="px-2 py-0.5 text-[10px] font-medium text-white/50 bg-white/5 border border-white/10 rounded-full flex items-center gap-1">
+            <span className="px-2 py-0.5 text-xs font-medium text-white/50 bg-white/5 border border-white/10 rounded-full flex items-center gap-1">
               <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
@@ -499,7 +499,7 @@ export function CrossPillarHooksPanel({
             </span>
           )}
           {isBlocked && (
-            <span className="px-2 py-0.5 text-[10px] font-medium text-semantic-danger bg-semantic-danger/10 border border-semantic-danger/20 rounded-full">
+            <span className="px-2 py-0.5 text-xs font-medium text-semantic-danger bg-semantic-danger/10 border border-semantic-danger/20 rounded-full">
               Blocked
             </span>
           )}
@@ -510,7 +510,7 @@ export function CrossPillarHooksPanel({
       {!isCollapsed && (
         <>
           {/* Info text */}
-          <p className={`text-[10px] ${text.hint} mb-3`}>
+          <p className={`text-xs ${text.hint} mb-3`}>
             {isReadOnly
               ? 'Cross-pillar integrations are available. Switch to Manual mode to take action.'
               : 'Connect this content to other pillars for orchestrated marketing.'}
@@ -562,7 +562,7 @@ export function CrossPillarHooksPanel({
                   </p>
                   <RiskIndicator riskClass={action.riskClass} />
                 </div>
-                <p className={`text-[10px] ${text.hint} truncate`}>
+                <p className={`text-xs ${text.hint} truncate`}>
                   {isReadOnly
                     ? 'Read-only in Autopilot'
                     : !hasRequiredDerivative
@@ -573,7 +573,7 @@ export function CrossPillarHooksPanel({
 
               {/* Mode + Pillar badges */}
               <div className="flex flex-col items-end gap-1 shrink-0">
-                <span className={`px-2 py-0.5 text-[9px] font-medium uppercase rounded-full ${colors.bg} ${colors.text}`}>
+                <span className={`px-2 py-0.5 text-[11px] font-medium uppercase rounded-full ${colors.bg} ${colors.text}`}>
                   {action.pillar === 'command' ? 'CMD' : action.pillar.toUpperCase()}
                 </span>
                 <ModeBadge mode={effectiveMode} compact />
@@ -591,14 +591,14 @@ export function CrossPillarHooksPanel({
             <svg className="w-3 h-3 text-brand-cyan" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
             </svg>
-            <span className="text-[10px] font-medium text-white/70">Last Action</span>
+            <span className="text-xs font-medium text-white/70">Last Action</span>
           </div>
-          <p className="text-[10px] text-white/50">{lastAction.userSummary}</p>
+          <p className="text-xs text-white/50">{lastAction.userSummary}</p>
           <div className="flex items-center gap-3 mt-1">
-            <span className="text-[9px] text-white/30">
+            <span className="text-xs text-white/30">
               Confidence: {(lastAction.confidence * 100).toFixed(0)}%
             </span>
-            <span className="text-[9px] text-white/30">
+            <span className="text-xs text-white/30">
               Risk: {lastAction.riskClass}
             </span>
           </div>
@@ -608,7 +608,7 @@ export function CrossPillarHooksPanel({
             <div className="mt-2 pt-2 border-t border-slate-4">
               <button
                 onClick={() => setIsCausalChainExpanded(!isCausalChainExpanded)}
-                className="flex items-center gap-1 text-[9px] text-white/40 hover:text-white/60 transition-colors"
+                className="flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
               >
                 <svg
                   className={`w-3 h-3 transition-transform ${isCausalChainExpanded ? 'rotate-90' : ''}`}
@@ -632,15 +632,15 @@ export function CrossPillarHooksPanel({
                       />
                       <div className="pl-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-[9px] font-medium text-white/60">{step.step}</span>
-                          <span className="text-[8px] text-white/30">
+                          <span className="text-xs font-medium text-white/60">{step.step}</span>
+                          <span className="text-xs text-white/30">
                             {step.actor === 'user' ? '👤' : '🤖'}
                           </span>
                         </div>
                         {step.detail && (
-                          <p className="text-[8px] text-white/40">{step.detail}</p>
+                          <p className="text-xs text-white/40">{step.detail}</p>
                         )}
-                        <p className="text-[7px] text-white/20">
+                        <p className="text-xs text-white/20">
                           {new Date(step.timestamp).toLocaleString()}
                         </p>
                       </div>
@@ -655,7 +655,7 @@ export function CrossPillarHooksPanel({
 
       {/* Blocked warning */}
       {isBlocked && (
-        <p className={`text-[10px] text-semantic-danger text-center mt-3`}>
+        <p className={`text-xs text-semantic-danger text-center mt-3`}>
           Resolve CiteMind issues to enable cross-pillar hooks
         </p>
       )}

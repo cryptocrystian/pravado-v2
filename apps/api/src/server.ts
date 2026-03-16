@@ -4,6 +4,10 @@
 
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
+import helmet from '@fastify/helmet';
+import rateLimit from '@fastify/rate-limit';
+import * as Sentry from '@sentry/node';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { FLAGS } from '@pravado/feature-flags';
 import { createLogger } from '@pravado/utils';
 import Fastify from 'fastify';
@@ -64,11 +68,36 @@ import scenarioOrchestrationRoutes from './routes/scenarioOrchestrations'; // S7
 import realityMapsRoutes from './routes/realityMaps'; // S73
 import insightConflictRoutes from './routes/insightConflicts'; // S74
 import { seoRoutes } from './routes/seo';
+import { eviRoutes } from './routes/evi'; // S-INT-01
+import { sageRoutes } from './routes/sage'; // S-INT-02
+import { citeMindRoutes } from './routes/citeMind'; // S-INT-04
+import { gscRoutes } from './routes/integrations/gsc'; // S-INT-06
+import { journalistEnrichmentRoutes } from './routes/journalists/enrichment'; // S-INT-06
+import { onboardingRoutes } from './routes/onboarding'; // S-INT-07
+import { betaRoutes } from './routes/beta'; // S-INT-09
 import { clientLogsRoutes } from './routes/clientLogs'; // S79
 
 const logger = createLogger('api:server');
 
 export async function createServer() {
+  // ========================================
+  // SENTRY INITIALIZATION (S-INT-08)
+  // ========================================
+  const sentryDsn = process.env.SENTRY_DSN;
+  const isValidDsn = sentryDsn?.startsWith('https://');
+  if (isValidDsn) {
+    Sentry.init({
+      dsn: sentryDsn,
+      environment: process.env.NODE_ENV || 'development',
+      integrations: [nodeProfilingIntegration()],
+      tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+      profilesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+    });
+    logger.info('Sentry initialized');
+  } else if (sentryDsn) {
+    logger.warn('Sentry DSN not configured or invalid format — skipping Sentry init');
+  }
+
   const server = Fastify({
     logger: false, // We use our custom logger
     requestIdLogLabel: 'requestId',
@@ -79,25 +108,64 @@ export async function createServer() {
     secret: config.COOKIE_SECRET,
   });
 
+  // CORS (S-INT-10: production-hardened)
   await server.register(cors, {
-    origin: config.CORS_ORIGIN,
+    origin: config.NODE_ENV === 'production'
+      ? config.CORS_ORIGIN.split(',').map((o: string) => o.trim())
+      : true,
     credentials: true,
+  });
+
+  // Security headers (S-INT-10)
+  await server.register(helmet, {
+    contentSecurityPolicy: false, // CSP managed by Next.js / dashboard
   });
 
   await server.register(authPlugin);
   await server.register(mailerPlugin);
 
+  // ========================================
+  // RATE LIMITING (S-INT-08)
+  // ========================================
+  await server.register(rateLimit, {
+    global: true,
+    max: 200,
+    timeWindow: '1 minute',
+    keyGenerator: (request) => {
+      return (request as any).user?.orgId ?? (request as any).orgId ?? request.ip;
+    },
+    errorResponseBuilder: (_request, context) => ({
+      success: false,
+      error: {
+        code: 'RATE_LIMITED',
+        message: `Rate limit exceeded. Try again in ${Math.ceil(context.ttl / 1000)} seconds.`,
+      },
+      retryAfter: Math.ceil(context.ttl / 1000),
+    }),
+  });
+
   // Platform Freeze plugin (S78) - must be registered before core routes
   // When PLATFORM_FREEZE=true, blocks write operations to core intelligence domains
   await server.register(platformFreezePlugin);
 
-  // Add request logging
+  // Add request logging + Sentry context tagging (S-INT-08)
   server.addHook('onRequest', async (request) => {
     logger.info('Incoming request', {
       method: request.method,
       url: request.url,
       requestId: request.id,
     });
+
+    // Tag Sentry with org context
+    if (process.env.SENTRY_DSN) {
+      const user = (request as any).user;
+      if (user) {
+        Sentry.setUser({ id: user.id, email: user.email });
+        Sentry.setTag('org_id', user.orgId ?? 'unknown');
+      } else {
+        Sentry.setTag('org_id', 'unauthenticated');
+      }
+    }
   });
 
   // Add response logging
@@ -313,6 +381,41 @@ export async function createServer() {
     prefix: '/api/v1/insight-conflicts',
   });
 
+  // EVI (Earned Visibility Index) routes (S-INT-01)
+  await server.register(eviRoutes, {
+    prefix: '/api/v1/evi',
+  });
+
+  // SAGE Signal Intelligence routes (S-INT-02)
+  await server.register(sageRoutes, {
+    prefix: '/api/v1/sage',
+  });
+
+  // CiteMind Quality Scoring routes (S-INT-04)
+  await server.register(citeMindRoutes, {
+    prefix: '/api/v1/citemind',
+  });
+
+  // GSC Integration routes (S-INT-06)
+  await server.register(gscRoutes, {
+    prefix: '/api/v1/integrations/gsc',
+  });
+
+  // Journalist Enrichment routes (S-INT-06)
+  await server.register(journalistEnrichmentRoutes, {
+    prefix: '/api/v1/journalists',
+  });
+
+  // Onboarding Activation routes (S-INT-07)
+  await server.register(onboardingRoutes, {
+    prefix: '/api/v1/onboarding',
+  });
+
+  // Beta Request routes (S-INT-09)
+  await server.register(betaRoutes, {
+    prefix: '/api/v1/beta',
+  });
+
   // Root endpoint
   server.get('/', async () => {
     return {
@@ -333,7 +436,7 @@ export async function createServer() {
     };
   });
 
-  // Error handler
+  // Error handler (S-INT-08: Sentry capture)
   server.setErrorHandler(async (error, request, reply) => {
     logger.error('Request error', {
       error: error.message,
@@ -342,7 +445,16 @@ export async function createServer() {
       method: request.method,
     });
 
+    // Capture to Sentry (skip 4xx client errors)
     const statusCode = (error as any).statusCode || 500;
+    if (statusCode >= 500 && process.env.SENTRY_DSN) {
+      Sentry.captureException(error, {
+        tags: {
+          org_id: (request as any).user?.orgId ?? 'unknown',
+          route: request.routeOptions?.url ?? request.url,
+        },
+      });
+    }
 
     return reply.status(statusCode).send({
       success: false,
@@ -352,6 +464,16 @@ export async function createServer() {
       },
     });
   });
+
+  // ========================================
+  // BULLMQ INITIALIZATION (S-INT-01)
+  // ========================================
+  if (FLAGS.ENABLE_EVI) {
+    const { initializeBullMQ, setupEVIScheduler } = await import('./queue/bullmqQueue');
+    const redisUrl = process.env.REDIS_URL;
+    await initializeBullMQ({ redisUrl });
+    await setupEVIScheduler({ redisUrl });
+  }
 
   // ========================================
   // SCHEDULER INITIALIZATION (S42)

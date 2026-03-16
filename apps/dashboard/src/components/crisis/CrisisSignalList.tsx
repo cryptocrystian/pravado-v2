@@ -179,7 +179,7 @@ export default function CrisisSignalList({
       <CardContent className="flex-1 p-0">
         <ScrollArea style={{ maxHeight }} className="px-4 pb-4">
           {filteredSignals.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-12 text-white/50">
               <CheckCircle2 className="h-12 w-12 mb-3 text-green-500" />
               <p className="text-sm">No active crisis signals</p>
               <p className="text-xs mt-1">All systems are normal</p>
@@ -217,7 +217,7 @@ export default function CrisisSignalList({
                             {signal.title}
                           </h4>
                         </div>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-2 mt-1 text-xs text-white/50">
                           <Clock className="h-3 w-3" />
                           <span>{formatTimeAgo(signal.createdAt)}</span>
                           <span className="text-gray-300">|</span>
@@ -251,7 +251,7 @@ export default function CrisisSignalList({
                       <div className="mt-3 pt-3 border-t space-y-3">
                         {/* Description */}
                         {signal.description && (
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-white/50">
                             {signal.description}
                           </p>
                         )}
@@ -273,14 +273,14 @@ export default function CrisisSignalList({
                         {/* Stats */}
                         <div className="grid grid-cols-3 gap-2 text-xs">
                           <div className="text-center p-2 bg-gray-50 rounded">
-                            <div className="text-muted-foreground">Priority</div>
+                            <div className="text-white/50">Priority</div>
                             <div className="font-semibold">
                               {signal.priorityScore.toFixed(1)}
                             </div>
                           </div>
                           {signal.mentionVelocity !== undefined && (
                             <div className="text-center p-2 bg-gray-50 rounded">
-                              <div className="text-muted-foreground">Velocity</div>
+                              <div className="text-white/50">Velocity</div>
                               <div className="font-semibold flex items-center justify-center gap-1">
                                 <Zap className="h-3 w-3" />
                                 {signal.mentionVelocity.toFixed(1)}/hr
@@ -289,7 +289,7 @@ export default function CrisisSignalList({
                           )}
                           {signal.sentimentScore !== undefined && (
                             <div className="text-center p-2 bg-gray-50 rounded">
-                              <div className="text-muted-foreground">Sentiment</div>
+                              <div className="text-white/50">Sentiment</div>
                               <div
                                 className={cn(
                                   'font-semibold',

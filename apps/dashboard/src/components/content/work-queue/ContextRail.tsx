@@ -172,7 +172,7 @@ export function ContextRail({
             <div className="flex items-center gap-2 mb-2">
               <span className={citeMindConf.color}>{citeMindConf.icon}</span>
               <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">CiteMind</h4>
-              <span className={`ml-auto px-1.5 py-0.5 text-[10px] font-bold rounded ${citeMindConf.color} ${citeMindConf.bg}`}>
+              <span className={`ml-auto px-1.5 py-0.5 text-xs font-bold rounded ${citeMindConf.color} ${citeMindConf.bg}`}>
                 {citeMindConf.label}
               </span>
             </div>
@@ -292,7 +292,7 @@ export function ContextRail({
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">Cross-Pillar</h4>
               </div>
               {isAutopilotReadOnly && (
-                <span className="px-1.5 py-0.5 text-[10px] font-medium text-white/30 bg-white/5 rounded">
+                <span className="px-1.5 py-0.5 text-xs font-medium text-white/30 bg-white/5 rounded">
                   Read-Only
                 </span>
               )}
@@ -332,7 +332,7 @@ export function ContextRail({
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
                   <div>
                     <span className="text-xs font-medium text-white/70">{guardrail.name}</span>
-                    <p className="text-[10px] text-white/40">{guardrail.description}</p>
+                    <p className="text-xs text-white/40">{guardrail.description}</p>
                   </div>
                 </div>
               ))}
@@ -352,7 +352,7 @@ export function ContextRail({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">Auto-handled</h4>
-                <span className="px-1.5 py-0.5 text-[10px] font-medium text-semantic-success bg-semantic-success/10 rounded">
+                <span className="px-1.5 py-0.5 text-[11px] tabular-nums font-medium text-semantic-success bg-semantic-success/10 rounded">
                   {auditLedger.length}
                 </span>
               </div>

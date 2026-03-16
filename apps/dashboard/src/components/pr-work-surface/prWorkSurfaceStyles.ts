@@ -23,24 +23,9 @@ import type { Mode } from './types';
 // SURFACE TOKENS (DS v3.1)
 // ============================================
 
-export const surfaceTokens = {
-  // Background hierarchy (darkest → lightest)
-  pageBg: '#0A0A0F', // Main page background
-  cardBg: '#0D0D12', // Card/container background
-  cardElevated: '#13131A', // Elevated cards, modals
-  cardHover: '#111116', // Card hover state
-  panelBg: '#16161E', // Panel backgrounds
-
-  // Border hierarchy
-  borderSubtle: '#1A1A24', // Default borders
-  borderDefault: '#1F1F28', // Emphasized borders
-  borderHover: '#2A2A36', // Hover state borders
-  borderActive: '#3A3A48', // Active state borders
-
-  // Interactive overlays
-  hoverOverlay: 'rgba(255, 255, 255, 0.02)',
-  activeOverlay: 'rgba(255, 255, 255, 0.04)',
-};
+// DS-VIOLATION: surfaceTokens JS hex object removed (§1D banned pattern).
+// Use Tailwind classes directly: bg-page, bg-slate-1, bg-panel, border-border-subtle, etc.
+// See DS_v3_COMPLIANCE_CHECKLIST.md §2A–2B for approved tokens.
 
 // ============================================
 // PILLAR ACCENT SYSTEM (PR = Magenta primary)
@@ -173,9 +158,9 @@ export const modeStyles: Record<Mode, {
     icon: 'user',
   },
   autopilot: {
-    bg: 'bg-brand-cyan/10',
-    text: 'text-brand-cyan',
-    border: 'border-brand-cyan/30',
+    bg: 'bg-brand-iris/10',
+    text: 'text-brand-iris',
+    border: 'border-brand-iris/30',
     label: 'Autopilot',
     description: 'System handles within guardrails',
     icon: 'bolt',
@@ -194,8 +179,8 @@ export const modeStyles: Record<Mode, {
 
 export const typography = {
   // High emphasis (titles, headers) - weight-driven, not color-only
-  titleLarge: 'text-lg font-semibold text-white leading-snug',
-  titleMedium: 'text-base font-semibold text-white leading-snug',
+  titleLarge: 'text-lg font-semibold text-white/90 leading-snug',
+  titleMedium: 'text-base font-semibold text-white/90 leading-snug',
   titleSmall: 'text-sm font-semibold text-white/90 leading-snug',
 
   // Body text (15-16px for sustained reading)
@@ -214,9 +199,10 @@ export const typography = {
   micro: 'text-[13px] text-white/50 leading-normal',
   microStrong: 'text-[13px] font-medium text-white/60 leading-normal',
 
-  // Uppercase labels ONLY - tracking-wider makes 11px visually equivalent to 13px
+  // Uppercase decorative labels ONLY — tracking-wider compensates for reduced size.
+  // NEVER use these for semantic data (status, counts, names, dates).
   labelLarge: 'text-xs font-semibold uppercase tracking-wider text-white/70',
-  labelSmall: 'text-[11px] font-bold uppercase tracking-wider text-white/50',
+  labelSmall: 'text-xs font-bold uppercase tracking-wider text-white/50',
 
   // System hints (reduced opacity, NOT reduced size)
   hint: 'text-[13px] text-white/40 leading-normal',
@@ -229,43 +215,43 @@ export const typography = {
 export const cardStyles = {
   // Base card (most common)
   base: `
-    bg-[#0D0D12]
-    border border-[#1A1A24]
+    bg-slate-1
+    border border-border-subtle
     rounded-xl
     transition-all duration-200
   `,
 
   // Interactive card (clickable)
   interactive: `
-    bg-[#0D0D12]
-    border border-[#1A1A24]
+    bg-slate-1
+    border border-border-subtle
     rounded-xl
     transition-all duration-200
-    hover:bg-[#111116]
-    hover:border-[#2A2A36]
+    hover:bg-slate-2
+    hover:border-slate-5
     cursor-pointer
   `,
 
   // Selected card
   selected: `
-    bg-[#111116]
-    border border-[#2A2A36]
+    bg-slate-2
+    border border-slate-5
     rounded-xl
     ring-1 ring-brand-magenta/30
   `,
 
   // Elevated card (modals, drawers)
   elevated: `
-    bg-[#13131A]
-    border border-[#1F1F28]
+    bg-panel
+    border border-border-subtle
     rounded-xl
     shadow-elev-2
   `,
 
   // Panel (large container)
   panel: `
-    bg-[#0D0D12]/80
-    border border-[#1A1A24]
+    bg-slate-1/80
+    border border-border-subtle
     rounded-xl
     backdrop-blur-sm
   `,
@@ -280,7 +266,7 @@ export const buttonStyles = {
   primary: `
     px-4 py-2.5
     text-sm font-semibold
-    bg-brand-magenta text-white
+    bg-brand-magenta text-white/95
     rounded-lg
     hover:bg-brand-magenta/90
     shadow-[0_0_16px_rgba(232,121,249,0.25)]
@@ -317,7 +303,7 @@ export const buttonStyles = {
   success: `
     px-4 py-2.5
     text-sm font-semibold
-    bg-semantic-success text-white
+    bg-semantic-success text-white/95
     rounded-lg
     hover:bg-semantic-success/90
     shadow-[0_0_16px_rgba(34,197,94,0.25)]
@@ -326,9 +312,14 @@ export const buttonStyles = {
 };
 
 // ============================================
-// BADGE STYLES
+// BADGE STYLES (DS v3.1)
 // ============================================
-
+//
+// TYPOGRAPHY RULE — badge text is SEMANTIC content.
+// Semantic content minimum = 13px.
+// Do NOT reduce below text-[13px] during revisions.
+// The lint script (scripts/lint-typography.js) enforces this.
+//
 export const badgeStyles = {
   // Pillar badge (PR/Content/SEO)
   pillar: (pillar: 'pr' | 'content' | 'seo') => {
@@ -337,28 +328,59 @@ export const badgeStyles = {
       content: 'bg-brand-iris/15 text-brand-iris border-brand-iris/30',
       seo: 'bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30',
     };
-    return `px-2 py-1 text-[11px] font-bold uppercase rounded border ${colors[pillar]}`;
+    return `px-2 py-0.5 text-[13px] font-semibold rounded border ${colors[pillar]}`;
   },
 
   // Priority badge
   priority: (level: 'critical' | 'high' | 'medium' | 'low') => {
     const styles = priorityStyles[level];
-    return `px-2 py-1 text-[11px] font-bold uppercase rounded border ${styles.bg} ${styles.text} ${styles.border}`;
+    return `px-2 py-0.5 text-[13px] font-semibold rounded border ${styles.bg} ${styles.text} ${styles.border}`;
   },
 
   // Mode badge
   mode: (mode: Mode) => {
     const styles = modeStyles[mode];
-    return `px-2 py-1 text-[11px] font-medium uppercase rounded border ${styles.bg} ${styles.text} ${styles.border}`;
+    return `px-2 py-0.5 text-[13px] font-medium rounded border ${styles.bg} ${styles.text} ${styles.border}`;
   },
 
-  // Count badge
-  count: 'px-1.5 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/70',
+  // Count badge (numeric — still semantic content)
+  count: 'px-1.5 py-0.5 text-[13px] font-medium rounded bg-white/10 text-white/70',
 
-  // Status badge
-  success: 'px-2 py-1 text-[11px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30',
-  warning: 'px-2 py-1 text-[11px] font-bold uppercase rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
-  danger: 'px-2 py-1 text-[11px] font-bold uppercase rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30',
+  // Status badges
+  success: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30',
+  warning: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
+  danger: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30',
+
+  // Tier badges (outlet tier — semantic content)
+  tier: {
+    t1: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-brand-iris/15 text-brand-iris border border-brand-iris/30',
+    t2: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30',
+    t3: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-white/10 text-white/60 border border-white/20',
+    trade: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
+    niche: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-white/10 text-white/50 border border-white/15',
+  },
+
+  // Relationship stage badges
+  relationship: {
+    cold: 'px-2 py-0.5 text-[13px] font-medium rounded bg-white/10 text-white/55',
+    warm: 'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-warning/15 text-semantic-warning',
+    engaged: 'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-success/15 text-semantic-success',
+    advocate: 'px-2 py-0.5 text-[13px] font-medium rounded bg-brand-iris/20 text-brand-iris',
+  },
+
+  // Track badges (distribution)
+  track: {
+    citemind_aeo: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30',
+    legacy_wire: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
+  },
+
+  // Verification status
+  verification: {
+    verified: 'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-success/15 text-semantic-success',
+    unverified: 'px-2 py-0.5 text-[13px] font-medium rounded bg-white/10 text-white/50',
+    outdated: 'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-warning/15 text-semantic-warning',
+    needs_review: 'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-danger/15 text-semantic-danger',
+  },
 };
 
 // ============================================
@@ -368,9 +390,9 @@ export const badgeStyles = {
 export const inputStyles = {
   base: `
     w-full px-3 py-2.5
-    text-sm text-white
-    bg-[#0D0D12]
-    border border-[#1A1A24]
+    text-sm text-white/90
+    bg-slate-1
+    border border-border-subtle
     rounded-lg
     placeholder:text-white/40
     focus:outline-none focus:border-brand-magenta/50 focus:ring-1 focus:ring-brand-magenta/30
@@ -379,9 +401,9 @@ export const inputStyles = {
 
   search: `
     w-full px-3 py-2 pl-9
-    text-sm text-white
-    bg-[#0D0D12]
-    border border-[#1A1A24]
+    text-sm text-white/90
+    bg-slate-1
+    border border-border-subtle
     rounded-lg
     placeholder:text-white/40
     focus:outline-none focus:border-brand-magenta/50
@@ -399,11 +421,11 @@ export const sectionStyles = {
     flex items-center gap-2 mb-4
   `,
   headerIcon: 'w-5 h-5 text-brand-magenta',
-  headerTitle: 'text-sm font-semibold text-white leading-snug',
-  headerCount: 'px-1.5 py-0.5 text-[11px] font-bold rounded bg-brand-magenta/15 text-brand-magenta',
+  headerTitle: 'text-sm font-semibold text-white/90 leading-snug',
+  headerCount: 'px-1.5 py-0.5 text-[13px] font-medium rounded bg-brand-magenta/15 text-brand-magenta',
 
   // Divider
-  divider: 'h-px bg-[#1A1A24] my-4',
+  divider: 'h-px bg-border-subtle my-4',
 
   // Uppercase label above sections (tracking-wider makes 11px legible)
   label: 'text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2',
@@ -462,10 +484,14 @@ export const FORBIDDEN_LEGACY_TOKENS = [
   'bg-neutral-',
   'bg-zinc-',
 
-  // Old color patterns
+  // Old color patterns (use semantic tokens instead)
   'emerald-400', // Use semantic-success
-  'red-400', // Use semantic-danger
-  'amber-400', // Use semantic-warning
+  'red-400',     // Use semantic-danger  ← banned, was found in ContactFormModal
+  'red-500',     // Use semantic-danger  ← banned, was found in ContactFormModal
+  'amber-400',   // Use semantic-warning
+
+  // Non-existent tokens (typos that silently produce no style)
+  'semantic-error', // Does not exist — use semantic-danger
 
   // Old borders
   'border-slate-',
@@ -480,7 +506,7 @@ export const FORBIDDEN_LEGACY_TOKENS = [
 export const DS3_TYPOGRAPHY_RULES = {
   // Minimum font sizes for semantic content
   // text-xs (12px) is ONLY allowed with uppercase + tracking-wider
-  // text-[9px], text-[10px] ONLY for uppercase labels
+  // text-[9px], text-[11px] ONLY for uppercase labels
   forbiddenForSemanticContent: [
     // Sub-13px sizes for regular text (not uppercase labels)
     // Note: CI script should check context - these are OK if uppercase + tracking-wider
@@ -488,7 +514,6 @@ export const DS3_TYPOGRAPHY_RULES = {
 
   // Allowed small sizes (ONLY for uppercase labels)
   allowedSmallSizes: {
-    'text-[10px]': 'only with font-bold uppercase tracking-wider',
     'text-[11px]': 'only with font-bold uppercase tracking-wider',
     'text-xs': 'only with uppercase tracking-wider',
   },
@@ -507,10 +532,10 @@ export const DS3_TYPOGRAPHY_RULES = {
 // ============================================
 
 export const REQUIRED_DS3_PATTERNS = [
-  // Surface tokens
-  'bg-[#0D0D12]',
-  'bg-[#13131A]',
-  'border-[#1A1A24]',
+  // Surface tokens (DS v3.1 Tailwind classes, not raw hex)
+  'bg-slate-1',
+  'bg-panel',
+  'border-border-subtle',
 
   // Typography (white opacity scale)
   'text-white/90',

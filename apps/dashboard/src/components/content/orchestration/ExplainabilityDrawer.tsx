@@ -51,12 +51,12 @@ function getMockCausalChain(action: TriggerAction): CausalChainNode[] {
   const chain: CausalChainNode[] = [];
 
   // Triggers (what caused this action)
-  if (action.type === 'brief_execution') {
+  if (action.type === 'content_execution') {
     chain.push({
       id: 'trigger-1',
       type: 'trigger',
-      label: 'Content Brief Created',
-      description: `Brief "${action.sourceContext.briefTitle}" was approved and scheduled for execution.`,
+      label: 'Content Ready',
+      description: `"${action.sourceContext.contentTitle || action.sourceContext.briefTitle}" was approved and scheduled for publication.`,
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
       pillar: 'content',
     });
@@ -257,7 +257,7 @@ export function ExplainabilityDrawer({
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 bg-black/50 z-40 ${motion.transition.fast}`}
+        className={`fixed inset-0 bg-page/70 z-40 ${motion.transition.fast}`}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -284,7 +284,7 @@ export function ExplainabilityDrawer({
                 </svg>
               </div>
               <div>
-                <h2 id="explain-drawer-title" className="text-sm font-semibold text-white">
+                <h2 id="explain-drawer-title" className="text-sm font-semibold text-white/95">
                   Explain This Action
                 </h2>
                 <p className="text-xs text-white/50">3-level explainability</p>
@@ -346,15 +346,15 @@ export function ExplainabilityDrawer({
                 <div className="grid grid-cols-3 gap-3">
                   <div className="p-3 bg-slate-2 border border-slate-4 rounded-lg text-center">
                     <p className="text-lg font-semibold text-brand-iris">+8</p>
-                    <p className="text-[10px] text-white/50">EVI Points</p>
+                    <p className="text-xs text-white/50">EVI Points</p>
                   </div>
                   <div className="p-3 bg-slate-2 border border-slate-4 rounded-lg text-center">
                     <p className="text-lg font-semibold text-brand-cyan">3</p>
-                    <p className="text-[10px] text-white/50">Entities Covered</p>
+                    <p className="text-xs text-white/50">Entities Covered</p>
                   </div>
                   <div className="p-3 bg-slate-2 border border-slate-4 rounded-lg text-center">
                     <p className="text-lg font-semibold text-brand-magenta">2</p>
-                    <p className="text-[10px] text-white/50">PR Opportunities</p>
+                    <p className="text-xs text-white/50">PR Opportunities</p>
                   </div>
                 </div>
               </div>
@@ -495,7 +495,7 @@ export function ExplainabilityDrawer({
                             </svg>
                           )}
                           {node.type === 'action' && (
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 text-white/95" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
                           )}
@@ -519,16 +519,16 @@ export function ExplainabilityDrawer({
                               {node.label}
                             </span>
                             {node.pillar && (
-                              <span className={`text-[10px] ${getPillarColor(node.pillar)}`}>
+                              <span className={`text-xs ${getPillarColor(node.pillar)}`}>
                                 {node.pillar.toUpperCase()}
                               </span>
                             )}
                           </div>
-                          <p className="text-[11px] text-white/50 leading-relaxed">
+                          <p className="text-xs text-white/50 leading-relaxed">
                             {node.description}
                           </p>
                           {node.timestamp && (
-                            <p className="text-[10px] text-white/30 mt-1">
+                            <p className="text-xs text-white/30 mt-1">
                               {new Date(node.timestamp).toLocaleDateString()}
                             </p>
                           )}
@@ -546,16 +546,16 @@ export function ExplainabilityDrawer({
                 </h3>
                 <div className="flex gap-2">
                   <div className={`flex-1 p-2 rounded-lg border ${getPillarBg('content')}`}>
-                    <p className={`text-[10px] font-medium ${getPillarColor('content')}`}>Content</p>
-                    <p className="text-[10px] text-white/40">Primary</p>
+                    <p className={`text-xs font-medium ${getPillarColor('content')}`}>Content</p>
+                    <p className="text-xs text-white/40">Primary</p>
                   </div>
                   <div className={`flex-1 p-2 rounded-lg border ${getPillarBg('pr')}`}>
-                    <p className={`text-[10px] font-medium ${getPillarColor('pr')}`}>PR</p>
-                    <p className="text-[10px] text-white/40">Downstream</p>
+                    <p className={`text-xs font-medium ${getPillarColor('pr')}`}>PR</p>
+                    <p className="text-xs text-white/40">Downstream</p>
                   </div>
                   <div className={`flex-1 p-2 rounded-lg border ${getPillarBg('seo')}`}>
-                    <p className={`text-[10px] font-medium ${getPillarColor('seo')}`}>SEO</p>
-                    <p className="text-[10px] text-white/40">Downstream</p>
+                    <p className={`text-xs font-medium ${getPillarColor('seo')}`}>SEO</p>
+                    <p className="text-xs text-white/40">Downstream</p>
                   </div>
                 </div>
               </div>
@@ -565,7 +565,7 @@ export function ExplainabilityDrawer({
 
         {/* Footer */}
         <div className="shrink-0 border-t border-slate-4 px-5 py-3 bg-slate-2">
-          <p className="text-[10px] text-white/40 text-center">
+          <p className="text-xs text-white/40 text-center">
             Explainability per UX Continuity Canon §6 • AUTOMATE Execution Model
           </p>
         </div>

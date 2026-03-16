@@ -105,7 +105,7 @@ const changeStyles: Record<string, { icon: string; color: string; label: string 
   added: { icon: '+', color: 'text-semantic-success', label: 'Added' },
   removed: { icon: '-', color: 'text-semantic-danger', label: 'Removed' },
   modified: { icon: '~', color: 'text-brand-amber', label: 'Modified' },
-  unchanged: { icon: '=', color: 'text-slate-6', label: 'Unchanged' },
+  unchanged: { icon: '=', color: 'text-white/55', label: 'Unchanged' },
 };
 
 // Freshness labels
@@ -113,7 +113,7 @@ const freshnessLabels: Record<string, { label: string; color: string }> = {
   'real-time': { label: 'Real-time', color: 'text-semantic-success' },
   hourly: { label: 'Updated hourly', color: 'text-brand-cyan' },
   daily: { label: 'Updated daily', color: 'text-brand-amber' },
-  weekly: { label: 'Updated weekly', color: 'text-muted' },
+  weekly: { label: 'Updated weekly', color: 'text-white/55' },
 };
 
 // Confidence indicator
@@ -133,7 +133,7 @@ function ConfidenceIndicator({ confidence }: { confidence: number }) {
           style={{ width: `${confidence}%` }}
         />
       </div>
-      <span className="text-xs font-medium text-muted">{confidence}%</span>
+      <span className="text-xs font-medium text-white/55">{confidence}%</span>
     </div>
   );
 }
@@ -174,14 +174,14 @@ export function ExecNarrativeDensityCard({
   const totalDataPoints = density.inputs.reduce((sum, input) => sum + input.dataPoints, 0);
 
   return (
-    <div className={`panel-card overflow-hidden shadow-lg shadow-slate-1/20 ${className}`}>
+    <div className={`bg-panel border border-border-subtle rounded-xl overflow-hidden shadow-lg shadow-slate-1/20 ${className}`}>
       {/* Header - Enhanced visual hierarchy */}
       <div className="px-6 py-5 border-b border-border-subtle bg-gradient-to-r from-slate-3/50 to-slate-3/30">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-1.5">
               <AIDot status="active" size="md" />
-              <h3 className="text-xl font-bold text-white tracking-tight">{title}</h3>
+              <h3 className="text-xl font-bold text-white/95 tracking-tight">{title}</h3>
               <AIReasoningPopover context={reasoningContext} position="bottom" />
             </div>
             {subtitle && <p className="text-sm text-slate-10">{subtitle}</p>}
@@ -222,12 +222,12 @@ export function ExecNarrativeDensityCard({
             <span className="text-xs text-brand-iris">?</span>
           </div>
           <div>
-            <p className="text-xs font-medium text-muted uppercase tracking-wider mb-1">
+            <p className="text-xs font-medium text-white/55 uppercase tracking-wider mb-1">
               Why This Exists
             </p>
             <p className="text-sm text-slate-11">{density.purpose}</p>
             {density.audienceContext && (
-              <p className="text-xs text-slate-6 mt-1">
+              <p className="text-xs text-white/55 mt-1">
                 Audience: {density.audienceContext}
               </p>
             )}
@@ -242,7 +242,7 @@ export function ExecNarrativeDensityCard({
       <div className="border-t border-border-subtle">
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="w-full px-6 py-3 flex items-center justify-between text-sm font-medium text-muted hover:text-white hover:bg-slate-3/30 transition-colors"
+          className="w-full px-6 py-3 flex items-center justify-between text-sm font-medium text-white/55 hover:text-white/90 hover:bg-slate-3/30 transition-colors"
         >
           <span>{showDetails ? 'Hide Details' : 'Show Details'}</span>
           <svg
@@ -269,13 +269,13 @@ export function ExecNarrativeDensityCard({
                   onClick={() => setActiveSection(tab.key as typeof activeSection)}
                   className={`flex-1 px-4 py-2.5 text-xs font-medium transition-colors ${
                     activeSection === tab.key
-                      ? 'text-white border-b-2 border-brand-cyan bg-slate-3/30'
-                      : 'text-muted hover:text-white'
+                      ? 'text-white/90 border-b-2 border-brand-cyan bg-slate-3/30'
+                      : 'text-white/55 hover:text-white/90'
                   }`}
                 >
                   {tab.label}
                   {tab.count > 0 && (
-                    <span className="ml-1.5 px-1.5 py-0.5 text-[10px] rounded bg-slate-5/50">
+                    <span className="ml-1.5 px-1.5 py-0.5 text-[11px] tabular-nums rounded bg-slate-5/50">
                       {tab.count}
                     </span>
                   )}
@@ -298,12 +298,12 @@ export function ExecNarrativeDensityCard({
                           {pillar.label}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white">{input.source}</p>
-                          <p className="text-xs text-muted">
+                          <p className="text-sm font-medium text-white/90">{input.source}</p>
+                          <p className="text-xs text-white/55">
                             {input.dataPoints} data points · {input.contributionWeight}% weight
                           </p>
                         </div>
-                        <div className="text-xs text-slate-6">
+                        <div className="text-xs text-white/55">
                           {new Date(input.lastUpdated).toLocaleDateString()}
                         </div>
                       </div>
@@ -317,16 +317,16 @@ export function ExecNarrativeDensityCard({
                 <div className="space-y-3">
                   {density.previousVersion && (
                     <div className="p-3 rounded-lg bg-slate-4/30 border border-border-subtle mb-4">
-                      <p className="text-xs text-muted mb-1">Previous Version</p>
+                      <p className="text-xs text-white/55 mb-1">Previous Version</p>
                       <p className="text-sm text-slate-11">{density.previousVersion.summary}</p>
-                      <p className="text-xs text-slate-6 mt-1">
+                      <p className="text-xs text-white/55 mt-1">
                         Generated {new Date(density.previousVersion.generatedAt).toLocaleString()}
                       </p>
                     </div>
                   )}
 
                   {!density.changes || density.changes.length === 0 ? (
-                    <p className="text-sm text-muted text-center py-4">No changes detected from previous version</p>
+                    <p className="text-sm text-white/55 text-center py-4">No changes detected from previous version</p>
                   ) : (
                     density.changes.map((change, idx) => {
                       const style = changeStyles[change.type];
@@ -341,9 +341,9 @@ export function ExecNarrativeDensityCard({
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <span className={`text-xs font-medium ${style.color}`}>{style.label}</span>
-                              <span className="text-xs text-muted">{change.field}</span>
+                              <span className="text-xs text-white/55">{change.field}</span>
                               {change.significance !== 'low' && (
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                                <span className={`text-xs px-1.5 py-0.5 rounded ${
                                   change.significance === 'high'
                                     ? 'bg-semantic-danger/10 text-semantic-danger'
                                     : 'bg-brand-amber/10 text-brand-amber'
@@ -353,10 +353,10 @@ export function ExecNarrativeDensityCard({
                               )}
                             </div>
                             {change.previousValue && (
-                              <p className="text-xs text-slate-6 line-through">{change.previousValue}</p>
+                              <p className="text-xs text-white/55 line-through">{change.previousValue}</p>
                             )}
                             {change.currentValue && (
-                              <p className="text-sm text-white">{change.currentValue}</p>
+                              <p className="text-sm text-white/90">{change.currentValue}</p>
                             )}
                           </div>
                         </div>
@@ -370,7 +370,7 @@ export function ExecNarrativeDensityCard({
               {activeSection === 'actions' && (
                 <div className="space-y-2">
                   {density.suggestedActions.length === 0 ? (
-                    <p className="text-sm text-muted text-center py-4">No suggested actions</p>
+                    <p className="text-sm text-white/55 text-center py-4">No suggested actions</p>
                   ) : (
                     density.suggestedActions.map((action) => {
                       const pillar = action.pillar ? pillarColors[action.pillar] : null;
@@ -391,12 +391,12 @@ export function ExecNarrativeDensityCard({
                               </span>
                             )}
                             <span className={`text-sm font-medium ${
-                              action.type === 'primary' ? 'text-brand-cyan' : 'text-white'
+                              action.type === 'primary' ? 'text-brand-cyan' : 'text-white/90'
                             }`}>
                               {action.label}
                             </span>
                           </div>
-                          <svg className="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 text-white/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
                           </svg>
                         </Link>

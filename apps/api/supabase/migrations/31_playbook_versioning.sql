@@ -17,12 +17,6 @@ CREATE TABLE IF NOT EXISTS public.playbook_versions (
   commit_message TEXT,
   created_by UUID REFERENCES public.users(id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org consistency
-  CONSTRAINT fk_playbook_versions_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.playbooks WHERE id = playbook_id)
-  ),
-
   -- Unique version per playbook
   UNIQUE(playbook_id, version)
 );

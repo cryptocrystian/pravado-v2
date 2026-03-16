@@ -1,0 +1,97 @@
+/* ── Editor Canvas — TipTap ProseMirror Styles ───────── */
+
+.editor-canvas .ProseMirror {
+  outline: none;
+  min-height: 400px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.editor-canvas .ProseMirror h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.editor-canvas .ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.editor-canvas .ProseMirror h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.editor-canvas .ProseMirror p {
+  margin-bottom: 1rem;
+}
+
+.editor-canvas .ProseMirror strong {
+  font-weight: 600;
+  color: white;
+}
+
+.editor-canvas .ProseMirror em {
+  font-style: italic;
+}
+
+.editor-canvas .ProseMirror ul,
+.editor-canvas .ProseMirror ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.editor-canvas .ProseMirror li {
+  margin-bottom: 0.25rem;
+}
+
+.editor-canvas .ProseMirror li strong {
+  color: white;
+}
+
+.editor-canvas .ProseMirror blockquote {
+  border-left: 3px solid var(--cc-cyan);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.editor-canvas .ProseMirror hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 2rem 0;
+}
+
+.editor-canvas .ProseMirror code {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 0.15rem 0.3rem;
+  font-size: 0.9em;
+  color: var(--cc-cyan);
+}
+
+.editor-canvas .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+  height: 0;
+}
+
+/* Selection highlight */
+.editor-canvas .ProseMirror ::selection {
+  background: rgba(0, 229, 204, 0.2);
+}

@@ -177,10 +177,10 @@ export function PRContinuityLinks({
 
   if (loading) {
     return (
-      <div className="panel-card p-6 shadow-lg shadow-slate-1/20">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6 shadow-lg shadow-slate-1/20">
         <div className="flex items-center justify-center py-8">
           <div className="w-2 h-2 rounded-full bg-brand-iris animate-pulse" />
-          <span className="ml-3 text-muted">Loading connections...</span>
+          <span className="ml-3 text-white/55">Loading connections...</span>
         </div>
       </div>
     );
@@ -188,9 +188,9 @@ export function PRContinuityLinks({
 
   if (!data) {
     return (
-      <div className="panel-card p-6 shadow-lg shadow-slate-1/20">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6 shadow-lg shadow-slate-1/20">
         <div className="text-center py-8">
-          <p className="text-muted">No pillar connections configured</p>
+          <p className="text-white/55">No pillar connections configured</p>
         </div>
       </div>
     );
@@ -202,10 +202,10 @@ export function PRContinuityLinks({
 
   if (compact) {
     return (
-      <div className="panel-card p-5 shadow-lg shadow-slate-1/20">
+      <div className="bg-panel border border-border-subtle rounded-xl p-5 shadow-lg shadow-slate-1/20">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-white">Cross-Pillar Links</h3>
+            <h3 className="text-sm font-semibold text-white/95">Cross-Pillar Links</h3>
             <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${orchStatus.bg} ${orchStatus.text}`}>
               {orchStatus.icon}
               {data.orchestrationStatus}
@@ -227,7 +227,7 @@ export function PRContinuityLinks({
                   <span className={config.text}>{config.icon}</span>
                   <span className={`w-2 h-2 rounded-full ${status.dot}`} />
                 </div>
-                <p className="text-xs font-medium text-white truncate">{config.label}</p>
+                <p className="text-xs font-medium text-white/90 truncate">{config.label}</p>
                 <p className="text-xs text-slate-10">{conn.signalCount} signals</p>
               </Link>
             );
@@ -238,7 +238,7 @@ export function PRContinuityLinks({
   }
 
   return (
-    <div className="panel-card overflow-hidden shadow-lg shadow-slate-1/20">
+    <div className="bg-panel border border-border-subtle rounded-xl overflow-hidden shadow-lg shadow-slate-1/20">
       {/* Header */}
       <div className="px-6 py-5 border-b border-border-subtle bg-gradient-to-r from-slate-3/50 to-slate-3/30">
         <div className="flex items-center justify-between">
@@ -250,7 +250,7 @@ export function PRContinuityLinks({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-white tracking-tight">Cross-Pillar Intelligence</h2>
+                <h2 className="text-xl font-bold text-white/95 tracking-tight">Cross-Pillar Intelligence</h2>
                 <span className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${orchStatus.bg} ${orchStatus.text}`}>
                   {orchStatus.icon}
                   <span className="capitalize">{data.orchestrationStatus}</span>
@@ -294,7 +294,7 @@ export function PRContinuityLinks({
                   <span className={config.text}>{config.icon}</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">{config.label}</h3>
+                  <h3 className="font-semibold text-white/95">{config.label}</h3>
                   <p className={`text-xs ${influence.color}`}>
                     PR {influence.label.toLowerCase()} this pillar
                   </p>

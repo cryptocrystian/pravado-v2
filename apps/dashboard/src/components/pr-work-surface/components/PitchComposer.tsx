@@ -69,7 +69,7 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-white">Compose Pitch</h3>
+          <h3 className="text-lg font-semibold text-white/95">Compose Pitch</h3>
           {contact && (
             <p className="text-sm text-white/55 mt-0.5">
               To: {contact.name} {contact.outlet && `(${contact.outlet})`}
@@ -109,7 +109,7 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           placeholder="Enter subject line..."
-          className="w-full px-4 py-2 rounded-lg bg-[#0D0D12] border border-[#1A1A24] text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-brand-iris/50"
+          className="w-full px-4 py-2 rounded-lg bg-panel border border-border-subtle text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-brand-iris/50"
         />
       </div>
 
@@ -123,20 +123,20 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
           onChange={(e) => handleBodyChange(e.target.value)}
           placeholder="Write your pitch..."
           rows={10}
-          className="w-full px-4 py-3 rounded-lg bg-[#0D0D12] border border-[#1A1A24] text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-brand-iris/50 resize-none"
+          className="w-full px-4 py-3 rounded-lg bg-panel border border-border-subtle text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-brand-iris/50 resize-none"
         />
       </div>
 
       {/* Personalization Score */}
-      <div className="flex items-center justify-between p-4 rounded-xl bg-[#13131A] border border-[#1A1A24]">
+      <div className="flex items-center justify-between p-4 rounded-xl bg-slate-2 border border-border-subtle">
         <div>
-          <div className="text-sm font-medium text-white">Personalization Score</div>
+          <div className="text-sm font-medium text-white/95">Personalization Score</div>
           <div className="text-xs text-white/55 mt-0.5">
             Higher scores indicate better tailoring to the contact
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="w-24 h-2 rounded-full bg-[#1A1A24] overflow-hidden">
+          <div className="w-24 h-2 rounded-full bg-slate-4 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${
                 personalizationScore >= 80
@@ -178,7 +178,7 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-3 pt-4 border-t border-[#1A1A24]">
+      <div className="flex items-center gap-3 pt-4 border-t border-border-subtle">
         <button
           type="button"
           onClick={handleSaveDraft}
@@ -190,7 +190,7 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
           type="button"
           onClick={handleSend}
           disabled={!subject || !body}
-          className="flex-1 px-4 py-2 text-sm font-medium text-white bg-brand-iris rounded-lg hover:bg-brand-iris/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 px-4 py-2 text-sm font-medium text-white/90 bg-brand-iris rounded-lg hover:bg-brand-iris/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Send Pitch
         </button>

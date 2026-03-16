@@ -63,7 +63,7 @@ export function GraphNodeCard({
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-medium truncate">{node.label}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-white/50">
             {getNodeTypeLabel(node.nodeType)}
           </p>
         </div>
@@ -125,21 +125,21 @@ export function GraphNodeCard({
       </CardHeader>
       <CardContent className="space-y-3">
         {node.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2">
+          <p className="text-sm text-white/50 line-clamp-2">
             {node.description}
           </p>
         )}
 
         {node.tags.length > 0 && (
           <div className="flex items-center gap-2 flex-wrap">
-            <Tag className="h-3 w-3 text-muted-foreground" />
+            <Tag className="h-3 w-3 text-white/50" />
             {node.tags.slice(0, 3).map((tag) => (
               <Badge key={tag} variant="outline" className="text-xs">
                 {tag}
               </Badge>
             ))}
             {node.tags.length > 3 && (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-white/50">
                 +{node.tags.length - 3} more
               </span>
             )}
@@ -149,22 +149,22 @@ export function GraphNodeCard({
         <div className="grid grid-cols-2 gap-2 text-xs">
           {node.degreeCentrality !== null && (
             <div className="flex items-center gap-1">
-              <BarChart3 className="h-3 w-3 text-muted-foreground" />
-              <span className="text-muted-foreground">Degree:</span>
+              <BarChart3 className="h-3 w-3 text-white/50" />
+              <span className="text-white/50">Degree:</span>
               <span>{formatCentrality(node.degreeCentrality)}</span>
             </div>
           )}
           {node.pagerankScore !== null && (
             <div className="flex items-center gap-1">
-              <BarChart3 className="h-3 w-3 text-muted-foreground" />
-              <span className="text-muted-foreground">PageRank:</span>
+              <BarChart3 className="h-3 w-3 text-white/50" />
+              <span className="text-white/50">PageRank:</span>
               <span>{formatCentrality(node.pagerankScore)}</span>
             </div>
           )}
         </div>
 
         {(node.sourceSystem || node.createdAt) && (
-          <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
+          <div className="flex items-center justify-between text-xs text-white/50 pt-2 border-t">
             {node.sourceSystem && (
               <span>Source: {node.sourceSystem}</span>
             )}

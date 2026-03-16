@@ -159,7 +159,7 @@ export default function InsightPanel({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-6 text-muted-foreground text-sm">
+          <div className="text-center py-6 text-white/50 text-sm">
             No insights available yet. Generate the briefing to extract insights from your sources.
           </div>
         </CardContent>
@@ -244,9 +244,9 @@ export default function InsightPanel({
                       </Badge>
                     </div>
                     {isExpanded ? (
-                      <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                      <ChevronUp className="h-4 w-4 text-white/50" />
                     ) : (
-                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      <ChevronDown className="h-4 w-4 text-white/50" />
                     )}
                   </button>
 
@@ -279,11 +279,11 @@ export default function InsightPanel({
                                   <span className="text-xs">
                                     {getSourceTypeIcon(insight.sourceType)}
                                   </span>
-                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                                  <Badge variant="outline" className="text-xs px-1.5 py-0">
                                     {insight.category}
                                   </Badge>
                                   {insight.actionable && (
-                                    <Badge className="text-[10px] px-1.5 py-0 bg-purple-100 text-purple-700">
+                                    <Badge className="text-xs px-1.5 py-0 bg-purple-100 text-purple-700">
                                       Actionable
                                     </Badge>
                                   )}
@@ -292,7 +292,7 @@ export default function InsightPanel({
                                   {insight.title}
                                 </h4>
                               </div>
-                              <div className="text-[10px] text-muted-foreground shrink-0">
+                              <div className="text-xs text-white/50 shrink-0">
                                 {(insight.relevanceScore * 100).toFixed(0)}%
                               </div>
                             </div>
@@ -306,7 +306,7 @@ export default function InsightPanel({
                                   <div className="flex items-start gap-2 bg-white/50 rounded p-2">
                                     <ArrowRight className="h-3 w-3 text-purple-600 mt-0.5 shrink-0" />
                                     <div>
-                                      <span className="text-[10px] font-medium text-purple-700 uppercase">
+                                      <span className="text-[11px] font-medium text-purple-700 uppercase">
                                         Suggested Action
                                       </span>
                                       <p className="text-xs text-gray-700">{insight.suggestedAction}</p>
@@ -349,7 +349,7 @@ export default function InsightPanel({
         </ScrollArea>
 
         {/* Summary Footer */}
-        <div className="px-4 py-2 border-t bg-gray-50 text-xs text-muted-foreground">
+        <div className="px-4 py-2 border-t bg-gray-50 text-xs text-white/50">
           <div className="flex justify-between">
             <span>
               {filteredInsights.filter((i) => i.actionable).length} actionable insights

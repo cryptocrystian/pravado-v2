@@ -106,14 +106,14 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-page/70 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl max-h-[85vh] bg-[#0D0D12] border border-[#1A1A24] rounded-xl shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-2xl max-h-[85vh] bg-slate-1 border border-border-subtle rounded-xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#1A1A24]">
+        <div className="flex items-center justify-between p-4 border-b border-border-subtle">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center">
               <span className="text-xl">📊</span>
@@ -134,7 +134,7 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 p-2 border-b border-[#1A1A24] bg-[#0A0A0F]">
+        <div className="flex gap-1 p-2 border-b border-border-subtle bg-page">
           {(['overview', 'formula', 'improve'] as const).map((tab) => (
             <button
               key={tab}
@@ -143,7 +143,7 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
                 flex-1 px-4 py-2 text-sm font-semibold rounded-lg transition-all
                 ${activeTab === tab
                   ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
-                  : 'text-white/55 hover:text-white/90 hover:bg-[#1A1A24]'
+                  : 'text-white/55 hover:text-white/90 hover:bg-slate-4'
                 }
               `}
             >
@@ -159,7 +159,7 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
           {activeTab === 'overview' && (
             <div className="space-y-4">
               {/* Definition */}
-              <div className="p-4 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+              <div className="p-4 bg-page border border-border-subtle rounded-lg">
                 <h3 className="text-sm font-semibold text-white mb-2">The North Star for Modern PR</h3>
                 <p className="text-sm text-white/70 leading-relaxed">
                   <strong className="text-brand-cyan">EVI (Earned Visibility Index)</strong> is a single score from 0-100
@@ -185,13 +185,13 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
                 <h4 className="text-xs text-white/50 uppercase tracking-wide mb-2">Status Bands</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {statusBands.map((band) => (
-                    <div key={band.label} className="p-3 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+                    <div key={band.label} className="p-3 bg-page border border-border-subtle rounded-lg">
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`w-2 h-2 rounded-full bg-${band.color}`} />
                         <span className="text-sm font-semibold text-white">{band.label}</span>
                         <span className="text-xs text-white/40 ml-auto">{band.range}</span>
                       </div>
-                      <p className="text-[11px] text-white/50">{band.description}</p>
+                      <p className="text-xs text-white/50">{band.description}</p>
                     </div>
                   ))}
                 </div>
@@ -202,9 +202,9 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
           {activeTab === 'formula' && (
             <div className="space-y-4">
               {/* Formula */}
-              <div className="p-4 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+              <div className="p-4 bg-page border border-border-subtle rounded-lg">
                 <h3 className="text-sm font-semibold text-white mb-3">The EVI Formula</h3>
-                <div className="p-4 bg-[#0D0D12] rounded-lg font-mono text-center">
+                <div className="p-4 bg-slate-1 rounded-lg font-mono text-center">
                   <span className="text-brand-cyan">EVI</span>
                   <span className="text-white/50 mx-2">=</span>
                   <span className="text-brand-cyan">Visibility</span>
@@ -231,7 +231,7 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
                           <span className={`text-sm font-semibold text-${config.color}`}>{config.label}</span>
                           <span className="text-xs text-white/40 ml-auto">{config.weight} weight</span>
                         </div>
-                        <p className="text-[11px] text-white/60">{config.description}</p>
+                        <p className="text-xs text-white/60">{config.description}</p>
                       </div>
                     );
                   })}
@@ -239,7 +239,7 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
               </div>
 
               {/* Worked Example */}
-              <div className="p-4 bg-[#0A0A0F] border border-[#1A1A24] rounded-lg">
+              <div className="p-4 bg-page border border-border-subtle rounded-lg">
                 <h3 className="text-sm font-semibold text-white mb-3">Worked Example</h3>
                 <div className="space-y-2 font-mono text-sm">
                   <div className="flex items-center gap-2">
@@ -263,7 +263,7 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
                     <span className="text-white/40">× 0.25 =</span>
                     <span className="text-brand-magenta">{(workedExample.momentum * 0.25).toFixed(1)}</span>
                   </div>
-                  <div className="pt-2 border-t border-[#1A1A24] flex items-center gap-2">
+                  <div className="pt-2 border-t border-border-subtle flex items-center gap-2">
                     <span className="text-white font-semibold">EVI</span>
                     <span className="text-white/40">=</span>
                     <span className="text-brand-cyan">{(workedExample.visibility * 0.4).toFixed(1)}</span>
@@ -325,7 +325,7 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[#1A1A24] bg-[#0A0A0F] flex justify-end">
+        <div className="p-4 border-t border-border-subtle bg-page flex justify-end">
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm font-semibold text-white bg-brand-cyan rounded-lg hover:bg-brand-cyan/90 transition-colors"

@@ -77,15 +77,6 @@ CREATE TABLE IF NOT EXISTS public.pr_list_members (
   journalist_id UUID NOT NULL REFERENCES public.journalists(id) ON DELETE CASCADE,
   added_by UUID REFERENCES public.users(id),
   added_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org consistency
-  CONSTRAINT fk_list_members_list_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.pr_lists WHERE id = list_id)
-  ),
-  CONSTRAINT fk_list_members_journalist_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.journalists WHERE id = journalist_id)
-  ),
-
   -- Prevent duplicate list-journalist pairs
   UNIQUE(list_id, journalist_id)
 );

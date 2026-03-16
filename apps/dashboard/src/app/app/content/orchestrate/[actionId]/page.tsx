@@ -40,7 +40,7 @@ const MOCK_TRIGGER_ACTIONS: Record<string, TriggerAction> = {
   'action-1': {
     id: 'action-1',
     title: 'Execute Brief: AI-Powered Content Creation Guide',
-    type: 'brief_execution',
+    type: 'content_execution',
     sourceContext: {
       briefId: 'brief-1',
       briefTitle: 'AI-Powered Content Creation Guide',

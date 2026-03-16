@@ -29,6 +29,8 @@ Every proposal MUST include:
 - Mode eligibility (manual/copilot/autopilot)
 - Required approvals (by tier/org settings)
 - Trace links to dependencies and expected outcomes
+- `entity_insight` (string, required when proposal is linked to an Entity Map node) — one sentence, max 160 characters, must reference the specific entity and at least one measurable signal. Example: "This journalist covers AI infrastructure at a frequency correlating with your target topics at 3.2×." Generic text that does not reference the specific entity or a measurable signal is a SAGE output quality failure. See Decision D015.
+- `impact_pillars` (string[]) — all pillars impacted beyond the primary pillar (e.g., a SEO action that also improves AEO: `["SEO", "AEO"]`). Required for cross-pillar attribution in Analytics and Entity Map progressive disclosure.
 
 ## Exposure ("E") Requirement
 Exposure is explicitly measured and visible:

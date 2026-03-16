@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tiptap Editor Styles */
+@import '../components/content/editor/editor-styles.css';
+
 /*
  * Pravado Design System v3 — AI-Native Command Center
  * Canonical source: docs/canon/DS_v3_1_EXPRESSION.md
@@ -30,6 +33,7 @@
     /* Brand Accents (DS v3) */
     --brand-iris: #A855F7;
     --brand-cyan: #00D9FF;
+    --brand-violet: #7C3AED;
     --brand-teal: #14B8A6;
     --brand-magenta: #D946EF;
     --brand-amber: #F59E0B;
@@ -51,13 +55,13 @@
     --muted: var(--slate-6);
     --border-subtle: var(--dark-border);
 
-    /* Radii */
+    /* Radii — DS v3.1 (D021: default 8px for professional precision tool feel) */
     --radius-xs: 4px;
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-2xl: 20px;
-    --radius: var(--radius-lg);
+    --radius-sm: 6px;
+    --radius-md: 8px;    /* DEFAULT — cards, inputs, buttons */
+    --radius-lg: 12px;   /* Larger panels, drawers */
+    --radius-2xl: 16px;  /* Modals, large overlays */
+    --radius: var(--radius-md);
 
     /* Elevation/Shadows (DS v3 - subtle, premium) */
     --elev-0: none;
@@ -80,6 +84,11 @@
     --z-modal: 40;
     --z-popover: 50;
     --z-toast: 60;
+
+    /* Command Center surface tokens — DEPRECATED: use bg-page, bg-panel, brand-cyan instead */
+    --cc-page: var(--slate-0);   /* was #0F1117 — now maps to page bg */
+    --cc-surface: var(--slate-2); /* was #1A1D2E — now maps to panel bg */
+    --cc-cyan: #00D9FF;           /* FIXED: was #00E5CC (wrong) — now matches brand-cyan */
 
     /* Data Viz Gridlines */
     --viz-gridline: rgba(234, 242, 247, 0.08);

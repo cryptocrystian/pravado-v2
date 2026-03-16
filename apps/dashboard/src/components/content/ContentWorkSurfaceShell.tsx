@@ -17,10 +17,30 @@
  * @see /docs/canon/DS_v3_1_EXPRESSION.md
  */
 
-import { useState, type ReactNode } from 'react';
-import type { ContentView, AutomationMode } from './types';
+import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
+import type { ContentView, AutomationMode, ContentType, CreationContentType, OutlineSection, EditorInitData } from './types';
+
 import { modeTokens } from './tokens';
-import { ModeSwitcher } from '@/components/shared/ModeSwitcher';
+import { ContentCreationOverlay } from './creation/ContentCreationOverlay';
+import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
+import {
+  ClipboardText,
+  Archive,
+  CalendarBlank,
+  ChartBar,
+  Info,
+  X,
+  Plus,
+  CaretDown,
+  CaretLeft,
+  CaretRight,
+  CheckCircle,
+  Lock,
+  User,
+  Lightning,
+  ClockCounterClockwise,
+  TrendUp,
+} from '@phosphor-icons/react';
 
 // ============================================
 // TYPES
@@ -37,8 +57,28 @@ export interface ContentWorkSurfaceShellProps {
   activeView: ContentView;
   /** View change handler */
   onViewChange: (view: ContentView) => void;
+  /** Current automation mode — affects tab labels and visibility */
+  mode?: AutomationMode;
   /** AI status for header dot */
   aiStatus?: 'idle' | 'analyzing' | 'generating';
+  /** Content creation handler - called when user selects a content type from Create dropdown */
+  onCreateContent?: (contentType: ContentType) => void;
+  /** Mode change handler - called when user selects a mode from mode switcher dropdown */
+  onModeChange?: (mode: AutomationMode) => void;
+  /** Editor mode — suppresses normal chrome bar, shows editor header */
+  isEditorMode?: boolean;
+  /** Current document title in editor (for chrome bar) */
+  editorTitle?: string;
+  /** Live word count from editor */
+  editorWordCount?: number;
+  /** Back from editor to content list */
+  onEditorBack?: () => void;
+  /** Called when creation flow fires "Open in Editor" */
+  onEditorLaunch?: (initData: EditorInitData) => void;
+  /** Registers a callback that the parent can invoke to open the creation overlay.
+   *  stage=2 (default): pre-filled brief form from a SAGE proposal.
+   *  stage=1: fresh overlay, no pre-fill (manual create path). */
+  registerOpenCreation?: (fn: (briefData: Record<string, string>, contentType?: CreationContentType, stage?: 1 | 2) => void) => void;
 }
 
 // ============================================
@@ -56,13 +96,11 @@ interface ViewTabConfig {
 const VIEW_TABS: ViewTabConfig[] = [
   {
     key: 'work-queue',
-    label: 'Work Queue',
-    description: 'Prioritized actions awaiting execution',
+    label: 'Content',
+    description: 'Create and manage your content',
     modeCeiling: 'copilot',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-      </svg>
+      <ClipboardText className="w-4 h-4" weight="regular" />
     ),
   },
   {
@@ -71,9 +109,7 @@ const VIEW_TABS: ViewTabConfig[] = [
     description: 'Content assets and derivatives',
     modeCeiling: 'copilot',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-      </svg>
+      <Archive className="w-4 h-4" weight="regular" />
     ),
   },
   {
@@ -82,9 +118,7 @@ const VIEW_TABS: ViewTabConfig[] = [
     description: 'Publication schedule and deadlines',
     modeCeiling: 'copilot',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
+      <CalendarBlank className="w-4 h-4" weight="regular" />
     ),
   },
   {
@@ -93,9 +127,7 @@ const VIEW_TABS: ViewTabConfig[] = [
     description: 'Performance and recommendations',
     modeCeiling: 'copilot',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
+      <ChartBar className="w-4 h-4" weight="regular" />
     ),
   },
 ];
@@ -106,15 +138,15 @@ const VIEW_TABS: ViewTabConfig[] = [
 
 const PAGE_CONTEXT: Record<ContentView, { purpose: string; aiCapabilities: string[]; manualRequired: string[] }> = {
   'work-queue': {
-    purpose: 'Your execution command center. See the single most important action, approve proposals, and build authority through action.',
+    purpose: 'Create, edit, and manage your content. Write articles, manage status, and track progress.',
     aiCapabilities: [
-      'Prioritize actions by impact and urgency',
+      'Suggest content improvements',
       'Propose next best content action',
-      'Generate execution-ready briefs',
+      'Generate derivative content',
     ],
     manualRequired: [
       'Approving proposed actions',
-      'Executing high-risk content changes',
+      'Publishing content',
     ],
   },
   library: {
@@ -153,6 +185,18 @@ const PAGE_CONTEXT: Record<ContentView, { purpose: string; aiCapabilities: strin
       'Acting on recommendations routes to Library or Briefs',
     ],
   },
+  editor: {
+    purpose: 'Write and refine your content with CiteMind governance and inline AI assistance.',
+    aiCapabilities: [
+      'Suggest improvements inline',
+      'Run CiteMind quality checks',
+      'Generate derivative content',
+    ],
+    manualRequired: [
+      'Writing and editing content',
+      'Publishing final version',
+    ],
+  },
 };
 
 // ============================================
@@ -162,22 +206,16 @@ const PAGE_CONTEXT: Record<ContentView, { purpose: string; aiCapabilities: strin
 function ModeIcon({ mode }: { mode: AutomationMode }) {
   if (mode === 'manual') {
     return (
-      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-      </svg>
+      <Lock className="w-3.5 h-3.5" weight="regular" />
     );
   }
   if (mode === 'copilot') {
     return (
-      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
+      <User className="w-3.5 h-3.5" weight="regular" />
     );
   }
   return (
-    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-    </svg>
+    <Lightning className="w-3.5 h-3.5" weight="regular" />
   );
 }
 
@@ -202,23 +240,21 @@ function ExplainDrawer({ isOpen, onClose, view }: ExplainDrawerProps) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40"
+        className="fixed inset-0 bg-slate-0/80 z-40"
         onClick={onClose}
         onKeyDown={(e) => e.key === 'Escape' && onClose()}
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 bottom-0 w-[400px] max-w-full bg-slate-2 border-l border-border-subtle z-50 shadow-elev-3 overflow-y-auto">
+      <div className="fixed right-0 top-0 bottom-0 w-[400px] max-w-full bg-slate-2 border-l border-slate-4 z-50 shadow-elev-3 overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-slate-2 border-b border-border-subtle px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-slate-2 border-b border-slate-4 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-brand-iris/10">
-              <svg className="w-5 h-5 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <Info className="w-5 h-5 text-brand-iris" weight="regular" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-white">Page Guide</h3>
+              <h3 className="text-sm font-semibold text-white/95">Page Guide</h3>
               <p className="text-xs text-white/50">{viewConfig?.label}</p>
             </div>
           </div>
@@ -227,22 +263,20 @@ function ExplainDrawer({ isOpen, onClose, view }: ExplainDrawerProps) {
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-white/5 transition-colors"
           >
-            <svg className="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="w-5 h-5 text-white/50" weight="regular" />
           </button>
         </div>
 
         <div className="p-6 space-y-6">
           {/* Purpose */}
           <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2">What This Page Is For</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">What This Page Is For</h4>
             <p className="text-sm text-white/85 leading-relaxed">{context.purpose}</p>
           </div>
 
           {/* Mode Ceiling */}
           <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2">Automation Mode</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">Automation Mode</h4>
             <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${modeConfig.bg} ${modeConfig.border}`}>
               <ModeIcon mode={viewConfig?.modeCeiling || 'manual'} />
               <span className={`text-sm font-medium ${modeConfig.text}`}>{modeConfig.label}</span>
@@ -253,13 +287,11 @@ function ExplainDrawer({ isOpen, onClose, view }: ExplainDrawerProps) {
           {/* AI Capabilities */}
           {context.aiCapabilities.length > 0 && (
             <div>
-              <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2">What AI Can Do Here</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">What AI Can Do Here</h4>
               <ul className="space-y-2">
                 {context.aiCapabilities.map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-white/70">
-                    <svg className="w-4 h-4 text-brand-cyan shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <CheckCircle className="w-4 h-4 text-brand-cyan shrink-0 mt-0.5" weight="regular" />
                     {item}
                   </li>
                 ))}
@@ -269,13 +301,11 @@ function ExplainDrawer({ isOpen, onClose, view }: ExplainDrawerProps) {
 
           {/* Manual Required */}
           <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-2">What Requires Your Approval</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">What Requires Your Approval</h4>
             <ul className="space-y-2">
               {context.manualRequired.map((item, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-white/70">
-                  <svg className="w-4 h-4 text-white/40 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
+                  <Lock className="w-4 h-4 text-white/40 shrink-0 mt-0.5" weight="regular" />
                   {item}
                 </li>
               ))}
@@ -297,112 +327,418 @@ export function ContentWorkSurfaceShell({
   showRightRail = false,
   activeView,
   onViewChange,
-  aiStatus = 'idle',
+  mode,
+  onCreateContent: _onCreateContent,
+  onModeChange,
+  isEditorMode = false,
+  editorTitle = '',
+  editorWordCount = 0,
+  onEditorBack,
+  onEditorLaunch,
+  registerOpenCreation,
 }: ContentWorkSurfaceShellProps) {
+  void _onCreateContent; // Preserved for external callers; overlay handles creation now
+  const [evi, setEvi] = useState<{ score: number; delta: number } | null>(null);
+
+  useEffect(() => {
+    fetch('/api/command-center/strategy-panel')
+      .then(r => r.json())
+      .then(d => {
+        if (d.success !== false && d.evi) {
+          setEvi({ score: d.evi.score, delta: d.evi.delta_7d });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const [isExplainOpen, setIsExplainOpen] = useState(false);
   const [rightRailCollapsed, setRightRailCollapsed] = useState(false);
+  const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
+  const modeDropdownRef = useRef<HTMLDivElement>(null);
 
-  const activeViewConfig = VIEW_TABS.find((t) => t.key === activeView);
+  // Creation overlay state
+  const [isCreationOverlayOpen, setIsCreationOverlayOpen] = useState(false);
+  const [creationStage, setCreationStage] = useState<1 | 2 | 3>(1);
+  const [selectedContentType, setSelectedContentType] = useState<CreationContentType | null>(null);
+  const [selectedSageBriefId, setSelectedSageBriefId] = useState<string | null>(null);
+  const [briefFormData, setBriefFormData] = useState<Record<string, string>>({});
+  const [generatedOutline, setGeneratedOutline] = useState<OutlineSection[] | null>(null);
+
+  // Register imperative opener for parent to trigger creation overlay pre-filled
+  useEffect(() => {
+    registerOpenCreation?.((data, contentType, stage = 2) => {
+      setBriefFormData(data);
+      if (contentType) setSelectedContentType(contentType);
+      setCreationStage(stage);
+      setIsCreationOverlayOpen(true);
+    });
+  }, [registerOpenCreation]);
+
+  // Autopilot Activity Log tab tracking
+  const [isActivityLogActive, setIsActivityLogActive] = useState(false);
+
+  useEffect(() => {
+    if (mode !== 'autopilot' || activeView !== 'work-queue') {
+      setIsActivityLogActive(false);
+    }
+  }, [mode, activeView]);
+
+  const isTabActive = (tabKey: string) => {
+    if (mode === 'autopilot' && tabKey === 'work-queue') return activeView === 'work-queue' && !isActivityLogActive;
+    if (tabKey === 'activity-log') return isActivityLogActive;
+    return activeView === tabKey;
+  };
+
+  const handleTabClick = (tabKey: string) => {
+    if (tabKey === 'activity-log') {
+      setIsActivityLogActive(true);
+      onViewChange('work-queue');
+    } else {
+      setIsActivityLogActive(false);
+      onViewChange(tabKey as ContentView);
+    }
+  };
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (modeDropdownRef.current && !modeDropdownRef.current.contains(event.target as Node)) {
+        setIsModeDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const effectiveMode = mode || 'copilot';
+  const currentModeTokens = modeTokens[effectiveMode];
+
+  // Close creation overlay and reset all creation state
+  const closeCreationOverlay = () => {
+    setIsCreationOverlayOpen(false);
+    setCreationStage(1);
+    setSelectedContentType(null);
+    setSelectedSageBriefId(null);
+    setBriefFormData({});
+    setGeneratedOutline(null);
+  };
+
+  const handleLaunchEditor = useCallback(
+    (briefData: Record<string, string>, outline: OutlineSection[] | null) => {
+      const initData: EditorInitData = {
+        title: briefData.title || briefData.topic || 'Untitled',
+        topic: briefData.topic || '',
+        keyword: briefData.targetKeyword || '',
+        audience: briefData.audience || '',
+        tone: briefData.tone || '',
+        contentType: selectedContentType,
+        outline: outline ?? [],
+      };
+      closeCreationOverlay();
+      onEditorLaunch?.(initData);
+    },
+    [selectedContentType, closeCreationOverlay, onEditorLaunch]
+  );
+
+  const createButtonClass = effectiveMode === 'manual'
+    ? "flex items-center gap-2 px-4 py-1.5 bg-brand-iris text-white/95 text-sm font-semibold rounded-lg hover:bg-brand-iris/90 transition-colors shadow-[0_0_16px_rgba(168,85,247,0.25)]"
+    : effectiveMode === 'copilot'
+    ? "flex items-center gap-2 px-3 py-1.5 border border-white/15 text-white/60 text-sm font-medium rounded-lg hover:text-white/80 hover:border-white/25 hover:bg-white/5 transition-all"
+    : "flex items-center gap-2 px-3 py-1.5 text-white/50 text-sm font-medium rounded-lg hover:text-white/70 hover:bg-white/5 transition-all";
 
   // DS v3 palette tokens (per DS_v3_1_EXPRESSION.md)
   // dark-bg: #0A0A0F (slate-0), dark-card: #13131A (slate-2), dark-border: #1F1F28
   return (
-    <div className="min-h-screen bg-slate-0">
-      {/* Header - gradient from slightly elevated to transparent */}
-      {/* Header - full-width shell per Phase 10A width continuity */}
-      <div className="border-b border-[#1A1A24] bg-gradient-to-b from-slate-1 to-transparent">
-        <div className="px-6 pt-6 pb-0">
-          {/* Title Row */}
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex items-start gap-4">
-                {/* Content Pillar Icon */}
-                <div className="p-3 rounded-xl bg-brand-iris/10 ring-1 ring-brand-iris/20 shadow-[0_0_20px_rgba(168,85,247,0.12)]">
-                  <svg className="w-6 h-6 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <div>
-                  <h1 className="text-xl font-semibold text-white tracking-tight">Content Hub</h1>
-                  <p className="text-sm text-white/50 mt-0.5">
-                    Authority-building content orchestration
-                  </p>
-                </div>
+    <div className="h-screen bg-slate-0 flex flex-col overflow-hidden">
+      {/* Global topbar navigation — same as CC/Calendar/Analytics */}
+      <CommandCenterTopbar />
 
-                {/* Mode Switcher - Phase 10A user-controllable mode */}
-                <ModeSwitcher
-                  pillar="content"
-                  ceiling={activeViewConfig?.modeCeiling}
-                />
+      {/* Unified chrome bar — 48px, replaces header + tabs + ImpactStrip */}
+      <div className="flex items-center h-12 px-4 border-b border-border-subtle bg-slate-1 shrink-0 relative z-[60]">
+        {isCreationOverlayOpen ? (
+          <>
+            {/* === CREATION FLOW HEADER — replaces normal chrome bar === */}
 
-                {/* AI Status Pill */}
-                {aiStatus !== 'idle' && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-iris/10 border border-brand-iris/20">
-                    <span className={`w-2 h-2 rounded-full ${aiStatus === 'generating' ? 'bg-brand-iris' : 'bg-brand-cyan'} animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.6)]`} />
-                    <span className="text-xs font-medium text-brand-iris">
-                      {aiStatus === 'generating' ? 'Generating...' : 'Analyzing...'}
-                    </span>
-                  </div>
-                )}
-              </div>
+            {/* Left: back arrow (stages 2+) + title + divider */}
+            {creationStage > 1 && (
+              <button
+                type="button"
+                onClick={() => setCreationStage((creationStage - 1) as 1 | 2 | 3)}
+                className="p-1.5 rounded hover:bg-white/5 text-white/50 hover:text-white/80 transition-colors mr-2"
+              >
+                <CaretLeft className="w-4 h-4" weight="regular" />
+              </button>
+            )}
+            <span className="text-sm font-semibold text-white/90 shrink-0">New Content</span>
+            <div className="w-px h-4 bg-white/10 mx-3 shrink-0" />
 
-              {/* Quick Actions */}
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsExplainOpen(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Explain
-                </button>
-                <button
-                  type="button"
-                  className="flex items-center gap-2 px-4 py-2 bg-brand-iris text-white text-sm font-medium rounded-lg hover:bg-brand-iris/90 transition-colors shadow-[0_0_20px_rgba(168,85,247,0.20)]"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  New Brief
-                </button>
-              </div>
+            {/* Center: step pills */}
+            <div className="flex-1 flex items-center justify-center gap-2">
+              {(['Type', 'Brief', 'Outline'] as const).map((label, i) => {
+                const stepNum = (i + 1) as 1 | 2 | 3;
+                const isActive = stepNum === creationStage;
+                return (
+                  <span
+                    key={label}
+                    className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border transition-colors ${
+                      isActive
+                        ? 'bg-brand-iris/20 text-brand-iris border-brand-iris/30'
+                        : 'bg-white/5 text-white/40 border-white/10'
+                    }`}
+                  >
+                    Step {stepNum}/3
+                  </span>
+                );
+              })}
             </div>
 
-            {/* Tab Navigation - DS3 Styling */}
-            <div className="flex items-center gap-1 -mb-px relative z-10">
-              {VIEW_TABS.map((tab) => (
+            {/* Right: close */}
+            <button
+              type="button"
+              onClick={closeCreationOverlay}
+              className="p-1.5 rounded hover:bg-white/5 text-white/50 hover:text-white/80 transition-colors"
+            >
+              <X className="w-4 h-4" weight="regular" />
+            </button>
+          </>
+        ) : isEditorMode ? (
+          <>
+            {/* === EDITOR CHROME BAR === */}
+
+            {/* Left: back to content */}
+            <button
+              type="button"
+              onClick={onEditorBack}
+              className="flex items-center gap-1.5 text-sm text-white/60 hover:text-white/80 transition-colors"
+            >
+              <CaretLeft className="w-4 h-4" weight="regular" />
+              Content
+            </button>
+            <div className="w-px h-4 bg-white/10 mx-3 shrink-0" />
+
+            {/* Document title */}
+            <span className="text-sm font-medium text-white/85 max-w-[300px] truncate">
+              {editorTitle || 'Untitled'}
+            </span>
+
+            {/* Spacer */}
+            <div className="flex-1" />
+
+            {/* Right: word count + CiteMind + Publish */}
+            <div className="flex items-center gap-3 shrink-0">
+              <span className="text-[13px] text-white/50 tabular-nums">
+                {editorWordCount.toLocaleString()} words
+              </span>
+              <div className="w-px h-4 bg-white/10" />
+              <span className="flex items-center gap-1.5 text-[13px] text-white/50">
+                <span className="w-2 h-2 rounded-full bg-brand-iris" />
+                <span className="tabular-nums">60</span>
+              </span>
+              <div className="w-px h-4 bg-white/10" />
+              <button
+                type="button"
+                className="border border-white/15 text-white/60 text-sm px-3 py-1 rounded-lg hover:border-white/25 hover:bg-white/5 transition-all"
+              >
+                Publish
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* === NORMAL CHROME BAR === */}
+
+            {/* Left cluster: pillar indicator + SAGE tag + divider + tabs */}
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="w-1.5 h-1.5 rounded-full bg-brand-iris" />
+              <span className="text-[12px] font-bold uppercase tracking-widest text-white/40">Content</span>
+            </div>
+            <div className="w-px h-3.5 bg-white/10 mx-3 shrink-0" />
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-brand-iris/8 border border-brand-iris/15 shrink-0">
+              <Lightning className="w-3 h-3 text-brand-iris/70" weight="fill" />
+              <span className="text-[11px] font-semibold text-brand-iris/80 tracking-wide">SAGE ACTIVE</span>
+            </div>
+            <div className="w-px h-4 bg-white/10 mx-3 shrink-0" />
+
+            {/* Tabs — mode-aware per MODE_UX_ARCHITECTURE §5B */}
+            {VIEW_TABS
+              .filter((tab) => {
+                if (mode === 'autopilot' && tab.key === 'insights') return false;
+                if (mode === 'autopilot' && tab.key === 'library') return false;
+                return true;
+              })
+              .map((tab) => {
+                const label = mode === 'autopilot' && tab.key === 'work-queue'
+                  ? 'Exceptions'
+                  : tab.label;
+                const active = isTabActive(tab.key);
+
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleTabClick(tab.key);
+                    }}
+                    className={`group flex items-center gap-1.5 px-3 h-full text-sm font-medium transition-all relative cursor-pointer ${
+                      active
+                        ? 'text-white/95'
+                        : 'text-white/50 hover:text-white/80'
+                    }`}
+                  >
+                    <span className={active ? 'text-brand-iris' : 'text-white/40 group-hover:text-white/60'}>
+                      {tab.icon}
+                    </span>
+                    {label}
+                    {active && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-iris rounded-t shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                    )}
+                  </button>
+                );
+              })}
+            {/* Activity Log tab — Autopilot mode only */}
+            {mode === 'autopilot' && (() => {
+              const active = isTabActive('activity-log');
+              return (
                 <button
-                  key={tab.key}
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    onViewChange(tab.key);
+                    handleTabClick('activity-log');
                   }}
-                  className={`group flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all relative cursor-pointer ${
-                    activeView === tab.key
-                      ? 'text-white'
+                  className={`group flex items-center gap-1.5 px-3 h-full text-sm font-medium transition-all relative cursor-pointer ${
+                    active
+                      ? 'text-white/95'
                       : 'text-white/50 hover:text-white/80'
                   }`}
                 >
-                  <span className={activeView === tab.key ? 'text-brand-iris' : 'text-white/40 group-hover:text-white/60'}>
-                    {tab.icon}
+                  <span className={active ? 'text-brand-iris' : 'text-white/40 group-hover:text-white/60'}>
+                    <ClockCounterClockwise className="w-4 h-4" weight="regular" />
                   </span>
-                  {tab.label}
-                  {activeView === tab.key && (
+                  Activity Log
+                  {active && (
                     <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-iris rounded-t shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
                   )}
                 </button>
-              ))}
+              );
+            })()}
+
+            {/* Spacer */}
+            <div className="flex-1" />
+
+            {/* Right cluster: SAGE + EVI + Mode + Explain + Create */}
+            <div className="flex items-center gap-2 shrink-0">
+              {/* SAGE tag */}
+              <div className="flex items-center gap-1.5">
+                <Lightning className="w-3.5 h-3.5 text-brand-iris shrink-0" weight="fill" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-brand-iris max-w-[200px] truncate">
+                  Content authority gap: AI citation coverage
+                </span>
+              </div>
+              <div className="w-px h-4 bg-white/10" />
+
+              {/* EVI indicator */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mr-1">EVI</span>
+                <span className="text-sm font-bold tabular-nums text-brand-cyan">{(evi?.score ?? 0).toFixed(1)}</span>
+                <span className={`text-xs flex items-center gap-0.5 ${(evi?.delta ?? 0) >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}>
+                  <TrendUp className="w-3 h-3" weight="bold" />
+                  {(evi?.delta ?? 0) >= 0 ? '+' : ''}{(evi?.delta ?? 0).toFixed(1)}
+                </span>
+              </div>
+              <div className="w-px h-4 bg-white/10" />
+
+              {/* Mode switcher badge */}
+              <div className="relative" ref={modeDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsModeDropdownOpen(!isModeDropdownOpen)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded border text-[11px] font-bold uppercase tracking-wider transition-colors ${currentModeTokens.bg} ${currentModeTokens.text} ${currentModeTokens.border}`}
+                >
+                  <ModeIcon mode={effectiveMode} />
+                  {currentModeTokens.label}
+                  <CaretDown className="w-3 h-3" weight="regular" />
+                </button>
+
+                {/* Mode dropdown — opens leftward (right-0) */}
+                {isModeDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-slate-2 border border-slate-4 rounded-lg shadow-elev-3 py-1 z-[200]">
+                    {(['manual', 'copilot', 'autopilot'] as AutomationMode[]).map((m) => {
+                      const tokens = modeTokens[m];
+                      return (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => {
+                            onModeChange?.(m);
+                            setIsModeDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-white/5 transition-colors ${
+                            m === effectiveMode ? tokens.text : 'text-white/70'
+                          }`}
+                        >
+                          <ModeIcon mode={m} />
+                          <span className="font-medium">{tokens.label}</span>
+                          {m === effectiveMode && (
+                            <CheckCircle className="w-4 h-4 ml-auto" weight="fill" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Explain — icon-only ghost button */}
+              <button
+                type="button"
+                onClick={() => setIsExplainOpen(true)}
+                className="p-1.5 rounded hover:bg-white/5 text-white/50 hover:text-white/80 transition-colors"
+              >
+                <Info className="w-4 h-4" weight="regular" />
+              </button>
+
+              {/* Create button — hidden in copilot work-queue (moved to SAGE queue header) */}
+              {!(effectiveMode === 'copilot' && activeView === 'work-queue') && (
+                <button
+                  type="button"
+                  onClick={() => setIsCreationOverlayOpen(true)}
+                  className={createButtonClass}
+                >
+                  <Plus className="w-4 h-4" weight="regular" />
+                  Create
+                </button>
+              )}
             </div>
-        </div>
+          </>
+        )}
       </div>
 
+      {/* Content Creation Overlay — full-screen below chrome bar */}
+      {isCreationOverlayOpen && (
+        <ContentCreationOverlay
+          mode={effectiveMode}
+          stage={creationStage}
+          selectedContentType={selectedContentType}
+          selectedSageBriefId={selectedSageBriefId}
+          briefFormData={briefFormData}
+          generatedOutline={generatedOutline}
+          onStageChange={setCreationStage}
+          onContentTypeSelect={setSelectedContentType}
+          onSageBriefSelect={setSelectedSageBriefId}
+          onBriefFormChange={setBriefFormData}
+          onOutlineReady={setGeneratedOutline}
+          onClose={closeCreationOverlay}
+          onLaunchEditor={handleLaunchEditor}
+        />
+      )}
+
       {/* Content Area with Optional Right Rail */}
-      <div className="flex">
-        {/* Main Content - full-width shell per Phase 10A width continuity */}
-        <div className={`flex-1 px-6 py-6 ${showRightRail && !rightRailCollapsed ? 'lg:pr-0' : ''}`}>
+      <div className="flex-1 flex min-h-0">
+        {/* Main Content - constrained so inner overflow-y-auto scrolls correctly */}
+        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
           {children}
         </div>
 
@@ -410,7 +746,7 @@ export function ContentWorkSurfaceShell({
         {showRightRail && (
           <div
             className={`
-              hidden lg:flex flex-col border-l border-[#1A1A24] bg-slate-0
+              hidden lg:flex flex-col border-l border-border-subtle bg-slate-0
               transition-all duration-300 ease-out shrink-0
               ${rightRailCollapsed ? 'w-12' : 'w-[320px] xl:w-[360px]'}
             `}
@@ -422,27 +758,23 @@ export function ContentWorkSurfaceShell({
                 aria-label="Expand Details Panel"
               >
                 <div className="flex flex-col items-center gap-3">
-                  <svg className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
-                  </svg>
+                  <CaretLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" weight="regular" />
                   <span className="text-[11px] font-medium uppercase tracking-wider [writing-mode:vertical-lr]">Details</span>
                 </div>
               </button>
             ) : (
               <>
-                <div className="flex items-center justify-between px-4 py-3 border-b border-[#1A1A24] bg-gradient-to-r from-slate-1 to-slate-0">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-gradient-to-r from-slate-1 to-slate-0">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-brand-iris/50" />
                     <h2 className="text-sm font-semibold text-white tracking-tight">Asset Details</h2>
                   </div>
                   <button
                     onClick={() => setRightRailCollapsed(true)}
-                    className="p-1.5 text-white/50 hover:text-white hover:bg-[#1A1A24] rounded transition-colors"
+                    className="p-1.5 text-white/50 hover:text-white hover:bg-slate-3 rounded transition-colors"
                     aria-label="Collapse Details Panel"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                    </svg>
+                    <CaretRight className="w-4 h-4" weight="regular" />
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto">

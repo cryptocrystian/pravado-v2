@@ -116,7 +116,7 @@ function SAGETag({ contribution, compact = false }: SAGETagProps) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${config.bgColor} ${config.color} ${
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[13px] font-medium ${config.bgColor} ${config.color} ${
         contribution.isPrimary ? 'ring-1 ring-current/30' : 'opacity-70'
       }`}
       title={`${config.label}${contribution.isPrimary ? ' (Primary)' : ''}`}
@@ -141,7 +141,7 @@ function EVIIndicator({ impact, compact = false }: EVIIndicatorProps) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-white/10 ${directionConfig.color}`}
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[13px] font-medium bg-white/10 ${directionConfig.color}`}
       title={impact.explanation || `${driverConfig.label} ${directionConfig.symbol}`}
     >
       <span className="font-bold">{directionConfig.icon}</span>
@@ -165,7 +165,7 @@ function ModeBadge({ mode, rationale, compact = false }: ModeBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${config.bgColor} ${config.color}`}
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[13px] font-medium ${config.bgColor} ${config.color}`}
       title={rationale || config.description}
     >
       {compact ? config.label.charAt(0) : config.label}

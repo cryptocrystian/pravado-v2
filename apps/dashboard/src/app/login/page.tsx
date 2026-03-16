@@ -9,7 +9,8 @@
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 // SVG Icons for OAuth providers
@@ -50,31 +51,120 @@ const AIPresenceDot = ({ status }: { status: 'idle' | 'analyzing' | 'generating'
 };
 
 // Get the correct redirect URL based on environment
-const getRedirectUrl = () => {
+// OAuth uses /auth/callback (server-side route handler for reliable PKCE exchange)
+// Magic links use /callback (client-side page)
+const getRedirectUrl = (type: 'oauth' | 'magic_link' = 'oauth') => {
+  const path = type === 'oauth' ? '/auth/callback' : '/callback';
+
   if (typeof window === 'undefined') {
-    return 'https://pravado-dashboard.vercel.app/callback';
+    return `https://pravado-dashboard.vercel.app${path}`;
   }
 
-  // Use production URL if on Vercel, otherwise use window.location.origin
   const isProduction = window.location.hostname === 'pravado-dashboard.vercel.app'
     || window.location.hostname.includes('vercel.app');
 
   if (isProduction) {
-    return 'https://pravado-dashboard.vercel.app/callback';
+    return `https://pravado-dashboard.vercel.app${path}`;
   }
 
-  return `${window.location.origin}/callback`;
+  return `${window.location.origin}${path}`;
 };
+
+// Beta invite gating — when true, signup requires a valid invite code
+const BETA_INVITE_REQUIRED = process.env.NEXT_PUBLIC_BETA_INVITE_REQUIRED === 'true';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [inviteValidated, setInviteValidated] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [magicLinkLoading, setMagicLinkLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<'google' | 'microsoft' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+
+  // Session expired detection (S-INT-10)
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams?.get('reason') === 'session_expired') {
+      setMessage('Your session has expired. Please sign in again.');
+    }
+  }, [searchParams]);
+
+  // MFA challenge state (S-INT-10)
+  const [mfaRequired, setMfaRequired] = useState(false);
+  const [mfaFactorId, setMfaFactorId] = useState('');
+  const [mfaCode, setMfaCode] = useState('');
+  const [mfaAttempts, setMfaAttempts] = useState(0);
+  const [mfaLocked, setMfaLocked] = useState(false);
+
+  // Check MFA enrollment after login
+  const checkAndHandleMFA = async (): Promise<boolean> => {
+    const { data, error: mfaErr } = await supabase.auth.mfa.listFactors();
+    if (mfaErr || !data) return false;
+
+    const verifiedFactors = (data.totp ?? []).filter(
+      (f: { status: string }) => f.status === 'verified'
+    );
+
+    if (verifiedFactors.length > 0) {
+      setMfaFactorId(verifiedFactors[0].id);
+      setMfaRequired(true);
+      return true;
+    }
+    return false;
+  };
+
+  // Handle MFA verification
+  const handleMFAVerify = async () => {
+    if (mfaCode.length !== 6) {
+      setError('Enter a 6-digit code');
+      return;
+    }
+
+    if (mfaLocked) {
+      setError('Too many attempts. Please wait 30 minutes and try again.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data: challenge, error: challengeErr } = await supabase.auth.mfa.challenge({
+        factorId: mfaFactorId,
+      });
+      if (challengeErr) throw challengeErr;
+
+      const { error: verifyErr } = await supabase.auth.mfa.verify({
+        factorId: mfaFactorId,
+        challengeId: challenge.id,
+        code: mfaCode,
+      });
+
+      if (verifyErr) {
+        const newAttempts = mfaAttempts + 1;
+        setMfaAttempts(newAttempts);
+        if (newAttempts >= 5) {
+          setMfaLocked(true);
+          setError('Too many failed attempts. Account locked for 30 minutes.');
+          setTimeout(() => setMfaLocked(false), 30 * 60 * 1000);
+        } else {
+          setError(`Incorrect code. ${5 - newAttempts} attempts remaining.`);
+        }
+        return;
+      }
+
+      // MFA verified, proceed to app
+      window.location.href = '/app';
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Verification failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,15 +174,47 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
+        // Validate invite code if beta gating is enabled
+        if (BETA_INVITE_REQUIRED && !inviteValidated) {
+          if (!inviteCode.trim()) {
+            setError('Invite code required for beta access');
+            setLoading(false);
+            return;
+          }
+
+          const validateRes = await fetch('/api/beta/validate-invite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ inviteCode: inviteCode.trim() }),
+          });
+          const validateData = await validateRes.json();
+
+          if (!validateData.success) {
+            setError(validateData.error?.message || 'Invalid invite code');
+            setLoading(false);
+            return;
+          }
+          setInviteValidated(true);
+        }
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: getRedirectUrl(),
+            emailRedirectTo: getRedirectUrl('magic_link'),
           },
         });
 
         if (error) throw error;
+
+        // Mark invite code as used after successful signup
+        if (BETA_INVITE_REQUIRED && inviteCode.trim()) {
+          fetch('/api/beta/mark-used', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ inviteCode: inviteCode.trim() }),
+          }).catch(() => { /* non-critical */ });
+        }
 
         setMessage('Check your email for the confirmation link!');
       } else {
@@ -104,9 +226,12 @@ export default function LoginPage() {
         if (error) throw error;
 
         if (data.session) {
-          // Session established by Supabase SDK - redirect to app
-          // The callback page will handle org check and proper routing
-          window.location.href = '/app';
+          // Check if MFA is enrolled — if so, show challenge before proceeding
+          const hasMFA = await checkAndHandleMFA();
+          if (!hasMFA) {
+            window.location.href = '/app';
+          }
+          // If hasMFA is true, the MFA challenge UI will be shown
         }
       }
     } catch (err) {
@@ -128,11 +253,11 @@ export default function LoginPage() {
       // Clear any stale session first to prevent cookie conflicts
       await supabase.auth.signOut();
 
-      // Use signInWithOAuth with automatic redirect (more reliable)
+      // Use signInWithOAuth — server-side route handler for reliable PKCE exchange
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: getRedirectUrl(),
+          redirectTo: getRedirectUrl('oauth'),
         },
       });
 
@@ -171,7 +296,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: getRedirectUrl(),
+          emailRedirectTo: getRedirectUrl('magic_link'),
         },
       });
 
@@ -197,7 +322,67 @@ export default function LoginPage() {
       />
 
       <div className="relative w-full max-w-md">
-        {/* Auth Card */}
+        {/* MFA Challenge Card — shown when MFA is required after login */}
+        {mfaRequired ? (
+          <div className="auth-card p-8 space-y-6">
+            <div className="text-center space-y-2">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <span className="text-2xl font-bold text-gradient-hero">Pravado</span>
+              </div>
+              <h1 className="text-xl font-semibold text-white">Two-Factor Authentication</h1>
+              <p className="text-sm text-muted">
+                Enter the 6-digit code from your authenticator app
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={mfaCode}
+                onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
+                className="input-field text-center font-mono tracking-[0.3em] text-lg"
+                placeholder="000000"
+                autoFocus
+                onKeyDown={(e) => { if (e.key === 'Enter') handleMFAVerify(); }}
+              />
+
+              {error && (
+                <div className="alert-error"><p>{error}</p></div>
+              )}
+
+              <button
+                onClick={handleMFAVerify}
+                disabled={loading || mfaCode.length !== 6 || mfaLocked}
+                className="btn-primary w-full py-3"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <AIPresenceDot status="analyzing" />
+                    <span>Verifying...</span>
+                  </span>
+                ) : 'Verify'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMfaRequired(false);
+                  setMfaCode('');
+                  setMfaAttempts(0);
+                  setError(null);
+                  supabase.auth.signOut();
+                }}
+                className="text-sm w-full text-center transition-colors"
+                style={{ color: '#3D3D4A' }}
+              >
+                Sign in with a different account
+              </button>
+            </div>
+          </div>
+        ) : (
+        /* Auth Card */
         <div className="auth-card p-8 space-y-8">
           {/* Header */}
           <div className="text-center space-y-2">
@@ -293,6 +478,32 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                 />
               </div>
+
+              {/* Beta invite code field — only shown during signup when gating is enabled */}
+              {isSignUp && BETA_INVITE_REQUIRED && (
+                <div>
+                  <label htmlFor="invite-code" className="block text-sm font-medium text-white mb-1.5">
+                    Invite code
+                  </label>
+                  <input
+                    id="invite-code"
+                    name="invite-code"
+                    type="text"
+                    required
+                    value={inviteCode}
+                    onChange={(e) => {
+                      setInviteCode(e.target.value.toUpperCase());
+                      setInviteValidated(false);
+                    }}
+                    className="input-field font-mono tracking-wider"
+                    placeholder="PRAVADO-XXXXXXXX"
+                  />
+                  <p className="text-xs mt-1" style={{ color: '#3D3D4A' }}>
+                    Don&apos;t have a code?{' '}
+                    <a href="/beta" className="hover:underline" style={{ color: '#00D9FF' }}>Request beta access</a>
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Error Message */}
@@ -380,6 +591,7 @@ export default function LoginPage() {
             </div>
           </form>
         </div>
+        )}
 
         {/* Footer (DS v3) */}
         <p className="mt-6 text-center text-xs" style={{ color: '#3D3D4A' }}>

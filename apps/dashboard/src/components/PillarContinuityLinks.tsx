@@ -96,7 +96,7 @@ export function PillarContinuityLinks({
 
         return (
           <div key={idx} className="flex items-center gap-1.5">
-            {showLabels && <span className="text-[10px] text-slate-6 uppercase">{roleLabels[link.role]}</span>}
+            {showLabels && <span className="text-xs text-white/55 uppercase">{roleLabels[link.role]}</span>}
             <Link
               href={href}
               className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium border transition-all hover:shadow-sm ${meta.bgColor} ${meta.color} ${meta.borderColor}`}

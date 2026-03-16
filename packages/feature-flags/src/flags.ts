@@ -137,6 +137,33 @@ export const FLAGS = {
 
   // Insight Conflict Resolution Engine flags (S74)
   ENABLE_INSIGHT_CONFLICTS: true, // S74: Autonomous insight conflict resolution engine
+
+  // EVI (Earned Visibility Index) flags (S-INT-01)
+  ENABLE_EVI: true, // S-INT-01: EVI calculation pipeline & snapshot history
+
+  // SAGE Signal Intelligence flags (S-INT-02)
+  ENABLE_SAGE_SIGNALS: true, // S-INT-02: SAGE signal ingestion pipeline & opportunity scorer
+
+  // SAGE Proposals flags (S-INT-03)
+  SAGE_PROPOSALS_ENABLED: true, // S-INT-03: SAGE proposal generator + Command Center real data
+
+  // CiteMind Quality Scoring flags (S-INT-04)
+  ENABLE_CITEMIND: true, // S-INT-04: CiteMind quality scorer, publish gate, schema generator
+
+  // GSC Integration flags (S-INT-06)
+  ENABLE_GSC_INTEGRATION: true, // S-INT-06: Google Search Console OAuth + keyword sync
+
+  // Journalist Enrichment flags (S-INT-06)
+  ENABLE_JOURNALIST_ENRICHMENT: true, // S-INT-06: Hunter.io journalist enrichment + discovery
+
+  // Onboarding Activation flags (S-INT-07)
+  ENABLE_ONBOARDING_V3: true, // S-INT-07: Activation-critical 7-step onboarding with SAGE activation
+
+  // Beta Invite Gating flags (S-INT-09)
+  BETA_INVITE_REQUIRED: true, // S-INT-09: Require invite code for new signups during beta launch
+
+  // Editor v2 flags
+  ENABLE_EDITOR_V2: true, // Editor v2: callout blocks, paste sanitization, inline link editing, block affordances
 } as const;
 
 export type FlagName = keyof typeof FLAGS;

@@ -17,12 +17,6 @@ CREATE TABLE IF NOT EXISTS public.playbook_branches (
   created_by UUID REFERENCES public.users(id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org consistency
-  CONSTRAINT fk_playbook_branches_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.playbooks WHERE id = playbook_id)
-  ),
-
   -- Unique branch name per playbook
   UNIQUE(playbook_id, name)
 );
@@ -82,12 +76,6 @@ CREATE TABLE IF NOT EXISTS public.playbook_commits (
   merge_parent_commit_id UUID REFERENCES public.playbook_commits(id) ON DELETE SET NULL,
   created_by UUID REFERENCES public.users(id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org consistency
-  CONSTRAINT fk_playbook_commits_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.playbooks WHERE id = playbook_id)
-  ),
-
   -- Unique version per branch
   UNIQUE(branch_id, version)
 );

@@ -22,7 +22,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "clean": "turbo clean && rm -rf node_modules",
-    "clean:workspaces": "turbo clean"
+    "clean:workspaces": "turbo clean",
+    "lint:ds": "node scripts/lint-typography.js",
+    "lint:ds:all": "node scripts/lint-typography.js --all",
+    "lint:ds:report": "node scripts/lint-typography.js --fix-report"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

@@ -168,10 +168,10 @@ export function ExecDecisionPanel({
 
   if (loading) {
     return (
-      <div className="panel-card p-6">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6">
         <div className="flex items-center justify-center py-12">
           <AIDot status="analyzing" />
-          <span className="ml-3 text-muted">Analyzing decisions...</span>
+          <span className="ml-3 text-white/55">Analyzing decisions...</span>
         </div>
       </div>
     );
@@ -179,15 +179,15 @@ export function ExecDecisionPanel({
 
   if (!data || data.decisions.length === 0) {
     return (
-      <div className="panel-card p-6">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6">
         <div className="text-center py-8">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-4/50 flex items-center justify-center">
-            <svg className="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-white/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             </svg>
           </div>
-          <p className="text-muted">No pending decisions</p>
-          <p className="text-sm text-slate-6 mt-1">All decisions have been resolved</p>
+          <p className="text-white/55">No pending decisions</p>
+          <p className="text-sm text-white/55 mt-1">All decisions have been resolved</p>
         </div>
       </div>
     );
@@ -214,7 +214,7 @@ export function ExecDecisionPanel({
   };
 
   return (
-    <div className="panel-card overflow-hidden shadow-lg shadow-slate-1/20">
+    <div className="bg-panel border border-border-subtle rounded-xl overflow-hidden shadow-lg shadow-slate-1/20">
       {/* Header - Enhanced visual hierarchy */}
       <div className="px-6 py-5 border-b border-border-subtle bg-gradient-to-r from-slate-3/50 to-slate-3/30">
         <div className="flex items-center justify-between">
@@ -226,7 +226,7 @@ export function ExecDecisionPanel({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-white tracking-tight">Decision Readiness</h2>
+                <h2 className="text-xl font-bold text-white/95 tracking-tight">Decision Readiness</h2>
                 <AIDot status="idle" size="md" />
               </div>
               <p className="text-sm text-slate-10 mt-0.5">
@@ -283,13 +283,13 @@ export function ExecDecisionPanel({
       {/* Decisions List - Enhanced spacing */}
       <div className="p-5 max-h-[520px] overflow-y-auto space-y-4">
         {filteredDecisions.length === 0 ? (
-          <div className="text-center py-12 text-muted">
+          <div className="text-center py-12 text-white/55">
             <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-slate-4/50 flex items-center justify-center">
               <svg className="w-6 h-6 text-slate-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
-            <p className="font-medium text-white">No Matching Decisions</p>
+            <p className="font-medium text-white/95">No Matching Decisions</p>
             <p className="text-sm text-slate-10 mt-1">No decisions match the selected filter</p>
           </div>
         ) : (
@@ -348,7 +348,7 @@ export function ExecDecisionPanel({
                       </div>
 
                       {/* Title - Enhanced typography */}
-                      <h4 className="font-semibold text-white text-base leading-snug">{decision.title}</h4>
+                      <h4 className="font-semibold text-white/95 text-base leading-snug">{decision.title}</h4>
 
                       {/* Dependencies Progress - Enhanced visual */}
                       {totalDeps > 0 && (
@@ -399,17 +399,17 @@ export function ExecDecisionPanel({
                             AI Recommendation ({decision.recommendation.confidence}% confidence)
                           </span>
                         </div>
-                        <p className="text-sm font-medium text-white mb-2">
+                        <p className="text-sm font-medium text-white/90 mb-2">
                           {decision.recommendation.option}
                         </p>
-                        <p className="text-sm text-muted">{decision.recommendation.rationale}</p>
+                        <p className="text-sm text-white/55">{decision.recommendation.rationale}</p>
 
                         {/* Benefits & Risks */}
                         <div className="grid grid-cols-2 gap-3 mt-3">
                           {decision.recommendation.benefits.length > 0 && (
                             <div>
                               <p className="text-xs font-medium text-semantic-success mb-1">Benefits</p>
-                              <ul className="text-xs text-muted space-y-1">
+                              <ul className="text-xs text-white/55 space-y-1">
                                 {decision.recommendation.benefits.map((b, i) => (
                                   <li key={i} className="flex items-start gap-1">
                                     <span className="text-semantic-success">+</span>
@@ -422,7 +422,7 @@ export function ExecDecisionPanel({
                           {decision.recommendation.risks.length > 0 && (
                             <div>
                               <p className="text-xs font-medium text-semantic-danger mb-1">Risks</p>
-                              <ul className="text-xs text-muted space-y-1">
+                              <ul className="text-xs text-white/55 space-y-1">
                                 {decision.recommendation.risks.map((r, i) => (
                                   <li key={i} className="flex items-start gap-1">
                                     <span className="text-semantic-danger">-</span>
@@ -439,7 +439,7 @@ export function ExecDecisionPanel({
                     {/* Dependencies */}
                     {decision.dependencies.length > 0 && (
                       <div>
-                        <p className="text-xs font-medium text-muted mb-2">Dependencies</p>
+                        <p className="text-xs font-medium text-white/55 mb-2">Dependencies</p>
                         <div className="space-y-2">
                           {decision.dependencies.map((dep) => (
                             <div
@@ -450,11 +450,11 @@ export function ExecDecisionPanel({
                                   : 'bg-slate-4/30 border border-border-subtle'
                               }`}
                             >
-                              <span className={`text-xs ${dep.satisfied ? 'text-semantic-success' : 'text-slate-6'}`}>
+                              <span className={`text-xs ${dep.satisfied ? 'text-semantic-success' : 'text-white/55'}`}>
                                 {dep.satisfied ? '✓' : '○'}
                               </span>
-                              <span className="text-xs text-muted flex-1">{dep.description}</span>
-                              <span className="text-xs text-slate-6 capitalize">{dep.type}</span>
+                              <span className="text-xs text-white/55 flex-1">{dep.description}</span>
+                              <span className="text-xs text-white/55 capitalize">{dep.type}</span>
                             </div>
                           ))}
                         </div>
@@ -482,7 +482,7 @@ export function ExecDecisionPanel({
                       {onDefer && (
                         <button
                           onClick={() => onDefer(decision.id)}
-                          className="px-4 py-2 text-sm font-medium text-muted hover:text-white hover:bg-slate-4/50 rounded-lg transition-colors"
+                          className="px-4 py-2 text-sm font-medium text-white/55 hover:text-white/90 hover:bg-slate-4/50 rounded-lg transition-colors"
                         >
                           Defer
                         </button>

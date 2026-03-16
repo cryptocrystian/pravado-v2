@@ -58,7 +58,7 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
           </div>
           {insights.mediaPerformance.topMentions.length > 0 && (
             <div className="mt-4">
-              <p className="text-xs text-muted-foreground mb-2">Top Outlets</p>
+              <p className="text-xs text-white/50 mb-2">Top Outlets</p>
               <div className="flex flex-wrap gap-2">
                 {insights.mediaPerformance.topMentions.slice(0, 5).map((m, i) => (
                   <Badge key={i} variant="secondary">
@@ -87,12 +87,12 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
           </div>
           {insights.competitiveIntel.topCompetitors.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs text-muted-foreground">Share of Voice</p>
+              <p className="text-xs text-white/50">Share of Voice</p>
               {insights.competitiveIntel.topCompetitors.slice(0, 4).map((c, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <span className="text-sm min-w-[100px] truncate">{c.name}</span>
                   <Progress value={c.shareOfVoice} className="flex-1" />
-                  <span className="text-xs text-muted-foreground w-10 text-right">
+                  <span className="text-xs text-white/50 w-10 text-right">
                     {c.shareOfVoice}%
                   </span>
                 </div>
@@ -101,7 +101,7 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
           )}
           {insights.competitiveIntel.strengthsVsCompetitors.length > 0 && (
             <div className="mt-4">
-              <p className="text-xs text-muted-foreground mb-2">Strengths</p>
+              <p className="text-xs text-white/50 mb-2">Strengths</p>
               <ul className="text-sm space-y-1">
                 {insights.competitiveIntel.strengthsVsCompetitors.slice(0, 3).map((s, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -136,7 +136,7 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
           </div>
           {insights.crisisStatus.riskFactors.length > 0 && (
             <div>
-              <p className="text-xs text-muted-foreground mb-2">Risk Factors</p>
+              <p className="text-xs text-white/50 mb-2">Risk Factors</p>
               <div className="flex flex-wrap gap-2">
                 {insights.crisisStatus.riskFactors.slice(0, 5).map((r, i) => (
                   <Badge key={i} variant="outline" className="text-orange-600">
@@ -174,7 +174,7 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
           </div>
           {insights.brandHealth.reputationRisks.length > 0 && (
             <div>
-              <p className="text-xs text-muted-foreground mb-2">Reputation Risks</p>
+              <p className="text-xs text-white/50 mb-2">Reputation Risks</p>
               <ul className="text-sm space-y-1">
                 {insights.brandHealth.reputationRisks.slice(0, 3).map((r, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -214,7 +214,7 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
           />
           {insights.governance.upcomingDeadlines.length > 0 && (
             <div className="mt-4">
-              <p className="text-xs text-muted-foreground mb-2">Upcoming Deadlines</p>
+              <p className="text-xs text-white/50 mb-2">Upcoming Deadlines</p>
               <ul className="text-sm space-y-1">
                 {insights.governance.upcomingDeadlines.slice(0, 3).map((d, i) => (
                   <li key={i} className="flex items-center justify-between">
@@ -296,7 +296,7 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
       {/* Empty state */}
       {Object.keys(insights).length === 0 && (
         <Card>
-          <CardContent className="py-8 text-center text-muted-foreground">
+          <CardContent className="py-8 text-center text-white/50">
             <p>No insights available yet.</p>
             <p className="text-sm">Generate the report to aggregate insights from all systems.</p>
           </CardContent>
@@ -351,10 +351,10 @@ function MetricItem({ label, value, isScore, warning }: MetricItemProps) {
 
   return (
     <div>
-      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-xs text-white/50">{label}</p>
       <p className={`text-xl font-bold ${colorClass}`}>
         {displayValue}
-        {isScore && <span className="text-sm text-muted-foreground">/100</span>}
+        {isScore && <span className="text-sm text-white/50">/100</span>}
       </p>
     </div>
   );

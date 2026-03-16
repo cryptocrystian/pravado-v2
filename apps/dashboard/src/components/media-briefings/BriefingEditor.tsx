@@ -159,7 +159,7 @@ export default function BriefingEditor({
                 value={editSubtitle}
                 onChange={(e) => setEditSubtitle(e.target.value)}
                 placeholder="Subtitle (optional)"
-                className="text-sm text-muted-foreground"
+                className="text-sm text-white/50"
               />
               <div className="flex gap-2">
                 <Button size="sm" onClick={handleSaveTitle} disabled={!editTitle.trim()}>
@@ -180,7 +180,7 @@ export default function BriefingEditor({
                 <h1 className="text-2xl font-bold truncate">{briefing.title}</h1>
               </div>
               {briefing.subtitle && (
-                <p className="text-muted-foreground truncate">{briefing.subtitle}</p>
+                <p className="text-white/50 truncate">{briefing.subtitle}</p>
               )}
             </div>
           )}
@@ -256,7 +256,7 @@ export default function BriefingEditor({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <div className="flex items-center gap-2 text-white/50 mb-1">
               <Layers className="h-4 w-4" />
               <span className="text-xs">Sections</span>
             </div>
@@ -266,7 +266,7 @@ export default function BriefingEditor({
 
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <div className="flex items-center gap-2 text-white/50 mb-1">
               <MessageSquare className="h-4 w-4" />
               <span className="text-xs">Talking Points</span>
             </div>
@@ -281,7 +281,7 @@ export default function BriefingEditor({
 
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <div className="flex items-center gap-2 text-white/50 mb-1">
               <FileText className="h-4 w-4" />
               <span className="text-xs">Confidence</span>
             </div>
@@ -293,7 +293,7 @@ export default function BriefingEditor({
 
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <div className="flex items-center gap-2 text-white/50 mb-1">
               <Sparkles className="h-4 w-4" />
               <span className="text-xs">Tokens Used</span>
             </div>
@@ -303,7 +303,7 @@ export default function BriefingEditor({
       </div>
 
       {/* Metadata Row */}
-      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-4 text-sm text-white/50">
         <span>Format: {getFormatLabel(briefing.format)}</span>
         <span className="text-gray-300">|</span>
         <span>Tone: <span className="capitalize">{briefing.tone}</span></span>
@@ -338,7 +338,7 @@ export default function BriefingEditor({
         <TabsContent value="sections" className="space-y-4 mt-4">
           {sections.length === 0 ? (
             <Card>
-              <CardContent className="py-8 text-center text-muted-foreground">
+              <CardContent className="py-8 text-center text-white/50">
                 No sections generated yet.
                 {briefing.status === 'draft' && onGenerateBriefing && (
                   <Button variant="link" onClick={onGenerateBriefing} className="ml-1">
@@ -374,7 +374,7 @@ export default function BriefingEditor({
 
           {talkingPoints.length === 0 ? (
             <Card>
-              <CardContent className="py-8 text-center text-muted-foreground">
+              <CardContent className="py-8 text-center text-white/50">
                 No talking points generated yet.
                 {onGenerateTalkingPoints && (
                   <Button variant="link" onClick={() => onGenerateTalkingPoints()} className="ml-1">
@@ -387,7 +387,7 @@ export default function BriefingEditor({
             Object.entries(groupedTalkingPoints).map(([category, points]) => (
               <div key={category} className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-medium text-muted-foreground">
+                  <h4 className="text-sm font-medium text-white/50">
                     {getTalkingPointCategoryLabel(category as TalkingPointCategory)}
                   </h4>
                   <Badge variant="secondary" className="text-xs">
@@ -429,7 +429,7 @@ export default function BriefingEditor({
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-sm text-muted-foreground">No focus areas specified</span>
+                    <span className="text-sm text-white/50">No focus areas specified</span>
                   )}
                 </div>
               </div>
@@ -447,7 +447,7 @@ export default function BriefingEditor({
                     ))}
                   </ul>
                 ) : (
-                  <span className="text-sm text-muted-foreground">No key messages specified</span>
+                  <span className="text-sm text-white/50">No key messages specified</span>
                 )}
               </div>
 
@@ -462,7 +462,7 @@ export default function BriefingEditor({
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-sm text-muted-foreground">No exclusions specified</span>
+                    <span className="text-sm text-white/50">No exclusions specified</span>
                   )}
                 </div>
               </div>
@@ -471,25 +471,25 @@ export default function BriefingEditor({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h4 className="text-sm font-medium mb-1">Journalists</h4>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-white/50">
                     {briefing.journalistIds.length} linked
                   </span>
                 </div>
                 <div>
                   <h4 className="text-sm font-medium mb-1">Personas</h4>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-white/50">
                     {briefing.personaIds.length} linked
                   </span>
                 </div>
                 <div>
                   <h4 className="text-sm font-medium mb-1">Competitors</h4>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-white/50">
                     {briefing.competitorIds.length} linked
                   </span>
                 </div>
                 <div>
                   <h4 className="text-sm font-medium mb-1">Press Releases</h4>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-white/50">
                     {briefing.pressReleaseIds.length} linked
                   </span>
                 </div>
@@ -499,7 +499,7 @@ export default function BriefingEditor({
               {briefing.customInstructions && (
                 <div>
                   <h4 className="text-sm font-medium mb-2">Custom Instructions</h4>
-                  <p className="text-sm text-muted-foreground bg-gray-50 p-3 rounded">
+                  <p className="text-sm text-white/50 bg-gray-50 p-3 rounded">
                     {briefing.customInstructions}
                   </p>
                 </div>
@@ -507,7 +507,7 @@ export default function BriefingEditor({
 
               {/* Generation Info */}
               {briefing.llmModel && (
-                <div className="pt-4 border-t text-xs text-muted-foreground">
+                <div className="pt-4 border-t text-xs text-white/50">
                   <span>Model: {briefing.llmModel}</span>
                   {briefing.llmTemperature && (
                     <span className="ml-4">Temperature: {briefing.llmTemperature}</span>

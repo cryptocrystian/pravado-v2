@@ -95,7 +95,7 @@ export default function CrisisIncidentCard({
               <CardTitle className="text-lg truncate">{incident.title}</CardTitle>
             </div>
             {incident.incidentCode && (
-              <p className="text-xs text-muted-foreground font-mono">
+              <p className="text-xs text-white/50 font-mono">
                 {incident.incidentCode}
               </p>
             )}
@@ -148,14 +148,14 @@ export default function CrisisIncidentCard({
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-3 gap-3 py-2 border-t border-b">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-muted-foreground">
+            <div className="flex items-center justify-center gap-1 text-white/50">
               <Activity className="h-3 w-3" />
               <span className="text-xs">Mentions</span>
             </div>
             <div className="text-lg font-semibold">{incident.mentionCount}</div>
           </div>
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-muted-foreground">
+            <div className="flex items-center justify-center gap-1 text-white/50">
               <Users className="h-3 w-3" />
               <span className="text-xs">Reach</span>
             </div>
@@ -164,7 +164,7 @@ export default function CrisisIncidentCard({
             </div>
           </div>
           <div className="text-center">
-            <div className="text-xs text-muted-foreground">Sentiment</div>
+            <div className="text-xs text-white/50">Sentiment</div>
             <div
               className={cn(
                 'text-lg font-semibold',
@@ -202,7 +202,7 @@ export default function CrisisIncidentCard({
               </Badge>
             ))}
             {incident.keywords.length > 4 && (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-white/50">
                 +{incident.keywords.length - 4} more
               </span>
             )}
@@ -236,7 +236,7 @@ export default function CrisisIncidentCard({
 
         {/* Actions */}
         <div className="flex items-center justify-between pt-2 border-t">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1 text-xs text-white/50">
             <Clock className="h-3 w-3" />
             {formatTimeAgo(incident.firstDetectedAt)}
           </div>

@@ -1,5 +1,9 @@
 # PRAVADO v2 — CANON INDEX
-Version: v1.8
+Version: v1.9
+
+> **CONFLICT RESOLUTION RULE:** When two canon files disagree, the higher priority file wins. Priority order: PRODUCT_CONSTITUTION → SAGE/AUTOMATE → DS v3 → UX Flows/Modes → UX Surfaces → V1 Freeze Contracts (per surface) → Plans/Limits → contracts/*. Full chain documented in `/CLAUDE.md`.
+
+> **SUPERSEDED FILES:** Files marked ~~strikethrough~~ or **SUPERSEDED** below have been archived to `docs/_archive/canon-superseded/`. They are non-authoritative. Do not implement from them.
 
 ## Purpose
 This index lists every canonical file that must exist, what it's for, and its category.
@@ -54,18 +58,22 @@ These files define WHAT Pravado is and HOW it should work:
 | `CORE_UX_FLOWS.md` | The 7 canonical user flows |
 | `DS_v3_PRINCIPLES.md` | Design system principles |
 | `DS_v3_1_EXPRESSION.md` | Design tokens and expression |
-| `AUTOMATION_MODES_UX.md` | Manual/Copilot/Autopilot UX patterns |
+| `DS_v3_COMPLIANCE_CHECKLIST.md` | **Pre-commit self-check, banned token list, pass/fail criteria** — Read before any UI work |
+| `AUTOMATION_MODES_UX.md` | Manual/Copilot/Autopilot UX patterns (thin summary) |
 | `AUTOMATION_MODE_CONTRACTS_CANON.md` | Mode semantic + behavioral contracts (authority boundaries) |
+| `MODE_UX_ARCHITECTURE.md` | **Governance system, component contracts, layout-switching logic, ModeSwitcher spec** |
 | `AI_VISUAL_COMMUNICATION_CANON.md` | AI state, confidence, and motion principles |
-| `CONTENT_MODE_UX_THESIS.md` | ~~User mental models~~ **SUPERSEDED** |
-| `EDITOR_IDENTITY_CANON.md` | ~~Editor boundaries~~ **SUPERSEDED** |
-| `INFORMATION_DENSITY_HIERARCHY_CANON.md` | ~~Typography, density~~ **SUPERSEDED** |
-| `ACTION_GRAVITY_CTA_CANON.md` | ~~CTA placement~~ **SUPERSEDED** |
-| `EDITOR_ACTION_PERSISTENCE_CANON.md` | ~~Action persistence~~ **SUPERSEDED** |
+| ~~`CONTENT_MODE_UX_THESIS.md`~~ | ~~User mental models~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
+| ~~`EDITOR_IDENTITY_CANON.md`~~ | ~~Editor boundaries~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
+| ~~`INFORMATION_DENSITY_HIERARCHY_CANON.md`~~ | ~~Typography, density~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
+| ~~`ACTION_GRAVITY_CTA_CANON.md`~~ | ~~CTA placement~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
+| ~~`EDITOR_ACTION_PERSISTENCE_CANON.md`~~ | ~~Action persistence~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
 | `PLANS_LIMITS_ENTITLEMENTS.md` | Pricing tiers and limits |
 | `PR_PILLAR_MODEL.md` | PR pillar operating model (Influence Orchestration) |
 | `CONTENT_PILLAR_CANON.md` | Authoritative specification for Content work surface |
 | `CONTENT_PILLAR_SYSTEM.md` | Content pillar system model (objects, views, agents, playbooks) |
+| `SEO_AEO_CONTINUITY_ADDENDUM.md` | SEO/AEO invariants and forbidden patterns (v0.1 — extended by SEO_AEO_PILLAR_CANON) |
+| `SEO_AEO_PILLAR_CANON.md` | **Full SEO/AEO pillar spec** — Three-layer model, AEO score, Share of Model, CiteMind integration, competitive position, work surface definition |
 
 ### Work Surfaces (Product Canon)
 
@@ -76,7 +84,7 @@ These files define layout and interaction patterns specific to work surfaces:
 | `work/WORK_SURFACE_CONTRACT.md` | **AUTHORITATIVE** - Consolidated work surface requirements |
 | `work/WORK_SURFACE_QA_GATE.md` | **AUTHORITATIVE** - Pass/fail verification checks |
 | `work/CONTENT_WORK_SURFACE_RECONSTRUCTION.md` | Content work surface reconstruction from canon sources |
-| `work/EDITOR_FOCUS_LAYOUT_CANON.md` | ~~Focus layout~~ **SUPERSEDED** |
+| ~~`work/EDITOR_FOCUS_LAYOUT_CANON.md`~~ | ~~Focus layout~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
 
 > **Note:** `WORK_SURFACE_CONTRACT.md` consolidates and supersedes multiple micro-canons.
 > See the contract for the list of superseded documents.

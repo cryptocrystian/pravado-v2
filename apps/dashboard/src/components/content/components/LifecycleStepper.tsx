@@ -162,7 +162,7 @@ function ModeBadge({ mode, compact = false }: { mode: AutomationMode; compact?: 
   const config = modeTokens[mode];
   return (
     <span
-      className={`inline-flex items-center gap-1 ${compact ? 'px-1.5 py-0.5 text-[9px]' : 'px-2 py-0.5 text-[10px]'} font-medium rounded-full ${config.bg} ${config.text} border ${config.border}`}
+      className={`inline-flex items-center gap-1 ${compact ? 'px-1.5 py-0.5 text-xs' : 'px-2 py-0.5 text-xs'} font-medium rounded-full ${config.bg} ${config.text} border ${config.border}`}
       title={config.description}
     >
       {mode === 'manual' && (
@@ -197,7 +197,7 @@ function ModeCeilingIndicator({ ceiling, currentMode }: { ceiling: AutomationMod
 
   if (isAboveCeiling) {
     return (
-      <span className="text-[9px] text-semantic-warning flex items-center gap-1">
+      <span className="text-xs text-semantic-warning flex items-center gap-1">
         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
         </svg>
@@ -247,12 +247,12 @@ export function LifecycleStepper({
           <ModeBadge mode={effectiveMode} compact />
         </div>
         {isBlocked && (
-          <span className="px-2 py-0.5 text-[10px] font-medium text-semantic-danger bg-semantic-danger/10 border border-semantic-danger/20 rounded-full">
+          <span className="px-2 py-0.5 text-xs font-medium text-semantic-danger bg-semantic-danger/10 border border-semantic-danger/20 rounded-full">
             Blocked
           </span>
         )}
         {needsAck && (
-          <span className="px-2 py-0.5 text-[10px] font-medium text-semantic-warning bg-semantic-warning/10 border border-semantic-warning/20 rounded-full">
+          <span className="px-2 py-0.5 text-xs font-medium text-semantic-warning bg-semantic-warning/10 border border-semantic-warning/20 rounded-full">
             Acknowledge warnings
           </span>
         )}
@@ -260,7 +260,7 @@ export function LifecycleStepper({
 
       {/* Mode-aware description */}
       {!compact && currentStep && (
-        <p className={`text-[10px] ${text.hint} mb-3`}>
+        <p className={`text-xs ${text.hint} mb-3`}>
           {currentStep.modeDescriptions[effectiveMode]}
         </p>
       )}
@@ -312,7 +312,7 @@ export function LifecycleStepper({
                     <p className={`text-xs font-medium ${isCurrent ? 'text-brand-iris' : isFuture ? text.hint : text.primary}`}>
                       {step.label}
                     </p>
-                    <p className={`text-[10px] ${text.hint} hidden sm:block`}>
+                    <p className={`text-xs ${text.hint} hidden sm:block`}>
                       {step.description}
                     </p>
                   </div>
@@ -360,12 +360,12 @@ export function LifecycleStepper({
           </button>
 
           {isBlocked && (
-            <p className={`text-[10px] text-semantic-danger text-center mt-2`}>
+            <p className={`text-xs text-semantic-danger text-center mt-2`}>
               Resolve CiteMind issues to proceed
             </p>
           )}
           {needsAck && (
-            <p className={`text-[10px] text-semantic-warning text-center mt-2`}>
+            <p className={`text-xs text-semantic-warning text-center mt-2`}>
               Acknowledge warnings to proceed
             </p>
           )}

@@ -132,7 +132,7 @@ export function EdgeInspectorDrawer({
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <Loader2 className="h-8 w-8 animate-spin text-white/50" />
           </div>
         ) : data ? (
           <div className="space-y-6 mt-6">
@@ -188,7 +188,7 @@ export function EdgeInspectorDrawer({
                     onClick={() => onNavigateToNode?.(data.sourceNode.id)}
                   >
                     <p className="font-medium truncate">{data.sourceNode.label}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-white/50">
                       {getNodeTypeLabel(data.sourceNode.nodeType)}
                     </p>
                   </div>
@@ -198,7 +198,7 @@ export function EdgeInspectorDrawer({
                     onClick={() => onNavigateToNode?.(data.targetNode.id)}
                   >
                     <p className="font-medium truncate">{data.targetNode.label}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-white/50">
                       {getNodeTypeLabel(data.targetNode.nodeType)}
                     </p>
                   </div>
@@ -208,7 +208,7 @@ export function EdgeInspectorDrawer({
 
             {/* Description */}
             <div>
-              <Label className="text-sm text-muted-foreground">Description</Label>
+              <Label className="text-sm text-white/50">Description</Label>
               {editMode ? (
                 <Textarea
                   value={formData.description}
@@ -227,7 +227,7 @@ export function EdgeInspectorDrawer({
             {/* Weight */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label className="text-sm text-muted-foreground flex items-center gap-1">
+                <Label className="text-sm text-white/50 flex items-center gap-1">
                   <Scale className="h-3 w-3" />
                   Weight
                 </Label>
@@ -271,7 +271,7 @@ export function EdgeInspectorDrawer({
             <div className="space-y-4 pt-4 border-t">
               {data.edge.sourceSystem && (
                 <div>
-                  <Label className="text-sm text-muted-foreground">Source System</Label>
+                  <Label className="text-sm text-white/50">Source System</Label>
                   <p className="text-sm mt-1">
                     {data.edge.sourceSystem}
                     {data.edge.inferenceMethod && ` (${data.edge.inferenceMethod})`}
@@ -281,7 +281,7 @@ export function EdgeInspectorDrawer({
 
               {data.edge.confidenceScore != null && (
                 <div>
-                  <Label className="text-sm text-muted-foreground">Confidence Score</Label>
+                  <Label className="text-sm text-white/50">Confidence Score</Label>
                   <p className="text-sm mt-1">
                     {((data.edge.confidenceScore ?? 0) * 100).toFixed(1)}%
                   </p>
@@ -290,11 +290,11 @@ export function EdgeInspectorDrawer({
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <Label className="text-muted-foreground">Created</Label>
+                  <Label className="text-white/50">Created</Label>
                   <p>{new Date(data.edge.createdAt).toLocaleString()}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Updated</Label>
+                  <Label className="text-white/50">Updated</Label>
                   <p>{new Date(data.edge.updatedAt).toLocaleString()}</p>
                 </div>
               </div>
@@ -302,7 +302,7 @@ export function EdgeInspectorDrawer({
           </div>
         ) : (
           <div className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground">Edge not found</p>
+            <p className="text-white/50">Edge not found</p>
           </div>
         )}
       </SheetContent>

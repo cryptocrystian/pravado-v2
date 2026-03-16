@@ -93,10 +93,10 @@ export function GraphMetricsPanel({ metrics, isLoading }: GraphMetricsPanelProps
             <div key={metric.label} className="p-3 bg-muted rounded-lg">
               <div className="flex items-center gap-2 mb-1">
                 <metric.icon className={`h-4 w-4 ${metric.color}`} />
-                <span className="text-sm text-muted-foreground">{metric.label}</span>
+                <span className="text-sm text-white/50">{metric.label}</span>
               </div>
               <p className="text-2xl font-bold">{metric.value}</p>
-              <p className="text-xs text-muted-foreground">{metric.subvalue}</p>
+              <p className="text-xs text-white/50">{metric.subvalue}</p>
             </div>
           ))}
         </div>
@@ -122,7 +122,7 @@ export function GraphMetricsPanel({ metrics, isLoading }: GraphMetricsPanelProps
             <div className="space-y-2">
               {metrics.topNodesByPagerank.slice(0, 5).map((node, index) => (
                 <div key={node.nodeId} className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground w-4">{index + 1}.</span>
+                  <span className="text-xs text-white/50 w-4">{index + 1}.</span>
                   <span className="flex-1 truncate text-sm">{node.label}</span>
                   <span className="text-xs font-medium">
                     {formatCentrality(node.pagerank)}
@@ -144,7 +144,7 @@ export function GraphMetricsPanel({ metrics, isLoading }: GraphMetricsPanelProps
                 .map(([type, count]) => (
                   <div key={type} className="flex items-center gap-2">
                     <span className="flex-1 text-sm truncate">{type}</span>
-                    <span className="text-xs text-muted-foreground">{count}</span>
+                    <span className="text-xs text-white/50">{count}</span>
                     <div className="w-16">
                       <Progress
                         value={(count / metrics.totalNodes) * 100}
@@ -168,7 +168,7 @@ export function GraphMetricsPanel({ metrics, isLoading }: GraphMetricsPanelProps
                 .map(([type, count]) => (
                   <div key={type} className="flex items-center gap-2">
                     <span className="flex-1 text-sm truncate">{type}</span>
-                    <span className="text-xs text-muted-foreground">{count}</span>
+                    <span className="text-xs text-white/50">{count}</span>
                     <div className="w-16">
                       <Progress
                         value={(count / metrics.totalEdges) * 100}
@@ -183,7 +183,7 @@ export function GraphMetricsPanel({ metrics, isLoading }: GraphMetricsPanelProps
 
         {/* Last Computed */}
         {metrics.computedAt && (
-          <p className="text-xs text-muted-foreground text-center pt-2 border-t">
+          <p className="text-xs text-white/50 text-center pt-2 border-t">
             Last computed: {new Date(metrics.computedAt).toLocaleString()}
           </p>
         )}

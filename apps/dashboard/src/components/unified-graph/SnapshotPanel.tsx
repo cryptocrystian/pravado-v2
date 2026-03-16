@@ -162,13 +162,13 @@ export function SnapshotPanel({ onSelect }: SnapshotPanelProps) {
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <Loader2 className="h-6 w-6 animate-spin text-white/50" />
           </div>
         ) : snapshots.length === 0 ? (
           <div className="text-center py-8">
-            <Camera className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-            <p className="text-muted-foreground">No snapshots yet</p>
-            <p className="text-sm text-muted-foreground mt-1">
+            <Camera className="h-12 w-12 mx-auto text-white/50 mb-2" />
+            <p className="text-white/50">No snapshots yet</p>
+            <p className="text-sm text-white/50 mt-1">
               Create a snapshot to capture the current graph state
             </p>
           </div>
@@ -190,11 +190,11 @@ export function SnapshotPanel({ onSelect }: SnapshotPanelProps) {
                     </Badge>
                   </div>
                   {snapshot.description && (
-                    <p className="text-sm text-muted-foreground truncate">
+                    <p className="text-sm text-white/50 truncate">
                       {snapshot.description}
                     </p>
                   )}
-                  <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-4 mt-2 text-xs text-white/50">
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {new Date(snapshot.createdAt).toLocaleDateString()}

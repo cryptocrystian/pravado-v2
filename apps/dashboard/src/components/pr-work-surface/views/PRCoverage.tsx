@@ -163,7 +163,7 @@ function TierBadge({ tier }: { tier: OutletTier }) {
 
   const { color, label } = config[tier];
   return (
-    <span className={`px-2 py-0.5 text-[11px] font-bold uppercase rounded ${color}`}>
+    <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${color}`}>
       {label}
     </span>
   );
@@ -206,7 +206,7 @@ function SentimentBadge({ sentiment, compact = false }: { sentiment: Sentiment; 
   }
 
   return (
-    <span className={`flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded ${bg} ${color}`}>
+    <span className={`flex items-center gap-1 px-2 py-0.5 text-[13px] font-medium rounded ${bg} ${color}`}>
       <span>{icon}</span>
       {label}
     </span>
@@ -215,7 +215,7 @@ function SentimentBadge({ sentiment, compact = false }: { sentiment: Sentiment; 
 
 function AICitationBadge() {
   return (
-    <span className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold uppercase rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30">
+    <span className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30">
       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>
@@ -243,9 +243,9 @@ function StatCard({
 }) {
   const accentStyles = {
     neutral: {
-      bg: 'bg-[#13131A]',
-      border: 'border-[#1A1A24]',
-      value: 'text-white',
+      bg: 'bg-slate-2',
+      border: 'border-border-subtle',
+      value: 'text-white/95',
     },
     cyan: {
       bg: 'bg-brand-cyan/5',
@@ -277,7 +277,7 @@ function StatCard({
         <div>
           <div className={`text-2xl font-bold ${style.value}`}>{value}</div>
           <div className="text-xs text-white/55 mt-1">{label}</div>
-          {subtext && <div className="text-[10px] text-white/40 mt-0.5">{subtext}</div>}
+          {subtext && <div className="text-[13px] text-white/40 mt-0.5">{subtext}</div>}
         </div>
         {icon && <div className="text-white/30">{icon}</div>}
       </div>
@@ -317,16 +317,16 @@ function TierDistributionBar({ coverage }: { coverage: Coverage[] }) {
   ] as const;
 
   return (
-    <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+    <div className="p-4 rounded-xl bg-panel border border-border-subtle">
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">
           Tier Distribution
         </span>
-        <span className="text-[10px] text-white/50">{coverage.length} placements</span>
+        <span className="text-[13px] text-white/50">{coverage.length} placements</span>
       </div>
 
       {/* Stacked bar */}
-      <div className="h-3 rounded-full bg-[#1A1A24] overflow-hidden flex">
+      <div className="h-3 rounded-full bg-slate-4 overflow-hidden flex">
         {tierConfig.map((tier) => {
           const pct = distribution[tier.key].pct;
           if (pct === 0) return null;
@@ -349,7 +349,7 @@ function TierDistributionBar({ coverage }: { coverage: Coverage[] }) {
           return (
             <div key={tier.key} className="flex items-center gap-1.5">
               <div className={`w-2 h-2 rounded-sm ${tier.color}`} />
-              <span className="text-[11px] text-white/60">
+              <span className="text-[13px] text-white/60">
                 {tier.label} <span className="text-white/40">({data.count})</span>
               </span>
             </div>
@@ -380,7 +380,7 @@ function SentimentSummary({ coverage }: { coverage: Coverage[] }) {
   }, [coverage]);
 
   return (
-    <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+    <div className="p-4 rounded-xl bg-panel border border-border-subtle">
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">
           Sentiment Analysis
@@ -390,42 +390,42 @@ function SentimentSummary({ coverage }: { coverage: Coverage[] }) {
       <div className="space-y-2">
         {/* Positive */}
         <div className="flex items-center gap-3">
-          <span className="w-16 text-[11px] text-semantic-success font-medium">Positive</span>
-          <div className="flex-1 h-2 rounded-full bg-[#1A1A24] overflow-hidden">
+          <span className="w-16 text-[13px] text-semantic-success font-medium">Positive</span>
+          <div className="flex-1 h-2 rounded-full bg-slate-4 overflow-hidden">
             <div
               className="h-full bg-semantic-success transition-all duration-300"
               style={{ width: `${sentiment.positive.pct}%` }}
             />
           </div>
-          <span className="w-8 text-right text-[11px] text-white/50">
+          <span className="w-8 text-right text-[13px] text-white/50">
             {sentiment.positive.count}
           </span>
         </div>
 
         {/* Neutral */}
         <div className="flex items-center gap-3">
-          <span className="w-16 text-[11px] text-white/60 font-medium">Neutral</span>
-          <div className="flex-1 h-2 rounded-full bg-[#1A1A24] overflow-hidden">
+          <span className="w-16 text-[13px] text-white/60 font-medium">Neutral</span>
+          <div className="flex-1 h-2 rounded-full bg-slate-4 overflow-hidden">
             <div
               className="h-full bg-white/40 transition-all duration-300"
               style={{ width: `${sentiment.neutral.pct}%` }}
             />
           </div>
-          <span className="w-8 text-right text-[11px] text-white/50">
+          <span className="w-8 text-right text-[13px] text-white/50">
             {sentiment.neutral.count}
           </span>
         </div>
 
         {/* Negative */}
         <div className="flex items-center gap-3">
-          <span className="w-16 text-[11px] text-semantic-danger font-medium">Negative</span>
-          <div className="flex-1 h-2 rounded-full bg-[#1A1A24] overflow-hidden">
+          <span className="w-16 text-[13px] text-semantic-danger font-medium">Negative</span>
+          <div className="flex-1 h-2 rounded-full bg-slate-4 overflow-hidden">
             <div
               className="h-full bg-semantic-danger transition-all duration-300"
               style={{ width: `${sentiment.negative.pct}%` }}
             />
           </div>
-          <span className="w-8 text-right text-[11px] text-white/50">
+          <span className="w-8 text-right text-[13px] text-white/50">
             {sentiment.negative.count}
           </span>
         </div>
@@ -456,7 +456,7 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
   const totalAICitations = Object.values(pulse.aiCitations).reduce((a, b) => a + b, 0);
 
   return (
-    <div className={`p-5 rounded-xl bg-[#0D0D12] border border-brand-cyan/20 ${glowEffects.seo}`}>
+    <div className={`p-5 rounded-xl bg-panel border border-brand-cyan/20 ${glowEffects.seo}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -466,11 +466,11 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
             </svg>
           </div>
           <div>
-            <span className="text-sm font-semibold text-white">CiteMind Pulse</span>
-            <span className="text-[10px] text-white/40 ml-2">AI Visibility Health</span>
+            <span className="text-sm font-semibold text-white/95">CiteMind Pulse</span>
+            <span className="text-[13px] text-white/40 ml-2">AI Visibility Health</span>
           </div>
         </div>
-        <span className="text-[10px] text-white/40">
+        <span className="text-[13px] text-white/40">
           Last scan: {new Date(pulse.lastScan).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
       </div>
@@ -482,43 +482,43 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
             <path
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               fill="none"
-              stroke="#1A1A24"
+              stroke="#1F1F28"
               strokeWidth="3"
             />
             <path
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               fill="none"
-              stroke="#00d9ff"
+              stroke="currentColor"
               strokeWidth="3"
               strokeDasharray={`${pulse.score}, 100`}
-              className="transition-all duration-500"
+              className="text-brand-cyan transition-all duration-500"
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-xl font-bold text-brand-cyan">{pulse.score}</span>
-            <span className="text-[9px] text-white/40">/ 100</span>
+            <span className="text-[13px] text-white/40">/ 100</span>
           </div>
         </div>
 
         <div className="flex-1 space-y-2">
           {/* Trend */}
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-white/55">Trend</span>
-            <span className={`flex items-center gap-1 text-[11px] font-medium ${trend.color}`}>
+            <span className="text-[13px] text-white/55">Trend</span>
+            <span className={`flex items-center gap-1 text-[13px] font-medium ${trend.color}`}>
               {trend.icon} {trend.label}
             </span>
           </div>
           {/* Velocity */}
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-white/55">Velocity</span>
-            <span className="text-[11px] text-white/70 font-medium">
+            <span className="text-[13px] text-white/55">Velocity</span>
+            <span className="text-[13px] text-white/70 font-medium">
               {pulse.citationVelocity}/day
             </span>
           </div>
           {/* Drift Risk */}
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-white/55">Drift Risk</span>
-            <span className={`px-1.5 py-0.5 text-[10px] font-bold uppercase rounded ${drift.bg} ${drift.color}`}>
+            <span className="text-[13px] text-white/55">Drift Risk</span>
+            <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${drift.bg} ${drift.color}`}>
               {drift.label}
             </span>
           </div>
@@ -526,12 +526,12 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
       </div>
 
       {/* AI Citation Breakdown */}
-      <div className="pt-3 border-t border-[#1A1A24]">
+      <div className="pt-3 border-t border-border-subtle">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-white/50">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
             AI Citations by Model
           </span>
-          <span className="text-[11px] text-brand-cyan font-medium">{totalAICitations} total</span>
+          <span className="text-[13px] text-brand-cyan font-medium">{totalAICitations} total</span>
         </div>
         <div className="grid grid-cols-5 gap-2">
           {[
@@ -545,7 +545,7 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
               <div className="text-sm font-semibold text-white/90">
                 {pulse.aiCitations[model.key as keyof typeof pulse.aiCitations]}
               </div>
-              <div className="text-[9px] text-white/40 truncate">{model.label}</div>
+              <div className="text-[13px] text-white/40 truncate">{model.label}</div>
             </div>
           ))}
         </div>
@@ -567,17 +567,17 @@ function CoverageTimeline({ coverage }: { coverage: Coverage[] }) {
   const recentCoverage = sortedCoverage.slice(0, 5);
 
   return (
-    <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+    <div className="p-4 rounded-xl bg-panel border border-border-subtle">
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">
           Recent Coverage
         </span>
-        <span className="text-[10px] text-white/50">Last 30 days</span>
+        <span className="text-[13px] text-white/50">Last 30 days</span>
       </div>
 
       <div className="relative">
         {/* Timeline line */}
-        <div className="absolute left-3 top-0 bottom-0 w-px bg-[#1A1A24]" />
+        <div className="absolute left-3 top-0 bottom-0 w-px bg-slate-4" />
 
         <div className="space-y-4">
           {recentCoverage.map((item, idx) => {
@@ -594,7 +594,7 @@ function CoverageTimeline({ coverage }: { coverage: Coverage[] }) {
                       ? 'bg-brand-magenta border-brand-magenta/50'
                       : item.citationDetected
                         ? 'bg-brand-cyan border-brand-cyan/50'
-                        : 'bg-[#1A1A24] border-[#2A2A36]'
+                        : 'bg-slate-4 border-slate-5'
                   }`}
                 />
 
@@ -606,8 +606,8 @@ function CoverageTimeline({ coverage }: { coverage: Coverage[] }) {
                     </div>
                     <p className="text-sm text-white/85 truncate">{item.headline}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[11px] text-brand-cyan">{item.outlet}</span>
-                      <span className="text-[11px] text-white/40">
+                      <span className="text-[13px] text-brand-cyan">{item.outlet}</span>
+                      <span className="text-[13px] text-white/40">
                         {daysDiff === 0 ? 'Today' : daysDiff === 1 ? 'Yesterday' : `${daysDiff}d ago`}
                       </span>
                     </div>
@@ -636,7 +636,7 @@ function CoverageTableRow({ item }: { item: Coverage }) {
 
   return (
     <div
-      className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-[#0A0A0F] hover:bg-[#111116] border border-transparent hover:border-[#1A1A24] transition-all duration-200"
+      className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-slate-1 hover:bg-slate-2 border border-transparent hover:border-border-subtle transition-all duration-200"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -663,20 +663,20 @@ function CoverageTableRow({ item }: { item: Coverage }) {
       {/* Citation Indicator */}
       <div className="w-24 shrink-0 flex justify-center">
         {item.citationDetected ? (
-          <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-brand-cyan/15 text-brand-cyan">
+          <span className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded bg-brand-cyan/15 text-brand-cyan">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
             Cited
           </span>
         ) : (
-          <span className="text-[10px] text-white/30">—</span>
+          <span className="text-[13px] text-white/30">—</span>
         )}
       </div>
 
       {/* Date */}
       <div className="w-20 shrink-0 text-right">
-        <span className="text-[11px] text-white/50">{dateLabel}</span>
+        <span className="text-[13px] text-white/50">{dateLabel}</span>
       </div>
 
       {/* Hover Action: View Article */}
@@ -685,7 +685,7 @@ function CoverageTableRow({ item }: { item: Coverage }) {
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
-          className={`flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all duration-200 ${
+          className={`flex items-center gap-1 px-2.5 py-1.5 text-[13px] font-medium rounded-lg transition-all duration-200 ${
             isHovered
               ? 'bg-brand-magenta/15 text-brand-magenta opacity-100'
               : 'opacity-0 text-white/50'
@@ -709,7 +709,7 @@ function CoverageTable({ coverage }: { coverage: Coverage[] }) {
   return (
     <div className="space-y-1">
       {/* Table Header */}
-      <div className="flex items-center gap-4 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-white/40">
+      <div className="flex items-center gap-4 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-white/40">
         <div className="w-8 shrink-0"></div>
         <div className="w-16 shrink-0">Tier</div>
         <div className="w-28 shrink-0">Outlet</div>
@@ -733,8 +733,8 @@ function CoverageTable({ coverage }: { coverage: Coverage[] }) {
 
 function EmptyState() {
   return (
-    <div className="p-12 text-center rounded-xl border border-dashed border-[#2A2A36] bg-[#0D0D12]/50">
-      <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[#13131A] flex items-center justify-center">
+    <div className="p-12 text-center rounded-xl border border-dashed border-slate-5 bg-panel/50">
+      <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-slate-2 flex items-center justify-center">
         <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
         </svg>
@@ -775,7 +775,7 @@ export function PRCoverage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-white">Coverage Tracking</h2>
+          <h2 className="text-base font-semibold text-white/95">Coverage Tracking</h2>
           <p className="text-xs text-white/40 mt-0.5">See the impact of your media efforts</p>
         </div>
         <button
@@ -854,7 +854,7 @@ export function PRCoverage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-1 border-b border-[#1A1A24] pb-px">
+      <div className="flex items-center gap-1 border-b border-border-subtle pb-px">
         {[
           { id: 'all', label: 'All Coverage', count: coverage.length },
           { id: 'citations', label: 'AI Citations', count: stats.aiCitations },
@@ -866,12 +866,12 @@ export function PRCoverage() {
             onClick={() => setFilter(tab.id as 'all' | 'citations' | 't1')}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors relative ${
               filter === tab.id
-                ? 'text-white'
+                ? 'text-white/95'
                 : 'text-white/55 hover:text-white/80'
             }`}
           >
             {tab.label}
-            <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+            <span className={`text-[13px] px-1.5 py-0.5 rounded ${
               filter === tab.id
                 ? 'bg-brand-magenta/15 text-brand-magenta'
                 : 'bg-white/10 text-white/50'
@@ -886,7 +886,7 @@ export function PRCoverage() {
       </div>
 
       {/* Coverage List (Tabular with aligned columns) */}
-      <div className="rounded-xl border border-[#1A1A24] bg-[#0D0D12] p-2">
+      <div className="rounded-xl border border-border-subtle bg-panel p-2">
         {filteredCoverage.length > 0 ? (
           <CoverageTable coverage={filteredCoverage} />
         ) : (

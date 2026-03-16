@@ -99,11 +99,11 @@ function CiteMindFlowVisual() {
         {steps.map((step, index) => (
           <div key={step.label} className="flex items-center gap-2">
             <div className="flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-[#13131A] border border-brand-cyan/30 flex items-center justify-center text-lg">
+              <div className="w-10 h-10 rounded-full bg-slate-2 border border-brand-cyan/30 flex items-center justify-center text-lg">
                 {step.icon}
               </div>
-              <span className="text-xs text-white font-medium mt-1">{step.label}</span>
-              <span className="text-[10px] text-white/55 text-center max-w-[80px]">{step.description}</span>
+              <span className="text-xs text-white/95 font-medium mt-1">{step.label}</span>
+              <span className="text-[13px] text-white/55 text-center max-w-[80px]">{step.description}</span>
             </div>
             {index < steps.length - 1 && (
               <svg className="w-6 h-6 text-brand-cyan/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,10 +125,10 @@ function TrackExplainer({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0A0A0F]/80 backdrop-blur-sm">
-      <div className="w-full max-w-2xl p-6 rounded-2xl bg-[#0D0D12] border border-[#1A1A24] shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-page/70 backdrop-blur-sm">
+      <div className="w-full max-w-2xl p-6 rounded-2xl bg-panel border border-border-subtle shadow-2xl">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-white">Why Choose Each Track?</h3>
+          <h3 className="text-lg font-semibold text-white/95">Why Choose Each Track?</h3>
           <button
             type="button"
             onClick={onClose}
@@ -154,7 +154,7 @@ function TrackExplainer({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               markup to help AI systems understand and cite your content.
             </p>
             <div className="space-y-2">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-white/50">Best For:</div>
+              <div className="text-[11px] font-bold uppercase tracking-wider text-white/50">Best For:</div>
               <ul className="space-y-1 text-xs text-white/55">
                 <li className="flex items-center gap-2">
                   <svg className="w-3 h-3 text-brand-cyan" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
@@ -177,7 +177,7 @@ function TrackExplainer({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           </div>
 
           {/* Legacy Wire Track */}
-          <div className="p-4 rounded-xl bg-[#13131A] border border-[#1A1A24]">
+          <div className="p-4 rounded-xl bg-slate-2 border border-border-subtle">
             <div className="flex items-center gap-2 mb-3">
               <span className="px-2 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30">
                 Add-on
@@ -189,7 +189,7 @@ function TrackExplainer({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               and regulatory compliance scenarios.
             </p>
             <div className="space-y-2">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-white/50">Best For:</div>
+              <div className="text-[11px] font-bold uppercase tracking-wider text-white/50">Best For:</div>
               <ul className="space-y-1 text-xs text-white/55">
                 <li className="flex items-center gap-2">
                   <svg className="w-3 h-3 text-semantic-warning" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
@@ -300,7 +300,7 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-white">Distribution Channels</h3>
+          <h3 className="text-lg font-semibold text-white/95">Distribution Channels</h3>
           <p className="text-sm text-white/55 mt-1">
             Select distribution tracks for your press release
           </p>
@@ -325,13 +325,13 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
         className={`relative rounded-2xl border-2 transition-all cursor-pointer ${
           selectedTracks.has('citemind_aeo')
             ? `border-brand-cyan bg-gradient-to-br from-brand-cyan/5 to-transparent ${glowEffects.seo}`
-            : 'border-[#1A1A24] bg-[#0D0D12] hover:border-[#2A2A36]'
+            : 'border-border-subtle bg-panel hover:border-slate-5'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={() => !disabled && handleTrackToggle('citemind_aeo')}
       >
         {/* Hero Badge */}
         <div className="absolute -top-3 left-4 flex items-center gap-2">
-          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-brand-cyan text-[#0A0A0F]">
+          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-brand-cyan text-slate-1">
             Primary Track
           </span>
           <span className="px-2 py-0.5 text-[11px] font-bold uppercase rounded-full bg-semantic-success/15 text-semantic-success border border-semantic-success/30">
@@ -346,11 +346,11 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
               className={`shrink-0 w-6 h-6 mt-1 rounded-lg border-2 flex items-center justify-center transition-colors ${
                 selectedTracks.has('citemind_aeo')
                   ? 'border-brand-cyan bg-brand-cyan'
-                  : 'border-[#2A2A36] bg-transparent'
+                  : 'border-slate-5 bg-transparent'
               }`}
             >
               {selectedTracks.has('citemind_aeo') && (
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               )}
@@ -358,7 +358,7 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
 
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h4 className="text-xl font-semibold text-white">{citeMindTrack.headline}</h4>
+                <h4 className="text-xl font-semibold text-white/95">{citeMindTrack.headline}</h4>
                 <span className="text-sm font-medium text-semantic-success">{citeMindTrack.costDescription}</span>
               </div>
 
@@ -402,7 +402,7 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
         className={`relative rounded-xl border transition-all cursor-pointer ${
           selectedTracks.has('legacy_wire')
             ? 'border-semantic-warning/50 bg-semantic-warning/5'
-            : 'border-[#1A1A24] bg-[#0D0D12] hover:border-[#2A2A36]'
+            : 'border-border-subtle bg-panel hover:border-slate-5'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={() => !disabled && handleTrackToggle('legacy_wire')}
       >
@@ -411,7 +411,7 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
           <span className="px-2 py-0.5 text-[11px] font-bold uppercase rounded-full bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30">
             Add-on Option
           </span>
-          <span className="px-2 py-0.5 text-[11px] font-medium rounded-full bg-white/10 text-white/55">
+          <span className="px-2 py-0.5 text-[13px] font-medium rounded-full bg-white/10 text-white/55">
             growth+ plan
           </span>
         </div>
@@ -423,11 +423,11 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
               className={`shrink-0 w-5 h-5 mt-0.5 rounded border-2 flex items-center justify-center transition-colors ${
                 selectedTracks.has('legacy_wire')
                   ? 'border-semantic-warning bg-semantic-warning'
-                  : 'border-[#2A2A36] bg-transparent'
+                  : 'border-slate-5 bg-transparent'
               }`}
             >
               {selectedTracks.has('legacy_wire') && (
-                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               )}
@@ -435,7 +435,7 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
 
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-1">
-                <h4 className="font-semibold text-white">{legacyTrack.headline}</h4>
+                <h4 className="font-semibold text-white/95">{legacyTrack.headline}</h4>
                 <span className="text-sm font-medium text-semantic-warning">{legacyTrack.costDescription}</span>
               </div>
 
@@ -475,10 +475,10 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
       </div>
 
       {/* Cost Summary */}
-      <div className="flex items-center justify-between p-4 rounded-xl bg-[#13131A] border border-[#1A1A24]">
+      <div className="flex items-center justify-between p-4 rounded-xl bg-slate-2 border border-border-subtle">
         <div>
           <div className="text-sm text-white/55">Total Distribution Cost</div>
-          <div className="text-2xl font-bold text-white">
+          <div className="text-2xl font-bold text-white/95">
             {totalCost === 0 ? 'Free' : `$${(totalCost / 100).toFixed(2)}`}
           </div>
         </div>
@@ -511,19 +511,19 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
 
       {/* Legacy Wire Confirmation Modal */}
       {showLegacyConfirmation && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0A0A0F]/80 backdrop-blur-sm">
-          <div className="w-full max-w-md p-6 rounded-2xl bg-[#0D0D12] border border-[#1A1A24] shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-page/70 backdrop-blur-sm">
+          <div className="w-full max-w-md p-6 rounded-2xl bg-panel border border-border-subtle shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 rounded-lg bg-semantic-warning/15">
                 <svg className="w-6 h-6 text-semantic-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-white">Confirm Wire Distribution</h3>
+              <h3 className="text-lg font-semibold text-white/95">Confirm Wire Distribution</h3>
             </div>
 
             <p className="text-sm text-white/55 mb-4">
-              Traditional wire distribution costs <strong className="text-white">$499.00</strong> per release
+              Traditional wire distribution costs <strong className="text-white/90">$499.00</strong> per release
               and cannot be undone once sent. This will distribute your press release to major wire services
               including AP and Reuters.
             </p>
@@ -545,7 +545,7 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
               <button
                 type="button"
                 onClick={confirmLegacyWire}
-                className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-semantic-warning rounded-lg hover:bg-semantic-warning/90 transition-colors"
+                className="flex-1 px-4 py-2.5 text-sm font-semibold text-white/90 bg-semantic-warning rounded-lg hover:bg-semantic-warning/90 transition-colors"
               >
                 Confirm Wire Distribution
               </button>

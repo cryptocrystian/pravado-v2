@@ -1,11 +1,21 @@
 /**
  * Command Center Components
  *
- * Exports all Command Center UI components for the tri-pane layout.
- *
- * @see /docs/canon/COMMAND-CENTER-UI.md
+ * v3 tri-pane layout with Entity Map concentric ring architecture.
  */
 
+// --- v2 Command Center components ---
+export { SituationBrief } from './SituationBrief';
+export { ActionQueue } from './ActionQueue';
+export { SageRecommendations } from './SageRecommendations';
+export { EviScoreCard } from './EviScoreCard';
+export { SagePulse } from './SagePulse';
+export { OnboardingChecklist } from './OnboardingChecklist';
+
+// --- Shared / layout components ---
+export { CommandCenterTopbar } from './CommandCenterTopbar';
+
+// --- Tri-pane shell + pane components ---
 export { TriPaneShell } from './TriPaneShell';
 export { ActionStreamPane } from './ActionStreamPane';
 export { ActionCard, type DensityLevel, type ExecutionState } from './ActionCard';
@@ -13,15 +23,12 @@ export { ActionModal } from './ActionModal';
 export { IntelligenceCanvasPane } from './IntelligenceCanvasPane';
 export { StrategyPanelPane } from './StrategyPanelPane';
 export { CalendarPeek } from './CalendarPeek';
-// Note: ActionPeekDrawer is deprecated - use ActionModal instead
-// export { ActionPeekDrawer } from './ActionPeekDrawer';
-export { CommandCenterTopbar } from './CommandCenterTopbar';
 export { EVIExplainerModal } from './EVIExplainerModal';
 export { EVIForecastPanel } from './EVIForecastPanel';
 export { EntityMap } from './EntityMap';
 
 // Pillar accent system
-export { pillarAccents, priorityStyles, modeStyles, surfaceTokens, cardClasses, getPillarCardClasses } from './pillar-accents';
+export { pillarAccents, priorityStyles, modeStyles, cardClasses, getPillarCardClasses } from './pillar-accents';
 
 // Re-export types
 export type {
@@ -36,11 +43,11 @@ export type {
   EVIFilterState,
   EVIDriverType,
   TopMover,
-  // Entity Map types
   EntityNode,
   EntityEdge,
-  EntityZone,
+  EdgeState,
   EdgeRel,
   ActionImpactMap,
-  EntityMapResponse,
+  EntityMapPayload,
+  SessionCitationEvent,
 } from './types';

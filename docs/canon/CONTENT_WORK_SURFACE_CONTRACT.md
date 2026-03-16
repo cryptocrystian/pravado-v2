@@ -1,9 +1,10 @@
 # CONTENT WORK SURFACE CONTRACT
 
-> **Status:** CANONICAL (V1 FREEZE)
-> **Authority:** This document defines the V1 frozen contract for the Content Work Surface.
-> **Classification:** V1 Release Specification
-> **Last Updated:** 2026-01-25
+> **Status:** CANONICAL (V2 — AMENDED 2026-03-02)
+> **Authority:** This document defines the content work surface contract. Supersedes V1 (2026-01-25).
+> **Classification:** Active Implementation Specification
+> **Last Updated:** 2026-03-02
+> **Amendment Summary:** Removed mandatory TriPaneShell layout requirement (was incorrectly applied globally; TriPaneShell is Command Center-specific per product decision D022). Each view now uses a surface-appropriate layout. Added competitive moat requirements and AEO-first content quality doctrine per COMPETITIVE_INTELLIGENCE_2026.md.
 
 ---
 
@@ -51,12 +52,12 @@ This contract inherits all constraints from:
 
 | Route | Component | Layout | Description |
 |-------|-----------|--------|-------------|
-| `/app/content` | `ContentWorkSurface` | TriPaneShell | Main work surface with tabbed views |
-| `/app/content/calendar` | `ContentCalendarView` | TriPaneShell | Multi-format calendar with themes |
-| `/app/content/library` | `ContentLibraryView` | TriPaneShell | Asset library with filters |
-| `/app/content/asset/[id]` | `ContentAssetEditor` | TriPaneShell | Structured asset editor |
-| `/app/content/brief/[id]` | `ContentBriefEditor` | TriPaneShell | Brief viewer/editor |
-| `/app/content/insights` | `ContentInsightsView` | TriPaneShell | Authority analytics |
+| `/app/content` | `ContentWorkSurface` | Surface-appropriate (see §3.2) | Main work surface with tabbed views |
+| `/app/content/calendar` | `ContentCalendarView` | Full-width | Multi-format calendar with themes |
+| `/app/content/library` | `ContentLibraryView` | Filter sidebar + main grid | Asset library with filters |
+| `/app/content/asset/[id]` | `ContentAssetEditor` | Two-pane + CiteMind drawer | Structured asset editor |
+| `/app/content/brief/[id]` | `ContentBriefEditor` | Two-pane | Brief viewer/editor |
+| `/app/content/insights` | `ContentInsightsView` | Full-width | Authority analytics |
 
 ### 2.2 API Route Handlers (Existing)
 
@@ -83,50 +84,40 @@ This contract inherits all constraints from:
 
 ## 3. Work Surface Layout Standard
 
-### 3.1 Shell Selection
+### 3.1 Layout Philosophy (AMENDED D022)
 
-The Content Work Surface uses **TriPaneShell** (imported from `components/command-center/TriPaneShell.tsx`).
+**TriPaneShell is NOT mandated globally.** The TriPaneShell is the Command Center layout — it is appropriate for a command-and-intelligence hub where three simultaneous context streams are always relevant.
 
-**NOT** a custom shell. Works within `AppShellWrapper` routing logic.
+Content is a workflow-centric surface. Each view should use the layout that best serves its workflow, not a forced three-pane structure. Layout must be earned by the content's needs.
 
-### 3.2 TriPaneShell Configuration
+**Per D019 Layout Laws:**
+- Width is earned by content, not assumed from container
+- Whitespace separates semantic sections or is breathing room — no other purpose
+- Cards are decision units (one action), not data containers
+- Data shape determines layout — tables for tabular data, cards for decisions, KPI rows for metrics, charts for time-series
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    CONTENT WORK SURFACE                          │
-│                    (TriPaneShell with Iris accent)               │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│ ┌──────────────┐ ┌────────────────────────┐ ┌─────────────────┐ │
-│ │ LEFT PANE    │ │     CENTER PANE        │ │   RIGHT PANE    │ │
-│ │ (320-360px)  │ │     (flex-1)           │ │   (300-340px)   │ │
-│ │              │ │                        │ │                 │ │
-│ │ • Navigation │ │ • Primary work area    │ │ • Context panel │ │
-│ │ • Filters    │ │ • Editor / Grid / Cal  │ │ • AI insights   │ │
-│ │ • Quick list │ │ • Asset detail         │ │ • Metrics       │ │
-│ │              │ │                        │ │ • Cross-pillar  │ │
-│ └──────────────┘ └────────────────────────┘ └─────────────────┘ │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+### 3.2 View-Specific Layout Specifications
 
-### 3.3 Pane Responsibilities
+| View | Layout | Rationale |
+|------|--------|-----------|
+| **Overview** | Full-width dashboard (no forced panes) | Authority metrics and proposals read as a strategic dashboard, not a work surface |
+| **Library** | Two-pane: filter sidebar (280px) + main grid | Filters are always contextually relevant to the browsing task |
+| **Calendar** | Full-width with top legend strip | Calendar grids need full horizontal space to be readable |
+| **Asset Editor** | Two-pane: outline nav (240px) + editor; CiteMind intelligence panel slides in from right as overlay/drawer on demand | Editor needs full width; CiteMind panel is contextual, not always needed |
+| **Brief Editor** | Two-pane: brief sections nav (240px) + brief content | Same principle as asset editor |
+| **Insights** | Full-width dashboard | Charts and delta comparisons need full horizontal space |
 
-| Pane | Content | Collapsible |
-|------|---------|-------------|
-| **Left** | Navigation tabs, asset list, filters, quick search | Yes (48px icon state) |
-| **Center** | Primary content area (view-dependent) | No |
-| **Right** | Authority signals, AI insights, CiteMind status, cross-pillar hooks | Yes (48px icon state) |
+**Important:** A view may use TriPaneShell if its specific workflow genuinely requires three simultaneous panels. The principle is fitness-for-purpose, not avoidance of TriPaneShell. It simply cannot be the default imposed on all views.
 
-### 3.4 Responsive Breakpoints
+### 3.3 Responsive Breakpoints (All Views)
 
-| Breakpoint | Visible Panes | Behavior |
-|------------|---------------|----------|
-| Desktop (lg+) | All 3 | Full tri-pane |
-| Tablet (md-lg) | Center + one rail | Toggle left/right |
-| Mobile (-md) | Single | Segmented control tabs |
+| Breakpoint | Behavior |
+|------------|----------|
+| Desktop (lg+) | Layout as specified per view above |
+| Tablet (md-lg) | Collapse secondary panels to toggleable drawers |
+| Mobile (-md) | Single panel with bottom navigation tabs |
 
-### 3.5 Pillar Accent
+### 3.4 Pillar Accent
 
 Content pillar uses **Iris** accent (`brand-iris` / `#A855F7`):
 
@@ -817,6 +808,59 @@ function ContentErrorState({ error, onRetry }: { error: Error; onRetry: () => vo
 
 ---
 
+## 9B. Competitive Moat Requirements (ADDED 2026-03-02)
+
+These requirements are derived from COMPETITIVE_INTELLIGENCE_2026.md and represent the minimum feature set needed to establish and defend Pravado's content moats. They are non-negotiable for V2.
+
+### 9B.1 Moat 1 — Citation-Worthiness as the Primary Quality Metric
+
+The Content Work Surface must treat **AEO citation potential** as the primary content quality metric, not NLP term coverage, word count, or keyword density. This directly contradicts every legacy content tool and defines Pravado's differentiation.
+
+**Required expressions:**
+- CiteMind score must be visually primary on every content asset card — more prominent than word count or publish date
+- Content Editor must include passage-level AEO guidance: entity-rich definitions, direct Q&A formatting, structured data recommendations — this is the writing feedback layer that replaces NLP term highlighting
+- Before publishing, the CiteMind gate must show the citation potential score alongside the governance pass/fail status
+- Empty state for new content must frame the creation task as "building an authority asset" not "writing a blog post"
+
+### 9B.2 Moat 2 — Cross-Pillar Attribution Visible in Content
+
+Content decisions must visibly connect to PR and AEO outcomes. This is the feature no competitor can replicate.
+
+**Required expressions:**
+- Every content asset must display its **Cross-Pillar Impact** score showing PR contribution and AEO citation lift
+- SAGE briefs must show the competitive gap they're closing ("CompetitorX is cited 134x/week on this topic; you are not. Closing this gap: +8–12 EVI pts.")
+- After publishing, CiteMind must update the asset's citation tracking within 7–14 days and show which AI engines have cited the piece
+- The ImpactStrip must always display the EVI delta that publishing this content would contribute
+
+### 9B.3 Moat 3 — Brief → Draft → Derivative Pipeline
+
+Every content asset must be structured to produce cross-pillar derivatives automatically. This is structural reuse, not manual repurposing — and it's a capability no single-pillar tool can offer.
+
+**Required expressions:**
+- Brief generation must produce a derivative map showing: PR pitch excerpt targets, AEO snippet targets, AI-ready summary, social fragments
+- The editor must show derivative status in a right-rail panel (or accessible drawer): which derivatives exist, which are stale, which need regeneration
+- Derivative generation must be a one-click Copilot action per asset — not a separate workflow
+- PR pitch excerpts must be directly linkable to the Pitches pipeline in the PR surface
+
+### 9B.4 Moat 4 — AEO-Optimized Editor (Not a Generic Rich Text Editor)
+
+The Asset Editor must be purpose-built for AEO citation-worthiness, not a standard rich text editor with AI suggestions bolted on.
+
+**Required expressions:**
+- Passage-level CiteMind feedback: each paragraph/section gets a citation readiness indicator, not just the whole document
+- Structured sections enforced: every long-form asset has defined sections (Introduction, Entity Definition, Evidence, FAQ, Related Concepts) — these are the structural units AI engines extract from
+- FAQ section must be a first-class editor component with schema markup generation
+- Entity grounding panel shows which entities this passage reinforces and their current Ring position in the Entity Map
+
+### 9B.5 Moat 5 — SAGE Proposals Integrated, Not Separate
+
+SAGE content proposals must be surfaced in the library and overview views, not in a separate "briefs" area that users have to navigate to. The insight must come to the user.
+
+**Required expressions:**
+- SAGE proposal cards in the Overview must show the competitive gap, estimated EVI impact, and a one-click "Create from Brief" action
+- In the Library view, assets with available SAGE optimization recommendations should show an indicator badge
+- SAGE must provide at least one content proposal per active topic cluster per week (automation via AUTOMATE in Autopilot mode)
+
 ## 10. Non-Goals / Drift Guardrails
 
 ### 10.1 Explicit Non-Goals
@@ -887,7 +931,7 @@ All Content surfaces MUST display the **Impact Strip** (adapted from PR pillar):
 
 V1 Content Work Surface MUST satisfy:
 
-- [ ] TriPaneShell layout implemented
+- [ ] Layout is surface-appropriate per §3.2 (NOT forced TriPaneShell)
 - [ ] Iris (`brand-iris`) accent consistently applied
 - [ ] Overview view with authority dashboard
 - [ ] Library view with density-adaptive cards
@@ -930,3 +974,4 @@ To modify this contract:
 | Date | Version | Change |
 |------|---------|--------|
 | 2026-01-25 | 1.0 | Initial V1 Content Work Surface Contract |
+| 2026-03-02 | 2.0 | Removed mandatory TriPaneShell (D022); Added competitive moat requirements §9B; Added view-specific layout specs §3.2; Updated amendment metadata |

@@ -144,10 +144,10 @@ export function PRAIRecommendations({
 
   if (loading) {
     return (
-      <div className="panel-card p-6 shadow-lg shadow-slate-1/20">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6 shadow-lg shadow-slate-1/20">
         <div className="flex items-center justify-center py-12">
           <AIDot status="generating" />
-          <span className="ml-3 text-muted">Generating recommendations...</span>
+          <span className="ml-3 text-white/55">Generating recommendations...</span>
         </div>
       </div>
     );
@@ -155,14 +155,14 @@ export function PRAIRecommendations({
 
   if (!data || data.recommendations.length === 0) {
     return (
-      <div className="panel-card p-6 shadow-lg shadow-slate-1/20">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6 shadow-lg shadow-slate-1/20">
         <div className="text-center py-10">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-brand-iris/10 flex items-center justify-center">
             <svg className="w-6 h-6 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
-          <p className="text-muted font-medium">No recommendations yet</p>
+          <p className="text-white/55 font-medium">No recommendations yet</p>
           <p className="text-sm text-slate-10 mt-1">AI will generate recommendations based on PR activity</p>
         </div>
       </div>
@@ -183,7 +183,7 @@ export function PRAIRecommendations({
   const highCount = data.recommendations.filter((r) => r.priority === 'high').length;
 
   return (
-    <div className="panel-card overflow-hidden shadow-lg shadow-slate-1/20">
+    <div className="bg-panel border border-border-subtle rounded-xl overflow-hidden shadow-lg shadow-slate-1/20">
       {/* Header */}
       <div className="px-6 py-5 border-b border-border-subtle bg-gradient-to-r from-slate-3/50 to-slate-3/30">
         <div className="flex items-center justify-between">
@@ -195,7 +195,7 @@ export function PRAIRecommendations({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-white tracking-tight">AI Recommendations</h2>
+                <h2 className="text-xl font-bold text-white/95 tracking-tight">AI Recommendations</h2>
                 <AIDot status="idle" />
               </div>
               <p className="text-sm text-slate-10 mt-0.5">
@@ -290,7 +290,7 @@ export function PRAIRecommendations({
                   </div>
 
                   {/* Title & Description */}
-                  <h4 className="font-semibold text-white text-base leading-snug">{rec.title}</h4>
+                  <h4 className="font-semibold text-white/95 text-base leading-snug">{rec.title}</h4>
                   <p className="text-sm text-slate-11 mt-1.5 leading-relaxed">{rec.description}</p>
 
                   {/* Impact Row */}

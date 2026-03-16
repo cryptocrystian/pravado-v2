@@ -101,7 +101,7 @@ export default function NarrativeSectionCard({
               <CardTitle className="text-base">{section.title}</CardTitle>
               <div className="flex items-center gap-2 mt-1">
                 <NarrativeSectionTypeBadge sectionType={section.sectionType} size="sm" />
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-white/50">
                   Order: {section.sortOrder}
                 </span>
               </div>
@@ -185,7 +185,7 @@ export default function NarrativeSectionCard({
           {/* Key Points */}
           {section.keyPoints && section.keyPoints.length > 0 && (
             <div className="border-t pt-3">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
+              <h4 className="text-xs font-semibold text-white/50 uppercase mb-2">
                 Key Points
               </h4>
               <ul className="space-y-1">
@@ -202,7 +202,7 @@ export default function NarrativeSectionCard({
           {/* Source References */}
           {section.sourceReferences && section.sourceReferences.length > 0 && (
             <div className="border-t pt-3">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2 flex items-center gap-1">
+              <h4 className="text-xs font-semibold text-white/50 uppercase mb-2 flex items-center gap-1">
                 <Link className="h-3 w-3" />
                 Sources ({section.sourceReferences.length})
               </h4>
@@ -223,13 +223,13 @@ export default function NarrativeSectionCard({
           {/* Supporting Data */}
           {section.supportingData && Object.keys(section.supportingData).length > 0 && (
             <div className="border-t pt-3">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
+              <h4 className="text-xs font-semibold text-white/50 uppercase mb-2">
                 Supporting Data
               </h4>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {Object.entries(section.supportingData).slice(0, 6).map(([key, value]) => (
                   <div key={key}>
-                    <span className="text-muted-foreground">{key}:</span>{' '}
+                    <span className="text-white/50">{key}:</span>{' '}
                     <span>{String(value)}</span>
                   </div>
                 ))}

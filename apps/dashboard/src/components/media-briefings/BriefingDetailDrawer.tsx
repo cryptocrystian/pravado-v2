@@ -188,7 +188,7 @@ export default function BriefingDetailDrawer({
           </div>
 
           {/* Quick Stats */}
-          <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-4 mt-2 text-xs text-white/50">
             <span>Format: {getFormatLabel(briefing.format)}</span>
             <span className="text-gray-300">|</span>
             <span>Sections: {briefing.sections?.length || 0}</span>

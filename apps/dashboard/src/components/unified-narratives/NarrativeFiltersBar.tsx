@@ -61,7 +61,7 @@ export default function NarrativeFiltersBar({
     <div className={`flex flex-wrap items-center gap-3 ${className}`}>
       {/* Search */}
       <div className="relative flex-1 min-w-[200px] max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
         <Input
           placeholder="Search narratives..."
           value={filters.search}
@@ -150,7 +150,7 @@ export default function NarrativeFiltersBar({
           variant="ghost"
           size="sm"
           onClick={handleClearFilters}
-          className="text-muted-foreground"
+          className="text-white/50"
         >
           <X className="h-4 w-4 mr-1" />
           Clear

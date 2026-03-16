@@ -112,7 +112,7 @@ const changeTypeIcons: Record<string, { icon: string; label: string; color: stri
 const priorityStyles: Record<string, { bg: string; text: string; label: string }> = {
   critical: { bg: 'bg-semantic-danger/10', text: 'text-semantic-danger', label: 'Critical' },
   high: { bg: 'bg-brand-amber/10', text: 'text-brand-amber', label: 'High' },
-  medium: { bg: 'bg-slate-5/50', text: 'text-muted', label: 'Medium' },
+  medium: { bg: 'bg-slate-5/50', text: 'text-white/55', label: 'Medium' },
 };
 
 export function ExecSituationBrief({
@@ -143,10 +143,10 @@ export function ExecSituationBrief({
 
   if (loading) {
     return (
-      <div className="panel-card p-6">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6">
         <div className="flex items-center justify-center py-12">
           <AIDot status="analyzing" />
-          <span className="ml-3 text-muted">Analyzing situation...</span>
+          <span className="ml-3 text-white/55">Analyzing situation...</span>
         </div>
       </div>
     );
@@ -154,12 +154,12 @@ export function ExecSituationBrief({
 
   if (!data) {
     return (
-      <div className="panel-card p-6">
+      <div className="bg-panel border border-border-subtle rounded-xl p-6">
         <div className="text-center py-8">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-4/50 flex items-center justify-center">
             <AIDot status="idle" />
           </div>
-          <p className="text-muted">No situation data available</p>
+          <p className="text-white/55">No situation data available</p>
           {onRefresh && (
             <button
               onClick={onRefresh}
@@ -178,7 +178,7 @@ export function ExecSituationBrief({
   const highRisks = data.emergingSignals.filter(s => s.type === 'risk' && s.severity >= 70);
 
   return (
-    <div className="panel-card overflow-hidden shadow-lg shadow-slate-1/20">
+    <div className="bg-panel border border-border-subtle rounded-xl overflow-hidden shadow-lg shadow-slate-1/20">
       {/* Header - Enhanced visual hierarchy */}
       <div className="px-6 py-5 border-b border-border-subtle bg-gradient-to-r from-slate-3/50 to-slate-3/30">
         <div className="flex items-center justify-between">
@@ -190,7 +190,7 @@ export function ExecSituationBrief({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-white tracking-tight">Executive Situation Brief</h2>
+                <h2 className="text-xl font-bold text-white/95 tracking-tight">Executive Situation Brief</h2>
                 <AIDot status="idle" size="md" />
               </div>
               <p className="text-sm text-slate-10 mt-0.5">
@@ -204,7 +204,7 @@ export function ExecSituationBrief({
               <button
                 onClick={onRefresh}
                 disabled={refreshing}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-4/50 hover:bg-slate-4 text-muted hover:text-white transition-all border border-border-subtle"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-4/50 hover:bg-slate-4 text-white/55 hover:text-white/90 transition-all border border-border-subtle"
                 aria-label="Refresh brief"
               >
                 <svg className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -306,13 +306,13 @@ export function ExecSituationBrief({
         {activeTab === 'attention' && (
           <div className="space-y-4">
             {data.attentionItems.length === 0 ? (
-              <div className="text-center py-12 text-muted">
+              <div className="text-center py-12 text-white/55">
                 <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-semantic-success/10 flex items-center justify-center">
                   <svg className="w-6 h-6 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <p className="font-medium text-white">All Clear</p>
+                <p className="font-medium text-white/95">All Clear</p>
                 <p className="text-sm text-slate-10 mt-1">No items require immediate attention</p>
               </div>
             ) : (
@@ -349,7 +349,7 @@ export function ExecSituationBrief({
                             </span>
                           )}
                         </div>
-                        <h4 className="font-semibold text-white text-base leading-snug">{item.title}</h4>
+                        <h4 className="font-semibold text-white/95 text-base leading-snug">{item.title}</h4>
                         <p className="text-sm text-slate-11 mt-1.5 leading-relaxed">{item.description}</p>
                       </div>
                       <Link
@@ -374,7 +374,7 @@ export function ExecSituationBrief({
         {activeTab === 'signals' && (
           <div className="space-y-3">
             {data.emergingSignals.length === 0 ? (
-              <div className="text-center py-8 text-muted">
+              <div className="text-center py-8 text-white/55">
                 <p>No emerging signals detected</p>
               </div>
             ) : (
@@ -410,15 +410,15 @@ export function ExecSituationBrief({
                           <span className={`text-xs px-2 py-0.5 rounded ${pillar.bg} ${pillar.text}`}>
                             {pillar.label}
                           </span>
-                          <span className="text-xs text-slate-6">
+                          <span className="text-xs text-white/55">
                             {signal.confidence}% confidence
                           </span>
                         </div>
-                        <h4 className="font-medium text-white">{signal.title}</h4>
-                        <p className="text-sm text-muted mt-1">{signal.description}</p>
+                        <h4 className="font-medium text-white/95">{signal.title}</h4>
+                        <p className="text-sm text-white/55 mt-1">{signal.description}</p>
                         {signal.affectedPillars.length > 0 && (
                           <div className="flex items-center gap-2 mt-2">
-                            <span className="text-xs text-slate-6">Affects:</span>
+                            <span className="text-xs text-white/55">Affects:</span>
                             {signal.affectedPillars.map((p) => {
                               const pc = pillarColors[p];
                               return (
@@ -433,7 +433,7 @@ export function ExecSituationBrief({
                       {signal.actionUrl && (
                         <Link
                           href={signal.actionUrl}
-                          className="flex-shrink-0 p-2 rounded-lg hover:bg-slate-4/50 text-muted hover:text-white transition-colors"
+                          className="flex-shrink-0 p-2 rounded-lg hover:bg-slate-4/50 text-white/55 hover:text-white/90 transition-colors"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
@@ -452,7 +452,7 @@ export function ExecSituationBrief({
         {activeTab === 'changes' && (
           <div className="space-y-3">
             {data.changes.length === 0 ? (
-              <div className="text-center py-8 text-muted">
+              <div className="text-center py-8 text-white/55">
                 <p>No changes detected since last review</p>
               </div>
             ) : (
@@ -476,24 +476,24 @@ export function ExecSituationBrief({
                           <span className={`text-xs px-2 py-0.5 rounded ${pillar.bg} ${pillar.text}`}>
                             {pillar.label}
                           </span>
-                          <span className="text-xs text-slate-6">
+                          <span className="text-xs text-white/55">
                             {new Date(change.timestamp).toLocaleTimeString()}
                           </span>
                         </div>
-                        <h4 className="font-medium text-white">{change.title}</h4>
-                        <p className="text-sm text-muted mt-1">{change.description}</p>
+                        <h4 className="font-medium text-white/95">{change.title}</h4>
+                        <p className="text-sm text-white/55 mt-1">{change.description}</p>
                         {change.previousValue && change.currentValue && (
                           <div className="flex items-center gap-2 mt-2 text-xs">
-                            <span className="text-slate-6 line-through">{change.previousValue}</span>
-                            <span className="text-slate-6">→</span>
-                            <span className="text-white font-medium">{change.currentValue}</span>
+                            <span className="text-white/55 line-through">{change.previousValue}</span>
+                            <span className="text-white/55">→</span>
+                            <span className="text-white/90 font-medium">{change.currentValue}</span>
                           </div>
                         )}
                       </div>
                       {change.linkUrl && (
                         <Link
                           href={change.linkUrl}
-                          className="flex-shrink-0 p-2 rounded-lg hover:bg-slate-4/50 text-muted hover:text-white transition-colors"
+                          className="flex-shrink-0 p-2 rounded-lg hover:bg-slate-4/50 text-white/55 hover:text-white/90 transition-colors"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

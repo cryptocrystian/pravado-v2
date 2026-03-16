@@ -306,7 +306,7 @@ export function GraphVisualizationPanel({
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[400px] flex items-center justify-center">
-          <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+          <RefreshCw className="h-8 w-8 animate-spin text-white/50" />
         </CardContent>
       </Card>
     );
@@ -355,8 +355,8 @@ export function GraphVisualizationPanel({
           {nodes.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <Network className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                <p className="text-muted-foreground">No nodes to display</p>
+                <Network className="h-12 w-12 mx-auto text-white/50 mb-2" />
+                <p className="text-white/50">No nodes to display</p>
               </div>
             </div>
           )}

@@ -43,7 +43,7 @@ export default function NarrativeInsightPanel({
   if (!insights || insights.length === 0) {
     return (
       <Card className={className}>
-        <CardContent className="py-8 text-center text-muted-foreground">
+        <CardContent className="py-8 text-center text-white/50">
           <Lightbulb className="h-8 w-8 mx-auto mb-2 opacity-50" />
           <p>No insights available for this narrative.</p>
         </CardContent>
@@ -76,7 +76,7 @@ export default function NarrativeInsightPanel({
       <CardContent className="space-y-6">
         {Object.entries(groupedInsights).map(([insightType, typeInsights]) => (
           <div key={insightType}>
-            <h4 className="text-sm font-semibold text-muted-foreground uppercase mb-3 flex items-center gap-2">
+            <h4 className="text-sm font-semibold text-white/50 uppercase mb-3 flex items-center gap-2">
               {INSIGHT_TYPE_ICONS[insightType] || INSIGHT_TYPE_ICONS.default}
               {insightType.replace(/_/g, ' ')}
             </h4>
@@ -112,7 +112,7 @@ function InsightCard({ insight }: { insight: NarrativeInsight }) {
           {insight.sourceSystem.replace(/_/g, ' ')}
         </Badge>
         {insight.confidenceScore !== undefined && (
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-white/50">
             {Math.round(insight.confidenceScore * 100)}% confidence
           </span>
         )}
@@ -124,7 +124,7 @@ function InsightCard({ insight }: { insight: NarrativeInsight }) {
           <div className="grid grid-cols-2 gap-2 text-xs">
             {Object.entries(insight.supportingData).slice(0, 4).map(([key, value]) => (
               <div key={key}>
-                <span className="text-muted-foreground">{key}:</span>{' '}
+                <span className="text-white/50">{key}:</span>{' '}
                 <span className="font-medium">{String(value)}</span>
               </div>
             ))}
@@ -136,7 +136,7 @@ function InsightCard({ insight }: { insight: NarrativeInsight }) {
       {insight.tags && insight.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
           {insight.tags.slice(0, 4).map((tag, idx) => (
-            <Badge key={idx} variant="outline" className="text-[10px]">
+            <Badge key={idx} variant="outline" className="text-xs">
               {tag}
             </Badge>
           ))}

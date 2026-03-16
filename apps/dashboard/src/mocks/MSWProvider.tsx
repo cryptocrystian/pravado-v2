@@ -14,38 +14,38 @@
  * ```
  */
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 
 interface MSWProviderProps {
   children: ReactNode;
 }
 
 export function MSWProvider({ children }: MSWProviderProps) {
-  const [isReady, setIsReady] = useState(false);
-
   useEffect(() => {
     const isMswEnabled = process.env.NEXT_PUBLIC_MSW_ENABLED === 'true';
 
     if (!isMswEnabled) {
-      setIsReady(true);
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((reg) => {
+            if (reg.active?.scriptURL?.includes('mockServiceWorker')) {
+              reg.unregister().then(() => {
+                console.log('[MSW] Stale service worker unregistered');
+              });
+            }
+          });
+        });
+      }
       return;
     }
 
-    // Dynamic import to avoid bundling MSW in production
     import('./browser')
       .then(({ initMocks }) => initMocks())
-      .then(() => setIsReady(true))
-      .catch((error) => {
-        console.error('[MSW] Failed to initialize:', error);
-        setIsReady(true); // Continue anyway
-      });
+      .catch((error) => console.error('[MSW] Failed to initialize:', error));
   }, []);
 
-  // Show nothing until MSW is ready (prevents flash of unintercepted requests)
-  if (!isReady) {
-    return null;
-  }
-
+  // Always render children — never gate SSR output behind client-side state.
+  // MSW intercepts fetch calls; it doesn't need to block rendering.
   return <>{children}</>;
 }
 

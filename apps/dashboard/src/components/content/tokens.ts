@@ -177,14 +177,14 @@ export const modeTokens = {
   copilot: {
     bg: 'bg-brand-cyan/10',
     text: 'text-brand-cyan',
-    border: 'border-brand-cyan/20',
+    border: 'border-brand-cyan/30',
     label: 'Copilot',
     description: 'AI assists, human decides',
   },
   autopilot: {
     bg: 'bg-brand-iris/10',
     text: 'text-brand-iris',
-    border: 'border-brand-iris/20',
+    border: 'border-brand-iris/30',
     label: 'Autopilot',
     description: 'AI executes within constraints',
   },
@@ -309,7 +309,7 @@ export const skeleton = {
 export const sectionHeader = 'flex items-center justify-between mb-3';
 
 /** Label text */
-export const label = 'text-[10px] font-bold uppercase tracking-wider text-white/50';
+export const label = 'text-[11px] font-bold uppercase tracking-wider text-white/50';
 
 /** Progress bar track */
 export const progressTrack = 'h-1.5 bg-slate-4 rounded-full overflow-hidden';

@@ -26,8 +26,9 @@ import type {
   AuthoritySignals,
   ContentClusterDTO,
   ContentGap,
-  ContentBrief,
+  ContentItem,
   ContentAsset,
+  ContentType,
   AutomationMode,
   AuditLedgerEntry,
 } from '../types';
@@ -63,7 +64,7 @@ interface ContentAction {
   priority: 'critical' | 'high' | 'medium' | 'low';
   type: 'opportunity' | 'issue' | 'scheduled' | 'sage_proposal' | 'execution';
   relatedEntityId?: string;
-  relatedEntityType?: 'gap' | 'brief' | 'asset' | 'cluster';
+  relatedEntityType?: 'gap' | 'content' | 'asset' | 'cluster';
   cta: {
     label: string;
     action: () => void;
@@ -92,8 +93,8 @@ interface ContentWorkQueueViewProps {
   clusters: ContentClusterDTO[];
   /** Content gaps/opportunities */
   gaps: ContentGap[];
-  /** Recent briefs */
-  briefs: ContentBrief[];
+  /** Recent content items */
+  briefs: ContentItem[];
   /** Content assets (for pipeline counts) */
   assets?: ContentAsset[];
   /** Current automation mode - determines filtering (Autopilot = exception queue) */
@@ -105,8 +106,9 @@ interface ContentWorkQueueViewProps {
   /** Action handlers */
   onViewLibrary?: () => void;
   onViewGap?: (keyword: string) => void;
-  onViewBrief?: (briefId: string) => void;
+  onViewBrief?: (contentId: string) => void;
   onGenerateBrief?: () => void;
+  onCreateContent?: (contentType: ContentType) => void;
   onImportContent?: () => void;
   onFixIssues?: () => void;
   onGenerateDraft?: () => void;
@@ -176,7 +178,7 @@ function HealthStrip({
           }`}
         >
           <div className="flex flex-col">
-            <span className="text-[10px] text-white/40 uppercase tracking-wider whitespace-nowrap">
+            <span className="text-xs text-white/40 uppercase tracking-wider whitespace-nowrap">
               {metric.label}
             </span>
             {/* Phase 9A: Removed animate-pulse from isAlert - per §7.4 no pulsing without deadline */}
@@ -211,8 +213,8 @@ function getMetricColor(value: number): string {
 /**
  * Mode-shaped header CTAs per AUTOMATION_MODES_UX.md
  *
- * - Manual: primary "New Brief", secondary "Import Content"
- * - Copilot: primary "Generate Draft", secondary "Create Brief with AI"
+ * - Manual: primary "Create", secondary "Import Content"
+ * - Copilot: primary "Generate Draft", secondary "Create with AI"
  * - Autopilot: primary "Review Exceptions", secondary (contextual)
  */
 function CTACluster({
@@ -233,12 +235,12 @@ function CTACluster({
   // Mode-specific CTA configurations
   const ctaConfig = {
     manual: {
-      primary: { label: '+ New Brief', action: onGenerateBrief, enabled: true },
+      primary: { label: '+ Create', action: onGenerateBrief, enabled: true },
       secondary: { label: 'Import Content', action: onImportContent, enabled: true },
     },
     copilot: {
       primary: { label: 'Generate Draft', action: onGenerateDraft, enabled: true },
-      secondary: { label: 'Create Brief with AI', action: onGenerateBrief, enabled: true },
+      secondary: { label: 'Create with AI', action: onGenerateBrief, enabled: true },
     },
     autopilot: {
       primary: { label: 'Review Exceptions', action: onFixIssues, enabled: hasIssues },
@@ -297,9 +299,9 @@ function CTACluster({
  * Action priority scoring for the Content Execution Gravity Model.
  *
  * PRIORITY ORDER (deterministic, highest to lowest):
- * 1. Execution-ready briefs (Execute →) - score: 100
+ * 1. Execution-ready content (Execute →) - score: 100
  * 2. CiteMind/Ingestibility issues (Fix Issue →) - score: 90
- * 3. Authority gaps without asset (Create Brief →) - score: 70
+ * 3. Authority gaps without asset (Start Writing →) - score: 70
  * 4. Scheduled content near deadline (Review →) - score: 60
  * 5. Optional enhancements (derivatives refresh, etc.) - score: 30
  *
@@ -309,7 +311,7 @@ function CTACluster({
 function computeActionScore(action: ContentAction): number {
   // Base score by type (explicit priority order)
   const typeScores: Record<ContentAction['type'], number> = {
-    execution: 100,   // Execution-ready briefs
+    execution: 100,   // Execution-ready content
     issue: 90,        // CiteMind/Ingestibility issues
     opportunity: 70,  // Authority gaps
     scheduled: 60,    // Near-deadline content
@@ -376,13 +378,13 @@ const MOCK_QUEUE_REASONING = [
   {
     id: 'reason-1',
     factor: 'Deadline Proximity',
-    explanation: 'Brief has a deadline within 48 hours, prioritizing time-sensitive work.',
+    explanation: 'Content has a deadline within 48 hours, prioritizing time-sensitive work.',
     weight: 'High',
   },
   {
     id: 'reason-2',
     factor: 'Authority Impact',
-    explanation: 'Executing this brief contributes +15 to authority score based on target keywords.',
+    explanation: 'Publishing this content contributes +15 to authority score based on target keywords.',
     weight: 'High',
   },
   {
@@ -428,7 +430,7 @@ function QueueControlsBand({
           </div>
 
           {/* Item count */}
-          <span className="px-2 py-0.5 text-[10px] font-medium text-white/40 bg-white/5 rounded">
+          <span className="px-2 py-0.5 text-xs font-medium text-white/40 bg-white/5 rounded">
             {itemCount} items
           </span>
         </div>
@@ -451,13 +453,13 @@ function QueueControlsBand({
               <span className="text-xs text-brand-iris font-medium">{selectedCount} selected</span>
               <button
                 onClick={() => onBatchAction('defer')}
-                className="px-2 py-1 text-[10px] font-medium text-white/60 hover:text-white hover:bg-white/5 rounded transition-colors"
+                className="px-2 py-1 text-xs font-medium text-white/60 hover:text-white hover:bg-white/5 rounded transition-colors"
               >
                 Defer
               </button>
               <button
                 onClick={() => onBatchAction('snooze')}
-                className="px-2 py-1 text-[10px] font-medium text-white/60 hover:text-white hover:bg-white/5 rounded transition-colors"
+                className="px-2 py-1 text-xs font-medium text-white/60 hover:text-white hover:bg-white/5 rounded transition-colors"
               >
                 Snooze
               </button>
@@ -471,7 +473,7 @@ function QueueControlsBand({
               </button>
             </div>
           ) : (
-            <span className="text-[10px] text-white/30">Click items to select for batch actions</span>
+            <span className="text-xs text-white/30">Click items to select for batch actions</span>
           )}
         </div>
       </div>
@@ -518,7 +520,7 @@ function PlanPanel({
       <div className="px-3 py-2 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {/* State indicator */}
-          <div className={`flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold shrink-0 ${
+          <div className={`flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold shrink-0 ${
             aiState === 'evaluating'
               ? 'bg-brand-cyan/20 text-brand-cyan animate-pulse'
               : isApproved
@@ -535,7 +537,7 @@ function PlanPanel({
                 {aiState === 'evaluating' ? 'Analyzing...' : isApproved ? 'Plan Approved' : 'AI Plan'}
               </span>
               {!isExpanded && !isApproved && aiState !== 'evaluating' && (
-                <span className="text-[10px] text-white/40 truncate">
+                <span className="text-xs text-white/40 truncate">
                   {summaryBullets.join(' · ')}
                 </span>
               )}
@@ -548,7 +550,7 @@ function PlanPanel({
           {!isApproved && aiState !== 'evaluating' && (
             <button
               onClick={onApprove}
-              className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold text-white bg-brand-cyan hover:bg-brand-cyan/90 rounded transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white bg-brand-cyan hover:bg-brand-cyan/90 rounded transition-colors"
             >
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -577,7 +579,7 @@ function PlanPanel({
         <div className="px-3 pb-2 border-t border-white/5">
           <div className="pt-2 space-y-1.5">
             {reasons.map((reason, index) => (
-              <div key={reason.id} className="flex items-start gap-2 text-[10px]">
+              <div key={reason.id} className="flex items-start gap-2 text-xs">
                 <span className="text-brand-cyan font-bold">{index + 1}.</span>
                 <span className="text-white/70">{reason.factor}</span>
                 <span className="text-white/40">— {reason.explanation}</span>
@@ -617,7 +619,7 @@ function SupervisedItemsCount({
   // Phrasing per spec: "Running: X routine • Y exceptions"
   // Quiet: no pulse, muted colors, informational only
   return (
-    <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-2/50 border border-slate-4/50 rounded text-[10px]">
+    <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-2/50 border border-slate-4/50 rounded text-xs">
       <span className="text-white/40">Running:</span>
       <span className="text-white/60 font-medium">{routineCount} routine</span>
       <span className="text-white/30">•</span>
@@ -658,13 +660,13 @@ function GuardrailsCard() {
           <div key={guardrail.id} className="flex items-start gap-2 p-2 bg-slate-2/50 rounded">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
             <div>
-              <span className="text-[11px] font-medium text-white">{guardrail.name}</span>
-              <p className="text-[10px] text-white/40">{guardrail.description}</p>
+              <span className="text-xs font-medium text-white/95">{guardrail.name}</span>
+              <p className="text-xs text-white/40">{guardrail.description}</p>
             </div>
           </div>
         ))}
       </div>
-      <button className="w-full mt-2 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
+      <button className="w-full mt-2 py-1.5 text-xs text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
         Configure Guardrails →
       </button>
     </div>
@@ -801,7 +803,7 @@ function _ExecutionGravityPane({
   // Convert ContentAction to TriggerAction for ExplainabilityDrawer
   const toTriggerAction = (action: ContentAction): TriggerAction => ({
     id: action.id,
-    type: action.type === 'execution' ? 'brief_execution' : action.type === 'opportunity' ? 'derivative_generation' : 'authority_optimization',
+    type: action.type === 'execution' ? 'content_execution' : action.type === 'opportunity' ? 'derivative_generation' : 'authority_optimization',
     title: action.title,
     priority: action.priority === 'critical' ? 'urgent' : action.priority === 'high' ? 'high' : 'normal',
     modeCeiling: action.modeCeiling || 'copilot',
@@ -809,8 +811,8 @@ function _ExecutionGravityPane({
     pillar: 'content',
     createdAt: action.createdAt,
     sourceContext: {
-      briefId: action.relatedEntityId,
-      briefTitle: action.title,
+      contentId: action.relatedEntityId,
+      contentTitle: action.title,
       keyword: action.relatedEntityId || 'target keyword',
       assetTitle: action.title,
     },
@@ -851,7 +853,7 @@ function _ExecutionGravityPane({
 
   // Header text varies by posture (3-second rule: immediately recognizable)
   const headerText = mode === 'manual'
-    ? 'Work Queue'
+    ? 'Content'
     : mode === 'copilot'
     ? 'AI Plan'
     : 'Top Exception';
@@ -865,7 +867,7 @@ function _ExecutionGravityPane({
     manual: {
       // WORKBENCH posture: Full control, user-driven prioritization
       posture: 'workbench',
-      descriptor: 'Workbench — you control the queue. Reorder, pin, and triage as you see fit.',
+      descriptor: 'Workbench — you control the flow. Reorder, pin, and manage as you see fit.',
       showQueueControls: true,      // Queue Controls band (Re-rank, Pin to Next, Batch select)
       showRerank: true,
       showPinToNext: true,
@@ -942,7 +944,7 @@ function _ExecutionGravityPane({
       timestamp: '2025-01-15T10:48:00Z', // Stable timestamp
       actor: 'system',
       actionType: 'brief_execution',
-      summary: 'Brief execution completed successfully',
+      summary: 'Content published successfully',
       outcome: 'completed',
       provenance: { confidence: 0.85, riskClass: 'low', mode: 'autopilot' },
     },
@@ -977,7 +979,7 @@ function _ExecutionGravityPane({
             {/* Ambient AI State Indicator (Phase 9A) */}
             <AmbientAIIndicator state={aiState} size="sm" showLabel={aiState !== 'idle'} />
             {headerSubtext && (
-              <span className="text-[10px] text-brand-cyan/70">
+              <span className="text-xs text-brand-cyan/70">
                 ({headerSubtext})
               </span>
             )}
@@ -994,7 +996,7 @@ function _ExecutionGravityPane({
             {behavior.showRerank && sortedActions.length > 1 && (
               <button
                 onClick={() => {/* TODO: Open re-rank modal/popover */}}
-                className="flex items-center gap-1 px-2 py-1 text-[10px] text-white/50 hover:text-white hover:bg-white/5 rounded transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs text-white/50 hover:text-white hover:bg-white/5 rounded transition-colors"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
@@ -1003,7 +1005,7 @@ function _ExecutionGravityPane({
               </button>
             )}
             {sortedActions.length > 1 && (
-              <span className="text-[10px] text-white/40">
+              <span className="text-xs text-white/40">
                 {sortedActions.length} {mode === 'autopilot' ? 'exception' : 'total'}{sortedActions.length !== 1 ? 's' : ''}
               </span>
             )}
@@ -1074,7 +1076,7 @@ function _ExecutionGravityPane({
               {remainingCount > 0 && (
                 <button
                   onClick={onViewAll}
-                  className="text-[10px] text-brand-iris hover:underline transition-colors"
+                  className="text-xs text-brand-iris hover:underline transition-colors"
                 >
                   +{remainingCount} more →
                 </button>
@@ -1106,14 +1108,14 @@ function _ExecutionGravityPane({
                 <svg className={`w-3.5 h-3.5 text-white/40 transition-transform ${auditLogCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
-                <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
                   Auto-handled Today
                 </h4>
-                <span className="px-1.5 py-0.5 text-[9px] font-medium text-semantic-success bg-semantic-success/10 rounded">
+                <span className="px-1.5 py-0.5 text-xs font-medium text-semantic-success bg-semantic-success/10 rounded">
                   {recentlyHandled.length}
                 </span>
               </div>
-              <span className="text-[10px] text-white/30">by AUTOMATE</span>
+              <span className="text-xs text-white/30">by AUTOMATE</span>
             </button>
             {/* Collapsible content - P2.6: Structured audit ledger display */}
             {!auditLogCollapsed && (
@@ -1141,7 +1143,7 @@ function _ExecutionGravityPane({
                     return (
                       <div
                         key={entry.id}
-                        className="flex items-center justify-between px-2.5 py-2 bg-slate-2/30 hover:bg-slate-2/50 rounded text-[10px] transition-colors"
+                        className="flex items-center justify-between px-2.5 py-2 bg-slate-2/30 hover:bg-slate-2/50 rounded text-xs transition-colors"
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                           {/* Actor indicator: system (robot) or user */}
@@ -1152,13 +1154,13 @@ function _ExecutionGravityPane({
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           {/* Actor badge */}
-                          <span className={`px-1 py-0.5 rounded text-[8px] font-medium ${
+                          <span className={`px-1 py-0.5 rounded text-xs font-medium ${
                             entry.actor === 'system' ? 'text-brand-cyan bg-brand-cyan/10' : 'text-brand-iris bg-brand-iris/10'
                           }`}>
                             {entry.actor === 'system' ? '🤖' : '👤'}
                           </span>
                           {/* Outcome badge */}
-                          <span className={`px-1 py-0.5 rounded text-[8px] font-medium ${
+                          <span className={`px-1 py-0.5 rounded text-xs font-medium ${
                             entry.outcome === 'completed' ? 'text-semantic-success bg-semantic-success/10' :
                             entry.outcome === 'passed' ? 'text-brand-cyan bg-brand-cyan/10' :
                             entry.outcome === 'failed' ? 'text-semantic-danger bg-semantic-danger/10' :
@@ -1167,13 +1169,13 @@ function _ExecutionGravityPane({
                             {entry.outcome}
                           </span>
                           {/* Timestamp */}
-                          <span className="text-white/30 text-[9px]">{formatTime(entry.timestamp)}</span>
+                          <span className="text-white/30 text-xs">{formatTime(entry.timestamp)}</span>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-                <button className="w-full mt-2 py-1.5 text-[10px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
+                <button className="w-full mt-2 py-1.5 text-xs text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
                   View Full Audit Log →
                 </button>
               </>
@@ -1231,7 +1233,7 @@ function ModeIndicator({ mode, size = 'default' }: { mode: AutomationMode; size?
   };
 
   const config = modeConfig[mode];
-  const sizeClass = size === 'small' ? 'px-1.5 py-0.5 text-[9px] gap-1' : 'px-2 py-1 text-[10px] gap-1.5';
+  const sizeClass = size === 'small' ? 'px-1.5 py-0.5 text-xs gap-1' : 'px-2 py-1 text-xs gap-1.5';
 
   return (
     <span className={`${sizeClass} font-medium uppercase rounded border flex items-center ${config.color} transition-colors duration-150`}>
@@ -1311,9 +1313,9 @@ function NextBestActionCard({
   };
 
   const typeConfig = {
-    execution: { label: 'Execute Brief', ctaLabel: getModeCtaLabel('Execute →'), ctaClass: 'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]' },
+    execution: { label: 'Publish', ctaLabel: getModeCtaLabel('Publish →'), ctaClass: 'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]' },
     issue: { label: 'Fix Issue', ctaLabel: getModeCtaLabel('Fix Issue →'), ctaClass: 'bg-semantic-warning text-black' },
-    opportunity: { label: 'Opportunity', ctaLabel: getModeCtaLabel('Create Brief →'), ctaClass: 'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]' },
+    opportunity: { label: 'Opportunity', ctaLabel: getModeCtaLabel('Start Writing →'), ctaClass: 'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]' },
     scheduled: { label: 'Deadline', ctaLabel: getModeCtaLabel('Review →'), ctaClass: 'bg-brand-cyan text-black' },
     sage_proposal: { label: 'SAGE Proposal', ctaLabel: getModeCtaLabel('View →'), ctaClass: 'bg-white/10 text-white' },
   };
@@ -1357,7 +1359,7 @@ function NextBestActionCard({
       {/* Top row: Type badge + priority + mode */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className={`px-2 py-1 text-[10px] font-bold uppercase rounded ${style.badge}`}>
+          <span className={`px-2 py-1 text-[11px] font-bold uppercase rounded ${style.badge}`}>
             {typeConf.label}
           </span>
           {/* Phase 9A: Critical indicator without animate-pulse per §7.4
@@ -1405,7 +1407,7 @@ function NextBestActionCard({
                  aiState === 'blocked' ? 'Action Blocked' :
                  'Urgent Attention Required'}
               </span>
-              <p className="text-[10px] text-white/40 mt-0.5">
+              <p className="text-xs text-white/40 mt-0.5">
                 {aiState === 'idle' && 'System idle, no active AI processing'}
                 {aiState === 'evaluating' && 'AI is preparing recommendations...'}
                 {aiState === 'ready' && 'AI has a recommendation ready for you'}
@@ -1434,13 +1436,13 @@ function NextBestActionCard({
       {/* Explainability Chips Row (Phase 8A) - condensed */}
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         {/* Impact chip */}
-        <span className="px-2 py-0.5 text-[10px] font-medium text-white/60 bg-slate-4 rounded">
+        <span className="px-2 py-0.5 text-xs font-medium text-white/60 bg-slate-4 rounded">
           Impact: {action.impact?.authority !== undefined ? `+${action.impact.authority}` : '—'}
           {action.impact?.crossPillar !== undefined && `, +${action.impact.crossPillar} hooks`}
         </span>
 
         {/* Risk / Mode ceiling chip */}
-        <span className={`px-2 py-0.5 text-[10px] font-medium rounded ${
+        <span className={`px-2 py-0.5 text-xs font-medium rounded ${
           action.risk ? riskColors[action.risk] : 'text-white/40 bg-slate-4'
         }`}>
           {action.modeCeiling
@@ -1456,7 +1458,7 @@ function NextBestActionCard({
             e.stopPropagation();
             onExplain?.();
           }}
-          className="px-2 py-0.5 text-[10px] font-medium text-brand-iris bg-brand-iris/10 hover:bg-brand-iris/20 rounded transition-colors"
+          className="px-2 py-0.5 text-xs font-medium text-brand-iris bg-brand-iris/10 hover:bg-brand-iris/20 rounded transition-colors"
         >
           Why this now?
         </button>
@@ -1532,7 +1534,7 @@ function ConfidenceAwareCTA({
       <div className="flex items-center gap-3 text-xs text-white/40">
         {/* Orchestration ready indicator */}
         {isOrchestrationReady && !requiresManualGate && (
-          <span className="flex items-center gap-1 text-brand-iris text-[10px]">
+          <span className="flex items-center gap-1 text-brand-iris text-xs">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -1548,7 +1550,7 @@ function ConfidenceAwareCTA({
             {/* Lock badge + Manual required label */}
             <button
               onClick={() => setShowExplanation(!showExplanation)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-medium text-white/50 bg-slate-4/50 border border-slate-5 rounded-lg hover:bg-slate-4 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-white/50 bg-slate-4/50 border border-slate-5 rounded-lg hover:bg-slate-4 transition-colors"
             >
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -1565,16 +1567,16 @@ function ConfidenceAwareCTA({
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-semantic-warning" />
-                    <span className="text-xs font-medium text-white">Low Confidence</span>
+                    <span className="text-xs font-medium text-white/95">Low Confidence</span>
                     {confidence !== undefined && (
-                      <span className="text-[10px] text-white/40">({confidence}%)</span>
+                      <span className="text-xs text-white/40">({confidence}%)</span>
                     )}
                   </div>
-                  <p className="text-[10px] text-white/60">
+                  <p className="text-xs text-white/60">
                     This action requires human judgment. AI confidence is below the 70% threshold for automated execution.
                   </p>
                   {(risk || reversibility) && (
-                    <div className="flex items-center gap-3 text-[9px] text-white/40">
+                    <div className="flex items-center gap-3 text-xs text-white/40">
                       {risk && <span>Risk: {risk}</span>}
                       {reversibility && (
                         <span>
@@ -1591,7 +1593,7 @@ function ConfidenceAwareCTA({
                         onSwitchToManual?.();
                         setShowExplanation(false);
                       }}
-                      className="w-full px-3 py-1.5 text-[10px] font-medium text-white bg-white/10 hover:bg-white/15 border border-white/20 rounded transition-colors"
+                      className="w-full px-3 py-1.5 text-xs font-medium text-white bg-white/10 hover:bg-white/15 border border-white/20 rounded transition-colors"
                     >
                       Switch to Manual to continue
                     </button>
@@ -1604,7 +1606,7 @@ function ConfidenceAwareCTA({
           <>
             {/* Moderate confidence indicator (informational, not blocking) */}
             {isModerateConfidence && (
-              <span className="text-[10px] text-white/40">
+              <span className="text-xs text-white/40">
                 Moderate confidence
               </span>
             )}
@@ -1698,7 +1700,7 @@ function UpNextActionCard({
           </svg>
         )}
         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${priorityDot[action.priority]}`} />
-        <span className="text-[10px] font-medium text-white/40 uppercase shrink-0">
+        <span className="text-xs font-medium text-white/40 uppercase shrink-0">
           {typeLabels[action.type]}
         </span>
         <span className="text-xs text-white truncate">
@@ -1721,7 +1723,7 @@ function UpNextActionCard({
             </svg>
           </button>
         )}
-        <button className="text-[10px] font-medium text-brand-iris hover:underline">
+        <button className="text-xs font-medium text-brand-iris hover:underline">
           {getCtaLabel()}
         </button>
       </div>
@@ -1771,7 +1773,7 @@ function _ContextPanel({
           <h4 className="text-xs font-semibold text-white/70">Pipeline</h4>
           <button
             onClick={onViewLibrary}
-            className="text-[10px] text-brand-iris hover:underline transition-colors"
+            className="text-xs text-brand-iris hover:underline transition-colors"
           >
             View →
           </button>
@@ -1790,17 +1792,17 @@ function _ContextPanel({
           <h4 className="text-xs font-semibold text-white/70">Deadlines</h4>
           <button
             onClick={onViewCalendar}
-            className="text-[10px] text-brand-iris hover:underline transition-colors"
+            className="text-xs text-brand-iris hover:underline transition-colors"
           >
             Calendar →
           </button>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="text-xl font-bold text-white">{upcomingDeadlines.count}</span>
+          <span className="text-xl font-bold text-white/95">{upcomingDeadlines.count}</span>
           <span className="text-xs text-white/40">this week</span>
         </div>
         {upcomingDeadlines.nextDate && (
-          <p className="text-[10px] text-white/50 mt-1">
+          <p className="text-xs text-white/50 mt-1">
             Next: {upcomingDeadlines.nextDate}
           </p>
         )}
@@ -1833,7 +1835,7 @@ function _ContextPanel({
             </div>
             <button
               onClick={onFixIssues}
-              className="text-[10px] text-semantic-warning hover:underline transition-colors"
+              className="text-xs text-semantic-warning hover:underline transition-colors"
             >
               Fix →
             </button>
@@ -1859,7 +1861,7 @@ function PipelineStat({
   return (
     <div className="flex flex-col items-center">
       <span className={`text-sm font-bold ${color}`}>{count}</span>
-      <span className="text-[9px] text-white/40 uppercase">{label}</span>
+      <span className="text-xs text-white/40 uppercase">{label}</span>
     </div>
   );
 }
@@ -1892,13 +1894,13 @@ function _QuickOpportunities({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-white">Quick Opportunities</h3>
+      <h3 className="text-sm font-semibold text-white/95">Quick Opportunities</h3>
 
       <div className="grid grid-cols-2 gap-3">
         {/* High-Score Gaps */}
         {topGaps.length > 0 && (
           <div className="space-y-2">
-            <span className="text-[10px] text-white/40 uppercase tracking-wider">Content Gaps</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider">Content Gaps</span>
             {topGaps.map((gap, index) => (
               <GapOpportunityCard
                 key={index}
@@ -1913,7 +1915,7 @@ function _QuickOpportunities({
         {/* Active Themes */}
         {topClusters.length > 0 && (
           <div className="space-y-2">
-            <span className="text-[10px] text-white/40 uppercase tracking-wider">Active Themes</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider">Active Themes</span>
             {topClusters.map((cluster) => (
               <ThemeOpportunityCard
                 key={cluster.cluster.id}
@@ -1932,7 +1934,7 @@ function _QuickOpportunities({
 function GapOpportunityCard({
   gap,
   onViewGap,
-  onCreateBrief,
+  onCreateBrief: onStartWriting,
 }: {
   gap: ContentGap;
   onViewGap?: () => void;
@@ -1952,22 +1954,22 @@ function GapOpportunityCard({
     >
       <div className="flex items-center justify-between gap-2 mb-1.5">
         <h5 className="text-xs font-medium text-white line-clamp-1">{gap.keyword}</h5>
-        <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full ${scoreColor}`}>
+        <span className={`px-1.5 py-0.5 text-[11px] tabular-nums font-bold rounded-full ${scoreColor}`}>
           {gap.seoOpportunityScore}
         </span>
       </div>
       <div className="flex items-center justify-between">
-        <span className="text-[10px] text-white/40">
+        <span className="text-xs text-white/40">
           {gap.intent && <span className="capitalize">{gap.intent}</span>}
         </span>
         <button
           onClick={(e) => {
             e.stopPropagation();
-            onCreateBrief?.();
+            onStartWriting?.();
           }}
-          className="px-2 py-0.5 text-[10px] font-medium text-brand-iris hover:bg-brand-iris/10 rounded transition-colors"
+          className="px-2 py-0.5 text-xs font-medium text-brand-iris hover:bg-brand-iris/10 rounded transition-colors"
         >
-          Create Brief →
+          Start Writing →
         </button>
       </div>
     </div>
@@ -1990,7 +1992,7 @@ function ThemeOpportunityCard({
     >
       <h5 className="text-xs font-medium text-white mb-1 line-clamp-1">{cluster.cluster.name}</h5>
       <div className="flex items-center justify-between">
-        <span className="text-[10px] text-white/40">
+        <span className="text-xs text-white/40">
           {cluster.topics.length} topics · {cluster.representativeContent.length} assets
         </span>
         <button
@@ -1998,7 +2000,7 @@ function ThemeOpportunityCard({
             e.stopPropagation();
             onAddContent?.();
           }}
-          className="px-2 py-0.5 text-[10px] font-medium text-brand-iris hover:bg-brand-iris/10 rounded transition-colors"
+          className="px-2 py-0.5 text-xs font-medium text-brand-iris hover:bg-brand-iris/10 rounded transition-colors"
         >
           Add Content →
         </button>
@@ -2024,6 +2026,7 @@ export function ContentWorkQueueView({
   onViewGap: _onViewGap, // Phase 11A: Reserved for future Quick Opportunities integration
   onViewBrief,
   onGenerateBrief,
+  onCreateContent,
   onImportContent,
   onFixIssues,
   onGenerateDraft,
@@ -2066,7 +2069,7 @@ export function ContentWorkQueueView({
     return (
       <div className="p-4">
         <div className="p-4 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg">
-          <h4 className="text-sm font-semibold text-semantic-danger">Failed to load work queue</h4>
+          <h4 className="text-sm font-semibold text-semantic-danger">Failed to load content</h4>
           <p className="text-xs text-white/55 mt-1">{error.message}</p>
         </div>
       </div>
@@ -2080,7 +2083,7 @@ export function ContentWorkQueueView({
       <ContentEmptyState
         view="work-queue"
         onAction={onGenerateBrief}
-        actionLabel="Create Your First Brief"
+        actionLabel="Create Content"
       />
     );
   }
@@ -2093,33 +2096,33 @@ export function ContentWorkQueueView({
   // Calculate pipeline counts
   const pipelineCounts = {
     draft: assets.filter((a) => a.status === 'draft').length,
-    review: assets.filter((a) => a.status === 'review').length,
-    approved: assets.filter((a) => a.status === 'approved').length,
+    review: assets.filter((a) => a.status === 'needs_review').length,
+    approved: assets.filter((a) => a.status === 'ready').length,
     published: assets.filter((a) => a.status === 'published').length,
   };
 
-  // Generate actions from gaps, briefs, and SAGE proposals
+  // Generate actions from gaps, content items, and SAGE proposals
   const actions: ContentAction[] = [
-    // Execution-ready briefs (Phase 6A.7: Entry point to Orchestration Editor)
+    // Execution-ready content (Phase 6A.7: Entry point to Orchestration Editor)
     ...briefs
-      .filter((b) => b.status === 'approved' || b.status === 'in_progress')
+      .filter((b) => b.status === 'ready' || b.status === 'needs_review')
       .slice(0, 2)
-      .map((brief, i): ContentAction => ({
-        id: `exec-${brief.id}`,
-        title: `Execute Brief: ${brief.title}`,
-        summary: `Ready to build authority · Target: ${brief.targetKeyword || 'Multiple keywords'}`,
+      .map((item, i): ContentAction => ({
+        id: `exec-${item.id}`,
+        title: item.title,
+        summary: `Ready to publish · Target: ${item.targetKeyword || 'Multiple keywords'}`,
         priority: 'high',
         type: 'execution',
-        relatedEntityId: brief.id,
-        relatedEntityType: 'brief',
+        relatedEntityId: item.id,
+        relatedEntityType: 'content',
         cta: {
-          label: 'Execute',
-          action: () => onViewBrief?.(brief.id),
+          label: 'Publish',
+          action: () => onViewBrief?.(item.id),
         },
         mode: mode,
-        createdAt: brief.createdAt,
+        createdAt: item.createdAt,
         orchestrateActionId: `action-${(i % 3) + 1}`,
-        confidence: 75 + (i * 5), // Deterministic mock confidence
+        confidence: 75 + (i * 5),
         impact: { authority: 12 + i * 3, crossPillar: 2 },
         risk: 'low',
       })),
@@ -2136,32 +2139,32 @@ export function ContentWorkQueueView({
         relatedEntityId: gap.keyword,
         relatedEntityType: 'gap',
         cta: {
-          label: 'Create Brief',
+          label: 'Start Writing',
           action: () => onGenerateBrief?.(),
         },
         mode: mode,
-        createdAt: '2025-01-15T09:00:00Z', // Stable timestamp to avoid hydration mismatch
-        confidence: 65 + (i * 5), // Deterministic mock confidence
+        createdAt: '2025-01-15T09:00:00Z',
+        confidence: 65 + (i * 5),
         impact: { authority: gap.seoOpportunityScore / 10 },
       })),
-    // Briefs needing attention (draft status)
+    // Content needing attention (draft status)
     ...briefs
       .filter((b) => b.status === 'draft')
       .slice(0, 2)
-      .map((brief): ContentAction => ({
-        id: `brief-${brief.id}`,
-        title: brief.title,
-        summary: `Status: ${brief.status} · Target: ${brief.targetKeyword || 'Not set'}`,
+      .map((item): ContentAction => ({
+        id: `content-${item.id}`,
+        title: item.title,
+        summary: `Status: ${item.status} · Target: ${item.targetKeyword || 'Not set'}`,
         priority: 'medium',
         type: 'scheduled',
-        relatedEntityId: brief.id,
-        relatedEntityType: 'brief',
+        relatedEntityId: item.id,
+        relatedEntityType: 'content',
         cta: {
           label: 'Review',
-          action: () => onViewBrief?.(brief.id),
+          action: () => onViewBrief?.(item.id),
         },
         mode: mode,
-        createdAt: brief.createdAt,
+        createdAt: item.createdAt,
         confidence: 70,
       })),
     // CiteMind issues
@@ -2254,7 +2257,7 @@ export function ContentWorkQueueView({
   // Convert to TriggerAction for ExplainabilityDrawer
   const toTriggerAction = (action: ContentAction): TriggerAction => ({
     id: action.id,
-    type: action.type === 'execution' ? 'brief_execution' : action.type === 'opportunity' ? 'derivative_generation' : 'authority_optimization',
+    type: action.type === 'execution' ? 'content_execution' : action.type === 'opportunity' ? 'derivative_generation' : 'authority_optimization',
     title: action.title,
     priority: action.priority === 'critical' ? 'urgent' : action.priority === 'high' ? 'high' : 'normal',
     modeCeiling: action.modeCeiling || 'copilot',
@@ -2262,8 +2265,8 @@ export function ContentWorkQueueView({
     pillar: 'content',
     createdAt: action.createdAt,
     sourceContext: {
-      briefId: action.relatedEntityId,
-      briefTitle: action.title,
+      contentId: action.relatedEntityId,
+      contentTitle: action.title,
       keyword: action.relatedEntityId || 'target keyword',
       assetTitle: action.title,
     },
@@ -2337,22 +2340,12 @@ export function ContentWorkQueueView({
         {/* Manual Workbench: fills remaining viewport, no padding wrapper */}
         <div className="flex-1 min-h-0">
           <ManualWorkbench
-            items={queueItems}
+            documents={assets}
             selectedId={selectedActionId}
             onSelect={handleSelect}
-            onExecute={(item) => {
-              const action = finalActions.find(a => a.id === item.id);
-              if (action) {
-                if (action.orchestrateActionId && onLaunchOrchestrate) {
-                  onLaunchOrchestrate(action.orchestrateActionId);
-                } else {
-                  action.cta.action();
-                }
-              }
-            }}
-            onSaveDraft={() => console.log('Save draft')}
-            onMarkReady={() => console.log('Mark ready')}
-            onCreateNew={onGenerateBrief}
+            onCreateNew={onCreateContent ? () => onCreateContent('article') : () => {}}
+            onSave={(data) => { void data; /* TODO: wire to API */ }}
+            onPublish={(assetId) => { void assetId; /* TODO: wire publish gate */ }}
             isLoading={isLoading}
             contextData={{
               citeMindStatus: citeMindIssueCount > 0 ? 'warning' : 'passed',

@@ -10,6 +10,7 @@
 import type { HealthCheckResponse } from '@pravado/types';
 import { FLAGS } from '@pravado/feature-flags';
 import type { FastifyInstance } from 'fastify';
+import { createClient } from '@supabase/supabase-js';
 
 import { config, APP_VERSION, BUILD_INFO } from '../config';
 
@@ -36,33 +37,81 @@ function getSafeFlags(): Record<string, boolean> {
 }
 
 export async function healthRoutes(server: FastifyInstance) {
+  const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_SERVICE_ROLE_KEY);
+
   /**
-   * Basic health check - backward compatible
+   * Basic health check with dependency checks (S-INT-10 upgrade)
    * GET /health/
    */
-  server.get('/', async (): Promise<HealthCheckResponse> => {
+  server.get('/', async (_request, reply): Promise<HealthCheckResponse> => {
+    const checks: Record<string, string> = {};
+
+    // Database check — query a known table
+    try {
+      const { error: dbErr } = await supabase.from('orgs').select('id').limit(1);
+      checks.database = dbErr ? 'degraded' : 'ok';
+    } catch {
+      checks.database = 'failed';
+    }
+
+    // Redis check — real liveness ping
+    if (config.REDIS_URL) {
+      try {
+        const { default: Redis } = await import('ioredis');
+        const redisClient = new Redis(config.REDIS_URL, {
+          connectTimeout: 2000,
+          lazyConnect: true,
+          maxRetriesPerRequest: 0,
+        });
+        const pong = await Promise.race([
+          redisClient.ping(),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('Redis ping timeout')), 2000)
+          ),
+        ]);
+        checks.redis = pong === 'PONG' ? 'ok' : 'degraded';
+        await redisClient.quit().catch(() => {});
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        checks.redis = 'degraded';
+        checks.redis_error = msg;
+      }
+    } else {
+      checks.redis = 'not_configured';
+    }
+
+    const allOk = Object.values(checks).every((v) => v === 'ok' || v === 'not_configured');
+
+    if (!allOk) {
+      reply.code(503);
+    }
+
     return {
-      status: 'healthy',
+      status: allOk ? 'healthy' : 'unhealthy',
       version: APP_VERSION,
       timestamp: new Date().toISOString(),
-      checks: {},
+      checks,
     };
   });
 
   /**
    * Readiness probe (for k8s/orchestration)
    * GET /health/ready
-   *
-   * Returns ready:true when the app can handle traffic.
-   * Can be extended to check database connectivity, etc.
    */
-  server.get('/ready', async () => {
+  server.get('/ready', async (_request, reply) => {
+    // Quick database connectivity check
+    const { error } = await supabase.from('orgs').select('id').limit(1);
+    const dbOk = !error;
+
+    if (!dbOk) {
+      reply.code(503);
+    }
+
     return {
-      ready: true,
+      ready: dbOk,
       version: APP_VERSION,
       timestamp: new Date().toISOString(),
-      // Future: Add database connectivity check
-      // checks: { database: 'ok', redis: 'ok' }
+      checks: { database: dbOk ? 'ok' : 'failed' },
     };
   });
 

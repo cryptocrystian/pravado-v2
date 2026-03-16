@@ -141,7 +141,7 @@ export default function BriefingSection({
 
         {/* Metadata row */}
         {section.isGenerated && (section.llmModel || section.tokensUsed) && (
-          <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-3 mt-2 text-xs text-white/50">
             {section.llmModel && <span>Model: {section.llmModel}</span>}
             {section.tokensUsed && <span>Tokens: {formatTokens(section.tokensUsed)}</span>}
             {section.generationDurationMs && (
@@ -156,7 +156,7 @@ export default function BriefingSection({
           {isRegenerating ? (
             <div className="flex items-center justify-center py-8">
               <RefreshCw className="h-6 w-6 animate-spin text-blue-600" />
-              <span className="ml-2 text-muted-foreground">Regenerating section...</span>
+              <span className="ml-2 text-white/50">Regenerating section...</span>
             </div>
           ) : isEditing ? (
             <div className="space-y-3">
@@ -191,7 +191,7 @@ export default function BriefingSection({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-6 text-muted-foreground">
+                <div className="text-center py-6 text-white/50">
                   No content generated yet.
                   {onRegenerate && (
                     <Button variant="link" onClick={handleRegenerate} className="ml-1">
@@ -225,7 +225,7 @@ export default function BriefingSection({
               {section.sourceSummary && (
                 <div className="mt-4 pt-4 border-t">
                   <h4 className="text-sm font-medium text-gray-700 mb-1">Sources</h4>
-                  <p className="text-xs text-muted-foreground">{section.sourceSummary}</p>
+                  <p className="text-xs text-white/50">{section.sourceSummary}</p>
                 </div>
               )}
             </>

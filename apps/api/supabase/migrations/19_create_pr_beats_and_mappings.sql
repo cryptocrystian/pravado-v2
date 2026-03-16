@@ -75,15 +75,6 @@ CREATE TABLE IF NOT EXISTS public.journalist_beats (
   is_primary BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org consistency
-  CONSTRAINT fk_journalist_beats_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.journalists WHERE id = journalist_id)
-  ),
-  CONSTRAINT fk_journalist_beats_beat_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.pr_beats WHERE id = beat_id)
-  ),
-
   -- Prevent duplicate journalist-beat pairs
   UNIQUE(journalist_id, beat_id)
 );

@@ -45,7 +45,7 @@ export function StrategicAuditLogTimeline({
   if (logs.length === 0) {
     return (
       <Card>
-        <CardContent className="py-8 text-center text-muted-foreground">
+        <CardContent className="py-8 text-center text-white/50">
           <p>No activity recorded yet.</p>
         </CardContent>
       </Card>
@@ -96,14 +96,14 @@ function TimelineEvent({ log, isFirst }: TimelineEventProps) {
           isFirst ? 'ring-2 ring-offset-2 ring-offset-background ring-primary' : ''
         }`}
       >
-        <IconComponent className="h-4 w-4 text-white" />
+        <IconComponent className="h-4 w-4 text-white/90" />
       </div>
 
       {/* Event content */}
       <div className="bg-muted/50 rounded-lg p-3">
         <div className="flex items-start justify-between mb-1">
           <span className="font-medium">{getEventLabel(log.eventType)}</span>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-white/50">
             {formatRelativeTime(log.createdAt)}
           </span>
         </div>
@@ -112,7 +112,7 @@ function TimelineEvent({ log, isFirst }: TimelineEventProps) {
         {log.previousStatus && log.newStatus && (
           <div className="flex items-center gap-2 mb-2">
             <Badge variant="outline">{getStatusLabel(log.previousStatus)}</Badge>
-            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            <ArrowRight className="h-4 w-4 text-white/50" />
             <Badge variant="default">{getStatusLabel(log.newStatus)}</Badge>
           </div>
         )}
@@ -128,7 +128,7 @@ function TimelineEvent({ log, isFirst }: TimelineEventProps) {
 
         {/* User info */}
         {log.userEmail && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+          <div className="flex items-center gap-2 text-sm text-white/50 mb-2">
             <User className="h-3 w-3" />
             <span>{log.userEmail}</span>
           </div>
@@ -136,7 +136,7 @@ function TimelineEvent({ log, isFirst }: TimelineEventProps) {
 
         {/* Metrics */}
         {(log.tokensUsed || log.durationMs) && (
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-4 text-xs text-white/50">
             {log.tokensUsed && (
               <div className="flex items-center gap-1">
                 <Zap className="h-3 w-3" />

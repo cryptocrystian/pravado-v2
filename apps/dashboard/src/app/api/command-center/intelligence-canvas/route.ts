@@ -1,27 +1,30 @@
 /**
- * Intelligence Canvas API Route
- * Returns mock intelligence canvas data from contract examples.
+ * Intelligence Canvas API Route (Sprint S-INT-03)
+ * Proxies to backend: GET /api/v1/sage/intelligence-canvas
+ * Falls back to contract examples if backend unavailable.
  */
 
 import { NextResponse } from 'next/server';
-import intelligenceCanvas from '../../../../../../../contracts/examples/intelligence-canvas.json';
+
+import { backendFetch, getErrorResponse } from '@/server/backendProxy';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+
+  const params = new URLSearchParams();
   const nodeKind = searchParams.get('node_kind');
+  if (nodeKind) params.set('node_kind', nodeKind);
+  const qs = params.toString();
+  const path = `/api/v1/sage/intelligence-canvas${qs ? `?${qs}` : ''}`;
 
-  let response = { ...intelligenceCanvas };
-
-  // Filter nodes by kind if specified
-  if (nodeKind) {
-    response = {
-      ...response,
-      nodes: response.nodes.filter((node) => node.kind === nodeKind),
-    };
+  try {
+    const data = await backendFetch(path);
+    return NextResponse.json(data);
+  } catch (error: unknown) {
+    const { status, message, code } = getErrorResponse(error);
+    console.error('[API /api/command-center/intelligence-canvas] Proxy error:', { status, message, code });
+    return NextResponse.json({ success: false, error: { message, code } }, { status });
   }
-
-  return NextResponse.json({
-    ...response,
-    generated_at: new Date().toISOString(),
-  });
 }

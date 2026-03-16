@@ -104,7 +104,7 @@ function RangeSlider({
   return (
     <div className="relative group">
       {/* Track background */}
-      <div className="h-2 rounded-full bg-[#1A1A24] overflow-hidden">
+      <div className="h-2 rounded-full bg-slate-4 overflow-hidden">
         {/* Fill */}
         <div
           className={`h-full rounded-full bg-gradient-to-r ${accentStyles[accentColor]} transition-all duration-100`}
@@ -210,7 +210,7 @@ const CEILING_GROUPS: CeilingGroup[] = [
 
 const DEFAULT_GUARDRAILS: PRGuardrails = {
   personalizationMinimum: 60,
-  followUpLimitPerWeek: 3,
+  followUpLimitPerWeek: 2, // Contract: PR_PITCH_PIPELINE_CONTRACT V1.1 §4.2 — max 2 per 7-day window
   dailyPitchCap: {
     cold: 10,
     warm: 20,
@@ -253,7 +253,7 @@ function ModeBadge({ mode, size = 'md' }: { mode: AutomationMode; size?: 'sm' | 
 
   const { bg, text, border, icon, label, shortLabel } = config[mode];
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-bold uppercase rounded border ${bg} ${text} ${border}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[13px] font-semibold rounded border ${bg} ${text} ${border}`}>
       <span>{icon}</span>
       <span>{size === 'sm' ? shortLabel : label}</span>
     </span>
@@ -276,7 +276,7 @@ function SystemEnforcedBanner({ reason }: { reason: string }) {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h4 className="text-sm font-semibold text-semantic-danger">SYSTEM ENFORCED</h4>
-            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30">
+            <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30">
               CANNOT OVERRIDE
             </span>
           </div>
@@ -316,7 +316,7 @@ function CeilingGroupPanel({ group }: { group: CeilingGroup }) {
     <div className={`rounded-xl border overflow-hidden ${
       group.isSystemEnforced
         ? 'bg-gradient-to-br from-semantic-danger/5 to-transparent border-semantic-danger/20'
-        : 'bg-[#0D0D12] border-[#1A1A24]'
+        : 'bg-panel border-border-subtle'
     }`}>
       {/* Group Header */}
       <button
@@ -326,9 +326,9 @@ function CeilingGroupPanel({ group }: { group: CeilingGroup }) {
       >
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h4 className="text-base font-semibold text-white">{group.title}</h4>
+            <h4 className="text-base font-semibold text-white/95">{group.title}</h4>
             {group.isSystemEnforced && (
-              <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30">
+              <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30">
                 LOCKED
               </span>
             )}
@@ -360,13 +360,13 @@ function CeilingGroupPanel({ group }: { group: CeilingGroup }) {
                 className={`p-4 rounded-lg border ${
                   !ceiling.overridable
                     ? 'bg-semantic-danger/5 border-semantic-danger/20'
-                    : 'bg-[#13131A] border-[#1A1A24]'
+                    : 'bg-slate-2 border-border-subtle'
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="text-sm font-medium text-white capitalize">
+                      <span className="text-sm font-medium text-white/90 capitalize">
                         {ceiling.action.replace(/_/g, ' ')}
                       </span>
                       <ModeBadge mode={ceiling.modeCeiling} size="sm" />
@@ -381,13 +381,13 @@ function CeilingGroupPanel({ group }: { group: CeilingGroup }) {
                       <svg className="w-3.5 h-3.5 text-semantic-danger group-hover/lock:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                       </svg>
-                      <span className="text-[10px] font-medium text-semantic-danger">Locked</span>
+                      <span className="text-[13px] font-medium text-semantic-danger">Locked</span>
                     </div>
                   ) : (
                     <div className="shrink-0">
                       <select
                         defaultValue={ceiling.modeCeiling}
-                        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#13131A] border border-[#1A1A24] text-white focus:outline-none focus:border-brand-magenta/50 focus:ring-1 focus:ring-brand-magenta/30"
+                        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-2 border border-border-subtle text-white focus:outline-none focus:border-brand-magenta/50 focus:ring-1 focus:ring-brand-magenta/30"
                       >
                         <option value="manual">Manual</option>
                         <option value="copilot">Copilot</option>
@@ -419,14 +419,14 @@ function PhilosophyExplainer() {
           </svg>
         </div>
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-white mb-2">The PRAVADO Philosophy</h3>
+          <h3 className="text-lg font-semibold text-white/95 mb-2">The PRAVADO Philosophy</h3>
           <p className="text-sm text-white/55 mb-4">
-            PRAVADO uses a three-tier automation model: <strong className="text-white">Manual</strong>,{' '}
-            <strong className="text-white">Copilot</strong>, and <strong className="text-white">Autopilot</strong>.
+            PRAVADO uses a three-tier automation model: <strong className="text-white/90">Manual</strong>,{' '}
+            <strong className="text-white/90">Copilot</strong>, and <strong className="text-white/90">Autopilot</strong>.
             Not all actions can reach all tiers — and that&apos;s by design.
           </p>
           <div className="grid grid-cols-3 gap-4">
-            <div className="p-3 rounded-lg bg-[#13131A] border border-[#1A1A24]">
+            <div className="p-3 rounded-lg bg-slate-2 border border-border-subtle">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">🔒</span>
                 <span className="text-sm font-semibold text-semantic-danger">Manual</span>
@@ -435,7 +435,7 @@ function PhilosophyExplainer() {
                 Human does the action. AI may provide context but takes no action.
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-[#13131A] border border-[#1A1A24]">
+            <div className="p-3 rounded-lg bg-slate-2 border border-border-subtle">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">🤝</span>
                 <span className="text-sm font-semibold text-brand-iris">Copilot</span>
@@ -444,7 +444,7 @@ function PhilosophyExplainer() {
                 AI drafts, proposes, or prepares. Human reviews and approves before execution.
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-[#13131A] border border-[#1A1A24]">
+            <div className="p-3 rounded-lg bg-slate-2 border border-border-subtle">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">🤖</span>
                 <span className="text-sm font-semibold text-semantic-success">Autopilot</span>
@@ -475,21 +475,21 @@ function GuardrailsPanel({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-white">Guardrails</h3>
+          <h3 className="text-base font-semibold text-white/95">Guardrails</h3>
           <p className="text-sm text-white/55 mt-1">
             Safety limits to protect relationships and prevent over-pitching
           </p>
         </div>
-        <span className="px-3 py-1 text-[11px] font-bold uppercase rounded-full bg-semantic-success/15 text-semantic-success border border-semantic-success/30">
+        <span className="px-3 py-1 text-[13px] font-semibold rounded-full bg-semantic-success/15 text-semantic-success border border-semantic-success/30">
           User Configurable
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Personalization Minimum */}
-        <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+        <div className="p-4 rounded-xl bg-panel border border-border-subtle">
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-white">Personalization Minimum</label>
+            <label className="text-sm font-medium text-white/90">Personalization Minimum</label>
             <span className="text-sm font-mono text-brand-cyan">{guardrails.personalizationMinimum}%</span>
           </div>
           <RangeSlider
@@ -503,24 +503,24 @@ function GuardrailsPanel({
         </div>
 
         {/* Follow-up Limit */}
-        <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+        <div className="p-4 rounded-xl bg-panel border border-border-subtle">
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-white">Weekly Follow-up Limit</label>
+            <label className="text-sm font-medium text-white/90">Weekly Follow-up Limit</label>
             <span className="text-sm font-mono text-brand-cyan">{guardrails.followUpLimitPerWeek}</span>
           </div>
           <RangeSlider
             value={guardrails.followUpLimitPerWeek}
             min={1}
-            max={5}
+            max={2} // Contract ceiling: PR_PITCH_PIPELINE_CONTRACT V1.1 §4.2
             onChange={(v) => onChange({ ...guardrails, followUpLimitPerWeek: v })}
             accentColor="cyan"
           />
-          <p className="text-xs text-white/50 mt-3">Maximum follow-ups per contact per week</p>
+          <p className="text-[13px] text-white/50 mt-3">Maximum follow-ups per contact per week (contract ceiling: 2)</p>
         </div>
 
         {/* Daily Pitch Caps */}
-        <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24] md:col-span-2">
-          <label className="text-sm font-medium text-white mb-3 block">Daily Pitch Caps by Relationship Stage</label>
+        <div className="p-4 rounded-xl bg-panel border border-border-subtle md:col-span-2">
+          <label className="text-sm font-medium text-white/90 mb-3 block">Daily Pitch Caps by Relationship Stage</label>
           <div className="grid grid-cols-3 gap-4">
             {(['cold', 'warm', 'engaged'] as const).map((stage) => {
               const colors = {
@@ -559,9 +559,9 @@ function GuardrailsPanel({
         </div>
 
         {/* New Contact Rate Warning */}
-        <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24] md:col-span-2">
+        <div className="p-4 rounded-xl bg-panel border border-border-subtle md:col-span-2">
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-white">New Contact Rate Warning</label>
+            <label className="text-sm font-medium text-white/90">New Contact Rate Warning</label>
             <span className="text-sm font-mono text-brand-cyan">{guardrails.newContactRateWarning}%</span>
           </div>
           <RangeSlider
@@ -611,7 +611,7 @@ export function PRSettings() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-white">Automation & Guardrails</h2>
+          <h2 className="text-base font-semibold text-white/95">Automation & Guardrails</h2>
           <p className="text-xs text-white/40 mt-0.5">Control what AI can do on your behalf</p>
         </div>
       </div>
@@ -622,7 +622,7 @@ export function PRSettings() {
       {/* Automation Ceilings */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-semibold text-white">Automation Ceilings</h3>
+          <h3 className="text-base font-semibold text-white/95">Automation Ceilings</h3>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-xs text-white/55">
               <div className="w-3 h-3 rounded bg-semantic-danger/30 border border-semantic-danger/50" />
@@ -650,7 +650,7 @@ export function PRSettings() {
       <GuardrailsPanel guardrails={guardrails} onChange={setGuardrails} />
 
       {/* Save Actions */}
-      <div className="flex items-center justify-between pt-6 border-t border-[#1A1A24]">
+      <div className="flex items-center justify-between pt-6 border-t border-border-subtle">
         <button
           type="button"
           onClick={handleReset}
@@ -678,9 +678,9 @@ export function PRSettings() {
           <div>
             <h4 className="text-sm font-semibold text-semantic-danger mb-1">Critical Constraints</h4>
             <ul className="text-xs text-white/55 space-y-1">
-              <li>• <strong className="text-white">Pitch sending</strong> will always require manual action — no exceptions</li>
-              <li>• <strong className="text-white">Follow-up sending</strong> requires human review even in Copilot mode</li>
-              <li>• <strong className="text-white">CiteMind audio generation</strong> is manual-only in V1</li>
+              <li>• <strong className="text-white/90">Pitch sending</strong> will always require manual action — no exceptions</li>
+              <li>• <strong className="text-white/90">Follow-up sending</strong> requires human review even in Copilot mode</li>
+              <li>• <strong className="text-white/90">CiteMind audio generation</strong> is manual-only in V1</li>
               <li>• These constraints are enforced at the platform level and cannot be bypassed</li>
             </ul>
           </div>

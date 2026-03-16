@@ -18,6 +18,7 @@ import { AppSidebar } from './AppSidebar';
 import { AIOrchestrationBar } from '@/components/orchestration';
 import { MSWProvider } from '@/mocks/MSWProvider';
 import { ModeProvider } from '@/lib/ModeContext';
+import { OmniTrayProvider } from '@/components/omni-tray';
 
 interface Org {
   id: string;
@@ -40,7 +41,7 @@ interface AppShellWrapperProps {
 
 // Routes that use their own shell (no sidebar, no legacy header)
 // These routes render with DS v3 topbar work surface pattern
-const CUSTOM_SHELL_ROUTES = ['/app/command-center', '/app/calendar', '/app/pr', '/app/content'];
+const CUSTOM_SHELL_ROUTES = ['/app/command-center', '/app/calendar', '/app/pr', '/app/content', '/app/seo', '/app/analytics'];
 
 // Routes that redirect immediately - show nothing to avoid flash
 const REDIRECT_ROUTES = ['/app'];
@@ -67,7 +68,7 @@ export function AppShellWrapper({
   if (isRedirectRoute) {
     // Route will redirect - show minimal loading state to prevent old DS flash
     return (
-      <div className="min-h-screen bg-[#050508] flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-brand-cyan/30 border-t-brand-cyan rounded-full animate-spin" />
       </div>
     );
@@ -81,12 +82,17 @@ export function AppShellWrapper({
   if (usesCustomShell) {
     // Route handles its own layout (topbar shell) - render children directly
     // MSWProvider is handled by the route's own layout
-    return <ModeProvider>{children}</ModeProvider>;
+    return (
+      <ModeProvider>
+        <OmniTrayProvider>{children}</OmniTrayProvider>
+      </ModeProvider>
+    );
   }
 
   // Default: render with sidebar + header + orchestration bar
   return (
     <ModeProvider>
+      <OmniTrayProvider>
       <div className="min-h-screen bg-page flex">
         <AppSidebar currentOrg={currentOrg} allOrgs={allOrgs} user={user} />
 
@@ -98,7 +104,7 @@ export function AppShellWrapper({
             {/* Search (placeholder) */}
             <div className="relative">
               <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/55"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -113,7 +119,7 @@ export function AppShellWrapper({
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-64 pl-10 pr-4 py-2 bg-slate-3 border border-border-subtle rounded-lg text-sm text-white placeholder-muted focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan/20 transition-all duration-sm"
+                className="w-64 pl-10 pr-4 py-2 bg-slate-3 border border-border-subtle rounded-lg text-sm text-white placeholder-white/40 focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan/20 transition-all duration-sm"
               />
             </div>
           </div>
@@ -122,11 +128,11 @@ export function AppShellWrapper({
             {/* AI Status */}
             <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-3/50 rounded-full">
               <AIPresenceDot />
-              <span className="text-xs text-muted">AI Active</span>
+              <span className="text-xs text-white/55">AI Active</span>
             </div>
 
             {/* Notifications (placeholder) */}
-            <button className="p-2 text-muted hover:text-white hover:bg-slate-4/50 rounded-lg transition-colors duration-sm">
+            <button className="p-2 text-white/55 hover:text-white/90 hover:bg-slate-4/50 rounded-lg transition-colors duration-sm">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -153,6 +159,7 @@ export function AppShellWrapper({
         </main>
       </div>
       </div>
+      </OmniTrayProvider>
     </ModeProvider>
   );
 }

@@ -16,15 +16,9 @@ CREATE TABLE IF NOT EXISTS public.seo_page_issues (
   message TEXT NOT NULL, -- Human-readable issue description
   hint TEXT, -- Optional recommendation for fixing the issue
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org_id consistency across audit, page, and issue
-  CONSTRAINT fk_issue_audit_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.seo_page_audits WHERE id = audit_id)
-  ),
-  CONSTRAINT fk_issue_page_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.seo_pages WHERE id = page_id)
-  )
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  -- org_id consistency enforced at application layer
+  -- org_id consistency enforced at application layer
 );
 
 -- Indexes for performance

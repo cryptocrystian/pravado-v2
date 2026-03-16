@@ -26,7 +26,7 @@
  * @see /contracts/examples/strategy-panel.json
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type {
   EarnedVisibilityIndex,
   EVIDriver,
@@ -43,9 +43,9 @@ import type {
 } from './types';
 
 interface StrategyPanelPaneProps {
-  data: StrategyPanelResponse | null;
-  isLoading: boolean;
-  error: Error | null;
+  data?: StrategyPanelResponse | null;
+  isLoading?: boolean;
+  error?: Error | null;
   /** Callback when user clicks a driver row to filter Action Stream */
   onDriverFilter?: (filter: EVIFilterState) => void;
   /** Current active filter (for highlighting active filter source) */
@@ -91,6 +91,7 @@ function TrendIndicator({ trend, delta, size = 'sm' }: { trend: Trend; delta: nu
 
 // Sparkline Component
 function Sparkline({ data, color = 'brand-cyan' }: { data: number[]; color?: string }) {
+  if (!data || data.length === 0) return null;
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
@@ -110,14 +111,14 @@ function Sparkline({ data, color = 'brand-cyan' }: { data: number[]; color?: str
 
 // EVI Hero Component
 function EVIHero({ evi }: { evi: EarnedVisibilityIndex }) {
-  const status = statusConfig[evi.status];
+  const status = statusConfig[evi.status ?? 'emerging'] ?? statusConfig.emerging;
 
   return (
-    <div className="p-4 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
+    <div className="p-4 bg-slate-1 border border-border-subtle rounded-lg">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-xs text-white/50 uppercase tracking-wide font-semibold">Earned Visibility Index</h3>
-        <span className={`text-[11px] px-2 py-0.5 rounded-full ${status.bg}/20 ${status.color} font-semibold`}>
+        <span className={`text-xs px-2 py-0.5 rounded-full ${status.bg}/20 ${status.color} font-semibold`}>
           {status.label}
         </span>
       </div>
@@ -130,21 +131,21 @@ function EVIHero({ evi }: { evi: EarnedVisibilityIndex }) {
             className={`text-5xl font-bold ${status.color}`}
             style={{ textShadow: `0 0 40px ${status.glow}` }}
           >
-            {evi.score.toFixed(1)}
+            {(evi.score ?? 0).toFixed(1)}
           </div>
           <div className="flex items-center justify-center gap-2 mt-1">
-            <TrendIndicator trend={evi.trend} delta={evi.delta_7d} size="md" />
-            <span className="text-[11px] text-white/30">7d</span>
+            <TrendIndicator trend={evi.trend ?? 'flat'} delta={evi.delta_7d ?? 0} size="md" />
+            <span className="text-xs text-white/30">7d</span>
           </div>
         </div>
 
         {/* Sparkline + 30d delta */}
         <div className="flex-1">
-          <Sparkline data={evi.sparkline} color={status.color.replace('text-', '')} />
+          <Sparkline data={evi.sparkline ?? []} color={status.color.replace('text-', '')} />
           <div className="flex items-center justify-between mt-2">
-            <span className="text-[11px] text-white/40">30-day trend</span>
-            <span className={`text-[11px] ${evi.delta_30d >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-              {evi.delta_30d >= 0 ? '+' : ''}{evi.delta_30d.toFixed(1)} pts
+            <span className="text-xs text-white/40">30-day trend</span>
+            <span className={`text-xs ${(evi.delta_30d ?? 0) >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}>
+              {(evi.delta_30d ?? 0) >= 0 ? '+' : ''}{(evi.delta_30d ?? 0).toFixed(1)} pts
             </span>
           </div>
         </div>
@@ -152,15 +153,15 @@ function EVIHero({ evi }: { evi: EarnedVisibilityIndex }) {
 
       {/* Overall Progress Bar */}
       <div className="mt-4">
-        <div className="h-1.5 bg-[#1A1A24] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-slate-3 rounded-full overflow-hidden">
           <div
             className={`h-full ${status.bg} rounded-full transition-all duration-500`}
             style={{ width: `${evi.score}%` }}
           />
         </div>
         <div className="flex justify-between mt-1">
-          <span className="text-[10px] text-white/30">0</span>
-          <span className="text-[10px] text-white/30">100</span>
+          <span className="text-xs text-white/30">0</span>
+          <span className="text-xs text-white/30">100</span>
         </div>
       </div>
     </div>
@@ -200,7 +201,7 @@ function DriverRow({
           <div className="text-left">
             <div className="flex items-center gap-2">
               <span className={`text-sm font-semibold ${colors.text}`}>{driver.label}</span>
-              <span className="text-[10px] text-white/40">({weightPct}%)</span>
+              <span className="text-xs text-white/40">({weightPct}%)</span>
             </div>
             <TrendIndicator trend={driver.trend} delta={driver.delta_7d} />
           </div>
@@ -242,7 +243,7 @@ function DriverRow({
 
       {/* Expanded Metrics */}
       {isExpanded && (
-        <div className="p-3 bg-[#0A0A0F] border-t border-[#1A1A24] space-y-2">
+        <div className="p-3 bg-page border-t border-border-subtle space-y-2">
           {driver.metrics.map((metric) => (
             <MetricRow key={metric.id} metric={metric} driverColors={colors} />
           ))}
@@ -257,23 +258,23 @@ function MetricRow({ metric, driverColors }: { metric: EVIMetric; driverColors: 
   const pct = (metric.value / metric.max_value) * 100;
 
   return (
-    <div className="p-2 bg-[#0D0D12] border border-[#1A1A24] rounded-lg">
+    <div className="p-2 bg-slate-1 border border-border-subtle rounded-lg">
       <div className="flex items-center justify-between mb-1">
         <span className="text-xs text-white/70">{metric.label}</span>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-white">
+          <span className="text-xs font-semibold text-white/90">
             {metric.value}{metric.max_value === 100 ? '' : `/${metric.max_value}`}
           </span>
           <TrendIndicator trend={metric.trend} delta={metric.delta_7d} />
         </div>
       </div>
-      <div className="h-1 bg-[#1A1A24] rounded-full overflow-hidden">
+      <div className="h-1 bg-slate-3 rounded-full overflow-hidden">
         <div
           className={`h-full ${driverColors.bar} rounded-full`}
           style={{ width: `${Math.min(pct, 100)}%` }}
         />
       </div>
-      <p className="text-[10px] text-white/40 mt-1">{metric.description}</p>
+      <p className="text-xs text-white/40 mt-1">{metric.description}</p>
     </div>
   );
 }
@@ -281,9 +282,9 @@ function MetricRow({ metric, driverColors }: { metric: EVIMetric; driverColors: 
 // Narrative Card Component
 function NarrativeCard({ narrative }: { narrative: Narrative }) {
   const sentimentConfig: Record<NarrativeSentiment, { bg: string; border: string; icon: string; iconColor: string }> = {
-    positive: { bg: 'bg-semantic-success/8', border: 'border-semantic-success/20', icon: '✓', iconColor: 'text-semantic-success' },
-    warning: { bg: 'bg-semantic-warning/8', border: 'border-semantic-warning/20', icon: '!', iconColor: 'text-semantic-warning' },
-    opportunity: { bg: 'bg-brand-cyan/8', border: 'border-brand-cyan/20', icon: '★', iconColor: 'text-brand-cyan' },
+    positive:     { bg: 'bg-semantic-success/10', border: 'border-semantic-success/20', icon: '✓', iconColor: 'text-semantic-success' },
+    warning:     { bg: 'bg-semantic-warning/10',  border: 'border-semantic-warning/20',  icon: '!', iconColor: 'text-semantic-warning' },
+    opportunity: { bg: 'bg-brand-cyan/10',        border: 'border-brand-cyan/20',        icon: '★', iconColor: 'text-brand-cyan' },
   };
   const style = sentimentConfig[narrative.sentiment];
 
@@ -292,15 +293,15 @@ function NarrativeCard({ narrative }: { narrative: Narrative }) {
       <div className="flex items-start gap-2">
         <span className={`text-sm ${style.iconColor}`}>{style.icon}</span>
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold text-white mb-1">{narrative.title}</h4>
-          <p className="text-[11px] text-white/55 leading-relaxed">{narrative.body}</p>
+          <h4 className="text-xs font-semibold text-white/90 mb-1">{narrative.title}</h4>
+          <p className="text-xs text-white/55 leading-relaxed">{narrative.body}</p>
           <div className="flex items-center gap-2 mt-2">
             {narrative.drivers.map((driver) => (
-              <span key={driver} className={`text-[10px] font-bold uppercase ${driverColors[driver].text}`}>
+              <span key={driver} className={`text-[11px] font-bold uppercase ${driverColors[driver].text}`}>
                 {driver}
               </span>
             ))}
-            <span className="text-[10px] text-white/40 ml-auto">{Math.round(narrative.confidence * 100)}% confidence</span>
+            <span className="text-xs text-white/40 ml-auto">{Math.round(narrative.confidence * 100)}% confidence</span>
           </div>
         </div>
       </div>
@@ -313,22 +314,22 @@ function UpgradeHookCard({ hook }: { hook: UpgradeHook }) {
   const isBlurred = hook.pattern === 'blurred_insight';
 
   return (
-    <div className="p-3 bg-[#0D0D12] border border-brand-iris/20 rounded-lg relative overflow-hidden">
+    <div className="p-3 bg-slate-1 border border-brand-iris/20 rounded-lg relative overflow-hidden">
       {isBlurred && (
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-brand-iris/5 to-transparent" />
       )}
       <div className="flex items-start gap-2">
         <span className="text-brand-iris">✦</span>
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold text-white mb-0.5">{hook.feature}</h4>
-          <p className="text-[11px] text-white/55">{hook.message}</p>
+          <h4 className="text-xs font-semibold text-white/90 mb-0.5">{hook.feature}</h4>
+          <p className="text-xs text-white/55">{hook.message}</p>
           {hook.sample_value && (
             <div className={`mt-2 text-xs font-mono ${isBlurred ? 'blur-sm' : ''} text-brand-iris`}>
               {hook.sample_value}
             </div>
           )}
-          <button className="mt-2 text-[11px] text-brand-iris hover:text-brand-iris/80 font-semibold transition-colors">
-            Upgrade to {hook.min_plan} →
+          <button className="mt-2 px-4 py-2.5 text-sm font-medium text-white/60 border border-white/10 rounded-lg hover:text-white/90 hover:border-white/20 hover:bg-white/5 transition-all duration-150">
+            Upgrade to {hook.min_plan}
           </button>
         </div>
       </div>
@@ -354,8 +355,8 @@ function TopMoverCard({ mover, onClick }: { mover: TopMover; onClick?: () => voi
     <button
       onClick={onClick}
       className={`
-        w-full p-2.5 bg-[#0D0D12] border border-[#1A1A24] rounded-lg
-        hover:border-brand-cyan/30 hover:bg-[#0D0D12]/80
+        w-full p-2.5 bg-slate-1 border border-border-subtle rounded-lg
+        hover:border-brand-cyan/30 hover:bg-slate-1/80
         transition-all text-left group
       `}
     >
@@ -366,23 +367,23 @@ function TopMoverCard({ mover, onClick }: { mover: TopMover; onClick?: () => voi
         <div className="flex-1 min-w-0">
           {/* Driver + Delta */}
           <div className="flex items-center gap-2 mb-1">
-            <span className={`text-[10px] font-bold uppercase ${colors.text}`}>
+            <span className={`text-[11px] font-bold uppercase ${colors.text}`}>
               {mover.driver}
             </span>
             <span className={`text-xs font-bold ${trendColor}`}>
               {isPositive ? '+' : ''}{mover.delta_points.toFixed(1)} pts
             </span>
-            <span className={`text-[10px] ${mover.trend === 'up' ? 'text-semantic-success' : 'text-semantic-danger'}`}>
+            <span className={`text-xs ${mover.trend === 'up' ? 'text-semantic-success' : 'text-semantic-danger'}`}>
               {mover.trend === 'up' ? '↑' : '↓'}
             </span>
           </div>
 
           {/* Reason */}
-          <p className="text-[11px] text-white/70 line-clamp-2">{mover.reason}</p>
+          <p className="text-xs text-white/70 line-clamp-2">{mover.reason}</p>
 
           {/* Deep link hint */}
           <div className="flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-[10px] text-brand-cyan">{mover.deep_link.label}</span>
+            <span className="text-xs text-brand-cyan">{mover.deep_link.label}</span>
             <svg className="w-3 h-3 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -398,17 +399,17 @@ function LoadingSkeleton() {
   return (
     <div className="p-3 space-y-3">
       {/* EVI Hero skeleton */}
-      <div className="h-36 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
+      <div className="h-36 bg-slate-1 border border-border-subtle rounded-lg animate-pulse" />
       {/* Driver rows skeleton */}
       <div className="space-y-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-16 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
+          <div key={i} className="h-16 bg-slate-1 border border-border-subtle rounded-lg animate-pulse" />
         ))}
       </div>
       {/* Narratives skeleton */}
       <div className="space-y-2">
         {[1, 2].map((i) => (
-          <div key={i} className="h-20 bg-[#0D0D12] border border-[#1A1A24] rounded-lg animate-pulse" />
+          <div key={i} className="h-20 bg-slate-1 border border-border-subtle rounded-lg animate-pulse" />
         ))}
       </div>
     </div>
@@ -419,7 +420,7 @@ function LoadingSkeleton() {
 function ErrorState({ error }: { error: Error }) {
   return (
     <div className="p-3">
-      <div className="p-3 bg-semantic-danger/8 border border-semantic-danger/20 rounded-lg">
+      <div className="p-3 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg">
         <div className="flex items-start gap-2">
           <svg className="w-4 h-4 text-semantic-danger flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path
@@ -430,7 +431,7 @@ function ErrorState({ error }: { error: Error }) {
           </svg>
           <div>
             <h4 className="text-xs font-semibold text-semantic-danger">Failed to load strategy</h4>
-            <p className="text-[11px] text-white/50 mt-0.5">{error.message}</p>
+            <p className="text-xs text-white/50 mt-0.5">{error.message}</p>
           </div>
         </div>
       </div>
@@ -439,12 +440,35 @@ function ErrorState({ error }: { error: Error }) {
 }
 
 export function StrategyPanelPane({
-  data,
-  isLoading,
-  error,
+  data: propData,
+  isLoading: propIsLoading,
+  error: propError,
   onDriverFilter,
   activeFilter,
 }: StrategyPanelPaneProps) {
+  // Self-fetching from MSW endpoint
+  const [fetchedData, setFetchedData] = useState<StrategyPanelResponse | null>(null);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    fetch('/api/command-center/strategy-panel')
+      .then(r => r.json())
+      .then((d: StrategyPanelResponse) => {
+        setFetchedData(d);
+        setFetchLoading(false);
+      })
+      .catch((e) => {
+        setFetchError(e instanceof Error ? e : new Error(String(e)));
+        setFetchLoading(false);
+      });
+  }, []);
+
+  // Props override fetched data when explicitly provided
+  const data = propData !== undefined ? propData : fetchedData;
+  const isLoading = propIsLoading !== undefined ? propIsLoading : fetchLoading;
+  const error = propError !== undefined ? propError : fetchError;
+
   const [expandedDrivers, setExpandedDrivers] = useState<Set<EVIDriverType>>(new Set());
 
   const toggleDriver = useCallback((driverType: EVIDriverType) => {
@@ -497,7 +521,19 @@ export function StrategyPanelPane({
     );
   }
 
-  const { evi, narratives, upgrade_hooks, top_movers } = data;
+  const evi = data.evi;
+  const narratives = data.narratives ?? [];
+  const upgrade_hooks = data.upgrade_hooks ?? [];
+  const top_movers = data.top_movers ?? [];
+
+  // Graceful fallback when EVI data is missing or malformed
+  if (!evi || typeof evi.score !== 'number') {
+    return (
+      <div className="p-6 text-center text-white/50">
+        <p className="text-xs">EVI data is loading or unavailable</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-3 space-y-3 h-full overflow-y-auto">
@@ -505,12 +541,13 @@ export function StrategyPanelPane({
       <EVIHero evi={evi} />
 
       {/* Driver Breakdown */}
+      {(evi.drivers ?? []).length > 0 && (
       <div>
         <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">
           EVI Drivers
         </h3>
         <div className="space-y-2">
-          {evi.drivers.map((driver) => (
+          {(evi.drivers ?? []).map((driver) => (
             <DriverRow
               key={driver.type}
               driver={driver}
@@ -522,6 +559,7 @@ export function StrategyPanelPane({
           ))}
         </div>
       </div>
+      )}
 
       {/* Top Movers (7d) - EVI Attribution */}
       {top_movers && top_movers.length > 0 && (

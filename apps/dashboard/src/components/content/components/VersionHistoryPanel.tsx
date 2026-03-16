@@ -165,7 +165,7 @@ export function VersionHistoryPanel({
     <div className={`${compact ? 'p-3' : 'p-4'}`}>
       <div className="flex items-center justify-between mb-3">
         <h3 className={label}>Version History</h3>
-        <span className={`text-[10px] ${text.hint}`}>v{currentVersion}</span>
+        <span className={`text-xs ${text.hint}`}>v{currentVersion}</span>
       </div>
 
       {/* Timeline */}
@@ -200,10 +200,10 @@ export function VersionHistoryPanel({
                       <p className={`text-xs font-medium ${isCurrent ? 'text-brand-iris' : text.primary}`}>
                         {event.description}
                         {isCurrent && (
-                          <span className="ml-1 text-[10px] text-brand-iris">(current)</span>
+                          <span className="ml-1 text-xs text-brand-iris">(current)</span>
                         )}
                       </p>
-                      <p className={`text-[10px] ${text.hint}`}>
+                      <p className={`text-xs ${text.hint}`}>
                         {event.author} · v{event.version}
                       </p>
                     </div>
@@ -225,7 +225,7 @@ export function VersionHistoryPanel({
                       {canRestore && (
                         <button
                           onClick={() => onRestore(event.id, event.version)}
-                          className={`text-[10px] ${text.accent} hover:underline`}
+                          className={`text-xs ${text.accent} hover:underline`}
                         >
                           Restore
                         </button>
@@ -234,7 +234,7 @@ export function VersionHistoryPanel({
                   </div>
 
                   {/* Timestamp */}
-                  <p className={`text-[10px] ${text.hint} mt-0.5`}>
+                  <p className={`text-xs ${text.hint} mt-0.5`}>
                     {new Date(event.timestamp).toLocaleString()}
                   </p>
                 </div>

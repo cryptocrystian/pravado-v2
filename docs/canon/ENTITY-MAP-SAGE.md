@@ -1,174 +1,138 @@
 # ENTITY MAP (SAGE-Native)
 
-Version: v2.0 (Canon)
+Version: v3.0 (Canon)
 Status: Canonical Specification
+Supersedes: v2.0 (2026-02-23) — concentric ring architecture adopted per D012
+
+---
 
 ## Overview
 
-The Entity Map is a SAGE-native visualization that renders the strategic relationship graph within the Command Center. It displays entities (journalists, outlets, topics, competitors, brand nodes) and their relationships as a stable, deterministic graph that responds to Action Stream interactions.
+The Entity Map is a SAGE-native visualization that renders the brand's position in the AI knowledge graph within the Command Center. It uses a **concentric ring architecture** (Owned / Earned / Perceived) that encodes the causal flow of AEO authority as its primary structural metaphor.
+
+See `ENTITY_MAP_CONTRACT.md` v2.0 for the full interaction, animation, and coherence contract. This document defines the SAGE integration model, data contract, and TypeScript types.
+
+---
 
 ## Purpose
 
 The Entity Map provides:
-1. **Visual context** for AI proposals in the Action Stream
-2. **Relationship topology** showing how entities connect
-3. **Impact preview** when hovering/selecting actions
-4. **Execution feedback** via pulse animations on affected nodes/edges
+1. **Causal territory visualization** — shows how brand authority flows from owned content through earned media to AI perception
+2. **Gap identification** — makes missing or weak relationships structurally visible as dashed edges
+3. **Cross-pillar chain illumination** — reveals the causal chain connecting Ring 1 → Ring 2 → Ring 3 on node interaction
+4. **SAGE proposal grounding** — every node and gap edge is anchored to a SAGE proposal / Action Stream record
+5. **Execution feedback** — dashed-to-solid transition and citation particle animation show when actions produce results
+
+---
 
 ## SAGE Integration
 
-Entity Map is a direct materialization of SAGE signals:
+The Entity Map is a direct materialization of SAGE's knowledge graph model:
 
 | SAGE Component | Entity Map Manifestation |
 |----------------|--------------------------|
-| **S (Signal)** | Journalist nodes, outlet nodes, topic nodes |
-| **A (Authority)** | Brand node, competitor nodes, edge strength |
-| **G (Growth)** | Topic nodes, relationship edges |
-| **E (Exposure)** | Node glow intensity, edge thickness |
+| **S (Signal)** | Ring 2 journalist and publication nodes; dashed edges represent signal gaps |
+| **A (Authority)** | Ring 1 topic cluster nodes; node size encodes schema coverage and content authority |
+| **G (Growth)** | Ring 3 AI engine nodes; edge state shows whether Ring 1+2 work has reached perceivers |
+| **E (Exposure)** | Edge glow intensity and solid/dashed state; the measurable outcome of the full Owned → Earned → Perceived chain |
 
-## Zone-Based Layout (SAGE-Native)
+---
 
-The graph uses a deterministic zone-based layout:
+## Ring-Based Layout (SAGE-Native)
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    AUTHORITY ZONE                        │
-│                   (Brand at center)                      │
-│                        [●]                               │
-│                                                          │
-│   SIGNAL ZONE                        GROWTH ZONE         │
-│   (Journalists/                      (Topics/            │
-│    Outlets)                          Distribution)       │
-│   [●] [●]                                 [●] [●]        │
-│      [●]                                  [●]            │
-│                                                          │
-│                   EXPOSURE ZONE                          │
-│                   (Competitors)                          │
-│                    [●] [●] [●]                           │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                                                                      │
+│   RING 3 ─ PERCEIVED AUTHORITY (AEO Pillar)                         │
+│   ┌──────────────────────────────────────────────────────────────┐  │
+│   │   RING 2 ─ EARNED AUTHORITY (PR Pillar)                      │  │
+│   │   ┌──────────────────────────────────────────────────────┐   │  │
+│   │   │   RING 1 ─ OWNED AUTHORITY (SEO/Content Pillar)      │   │  │
+│   │   │   ┌──────────────────────────────────────────────┐   │   │  │
+│   │   │   │          RING 0 ─ BRAND CORE                  │   │   │  │
+│   │   │   │                  [●]                          │   │   │  │
+│   │   │   └──────────────────────────────────────────────┘   │   │  │
+│   │   └──────────────────────────────────────────────────────┘   │  │
+│   └──────────────────────────────────────────────────────────────┘  │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
-### Zone Definitions
+### Ring Definitions
 
-| Zone | Purpose | Node Types | Position |
-|------|---------|------------|----------|
-| **Authority** | Brand anchor point | `brand` | Center |
-| **Signal** | Media intelligence | `journalist`, `outlet` | Left hemisphere |
-| **Growth** | Distribution network | `topic`, `ai_model` | Right hemisphere |
-| **Exposure** | Competitive context | `competitor` | Bottom |
+| Ring | Label | Pillar | Node Types | Causal Role |
+|------|-------|--------|------------|-------------|
+| **0** | Brand Core | — | `brand` | Anchor. Always one. Always centered. |
+| **1** | Owned Authority | SEO/Content | `topic_cluster` | Foundation. Brand controls directly. Schema + structured data. |
+| **2** | Earned Authority | PR | `journalist`, `publication` | Influence layer. Brand earns through outreach and content. |
+| **3** | Perceived Authority | AEO | `ai_engine` | Outcome layer. Cannot be directly controlled. Reflects Rings 1+2. |
+
+---
 
 ## Node Types
 
 ```typescript
 type NodeKind =
-  | 'brand'      // Central brand entity (always one)
-  | 'journalist' // Media contacts
-  | 'outlet'     // Publications
-  | 'topic'      // Content/SEO topics
-  | 'ai_model'   // AI platforms (ChatGPT, Perplexity, etc.)
-  | 'competitor' // Competitive brands
+  | 'brand'          // Ring 0 — central brand entity, always one
+  | 'topic_cluster'  // Ring 1 — aggregated content + schema for a semantic topic area
+  | 'journalist'     // Ring 2 — individual media contacts
+  | 'publication'    // Ring 2 — media organizations and outlets
+  | 'ai_engine'      // Ring 3 — AI systems (Perplexity, ChatGPT, Gemini, Claude, Bing)
 ```
+
+### Topic Cluster (Ring 1) Definition
+
+Ring 1 nodes are **topic clusters**, not individual content pieces.
+
+Each topic cluster:
+- Aggregates all content pieces targeting a given semantic topic
+- `authority_weight` = aggregate schema coverage score across all content in cluster
+- `affinity_score` = weighted average affinity score of contained content pieces
+- Progressive disclosure shows: list of individual content pieces with schema and indexing status
+
+---
 
 ## Edge Types
 
 ```typescript
 type EdgeRel =
-  | 'covers'      // journalist → topic/brand
-  | 'writes_for'  // journalist → outlet
-  | 'competes'    // competitor → brand
-  | 'cites'       // ai_model → brand/topic
-  | 'relates_to'  // topic → topic
+  | 'topic_to_brand'       // Ring 1 → Ring 0: topic cluster authority connection
+  | 'earned_from_topic'    // Ring 1 → Ring 2: content cluster driving earned media
+  | 'journalist_covers'    // Ring 2 → Ring 0: journalist/publication mentions brand
+  | 'cites_brand'          // Ring 3 → Ring 0: AI engine cites brand content
+  | 'journalist_to_ai'     // Ring 2 → Ring 3: journalist's content cited by AI engine (cross-ring synergy)
+  | 'topic_to_ai'          // Ring 1 → Ring 3: content directly cited by AI (no journalist intermediary)
 ```
 
-## Layout Rules
+Cross-ring synergy edges (`journalist_to_ai`, `topic_to_ai`) are **not rendered on the main view**. They are revealed only during chain illumination on node interaction.
 
-### Deterministic Positioning (REQUIRED)
-- **Layout seed**: Hash of node IDs provides stable positioning
-- **No reflow on interaction**: Positions locked after initial render
-- **Only animation**: Highlight/pulse effects, not position changes
+---
 
-### Top-20 Constraint
-- Default: Show only top-20 most relevant nodes
-- Relevance: Calculated from edge strength + recent action impact
-- Expansion: "Show more" reveals additional nodes without reflow
-
-### Pillar Styling
-Nodes and edges follow pillar accent system:
-
-| Pillar | Node Color | Edge Color |
-|--------|------------|------------|
-| PR | `brand-magenta` | `brand-magenta/50` |
-| Content | `brand-iris` | `brand-iris/50` |
-| SEO | `brand-cyan` | `brand-cyan/50` |
-
-## Action Stream Integration
-
-### Hover Highlighting
-When user hovers an Action Stream card:
-1. Map identifies impacted nodes via `action.entity_impact`
-2. Impacted nodes receive pillar glow
-3. Impacted edges receive increased opacity + glow
-4. Non-impacted nodes dim to 40% opacity
-
-### Execute Pulse Animation
-When user executes an action:
-1. Affected nodes pulse with pillar glow (300ms ease-out)
-2. Affected edges pulse with increased stroke width
-3. Animation propagates outward from driver node
-4. Duration: 800ms total, staggered 100ms per hop
-
-### Impact Mapping
-
-Actions declare their entity impact:
-
-```typescript
-interface ActionImpactMap {
-  /** Primary driver node (where animation starts) */
-  driver_node: string;
-  /** All impacted nodes (receive highlight/pulse) */
-  impacted_nodes: string[];
-  /** All impacted edges (receive highlight/pulse) */
-  impacted_edges: string[];
-}
-```
-
-Example:
-```json
-{
-  "driver_node": "n_journalist_sarah_chen",
-  "impacted_nodes": [
-    "n_journalist_sarah_chen",
-    "n_outlet_techcrunch",
-    "n_brand_acme"
-  ],
-  "impacted_edges": [
-    "e_sarah_techcrunch",
-    "e_sarah_acme"
-  ]
-}
-```
-
-## Contract Structure
-
-### EntityMapPayload
+## TypeScript Data Contract
 
 ```typescript
 interface EntityMapPayload {
   generated_at: string;
-  layout_seed: string;
+  layout_version: 'v3';
   nodes: EntityNode[];
   edges: EntityEdge[];
+  session_events: SessionCitationEvent[]; // New citations since last session load
 }
 
 interface EntityNode {
   id: string;
   kind: NodeKind;
   label: string;
-  zone: 'authority' | 'signal' | 'growth' | 'exposure';
-  pillar: Pillar;
-  meta: {
-    [key: string]: string | number | boolean | null;
-  };
+  ring: 0 | 1 | 2 | 3;
+  pillar: 'PR' | 'SEO' | 'AEO' | null;  // null for Brand Core
+  affinity_score: number;        // 0–100. Drives angular position within ring.
+  authority_weight: number;      // 0–100. Drives node size.
+  connection_status: EdgeState;  // Current status of this node's primary radial edge
+  linked_action_id: string;      // FK to Action Stream record. Required. Null = system error.
+  entity_insight: string;        // SAGE entity_insight field. Max 160 chars. Required for gap nodes.
+  impact_pillars: string[];      // All pillars this node's actions affect
+  last_updated: string;          // ISO timestamp
+  meta: Record<string, string | number | boolean | null>;
 }
 
 interface EntityEdge {
@@ -176,36 +140,125 @@ interface EntityEdge {
   from: string;
   to: string;
   rel: EdgeRel;
-  strength: number; // 0-1
-  pillar: Pillar;
+  state: EdgeState;
+  strength: number;     // 0–100. Drives stroke weight.
+  pillar: 'PR' | 'SEO' | 'AEO';
+  verified_at: string | null;  // ISO timestamp when edge became verified
+}
+
+type EdgeState = 'verified_solid' | 'verified_pending' | 'gap' | 'in_progress';
+
+interface SessionCitationEvent {
+  // CiteMind citation events detected since last session load.
+  // Used to trigger session-load citation particle animations.
+  // Animations are NOT continuous — they fire once on load for each new event.
+  entity_id_source: string;    // Ring 2 journalist or publication node
+  entity_id_perceiver: string; // Ring 3 AI engine node
+  detected_at: string;
+  citation_type: 'direct' | 'paraphrase';
+  confidence: number;          // 0–1
+}
+
+interface ActionImpactMap {
+  driver_node: string;
+  impacted_nodes: string[];
+  impacted_edges: string[];
 }
 ```
 
-## Interaction Contract
+---
 
-### REQUIRED Behaviors
-1. **Stable layout**: Node positions do not change during session
-2. **Single focus**: Only one set of nodes highlighted at a time
-3. **Hover coordination**: Uses same coordination as Action Stream (single active)
-4. **Accessibility**: Keyboard navigation + screen reader labels
+## SAGE Output Requirements
 
-### FORBIDDEN Behaviors
-1. **Full reflow**: Never recalculate positions during interaction
-2. **Multiple highlights**: Never highlight from multiple sources simultaneously
-3. **Auto-zoom**: Never auto-zoom/pan without user input
-4. **Position drift**: Nodes must not shift position after initial render
+Per Decision D015, SAGE proposals that generate Entity Map nodes must include:
+
+```typescript
+interface SAGEProposalEntityExtension {
+  entity_id: string;           // Maps to EntityNode.id
+  ring: 1 | 2 | 3;
+  entity_insight: string;      // REQUIRED. Max 160 chars. Must reference the specific
+                                // entity and at least one measurable signal.
+                                // e.g., "This journalist covers AI infrastructure at a
+                                // frequency correlating with your target topics at 3.2×."
+                                // Generic text = SAGE output quality failure.
+  impact_pillars: string[];    // All pillars this proposal's actions affect
+}
+```
+
+---
+
+## AUTOMATE Integration
+
+Per Decision D016, AUTOMATE is responsible for:
+
+1. Subscribing to SAGE `gap_node_detected` events
+2. Creating Action Stream records from SAGE proposals
+3. Setting `linked_entity_id` on the Action Stream record
+4. Writing `linked_action_id` back to the EntityNode record
+5. Setting initial status: `Priority` if SAGE confidence ≥ 0.7, `Pending` otherwise
+
+This is the enforcement mechanism for the coherence invariant: every Entity Map node has a corresponding Action Stream record.
+
+---
+
+## Action Stream Integration
+
+### Hover Highlighting
+When user hovers an Action Stream card:
+1. Map identifies impacted nodes via `action.entity_impact.impacted_nodes`
+2. Impacted nodes receive pillar glow
+3. Non-impacted nodes dim to 40% opacity
+4. Impacted edges illuminate
+
+### Chain Illumination (Node Click)
+When user clicks a node on the Entity Map:
+1. Map dims all non-connected nodes to 20% opacity (200ms)
+2. Clicked node scales to 1.3× (200ms ease-out)
+3. Causal chain illuminates with 80ms stagger per hop outward from brand core
+4. Cross-ring synergy edges appear for the illuminated chain
+5. Progressive disclosure panel slides in (250ms ease-out)
+
+### Execute Pulse Animation
+When an action executes via AUTOMATE:
+1. Driver node pulses with pillar glow (300ms ease-out)
+2. Ripple propagates through affected edges
+3. Each affected node pulses as wave reaches it (100ms stagger per hop)
+4. Total duration: 800ms
+
+---
 
 ## Animation Specifications
 
-### Hover Highlight
+### Brand Core Pulse
+```css
+@keyframes brand-core-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.15); }
+  70% { box-shadow: 0 0 0 12px rgba(168, 85, 247, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
+}
+animation: brand-core-pulse 3s ease-out infinite;
+```
+
+### Chain Illumination
 ```css
 /* Affected nodes */
-transition: opacity 150ms ease-out, box-shadow 150ms ease-out;
-box-shadow: 0 0 12px var(--pillar-glow);
+transition: opacity 200ms ease-out, box-shadow 200ms ease-out, transform 200ms ease-out;
+transform: scale(1.3);
+box-shadow: 0 0 16px var(--pillar-glow);
 
 /* Non-affected nodes */
-opacity: 0.4;
-transition: opacity 150ms ease-out;
+opacity: 0.2;
+transition: opacity 200ms ease-out;
+```
+
+### Dashed-to-Solid Transition
+```css
+@keyframes edge-solidify {
+  0% { stroke-dasharray: 5 4; stroke-opacity: 0.4; stroke: var(--gap-color); }
+  50% { stroke-dasharray: 3 2; stroke-opacity: 0.6; stroke: var(--pillar-color); }
+  100% { stroke-dasharray: none; stroke-opacity: 0.6; stroke: var(--pillar-color); }
+}
+animation: edge-solidify 2.5s ease-in-out forwards;
 ```
 
 ### Execute Pulse
@@ -218,47 +271,62 @@ transition: opacity 150ms ease-out;
 animation: entity-pulse 800ms ease-out;
 ```
 
-### Edge Pulse
-```css
-@keyframes edge-pulse {
-  0% { stroke-width: var(--base-width); stroke-opacity: 0.5; }
-  50% { stroke-width: calc(var(--base-width) * 2); stroke-opacity: 1; }
-  100% { stroke-width: var(--base-width); stroke-opacity: 0.7; }
-}
-animation: edge-pulse 600ms ease-out;
-```
+---
 
-## CI Guardrails
+## CI Guardrail
 
 File: `scripts/check-entity-map-spec.mjs`
 
 ### Required Patterns
 | File | Pattern | Description |
 |------|---------|-------------|
-| `EntityMap.tsx` | `entity-map-v2` | Version marker |
-| `EntityMap.tsx` | `layout_seed` | Deterministic seed usage |
-| `EntityMap.tsx` | `zone:` | Zone-based positioning |
-| `EntityMap.tsx` | `hoveredActionId` | Action Stream coordination |
-| `EntityMap.tsx` | `entity-pulse` | Pulse animation class |
+| `EntityMap.tsx` | `entity-map-v3` | Version marker |
+| `EntityMap.tsx` | `ring_position` | Ring-based node placement |
+| `EntityMap.tsx` | `affinity_score` | Affinity-based angular positioning |
+| `EntityMap.tsx` | `chain_illumination` | Chain illumination on node click |
+| `EntityMap.tsx` | `cluster_node` | Cluster node overflow handling |
+| `EntityMap.tsx` | `session_events` | Session-load citation event processing |
+| `EntityMap.tsx` | `entity-pulse` | Execute pulse animation class |
 | `types.ts` | `EntityNode` | Node type definition |
 | `types.ts` | `EntityEdge` | Edge type definition |
 | `types.ts` | `ActionImpactMap` | Impact mapping type |
+| `types.ts` | `SessionCitationEvent` | Session citation event type |
+| `types.ts` | `linked_action_id` | Action Stream coherence field |
+| `types.ts` | `entity_insight` | SAGE intelligence brief field |
 
 ### Forbidden Patterns
 | File | Pattern | Reason |
 |------|---------|--------|
-| `EntityMap.tsx` | `forceSimulation` | No physics-based layout |
-| `EntityMap.tsx` | `useLayoutEffect.*position` | No position recalculation |
-| `EntityMap.tsx` | `zoom.*auto` | No auto-zoom |
+| `EntityMap.tsx` | `useLayoutEffect.*position` | No position recalculation during interaction |
+| `EntityMap.tsx` | `zoom.*auto` | No auto-zoom without user input |
+| `EntityMap.tsx` | `setInterval.*particle` | No continuous particle animation — events only |
+
+---
 
 ## Compliance Checklist
 
-- [ ] Layout uses deterministic seed, not physics simulation
-- [ ] Nodes positioned by zone, not random/force-directed
-- [ ] Top-20 constraint enforced by default
-- [ ] Hover highlights impacted nodes/edges only
-- [ ] Execute triggers pulse animation
-- [ ] No position changes during interaction
-- [ ] Pillar styling consistent with DS v3.1
-- [ ] Keyboard accessible
+- [ ] Concentric ring structure with three rings (Owned / Earned / Perceived)
+- [ ] Ring 1 nodes are topic clusters with aggregated authority weight
+- [ ] Angular position within ring computed from `affinity_score`
+- [ ] Node size computed from `authority_weight`
+- [ ] Cluster nodes created at >8 nodes per ring
+- [ ] All gap nodes have `linked_action_id` (null = system error)
+- [ ] All gap nodes have `entity_insight` from SAGE (generic = quality failure)
+- [ ] Chain illumination fires on node click with 80ms stagger
+- [ ] Cross-ring synergy edges revealed only during chain illumination
+- [ ] Citation particle animation fires on `session_events`, not as continuous stream
+- [ ] Dashed-to-solid transition fires on AUTOMATE confirmation event
+- [ ] Brand Core pulse is the only continuous animation
+- [ ] No position recalculation during interaction
+- [ ] Hover highlighting coordinates with Action Stream
 - [ ] CI guardrail passes
+
+---
+
+## Revision History
+
+| Date | Version | Change |
+|------|---------|--------|
+| (prior) | 1.0 | Initial SAGE zone-based spec |
+| (prior) | 2.0 | TypeScript contract and CI guardrail additions |
+| 2026-02-23 | 3.0 | Concentric ring architecture (D012). Event-driven animation (D013). Cluster nodes (D014). SAGE entity_insight field (D015). AUTOMATE record creation (D016). Topic cluster Ring 1 (D017). |

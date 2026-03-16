@@ -15,8 +15,6 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { redirect } from 'next/navigation';
-
 import { getCurrentUser } from '@/lib/getCurrentUser';
 import { CommandCenterTopbar } from '@/components/command-center';
 import { MSWProvider } from '@/mocks/MSWProvider';
@@ -29,23 +27,16 @@ export default async function CommandCenterLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Parent /app layout already validates auth + org — this fetch is for topbar props only
   const session = await getCurrentUser();
 
-  if (!session) {
-    redirect('/login');
-  }
-
-  if (!session.activeOrg) {
-    redirect('/onboarding');
-  }
-
   return (
-    <div className="min-h-screen bg-[#050508] flex flex-col">
+    <div className="min-h-screen bg-cc-page flex flex-col">
       {/* DS v3 Topbar - AI-native, no sidebar */}
       <CommandCenterTopbar
-        orgName={session.activeOrg.name}
-        userName={session.user.fullName || 'User'}
-        userAvatarUrl={session.user.avatarUrl || undefined}
+        orgName={session?.activeOrg?.name ?? 'Workspace'}
+        userName={session?.user.fullName || 'User'}
+        userAvatarUrl={session?.user.avatarUrl || undefined}
       />
 
       {/* Main Content - Full width beneath topbar */}

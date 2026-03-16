@@ -22,40 +22,47 @@ const PLANS = [
   {
     slug: 'starter',
     name: 'Pravado Starter',
-    description: 'For individuals and small teams getting started with AI-powered marketing',
-    monthlyPriceCents: 1000, // $10/month
+    description: 'For individuals getting started with AI-powered visibility',
+    monthlyPriceCents: 9900, // $99/month
     features: [
-      '100,000 LLM tokens/month',
-      '10 playbook runs/month',
       '1 team seat',
+      '5 SAGE proposals/day',
+      '50 CiteMind scores/month',
+      '500,000 LLM tokens/month',
+      'Basic analytics',
       'Email support',
+    ],
+  },
+  {
+    slug: 'pro',
+    name: 'Pravado Pro',
+    description: 'For teams scaling their visibility operations with full SAGE + CiteMind',
+    monthlyPriceCents: 29900, // $299/month
+    features: [
+      '3 team seats',
+      '50 SAGE proposals/day',
+      '500 CiteMind scores/month',
+      'Citation monitoring',
+      '5,000,000 LLM tokens/month',
+      'Advanced analytics',
+      'API integrations (GSC, etc.)',
+      'Priority support',
     ],
   },
   {
     slug: 'growth',
     name: 'Pravado Growth',
-    description: 'For growing teams scaling their marketing operations',
-    monthlyPriceCents: 5000, // $50/month
+    description: 'For organizations running full-stack visibility with AUTOMATE',
+    monthlyPriceCents: 79900, // $799/month
     features: [
-      '500,000 LLM tokens/month',
-      '50 playbook runs/month',
-      '5 team seats',
-      'Priority support',
+      '10 team seats',
+      'Unlimited SAGE proposals',
+      'Unlimited CiteMind scores',
+      '20,000,000 LLM tokens/month',
+      'AUTOMATE (autopilot mode)',
       'Advanced analytics',
-    ],
-  },
-  {
-    slug: 'enterprise',
-    name: 'Pravado Enterprise',
-    description: 'For large organizations with advanced requirements',
-    monthlyPriceCents: 50000, // $500/month
-    features: [
-      '5,000,000 LLM tokens/month',
-      '500 playbook runs/month',
-      '50 team seats',
+      'API integrations (GSC, etc.)',
       'Dedicated support',
-      'Custom integrations',
-      'SLA guarantee',
     ],
   },
 ];
@@ -254,11 +261,15 @@ async function bootstrapStripeBilling(): Promise<BootstrapResult> {
   console.log('BOOTSTRAP COMPLETE');
   console.log('='.repeat(60));
 
-  console.log('\n--- Environment Variables to Set ---');
+  const priceMap: Record<string, string> = {};
   for (const product of result.products) {
-    const envKey = `STRIPE_PRICE_${product.slug.toUpperCase()}`;
-    console.log(`${envKey}=${product.priceId}`);
+    priceMap[product.slug] = product.priceId;
   }
+
+  console.log('\n\u2705 Stripe bootstrap complete. Add these to your .env:\n');
+  console.log(`STRIPE_PRICE_STARTER=${priceMap['starter'] ?? ''}`);
+  console.log(`STRIPE_PRICE_PRO=${priceMap['pro'] ?? ''}`);
+  console.log(`STRIPE_PRICE_GROWTH=${priceMap['growth'] ?? ''}`);
 
   if (result.webhook) {
     console.log(`STRIPE_WEBHOOK_SECRET=${result.webhook.secret}`);

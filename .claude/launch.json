@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dashboard",
+      "runtimeExecutable": "wsl",
+      "runtimeArgs": ["-d", "Ubuntu", "--", "bash", "-c", "export PATH=\"$HOME/.local/share/pnpm:$PATH\" && cd /home/saipienlabs/projects/pravado-v2/apps/dashboard && npx next dev -H 0.0.0.0 -p 3000"],
+      "port": 3000
+    }
+  ]
+}

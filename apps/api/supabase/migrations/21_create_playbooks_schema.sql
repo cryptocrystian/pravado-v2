@@ -81,12 +81,6 @@ CREATE TABLE IF NOT EXISTS public.playbook_steps (
   next_step_key TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org consistency
-  CONSTRAINT fk_playbook_steps_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.playbooks WHERE id = playbook_id)
-  ),
-
   -- Unique key within playbook
   UNIQUE(playbook_id, key)
 );
@@ -144,12 +138,8 @@ CREATE TABLE IF NOT EXISTS public.playbook_runs (
   started_at TIMESTAMPTZ,
   completed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org consistency
-  CONSTRAINT fk_playbook_runs_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.playbooks WHERE id = playbook_id)
-  )
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  -- org_id consistency enforced at application layer
 );
 
 -- Indexes for playbook_runs
@@ -207,12 +197,8 @@ CREATE TABLE IF NOT EXISTS public.playbook_step_runs (
   started_at TIMESTAMPTZ,
   completed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  -- Ensure org consistency
-  CONSTRAINT fk_playbook_step_runs_org_consistency CHECK (
-    org_id = (SELECT org_id FROM public.playbook_runs WHERE id = run_id)
-  )
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  -- org_id consistency enforced at application layer
 );
 
 -- Indexes for playbook_step_runs

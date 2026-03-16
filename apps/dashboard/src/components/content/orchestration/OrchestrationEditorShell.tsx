@@ -134,9 +134,13 @@ function useModeChangePulse(currentMode: AutomationMode) {
 export interface TriggerAction {
   id: string;
   title: string;
-  type: 'brief_execution' | 'derivative_generation' | 'authority_optimization';
+  type: 'content_execution' | 'derivative_generation' | 'authority_optimization';
   sourceContext: {
+    contentId?: string;
+    contentTitle?: string;
+    /** @deprecated Use contentId */
     briefId?: string;
+    /** @deprecated Use contentTitle */
     briefTitle?: string;
     assetId?: string;
     assetTitle?: string;
@@ -200,8 +204,8 @@ export interface OrchestrationEditorShellProps {
 
 function getActionTypeLabel(type: TriggerAction['type']): string {
   switch (type) {
-    case 'brief_execution':
-      return 'Brief Execution';
+    case 'content_execution':
+      return 'Content Publication';
     case 'derivative_generation':
       return 'Derivative Generation';
     case 'authority_optimization':
@@ -213,7 +217,7 @@ function getActionTypeLabel(type: TriggerAction['type']): string {
 
 function getActionTypeIcon(type: TriggerAction['type']): ReactNode {
   switch (type) {
-    case 'brief_execution':
+    case 'content_execution':
       return (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -290,13 +294,13 @@ function TriggerCard({ action }: TriggerCardProps) {
           <div className="p-1.5 rounded-lg bg-brand-iris/10">
             {getActionTypeIcon(action.type)}
           </div>
-          <span className={`px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded ${priorityConfig.bg} ${priorityConfig.text}`}>
+          <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${priorityConfig.bg} ${priorityConfig.text}`}>
             {priorityConfig.label}
           </span>
         </div>
         <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded ${citeMindConfig.bg}`}>
           <span className={`w-1.5 h-1.5 rounded-full ${citeMindConfig.dot}`} />
-          <span className={`text-[10px] font-medium ${citeMindConfig.text}`}>{action.citeMindStatus}</span>
+          <span className={`text-xs font-medium ${citeMindConfig.text}`}>{action.citeMindStatus}</span>
         </div>
       </div>
 
@@ -305,11 +309,11 @@ function TriggerCard({ action }: TriggerCardProps) {
 
       {/* Context Details */}
       <div className="space-y-1">
-        <p className="text-[10px] text-white/40">
+        <p className="text-xs text-white/40">
           {getActionTypeLabel(action.type)}
         </p>
         {action.sourceContext.keyword && (
-          <p className="text-[10px] text-white/50">
+          <p className="text-xs text-white/50">
             <span className="text-white/30">Target:</span> {action.sourceContext.keyword}
           </p>
         )}
@@ -338,7 +342,7 @@ function EntityChecklist({ items }: EntityChecklistProps) {
     <div className={`${surface.panel} border ${border.subtle} rounded-lg p-3`}>
       <div className="flex items-center justify-between mb-2">
         <h4 className={labelClass}>Entity Checklist</h4>
-        <span className="text-[10px] text-brand-iris font-medium">{progress}%</span>
+        <span className="text-xs text-brand-iris font-medium">{progress}%</span>
       </div>
 
       {/* Progress bar with smooth transition */}
@@ -377,7 +381,7 @@ function EntityChecklist({ items }: EntityChecklistProps) {
                 </span>
               </div>
               {item.requiredMentions && (
-                <span className={`text-[10px] ${isJustChanged ? 'text-brand-iris' : 'text-white/30'}`}>
+                <span className={`text-xs ${isJustChanged ? 'text-brand-iris' : 'text-white/30'}`}>
                   {item.currentMentions ?? 0}/{item.requiredMentions}
                 </span>
               )}
@@ -416,7 +420,7 @@ function AEOProfiles({ profiles }: AEOProfilesProps) {
                     style={{ width: `${profile.coverage}%` }}
                   />
                 </div>
-                <span className={`text-[10px] font-medium ${statusTokens.text}`}>
+                <span className={`text-xs font-medium ${statusTokens.text}`}>
                   {profile.coverage}%
                 </span>
               </div>
@@ -441,10 +445,10 @@ function SchemaPreview({ schema }: SchemaPreviewProps) {
     <div className={`${surface.panel} border ${border.subtle} rounded-lg p-3`}>
       <div className="flex items-center justify-between mb-2">
         <h4 className={labelClass}>Schema Preview</h4>
-        <span className="text-[10px] text-white/30">JSON-LD</span>
+        <span className="text-xs text-white/30">JSON-LD</span>
       </div>
       <div className="bg-slate-1 rounded p-2 max-h-32 overflow-y-auto">
-        <pre className="text-[10px] text-white/50 font-mono whitespace-pre-wrap">
+        <pre className="text-xs text-white/50 font-mono whitespace-pre-wrap">
           {schema || '{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "...\n}'}
         </pre>
       </div>
@@ -475,7 +479,7 @@ function CiteMindStatusPanel({ status, issues = [] }: CiteMindStatusPanelProps) 
       {issues.length > 0 && (
         <div className="mt-2 space-y-1">
           {issues.slice(0, 3).map((issue, i) => (
-            <p key={i} className="text-[10px] text-semantic-warning/80 flex items-start gap-1.5">
+            <p key={i} className="text-xs text-semantic-warning/80 flex items-start gap-1.5">
               <span>⚠</span>
               <span>{issue.message}</span>
             </p>
@@ -571,7 +575,7 @@ export function OrchestrationEditorShell({
        */}
 
       {/* Header */}
-      <header className="border-b border-[#1A1A24] bg-gradient-to-b from-slate-1 to-transparent shrink-0">
+      <header className="border-b border-border-subtle bg-gradient-to-b from-slate-1 to-transparent shrink-0">
         <div className="px-6 py-3">
           <div className="max-w-[1800px] mx-auto">
             <div className="flex items-center justify-between">
@@ -599,7 +603,7 @@ export function OrchestrationEditorShell({
                       Orchestration Editor
                     </h1>
                     {hasUnsavedChanges && (
-                      <span className="px-1.5 py-0.5 text-[9px] bg-semantic-warning/10 text-semantic-warning rounded">
+                      <span className="px-1.5 py-0.5 text-xs bg-semantic-warning/10 text-semantic-warning rounded">
                         Unsaved
                       </span>
                     )}
@@ -686,7 +690,7 @@ export function OrchestrationEditorShell({
         {/* Left Pane: Strategic Anchor */}
         <aside
           className={`
-            shrink-0 border-r border-[#1A1A24] bg-slate-0 overflow-y-auto
+            shrink-0 border-r border-border-subtle bg-slate-0 overflow-y-auto
             ${motion.transition.slow}
             ${isLeftPaneCollapsed ? 'w-10' : 'w-72 xl:w-80'}
           `}
@@ -728,7 +732,7 @@ export function OrchestrationEditorShell({
               {/* Placeholder if no checklist */}
               {entityChecklist.length === 0 && (
                 <div className="p-3 bg-slate-2 border border-slate-4 rounded-lg">
-                  <p className="text-[10px] text-white/30 text-center">
+                  <p className="text-xs text-white/30 text-center">
                     Entity checklist will populate from brief
                   </p>
                 </div>
@@ -740,7 +744,7 @@ export function OrchestrationEditorShell({
         {/* Center Pane: Living Canvas */}
         <main className="flex-1 min-w-0 overflow-hidden flex flex-col bg-slate-0">
           {/* Canvas Header with AI Progress (Phase 9A) */}
-          <div className="px-4 py-2 border-b border-[#1A1A24] bg-slate-1/30 shrink-0">
+          <div className="px-4 py-2 border-b border-border-subtle bg-slate-1/30 shrink-0">
             <div className="flex items-center justify-between">
               <h2 className={labelClass}>Living Canvas</h2>
               {/* AI state label for evaluating/executing */}
@@ -751,7 +755,7 @@ export function OrchestrationEditorShell({
                     ${AI_PERCEPTUAL_SIGNALS[aiState].indicator}
                     ${AI_PERCEPTUAL_SIGNALS[aiState].motion}
                   `} />
-                  <span className={`text-[10px] ${AI_PERCEPTUAL_SIGNALS[aiState].text}`}>
+                  <span className={`text-xs ${AI_PERCEPTUAL_SIGNALS[aiState].text}`}>
                     {aiState === 'evaluating' ? 'AI analyzing...' : 'Saving...'}
                   </span>
                 </div>
@@ -787,7 +791,7 @@ export function OrchestrationEditorShell({
         {/* Right Pane: AEO Audit */}
         <aside
           className={`
-            shrink-0 border-l border-[#1A1A24] bg-slate-0 overflow-y-auto
+            shrink-0 border-l border-border-subtle bg-slate-0 overflow-y-auto
             ${motion.transition.slow}
             ${isRightPaneCollapsed ? 'w-10' : 'w-72 xl:w-80'}
           `}
@@ -825,9 +829,9 @@ export function OrchestrationEditorShell({
                 <div className={`${surface.panel} border ${border.subtle} rounded-lg p-3`}>
                   <h4 className={`${labelClass} mb-2`}>Target AI Profiles</h4>
                   <div className="flex gap-2 flex-wrap">
-                    <span className="px-2 py-1 text-[10px] bg-slate-4 text-white/50 rounded">ChatGPT</span>
-                    <span className="px-2 py-1 text-[10px] bg-slate-4 text-white/50 rounded">Gemini</span>
-                    <span className="px-2 py-1 text-[10px] bg-slate-4 text-white/50 rounded">Perplexity</span>
+                    <span className="px-2 py-1 text-xs bg-slate-4 text-white/50 rounded">ChatGPT</span>
+                    <span className="px-2 py-1 text-xs bg-slate-4 text-white/50 rounded">Gemini</span>
+                    <span className="px-2 py-1 text-xs bg-slate-4 text-white/50 rounded">Perplexity</span>
                   </div>
                 </div>
               )}

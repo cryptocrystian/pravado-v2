@@ -129,9 +129,9 @@ export function StrategicSectionEditor({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {isDraggable && (
-              <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
+              <GripVertical className="h-5 w-5 text-white/50 cursor-grab" />
             )}
-            <IconComponent className="h-5 w-5 text-muted-foreground" />
+            <IconComponent className="h-5 w-5 text-white/50" />
             <CardTitle className="text-lg">
               {section.title || getSectionTypeLabel(section.sectionType)}
             </CardTitle>
@@ -147,7 +147,7 @@ export function StrategicSectionEditor({
 
           <div className="flex items-center gap-2">
             {section.regenerationCount > 0 && (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-white/50">
                 Regenerated {section.regenerationCount}x
               </span>
             )}
@@ -221,7 +221,7 @@ export function StrategicSectionEditor({
                   <div
                     className="prose prose-sm max-w-none dark:prose-invert min-h-[300px] p-4 border rounded-md"
                     dangerouslySetInnerHTML={{
-                      __html: section.contentHtml || '<p class="text-muted-foreground">No content yet</p>',
+                      __html: section.contentHtml || '<p class="text-white/50">No content yet</p>',
                     }}
                   />
                 </TabsContent>
@@ -251,13 +251,13 @@ export function StrategicSectionEditor({
             <div
               className="prose prose-sm max-w-none dark:prose-invert"
               dangerouslySetInnerHTML={{
-                __html: section.contentHtml || '<p class="text-muted-foreground">No content generated yet. Click Generate to create content for this section.</p>',
+                __html: section.contentHtml || '<p class="text-white/50">No content generated yet. Click Generate to create content for this section.</p>',
               }}
             />
           )}
 
           {/* Section metadata */}
-          <div className="flex items-center gap-4 mt-4 pt-4 border-t text-xs text-muted-foreground">
+          <div className="flex items-center gap-4 mt-4 pt-4 border-t text-xs text-white/50">
             {section.tokensUsed > 0 && (
               <span>{section.tokensUsed.toLocaleString()} tokens</span>
             )}

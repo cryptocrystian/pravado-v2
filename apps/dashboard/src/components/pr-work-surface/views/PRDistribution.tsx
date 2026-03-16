@@ -133,7 +133,7 @@ function StatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`px-2 py-0.5 text-[11px] font-bold uppercase rounded border ${colors[status as keyof typeof colors] || colors.draft}`}>
+    <span className={`px-2 py-0.5 text-[13px] font-semibold rounded border ${colors[status as keyof typeof colors] || colors.draft}`}>
       {status.replace('_', ' ')}
     </span>
   );
@@ -161,7 +161,7 @@ function TrackBadge({ track }: { track: DistributionTrack }) {
 
   const style = config[track];
   return (
-    <span className={`px-2 py-0.5 text-[11px] font-bold uppercase rounded border ${style.bg} ${style.text} ${style.border}`}>
+    <span className={`px-2 py-0.5 text-[13px] font-semibold rounded border ${style.bg} ${style.text} ${style.border}`}>
       {style.label}
     </span>
   );
@@ -178,7 +178,7 @@ function FeatureBadge({ label, variant }: { label: string; variant: 'success' | 
   };
 
   return (
-    <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border ${styles[variant]}`}>
+    <span className={`px-1.5 py-0.5 text-[13px] font-semibold rounded border ${styles[variant]}`}>
       {label}
     </span>
   );
@@ -207,7 +207,7 @@ function MiniCalendar({ scheduledSends, onDayClick }: { scheduledSends: Schedule
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <div className="p-4 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+    <div className="p-4 rounded-xl bg-panel border border-border-subtle">
       <div className="flex items-center justify-between mb-3">
         <span className="text-[11px] font-bold text-white/70 uppercase tracking-wider">
           Next 7 Days
@@ -228,10 +228,10 @@ function MiniCalendar({ scheduledSends, onDayClick }: { scheduledSends: Schedule
                 ? 'bg-brand-magenta/15 border border-brand-magenta/30'
                 : sends.length > 0
                 ? 'bg-brand-cyan/10 border border-brand-cyan/20 hover:border-brand-cyan/40'
-                : 'bg-[#0A0A0F] border border-transparent hover:border-[#1A1A24]'
+                : 'bg-slate-1 border border-transparent hover:border-border-subtle'
             }`}
           >
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-white/40 uppercase tracking-wider">
               {dayNames[date.getDay()]}
             </span>
             <span className={`text-sm font-semibold ${isToday ? 'text-brand-magenta' : 'text-white/85'}`}>
@@ -290,7 +290,7 @@ function ScheduledSendsList({
 
   if (sends.length === 0) {
     return (
-      <div className="p-6 text-center rounded-xl border border-dashed border-[#2A2A36] bg-[#0D0D12]/50">
+      <div className="p-6 text-center rounded-xl border border-dashed border-slate-5 bg-panel/50">
         <p className="text-sm text-white/55">No scheduled sends</p>
         <p className="text-[13px] text-white/40 mt-1">Use "Send Later" to schedule outreach</p>
       </div>
@@ -312,12 +312,12 @@ function ScheduledSendsList({
       {sortedSends.map((send) => (
         <div
           key={send.id}
-          className="p-3 rounded-lg bg-[#0A0A0F] border border-[#1A1A24] hover:border-[#2A2A36] transition-all"
+          className="p-3 rounded-lg bg-slate-1 border border-border-subtle hover:border-slate-5 transition-all"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className={`px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded ${
+                <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${
                   send.type === 'pitch'
                     ? 'bg-brand-magenta/15 text-brand-magenta'
                     : 'bg-brand-iris/15 text-brand-iris'
@@ -414,10 +414,10 @@ function SendLaterPicker({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-[#0A0A0F]/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-sm p-6 bg-[#0D0D12] border border-[#1A1A24] rounded-2xl shadow-elev-3">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-sm p-6 bg-panel border border-border-subtle rounded-2xl shadow-elev-3">
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-lg font-semibold text-white">Schedule Send</h3>
+          <h3 className="text-lg font-semibold text-white/95">Schedule Send</h3>
           <button
             type="button"
             onClick={onClose}
@@ -440,7 +440,7 @@ function SendLaterPicker({
               min={today}
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg bg-[#0A0A0F] border border-[#1A1A24] text-white focus:outline-none focus:border-brand-magenta/50 transition-colors"
+              className="w-full px-3 py-2.5 rounded-lg bg-slate-1 border border-border-subtle text-white focus:outline-none focus:border-brand-magenta/50 transition-colors"
             />
           </div>
 
@@ -452,7 +452,7 @@ function SendLaterPicker({
             <select
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg bg-[#0A0A0F] border border-[#1A1A24] text-white focus:outline-none focus:border-brand-magenta/50 transition-colors"
+              className="w-full px-3 py-2.5 rounded-lg bg-slate-1 border border-border-subtle text-white focus:outline-none focus:border-brand-magenta/50 transition-colors"
             >
               {timeOptions.map((time) => (
                 <option key={time} value={time}>
@@ -525,7 +525,7 @@ export function PRDistribution() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-white">Distribution</h2>
+          <h2 className="text-base font-semibold text-white/95">Distribution</h2>
           <p className="text-[13px] text-white/40 mt-0.5">Amplify your message with precision timing</p>
         </div>
         <button
@@ -543,7 +543,7 @@ export function PRDistribution() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Release List */}
         <div className="lg:col-span-3 space-y-4">
-          <h3 className="text-[10px] font-bold uppercase tracking-wider text-white/50">
+          <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50">
             Press Releases
           </h3>
 
@@ -556,13 +556,13 @@ export function PRDistribution() {
                 className={`w-full text-left p-4 rounded-xl border transition-all ${
                   selectedRelease?.id === release.id
                     ? 'border-brand-magenta/50 bg-brand-magenta/5 ring-1 ring-brand-magenta/30'
-                    : 'border-[#1A1A24] bg-[#0D0D12] hover:border-[#2A2A36] hover:bg-[#111116]'
+                    : 'border-border-subtle bg-panel hover:border-slate-5 hover:bg-slate-2'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <StatusBadge status={release.status} />
                   {release.schema?.generated && (
-                    <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30">
+                    <span className="px-1.5 py-0.5 text-[13px] font-semibold rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30">
                       Schema
                     </span>
                   )}
@@ -577,7 +577,7 @@ export function PRDistribution() {
             ))}
 
             {releases.length === 0 && (
-              <div className="p-8 text-center rounded-xl border border-dashed border-[#2A2A36] bg-[#0D0D12]/50">
+              <div className="p-8 text-center rounded-xl border border-dashed border-slate-5 bg-panel/50">
                 <p className="text-sm text-white/55">No press releases yet</p>
                 <button
                   type="button"
@@ -596,11 +596,11 @@ export function PRDistribution() {
           {selectedRelease ? (
             <div className="space-y-6">
               {/* Selected Release Preview */}
-              <div className="p-5 rounded-xl bg-[#0D0D12] border border-[#1A1A24]">
+              <div className="p-5 rounded-xl bg-panel border border-border-subtle">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <StatusBadge status={selectedRelease.status} />
-                    <h3 className="text-xl font-semibold text-white mt-2">
+                    <h3 className="text-xl font-semibold text-white/95 mt-2">
                       {selectedRelease.headline}
                     </h3>
                     {selectedRelease.subheadline && (
@@ -635,14 +635,14 @@ export function PRDistribution() {
                   onDistribute={handleDistribute}
                 />
               ) : (
-                <div className="p-8 text-center rounded-xl border border-dashed border-[#2A2A36] bg-[#0D0D12]/50">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[#13131A] flex items-center justify-center">
+                <div className="p-8 text-center rounded-xl border border-dashed border-slate-5 bg-panel/50">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-slate-2 flex items-center justify-center">
                     <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
                   <p className="text-sm text-white/55 mb-2">
-                    This release is in <strong className="text-white">{selectedRelease.status}</strong> status
+                    This release is in <strong className="text-white/90">{selectedRelease.status}</strong> status
                   </p>
                   <p className="text-[13px] text-white/40">
                     Mark it as "ready" to enable distribution options
@@ -651,9 +651,9 @@ export function PRDistribution() {
               )}
             </div>
           ) : (
-            <div className="h-full min-h-[400px] flex items-center justify-center p-12 rounded-xl border border-dashed border-[#2A2A36] bg-[#0D0D12]/50">
+            <div className="h-full min-h-[400px] flex items-center justify-center p-12 rounded-xl border border-dashed border-slate-5 bg-panel/50">
               <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#13131A] flex items-center justify-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-2 flex items-center justify-center">
                   <svg className="w-8 h-8 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                   </svg>
@@ -670,13 +670,13 @@ export function PRDistribution() {
         {/* Right: Scheduled Sends Panel */}
         <div className="lg:col-span-3 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-[10px] font-bold uppercase tracking-wider text-white/50">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50">
               Scheduled Sends
             </h3>
             <button
               type="button"
               onClick={() => setShowSendLaterPicker(true)}
-              className={`flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-colors ${prAccent.bg} ${prAccent.text} hover:bg-brand-magenta/20`}
+              className={`flex items-center gap-1 px-2.5 py-1.5 text-[13px] font-medium rounded-lg transition-colors ${prAccent.bg} ${prAccent.text} hover:bg-brand-magenta/20`}
             >
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -719,35 +719,35 @@ export function PRDistribution() {
 
       {/* Recent Distributions */}
       <div className="mt-8">
-        <h3 className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-4">
+        <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-4">
           Recent Distributions
         </h3>
 
-        <div className="overflow-hidden rounded-xl border border-[#1A1A24]">
+        <div className="overflow-hidden rounded-xl border border-border-subtle">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#13131A]">
-                <th className="px-4 py-3 text-left text-[10px] font-bold text-white/50 uppercase tracking-wider">
+              <tr className="bg-slate-2">
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-white/50 uppercase tracking-wider">
                   Release
                 </th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold text-white/50 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-white/50 uppercase tracking-wider">
                   Track
                 </th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold text-white/50 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-white/50 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold text-white/50 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-white/50 uppercase tracking-wider">
                   Distributed
                 </th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold text-white/50 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-white/50 uppercase tracking-wider">
                   Features
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1A1A24]">
+            <tbody className="divide-y divide-border-subtle">
               {MOCK_DISTRIBUTIONS.length > 0 ? (
                 MOCK_DISTRIBUTIONS.map((dist) => (
-                  <tr key={dist.id} className="hover:bg-[#111116] transition-colors">
+                  <tr key={dist.id} className="hover:bg-slate-2 transition-colors">
                     <td className="px-4 py-3 text-sm text-white/85">
                       Release #{dist.releaseId}
                     </td>
