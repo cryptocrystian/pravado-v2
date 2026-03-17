@@ -2,6 +2,6 @@
   "version": 2,
   "framework": "nextjs",
   "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm --filter @pravado/dashboard build",
+  "buildCommand": "pnpm --filter @pravado/feature-flags build && pnpm --filter @pravado/types build && pnpm --filter @pravado/utils build && pnpm --filter @pravado/validators build && pnpm --filter @pravado/dashboard build",
   "outputDirectory": "apps/dashboard/.next"
 }
