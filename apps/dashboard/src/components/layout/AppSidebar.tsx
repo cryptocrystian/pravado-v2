@@ -81,11 +81,6 @@ const icons = {
   ),
 };
 
-// AI Presence Dot
-const AIPresenceDot = () => (
-  <span className="w-2 h-2 rounded-full bg-brand-cyan animate-ai-pulse" aria-label="AI Active" />
-);
-
 const navItems = [
   { name: 'Command Center', href: '/app/command-center', icon: icons.commandCenter },
   { name: 'PR', href: '/app/pr', icon: icons.pr },
