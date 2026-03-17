@@ -98,7 +98,18 @@ Admin
 - Table row counts for key tables (orgs, sage_proposals, evi_snapshots, citation_monitor_results)
 - Migration status: last applied migration number + timestamp
 
-#### 2d. Error Log
+#### 2d. Render Service Health
+- Live status of `pravado-api.onrender.com` — green/yellow/red
+- Last health check timestamp (poll GET /health every 60s from admin dashboard)
+- Response time trend (P50/P95 last 24h) — slow response = approaching cold start
+- Uptime % (30-day rolling)
+- **Cold start indicator**: if last response time > 10s, show amber banner: "API cold start detected — response times elevated"
+- Manual "Ping API" button to wake the service if it has gone cold
+- Note: Render free tier spins down after 15 min inactivity. Upgrade to Starter ($7/mo) to eliminate cold starts entirely.
+
+Data source: proxy health checks through `/api/v1/admin/platform/render-health` which hits the Render API or directly pings the service.
+
+#### 2e. Error Log
 - Recent Sentry errors, grouped by issue
 - Filter by severity, time range, surface
 - Link to full Sentry issue

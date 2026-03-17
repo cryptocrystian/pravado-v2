@@ -200,9 +200,9 @@ export default function BetaRequestPage() {
 
         <p className="mt-6 text-center text-xs" style={{ color: '#3D3D4A' }}>
           By requesting access, you agree to Pravado&apos;s{' '}
-          <a href="#" className="hover:underline" style={{ color: '#00D9FF' }}>Terms of Service</a>
+          <a href="/legal/terms" className="hover:underline" style={{ color: '#00D9FF' }}>Terms of Service</a>
           {' '}and{' '}
-          <a href="#" className="hover:underline" style={{ color: '#00D9FF' }}>Privacy Policy</a>
+          <a href="/legal/privacy" className="hover:underline" style={{ color: '#00D9FF' }}>Privacy Policy</a>
         </p>
       </div>
     </div>

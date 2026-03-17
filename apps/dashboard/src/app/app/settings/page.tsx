@@ -178,6 +178,17 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* Legal */}
+        <div className="pt-6 mt-6 border-t border-border-subtle">
+          <h3 className="text-sm font-semibold text-white/70 mb-3">Legal</h3>
+          <div className="space-y-2">
+            <a href="/legal/terms" target="_blank" rel="noopener noreferrer" className="block text-sm text-white/50 hover:text-white/80 transition-colors">Terms of Service &rarr;</a>
+            <a href="/legal/privacy" target="_blank" rel="noopener noreferrer" className="block text-sm text-white/50 hover:text-white/80 transition-colors">Privacy Policy &rarr;</a>
+            <a href="/legal/cookies" target="_blank" rel="noopener noreferrer" className="block text-sm text-white/50 hover:text-white/80 transition-colors">Cookie Policy &rarr;</a>
+            <a href="/legal/acceptable-use" target="_blank" rel="noopener noreferrer" className="block text-sm text-white/50 hover:text-white/80 transition-colors">Acceptable Use Policy &rarr;</a>
+          </div>
+        </div>
       </div>
     </div>
   );

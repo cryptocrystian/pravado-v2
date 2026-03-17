@@ -58,14 +58,7 @@ const getRedirectUrl = (type: 'oauth' | 'magic_link' = 'oauth') => {
   const path = type === 'oauth' ? '/auth/callback' : '/callback';
 
   if (typeof window === 'undefined') {
-    return `https://pravado-dashboard.vercel.app${path}`;
-  }
-
-  const isProduction = window.location.hostname === 'pravado-dashboard.vercel.app'
-    || window.location.hostname.includes('vercel.app');
-
-  if (isProduction) {
-    return `https://pravado-dashboard.vercel.app${path}`;
+    return `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.pravado.io'}${path}`;
   }
 
   return `${window.location.origin}${path}`;
@@ -387,8 +380,8 @@ export default function LoginPage() {
         <div className="auth-card p-8 space-y-8">
           {/* Header */}
           <div className="text-center space-y-2">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <PravadoLogo iconSize={32} fontSize="20px" />
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <PravadoLogo iconSize={48} fontSize="28px" />
               <AIPresenceDot status={loading || oauthLoading ? 'analyzing' : 'idle'} />
             </div>
             <h1 className="text-xl font-semibold text-white">
@@ -597,9 +590,9 @@ export default function LoginPage() {
         {/* Footer (DS v3) */}
         <p className="mt-6 text-center text-xs" style={{ color: '#3D3D4A' }}>
           By continuing, you agree to Pravado&apos;s{' '}
-          <a href="#" className="hover:underline" style={{ color: '#00D9FF' }}>Terms of Service</a>
+          <a href="/legal/terms" className="hover:underline" style={{ color: '#00D9FF' }}>Terms of Service</a>
           {' '}and{' '}
-          <a href="#" className="hover:underline" style={{ color: '#00D9FF' }}>Privacy Policy</a>
+          <a href="/legal/privacy" className="hover:underline" style={{ color: '#00D9FF' }}>Privacy Policy</a>
         </p>
       </div>
     </div>
