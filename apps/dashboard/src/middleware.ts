@@ -132,12 +132,28 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Admin route protection (ADMIN-01):
+  // /app/admin/* requires is_admin = true on the user's profile
+  if (user && pathname.startsWith('/app/admin')) {
+    const { data: adminProfile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (!adminProfile?.is_admin) {
+      console.log('[Middleware] Non-admin user accessing /app/admin, redirecting');
+      return NextResponse.redirect(new URL('/app/command-center', request.url));
+    }
+  }
+
   return response;
 }
 
 export const config = {
   matcher: [
     '/app/:path*',
+    '/app/admin/:path*',
     '/onboarding/:path*',
     '/login',
     '/api/auth/signout',

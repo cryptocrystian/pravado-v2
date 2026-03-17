@@ -75,6 +75,7 @@ import { gscRoutes } from './routes/integrations/gsc'; // S-INT-06
 import { journalistEnrichmentRoutes } from './routes/journalists/enrichment'; // S-INT-06
 import { onboardingRoutes } from './routes/onboarding'; // S-INT-07
 import { betaRoutes } from './routes/beta'; // S-INT-09
+import { adminRoutes } from './routes/admin'; // Admin panel
 import { clientLogsRoutes } from './routes/clientLogs'; // S79
 
 const logger = createLogger('api:server');
@@ -414,6 +415,11 @@ export async function createServer() {
   // Beta Request routes (S-INT-09)
   await server.register(betaRoutes, {
     prefix: '/api/v1/beta',
+  });
+
+  // Admin panel routes
+  await server.register(adminRoutes, {
+    prefix: '/api/v1/admin',
   });
 
   // Root endpoint
