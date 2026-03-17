@@ -640,12 +640,28 @@ Components: Output Telemetry → Quality Eval Jobs → Threshold Governance → 
 Admin dashboard to be built alongside (see docs/admin-dashboard-spec.md when created)
 
 ### Remaining Pre-Beta Checklist
-- [ ] Restart dev server and do final smoke verification of all surfaces
-- [ ] Run cleanupTestOrgs.ts --confirm to remove 23 ghost orgs
-- [ ] First intelligence quality eval run (docs/evals/ rubrics — CiteMind benchmark)
-- [ ] Render production deployment
-- [ ] Google OAuth production URIs added (app.pravado.com)
-- [ ] Uptime monitor on /health
-- [ ] S-GOV-01: Intelligence Governance Layer (Phase 1: CiteMind benchmark job + output telemetry)
+- [x] Restart dev server and do final smoke verification of all surfaces
+- [x] Run cleanupTestOrgs.ts --confirm — 23 ghost orgs + 22 org_members deleted
+- [x] Render production deployment — https://pravado-api.onrender.com LIVE
+- [x] Redis Cloud connected — database: ok, redis: ok
+- [x] All 36 production env vars configured on Render
+- [x] Auto-deploy on push to main enabled
+- [ ] Vercel env vars set + dashboard redeploy (docs/deployment/VERCEL_ENV_VARS.md)
+- [ ] Google OAuth production URIs added (docs/deployment/GOOGLE_OAUTH_CHECKLIST.md)
+- [ ] Supabase redirect URL: https://pravado-dashboard.vercel.app/auth/callback
+- [ ] First intelligence quality eval run (docs/evals/ — CiteMind benchmark)
+- [ ] Uptime monitor on https://pravado-api.onrender.com/health
+- [ ] S-GOV-01: Intelligence Governance Layer (Phase 1)
 - [ ] Admin dashboard build sprint
 - [ ] First beta invite sent
+
+### Production Infrastructure (2026-03-15)
+| Service | URL | Status |
+|---------|-----|--------|
+| API (Fastify) | https://pravado-api.onrender.com | ✅ Live |
+| Dashboard (Next.js) | https://pravado-dashboard.vercel.app | ⏳ Needs env vars |
+| Database | Supabase (kroexsdyyqmlxfpbwajv) | ✅ Connected |
+| Redis | Redis Cloud (redis-13861) | ✅ Connected |
+| Stripe | Live mode | ✅ Configured |
+| Sentry | Initialized | ✅ Active |
+| PostHog | Initialized | ✅ Active |
