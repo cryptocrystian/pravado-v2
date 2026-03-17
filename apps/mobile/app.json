@@ -1,32 +1,49 @@
 {
   "expo": {
-    "name": "Pravado Mobile",
+    "name": "Pravado",
     "slug": "pravado-mobile",
-    "version": "0.0.0-s0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0A0A0F",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0A0A0F"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.pravado.mobile"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.pravado.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Not used",
+        "NSMicrophoneUsageDescription": "Not used"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0A0A0F"
       },
       "package": "com.pravado.mobile"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-router"],
-    "scheme": "pravado"
+    "scheme": "pravado",
+    "plugins": [
+      "expo-router",
+      ["expo-notifications", {
+        "icon": "./assets/icon.png",
+        "color": "#A855F7"
+      }],
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "pravado-mobile"
+      }
+    }
   }
 }
