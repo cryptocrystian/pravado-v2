@@ -1,0 +1,14 @@
+# Exclude the API — only the dashboard deploys to Vercel
+apps/api
+
+# Exclude build artifacts and local state
+.git
+apps/dashboard/.next
+apps/dashboard/node_modules
+**/.DS_Store
+**/coverage
+**/dist
+
+# Do NOT exclude packages/* — workspace packages are needed at build time
+# packages/feature-flags, packages/types, packages/utils, packages/validators
+# must all be available during pnpm install + next build
