@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { OrgSwitcher } from '@/components/OrgSwitcher';
+import { PravadoLogo } from '@/components/brand/PravadoLogo';
 
 interface Org {
   id: string;
@@ -119,10 +120,9 @@ export function AppSidebar({ currentOrg, allOrgs, user }: AppSidebarProps) {
   return (
     <aside className="w-72 bg-slate-1 border-r border-border-subtle flex flex-col flex-shrink-0">
       {/* Logo */}
-      <div className="h-16 flex items-center px-6 border-b border-border-subtle">
-        <div className="flex items-center gap-2">
-          <span className="text-xl font-bold text-gradient-hero">Pravado</span>
-          <AIPresenceDot />
+      <div className="h-16 flex items-center px-4 border-b border-border-subtle">
+        <div className="flex items-center gap-1">
+          <PravadoLogo iconSize={28} fontSize="16px" />
         </div>
       </div>
 

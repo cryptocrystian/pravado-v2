@@ -12,6 +12,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { PravadoLogo } from '@/components/brand/PravadoLogo';
 
 // SVG Icons for OAuth providers
 const GoogleIcon = () => (
@@ -327,7 +328,7 @@ export default function LoginPage() {
           <div className="auth-card p-8 space-y-6">
             <div className="text-center space-y-2">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <span className="text-2xl font-bold text-gradient-hero">Pravado</span>
+                <PravadoLogo iconSize={32} fontSize="20px" />
               </div>
               <h1 className="text-xl font-semibold text-white">Two-Factor Authentication</h1>
               <p className="text-sm text-muted">
@@ -387,7 +388,7 @@ export default function LoginPage() {
           {/* Header */}
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="text-2xl font-bold text-gradient-hero">Pravado</span>
+              <PravadoLogo iconSize={32} fontSize="20px" />
               <AIPresenceDot status={loading || oauthLoading ? 'analyzing' : 'idle'} />
             </div>
             <h1 className="text-xl font-semibold text-white">
