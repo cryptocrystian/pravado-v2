@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { PravadoLogoIcon } from '@/components/brand/PravadoLogo';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
@@ -27,8 +28,9 @@ export function AdminShell({ children, userEmail }: AdminShellProps) {
       {/* Sidebar */}
       <aside className="w-56 flex flex-col shrink-0" style={{ background: '#13131A', borderRight: '1px solid #1F1F28' }}>
         {/* Logo area */}
-        <div className="h-14 flex items-center gap-2 px-4" style={{ borderBottom: '1px solid #1F1F28' }}>
-          <span className="text-sm font-bold text-white/90">Pravado</span>
+        <div className="h-14 flex items-center gap-2 px-3" style={{ borderBottom: '1px solid #1F1F28' }}>
+          <PravadoLogoIcon size={22} />
+          <span className="text-sm font-bold text-white/90 tracking-[0.1em]">PRAVADO</span>
           <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-semantic-danger/20 text-semantic-danger">
             Admin
           </span>
