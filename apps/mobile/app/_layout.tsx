@@ -5,6 +5,7 @@ import { Session } from '@supabase/supabase-js';
 import { supabase } from '../src/lib/supabase';
 import { registerForPushNotifications } from '../src/lib/notifications';
 import * as Notifications from 'expo-notifications';
+import * as ExpoLinking from 'expo-linking';
 
 export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
@@ -43,6 +44,31 @@ export default function RootLayout() {
       else if (data.screen === 'content' && data.id) router.push(`/content/${data.id}`);
       else if (data.screen === 'analytics') router.push('/(tabs)/analytics');
     });
+    return () => sub.remove();
+  }, [router]);
+
+  // Deep link handling
+  useEffect(() => {
+    function handleUrl(event: { url: string }) {
+      try {
+        const parsed = new URL(event.url);
+        const path = parsed.pathname;
+        if (path.startsWith('/app/content/')) {
+          const contentId = path.replace('/app/content/', '');
+          if (contentId) router.push(`/content/${contentId}`);
+        } else if (path.startsWith('/app/pr')) {
+          router.push('/(tabs)/pr');
+        } else if (path.startsWith('/app/analytics')) {
+          router.push('/(tabs)/analytics');
+        } else if (path.startsWith('/app/command-center') || path === '/app') {
+          router.push('/(tabs)');
+        }
+      } catch {}
+    }
+
+    const sub = ExpoLinking.addEventListener('url', handleUrl);
+    // Check initial URL
+    ExpoLinking.getInitialURL().then(url => { if (url) handleUrl({ url }); });
     return () => sub.remove();
   }, [router]);
 
