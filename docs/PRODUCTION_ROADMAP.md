@@ -634,6 +634,45 @@ All 7 surfaces audited via live browser testing (Chrome extension). Bugs found, 
 - Billing settings page created at /app/settings/billing
 - Settings sub-route redirects (/integrations, /notifications → /settings)
 
+### Proprietary IP Portfolio
+
+#### Trade Secrets (protected immediately, no filing required)
+| Asset | Protection | Status |
+|-------|-----------|--------|
+| EVI formula weights (V×0.40 + A×0.35 + M×0.25) | DTSA trade secret | ✅ Active — ToS prohibits reverse engineering, API exposes scores only |
+| CiteMind 6-factor scoring algorithm + weights | DTSA trade secret | ✅ Active — heuristic logic never exposed via API |
+| SAGE signal scoring + proposal generation prompts | DTSA trade secret | ✅ Active — LLM prompts are server-side only |
+
+#### Trademark Filings (register at USPTO.gov)
+| Mark | Class | Priority | Notes |
+|------|-------|----------|-------|
+| PRAVADO | Class 42 (SaaS) | High | Search TESS first |
+| EARNED VISIBILITY INDEX | Class 42 + 35 | High | Core branded metric |
+| EVI (in marketing/SaaS context) | Class 42 + 35 | High | File with design mark |
+| CITEMIND | Class 42 | High | Coined compound word, strong distinctiveness |
+| SAGE (AI strategy orchestration) | Class 42 | Medium | Common word, verify clearance |
+| Nexus-P logo mark | Class 42 | Medium | File as design mark |
+
+**Filing cost:** ~$350/class via USPTO TEAS Plus. Recommend IP attorney review goods/services description (~$1,500 total). Texas State Bar referral: texasbar.com/findalawyer
+
+#### Copyright (automatic, registration strengthens enforcement)
+- Nexus-P logo — register at copyright.gov ($65) for statutory damages eligibility
+- Source code — copyright attaches automatically; document creation dates
+
+#### Patent (defer until post-revenue)
+- CiteMind AI citation scoring methodology — potentially patentable as business method
+- Cost: $10–20k + 2–3 year timeline — revisit at Series A
+- Trade secret protection is stronger and faster at current stage
+
+#### Operational IP Protection Checklist
+- [ ] Conduct USPTO TESS searches for all 6 marks above
+- [ ] File PRAVADO, EVI, EARNED VISIBILITY INDEX, CITEMIND trademarks
+- [ ] Register Nexus-P logo copyright
+- [ ] Add IP Assignment clause to all contractor/employee agreements
+- [ ] Create dated invention disclosure documents for EVI formula + CiteMind algorithm
+- [ ] API (when built): expose scores only, never factor weights or formula internals
+- [ ] Mark all internal methodology docs as CONFIDENTIAL — TRADE SECRET
+
 ### Intelligence Governance Layer — PLANNED (S-GOV-01)
 Design complete. Build scheduled after Render deployment.
 Components: Output Telemetry → Quality Eval Jobs → Threshold Governance → Recalibration Triggers

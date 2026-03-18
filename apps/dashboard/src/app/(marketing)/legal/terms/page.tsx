@@ -345,7 +345,33 @@ export default function TermsPage() {
         expressly permitted.
       </P>
 
-      <H3>9.2 Feedback</H3>
+      <H3>9.2 Trade Secrets</H3>
+      <P>
+        The following constitute valuable trade secrets of Saipien Labs LLC
+        protected under the Defend Trade Secrets Act (18 U.S.C. § 1836) and
+        applicable state law: (a) the EVI (Earned Visibility Index) scoring
+        formula, component weights, and calculation methodology; (b) the
+        CiteMind content quality scoring algorithm, factor weights, and
+        citation-pattern analysis logic; (c) the SAGE signal scoring,
+        opportunity ranking, and proposal generation systems; and (d) any
+        other proprietary methodologies, algorithms, or data models underlying
+        the Service. You agree not to attempt to discover, derive, reconstruct,
+        or reproduce any such trade secrets through reverse engineering,
+        benchmarking, systematic querying, or any other means. Any outputs
+        returned by the Service (scores, recommendations, reports) are provided
+        for your business use only and may not be used to build competing
+        systems or to infer the underlying methodologies.
+      </P>
+
+      <H3>9.3 Trademark</H3>
+      <P>
+        &quot;Pravado,&quot; &quot;Earned Visibility Index,&quot;
+        &quot;EVI,&quot; &quot;CiteMind,&quot; &quot;SAGE,&quot; and the
+        Pravado logo are trademarks or pending trademarks of Saipien Labs LLC.
+        You may not use these marks without our prior written consent.
+      </P>
+
+      <H3>9.4 Feedback</H3>
       <P>
         If you provide suggestions, ideas, enhancement requests, or other
         feedback regarding the Service (&quot;Feedback&quot;), you grant us a
