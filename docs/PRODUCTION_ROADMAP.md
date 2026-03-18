@@ -664,8 +664,8 @@ Infrastructure: Supabase auth + SecureStore, API client with auto-auth, push not
 **Manual steps before App Store submission:**
 - [ ] Replace placeholder assets with real Nexus-P brand icons (1024×1024)
 - [x] Apply migration 89 via Supabase SQL Editor — device_push_tokens table live
-- [ ] Create .well-known/apple-app-site-association on app.pravado.io
-- [ ] Create .well-known/assetlinks.json on app.pravado.io
+- [x] Create .well-known/apple-app-site-association on app.pravado.io — live, Team ID placeholder
+- [x] Create .well-known/assetlinks.json on app.pravado.io — live, SHA-256 placeholder
 - [ ] Link EAS to Apple Developer + Google Play accounts
 - [ ] npx eas build --platform all --profile preview → TestFlight + Play internal track
 - [ ] Capture screenshots for store listings

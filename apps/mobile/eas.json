@@ -3,16 +3,27 @@
     "version": ">= 5.0.0"
   },
   "build": {
+    "base": {
+      "node": "20.20.1",
+      "pnpm": "9.0.0",
+      "env": {
+        "EXPO_USE_METRO_WORKSPACE_ROOT": "1",
+        "CI": "0"
+      }
+    },
     "development": {
+      "extends": "base",
       "developmentClient": true,
       "distribution": "internal"
     },
     "preview": {
+      "extends": "base",
       "distribution": "internal",
       "ios": { "simulator": false },
       "android": { "buildType": "apk" }
     },
     "production": {
+      "extends": "base",
       "ios": { "resourceClass": "m1-medium" },
       "android": { "buildType": "aab" }
     }
