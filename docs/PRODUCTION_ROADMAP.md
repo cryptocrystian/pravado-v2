@@ -653,13 +653,22 @@ Admin dashboard to be built alongside (see docs/admin-dashboard-spec.md when cre
 
 Infrastructure: Supabase auth + SecureStore, API client with auto-auth, push notification registration, DS v3 dark theme, expo-router, EAS config
 
-### Mobile App — Sprint MOBILE-02 Planned
-- App icons + splash screen assets (Nexus-P brand)
-- Content Detail + Pitch Detail full screens (expand from stubs)
-- EAS build --profile preview → TestFlight + Play Store internal track
-- API endpoint: POST /notifications/register-device (push token storage)
-- App Store / Play Store metadata (description, screenshots, keywords)
-- Deep link handling: app.pravado.io links open in mobile app
+### Mobile App — Sprint MOBILE-02 Complete (2026-03-15)
+- ✅ POST /api/v1/notifications/register-device (migration 89)
+- ✅ Content Detail — CiteMind 6-factor bars, gate status, approve action
+- ✅ Pitch Detail — journalist card, full pitch body, 5-step status timeline, EVI attribution
+- ✅ Deep linking — iOS associatedDomains + Android intent filters for app.pravado.io
+- ✅ Store metadata — iOS/Android descriptions, keywords, categories
+- ✅ Placeholder assets + pre-build check script
+
+**Manual steps before App Store submission:**
+- [ ] Replace placeholder assets with real Nexus-P brand icons (1024×1024)
+- [x] Apply migration 89 via Supabase SQL Editor — device_push_tokens table live
+- [ ] Create .well-known/apple-app-site-association on app.pravado.io
+- [ ] Create .well-known/assetlinks.json on app.pravado.io
+- [ ] Link EAS to Apple Developer + Google Play accounts
+- [ ] npx eas build --platform all --profile preview → TestFlight + Play internal track
+- [ ] Capture screenshots for store listings
 
 ### Remaining Pre-Beta Checklist
 - [x] Restart dev server and do final smoke verification of all surfaces
