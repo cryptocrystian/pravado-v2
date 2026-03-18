@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.pravado.mobile",
+      "sha256_cert_fingerprints": [
+        "TODO: Replace with SHA-256 fingerprint from EAS build output"
+      ]
+    }
+  }
+]
