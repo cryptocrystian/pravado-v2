@@ -639,6 +639,28 @@ Design complete. Build scheduled after Render deployment.
 Components: Output Telemetry → Quality Eval Jobs → Threshold Governance → Recalibration Triggers
 Admin dashboard to be built alongside (see docs/admin-dashboard-spec.md when created)
 
+### Mobile App — Sprint MOBILE-01 Complete (2026-03-15)
+| Screen | Status |
+|--------|--------|
+| Login (Google OAuth + Magic Link) | ✅ |
+| Today (EVI, SAGE brief, pending actions, CiteMind feed) | ✅ |
+| Action Queue (filter, swipe approve/dismiss) | ✅ |
+| Analytics (EVI trend, time range, driver cards) | ✅ |
+| Content (status tabs, CiteMind badges) | ✅ |
+| PR (Pitches/Coverage/Journalists) | ✅ |
+| Content Detail (modal stub) | ✅ |
+| Pitch Detail (modal stub) | ✅ |
+
+Infrastructure: Supabase auth + SecureStore, API client with auto-auth, push notification registration, DS v3 dark theme, expo-router, EAS config
+
+### Mobile App — Sprint MOBILE-02 Planned
+- App icons + splash screen assets (Nexus-P brand)
+- Content Detail + Pitch Detail full screens (expand from stubs)
+- EAS build --profile preview → TestFlight + Play Store internal track
+- API endpoint: POST /notifications/register-device (push token storage)
+- App Store / Play Store metadata (description, screenshots, keywords)
+- Deep link handling: app.pravado.io links open in mobile app
+
 ### Remaining Pre-Beta Checklist
 - [x] Restart dev server and do final smoke verification of all surfaces
 - [x] Run cleanupTestOrgs.ts --confirm — 23 ghost orgs + 22 org_members deleted

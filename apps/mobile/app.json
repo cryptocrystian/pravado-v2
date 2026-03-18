@@ -16,6 +16,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.pravado.mobile",
+      "associatedDomains": ["applinks:app.pravado.io"],
       "infoPlist": {
         "NSCameraUsageDescription": "Not used",
         "NSMicrophoneUsageDescription": "Not used"
@@ -26,7 +27,15 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0A0A0F"
       },
-      "package": "com.pravado.mobile"
+      "package": "com.pravado.mobile",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [{"scheme": "https", "host": "app.pravado.io"}],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
