@@ -42,5 +42,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "pnpm": {
+    "overrides": {
+      "expo-router>expo-linking": "~6.2.2"
+    }
+  }
 }
