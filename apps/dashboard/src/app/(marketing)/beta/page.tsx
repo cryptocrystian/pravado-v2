@@ -13,6 +13,20 @@ import { useState } from 'react';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
+const TOOL_OPTIONS = [
+  'Semrush or Ahrefs',
+  'Cision or Muck Rack',
+  'Meltwater or Brandwatch',
+  'HubSpot',
+  'None of these',
+];
+
+const FEEDBACK_OPTIONS = [
+  'Yes — happy to',
+  'Maybe',
+  'No thanks',
+];
+
 export default function BetaRequestPage() {
   const [email, setEmail] = useState('');
   const [companyName, setCompanyName] = useState('');
@@ -21,10 +35,25 @@ export default function BetaRequestPage() {
   const [referralSource, setReferralSource] = useState('');
   const [formState, setFormState] = useState<FormState>('idle');
   const [message, setMessage] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
+  const [companyWebsite, setCompanyWebsite] = useState('');
+  const [currentTools, setCurrentTools] = useState<string[]>([]);
+  const [feedbackCall, setFeedbackCall] = useState('');
+  const [emailError, setEmailError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormState('submitting');
+
+    const freeDomains = ['gmail.com', 'yahoo.com', 'hotmail.com',
+      'outlook.com', 'icloud.com', 'aol.com'];
+    const domain = email.split('@')[1]?.toLowerCase();
+    if (domain && freeDomains.includes(domain)) {
+      setEmailError('Please use your work email address.');
+      setFormState('idle');
+      return;
+    }
+    setEmailError('');
 
     try {
       const res = await fetch('/api/beta/request', {
@@ -36,6 +65,10 @@ export default function BetaRequestPage() {
           companySize: companySize || undefined,
           useCase: useCase || undefined,
           referralSource: referralSource || undefined,
+          jobTitle: jobTitle || undefined,
+          companyWebsite: companyWebsite || undefined,
+          currentTools: currentTools.length > 0 ? currentTools : undefined,
+          feedbackCall: feedbackCall || undefined,
         }),
       });
 
@@ -46,16 +79,24 @@ export default function BetaRequestPage() {
         setMessage(json.data.message);
       } else {
         setFormState('error');
-        setMessage(json.error?.message || 'Something went wrong. Please try again.');
+        setMessage(json.error?.message || 'Something went wrong. Please try again or email hello@pravado.io directly.');
       }
     } catch {
       setFormState('error');
-      setMessage('Network error. Please try again.');
+      setMessage('Something went wrong. Please try again or email hello@pravado.io directly.');
     }
   };
 
+  const toggleTool = (tool: string) => {
+    setCurrentTools((prev) =>
+      prev.includes(tool) ? prev.filter((t) => t !== tool) : [...prev, tool]
+    );
+  };
+
+  const inputStyle = { backgroundColor: '#0A0A0F', border: '1px solid #1F1F28' };
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ backgroundColor: '#0A0A0F' }}>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12" style={{ backgroundColor: '#0A0A0F' }}>
       {/* Background gradient */}
       <div
         className="fixed inset-0 pointer-events-none"
@@ -64,19 +105,65 @@ export default function BetaRequestPage() {
         }}
       />
 
-      <div className="relative w-full max-w-lg">
-        <div className="p-8 space-y-6 rounded-2xl border" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
+      <div className="relative w-full max-w-3xl">
+        {/* Headline */}
+        <h1 className="text-3xl md:text-4xl font-bold text-white text-center leading-tight">
+          The AI Platform That Runs Your PR, Content, and SEO —
+          <br className="hidden md:block" />
+          So You Can Focus on What Only You Can Do.
+        </h1>
+
+        {/* Subheadline */}
+        <p className="mt-4 mb-2 text-center text-base md:text-lg" style={{ color: '#7A7A8A' }}>
+          Pravado&apos;s AI engine — SAGE — monitors signals across your PR pipeline,
+          content library, and SEO landscape around the clock. It surfaces exactly
+          what to do next, then helps you do it. One platform. Three pillars.
+          Everything moving in the same direction.
+        </p>
+
+        {/* Social proof */}
+        <p className="text-center text-sm mb-8" style={{ color: '#5A5A6A' }}>
+          Private beta. Limited spots. We review applications within 48 hours.
+        </p>
+
+        {/* Value prop cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="p-6 rounded-xl border" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
+            <div className="text-2xl mb-3">⚡</div>
+            <h3 className="text-sm font-semibold text-white mb-2">SAGE identifies your next move</h3>
+            <p className="text-sm" style={{ color: '#7A7A8A' }}>
+              Continuously analyzes PR, content, and SEO signals to surface your
+              highest-impact actions — ranked by EVI improvement potential.
+            </p>
+          </div>
+          <div className="p-6 rounded-xl border" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
+            <div className="text-2xl mb-3">🎯</div>
+            <h3 className="text-sm font-semibold text-white mb-2">Execute across all three pillars</h3>
+            <p className="text-sm" style={{ color: '#7A7A8A' }}>
+              From pitch to publish to ranking — manage every visibility action
+              from one command center without switching between five tools.
+            </p>
+          </div>
+          <div className="p-6 rounded-xl border" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
+            <div className="text-2xl mb-3">📡</div>
+            <h3 className="text-sm font-semibold text-white mb-2">Know exactly where you stand with AI engines</h3>
+            <p className="text-sm" style={{ color: '#7A7A8A' }}>
+              Your Earned Visibility Index tells you how your brand registers in
+              ChatGPT, Perplexity, and Google — and what&apos;s moving it.
+            </p>
+          </div>
+        </div>
+
+        {/* Form card */}
+        <div className="w-full max-w-lg mx-auto p-8 space-y-6 rounded-2xl border" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
           {/* Header */}
           <div className="text-center space-y-2">
             <span className="text-2xl font-bold" style={{ background: 'linear-gradient(135deg, #A855F7, #00D9FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Pravado
             </span>
-            <h1 className="text-xl font-semibold text-white mt-2">
-              Request Beta Access
-            </h1>
-            <p className="text-sm" style={{ color: '#7A7A8A' }}>
-              Join the waitlist for Pravado — the AI-native Visibility Operating System.
-            </p>
+            <h2 className="text-xl font-semibold text-white mt-2">
+              Apply for Private Beta Access
+            </h2>
           </div>
 
           {formState === 'success' ? (
@@ -86,13 +173,29 @@ export default function BetaRequestPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-white font-medium">{message}</p>
+              <h3 className="text-xl font-semibold text-white">You&apos;re on the list.</h3>
               <p className="text-sm" style={{ color: '#7A7A8A' }}>
-                We review requests daily and prioritize teams ready to transform their visibility strategy.
+                We review applications every day and prioritize teams ready to
+                stop managing PR, content, and SEO separately. If approved, you&apos;ll
+                get a personal email from Christian with your invite code.
               </p>
+              <p className="text-xs" style={{ color: '#5A5A6A' }}>
+                One thing to do now — connect on LinkedIn. That&apos;s where
+                the research behind Pravado comes out first.
+              </p>
+              <a
+                href="https://linkedin.com/in/cdibrell"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 px-6 py-2.5 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
+                style={{ background: 'linear-gradient(135deg, #A855F7, #7C3AED)' }}
+              >
+                Connect on LinkedIn →
+              </a>
             </div>
           ) : (
             <form className="space-y-4" onSubmit={handleSubmit}>
+              {/* Work email */}
               <div>
                 <label htmlFor="beta-email" className="block text-sm font-medium text-white mb-1.5">
                   Work email *
@@ -102,13 +205,34 @@ export default function BetaRequestPage() {
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); setEmailError(''); }}
                   className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder:text-[#3D3D4A] outline-none transition-colors"
-                  style={{ backgroundColor: '#0A0A0F', border: '1px solid #1F1F28' }}
+                  style={inputStyle}
                   placeholder="you@company.com"
+                />
+                {emailError && (
+                  <p className="mt-1 text-xs" style={{ color: '#EF4444' }}>{emailError}</p>
+                )}
+              </div>
+
+              {/* Job title */}
+              <div>
+                <label htmlFor="beta-job-title" className="block text-sm font-medium text-white mb-1.5">
+                  Job title *
+                </label>
+                <input
+                  id="beta-job-title"
+                  type="text"
+                  required
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder:text-[#3D3D4A] outline-none transition-colors"
+                  style={inputStyle}
+                  placeholder="VP Marketing, CMO, Director of Content..."
                 />
               </div>
 
+              {/* Company name */}
               <div>
                 <label htmlFor="beta-company" className="block text-sm font-medium text-white mb-1.5">
                   Company name
@@ -119,11 +243,29 @@ export default function BetaRequestPage() {
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder:text-[#3D3D4A] outline-none transition-colors"
-                  style={{ backgroundColor: '#0A0A0F', border: '1px solid #1F1F28' }}
+                  style={inputStyle}
                   placeholder="Acme Inc."
                 />
               </div>
 
+              {/* Company website */}
+              <div>
+                <label htmlFor="beta-website" className="block text-sm font-medium text-white mb-1.5">
+                  Company website *
+                </label>
+                <input
+                  id="beta-website"
+                  type="text"
+                  required
+                  value={companyWebsite}
+                  onChange={(e) => setCompanyWebsite(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder:text-[#3D3D4A] outline-none transition-colors"
+                  style={inputStyle}
+                  placeholder="acme.com"
+                />
+              </div>
+
+              {/* Team size */}
               <div>
                 <label htmlFor="beta-size" className="block text-sm font-medium text-white mb-1.5">
                   Team size
@@ -133,7 +275,7 @@ export default function BetaRequestPage() {
                   value={companySize}
                   onChange={(e) => setCompanySize(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none transition-colors"
-                  style={{ backgroundColor: '#0A0A0F', border: '1px solid #1F1F28' }}
+                  style={inputStyle}
                 >
                   <option value="">Select size</option>
                   <option value="solo">Solo / Freelancer</option>
@@ -144,6 +286,7 @@ export default function BetaRequestPage() {
                 </select>
               </div>
 
+              {/* Use case */}
               <div>
                 <label htmlFor="beta-usecase" className="block text-sm font-medium text-white mb-1.5">
                   What do you want to use Pravado for?
@@ -154,11 +297,33 @@ export default function BetaRequestPage() {
                   onChange={(e) => setUseCase(e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder:text-[#3D3D4A] outline-none transition-colors resize-none"
-                  style={{ backgroundColor: '#0A0A0F', border: '1px solid #1F1F28' }}
+                  style={inputStyle}
                   placeholder="PR outreach, content strategy, AEO monitoring..."
                 />
               </div>
 
+              {/* Current tools */}
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Tools you currently use (select all that apply)
+                </label>
+                <div className="space-y-2">
+                  {TOOL_OPTIONS.map((tool) => (
+                    <label key={tool} className="flex items-center gap-2.5 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={currentTools.includes(tool)}
+                        onChange={() => toggleTool(tool)}
+                        className="w-4 h-4 rounded border accent-purple-500"
+                        style={{ accentColor: '#A855F7' }}
+                      />
+                      <span className="text-sm" style={{ color: '#7A7A8A' }}>{tool}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Referral source */}
               <div>
                 <label htmlFor="beta-referral" className="block text-sm font-medium text-white mb-1.5">
                   How did you hear about us?
@@ -168,7 +333,7 @@ export default function BetaRequestPage() {
                   value={referralSource}
                   onChange={(e) => setReferralSource(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none transition-colors"
-                  style={{ backgroundColor: '#0A0A0F', border: '1px solid #1F1F28' }}
+                  style={inputStyle}
                 >
                   <option value="">Select one</option>
                   <option value="twitter">Twitter / X</option>
@@ -178,6 +343,29 @@ export default function BetaRequestPage() {
                   <option value="product_hunt">Product Hunt</option>
                   <option value="other">Other</option>
                 </select>
+              </div>
+
+              {/* Feedback call */}
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Open to a 15-minute feedback call during beta?
+                </label>
+                <div className="space-y-2">
+                  {FEEDBACK_OPTIONS.map((option) => (
+                    <label key={option} className="flex items-center gap-2.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="feedbackCall"
+                        value={option}
+                        checked={feedbackCall === option}
+                        onChange={(e) => setFeedbackCall(e.target.value)}
+                        className="w-4 h-4"
+                        style={{ accentColor: '#A855F7' }}
+                      />
+                      <span className="text-sm" style={{ color: '#7A7A8A' }}>{option}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
               {formState === 'error' && (
@@ -192,18 +380,20 @@ export default function BetaRequestPage() {
                 className="w-full py-3 rounded-lg text-sm font-medium text-white transition-opacity disabled:opacity-50"
                 style={{ background: 'linear-gradient(135deg, #A855F7, #7C3AED)' }}
               >
-                {formState === 'submitting' ? 'Submitting...' : 'Request Access'}
+                {formState === 'submitting' ? 'Submitting...' : 'Request Early Access →'}
               </button>
+
+              <p className="text-center text-xs" style={{ color: '#5A5A6A' }}>
+                By applying you agree to our{' '}
+                <a href="/legal/terms" className="hover:underline" style={{ color: '#00D9FF' }}>Terms of Service</a>
+                {' '}and{' '}
+                <a href="/legal/privacy" className="hover:underline" style={{ color: '#00D9FF' }}>Privacy Policy</a>.
+                <br />
+                We review applications within 48 hours.
+              </p>
             </form>
           )}
         </div>
-
-        <p className="mt-6 text-center text-xs" style={{ color: '#3D3D4A' }}>
-          By requesting access, you agree to Pravado&apos;s{' '}
-          <a href="/legal/terms" className="hover:underline" style={{ color: '#00D9FF' }}>Terms of Service</a>
-          {' '}and{' '}
-          <a href="/legal/privacy" className="hover:underline" style={{ color: '#00D9FF' }}>Privacy Policy</a>
-        </p>
       </div>
     </div>
   );
