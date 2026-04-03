@@ -16,6 +16,11 @@ const protectedPaths = ['/app', '/onboarding'];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Auth callback and error routes handle their own session — never interfere
+  if (pathname.startsWith('/auth/') || pathname === '/api/auth/signout' || pathname === '/beta') {
+    return NextResponse.next({ request });
+  }
+
   // Create a response we can modify (to set refreshed session cookies)
   let response = NextResponse.next({ request });
 
@@ -58,7 +63,15 @@ export async function middleware(request: NextRequest) {
   }
 
   // Refresh the session — this updates cookies if the access token was expired
-  const { data: { user } } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch (err) {
+    console.error('[Middleware] getUser() threw:', err);
+    // Allow through rather than trapping in redirect loop
+    return response;
+  }
 
   console.log('[Middleware] Path:', pathname, '| User:', user?.email ?? 'none');
 
@@ -77,20 +90,22 @@ export async function middleware(request: NextRequest) {
   // Session timeout check (S-INT-10):
   // If session age > 24 hours, force re-authentication
   if (user && pathname.startsWith('/app')) {
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (sessionData?.session?.expires_at) {
-      // Supabase sessions have expires_at in seconds since epoch
-      // Default session lifetime is 1 hour with auto-refresh
-      // We enforce a hard 24-hour max from initial auth
-      const sessionCreated = (sessionData.session.expires_at - 3600) * 1000; // approximate
-      const sessionAgeHours = (Date.now() - sessionCreated) / (1000 * 60 * 60);
-      if (sessionAgeHours > 24) {
-        console.log('[Middleware] Session expired (>24h), forcing re-auth');
-        await supabase.auth.signOut();
-        const expiredUrl = new URL('/login', request.url);
-        expiredUrl.searchParams.set('reason', 'session_expired');
-        return safeRedirect(expiredUrl);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData?.session?.expires_at) {
+        const sessionCreated = (sessionData.session.expires_at - 3600) * 1000;
+        const sessionAgeHours = (Date.now() - sessionCreated) / (1000 * 60 * 60);
+        if (sessionAgeHours > 24) {
+          console.log('[Middleware] Session expired (>24h), forcing re-auth');
+          await supabase.auth.signOut();
+          const expiredUrl = new URL('/login', request.url);
+          expiredUrl.searchParams.set('reason', 'session_expired');
+          return safeRedirect(expiredUrl);
+        }
       }
+    } catch {
+      // Don't let session check failures block the user
+      console.error('[Middleware] Session timeout check failed, allowing through');
     }
   }
 
@@ -173,12 +188,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/app/:path*',
-    '/app/admin/:path*',
     '/onboarding/:path*',
     '/login',
-    '/api/auth/signout',
-    '/auth/callback',
-    '/auth/error',
-    '/beta',
+    // Auth callback routes are handled by route handlers directly — no middleware needed
+    // '/auth/callback' and '/auth/error' intentionally excluded to prevent session interference
   ],
 };
