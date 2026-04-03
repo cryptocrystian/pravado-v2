@@ -515,8 +515,20 @@ export function StrategyPanelPane({
   if (error) return <ErrorState error={error} />;
   if (!data) {
     return (
-      <div className="p-6 text-center text-white/50">
-        <p className="text-xs">No strategy data available</p>
+      <div className="p-4 space-y-4">
+        <div className="p-5 bg-slate-1 border border-brand-iris/20 rounded-lg text-center">
+          <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-brand-iris/10 border border-brand-iris/20 flex items-center justify-center">
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-iris animate-pulse" />
+          </div>
+          <h4 className="text-sm font-semibold text-white/80 mb-1">Your first SAGE proposals are generating</h4>
+          <p className="text-xs text-white/45 leading-relaxed">This usually takes 1-2 minutes after onboarding completes.</p>
+        </div>
+        {/* Skeleton placeholders */}
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-16 bg-slate-1 border border-border-subtle rounded-lg animate-pulse" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -529,8 +541,17 @@ export function StrategyPanelPane({
   // Graceful fallback when EVI data is missing or malformed
   if (!evi || typeof evi.score !== 'number') {
     return (
-      <div className="p-6 text-center text-white/50">
-        <p className="text-xs">EVI data is loading or unavailable</p>
+      <div className="p-4">
+        <div className="p-5 bg-slate-1 border border-brand-amber/20 rounded-lg text-center">
+          <h4 className="text-sm font-semibold text-white/80 mb-1">Your EVI score is still calculating</h4>
+          <p className="text-xs text-white/45 leading-relaxed mb-3">Refresh in a few minutes to see your baseline score.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-3 py-1.5 text-xs font-medium text-brand-cyan border border-brand-cyan/30 rounded-lg hover:bg-brand-cyan/10 transition-colors"
+          >
+            Refresh now
+          </button>
+        </div>
       </div>
     );
   }
