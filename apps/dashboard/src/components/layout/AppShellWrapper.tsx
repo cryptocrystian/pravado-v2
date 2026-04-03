@@ -62,16 +62,16 @@ export function AppShellWrapper({
 }: AppShellWrapperProps) {
   const pathname = usePathname();
 
-  // Check if current route is a redirect route - show nothing to prevent flash
+  // /app should server-redirect to /app/command-center via page.tsx.
+  // If we get here, the server redirect didn't fire (layout rendered first).
+  // Client-redirect as a fallback instead of showing an infinite spinner.
   const isRedirectRoute = REDIRECT_ROUTES.some((route) => pathname === route);
 
   if (isRedirectRoute) {
-    // Route will redirect - show minimal loading state to prevent old DS flash
-    return (
-      <div className="min-h-screen bg-page flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-brand-cyan/30 border-t-brand-cyan rounded-full animate-spin" />
-      </div>
-    );
+    if (typeof window !== 'undefined') {
+      window.location.replace('/app/command-center');
+    }
+    return null;
   }
 
   // Check if current route uses a custom shell
