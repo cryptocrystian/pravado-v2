@@ -29,13 +29,19 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
   });
 
   try {
-    // Get the current user from the session
-    const { data: { user }, error } = await supabase.auth.getUser();
+    // Read the session from cookies — do NOT call getUser() here.
+    // getUser() triggers a token refresh that calls setAll(), but server
+    // components cannot write cookies (setAll is a no-op above).
+    // The middleware already refreshed the session, so getSession() is
+    // sufficient and won't discard tokens.
+    const { data: { session }, error } = await supabase.auth.getSession();
 
-    if (error || !user) {
-      console.log('[getCurrentUser] No user found:', error?.message);
+    if (error || !session?.user) {
+      console.log('[getCurrentUser] No session found:', error?.message);
       return null;
     }
+
+    const user = session.user;
 
     console.log('[getCurrentUser] User found:', user.email);
 
