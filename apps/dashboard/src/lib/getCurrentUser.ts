@@ -1,122 +1,63 @@
 /**
  * Server-side helper to get current user session
  *
- * IMPORTANT: This runs in server components where cookies are READ-ONLY.
- * It must NEVER trigger a Supabase token refresh (getUser/getSession can
- * both do this). Instead it decodes the JWT directly from cookies.
- * The middleware handles all token refreshes.
+ * Uses getSession() (not getUser()) to avoid triggering token refreshes.
+ * The middleware handles all token refreshes via getUser() + writable setAll.
+ * This function only READS the already-refreshed session from cookies.
  */
 
 import type { UserSessionData } from '@pravado/types';
 import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-/**
- * Decode a JWT payload without verification.
- * The middleware already verified the token — we just need the claims.
- */
-function decodeJwtPayload(token: string): Record<string, unknown> | null {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8'));
-    return payload;
-  } catch {
-    return null;
-  }
-}
 
 export async function getCurrentUser(): Promise<UserSessionData | null> {
   try {
     const cookieStore = await cookies();
-    const allCookies = cookieStore.getAll();
 
-    // Find the Supabase access token cookie
-    // Supabase stores it as sb-<ref>-auth-token (may be chunked: .0, .1, etc.)
-    const authCookieBase = allCookies
-      .filter(c => c.name.includes('-auth-token'))
-      .sort((a, b) => a.name.localeCompare(b.name));
-
-    if (authCookieBase.length === 0) {
-      console.log('[getCurrentUser] No auth token cookie found');
-      return null;
-    }
-
-    // Reassemble chunked cookie value
-    let tokenData: string;
-    // Check if it's a single cookie with JSON or chunked
-    if (authCookieBase.length === 1 && !authCookieBase[0].name.endsWith('.0')) {
-      tokenData = authCookieBase[0].value;
-    } else {
-      // Chunked cookies: sb-xxx-auth-token.0, sb-xxx-auth-token.1, etc.
-      tokenData = authCookieBase.map(c => c.value).join('');
-    }
-
-    // Parse the session JSON from the cookie
-    let accessToken: string;
-    let userId: string;
-    let userMeta: Record<string, unknown> = {};
-
-    try {
-      // Supabase stores session as base64-encoded JSON
-      const parsed = JSON.parse(tokenData);
-      accessToken = parsed.access_token || parsed;
-
-      // Decode JWT to get user info
-      const payload = decodeJwtPayload(typeof accessToken === 'string' ? accessToken : tokenData);
-      if (!payload || !payload.sub) {
-        console.log('[getCurrentUser] Could not decode JWT');
-        return null;
-      }
-
-      userId = payload.sub as string;
-      userMeta = (payload.user_metadata as Record<string, unknown>) || {};
-    } catch {
-      // Try treating the whole thing as a JWT directly
-      const payload = decodeJwtPayload(tokenData);
-      if (!payload || !payload.sub) {
-        console.log('[getCurrentUser] Could not parse token data');
-        return null;
-      }
-      userId = payload.sub as string;
-      userMeta = (payload.user_metadata as Record<string, unknown>) || {};
-    }
-
-    console.log('[getCurrentUser] User found from JWT:', userId);
-
-    // Use service-role client to query org memberships (bypasses RLS)
-    const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
+    const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll() {
+          // Server components cannot write cookies — this is intentionally a no-op.
+          // The middleware already refreshed the session before this runs.
+        },
       },
     });
 
-    // Query user's organizations
-    const { data: memberships, error: membershipError } = await supabaseAdmin
-      .from('org_members')
-      .select(`
-        org_id,
-        role,
-        orgs (
-          id,
-          name,
-          created_at,
-          updated_at
-        )
-      `)
-      .eq('user_id', userId);
+    // Use getSession() — reads cookie data WITHOUT triggering a server-side refresh.
+    // getUser() would call setAll() to persist refreshed tokens, but since setAll
+    // is a no-op here, those tokens would be lost, causing redirect loops.
+    const { data: { session }, error } = await supabase.auth.getSession();
 
-    if (membershipError) {
-      console.error('[getCurrentUser] Error fetching org memberships:', membershipError);
+    if (error || !session?.user) {
+      console.log('[getCurrentUser] No session:', error?.message ?? 'no user');
+      return null;
     }
 
-    console.log('[getCurrentUser] Memberships found:', memberships?.length || 0);
+    const user = session.user;
+    console.log('[getCurrentUser] User:', user.email);
 
-    // Build orgs array from memberships
+    // Use service-role client for org queries (bypasses RLS)
+    const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+
+    const { data: memberships, error: membershipError } = await supabaseAdmin
+      .from('org_members')
+      .select('org_id, role, orgs (id, name, created_at, updated_at)')
+      .eq('user_id', user.id);
+
+    if (membershipError) {
+      console.error('[getCurrentUser] Org membership error:', membershipError.message);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const orgs = (memberships || [])
       .filter((m: any) => m.orgs)
@@ -128,17 +69,15 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
       }));
 
     const activeOrg = orgs.length > 0 ? orgs[0] : null;
-
-    console.log('[getCurrentUser] Active org:', activeOrg?.name || 'none');
-
     const now = new Date().toISOString();
+
     return {
       user: {
-        id: userId,
-        fullName: (userMeta.full_name || userMeta.name || null) as string | null,
-        avatarUrl: (userMeta.avatar_url || userMeta.picture || null) as string | null,
-        createdAt: now,
-        updatedAt: now,
+        id: user.id,
+        fullName: user.user_metadata?.full_name || user.user_metadata?.name || null,
+        avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+        createdAt: user.created_at || now,
+        updatedAt: user.updated_at || now,
       },
       orgs,
       activeOrg,
