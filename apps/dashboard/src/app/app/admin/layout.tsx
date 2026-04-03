@@ -5,8 +5,6 @@
  */
 
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { getCurrentUser } from '@/lib/getCurrentUser';
 import { AdminShell } from '@/components/admin/AdminShell';
@@ -14,12 +12,14 @@ import { AdminShell } from '@/components/admin/AdminShell';
 export const dynamic = 'force-dynamic';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getCurrentUser();
-  if (!session) redirect('/login');
+  if (!session) {
+    // Admin layout still gates because non-admin redirect is not to /login
+    redirect('/app/command-center');
+  }
 
   // Check admin status via service-role client (bypasses RLS)
   const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
@@ -36,18 +36,5 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect('/app/command-center');
   }
 
-  const userEmail = session.user.fullName || 'Admin';
-
-  // Get email from Supabase auth
-  const cookieStore = await cookies();
-  const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    cookies: {
-      getAll() { return cookieStore.getAll(); },
-      setAll() { /* read-only in server components */ },
-    },
-  });
-  const { data: { user } } = await supabase.auth.getUser();
-  const email = user?.email ?? userEmail;
-
-  return <AdminShell userEmail={email}>{children}</AdminShell>;
+  return <AdminShell userEmail={session.user.fullName || 'Admin'}>{children}</AdminShell>;
 }
