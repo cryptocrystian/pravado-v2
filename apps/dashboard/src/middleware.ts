@@ -1,14 +1,9 @@
 /**
- * Next.js middleware — minimal auth gate
+ * Next.js middleware — session refresh ONLY
  *
- * ONLY does two things:
- * 1. Refreshes the Supabase session (so server components get a valid token)
- * 2. Redirects unauthenticated users away from /app and /onboarding
- *
- * All other checks (onboarding status, session timeout, MFA, admin)
- * are handled client-side to avoid redirect loops.
- *
- * @see https://supabase.com/docs/guides/auth/server-side/nextjs
+ * Does NOT redirect. Only refreshes the Supabase session cookie
+ * so that server components can read it. All auth gating is
+ * handled by pages/layouts.
  */
 
 import { NextResponse } from 'next/server';
@@ -16,9 +11,6 @@ import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Create a mutable response for cookie updates
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -42,27 +34,15 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session — this is the primary job of the middleware
-  const { data: { user } } = await supabase.auth.getUser();
+  // Just refresh the session — no redirects
+  await supabase.auth.getUser();
 
-  // Unauthenticated users cannot access /app or /onboarding
-  if (!user && (pathname.startsWith('/app') || pathname.startsWith('/onboarding'))) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  // Authenticated users on /login go to /app
-  if (user && pathname === '/login') {
-    return NextResponse.redirect(new URL('/app', request.url));
-  }
-
-  // Everything else: pass through with refreshed cookies
   return response;
 }
 
 export const config = {
   matcher: [
-    '/app/:path*',
-    '/onboarding/:path*',
-    '/login',
+    // Match everything EXCEPT static files and API routes
+    '/((?!_next/static|_next/image|favicon.ico|api/).*)',
   ],
 };
