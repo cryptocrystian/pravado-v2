@@ -57,7 +57,7 @@ export async function middleware(request: NextRequest) {
     const redirectResponse = NextResponse.redirect(url instanceof URL ? url : new URL(url, request.url));
     // Copy any refreshed Supabase cookies so the browser doesn't lose its session
     for (const { name, value, options } of refreshedCookies) {
-      redirectResponse.cookies.set(name, value, options as Record<string, string>);
+      redirectResponse.cookies.set(name, value, options as Parameters<typeof redirectResponse.cookies.set>[2]);
     }
     return redirectResponse;
   }
