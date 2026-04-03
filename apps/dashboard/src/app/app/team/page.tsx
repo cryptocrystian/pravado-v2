@@ -3,7 +3,6 @@
  */
 
 import type { ListMembersResponse } from '@pravado/types';
-import { redirect } from 'next/navigation';
 
 import { apiRequest } from '@/lib/apiClient';
 import { getCurrentUser } from '@/lib/getCurrentUser';
@@ -17,7 +16,7 @@ export default async function TeamPage() {
   const session = await getCurrentUser();
 
   if (!session || !session.activeOrg) {
-    redirect('/login');
+    return <div className="p-8 text-white/50">Loading team data...</div>;
   }
 
   // Fetch members and invites
