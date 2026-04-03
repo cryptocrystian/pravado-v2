@@ -250,6 +250,7 @@ export default function AIIntroPage() {
   // Activation state
   const [activationPhase, setActivationPhase] = useState<'idle' | 'running' | 'done'>('idle');
   const [activationLabel, setActivationLabel] = useState('Initializing...');
+  const [completionFailed, setCompletionFailed] = useState(false);
   const [eviScore, setEviScore] = useState<number | null>(null);
 
   // Proposals state
@@ -504,6 +505,7 @@ export default function AIIntroPage() {
 
       if (!completed) {
         console.error('[Onboarding] Failed to mark onboarding complete after 3 attempts');
+        setCompletionFailed(true);
       }
 
       // Fetch SAGE proposals
@@ -990,6 +992,20 @@ export default function AIIntroPage() {
                     <PrimaryBtn onClick={goNext}>
                       See Your Proposals <ArrowRight />
                     </PrimaryBtn>
+                    {completionFailed && (
+                      <div className="mt-4 p-4 bg-brand-amber/10 border border-brand-amber/20 rounded-xl text-center">
+                        <p className="text-xs text-white/55 mb-2">Setup is taking longer than expected.</p>
+                        <button
+                          onClick={() => {
+                            document.cookie = 'onboarding_escape=true;path=/;max-age=86400';
+                            router.push('/app/command-center');
+                          }}
+                          className="px-4 py-2 text-sm font-medium text-brand-cyan border border-brand-cyan/30 rounded-lg hover:bg-brand-cyan/10 transition-colors"
+                        >
+                          Continue to Dashboard &rarr;
+                        </button>
+                      </div>
+                    )}
                   </>
                 )}
               </div>

@@ -200,10 +200,12 @@ function EmptyState({ isHistory }: { isHistory: boolean }) {
         )}
       </div>
       <p className="text-sm text-white/70 font-medium">
-        {isHistory ? 'No completed actions yet' : 'No pending actions'}
+        {isHistory ? 'No completed actions yet' : 'No actions yet'}
       </p>
-      <p className="text-xs text-white/40 mt-1">
-        {isHistory ? 'Actions you complete will appear here' : 'AI is analyzing your strategy'}
+      <p className="text-xs text-white/40 mt-1 leading-relaxed">
+        {isHistory
+          ? 'Actions you complete will appear here'
+          : 'SAGE will surface your highest-impact actions here once your visibility signals are processed.'}
       </p>
     </div>
   );

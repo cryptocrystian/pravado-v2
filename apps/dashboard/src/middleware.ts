@@ -112,9 +112,14 @@ export async function middleware(request: NextRequest) {
     }
 
     if (membership && !orgData?.completed_onboarding_at) {
-      // Org exists but onboarding incomplete — redirect to onboarding
-      console.log('[Middleware] Onboarding incomplete, redirecting to /onboarding/ai-intro');
-      return NextResponse.redirect(new URL('/onboarding/ai-intro', request.url));
+      // Allow through if user used the onboarding escape hatch (completion API was down)
+      const hasEscapeCookie = request.cookies.get('onboarding_escape')?.value === 'true';
+      if (!hasEscapeCookie) {
+        // Org exists but onboarding incomplete — redirect to onboarding
+        console.log('[Middleware] Onboarding incomplete, redirecting to /onboarding/ai-intro');
+        return NextResponse.redirect(new URL('/onboarding/ai-intro', request.url));
+      }
+      console.log('[Middleware] Onboarding incomplete but escape cookie set, allowing through');
     }
 
     // MFA enforcement (S-INT-10):

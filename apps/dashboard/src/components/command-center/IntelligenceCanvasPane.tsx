@@ -438,10 +438,17 @@ export function IntelligenceCanvasPane({
                 </div>
               ))
             ) : (
-              <div className="flex items-center justify-center py-8 px-4">
-                <p className="text-xs text-white/40 text-center leading-relaxed">
-                  No AI citations detected yet. Citation monitoring runs every 6 hours.
+              <div className="flex flex-col items-center justify-center py-8 px-4">
+                <p className="text-sm font-medium text-white/60 mb-1">Intelligence building...</p>
+                <p className="text-xs text-white/40 text-center leading-relaxed mb-3">
+                  Connect Google Search Console to accelerate your first insights.
                 </p>
+                <a
+                  href="/app/settings"
+                  className="px-3 py-1.5 text-xs font-medium text-brand-cyan border border-brand-cyan/30 rounded-lg hover:bg-brand-cyan/10 transition-colors"
+                >
+                  Connect GSC &rarr;
+                </a>
               </div>
             )}
           </div>
