@@ -19,6 +19,9 @@ export async function middleware(request: NextRequest) {
   // Create a response we can modify (to set refreshed session cookies)
   let response = NextResponse.next({ request });
 
+  // Track cookies that Supabase refreshes so we can copy them onto redirect responses
+  let refreshedCookies: { name: string; value: string; options?: Record<string, unknown> }[] = [];
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -37,10 +40,22 @@ export async function middleware(request: NextRequest) {
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, options);
           });
+          // Stash for any redirect responses we create later
+          refreshedCookies = cookiesToSet.map(({ name, value, options }) => ({ name, value, options }));
         },
       },
     }
   );
+
+  // Helper: create a redirect that carries refreshed auth cookies
+  function safeRedirect(url: URL | string) {
+    const redirectResponse = NextResponse.redirect(url instanceof URL ? url : new URL(url, request.url));
+    // Copy any refreshed Supabase cookies so the browser doesn't lose its session
+    for (const { name, value, options } of refreshedCookies) {
+      redirectResponse.cookies.set(name, value, options as Record<string, string>);
+    }
+    return redirectResponse;
+  }
 
   // Refresh the session — this updates cookies if the access token was expired
   const { data: { user } } = await supabase.auth.getUser();
@@ -50,13 +65,13 @@ export async function middleware(request: NextRequest) {
   // If no user and trying to access protected route, redirect to login
   if (!user && protectedPaths.some((path) => pathname.startsWith(path))) {
     console.log('[Middleware] No session, redirecting to /login');
-    return NextResponse.redirect(new URL('/login', request.url));
+    return safeRedirect(new URL('/login', request.url));
   }
 
   // If user exists and on login page, redirect to app
   if (user && pathname === '/login') {
     console.log('[Middleware] Has session, redirecting to /app');
-    return NextResponse.redirect(new URL('/app', request.url));
+    return safeRedirect(new URL('/app', request.url));
   }
 
   // Session timeout check (S-INT-10):
@@ -74,7 +89,7 @@ export async function middleware(request: NextRequest) {
         await supabase.auth.signOut();
         const expiredUrl = new URL('/login', request.url);
         expiredUrl.searchParams.set('reason', 'session_expired');
-        return NextResponse.redirect(expiredUrl);
+        return safeRedirect(expiredUrl);
       }
     }
   }
@@ -108,7 +123,7 @@ export async function middleware(request: NextRequest) {
     if (membership === null && !membershipError) {
       // Confirmed no org exists — redirect to onboarding
       console.log('[Middleware] No org membership, redirecting to /onboarding/ai-intro');
-      return NextResponse.redirect(new URL('/onboarding/ai-intro', request.url));
+      return safeRedirect(new URL('/onboarding/ai-intro', request.url));
     }
 
     if (membership && !orgData?.completed_onboarding_at) {
@@ -117,7 +132,7 @@ export async function middleware(request: NextRequest) {
       if (!hasEscapeCookie) {
         // Org exists but onboarding incomplete — redirect to onboarding
         console.log('[Middleware] Onboarding incomplete, redirecting to /onboarding/ai-intro');
-        return NextResponse.redirect(new URL('/onboarding/ai-intro', request.url));
+        return safeRedirect(new URL('/onboarding/ai-intro', request.url));
       }
       console.log('[Middleware] Onboarding incomplete but escape cookie set, allowing through');
     }
@@ -132,7 +147,7 @@ export async function middleware(request: NextRequest) {
       );
       if (!hasVerifiedFactor) {
         console.log('[Middleware] Org requires MFA, user not enrolled, redirecting to security settings');
-        return NextResponse.redirect(new URL('/app/settings/security', request.url));
+        return safeRedirect(new URL('/app/settings/security', request.url));
       }
     }
   }
@@ -148,7 +163,7 @@ export async function middleware(request: NextRequest) {
 
     if (!adminProfile?.is_admin) {
       console.log('[Middleware] Non-admin user accessing /app/admin, redirecting');
-      return NextResponse.redirect(new URL('/app/command-center', request.url));
+      return safeRedirect(new URL('/app/command-center', request.url));
     }
   }
 
