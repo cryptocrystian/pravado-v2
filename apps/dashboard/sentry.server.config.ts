@@ -6,9 +6,14 @@
 
 import * as Sentry from '@sentry/nextjs';
 
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  environment: process.env.NODE_ENV,
-  tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
-  enabled: !!process.env.NEXT_PUBLIC_SENTRY_DSN,
-});
+const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+const isValidDsn = dsn?.startsWith('https://');
+
+if (isValidDsn) {
+  Sentry.init({
+    dsn,
+    environment: process.env.NODE_ENV,
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+    enabled: true,
+  });
+}
