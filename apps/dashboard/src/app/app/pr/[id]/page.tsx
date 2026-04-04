@@ -85,10 +85,21 @@ export default function PRDetailPage() {
   if (!release) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900">Press Release Not Found</h2>
-          <Link href="/app/pr/generator" className="mt-4 text-blue-600 hover:underline">
-            Go back to generator
+        <div className="text-center max-w-sm">
+          <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-slate-3 flex items-center justify-center">
+            <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-semibold text-white/80 mb-1">No coverage yet</h2>
+          <p className="text-sm text-white/45 mb-4">
+            Coverage from your pitches will appear here as journalists publish stories about your brand.
+          </p>
+          <Link
+            href="/app/pr/pitches/new"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-brand-cyan border border-brand-cyan/30 rounded-lg hover:bg-brand-cyan/10 transition-colors"
+          >
+            Start a Pitch &rarr;
           </Link>
         </div>
       </div>

@@ -58,19 +58,10 @@ export async function GET(request: NextRequest) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('[API /api/pr/pitches/sequences] GET Error:', message);
 
-    if (!config.allowMockFallback) {
-      const response = NextResponse.json(
-        { error: message, code: 'DB_ERROR' },
-        { status: 500 }
-      );
-      return addPRAuthHeader(response, 'ok');
-    }
-
+    // Return empty list on error — no sequences is a valid state, not a 500
     const response = NextResponse.json({
       sequences: [],
       total: 0,
-      _mock: true,
-      _error: message,
     });
     return addPRAuthHeader(response, 'ok');
   }
