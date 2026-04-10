@@ -845,17 +845,23 @@ Return a JSON array of 10 headline strings.`;
     selectedAngle: PRAngleOption,
     selectedHeadline: PRHeadlineVariant
   ): Promise<PRDraftResult> {
-    const systemPrompt = `You are an expert press release writer. Write a professional press release following AP style guidelines.
+    const systemPrompt = `You are an expert press release writer. Write an original, professional press release following AP style guidelines.
+
+CRITICAL RULES:
+- REWRITE the announcement into polished AP-style prose. Do NOT copy or echo the announcement text verbatim.
+- Every paragraph must be original writing that expands on and professionalizes the raw announcement.
+- Quotes must sound natural and attributable — use the EXACT spokesperson name and title provided, never generic placeholders like "CEO of [Company]".
+- If no spokesperson name is provided, attribute quotes to "a company spokesperson".
 
 Structure:
-1. Headline (provided)
-2. Subheadline (one sentence summary)
-3. Dateline (CITY, STATE, Date)
-4. Opening paragraph (who, what, when, where, why)
-5. Body paragraphs (2-3 paragraphs with details)
-6. Quote 1 from spokesperson
-7. Quote 2 from secondary source (if available)
-8. Boilerplate
+1. Headline (provided — do not change)
+2. Subheadline (one compelling sentence that adds context beyond the headline)
+3. Dateline (CITY, STATE, Date — use today's date)
+4. Opening paragraph (who, what, when, where, why — written as original journalism)
+5. Body paragraphs (2-3 paragraphs expanding on significance, details, and market context)
+6. Quote 1 from the primary spokesperson (must use their exact name and title)
+7. Quote 2 from secondary spokesperson if provided (use their exact name and title)
+8. Boilerplate (company description paragraph)
 
 Return a JSON object with:
 - subheadline
@@ -864,18 +870,26 @@ Return a JSON object with:
 - quote1, quote1Attribution
 - quote2, quote2Attribution`;
 
-    const userPrompt = `Write a press release:
+    const spokespersonName = context.input.spokespersonName || '';
+    const spokespersonTitle = context.input.spokespersonTitle || '';
+    const secondaryName = context.input.secondarySpokesperson || '';
+    const secondaryTitle = context.input.secondarySpokespersonTitle || '';
+
+    const userPrompt = `Write an original press release (do NOT repeat the announcement verbatim):
 
 Headline: ${selectedHeadline.headline}
 Company: ${context.companyFootprint.name}
 Industry: ${context.companyFootprint.industry}
-Announcement: ${context.input.announcement}
-Angle: ${selectedAngle.angleTitle}
-Spokesperson: ${context.input.spokespersonName || 'CEO'}, ${context.input.spokespersonTitle || 'Chief Executive Officer'}
-Secondary Spokesperson: ${context.input.secondarySpokesperson || ''}, ${context.input.secondarySpokespersonTitle || ''}
-Keywords to include: ${context.seoKeywords.slice(0, 5).join(', ') || 'None'}
+Raw Announcement (rewrite this into professional prose): ${context.input.announcement}
+Narrative Angle: ${selectedAngle.angleTitle}
+Primary Spokesperson: ${spokespersonName ? `${spokespersonName}, ${spokespersonTitle}` : 'a company spokesperson'}
+${secondaryName ? `Secondary Spokesperson: ${secondaryName}, ${secondaryTitle}` : ''}
+Keywords to weave in naturally: ${context.seoKeywords.slice(0, 5).join(', ') || 'None'}
 Tone: ${context.personality?.tone || context.input.tone || 'professional'}
-Additional Context: ${context.input.additionalContext || 'None'}
+${context.input.additionalContext ? `Additional Context: ${context.input.additionalContext}` : ''}
+
+IMPORTANT: quote1Attribution must be exactly "${spokespersonName ? `${spokespersonName}, ${spokespersonTitle}, ${context.companyFootprint.name}` : `a spokesperson for ${context.companyFootprint.name}`}".
+${secondaryName ? `quote2Attribution must be exactly "${secondaryName}, ${secondaryTitle}, ${context.companyFootprint.name}".` : 'Omit quote2 and quote2Attribution if no secondary spokesperson.'}
 
 Return a JSON object with the press release sections.`;
 
