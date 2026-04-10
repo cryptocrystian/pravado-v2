@@ -6,11 +6,77 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export const dynamic = 'force-dynamic';
 
 type SettingsTab = 'account' | 'organization' | 'integrations' | 'notifications';
+
+function GSCIntegrationCard() {
+  const [status, setStatus] = useState<'loading' | 'connected' | 'disconnected'>('loading');
+  const [connecting, setConnecting] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/integrations/gsc/status')
+      .then(r => r.json())
+      .then(data => setStatus(data.connected ? 'connected' : 'disconnected'))
+      .catch(() => setStatus('disconnected'));
+  }, []);
+
+  const handleConnect = async () => {
+    setConnecting(true);
+    try {
+      const res = await fetch('/api/integrations/gsc/auth-url');
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      setConnecting(false);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    await fetch('/api/integrations/gsc/disconnect', { method: 'DELETE' });
+    setStatus('disconnected');
+  };
+
+  return (
+    <div className="p-4 rounded-lg bg-slate-3/30 border border-border-subtle">
+      <div className="flex items-center gap-3 mb-1">
+        <svg className="w-5 h-5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <div className="font-medium text-white">Google Search Console</div>
+      </div>
+      <div className="text-sm text-slate-11 mb-3">Import keyword data and search performance</div>
+      {status === 'loading' ? (
+        <span className="px-3 py-1.5 text-xs font-medium text-slate-10">Checking...</span>
+      ) : status === 'connected' ? (
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-semantic-success bg-semantic-success/10 border border-semantic-success/20 rounded-lg">
+            <span className="w-1.5 h-1.5 rounded-full bg-semantic-success" />
+            Connected
+          </span>
+          <button
+            onClick={handleDisconnect}
+            className="px-3 py-1.5 text-xs font-medium text-white/40 hover:text-white/70 transition-colors"
+          >
+            Disconnect
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={handleConnect}
+          disabled={connecting}
+          className="px-3 py-1.5 text-xs font-medium text-brand-cyan border border-brand-cyan/30 rounded-lg hover:bg-brand-cyan/10 transition-colors disabled:opacity-50"
+        >
+          {connecting ? 'Connecting...' : 'Connect'}
+        </button>
+      )}
+    </div>
+  );
+}
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('account');
@@ -34,6 +100,29 @@ export default function SettingsPage() {
     { key: 'notifications' as const, label: 'Notifications', icon: (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+      </svg>
+    )},
+  ];
+
+  const subPages = [
+    { label: 'Brand Voice', href: '/app/settings/brand-voice', icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    )},
+    { label: 'Knowledge Base', href: '/app/settings/knowledge-base', icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    )},
+    { label: 'Security', href: '/app/settings/security', icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    )},
+    { label: 'Billing', href: '/app/settings/billing', icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
       </svg>
     )},
   ];
@@ -81,6 +170,23 @@ export default function SettingsPage() {
                 </button>
               ))}
             </nav>
+
+            {/* Sub-page links */}
+            <div className="mt-6 pt-4 border-t border-border-subtle">
+              <p className="px-3 mb-2 text-[11px] font-medium text-white/40 uppercase tracking-wider">Configure</p>
+              <nav className="space-y-1">
+                {subPages.map((page) => (
+                  <Link
+                    key={page.href}
+                    href={page.href}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-10 hover:text-white hover:bg-slate-4/50 transition-all"
+                  >
+                    {page.icon}
+                    {page.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
           </div>
 
           {/* Content Area */}
@@ -134,6 +240,7 @@ export default function SettingsPage() {
                     Connect external services to enhance your Pravado experience.
                   </p>
                   <div className="grid grid-cols-2 gap-4">
+                    <GSCIntegrationCard />
                     {['Slack', 'HubSpot', 'Salesforce', 'Google Analytics'].map((integration) => (
                       <div key={integration} className="p-4 rounded-lg bg-slate-3/30 border border-border-subtle">
                         <div className="font-medium text-white mb-1">{integration}</div>
