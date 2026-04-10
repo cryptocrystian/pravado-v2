@@ -41,7 +41,7 @@ interface AppShellWrapperProps {
 
 // Routes that use their own shell (no sidebar, no legacy header)
 // These routes render with DS v3 topbar work surface pattern
-const CUSTOM_SHELL_ROUTES = ['/app/command-center', '/app/calendar', '/app/pr', '/app/content', '/app/seo', '/app/analytics'];
+const CUSTOM_SHELL_ROUTES = ['/app/command-center', '/app/calendar', '/app/pr', '/app/content', '/app/seo', '/app/analytics', '/app/settings', '/app/team', '/app/billing', '/app/playbooks'];
 
 // Routes that redirect immediately - show nothing to avoid flash
 const REDIRECT_ROUTES = ['/app'];
