@@ -8,8 +8,6 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
-export const dynamic = 'force-dynamic';
-
 type SettingsTab = 'account' | 'organization' | 'integrations' | 'notifications';
 
 function GSCIntegrationCard() {
@@ -157,8 +155,9 @@ export default function SettingsPage() {
             <nav className="space-y-1">
               {tabs.map((tab) => (
                 <button
+                  type="button"
                   key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
+                  onClick={() => { setActiveTab(tab.key); }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                     activeTab === tab.key
                       ? 'bg-brand-iris/10 text-brand-iris'
