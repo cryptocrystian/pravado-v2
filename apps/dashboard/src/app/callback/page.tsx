@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { PravadoLogo } from '@/components/brand/PravadoLogo';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
@@ -75,6 +76,13 @@ export default function CallbackPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    // Safety timeout — if auth doesn't resolve in 12 seconds, redirect to login
+    const safetyTimer = setTimeout(() => {
+      if (status === 'loading') {
+        window.location.href = '/login?reason=auth_timeout';
+      }
+    }, 12000);
+
     const handleCallback = async () => {
       // Check for error parameters in URL
       const error = searchParams?.get('error') ?? null;
@@ -147,6 +155,8 @@ export default function CallbackPage() {
     };
 
     handleCallback();
+
+    return () => clearTimeout(safetyTimer);
   }, [searchParams, router]);
 
   // Error state UI
@@ -166,7 +176,7 @@ export default function CallbackPage() {
             {/* Header */}
             <div className="text-center space-y-2">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <span className="text-2xl font-bold text-gradient-hero">Pravado</span>
+                <PravadoLogo iconSize={36} fontSize="22px" />
               </div>
               <h1 className="text-xl font-semibold text-white">
                 Authentication Error
@@ -231,7 +241,7 @@ export default function CallbackPage() {
           {/* Header */}
           <div className="text-center space-y-4">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="text-2xl font-bold text-gradient-hero">Pravado</span>
+              <PravadoLogo iconSize={36} fontSize="22px" />
               <AIPresenceDot status="analyzing" />
             </div>
             <h1 className="text-xl font-semibold text-white">

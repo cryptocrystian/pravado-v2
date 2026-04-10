@@ -18,6 +18,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { track, Events, identifyUser } from '@/lib/analytics';
+import { PravadoLogoIcon } from '@/components/brand/PravadoLogo';
 
 export const dynamic = 'force-dynamic';
 
@@ -621,8 +622,9 @@ export default function AIIntroPage() {
 
         {/* Header */}
         <header className="flex items-center justify-between px-8 py-5 shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="text-[18px] font-bold text-white tracking-tight">Pravado</span>
+          <div className="flex items-center gap-1.5">
+            <PravadoLogoIcon size={24} />
+            <span className="font-mono font-bold tracking-[0.15em] text-white text-sm">PRAVADO</span>
             <AIDot pulse={isTyping} />
           </div>
           <div className="flex items-center gap-4">
