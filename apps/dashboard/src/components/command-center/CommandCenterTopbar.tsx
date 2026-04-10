@@ -37,6 +37,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { CaretDown, Bell } from '@phosphor-icons/react';
+import { PravadoLogoIcon } from '@/components/brand/PravadoLogo';
 
 interface CommandCenterTopbarProps {
   orgName?: string;
@@ -95,11 +96,11 @@ export function CommandCenterTopbar({
             ============================================ */}
         <div className="flex items-center gap-3 flex-shrink-0 pl-2">
           {/* Pravado Wordmark + AI Status */}
-          <Link href="/app/command-center" className="flex items-center gap-2 group">
-            <span className="text-3xl font-bold tracking-tight bg-gradient-to-r from-brand-cyan via-brand-iris to-brand-magenta bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
-              Pravado
+          <Link href="/app/command-center" className="flex items-center gap-1.5 group">
+            <PravadoLogoIcon size={28} />
+            <span className="font-mono font-bold tracking-[0.15em] text-white text-base group-hover:opacity-90 transition-opacity">
+              PRAVADO
             </span>
-            <span className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.7)]" />
           </Link>
         </div>
 

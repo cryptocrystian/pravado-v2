@@ -7,6 +7,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { PravadoLogo } from '@/components/brand/PravadoLogo';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -54,7 +55,7 @@ export default function OnboardingPage() {
 
       <div className="relative text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <span className="text-2xl font-bold text-gradient-hero">Pravado</span>
+          <PravadoLogo iconSize={36} fontSize="22px" />
           <AIDot status="analyzing" />
         </div>
         <p className="text-muted">Preparing your experience...</p>
