@@ -634,6 +634,71 @@ All 7 surfaces audited via live browser testing (Chrome extension). Bugs found, 
 - Billing settings page created at /app/settings/billing
 - Settings sub-route redirects (/integrations, /notifications → /settings)
 
+### LLM Advertising — Category Definition Initiative
+
+**Strategic thesis:** LLM advertising (ChatGPT Sponsored, Perplexity Ads, Google AI Overviews promoted placements) is an emerging $50B+ category with no measurement standard, no attribution framework, and no established tooling. Pravado's existing infrastructure — EVI, CiteMind, SAGE — maps directly onto what brands will need to manage and measure paid AI visibility. We have a narrow window to define the category vocabulary before incumbents (Semrush, Cision, Meltwater) react.
+
+#### Phase 1 — Category Definition (Q2 2026, execute during beta)
+
+**1a. The LLM Visibility Framework (white paper)**
+A rigorous, practitioner-focused framework that defines:
+- Organic AI Visibility vs. Paid AI Visibility — the distinction that doesn't yet have a name
+- AI Share of Voice (AI-SOV) — how to measure brand presence across LLM responses
+- LLM Ad Quality Score — why citation probability predicts paid placement performance
+- The AI Visibility Stack — earned (CiteMind/EVI) + paid (LLM ads) + attributed (SAGE)
+- Platform-by-platform breakdown: ChatGPT, Perplexity, Gemini, Claude, Copilot ad formats
+
+Target: 4,000–6,000 words, heavily cited, original data where possible (use beta customer EVI/CiteMind data with permission). Register at copyright.gov.
+
+**1b. PR campaign (around white paper launch)**
+- Target tier-1 marketing/tech press: Marketing Week, Adweek, TechCrunch, The Drum, Digiday, Search Engine Journal
+- Pitch angle: "The agency that measures AI ads before platforms even launch them"
+- Secondary angle: "Why your Google Ads budget won't translate to ChatGPT"
+- Byline opportunities: Harvard Business Review, Forbes CMO Network
+- Podcast targets: Marketing Over Coffee, Duct Tape Marketing, Exit Five, The CMO Podcast
+- HARO/Qwoted: position Christian as go-to expert on AI advertising measurement
+
+**1c. Content campaign (8-week drip around white paper)**
+| Week | Content | Channel |
+|------|---------|--------|
+| 1 | "LLM ads are here. Nobody knows how to measure them." | LinkedIn + blog |
+| 2 | "Why your Google Quality Score means nothing in ChatGPT" | Blog + email |
+| 3 | "Introducing the AI Visibility Stack" (infographic) | LinkedIn + Twitter/X |
+| 4 | White paper launch + PR push | All channels |
+| 5 | "We measured 100 brands' AI Share of Voice. Here's what we found." | Blog + press |
+| 6 | "The CiteMind Score: predicting LLM ad quality before you spend" | Blog + LinkedIn |
+| 7 | Video: "What LLM advertising looks like in practice" | YouTube + LinkedIn |
+| 8 | "Agency guide to AI Visibility" (gated lead magnet) | Landing page |
+
+**1d. Vocabulary to own (publish and repeat consistently)**
+- "AI Visibility" — the category name
+- "Earned AI Visibility" — organic brand presence in LLM responses
+- "Paid AI Visibility" — sponsored placements in LLM responses
+- "AI Share of Voice" (AI-SOV) — % of relevant LLM responses mentioning your brand
+- "LLM Ad Quality Score" — CiteMind-derived metric for paid placement readiness
+- "Visibility Operating System" — Pravado's product positioning
+
+#### Phase 2 — Platform Integration Abstraction Layer (Q3 2026)
+- Monitor each LLM ad platform's API/format as they launch
+- Build CiteMind → "LLM Ad Readiness" score (existing CiteMind, new label)
+- Build EVI → "AI SOV" dashboard panel (existing monitoring, new framing)
+- SAGE begins recommending paid vs. earned actions side-by-side
+- No bidding integration yet — monitoring and readiness scoring only
+
+#### Phase 3 — LLM Ad Management (Q4 2026 / Q1 2027)
+- Platform API integrations: Perplexity Ads, ChatGPT Sponsored (when available)
+- Unified LLM Ad dashboard: manage spend, see AI-SOV, attribute EVI changes
+- Attribution: connect paid LLM placements to EVI delta movements
+- Agency tier: white-label AI Visibility reporting for agency clients
+
+#### Agency Plan Overlap
+The agency tier (planned post-beta) and the LLM ad management layer are the same product. Agency clients need: (a) AI-SOV reporting for multiple client brands, (b) LLM ad readiness scoring, (c) white-label EVI dashboards. Design the agency tier with LLM ad management in mind from the start — they ship together.
+
+#### Key risks
+- Platform timing: ChatGPT/Perplexity ad APIs may be slow to open → mitigation: monitoring layer doesn't require API access
+- Incumbent response: Semrush/Meltwater will move into this space → mitigation: ship the white paper and own the vocabulary before they do
+- Standard fragmentation: each LLM doing ads differently → mitigation: abstraction layer is the product, fragmentation is the moat
+
 ### Proprietary IP Portfolio
 
 #### Trade Secrets (protected immediately, no filing required)
@@ -735,3 +800,29 @@ Infrastructure: Supabase auth + SecureStore, API client with auto-auth, push not
 | Stripe | Live mode | ✅ Configured |
 | Sentry | Initialized | ✅ Active |
 | PostHog | Initialized | ✅ Active |
+
+---
+
+## POST-BETA BACKLOG
+
+### MOBILE-NAV-001 — No mobile navigation for authenticated app
+**Priority:** Post-beta
+**Status:** Logged
+
+The `CommandCenterTopbar` surface navigation uses `hidden md:flex` and is completely invisible below 768px. No hamburger menu, mobile drawer, or bottom tab bar exists. Mobile users cannot navigate between surfaces (Command Center, PR, Content, SEO, Calendar, Analytics) or access Settings/Team.
+
+**Confirmed via Playwright audit (375px):**
+- `<nav>` element has `hidden md:flex` — invisible at mobile widths
+- No `<button>` with hamburger/menu icon exists in the DOM
+- No drawer or slide-out component exists
+
+**Fix required:**
+- Add a hamburger button (`md:hidden`) to the topbar right cluster
+- Create a `MobileNavDrawer` component with all 6 surface links + Settings/Team
+- Use DS v3 dark theme (bg-slate-1, border-border-subtle)
+- Animate with slide-from-right, backdrop overlay
+- Close on link click or outside tap
+
+**Affected pages:** All authenticated routes under `/app/*`
+
+**Acceptable for beta:** Yes — beta users will be desktop-only.
