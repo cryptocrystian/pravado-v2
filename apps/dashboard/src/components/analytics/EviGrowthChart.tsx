@@ -58,10 +58,13 @@ export function EviGrowthChart() {
 
   if (isLoading) return <ChartSkeleton />;
 
-  const chartData = history.map((point) => ({
-    date: new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    evi: Number(point.evi_score),
-  }));
+  // Deduplicate: keep only the last data point per calendar date
+  const byDate = new Map<string, number>();
+  for (const point of history) {
+    const label = new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    byDate.set(label, Number(point.evi_score));
+  }
+  const chartData = Array.from(byDate, ([date, evi]) => ({ date, evi }));
 
   return (
     <div className="bg-cc-surface border border-white/8 rounded-2xl p-6">
