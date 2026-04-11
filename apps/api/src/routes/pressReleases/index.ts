@@ -5,6 +5,7 @@
 
 import { FLAGS } from '@pravado/feature-flags';
 import type { PRGenerationInput, PRListFilters, PRReleaseStatus } from '@pravado/types';
+import { LlmRouter } from '@pravado/utils';
 import { apiEnvSchema, validateEnv } from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
@@ -22,10 +23,19 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
     return;
   }
 
-  // Create Supabase client (S100.3 fix)
+  // Create Supabase client + LLM router
   const env = validateEnv(apiEnvSchema);
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
-  const prService = new PressReleaseService(supabase);
+  const llmRouter = new LlmRouter({
+    provider: env.LLM_PROVIDER as 'openai' | 'anthropic' | 'stub',
+    openaiApiKey: env.LLM_OPENAI_API_KEY,
+    openaiModel: env.LLM_OPENAI_MODEL,
+    anthropicApiKey: env.LLM_ANTHROPIC_API_KEY,
+    anthropicModel: env.LLM_ANTHROPIC_MODEL,
+    timeoutMs: env.LLM_TIMEOUT_MS,
+    maxTokens: env.LLM_MAX_TOKENS,
+  });
+  const prService = new PressReleaseService(supabase, llmRouter);
 
   /**
    * Helper to get user's org ID
