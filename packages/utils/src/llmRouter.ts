@@ -222,7 +222,7 @@ export class LlmRouter {
       openaiApiKey: config.openaiApiKey || '',
       openaiModel: config.openaiModel || 'gpt-4o-mini',
       anthropicApiKey: config.anthropicApiKey || '',
-      anthropicModel: config.anthropicModel || 'claude-3-5-sonnet-20241022',
+      anthropicModel: config.anthropicModel || 'claude-sonnet-4-20250514',
       timeoutMs: config.timeoutMs || 20000,
       maxTokens: config.maxTokens || 2048,
     };
@@ -702,7 +702,7 @@ export async function routeLLM(request: RouteLLMRequest): Promise<RouteLLMRespon
     openaiApiKey: process.env.OPENAI_API_KEY,
     openaiModel: request.model || 'gpt-4o-mini',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
-    anthropicModel: 'claude-3-5-sonnet-20241022',
+    anthropicModel: 'claude-sonnet-4-20250514',
     timeoutMs: 30000,
     maxTokens: request.maxTokens || 2000,
   });
