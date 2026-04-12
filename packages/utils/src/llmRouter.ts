@@ -490,7 +490,8 @@ export class LlmRouter {
       if (error instanceof Error && error.name === 'AbortError') {
         logger.warn('Anthropic request timed out, falling back to stub');
       } else {
-        logger.error('Anthropic request failed', { error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        logger.error(`Anthropic request failed: ${errMsg}`);
       }
 
       // Fallback to stub
