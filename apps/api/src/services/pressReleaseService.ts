@@ -354,9 +354,7 @@ Return a JSON array of 5 angle objects.`;
         }));
       }
     } catch (error) {
-      if (this.debugMode) {
-        console.error('LLM angle generation failed:', error);
-      }
+      console.error('[PressRelease] LLM angle generation failed, using fallback:', error instanceof Error ? error.message : error);
     }
 
     return this.generateFallbackAngles(context);
@@ -635,9 +633,7 @@ Return a JSON array of 10 headline strings.`;
         }));
       }
     } catch (error) {
-      if (this.debugMode) {
-        console.error('LLM headline generation failed:', error);
-      }
+      console.error('[PressRelease] LLM headline generation failed, using fallback:', error instanceof Error ? error.message : error);
     }
 
     return this.generateFallbackHeadlines(context, selectedAngle);
@@ -940,9 +936,7 @@ Return a JSON object with the press release sections.`;
         };
       }
     } catch (error) {
-      if (this.debugMode) {
-        console.error('LLM draft generation failed:', error);
-      }
+      console.error('[PressRelease] LLM draft generation failed, using fallback:', error instanceof Error ? error.message : error);
     }
 
     return this.generateFallbackDraft(context, selectedAngle, selectedHeadline);

@@ -26,8 +26,9 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
   // Create Supabase client + LLM router
   const env = validateEnv(apiEnvSchema);
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const llmProvider = env.LLM_PROVIDER || 'stub';
   const llmRouter = new LlmRouter({
-    provider: env.LLM_PROVIDER as 'openai' | 'anthropic' | 'stub',
+    provider: llmProvider as 'openai' | 'anthropic' | 'stub',
     openaiApiKey: env.LLM_OPENAI_API_KEY,
     openaiModel: env.LLM_OPENAI_MODEL,
     anthropicApiKey: env.LLM_ANTHROPIC_API_KEY,
@@ -35,6 +36,7 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
     timeoutMs: env.LLM_TIMEOUT_MS,
     maxTokens: env.LLM_MAX_TOKENS,
   });
+  server.log.info(`[PressRelease] LLM provider: ${llmProvider}, hasAnthropicKey: ${!!env.LLM_ANTHROPIC_API_KEY}, hasOpenAIKey: ${!!env.LLM_OPENAI_API_KEY}`);
   const prService = new PressReleaseService(supabase, llmRouter);
 
   /**
