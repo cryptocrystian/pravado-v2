@@ -52,6 +52,11 @@ const waterfallData: WaterfallItem[] = (() => {
   return items;
 })();
 
+// Zoom into the range of movement so delta bars are visually thick
+const totalDelta = waterfallData[waterfallData.length - 1].total - START_EVI;
+const yMin = Math.floor(START_EVI * 0.97);
+const yMax = Math.ceil((START_EVI + totalDelta) * 1.02);
+
 function WaterfallTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: WaterfallItem }> }) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
@@ -85,7 +90,7 @@ export function EviWaterfall() {
             tickLine={false}
           />
           <YAxis
-            domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.05)]}
+            domain={[yMin, yMax]}
             tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)' }}
             axisLine={false}
             tickLine={false}
