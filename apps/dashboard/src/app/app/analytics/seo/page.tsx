@@ -21,8 +21,10 @@ import {
   mockSEOSummary,
   mockTopicPerformance,
   mockEngineTrend,
+  mockNarratives,
 } from '@/components/analytics/analytics-mock-data';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
+import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
 import { CitationVelocityByEngine } from '@/components/analytics/CitationVelocityByEngine';
 import { TopicOpportunityMatrix } from '@/components/analytics/TopicOpportunityMatrix';
 
@@ -57,6 +59,8 @@ export default function SEOAnalyticsPage() {
             Export &darr;
           </button>
         </div>
+
+        <AINarrativeHeader narrative={mockNarratives.seo} />
 
         {/* Summary Stats */}
         <div className="grid grid-cols-4 gap-4">

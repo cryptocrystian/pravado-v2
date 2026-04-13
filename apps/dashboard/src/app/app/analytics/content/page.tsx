@@ -9,7 +9,8 @@ import { useCallback } from 'react';
 import { ContentTable } from '@/components/analytics/ContentTable';
 import { CitationVelocityChart } from '@/components/analytics/CitationVelocityChart';
 import { CiteMindDistribution } from '@/components/analytics/CiteMindDistribution';
-import { mockContentRows } from '@/components/analytics/analytics-mock-data';
+import { mockContentRows, mockNarratives } from '@/components/analytics/analytics-mock-data';
+import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
 export default function ContentAnalyticsPage() {
@@ -34,6 +35,7 @@ export default function ContentAnalyticsPage() {
           </button>
         </div>
 
+        <AINarrativeHeader narrative={mockNarratives.content} />
         <ContentTable />
         <CitationVelocityChart />
         <CiteMindDistribution />

@@ -11,7 +11,8 @@ import { HeadlineMetrics } from '@/components/analytics/HeadlineMetrics';
 import { PillarContribution } from '@/components/analytics/PillarContribution';
 import { CompetitiveSnapshot } from '@/components/analytics/CompetitiveSnapshot';
 import { TopWins } from '@/components/analytics/TopWins';
-import { mockHeadlineMetrics, mockAttribution, mockTopWins } from '@/components/analytics/analytics-mock-data';
+import { mockHeadlineMetrics, mockAttribution, mockTopWins, mockNarratives } from '@/components/analytics/analytics-mock-data';
+import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
 const EviGrowthChart = dynamic(
@@ -59,6 +60,8 @@ export default function AnalyticsOverviewPage() {
             Export &darr;
           </button>
         </div>
+
+        <AINarrativeHeader narrative={mockNarratives.overview} />
 
         {/* Headline Metrics */}
         <HeadlineMetrics />
