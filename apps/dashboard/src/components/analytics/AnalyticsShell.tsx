@@ -10,6 +10,7 @@ import type { ReactNode } from 'react';
 import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
 import { AnalyticsChromeBar } from './AnalyticsChromeBar';
 import { AnalyticsModeProvider } from './AnalyticsModeContext';
+import { AnalyticsDateProvider } from './AnalyticsDateContext';
 
 interface AnalyticsShellProps {
   orgName: string;
@@ -21,6 +22,7 @@ interface AnalyticsShellProps {
 export function AnalyticsShell({ orgName, userName, userAvatarUrl, children }: AnalyticsShellProps) {
   return (
     <AnalyticsModeProvider>
+    <AnalyticsDateProvider>
       <div className="min-h-screen bg-slate-0 flex flex-col">
         <CommandCenterTopbar
           orgName={orgName}
@@ -32,6 +34,7 @@ export function AnalyticsShell({ orgName, userName, userAvatarUrl, children }: A
           {children}
         </main>
       </div>
+    </AnalyticsDateProvider>
     </AnalyticsModeProvider>
   );
 }

@@ -2,10 +2,10 @@
 
 /**
  * EviGrowthChart — Primary EVI trend chart.
- * Uses real EVI history data from the backend (Sprint S-INT-01).
+ * Uses real EVI history data from the backend.
+ * Supports period comparison (dashed prior-period line).
  */
 
-import { useState } from 'react';
 import {
   ComposedChart,
   Line,
@@ -16,6 +16,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useEVIHistory } from '@/lib/useEVI';
+import { useAnalyticsDate } from './AnalyticsDateContext';
 
 function CustomTooltip({
   active,
@@ -34,9 +35,9 @@ function CustomTooltip({
       {payload.map((p) => (
         <p
           key={p.dataKey}
-          className="text-cc-cyan font-medium"
+          className={p.dataKey === 'prior' ? 'text-white/40' : 'text-cc-cyan font-medium'}
         >
-          Your EVI: {p.value}
+          {p.dataKey === 'prior' ? 'Prior period' : 'Your EVI'}: {p.value}
         </p>
       ))}
     </div>
@@ -53,8 +54,10 @@ function ChartSkeleton() {
 }
 
 export function EviGrowthChart() {
-  const [days] = useState(30);
-  const { data: history, isLoading } = useEVIHistory(days);
+  const { days, comparisonEnabled } = useAnalyticsDate();
+
+  // Fetch current period + prior period (2x days to cover both)
+  const { data: history, isLoading } = useEVIHistory(comparisonEnabled ? days * 2 : days);
 
   if (isLoading) return <ChartSkeleton />;
 
@@ -64,13 +67,30 @@ export function EviGrowthChart() {
     const label = new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     byDate.set(label, Number(point.evi_score));
   }
-  const chartData = Array.from(byDate, ([date, evi]) => ({ date, evi }));
+  const allPoints = Array.from(byDate, ([date, evi]) => ({ date, evi }));
+
+  // Split into current and prior period
+  let chartData: { date: string; evi: number; prior?: number }[];
+
+  if (comparisonEnabled && allPoints.length > days) {
+    const priorPoints = allPoints.slice(0, allPoints.length - days);
+    const currentPoints = allPoints.slice(allPoints.length - days);
+
+    // Merge: align prior period data alongside current period by index
+    chartData = currentPoints.map((point, i) => ({
+      ...point,
+      prior: priorPoints[i]?.evi,
+    }));
+  } else {
+    chartData = allPoints.slice(-days);
+  }
 
   return (
     <div className="bg-cc-surface border border-white/8 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-white">
-          EVI Growth Story (30 days)
+          EVI Growth Story ({days} days)
+          {comparisonEnabled && <span className="text-white/40 font-normal ml-2">vs prior period</span>}
         </h3>
       </div>
 
@@ -96,6 +116,17 @@ export function EviGrowthChart() {
               width={30}
             />
             <Tooltip content={<CustomTooltip />} />
+            {comparisonEnabled && (
+              <Line
+                type="monotone"
+                dataKey="prior"
+                stroke="rgba(255,255,255,0.25)"
+                strokeWidth={1.5}
+                strokeDasharray="6 4"
+                dot={false}
+                connectNulls
+              />
+            )}
             <Line
               type="monotone"
               dataKey="evi"
