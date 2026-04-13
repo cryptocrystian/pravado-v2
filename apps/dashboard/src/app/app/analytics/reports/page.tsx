@@ -2,26 +2,19 @@
 
 /**
  * Reports — /app/analytics/reports
- * Report builder with PDF generation for all 4 templates.
+ * Report builder with print-to-PDF generation for all 4 templates.
  */
 
-import { useState, useRef, useCallback } from 'react';
-import { FileText, DownloadSimple, SpinnerGap } from '@phosphor-icons/react';
+import { useRef, useCallback } from 'react';
+import { FileText, Printer } from '@phosphor-icons/react';
 import { mockReportTemplates } from '@/components/analytics/analytics-mock-data';
 import { ExecutiveSummaryReport } from '@/components/analytics/reports/ExecutiveSummaryReport';
 import { PRCampaignReport } from '@/components/analytics/reports/PRCampaignReport';
 import { BoardInvestorUpdate } from '@/components/analytics/reports/BoardInvestorUpdate';
 import { SEOPresenceReport } from '@/components/analytics/reports/SEOPresenceReport';
-
-const REPORT_FILENAMES: Record<string, string> = {
-  'Monthly Executive Summary': 'pravado-executive-summary.pdf',
-  'PR Campaign Report': 'pravado-pr-campaign-report.pdf',
-  'Board / Investor Update': 'pravado-board-update.pdf',
-  'Client Report': 'pravado-seo-presence-report.pdf',
-};
+import { generatePdf } from '@/lib/pdf-export';
 
 export default function ReportsPage() {
-  const [generating, setGenerating] = useState<string | null>(null);
   const execRef = useRef<HTMLDivElement>(null);
   const prRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
@@ -34,22 +27,18 @@ export default function ReportsPage() {
     'Client Report': seoRef,
   };
 
-  const handleGenerate = useCallback(async (templateTitle: string) => {
+  const handleGenerate = useCallback((templateTitle: string) => {
     const ref = refMap[templateTitle];
-    if (!ref?.current || generating) return;
-    setGenerating(templateTitle);
+    if (!ref?.current) return;
 
     try {
-      const { generatePdf } = await import('@/lib/pdf-export');
-      await generatePdf(ref.current, REPORT_FILENAMES[templateTitle] || 'pravado-report.pdf');
+      generatePdf(ref.current, `pravado-${templateTitle.toLowerCase().replace(/\s+/g, '-')}.pdf`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error('[PDF] Generation failed:', msg, err);
+      console.error('[PDF] Generation failed:', msg);
       alert('PDF generation failed: ' + msg);
-    } finally {
-      setGenerating(null);
     }
-  }, [generating]);
+  }, []);
 
   return (
     <div className="pt-6 pb-16 px-8 overflow-y-auto h-full">
@@ -60,7 +49,7 @@ export default function ReportsPage() {
           <h2 className="text-xl font-bold text-white mt-4">Report Builder</h2>
           <p className="text-sm text-white/70 mt-2 mb-2 max-w-md mx-auto leading-relaxed">
             Generate shareable reports for leadership, clients, or boards.
-            Select a template below to export as PDF.
+            Select a template and use &ldquo;Save as PDF&rdquo; in the print dialog.
           </p>
         </div>
 
@@ -81,27 +70,17 @@ export default function ReportsPage() {
               <button
                 type="button"
                 onClick={() => handleGenerate(tpl.title)}
-                disabled={generating !== null}
-                className="flex items-center gap-1.5 bg-brand-cyan text-slate-0 rounded-lg px-4 py-2 text-sm font-medium hover:bg-brand-cyan/90 transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 bg-brand-cyan text-slate-0 rounded-lg px-4 py-2 text-sm font-medium hover:bg-brand-cyan/90 transition-colors"
               >
-                {generating === tpl.title ? (
-                  <>
-                    <SpinnerGap size={14} className="animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <DownloadSimple size={14} weight="bold" />
-                    Generate PDF
-                  </>
-                )}
+                <Printer size={14} weight="bold" />
+                Generate PDF
               </button>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Hidden report render targets (off-screen, light theme for PDF) */}
+      {/* Hidden report render targets (off-screen, light theme for print capture) */}
       <div style={{ position: 'absolute', left: '-9999px', top: 0 }} aria-hidden="true">
         <div ref={execRef}><ExecutiveSummaryReport orgName="Pravado" period="Last 30 Days" /></div>
         <div ref={prRef}><PRCampaignReport orgName="Pravado" period="Last 30 Days" /></div>
