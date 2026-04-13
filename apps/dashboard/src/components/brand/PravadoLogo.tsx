@@ -65,8 +65,7 @@ export function PravadoLogoIcon({ size = 48, className = '' }: LogoIconProps) {
             V 24
             Z
           `}
-          fill="currentColor"
-          className="text-black"
+          fill="#0A0A0F"
           style={{ transform: `translateX(${gap}px)` }}
         />
 

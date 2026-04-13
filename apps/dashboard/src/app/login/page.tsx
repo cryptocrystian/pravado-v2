@@ -242,36 +242,35 @@ export default function LoginPage() {
 
     try {
       console.log('[OAuth] Starting sign-in with provider:', provider);
-      console.log('[OAuth] Redirect URL:', getRedirectUrl());
+      const redirectUrl = getRedirectUrl('oauth');
+      console.log('[OAuth] Redirect URL:', redirectUrl);
 
-      // Clear any stale session first to prevent cookie conflicts
-      await supabase.auth.signOut();
-
-      // Use signInWithOAuth — server-side route handler for reliable PKCE exchange
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: getRedirectUrl('oauth'),
+          redirectTo: redirectUrl,
         },
       });
 
-      console.log('[OAuth] Response:', { data, error });
+      console.log('[OAuth] Response:', { url: data?.url, error });
 
       if (error) {
-        console.error('[OAuth] Error:', error);
         throw error;
       }
 
-      // If skipBrowserRedirect wasn't used, Supabase handles redirect automatically
-      // But if we get a URL back, redirect manually
       if (data?.url) {
-        console.log('[OAuth] Redirecting to:', data.url);
+        // Navigate to OAuth provider
         window.location.href = data.url;
+        return; // Don't clear loading — we're navigating away
       }
+
+      // If no URL returned, Supabase handled the redirect automatically
+      // (shouldn't reach here, but clear loading just in case)
+      console.warn('[OAuth] No redirect URL returned — Supabase may have redirected automatically');
+      setOauthLoading(null);
     } catch (err) {
-      console.error('[OAuth] Caught error:', err);
-      const error = err as Error;
-      setError(error.message || `Failed to sign in with ${provider === 'azure' ? 'Microsoft' : 'Google'}`);
+      console.error('[OAuth] Error:', err);
+      setError(err instanceof Error ? err.message : `Failed to sign in with ${provider === 'azure' ? 'Microsoft' : 'Google'}`);
       setOauthLoading(null);
     }
   };
