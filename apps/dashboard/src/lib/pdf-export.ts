@@ -1,9 +1,9 @@
 /**
  * PDF Export Utility — client-side PDF generation via html2canvas + jsPDF
+ *
+ * Both libraries are dynamically imported at call time to avoid
+ * SSR/bundler issues with CommonJS packages in Next.js App Router.
  */
-
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 
 const A4_WIDTH_MM = 210;
 const A4_HEIGHT_MM = 297;
@@ -15,6 +15,12 @@ const CONTENT_WIDTH_MM = A4_WIDTH_MM - MARGIN_MM * 2;
  * The element should be rendered off-screen with light-theme styling.
  */
 export async function generatePdf(element: HTMLElement, filename: string): Promise<void> {
+  // Dynamic imports — loaded at call time, not at module parse
+  const html2canvasModule = await import('html2canvas');
+  const html2canvas = html2canvasModule.default;
+  const jsPDFModule = await import('jspdf');
+  const jsPDF = jsPDFModule.jsPDF;
+
   // Capture the element at 2x resolution for sharpness
   const canvas = await html2canvas(element, {
     scale: 2,
@@ -27,8 +33,7 @@ export async function generatePdf(element: HTMLElement, filename: string): Promi
   const imgHeightPx = canvas.height;
 
   // Calculate how the image maps to A4 pages
-  const contentWidthPx = imgWidthPx;
-  const pxPerMm = contentWidthPx / CONTENT_WIDTH_MM;
+  const pxPerMm = imgWidthPx / CONTENT_WIDTH_MM;
   const contentHeightMm = imgHeightPx / pxPerMm;
   const pageContentHeightMm = A4_HEIGHT_MM - MARGIN_MM * 2;
 
@@ -39,7 +44,6 @@ export async function generatePdf(element: HTMLElement, filename: string): Promi
   while (yOffsetMm < contentHeightMm) {
     if (page > 0) pdf.addPage();
 
-    // Calculate source region for this page
     const remainingMm = contentHeightMm - yOffsetMm;
     const thisPageHeightMm = Math.min(pageContentHeightMm, remainingMm);
 
