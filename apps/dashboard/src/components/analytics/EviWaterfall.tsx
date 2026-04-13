@@ -3,10 +3,14 @@
 /**
  * EviWaterfall — Waterfall chart showing each placement's EVI contribution.
  *
- * Recharts waterfall pattern:
- * - Two stacked <Bar>s: invisible base + visible delta
- * - The invisible bar has fillOpacity=0 and no stroke
- * - Domain is set manually to avoid stacked-sum distortion
+ * Pattern: two stacked bars per data point.
+ *   Bar 1 (invisible): height = base (pushes visible bar to correct Y)
+ *   Bar 2 (visible):   height = value (the delta)
+ *
+ * Data example:
+ *   { name: 'Start',      base: 0,    value: 70.0 }  ← full column
+ *   { name: 'TechCrunch', base: 70.0, value: 4.1 }   ← floats at Y=70
+ *   { name: 'Current',    base: 0,    value: 76.6 }  ← full column
  */
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -17,41 +21,36 @@ function parseLift(lift: string): number {
   return match ? parseFloat(match[0]) : 0;
 }
 
-const START_EVI = 70.0;
-
 interface WaterfallItem {
   name: string;
   base: number;
-  delta: number;
+  value: number;
   total: number;
   isTotal: boolean;
 }
+
+const START_EVI = 70.0;
 
 const waterfallData: WaterfallItem[] = (() => {
   const items: WaterfallItem[] = [];
   let running = START_EVI;
 
-  // Start bar: base=0, delta=full EVI (renders from 0 to START_EVI)
-  items.push({ name: 'Start', base: 0, delta: running, total: running, isTotal: true });
+  // Start: full column from 0 to START_EVI
+  items.push({ name: 'Start', base: 0, value: running, total: running, isTotal: true });
 
+  // Each placement: floating segment at running total
   for (const p of mockPlacements) {
     const lift = parseLift(p.eviLift);
     if (lift === 0) continue;
-    // Intermediate: base = current running total, delta = the lift
-    items.push({ name: p.publication, base: running, delta: lift, total: running + lift, isTotal: false });
+    items.push({ name: p.publication, base: running, value: lift, total: running + lift, isTotal: false });
     running += lift;
   }
 
-  // Current bar: base=0, delta=full running total
-  items.push({ name: 'Current', base: 0, delta: running, total: running, isTotal: true });
+  // Current: full column from 0 to final total
+  items.push({ name: 'Current', base: 0, value: running, total: running, isTotal: true });
 
   return items;
 })();
-
-// Calculate domain manually — don't let Recharts auto-calculate from stacked sums
-const allTotals = waterfallData.map(d => d.total);
-const yMin = Math.floor(Math.min(...allTotals) * 0.95);
-const yMax = Math.ceil(Math.max(...allTotals) * 1.03);
 
 function WaterfallTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: WaterfallItem }> }) {
   if (!active || !payload?.length) return null;
@@ -62,8 +61,8 @@ function WaterfallTooltip({ active, payload }: { active?: boolean; payload?: Arr
       {d.isTotal ? (
         <p className="text-brand-cyan">EVI: {d.total.toFixed(1)}</p>
       ) : (
-        <p className={d.delta >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}>
-          {d.delta >= 0 ? '+' : ''}{d.delta.toFixed(1)} pts
+        <p className={d.value >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}>
+          {d.value >= 0 ? '+' : ''}{d.value.toFixed(1)} pts
         </p>
       )}
     </div>
@@ -86,7 +85,7 @@ export function EviWaterfall() {
             tickLine={false}
           />
           <YAxis
-            domain={[yMin, yMax]}
+            domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.05)]}
             tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)' }}
             axisLine={false}
             tickLine={false}
@@ -94,38 +93,36 @@ export function EviWaterfall() {
           />
           <Tooltip content={<WaterfallTooltip />} cursor={false} />
 
-          {/* Invisible spacer bar — pushes the delta bar up to the correct position */}
+          {/* Invisible spacer — pushes the visible bar to the correct Y position */}
           <Bar
             dataKey="base"
-            stackId="waterfall"
-            fill="transparent"
+            stackId="a"
             fillOpacity={0}
             strokeOpacity={0}
             isAnimationActive={false}
           />
 
-          {/* Visible delta bar — the actual waterfall segment */}
+          {/* Visible delta bar */}
           <Bar
-            dataKey="delta"
-            stackId="waterfall"
+            dataKey="value"
+            stackId="a"
             radius={[4, 4, 0, 0]}
             isAnimationActive={false}
           >
             {waterfallData.map((entry, i) => (
               <Cell
                 key={i}
-                fill={entry.isTotal ? '#00D9FF' : entry.delta >= 0 ? '#22C55E' : '#EF4444'}
-                fillOpacity={entry.isTotal ? 0.7 : 0.9}
+                fill={entry.isTotal ? '#00D9FF' : entry.value >= 0 ? '#22C55E' : '#EF4444'}
+                fillOpacity={entry.isTotal ? 0.6 : 0.9}
               />
             ))}
           </Bar>
         </BarChart>
       </ResponsiveContainer>
 
-      {/* Legend */}
       <div className="flex items-center gap-4 mt-2 text-[11px] text-white/40">
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-2 rounded-sm bg-[#00D9FF]/70 inline-block" /> Total EVI
+          <span className="w-3 h-2 rounded-sm bg-[#00D9FF]/60 inline-block" /> Total EVI
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-2 rounded-sm bg-[#22C55E] inline-block" /> Positive lift
