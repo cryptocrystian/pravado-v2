@@ -1,9 +1,12 @@
 /**
  * PDF Export Utility — client-side PDF generation via html2canvas + jsPDF
  *
- * Both libraries are dynamically imported at call time to avoid
- * SSR/bundler issues with CommonJS packages in Next.js App Router.
+ * Static imports so webpack bundles these into the client chunk.
+ * This file should only be imported from 'use client' components.
  */
+
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const A4_WIDTH_MM = 210;
 const A4_HEIGHT_MM = 297;
@@ -15,11 +18,7 @@ const CONTENT_WIDTH_MM = A4_WIDTH_MM - MARGIN_MM * 2;
  * The element should be rendered off-screen with light-theme styling.
  */
 export async function generatePdf(element: HTMLElement, filename: string): Promise<void> {
-  // Dynamic imports — loaded at call time, not at module parse
-  const html2canvasModule = await import('html2canvas');
-  const html2canvas = html2canvasModule.default;
-  const jsPDFModule = await import('jspdf');
-  const jsPDF = jsPDFModule.jsPDF;
+  console.log('[PDF] Starting generation...');
 
   // Capture the element at 2x resolution for sharpness
   const canvas = await html2canvas(element, {
@@ -28,6 +27,8 @@ export async function generatePdf(element: HTMLElement, filename: string): Promi
     backgroundColor: '#ffffff',
     logging: false,
   });
+
+  console.log('[PDF] Canvas captured:', canvas.width, 'x', canvas.height);
 
   const imgWidthPx = canvas.width;
   const imgHeightPx = canvas.height;
@@ -71,5 +72,6 @@ export async function generatePdf(element: HTMLElement, filename: string): Promi
     page++;
   }
 
+  console.log('[PDF] Saving:', filename);
   pdf.save(filename);
 }
