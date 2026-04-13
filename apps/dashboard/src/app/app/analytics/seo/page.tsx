@@ -23,6 +23,8 @@ import {
   mockEngineTrend,
 } from '@/components/analytics/analytics-mock-data';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
+import { CitationVelocityByEngine } from '@/components/analytics/CitationVelocityByEngine';
+import { TopicOpportunityMatrix } from '@/components/analytics/TopicOpportunityMatrix';
 
 const engineColors: Record<string, string> = {
   ChatGPT: '#00E5CC',
@@ -272,6 +274,11 @@ export default function SEOAnalyticsPage() {
             Gap closing: 26% improvement this period
           </p>
         </div>
+        {/* Citation Velocity by Engine */}
+        <CitationVelocityByEngine />
+
+        {/* Topic Opportunity Matrix */}
+        <TopicOpportunityMatrix />
       </div>
     </div>
   );
