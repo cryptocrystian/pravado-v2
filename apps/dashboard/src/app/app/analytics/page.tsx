@@ -5,11 +5,13 @@
  * Headline metrics, EVI growth chart, attribution, top wins.
  */
 
-import { Suspense } from 'react';
+import { Suspense, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { HeadlineMetrics } from '@/components/analytics/HeadlineMetrics';
 import { AttributionBar } from '@/components/analytics/AttributionBar';
 import { TopWins } from '@/components/analytics/TopWins';
+import { mockHeadlineMetrics, mockAttribution, mockTopWins } from '@/components/analytics/analytics-mock-data';
+import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
 const EviGrowthChart = dynamic(
   () =>
@@ -29,13 +31,28 @@ function ChartSkeleton() {
 }
 
 export default function AnalyticsOverviewPage() {
+  const handleExport = useCallback(() => {
+    const csv = arrayToCsv(
+      ['Metric', 'Value', 'Detail'],
+      [
+        ['EVI Change', mockHeadlineMetrics.eviChange.value, `${mockHeadlineMetrics.eviChange.from} → ${mockHeadlineMetrics.eviChange.to}`],
+        ['Content Published', String(mockHeadlineMetrics.contentPublished.value), `Goal: ${mockHeadlineMetrics.contentPublished.goal}`],
+        ['Earned Placements', String(mockHeadlineMetrics.earnedPlacements.value), `Goal: ${mockHeadlineMetrics.earnedPlacements.goal}`],
+        ['AI Citations', String(mockHeadlineMetrics.totalCitations.value), `+${mockHeadlineMetrics.totalCitations.deltaPercent}%`],
+        ...mockAttribution.map(a => ['Attribution: ' + a.label, a.percent + '%', '']),
+        ...mockTopWins.map((w, i) => [`Top Win #${i + 1}`, w, '']),
+      ]
+    );
+    downloadCsv('pravado-analytics-overview.csv', csv);
+  }, []);
+
   return (
     <div className="pt-6 pb-16 px-8 overflow-y-auto h-full">
       <div className="max-w-[1600px] mx-auto space-y-6">
-        {/* Controls row — date range is in chrome bar; Export only here */}
         <div className="flex items-center justify-end">
           <button
             type="button"
+            onClick={handleExport}
             className="bg-white/5 border border-white/8 rounded-xl px-3 py-1.5 text-sm text-white/70 hover:text-white transition-colors"
           >
             Export &darr;
