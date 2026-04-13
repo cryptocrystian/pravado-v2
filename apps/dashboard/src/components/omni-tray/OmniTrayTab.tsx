@@ -1,88 +1,63 @@
 'use client';
 
-import { Sparkle } from '@phosphor-icons/react';
-import { useOmniTray, OmniTrayEdge } from './useOmniTray';
+/**
+ * OmniTrayTab — Click-to-open handle strip on the right edge.
+ *
+ * Desktop (>=768px): 8px vertical strip, full viewport height below topbar.
+ * Mobile (<768px): 56px floating circle, bottom-right.
+ *
+ * No proximity detection — click only.
+ */
 
-interface OmniTrayTabProps {
-  edge: OmniTrayEdge;
-}
+import { Lightning } from '@phosphor-icons/react';
+import { useOmniTray } from './useOmniTray';
 
-export function OmniTrayTab({ edge }: OmniTrayTabProps) {
-  const { proximityLevels, isOpen, activeEdge, open } = useOmniTray();
-  const level = proximityLevels[edge];
-
-  if (isOpen && activeEdge === edge) return null;
-
-  // Sliver → full expansion driven by proximity level
-  // At level 0: 4px sliver. At level 1: full tab size.
-  const sliverMin = 4;
-  const sliverMax = 40;
-  const lengthMin = 20;
-  const lengthMax = 72;
-
-  const thickness = sliverMin + level * (sliverMax - sliverMin); // 4px → 40px
-  const length = lengthMin + level * (lengthMax - lengthMin);     // 20px → 72px
-
-  const glowOpacity = level * 0.5;
-  const glowSize = level * 24;
-  const iconOpacity = Math.max(0, (level - 0.3) / 0.7); // only visible above 30% proximity
-
-  const positionStyles: Record<OmniTrayEdge, React.CSSProperties> = {
-    left: {
-      left: 0,
-      top: '50%',
-      transform: 'translateY(-50%)',
-      width: `${thickness}px`,
-      height: `${length}px`,
-      borderRadius: '0 8px 8px 0',
-      flexDirection: 'column',
-    },
-    right: {
-      right: 0,
-      top: '50%',
-      transform: 'translateY(-50%)',
-      width: `${thickness}px`,
-      height: `${length}px`,
-      borderRadius: '8px 0 0 8px',
-      flexDirection: 'column',
-    },
-    bottom: {
-      bottom: 0,
-      left: '50%',
-      transform: 'translateX(-50%)',
-      width: `${length}px`,
-      height: `${thickness}px`,
-      borderRadius: '8px 8px 0 0',
-      flexDirection: 'row',
-    },
-  };
+export function OmniTrayTab() {
+  const { isOpen, toggle } = useOmniTray();
 
   return (
-    <button
-      onClick={() => open(edge)}
-      className="fixed z-40 flex items-center justify-center
-        backdrop-blur-sm cursor-pointer overflow-hidden"
-      style={{
-        ...positionStyles[edge],
-        background: `rgba(15, 15, 25, ${0.4 + level * 0.5})`,
-        borderWidth: level > 0.05 ? '1px' : '0px',
-        borderStyle: 'solid',
-        borderColor: `rgba(0, 217, 255, ${level * 0.3})`,
-        boxShadow: level > 0.05
-          ? `0 0 ${glowSize}px rgba(0, 217, 255, ${glowOpacity})`
-          : 'none',
-        transition: 'width 120ms ease-out, height 120ms ease-out, border-color 120ms ease-out, box-shadow 120ms ease-out',
-      }}
-      aria-label={`Open AI tray from ${edge}`}
-    >
-      <Sparkle
-        weight="regular"
-        className="w-4 h-4 text-brand-cyan flex-shrink-0"
-        style={{
-          opacity: iconOpacity,
-          transition: 'opacity 100ms ease-out',
-        }}
-      />
-    </button>
+    <>
+      {/* Desktop: persistent right-edge strip */}
+      <button
+        onClick={toggle}
+        className="
+          hidden md:flex fixed z-40 right-0 top-20 bottom-0 w-2
+          items-center justify-center
+          bg-slate-2 border-l border-slate-4
+          hover:w-5 hover:bg-slate-3 hover:border-brand-cyan/30
+          hover:shadow-[inset_2px_0_8px_rgba(0,217,255,0.1)]
+          transition-all duration-200 ease-out
+          group cursor-pointer
+        "
+        aria-label={isOpen ? 'Close AI tray' : 'Open AI tray'}
+      >
+        <svg
+          className={`w-3 h-3 text-white/30 group-hover:text-brand-cyan opacity-0 group-hover:opacity-100 transition-all duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      {/* Mobile: floating action button */}
+      <button
+        onClick={toggle}
+        className="
+          md:hidden fixed z-40 right-4 bottom-4
+          w-14 h-14 rounded-full
+          bg-brand-iris text-white
+          flex items-center justify-center
+          shadow-[0_0_20px_rgba(168,85,247,0.3)]
+          hover:bg-brand-iris/90
+          active:scale-95
+          transition-all duration-150
+        "
+        aria-label={isOpen ? 'Close AI tray' : 'Open AI tray'}
+      >
+        <Lightning size={24} weight="fill" />
+      </button>
+    </>
   );
 }
