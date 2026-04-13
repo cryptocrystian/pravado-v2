@@ -17,6 +17,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import { Lightning, TrendUp, Info, Lock, User, CaretDown } from '@phosphor-icons/react';
 import { useAnalyticsMode, type AnalyticsMode } from './AnalyticsModeContext';
+import { useAnalyticsDate, DATE_RANGES } from './AnalyticsDateContext';
 
 // ============================================
 // TAB CONFIG
@@ -29,9 +30,6 @@ const TABS = [
   { label: 'SEO',       href: '/app/analytics/seo' },
   { label: 'Reports',   href: '/app/analytics/reports' },
 ];
-
-const DATE_RANGES = ['7d', '30d', '60d', '90d'] as const;
-type DateRange = typeof DATE_RANGES[number];
 
 // ============================================
 // MODE CONFIG
@@ -136,7 +134,7 @@ function ModeSwitcher() {
 
 export function AnalyticsChromeBar() {
   const pathname = usePathname();
-  const [range, setRange] = useState<DateRange>('30d');
+  const { range, setRange, comparisonEnabled, setComparisonEnabled } = useAnalyticsDate();
   const [evi, setEvi] = useState<{ score: number; delta: number } | null>(null);
 
   useEffect(() => {
@@ -218,6 +216,17 @@ export function AnalyticsChromeBar() {
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            onClick={() => setComparisonEnabled(!comparisonEnabled)}
+            className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition-all duration-150 ${
+              comparisonEnabled
+                ? 'bg-brand-cyan/10 border-brand-cyan/30 text-brand-cyan'
+                : 'bg-slate-3 border-slate-4 text-white/40 hover:text-white/60'
+            }`}
+          >
+            vs prior
+          </button>
         </div>
       </div>
 
