@@ -43,7 +43,9 @@ export default function ReportsPage() {
       const { generatePdf } = await import('@/lib/pdf-export');
       await generatePdf(ref.current, REPORT_FILENAMES[templateTitle] || 'pravado-report.pdf');
     } catch (err) {
-      console.error('PDF generation failed:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[PDF] Generation failed:', msg, err);
+      alert('PDF generation failed: ' + msg);
     } finally {
       setGenerating(null);
     }
