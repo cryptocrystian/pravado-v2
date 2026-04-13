@@ -182,6 +182,17 @@ export const mockReportTemplates = [
 ];
 
 // ============================================
+// AI NARRATIVES (per tab)
+// ============================================
+
+export const mockNarratives = {
+  overview: 'Your EVI grew 4.2 pts this period, driven primarily by 2 new TechCrunch placements and a 23% increase in Perplexity citations. Content authority is your strongest pillar — PR outreach has the highest upside.',
+  pr: 'PR earned +5.2 EVI points this period across 3 placements. TechCrunch coverage alone drove +4.1 pts. Your pitch reply rate (25%) is above the 18% industry average — consider increasing volume.',
+  seo: 'AI citations are up 23% period-over-period, led by ChatGPT (+12%) and Perplexity (+18%). Topic "Enterprise AEO" has a 48-pt gap to CompetitorX — this is your highest-leverage opportunity.',
+  content: 'You published 8 pieces this period with an average CiteMind score of 76.5. Your "AI Visibility Guide" is your citation powerhouse with 247 citations across 4 engines. Two content gaps remain in Enterprise AEO.',
+};
+
+// ============================================
 // HELPERS
 // ============================================
 

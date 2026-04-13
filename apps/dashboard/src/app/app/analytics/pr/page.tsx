@@ -11,7 +11,8 @@ import { CoverageTimeline } from '@/components/analytics/CoverageTimeline';
 import { PitchFunnel } from '@/components/analytics/PitchFunnel';
 import { EviWaterfall } from '@/components/analytics/EviWaterfall';
 import { EviContributionCard } from '@/components/analytics/EviContributionCard';
-import { mockPlacements } from '@/components/analytics/analytics-mock-data';
+import { mockPlacements, mockNarratives } from '@/components/analytics/analytics-mock-data';
+import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
 export default function PRAnalyticsPage() {
@@ -36,6 +37,7 @@ export default function PRAnalyticsPage() {
           </button>
         </div>
 
+        <AINarrativeHeader narrative={mockNarratives.pr} />
         <PlacementsTable />
         <CoverageTimeline />
         <PitchFunnel />
