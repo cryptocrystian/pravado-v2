@@ -18,6 +18,8 @@ const nextConfig = {
     '@pravado/validators',
     '@pravado/utils',
     '@pravado/feature-flags',
+    'jspdf',
+    'html2canvas',
   ],
   // Disable ESLint blocking during production build (run lint separately in CI)
   eslint: {
