@@ -5,8 +5,8 @@
  * Report builder with print-to-PDF generation for all 4 templates.
  */
 
-import { useRef, useCallback } from 'react';
-import { FileText, Printer } from '@phosphor-icons/react';
+import { useRef, useCallback, useState } from 'react';
+import { FileText, Printer, SpinnerGap } from '@phosphor-icons/react';
 import { mockReportTemplates } from '@/components/analytics/analytics-mock-data';
 import { ExecutiveSummaryReport } from '@/components/analytics/reports/ExecutiveSummaryReport';
 import { PRCampaignReport } from '@/components/analytics/reports/PRCampaignReport';
@@ -15,6 +15,7 @@ import { SEOPresenceReport } from '@/components/analytics/reports/SEOPresenceRep
 import { generatePdf } from '@/lib/pdf-export';
 
 export default function ReportsPage() {
+  const [generating, setGenerating] = useState<string | null>(null);
   const execRef = useRef<HTMLDivElement>(null);
   const prRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
@@ -29,16 +30,23 @@ export default function ReportsPage() {
 
   const handleGenerate = useCallback((templateTitle: string) => {
     const ref = refMap[templateTitle];
-    if (!ref?.current) return;
+    if (!ref?.current || generating) return;
 
-    try {
-      generatePdf(ref.current, `pravado-${templateTitle.toLowerCase().replace(/\s+/g, '-')}.pdf`);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.error('[PDF] Generation failed:', msg);
-      alert('PDF generation failed: ' + msg);
-    }
-  }, []);
+    setGenerating(templateTitle);
+
+    // setTimeout lets React paint the loading state before window.print() blocks
+    setTimeout(() => {
+      try {
+        generatePdf(ref.current!, `pravado-${templateTitle.toLowerCase().replace(/\s+/g, '-')}.pdf`);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error('[PDF] Generation failed:', msg);
+        alert('PDF generation failed: ' + msg);
+      } finally {
+        setGenerating(null);
+      }
+    }, 50);
+  }, [generating]);
 
   return (
     <div className="pt-6 pb-16 px-8 overflow-y-auto h-full">
@@ -70,10 +78,20 @@ export default function ReportsPage() {
               <button
                 type="button"
                 onClick={() => handleGenerate(tpl.title)}
-                className="flex items-center gap-1.5 bg-brand-cyan text-slate-0 rounded-lg px-4 py-2 text-sm font-medium hover:bg-brand-cyan/90 transition-colors"
+                disabled={generating !== null}
+                className="flex items-center gap-1.5 bg-brand-cyan text-slate-0 rounded-lg px-4 py-2 text-sm font-medium hover:bg-brand-cyan/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Printer size={14} weight="bold" />
-                Generate PDF
+                {generating === tpl.title ? (
+                  <>
+                    <SpinnerGap size={14} className="animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Printer size={14} weight="bold" />
+                    Generate PDF
+                  </>
+                )}
               </button>
             </div>
           ))}
