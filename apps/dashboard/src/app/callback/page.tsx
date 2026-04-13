@@ -95,6 +95,30 @@ export default function CallbackPage() {
       }
 
       try {
+        // Handle email confirmation via token_hash (new account signup / magic link)
+        const tokenHash = searchParams?.get('token_hash');
+        const type = searchParams?.get('type');
+
+        if (tokenHash) {
+          const { data: otpData, error: verifyError } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: (type as 'signup' | 'magiclink' | 'recovery') || 'signup',
+          });
+
+          if (verifyError) {
+            setErrorMessage(`Verification failed: ${verifyError.message}`);
+            setStatus('error');
+            return;
+          }
+
+          if (otpData.session) {
+            console.log('[Callback] OTP verified, redirecting to /app');
+            setStatus('success');
+            window.location.href = '/app';
+            return;
+          }
+        }
+
         // First, try to get existing session
         let { data: { session }, error: sessionError } = await supabase.auth.getSession();
 

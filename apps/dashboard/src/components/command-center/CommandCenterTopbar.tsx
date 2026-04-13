@@ -33,11 +33,12 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CaretDown, Bell } from '@phosphor-icons/react';
+import { CaretDown, Bell, Gear, User, CreditCard, BookOpen, ChatDots, SignOut } from '@phosphor-icons/react';
 import { PravadoLogoIcon } from '@/components/brand/PravadoLogo';
+import { supabase } from '@/lib/supabaseClient';
 
 interface CommandCenterTopbarProps {
   orgName?: string;
@@ -54,6 +55,119 @@ const surfaceNavItems = [
   { name: 'Calendar', href: '/app/calendar', shortName: 'Calendar' },
   { name: 'Analytics', href: '/app/analytics', shortName: 'Analytics' },
 ];
+
+// ── User Menu Dropdown ──────────────────────────────────────
+
+function UserMenu({ userName, userAvatarUrl }: { userName: string; userAvatarUrl?: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/login';
+  };
+
+  const menuItems = [
+    { label: 'Settings', icon: <Gear size={16} />, href: '/app/settings' },
+    { label: 'Account', icon: <User size={16} />, href: '/app/settings' },
+    { label: 'Billing', icon: <CreditCard size={16} />, href: '/app/billing' },
+  ];
+
+  const helpItems = [
+    { label: 'Help & Docs', icon: <BookOpen size={16} />, href: 'https://docs.pravado.io', external: true },
+    { label: 'Send Feedback', icon: <ChatDots size={16} />, href: 'mailto:feedback@pravado.io', external: true },
+  ];
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 p-1 rounded-lg hover:bg-slate-4 transition-colors group"
+      >
+        {userAvatarUrl ? (
+          <img src={userAvatarUrl} alt={userName} className="w-9 h-9 rounded-full ring-2 ring-border-subtle" />
+        ) : (
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-iris to-brand-magenta flex items-center justify-center text-white text-xs font-bold ring-2 ring-border-subtle">
+            {userName.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <CaretDown weight="regular" className="w-3 h-3 text-white/45 group-hover:text-white/75 hidden sm:block transition-colors" />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full mt-2 w-56 bg-slate-2 border border-slate-4 rounded-xl shadow-elev-3 z-50 overflow-hidden">
+          {/* User info */}
+          <div className="px-4 py-3 border-b border-slate-4">
+            <p className="text-sm font-semibold text-white/90 truncate">{userName}</p>
+            <p className="text-xs text-white/40 truncate">Signed in</p>
+          </div>
+
+          {/* Main nav */}
+          <div className="py-1">
+            {menuItems.map(item => (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-slate-3 transition-colors"
+              >
+                <span className="text-white/40">{item.icon}</span>
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Help */}
+          <div className="py-1 border-t border-slate-4">
+            {helpItems.map(item => (
+              <a
+                key={item.label}
+                href={item.href}
+                target={item.external ? '_blank' : undefined}
+                rel={item.external ? 'noopener noreferrer' : undefined}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-slate-3 transition-colors"
+              >
+                <span className="text-white/40">{item.icon}</span>
+                {item.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Sign out */}
+          <div className="py-1 border-t border-slate-4">
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-semantic-danger/80 hover:text-semantic-danger hover:bg-slate-3 transition-colors"
+            >
+              <SignOut size={16} />
+              Sign Out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main Topbar ─────────────────────────────────────────────
 
 export function CommandCenterTopbar({
   orgName: _orgName = 'Pravado Test 01',
@@ -185,20 +299,7 @@ export function CommandCenterTopbar({
           </button>
 
           {/* User Menu */}
-          <button className="flex items-center gap-1.5 p-1 rounded-lg hover:bg-slate-4 transition-colors group">
-            {userAvatarUrl ? (
-              <img
-                src={userAvatarUrl}
-                alt={userName}
-                className="w-9 h-9 rounded-full ring-2 ring-border-subtle"
-              />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-iris to-brand-magenta flex items-center justify-center text-white text-xs font-bold ring-2 ring-border-subtle">
-                {userName.charAt(0).toUpperCase()}
-              </div>
-            )}
-            <CaretDown weight="regular" className="w-3 h-3 text-white/45 group-hover:text-white/75 hidden sm:block transition-colors" />
-          </button>
+          <UserMenu userName={userName} userAvatarUrl={userAvatarUrl} />
         </div>
       </header>
 
