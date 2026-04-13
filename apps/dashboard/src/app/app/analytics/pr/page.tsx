@@ -7,7 +7,9 @@
 
 import { useCallback } from 'react';
 import { PlacementsTable } from '@/components/analytics/PlacementsTable';
+import { CoverageTimeline } from '@/components/analytics/CoverageTimeline';
 import { PitchFunnel } from '@/components/analytics/PitchFunnel';
+import { EviWaterfall } from '@/components/analytics/EviWaterfall';
 import { EviContributionCard } from '@/components/analytics/EviContributionCard';
 import { mockPlacements } from '@/components/analytics/analytics-mock-data';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
@@ -35,7 +37,9 @@ export default function PRAnalyticsPage() {
         </div>
 
         <PlacementsTable />
+        <CoverageTimeline />
         <PitchFunnel />
+        <EviWaterfall />
         <EviContributionCard />
       </div>
     </div>
