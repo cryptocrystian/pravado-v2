@@ -8,7 +8,8 @@
 import { Suspense, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { HeadlineMetrics } from '@/components/analytics/HeadlineMetrics';
-import { AttributionBar } from '@/components/analytics/AttributionBar';
+import { PillarContribution } from '@/components/analytics/PillarContribution';
+import { CompetitiveSnapshot } from '@/components/analytics/CompetitiveSnapshot';
 import { TopWins } from '@/components/analytics/TopWins';
 import { mockHeadlineMetrics, mockAttribution, mockTopWins } from '@/components/analytics/analytics-mock-data';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
@@ -67,11 +68,14 @@ export default function AnalyticsOverviewPage() {
           <EviGrowthChart />
         </Suspense>
 
-        {/* Attribution */}
-        <AttributionBar />
+        {/* Pillar Contribution (replaces stub AttributionBar) */}
+        <PillarContribution />
 
         {/* Top Wins */}
         <TopWins />
+
+        {/* Competitive Position */}
+        <CompetitiveSnapshot />
       </div>
     </div>
   );
