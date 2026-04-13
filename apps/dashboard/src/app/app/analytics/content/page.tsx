@@ -7,6 +7,8 @@
 
 import { useCallback } from 'react';
 import { ContentTable } from '@/components/analytics/ContentTable';
+import { CitationVelocityChart } from '@/components/analytics/CitationVelocityChart';
+import { CiteMindDistribution } from '@/components/analytics/CiteMindDistribution';
 import { mockContentRows } from '@/components/analytics/analytics-mock-data';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
@@ -33,6 +35,8 @@ export default function ContentAnalyticsPage() {
         </div>
 
         <ContentTable />
+        <CitationVelocityChart />
+        <CiteMindDistribution />
       </div>
     </div>
   );
