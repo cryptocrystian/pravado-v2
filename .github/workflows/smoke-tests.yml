@@ -1,0 +1,45 @@
+name: Smoke Tests
+
+on:
+  pull_request:
+    branches: [main]
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    name: Playwright Smoke Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Run smoke tests against production
+        run: npx playwright test tests/smoke/ --project=chromium
+        working-directory: apps/dashboard
+        env:
+          PLAYWRIGHT_BASE_URL: https://app.pravado.io
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-results
+          path: apps/dashboard/playwright-report/
+          retention-days: 7
