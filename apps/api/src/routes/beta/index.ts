@@ -4,8 +4,9 @@
  * Routes:
  * - POST /request          — Public: submit beta access request
  * - GET  /requests         — Admin: list all beta requests
- * - POST /approve/:id      — Admin: approve request + generate invite code
+ * - POST /approve/:id      — Admin: approve request + generate invite code + send email
  * - POST /validate-invite  — Public: validate an invite code for signup
+ * - POST /mark-used        — Internal: mark invite as used after signup
  */
 
 import type { FastifyInstance } from 'fastify';
@@ -19,10 +20,72 @@ function generateInviteCode(): string {
   return `PRAVADO-${randomBytes(4).toString('hex').toUpperCase()}`;
 }
 
+// ── Email HTML builders ──────────────────────────────────────
+
+function buildWaitlistConfirmationHtml(_email: string): string {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f8;padding:40px 0;"><tr><td align="center">
+<table width="480" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+<tr><td style="padding:32px 32px 24px;text-align:center;border-bottom:2px solid #00D9FF;">
+  <span style="font-family:monospace;font-weight:800;font-size:20px;letter-spacing:3px;color:#1a1a2e;">PRAVADO</span>
+</td></tr>
+<tr><td style="padding:32px;">
+  <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#111118;">You're on the waitlist!</h1>
+  <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#444;">
+    Thank you for applying for early access to Pravado. We're reviewing applications and will get back to you within 48 hours.
+  </p>
+  <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#444;">
+    When approved, you'll receive an invite code to create your account and start building your AI visibility strategy.
+  </p>
+  <p style="margin:0;font-size:13px;color:#888;">
+    Questions? Reply to this email or reach us at hello@pravado.io
+  </p>
+</td></tr>
+<tr><td style="padding:20px 32px;background:#f9f9fb;text-align:center;border-top:1px solid #eee;">
+  <p style="margin:0;font-size:12px;color:#aaa;">Pravado &middot; AI-Powered Visibility Platform &middot; <a href="https://pravado.io" style="color:#00D9FF;text-decoration:none;">pravado.io</a></p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+function buildInviteCodeEmailHtml(_email: string, inviteCode: string): string {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f8;padding:40px 0;"><tr><td align="center">
+<table width="480" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+<tr><td style="padding:32px 32px 24px;text-align:center;border-bottom:2px solid #00D9FF;">
+  <span style="font-family:monospace;font-weight:800;font-size:20px;letter-spacing:3px;color:#1a1a2e;">PRAVADO</span>
+</td></tr>
+<tr><td style="padding:32px;">
+  <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#111118;">You're in! 🎉</h1>
+  <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#444;">
+    Your application has been approved. Use the invite code below to create your Pravado account.
+  </p>
+  <div style="background:#f0f0f5;border:2px dashed #00D9FF;border-radius:8px;padding:16px;text-align:center;margin:0 0 24px;">
+    <span style="font-family:monospace;font-size:24px;font-weight:800;letter-spacing:2px;color:#1a1a2e;">${inviteCode}</span>
+  </div>
+  <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+    <a href="https://app.pravado.io/login" style="display:inline-block;background:#00D9FF;color:#0A0A0F;font-size:15px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:8px;">
+      Create Your Account
+    </a>
+  </td></tr></table>
+  <p style="margin:24px 0 0;font-size:13px;color:#888;">
+    This invite code is single-use. If you have questions, reply to this email.
+  </p>
+</td></tr>
+<tr><td style="padding:20px 32px;background:#f9f9fb;text-align:center;border-top:1px solid #eee;">
+  <p style="margin:0;font-size:12px;color:#aaa;">Pravado &middot; AI-Powered Visibility Platform &middot; <a href="https://pravado.io" style="color:#00D9FF;text-decoration:none;">pravado.io</a></p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+// ── Routes ───────────────────────────────────────────────────
+
 export async function betaRoutes(server: FastifyInstance) {
   const supabaseUrl = process.env.SUPABASE_URL!;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const adminNotifyEmail = process.env.ADMIN_NOTIFY_EMAIL || 'cdibrell@saipienlabs.com';
 
   // ========================================
   // POST /request — Public beta access request
@@ -35,9 +98,13 @@ export async function betaRoutes(server: FastifyInstance) {
       companySize?: string;
       useCase?: string;
       referralSource?: string;
+      jobTitle?: string;
+      companyWebsite?: string;
+      currentTools?: string[];
+      feedbackCall?: string;
     };
   }>('/request', async (request, reply) => {
-    const { email, companyName, companySize, useCase, referralSource } = request.body;
+    const { email, companyName, companySize, useCase, referralSource, jobTitle, companyWebsite, currentTools, feedbackCall } = request.body;
 
     if (!email || !email.includes('@')) {
       return reply.code(400).send({
@@ -46,11 +113,13 @@ export async function betaRoutes(server: FastifyInstance) {
       });
     }
 
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Check for existing request
     const { data: existing } = await supabase
       .from('beta_requests')
       .select('id, status')
-      .eq('email', email.toLowerCase().trim())
+      .eq('email', normalizedEmail)
       .single();
 
     if (existing) {
@@ -66,11 +135,15 @@ export async function betaRoutes(server: FastifyInstance) {
     const { data, error } = await supabase
       .from('beta_requests')
       .insert({
-        email: email.toLowerCase().trim(),
+        email: normalizedEmail,
         company_name: companyName ?? null,
         company_size: companySize ?? null,
         use_case: useCase ?? null,
         referral_source: referralSource ?? null,
+        job_title: jobTitle ?? null,
+        company_website: companyWebsite ?? null,
+        current_tools: currentTools ?? null,
+        feedback_call: feedbackCall ?? null,
         status: 'pending',
       })
       .select('id, status')
@@ -82,6 +155,45 @@ export async function betaRoutes(server: FastifyInstance) {
         error: { code: 'INSERT_FAILED', message: error.message },
       });
     }
+
+    // Send waitlist confirmation email
+    try {
+      await server.mailer.sendMail({
+        to: normalizedEmail,
+        from: 'hello@pravado.io',
+        subject: "You're on the Pravado waitlist",
+        html: buildWaitlistConfirmationHtml(normalizedEmail),
+        text: `You're on the Pravado waitlist! We're reviewing applications and will get back to you within 48 hours. Questions? hello@pravado.io`,
+      });
+      console.log(`[Beta] Waitlist confirmation sent to ${normalizedEmail}`);
+    } catch (emailErr) {
+      // Non-blocking — log but don't fail the request
+      console.error(`[Beta] Failed to send confirmation to ${normalizedEmail}:`, emailErr instanceof Error ? emailErr.message : emailErr);
+    }
+
+    // Notify admin of new application
+    try {
+      await server.mailer.sendMail({
+        to: adminNotifyEmail,
+        from: 'hello@pravado.io',
+        subject: `[Pravado Beta] New application: ${normalizedEmail}`,
+        html: `<p>New beta request from <strong>${normalizedEmail}</strong></p>
+          <ul>
+            <li>Company: ${companyName || 'N/A'}</li>
+            <li>Size: ${companySize || 'N/A'}</li>
+            <li>Title: ${jobTitle || 'N/A'}</li>
+            <li>Website: ${companyWebsite || 'N/A'}</li>
+            <li>Use case: ${useCase || 'N/A'}</li>
+            <li>Source: ${referralSource || 'N/A'}</li>
+          </ul>
+          <p><a href="https://app.pravado.io/app/admin/beta">Review in Admin →</a></p>`,
+        text: `New beta request from ${normalizedEmail}. Company: ${companyName || 'N/A'}. Review at https://app.pravado.io/app/admin/beta`,
+      });
+    } catch {
+      // Non-critical
+    }
+
+    console.log(`[Beta] New request: ${normalizedEmail} (${companyName || 'no company'})`);
 
     return reply.code(201).send({
       success: true,
@@ -133,7 +245,7 @@ export async function betaRoutes(server: FastifyInstance) {
   );
 
   // ========================================
-  // POST /approve/:id — Admin: approve + generate invite code
+  // POST /approve/:id — Admin: approve + generate invite code + send email
   // ========================================
 
   server.post<{
@@ -191,7 +303,20 @@ export async function betaRoutes(server: FastifyInstance) {
         });
       }
 
-      // TODO: Send invite email via mailer plugin when email service is configured
+      // Send invite code email to the user
+      try {
+        await server.mailer.sendMail({
+          to: betaReq.email,
+          from: 'hello@pravado.io',
+          subject: "You're approved for Pravado beta!",
+          html: buildInviteCodeEmailHtml(betaReq.email, inviteCode),
+          text: `You're approved for Pravado beta! Your invite code: ${inviteCode}. Create your account at https://app.pravado.io/login`,
+        });
+        console.log(`[Beta] Invite code sent to ${betaReq.email}: ${inviteCode}`);
+      } catch (emailErr) {
+        console.error(`[Beta] Failed to send invite to ${betaReq.email}:`, emailErr instanceof Error ? emailErr.message : emailErr);
+        // Don't fail the approve — the code is generated even if email fails
+      }
 
       return reply.send({
         success: true,
