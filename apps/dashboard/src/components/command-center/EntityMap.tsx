@@ -101,7 +101,6 @@ export function EntityMap({
   onNodeClick,
 }: EntityMapProps) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const fgRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -185,11 +184,12 @@ export function EntityMap({
     [onNodeClick, pauseRotation],
   );
 
-  // Custom node rendering with Three.js
+  // Custom node rendering with Three.js + persistent SpriteText labels for top nodes
   const nodeThreeObject = useCallback(
     (node: GraphNode) => {
       if (typeof window === 'undefined') return undefined;
       const THREE = require('three');
+      const SpriteText = require('three-spritetext').default;
 
       const group = new THREE.Group();
 
@@ -218,38 +218,42 @@ export function EntityMap({
         group.add(ring);
       }
 
+      // Persistent text label for brand + top-5 authority nodes
+      if (node.isTopNode) {
+        const sprite = new SpriteText(node.label);
+        sprite.color = node.color;
+        sprite.textHeight = node.kind === 'brand' ? 5 : 3.5;
+        sprite.backgroundColor = 'rgba(10,10,15,0.75)';
+        sprite.padding = 1.5;
+        sprite.borderRadius = 2;
+        sprite.position.y = node.size + 4;
+        group.add(sprite);
+      }
+
       return group;
     },
     [],
-  );
-
-  // Node label visibility: top 5 + hovered + selected
-  const nodeLabel = useCallback(
-    (node: GraphNode) => {
-      const show =
-        node.isTopNode ||
-        node.id === hoveredNodeId ||
-        node.id === selectedNodeId;
-      if (!show) return '';
-      return `<div style="color:${node.color};font-size:11px;font-weight:600;text-shadow:0 0 4px rgba(0,0,0,0.8);padding:2px 6px;background:rgba(10,10,15,0.85);border-radius:4px;border:1px solid ${node.color}40;">${node.label}</div>`;
-    },
-    [hoveredNodeId, selectedNodeId],
   );
 
   const selectedNode = selectedNodeId
     ? graphData.nodes.find(n => n.id === selectedNodeId)
     : null;
 
-  // Container dimensions
-  const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
+  // Container dimensions — ResizeObserver tracks actual container size
+  const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
   useEffect(() => {
     if (!containerRef.current) return;
+    // Seed with current size immediately
+    const rect = containerRef.current.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      setDimensions({ width: rect.width, height: rect.height });
+    }
     const ro = new ResizeObserver(entries => {
       for (const entry of entries) {
-        setDimensions({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        });
+        const { width, height } = entry.contentRect;
+        if (width > 0 && height > 0) {
+          setDimensions({ width, height });
+        }
       }
     });
     ro.observe(containerRef.current);
@@ -257,7 +261,7 @@ export function EntityMap({
   }, []);
 
   return (
-    <div ref={containerRef} className="entity-map-v4 relative w-full h-full">
+    <div ref={containerRef} className="entity-map-v4 relative" style={{ width: '100%', height: '100%', minHeight: 300 }}>
       {mounted && (
         <ForceGraph3D
           ref={fgRef}
@@ -266,16 +270,14 @@ export function EntityMap({
           height={dimensions.height}
           backgroundColor="rgba(0,0,0,0)"
           nodeThreeObject={nodeThreeObject as any} // eslint-disable-line @typescript-eslint/no-explicit-any
-          nodeLabel={nodeLabel as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+          nodeThreeObjectExtend={false}
+          nodeLabel={((node: any) => node.label) as any} // eslint-disable-line @typescript-eslint/no-explicit-any
           nodeVal={((node: any) => node.size) as any} // eslint-disable-line @typescript-eslint/no-explicit-any
           linkColor={((link: any) => link.color) as any} // eslint-disable-line @typescript-eslint/no-explicit-any
           linkWidth={((link: any) => link.width) as any} // eslint-disable-line @typescript-eslint/no-explicit-any
           linkOpacity={0.4}
           onNodeClick={handleNodeClick as any} // eslint-disable-line @typescript-eslint/no-explicit-any
-          onNodeHover={((node: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-            pauseRotation();
-            setHoveredNodeId(node?.id ?? null);
-          }) as any}
+          onNodeHover={(() => { pauseRotation(); }) as any} // eslint-disable-line @typescript-eslint/no-explicit-any
           showNavInfo={false}
           enableNodeDrag={true}
           d3AlphaDecay={0.02}
