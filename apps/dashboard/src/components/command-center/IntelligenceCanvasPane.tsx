@@ -16,6 +16,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import type { EntityNode, EntityEdge } from './types';
 import { EntityMap } from './EntityMap';
 import { useCitationResults } from '@/lib/useCiteMind';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 // ── Tab definitions ──────────────────────────────────────
 
@@ -402,8 +403,9 @@ export function IntelligenceCanvasPane({
             px-4 py-2.5 border-b border-border-subtle">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-semantic-success animate-pulse" />
-              <span className="text-xs font-bold uppercase tracking-wide text-white/60">
+              <span className="text-xs font-bold uppercase tracking-wide text-white/60 inline-flex items-center gap-1">
                 CiteMind Feed
+                <InfoTooltip content="CiteMind continuously scans ChatGPT, Perplexity, Claude, and Gemini to find citations of your brand, content, and competitors. Connect GSC to correlate AI citations with your organic search performance." size={11} />
               </span>
             </div>
             <span className="text-xs text-white/30">
@@ -438,10 +440,12 @@ export function IntelligenceCanvasPane({
                 </div>
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center py-8 px-4">
-                <p className="text-sm font-medium text-white/60 mb-1">Intelligence building...</p>
-                <p className="text-xs text-white/40 text-center leading-relaxed mb-3">
-                  Connect Google Search Console to accelerate your first insights.
+              <div className="flex flex-col items-center justify-center py-6 px-5">
+                <p className="text-sm font-medium text-white/60 mb-2">Intelligence building...</p>
+                <p className="text-xs text-white/50 text-center leading-relaxed mb-4">
+                  Connect Google Search Console to import your actual search keywords,
+                  impressions, and click data. This powers SAGE&apos;s topic recommendations
+                  and makes your CiteMind score reflect real performance data.
                 </p>
                 <a
                   href="/app/settings"
