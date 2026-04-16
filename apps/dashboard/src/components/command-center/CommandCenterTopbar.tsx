@@ -60,7 +60,25 @@ const surfaceNavItems = [
 
 function UserMenu({ userName, userAvatarUrl }: { userName: string; userAvatarUrl?: string }) {
   const [open, setOpen] = useState(false);
+  const [displayName, setDisplayName] = useState(userName || '');
+  const [displayEmail, setDisplayEmail] = useState('');
   const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) {
+        const meta = data.user.user_metadata;
+        setDisplayName(
+          userName ||
+          meta?.full_name ||
+          meta?.name ||
+          data.user.email?.split('@')[0] ||
+          'User'
+        );
+        setDisplayEmail(data.user.email || '');
+      }
+    });
+  }, [userName]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -104,7 +122,7 @@ function UserMenu({ userName, userAvatarUrl }: { userName: string; userAvatarUrl
           <img src={userAvatarUrl} alt={userName} className="w-9 h-9 rounded-full ring-2 ring-border-subtle" />
         ) : (
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-iris to-brand-magenta flex items-center justify-center text-white text-xs font-bold ring-2 ring-border-subtle">
-            {userName.charAt(0).toUpperCase()}
+            {(displayName || 'U').charAt(0).toUpperCase()}
           </div>
         )}
         <CaretDown weight="regular" className="w-3 h-3 text-white/45 group-hover:text-white/75 hidden sm:block transition-colors" />
@@ -114,8 +132,8 @@ function UserMenu({ userName, userAvatarUrl }: { userName: string; userAvatarUrl
         <div className="absolute right-0 top-full mt-2 w-56 bg-slate-2 border border-slate-4 rounded-xl shadow-elev-3 z-50 overflow-hidden">
           {/* User info */}
           <div className="px-4 py-3 border-b border-slate-4">
-            <p className="text-sm font-semibold text-white/90 truncate">{userName}</p>
-            <p className="text-xs text-white/40 truncate">Signed in</p>
+            <p className="font-medium text-white text-sm truncate">{displayName}</p>
+            <p className="text-xs truncate" style={{color:'#7A7A8A'}}>{displayEmail}</p>
           </div>
 
           {/* Main nav */}
