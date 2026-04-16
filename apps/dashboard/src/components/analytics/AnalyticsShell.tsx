@@ -14,7 +14,7 @@ import { AnalyticsDateProvider } from './AnalyticsDateContext';
 
 interface AnalyticsShellProps {
   orgName: string;
-  userName: string;
+  userName?: string;
   userEmail?: string;
   userAvatarUrl?: string;
   children: ReactNode;

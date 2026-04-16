@@ -14,7 +14,7 @@ import { CalendarChromeBar } from './CalendarChromeBar';
 
 interface CalendarShellProps {
   orgName: string;
-  userName: string;
+  userName?: string;
   userEmail?: string;
   userAvatarUrl?: string;
   children: ReactNode;

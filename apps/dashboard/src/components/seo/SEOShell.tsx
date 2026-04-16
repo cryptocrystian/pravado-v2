@@ -14,7 +14,7 @@ import { SEOChromeBar } from './SEOChromeBar';
 interface SEOShellProps {
   children: React.ReactNode;
   orgName: string;
-  userName: string;
+  userName?: string;
   userEmail?: string;
   userAvatarUrl?: string;
 }
