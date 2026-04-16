@@ -562,6 +562,26 @@ export default function LoginPage() {
                     </>
                   )}
                 </button>
+
+                {/* Beta gating note — magic link creates accounts without invite code */}
+                {BETA_INVITE_REQUIRED && (
+                  <p className="text-xs text-center" style={{color:'#5A5A6A'}}>
+                    New to Pravado? Magic link will create your account automatically.
+                    <br/>Have an invite code?{' '}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSignUp(true);
+                        setError(null);
+                        setMessage(null);
+                      }}
+                      className="hover:underline"
+                      style={{color:'#00D9FF'}}
+                    >
+                      Sign up here
+                    </button>
+                  </p>
+                )}
               </>
             )}
 
