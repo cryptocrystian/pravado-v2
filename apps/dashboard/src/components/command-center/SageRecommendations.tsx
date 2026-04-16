@@ -1,14 +1,16 @@
 'use client';
 
 import { sageRecommendations } from './cc-mock-data';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 export function SageRecommendations() {
   return (
     <div>
       {/* Section header */}
       <div className="mb-3">
-        <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60">
+        <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60 inline-flex items-center gap-1.5">
           SAGE Recommends
+          <InfoTooltip content="SAGE (Strategy AI for Growth Engine) analyzes your PR, content, and SEO data to recommend the highest-impact actions. Each recommendation shows its expected EVI impact." />
         </span>
       </div>
 

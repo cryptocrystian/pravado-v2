@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, CheckCircle } from '@phosphor-icons/react';
 import type { CoverageRow, Sentiment } from './pr-mock-data';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 const sentimentColors: Record<Sentiment, string> = {
   positive: 'text-semantic-success',
@@ -56,7 +57,7 @@ export function CoverageTable({ rows }: CoverageTableProps) {
                 Sentiment
               </th>
               <th className="text-left text-xs font-semibold uppercase tracking-wider text-white/45 py-3">
-                EVI Impact
+                EVI Impact <InfoTooltip content="Estimated effect this coverage had on your EVI score. High-authority outlets that get cited by AI engines deliver more EVI impact than smaller publications." size={11} />
               </th>
             </tr>
           </thead>

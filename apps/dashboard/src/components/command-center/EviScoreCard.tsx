@@ -1,6 +1,7 @@
 'use client';
 
 import { useEVICurrent } from '@/lib/useEVI';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 function EviSkeleton() {
   return (
@@ -47,8 +48,9 @@ export function EviScoreCard() {
     <div className="bg-cc-surface border border-white/8 rounded-2xl p-5">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60">
+        <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60 inline-flex items-center gap-1.5">
           AI Visibility
+          <InfoTooltip content="Earned Visibility Index (EVI) measures how prominently your brand appears in AI-generated responses across ChatGPT, Perplexity, Claude, and Gemini. Scored 0-100." />
         </span>
         {isStale && (
           <span className="text-[10px] text-amber-400/70 uppercase tracking-wider">
@@ -83,8 +85,9 @@ export function EviScoreCard() {
       <div className="border-t border-white/8 my-4" />
 
       {/* By Sub-score */}
-      <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60 block mb-3">
+      <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60 mb-3 inline-flex items-center gap-1.5">
         Sub-scores
+        <InfoTooltip content="Visibility = how often AI engines mention you. Authority = how credible those mentions are. Momentum = whether your visibility is growing or declining." />
       </span>
 
       <div className="space-y-0">
