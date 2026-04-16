@@ -12,7 +12,7 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import type { EntityNode, EntityEdge } from './types';
 import { EntityMap } from './EntityMap';
 import { useCitationResults } from '@/lib/useCiteMind';
@@ -204,18 +204,6 @@ export function IntelligenceCanvasPane({
   }, [citationResults]);
 
   const contentRef = useRef<HTMLDivElement>(null);
-  const [mapSize, setMapSize] = useState(0);
-
-  useEffect(() => {
-    const el = contentRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([entry]) => {
-      const { height } = entry.contentRect;
-      setMapSize(Math.floor(height * 0.68));
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
 
   const ZOOM_MIN = 0.6;
   const ZOOM_MAX = 1.5;
@@ -317,17 +305,16 @@ export function IntelligenceCanvasPane({
       <div ref={contentRef} className="relative flex-1 min-h-0 flex flex-col"
         style={{ background: '#06060A' }}>
 
-        {/* Map row — full width, height = mapSize, holds the square canvas + flanking legend */}
+        {/* Map row — full width, fills available space */}
         <div
-          className="relative flex-shrink-0 flex items-center justify-center"
-          style={{ height: mapSize > 0 ? `${mapSize}px` : '65%' }}
+          className="relative flex-1 min-h-0 flex items-center justify-center"
         >
-          {/* Square canvas */}
+          {/* Canvas — fills container */}
           <div
             className="relative"
             style={{
-              width: mapSize > 0 ? `${mapSize}px` : '100%',
-              height: mapSize > 0 ? `${mapSize}px` : '100%',
+              width: '100%',
+              height: '100%',
               background: '#0A0A0F',
               borderLeft: '1px solid rgba(255,255,255,0.04)',
               borderRight: '1px solid rgba(255,255,255,0.04)',

@@ -1,15 +1,19 @@
 'use client';
 
 /**
- * EntityMap v4 — 3D Force Graph
+ * EntityMap v5 — Geometric 3D Force Graph
  *
- * MARKER: entity-map-v4
+ * MARKER: entity-map-v5
  *
- * Uses react-force-graph-3d for an interactive 3D entity visualization.
- * Nodes: Brand (large iris), AI engines (cyan), journalists (magenta),
- * topics (teal), competitors (dark with warning ring).
- * Edges: glowing lines, verified=solid, opportunity=dashed.
- * Ambient auto-rotation when idle. Labels on hover + top 5 nodes.
+ * Distinct angular geometry per entity type:
+ *   Brand: Icosahedron (20-faced gem) + wireframe overlay + dual glow rings
+ *   AI Engine: Octahedron (diamond)
+ *   Journalist/Publication: Hexagonal prism (CylinderGeometry 6-sided)
+ *   Topic Cluster: Tetrahedron (4-sided shard)
+ *   Default: Rotated cube
+ *
+ * MeshStandardMaterial with metalness for flagship visual quality.
+ * Colored scene lights (magenta + cyan point lights).
  *
  * @see /docs/canon/ENTITY_MAP_SPEC.md
  */
@@ -150,13 +154,24 @@ export function EntityMap({
     return { nodes: graphNodes, links: graphLinks };
   }, [nodes, edges, topNodeIds]);
 
-  // Auto-rotation
+  // Auto-rotation + scene lighting
   useEffect(() => {
     if (!fgRef.current) return;
     const controls = fgRef.current.controls();
     if (controls) {
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.4;
+    }
+    // Add colored scene lights for metallic materials
+    const scene = fgRef.current.scene?.();
+    if (scene) {
+      const THREE = require('three');
+      const magentaLight = new THREE.PointLight('#A855F7', 2, 300);
+      magentaLight.position.set(-100, 100, 100);
+      const cyanLight = new THREE.PointLight('#00D9FF', 1.5, 300);
+      cyanLight.position.set(100, -50, 100);
+      const ambientLight = new THREE.AmbientLight('#ffffff', 0.4);
+      scene.add(magentaLight, cyanLight, ambientLight);
     }
   }, [mounted]);
 
@@ -184,7 +199,7 @@ export function EntityMap({
     [onNodeClick, pauseRotation],
   );
 
-  // Custom node rendering with Three.js + persistent SpriteText labels for top nodes
+  // Custom node rendering — distinct angular geometry per entity type
   const nodeThreeObject = useCallback(
     (node: GraphNode) => {
       if (typeof window === 'undefined') return undefined;
@@ -192,41 +207,94 @@ export function EntityMap({
       const SpriteText = require('three-spritetext').default;
 
       const group = new THREE.Group();
+      const s = node.size;
 
-      // Sphere
-      const geometry = new THREE.SphereGeometry(node.size, 16, 16);
-      const material = new THREE.MeshPhongMaterial({
-        color: node.color,
-        transparent: true,
-        opacity: node.kind === 'brand' ? 1 : 0.85,
-        emissive: node.color,
-        emissiveIntensity: node.kind === 'brand' ? 0.5 : 0.2,
-      });
-      const sphere = new THREE.Mesh(geometry, material);
-      group.add(sphere);
-
-      // Glow ring for brand
-      if (node.kind === 'brand') {
-        const glowGeo = new THREE.RingGeometry(node.size + 2, node.size + 4, 32);
-        const glowMat = new THREE.MeshBasicMaterial({
-          color: '#A855F7',
-          transparent: true,
-          opacity: 0.3,
-          side: THREE.DoubleSide,
-        });
-        const ring = new THREE.Mesh(glowGeo, glowMat);
-        group.add(ring);
+      // ── Geometry per entity type ──
+      let geometry;
+      switch (node.kind) {
+        case 'brand':
+          geometry = new THREE.IcosahedronGeometry(s, 1); // 20-faced gem
+          break;
+        case 'ai_engine':
+          geometry = new THREE.OctahedronGeometry(s, 0); // diamond
+          break;
+        case 'journalist':
+        case 'publication':
+          geometry = new THREE.CylinderGeometry(s, s, s * 0.4, 6); // hexagonal prism
+          break;
+        case 'topic_cluster':
+          geometry = new THREE.TetrahedronGeometry(s, 0); // 4-sided shard
+          break;
+        default: {
+          geometry = new THREE.BoxGeometry(s * 1.4, s * 1.4, s * 1.4);
+          break;
+        }
       }
 
-      // Persistent text label for brand + top-5 authority nodes
+      // ── Metallic material ──
+      const material = new THREE.MeshStandardMaterial({
+        color: node.color,
+        emissive: node.color,
+        emissiveIntensity: node.kind === 'brand' ? 0.6 : 0.15,
+        metalness: 0.4,
+        roughness: 0.15,
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      // Rotate default cubes 45° for visual interest
+      if (node.kind !== 'brand' && node.kind !== 'ai_engine' && node.kind !== 'journalist' && node.kind !== 'publication' && node.kind !== 'topic_cluster') {
+        mesh.rotation.y = Math.PI / 4;
+      }
+      group.add(mesh);
+
+      // ── Brand-only: wireframe overlay ──
+      if (node.kind === 'brand') {
+        const wireMat = new THREE.MeshBasicMaterial({
+          color: '#A855F7',
+          wireframe: true,
+          transparent: true,
+          opacity: 0.25,
+        });
+        const wire = new THREE.Mesh(geometry.clone(), wireMat);
+        group.add(wire);
+
+        // Inner glow ring
+        const ring1 = new THREE.Mesh(
+          new THREE.RingGeometry(s + 2, s + 3.5, 32),
+          new THREE.MeshBasicMaterial({
+            color: '#A855F7',
+            transparent: true,
+            opacity: 0.5,
+            side: THREE.DoubleSide,
+          })
+        );
+        group.add(ring1);
+
+        // Outer ring (tilted 60°, cyan)
+        const ring2Geo = new THREE.RingGeometry(s + 2, s + 3.5, 32);
+        const ring2Mat = new THREE.MeshBasicMaterial({
+          color: '#00D9FF',
+          transparent: true,
+          opacity: 0.25,
+          side: THREE.DoubleSide,
+        });
+        const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+        ring2.rotation.x = Math.PI / 3;
+        group.add(ring2);
+      }
+
+      // ── Persistent SpriteText label for brand + top-5 authority nodes ──
       if (node.isTopNode) {
         const sprite = new SpriteText(node.label);
-        sprite.color = node.color;
-        sprite.textHeight = node.kind === 'brand' ? 5 : 3.5;
-        sprite.backgroundColor = 'rgba(10,10,15,0.75)';
-        sprite.padding = 1.5;
-        sprite.borderRadius = 2;
-        sprite.position.y = node.size + 4;
+        sprite.color = '#ffffff';
+        sprite.textHeight = node.kind === 'brand' ? 6 : 3.5;
+        sprite.fontFace = 'monospace';
+        sprite.padding = 2;
+        sprite.borderRadius = 1;
+        sprite.backgroundColor = 'rgba(10,10,15,0.85)';
+        sprite.borderWidth = 0.5;
+        sprite.borderColor = node.color;
+        sprite.position.y = s + 5;
         group.add(sprite);
       }
 
