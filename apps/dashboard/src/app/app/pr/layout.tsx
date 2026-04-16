@@ -15,7 +15,7 @@ export default async function PRLayout({ children }: { children: React.ReactNode
   return (
     <PRShell
       orgName={session?.activeOrg?.name ?? 'Workspace'}
-      userName={session?.user.fullName || 'User'}
+      userName={session?.user.fullName || undefined}
       userEmail={session?.user.email || undefined}
       userAvatarUrl={session?.user.avatarUrl || undefined}
     >

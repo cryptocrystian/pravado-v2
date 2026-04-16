@@ -17,7 +17,7 @@ export default async function AnalyticsLayout({ children }: { children: React.Re
   return (
     <AnalyticsShell
       orgName={session?.activeOrg?.name ?? 'Workspace'}
-      userName={session?.user.fullName || 'User'}
+      userName={session?.user.fullName || undefined}
       userEmail={session?.user.email || undefined}
       userAvatarUrl={session?.user.avatarUrl || undefined}
     >

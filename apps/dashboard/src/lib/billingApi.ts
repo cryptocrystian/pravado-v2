@@ -3,8 +3,6 @@
  * Frontend API layer for billing and plan management
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -15,20 +13,20 @@ export interface ApiResponse<T> {
 }
 
 /**
- * Client-side API request (for use in client components)
- * Uses credentials: 'include' to automatically send cookies
+ * Client-side API request via same-origin Next.js proxy routes.
+ * Requests go to /api/billing/* which the server proxies to Render
+ * with the auth token — no CORS or credential issues.
  */
 async function apiRequest<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(path, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,
     },
-    credentials: 'include', // Automatically sends cookies
   });
 
   return response.json();
@@ -151,7 +149,7 @@ export interface CheckoutSessionResult {
  * Includes renewal dates, overage projections, and recommendations
  */
 export async function getBillingSummaryEnriched(): Promise<OrgBillingSummaryEnriched | null> {
-  const response = await apiRequest<OrgBillingSummaryEnriched>('/api/v1/billing/org/summary', {
+  const response = await apiRequest<OrgBillingSummaryEnriched>('/api/billing/org/summary', {
     method: 'GET',
   });
 
@@ -166,7 +164,7 @@ export async function getBillingSummaryEnriched(): Promise<OrgBillingSummaryEnri
  * Get all available billing plans
  */
 export async function getAvailablePlans(): Promise<BillingPlan[]> {
-  const response = await apiRequest<BillingPlan[]>('/api/v1/billing/plans', {
+  const response = await apiRequest<BillingPlan[]>('/api/billing/plans', {
     method: 'GET',
   });
 
@@ -181,7 +179,7 @@ export async function getAvailablePlans(): Promise<BillingPlan[]> {
  * Get plan details by slug (S33)
  */
 export async function getPlanDetails(slug: string): Promise<BillingPlan | null> {
-  const response = await apiRequest<BillingPlan>(`/api/v1/billing/plans/${slug}`, {
+  const response = await apiRequest<BillingPlan>(`/api/billing/plans/${slug}`, {
     method: 'GET',
   });
 
@@ -197,7 +195,7 @@ export async function getPlanDetails(slug: string): Promise<BillingPlan | null> 
  * Throws error if downgrade would violate usage guardrails
  */
 export async function switchPlan(targetPlanSlug: string): Promise<ApiResponse<SwitchPlanResult>> {
-  return apiRequest<SwitchPlanResult>('/api/v1/billing/org/switch-plan', {
+  return apiRequest<SwitchPlanResult>('/api/billing/org/switch-plan', {
     method: 'POST',
     body: JSON.stringify({ targetPlanSlug }),
   });
@@ -210,7 +208,7 @@ export async function switchPlan(targetPlanSlug: string): Promise<ApiResponse<Sw
 export async function cancelSubscription(
   immediate: boolean = false
 ): Promise<ApiResponse<CancelSubscriptionResult>> {
-  return apiRequest<CancelSubscriptionResult>('/api/v1/billing/org/plan/cancel', {
+  return apiRequest<CancelSubscriptionResult>('/api/billing/org/plan/cancel', {
     method: 'POST',
     body: JSON.stringify({ immediate }),
   });
@@ -233,7 +231,7 @@ export async function resumeSubscription(): Promise<ApiResponse<SwitchPlanResult
 export async function createCheckoutSession(
   planSlug: string
 ): Promise<ApiResponse<CheckoutSessionResult>> {
-  return apiRequest<CheckoutSessionResult>('/api/v1/billing/org/create-checkout', {
+  return apiRequest<CheckoutSessionResult>('/api/billing/org/create-checkout', {
     method: 'POST',
     body: JSON.stringify({ planSlug }),
   });
@@ -244,7 +242,7 @@ export async function createCheckoutSession(
  * Returns URL to redirect user to Stripe portal
  */
 export async function openPaymentPortal(): Promise<string | null> {
-  const response = await apiRequest<StripePortalSession>('/api/v1/billing/org/payment-method', {
+  const response = await apiRequest<StripePortalSession>('/api/billing/org/payment-method', {
     method: 'POST',
   });
 
@@ -267,7 +265,7 @@ export async function getUsageAlerts(
   }
 
   const response = await apiRequest<BillingAlertRecord[]>(
-    `/api/v1/billing/org/alerts?${params.toString()}`,
+    `/api/billing/org/alerts?${params.toString()}`,
     {
       method: 'GET',
     }
@@ -284,7 +282,7 @@ export async function getUsageAlerts(
  * Acknowledge a billing alert (S32)
  */
 export async function acknowledgeAlert(alertId: string): Promise<boolean> {
-  const response = await apiRequest(`/api/v1/billing/org/alerts/${alertId}/acknowledge`, {
+  const response = await apiRequest(`/api/billing/org/alerts/${alertId}/acknowledge`, {
     method: 'POST',
   });
 
@@ -454,7 +452,7 @@ export interface InvoiceDetails {
  * Returns last 12 months of invoices with aggregated metrics
  */
 export async function getBillingHistory(): Promise<BillingHistorySummary | null> {
-  const response = await apiRequest<BillingHistorySummary>('/api/v1/billing/org/invoices', {
+  const response = await apiRequest<BillingHistorySummary>('/api/billing/org/invoices', {
     method: 'GET',
   });
 
@@ -470,7 +468,7 @@ export async function getBillingHistory(): Promise<BillingHistorySummary | null>
  * Returns full invoice details with line items and usage snapshot
  */
 export async function getInvoiceDetails(invoiceId: string): Promise<InvoiceDetails | null> {
-  const response = await apiRequest<InvoiceDetails>(`/api/v1/billing/org/invoices/${invoiceId}`, {
+  const response = await apiRequest<InvoiceDetails>(`/api/billing/org/invoices/${invoiceId}`, {
     method: 'GET',
   });
 
@@ -486,7 +484,7 @@ export async function getInvoiceDetails(invoiceId: string): Promise<InvoiceDetai
  * Admin-only feature to refresh invoice cache
  */
 export async function syncInvoices(): Promise<ApiResponse<{ message: string; syncedCount: number }>> {
-  return apiRequest<{ message: string; syncedCount: number }>('/api/v1/billing/org/invoices/sync', {
+  return apiRequest<{ message: string; syncedCount: number }>('/api/billing/org/invoices/sync', {
     method: 'POST',
   });
 }
