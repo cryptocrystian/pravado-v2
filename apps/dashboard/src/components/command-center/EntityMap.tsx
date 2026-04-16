@@ -154,9 +154,9 @@ export function EntityMap({
     return { nodes: graphNodes, links: graphLinks };
   }, [nodes, edges, topNodeIds]);
 
-  // Auto-rotation + scene lighting
+  // Auto-rotation + scene lighting + camera positioning
   useEffect(() => {
-    if (!fgRef.current) return;
+    if (!fgRef.current || !mounted) return;
     const controls = fgRef.current.controls();
     if (controls) {
       controls.autoRotate = true;
@@ -173,6 +173,14 @@ export function EntityMap({
       const ambientLight = new THREE.AmbientLight('#ffffff', 0.4);
       scene.add(magentaLight, cyanLight, ambientLight);
     }
+    // Stronger repulsion to spread nodes apart
+    fgRef.current.d3Force('charge')?.strength(-120);
+    // Move camera closer after mount
+    fgRef.current.cameraPosition({ x: 0, y: 0, z: 180 }, undefined, 1000);
+    // Zoom to fit all nodes after simulation settles
+    setTimeout(() => {
+      fgRef.current?.zoomToFit(400, 40);
+    }, 2500);
   }, [mounted]);
 
   // Pause rotation on interaction, resume after idle
@@ -348,8 +356,8 @@ export function EntityMap({
           onNodeHover={(() => { pauseRotation(); }) as any} // eslint-disable-line @typescript-eslint/no-explicit-any
           showNavInfo={false}
           enableNodeDrag={true}
-          d3AlphaDecay={0.02}
-          d3VelocityDecay={0.3}
+          d3AlphaDecay={0.015}
+          d3VelocityDecay={0.25}
           warmupTicks={50}
           cooldownTicks={100}
         />
