@@ -92,6 +92,7 @@
     "swr": "^2.3.8",
     "tailwind-merge": "^2.2.0",
     "three": "^0.184.0",
+    "three-spritetext": "^1.10.0",
     "zod": "^3.22.4",
     "zustand": "^5.0.11"
   },
