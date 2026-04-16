@@ -15,16 +15,18 @@ interface SEOShellProps {
   children: React.ReactNode;
   orgName: string;
   userName: string;
+  userEmail?: string;
   userAvatarUrl?: string;
 }
 
-export function SEOShell({ children, orgName, userName, userAvatarUrl }: SEOShellProps) {
+export function SEOShell({ children, orgName, userName, userEmail, userAvatarUrl }: SEOShellProps) {
   return (
     <SEOModeProvider>
       <div className="min-h-screen bg-slate-0 flex flex-col">
         <CommandCenterTopbar
           orgName={orgName}
           userName={userName}
+          userEmail={userEmail}
           userAvatarUrl={userAvatarUrl}
         />
         <SEOChromeBar />

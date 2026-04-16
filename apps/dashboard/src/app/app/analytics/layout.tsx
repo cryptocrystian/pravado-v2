@@ -18,6 +18,7 @@ export default async function AnalyticsLayout({ children }: { children: React.Re
     <AnalyticsShell
       orgName={session?.activeOrg?.name ?? 'Workspace'}
       userName={session?.user.fullName || 'User'}
+      userEmail={session?.user.email || undefined}
       userAvatarUrl={session?.user.avatarUrl || undefined}
     >
       <MSWProvider>

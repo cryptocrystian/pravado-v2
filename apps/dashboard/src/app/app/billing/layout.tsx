@@ -16,6 +16,7 @@ export default async function BillingLayout({ children }: { children: React.Reac
     <SettingsShell
       orgName={session?.activeOrg?.name ?? 'Workspace'}
       userName={session?.user.fullName || 'User'}
+      userEmail={session?.user.email || undefined}
       userAvatarUrl={session?.user.avatarUrl || undefined}
     >
       <MSWProvider>{children}</MSWProvider>

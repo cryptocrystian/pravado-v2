@@ -29,6 +29,7 @@ interface Org {
 
 interface User {
   fullName: string | null;
+  email: string | null;
   avatarUrl: string | null;
 }
 

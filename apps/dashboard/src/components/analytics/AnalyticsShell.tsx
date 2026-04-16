@@ -15,11 +15,12 @@ import { AnalyticsDateProvider } from './AnalyticsDateContext';
 interface AnalyticsShellProps {
   orgName: string;
   userName: string;
+  userEmail?: string;
   userAvatarUrl?: string;
   children: ReactNode;
 }
 
-export function AnalyticsShell({ orgName, userName, userAvatarUrl, children }: AnalyticsShellProps) {
+export function AnalyticsShell({ orgName, userName, userEmail, userAvatarUrl, children }: AnalyticsShellProps) {
   return (
     <AnalyticsModeProvider>
     <AnalyticsDateProvider>
@@ -27,6 +28,7 @@ export function AnalyticsShell({ orgName, userName, userAvatarUrl, children }: A
         <CommandCenterTopbar
           orgName={orgName}
           userName={userName}
+          userEmail={userEmail}
           userAvatarUrl={userAvatarUrl}
         />
         <AnalyticsChromeBar />

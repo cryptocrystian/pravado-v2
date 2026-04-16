@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic';
 
 // Fallback org/user for when session is unavailable (middleware handles auth gate)
 const FALLBACK_ORG = { id: '', name: 'Workspace', createdAt: '', updatedAt: '' };
-const FALLBACK_USER = { fullName: 'User', avatarUrl: null };
+const FALLBACK_USER = { fullName: 'User', email: null, avatarUrl: null };
 
 export default async function AppLayout({
   children,
@@ -32,6 +32,7 @@ export default async function AppLayout({
       allOrgs={session?.orgs ?? []}
       user={{
         fullName: session?.user.fullName ?? FALLBACK_USER.fullName,
+        email: session?.user.email ?? FALLBACK_USER.email,
         avatarUrl: session?.user.avatarUrl ?? FALLBACK_USER.avatarUrl,
       }}
     >

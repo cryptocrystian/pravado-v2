@@ -74,6 +74,7 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
     return {
       user: {
         id: user.id,
+        email: user.email || null,
         fullName: user.user_metadata?.full_name || user.user_metadata?.name || null,
         avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
         createdAt: user.created_at || now,
