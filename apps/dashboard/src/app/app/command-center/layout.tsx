@@ -35,7 +35,7 @@ export default async function CommandCenterLayout({
       {/* DS v3 Topbar - AI-native, no sidebar */}
       <CommandCenterTopbar
         orgName={session?.activeOrg?.name ?? 'Workspace'}
-        userName={session?.user.fullName || 'User'}
+        userName={session?.user.fullName || undefined}
         userEmail={session?.user.email || undefined}
         userAvatarUrl={session?.user.avatarUrl || undefined}
       />

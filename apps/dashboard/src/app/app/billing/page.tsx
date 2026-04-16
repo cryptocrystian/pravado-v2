@@ -177,12 +177,53 @@ export default function BillingPage() {
     );
   }
 
-  // Render error state
+  // Render graceful placeholder when billing backend isn't configured yet
   if (error || !summary) {
     return (
-      <div className="p-8">
-        <div className="alert-error">
-          {error || 'Failed to load billing information'}
+      <div className="p-8 max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white-0 mb-2">Billing & Subscription</h1>
+          <p className="text-muted">Manage your plan, track usage, and control your subscription</p>
+        </div>
+
+        {/* Info banner instead of error */}
+        <div className="mb-8 p-4 rounded-lg border border-brand-cyan/20 bg-brand-cyan/5">
+          <p className="text-sm text-brand-cyan font-medium">Billing is not yet configured for your account.</p>
+          <p className="text-xs text-muted mt-1">During beta, all features are available at no cost. Stripe billing will be enabled before launch.</p>
+        </div>
+
+        {/* Static plan cards so the page is usable */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-white-0 mb-2">Available Plans</h2>
+          <p className="text-muted">Plans available when billing goes live</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { name: 'Starter', price: 'Free', desc: 'For individuals getting started', features: ['1 seat', '10K tokens/mo', '5 playbook runs/mo'] },
+            { name: 'Growth', price: '$49/mo', desc: 'For growing teams', features: ['5 seats', '100K tokens/mo', '50 playbook runs/mo'] },
+            { name: 'Pro', price: '$149/mo', desc: 'For professional teams', features: ['15 seats', '500K tokens/mo', '200 playbook runs/mo'] },
+            { name: 'Enterprise', price: 'Custom', desc: 'For large organizations', features: ['Unlimited seats', 'Custom token limits', 'Dedicated support'] },
+          ].map((plan) => (
+            <div key={plan.name} className="panel-card p-6 flex flex-col">
+              <h3 className="text-lg font-semibold text-white-0">{plan.name}</h3>
+              <div className="text-2xl font-bold text-white-0 mt-2">{plan.price}</div>
+              <p className="text-sm text-muted mt-1 mb-4">{plan.desc}</p>
+              <ul className="space-y-2 flex-1">
+                {plan.features.map((f) => (
+                  <li key={f} className="text-sm text-muted flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <button
+                disabled
+                className="mt-6 w-full px-4 py-2 rounded-md font-medium bg-slate-4 text-muted cursor-not-allowed"
+              >
+                Coming Soon
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     );
