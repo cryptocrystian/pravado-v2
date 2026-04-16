@@ -13,7 +13,7 @@ import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTo
 interface SettingsShellProps {
   children: ReactNode;
   orgName: string;
-  userName: string;
+  userName?: string;
   userEmail?: string;
   userAvatarUrl?: string;
 }

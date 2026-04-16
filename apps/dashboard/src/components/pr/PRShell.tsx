@@ -18,7 +18,7 @@ import { PRChromeBar } from './PRChromeBar';
 interface PRShellProps {
   children: ReactNode;
   orgName: string;
-  userName: string;
+  userName?: string;
   userEmail?: string;
   userAvatarUrl?: string;
 }
