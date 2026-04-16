@@ -22,9 +22,9 @@ import {
   User,
   CaretDown,
   TrendUp,
-  Info,
 } from '@phosphor-icons/react';
 import { usePRMode, type AutomationMode } from './PRModeContext';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 // ============================================
 // TAB CONFIG
@@ -199,13 +199,7 @@ export function PRChromeBar() {
               <span className="text-[12px] font-semibold">{(evi?.delta ?? 0) >= 0 ? '+' : ''}{(evi?.delta ?? 0).toFixed(1)}</span>
             </div>
           </div>
-          <button
-            type="button"
-            className="p-1.5 rounded-lg hover:bg-slate-3 transition-colors"
-            title="About this page"
-          >
-            <Info className="w-4 h-4 text-white/35 hover:text-white/60 transition-colors" weight="regular" />
-          </button>
+          <InfoTooltip content="EVI (Earned Visibility Index) measures your brand's presence in AI-generated answers. PR placements that get cited by AI engines directly increase your EVI score." size={14} />
         </div>
 
         {/* Right: Mode switcher */}

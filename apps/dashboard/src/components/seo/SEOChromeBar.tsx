@@ -9,8 +9,9 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Lightning, Info, TrendUp, CaretDown, User, Robot, Cpu } from '@phosphor-icons/react';
+import { Lightning, TrendUp, CaretDown, User, Robot, Cpu } from '@phosphor-icons/react';
 import { useSEOMode, type AutomationMode } from './SEOModeContext';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 const TABS = [
   { label: 'Overview',        href: '/app/seo' },
@@ -132,9 +133,7 @@ export function SEOChromeBar() {
             <TrendUp size={12} weight="bold" />
             {(evi?.delta ?? 0) >= 0 ? '+' : ''}{(evi?.delta ?? 0).toFixed(1)}
           </span>
-          <button type="button" className="p-1 rounded hover:bg-slate-3 transition-colors">
-            <Info size={13} className="text-white/30 hover:text-white/60" />
-          </button>
+          <InfoTooltip content="EVI measures your brand's visibility in AI-generated answers. SEO/AEO directly impacts this through content optimization, citation building, and Share of Voice across AI engines." size={13} />
         </div>
 
         {/* Right side: date range (non-autopilot) + mode switcher */}

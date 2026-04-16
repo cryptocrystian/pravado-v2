@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { ContentDocument, DocStatus } from './content-mock-data';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 const statusConfig: Record<DocStatus, { label: string; className: string }> = {
   draft: { label: 'Draft', className: 'bg-white/5 text-white/45' },
@@ -53,7 +54,7 @@ export function DocumentCard({ doc }: { doc: ContentDocument }) {
 
         {/* CiteMind score row */}
         <div className="mt-auto flex items-center gap-2">
-          <span className="text-[13px] text-white/50">CiteMind</span>
+          <span className="text-[13px] text-white/50 inline-flex items-center gap-1">CiteMind <InfoTooltip content="CiteMind scores how well this content is optimized for AI citation. Scores above 80 mean AI engines are likely to reference it. Below 50, consider rewriting for better AI visibility." size={11} /></span>
           <span className={`text-sm font-bold ${citeMindColor(doc.citeMindScore)}`}>
             {doc.citeMindScore}
           </span>

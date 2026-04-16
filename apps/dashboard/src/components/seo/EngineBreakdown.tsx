@@ -7,6 +7,7 @@
 import { useRouter } from 'next/navigation';
 import { ArrowUp, ArrowDown, Lightning, ArrowRight } from '@phosphor-icons/react';
 import { mockEngineScores, mockTopTopics } from './seo-mock-data';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 const trendBadge: Record<string, { label: string; className: string }> = {
   hot: { label: 'Hot', className: 'bg-amber-500/10 text-amber-500' },
@@ -23,7 +24,7 @@ export function EngineBreakdown() {
       {/* By AI Engine */}
       <div>
         <h3 className="text-[13px] font-semibold uppercase tracking-wider text-white/60 mb-3">
-          By AI Engine
+          By AI Engine <InfoTooltip content="Your EVI score broken down by each AI engine (ChatGPT, Perplexity, Claude, Gemini). Different engines weight content differently, so optimizing for each can improve your overall visibility." size={11} />
         </h3>
         <div>
           {mockEngineScores.map((eng) => {

@@ -17,6 +17,7 @@ import {
 } from 'recharts';
 import { useEVIHistory } from '@/lib/useEVI';
 import { useAnalyticsDate } from './AnalyticsDateContext';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 function CustomTooltip({
   active,
@@ -89,7 +90,7 @@ export function EviGrowthChart() {
     <div className="bg-cc-surface border border-white/8 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-white">
-          EVI Growth Story ({days} days)
+          EVI Growth Story ({days} days) <InfoTooltip content="Your EVI score over time. Upward trends mean AI engines are citing your brand more frequently and more prominently. Dips often follow competitor content surges." size={12} />
           {comparisonEnabled && <span className="text-white/40 font-normal ml-2">vs prior period</span>}
         </h3>
       </div>

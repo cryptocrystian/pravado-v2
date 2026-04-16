@@ -1,13 +1,15 @@
 'use client';
 
 import { sageSignals } from './cc-mock-data';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 export function SagePulse() {
   return (
     <div className="bg-cc-surface border border-white/8 rounded-2xl p-5">
       {/* Header */}
-      <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60">
+      <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60 inline-flex items-center gap-1.5">
         SAGE Pulse
+        <InfoTooltip content="Real-time signals from SAGE about changes in your visibility landscape. Includes competitor moves, trending topics, and emerging opportunities." />
       </span>
 
       {/* Signals */}

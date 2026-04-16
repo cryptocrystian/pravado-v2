@@ -11,6 +11,7 @@
 
 import { useState, useMemo } from 'react';
 import type { EVIForecast, ForecastScenario, EVIDriverType } from './types';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 interface EVIForecastPanelProps {
   forecast: EVIForecast | null;
@@ -211,8 +212,9 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-white/50 uppercase tracking-wide font-semibold">
+          <span className="text-[11px] text-white/50 uppercase tracking-wide font-semibold inline-flex items-center gap-1">
             30-Day Forecast
+            <InfoTooltip content="SAGE projects where your EVI score will be in 30 days based on planned actions, content pipeline, and current momentum. Toggle scenarios to see their individual impact." size={11} />
           </span>
           <span className="text-[11px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-iris/10 text-brand-iris border border-brand-iris/30">
             BETA

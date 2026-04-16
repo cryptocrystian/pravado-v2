@@ -15,6 +15,7 @@
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { mockPlacements } from './analytics-mock-data';
+import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 function parseLift(lift: string): number {
   const match = lift.match(/[+-]?[\d.]+/);
@@ -78,7 +79,7 @@ export function EviWaterfall() {
   return (
     <div className="bg-panel border border-border-subtle rounded-xl p-5">
       <h3 className="text-xs font-semibold uppercase tracking-wider text-white/45 mb-4">
-        EVI Attribution by Placement
+        EVI Attribution by Placement <InfoTooltip content="Shows how each individual PR placement contributed to your overall EVI score. Taller bars mean that placement drove more AI visibility for your brand." size={11} />
       </h3>
 
       <ResponsiveContainer width="100%" height={220}>
