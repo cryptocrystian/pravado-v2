@@ -16,6 +16,7 @@ export default async function PRLayout({ children }: { children: React.ReactNode
     <PRShell
       orgName={session?.activeOrg?.name ?? 'Workspace'}
       userName={session?.user.fullName || 'User'}
+      userEmail={session?.user.email || undefined}
       userAvatarUrl={session?.user.avatarUrl || undefined}
     >
       <MSWProvider>{children}</MSWProvider>

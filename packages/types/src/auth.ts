@@ -2,6 +2,7 @@ import type { BaseEntity, UUID, ApiResponse } from './common';
 
 export interface User extends BaseEntity {
   id: UUID;
+  email: string | null;
   fullName: string | null;
   avatarUrl: string | null;
 }

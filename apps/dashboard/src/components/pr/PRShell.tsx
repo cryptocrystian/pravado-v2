@@ -19,16 +19,18 @@ interface PRShellProps {
   children: ReactNode;
   orgName: string;
   userName: string;
+  userEmail?: string;
   userAvatarUrl?: string;
 }
 
-export function PRShell({ children, orgName, userName, userAvatarUrl }: PRShellProps) {
+export function PRShell({ children, orgName, userName, userEmail, userAvatarUrl }: PRShellProps) {
   return (
     <PRModeProvider>
       <div className="min-h-screen bg-slate-0 flex flex-col">
         <CommandCenterTopbar
           orgName={orgName}
           userName={userName}
+          userEmail={userEmail}
           userAvatarUrl={userAvatarUrl}
         />
         <PRChromeBar />

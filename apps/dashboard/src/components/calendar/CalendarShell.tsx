@@ -15,17 +15,19 @@ import { CalendarChromeBar } from './CalendarChromeBar';
 interface CalendarShellProps {
   orgName: string;
   userName: string;
+  userEmail?: string;
   userAvatarUrl?: string;
   children: ReactNode;
 }
 
-export function CalendarShell({ orgName, userName, userAvatarUrl, children }: CalendarShellProps) {
+export function CalendarShell({ orgName, userName, userEmail, userAvatarUrl, children }: CalendarShellProps) {
   return (
     <CalendarModeProvider>
       <div className="min-h-screen bg-slate-0 flex flex-col">
         <CommandCenterTopbar
           orgName={orgName}
           userName={userName}
+          userEmail={userEmail}
           userAvatarUrl={userAvatarUrl}
         />
         <CalendarChromeBar />

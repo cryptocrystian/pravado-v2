@@ -43,6 +43,7 @@ import { supabase } from '@/lib/supabaseClient';
 interface CommandCenterTopbarProps {
   orgName?: string;
   userName?: string;
+  userEmail?: string;
   userAvatarUrl?: string;
 }
 
@@ -58,27 +59,11 @@ const surfaceNavItems = [
 
 // ── User Menu Dropdown ──────────────────────────────────────
 
-function UserMenu({ userName, userAvatarUrl }: { userName: string; userAvatarUrl?: string }) {
+function UserMenu({ userName, userEmail, userAvatarUrl }: { userName: string; userEmail?: string; userAvatarUrl?: string }) {
   const [open, setOpen] = useState(false);
-  const [displayName, setDisplayName] = useState(userName || '');
-  const [displayEmail, setDisplayEmail] = useState('');
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data?.user) {
-        const meta = data.user.user_metadata;
-        setDisplayName(
-          userName ||
-          meta?.full_name ||
-          meta?.name ||
-          data.user.email?.split('@')[0] ||
-          'User'
-        );
-        setDisplayEmail(data.user.email || '');
-      }
-    });
-  }, [userName]);
+  const displayName = userName || userEmail?.split('@')[0] || 'User';
+  const displayEmail = userEmail || '';
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -190,6 +175,7 @@ function UserMenu({ userName, userAvatarUrl }: { userName: string; userAvatarUrl
 export function CommandCenterTopbar({
   orgName: _orgName = 'Pravado Test 01',
   userName = 'User',
+  userEmail,
   userAvatarUrl,
 }: CommandCenterTopbarProps) {
   const pathname = usePathname();
@@ -317,7 +303,7 @@ export function CommandCenterTopbar({
           </button>
 
           {/* User Menu */}
-          <UserMenu userName={userName} userAvatarUrl={userAvatarUrl} />
+          <UserMenu userName={userName} userEmail={userEmail} userAvatarUrl={userAvatarUrl} />
         </div>
       </header>
 

@@ -14,15 +14,17 @@ interface SettingsShellProps {
   children: ReactNode;
   orgName: string;
   userName: string;
+  userEmail?: string;
   userAvatarUrl?: string;
 }
 
-export function SettingsShell({ children, orgName, userName, userAvatarUrl }: SettingsShellProps) {
+export function SettingsShell({ children, orgName, userName, userEmail, userAvatarUrl }: SettingsShellProps) {
   return (
     <div className="min-h-screen bg-page flex flex-col">
       <CommandCenterTopbar
         orgName={orgName}
         userName={userName}
+        userEmail={userEmail}
         userAvatarUrl={userAvatarUrl}
       />
       <main className="flex-1 overflow-auto">

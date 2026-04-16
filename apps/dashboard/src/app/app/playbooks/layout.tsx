@@ -16,6 +16,7 @@ export default async function PlaybooksLayout({ children }: { children: React.Re
     <SettingsShell
       orgName={session?.activeOrg?.name ?? 'Workspace'}
       userName={session?.user.fullName || 'User'}
+      userEmail={session?.user.email || undefined}
       userAvatarUrl={session?.user.avatarUrl || undefined}
     >
       <MSWProvider>{children}</MSWProvider>
