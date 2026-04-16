@@ -170,6 +170,9 @@ export default function CallbackPage() {
     };
 
     const redirectBasedOnOrgs = async () => {
+      // Fire-and-forget welcome email for new users (backend handles idempotency)
+      fetch('/api/auth/welcome-email', { method: 'POST' }).catch(() => {});
+
       // Skip org_members query due to RLS policy issues
       // Just redirect to /app - the app layout will handle routing based on auth state
       console.log('[Callback] Session established, redirecting to /app');
