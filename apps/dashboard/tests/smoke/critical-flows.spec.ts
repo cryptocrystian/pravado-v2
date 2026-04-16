@@ -73,6 +73,32 @@ test.describe('Root redirect', () => {
   });
 });
 
+test.describe('Command Center / Entity Map', () => {
+  test('command center redirects without 500 error', async ({ page }) => {
+    const response = await page.goto(`${BASE}/app/command-center`);
+    // Should redirect to login (no auth), but must not 500
+    expect(response?.status()).not.toBe(500);
+    expect(page.url()).not.toContain('error');
+  });
+
+  test('command center page has no critical JS errors on redirect', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (err) => errors.push(err.message));
+    await page.goto(`${BASE}/app/command-center`, { waitUntil: 'networkidle' });
+    // Filter known non-critical errors (analytics, polyfills)
+    const critical = errors.filter(
+      (e) =>
+        !e.includes('Sentry') &&
+        !e.includes('PostHog') &&
+        !e.includes('lockdown') &&
+        !e.includes('ResizeObserver')
+    );
+    // THREE.js "Multiple instances" warning is a console.warn, not a pageerror,
+    // so it won't appear here. Any actual THREE crash would.
+    expect(critical).toHaveLength(0);
+  });
+});
+
 test.describe('Error handling', () => {
   test('auth callback with error shows friendly message', async ({ page }) => {
     await page.goto(`${BASE}/callback?error=access_denied&error_description=User+cancelled`);
