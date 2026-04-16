@@ -1,29 +1,35 @@
 'use client';
 
 /**
- * EntityMap v3 — Concentric Ring Architecture
+ * EntityMap v4 — 3D Force Graph
  *
- * MARKER: entity-map-v3
+ * MARKER: entity-map-v4
  *
- * Three concentric rings encode causal role:
- *   Ring 1 (Owned — topic clusters) → Ring 2 (Earned — journalists/publications) → Ring 3 (Perceived — AI engines)
- * Brand Core sits at the center (Ring 0).
+ * Uses react-force-graph-3d for an interactive 3D entity visualization.
+ * Nodes: Brand (large iris), AI engines (cyan), journalists (magenta),
+ * topics (teal), competitors (dark with warning ring).
+ * Edges: glowing lines, verified=solid, opportunity=dashed.
+ * Ambient auto-rotation when idle. Labels on hover + top 5 nodes.
  *
- * @see /docs/canon/ENTITY_MAP_SPEC.md v2.0
- * @see /docs/canon/ENTITY-MAP-SAGE.md v3.0
+ * @see /docs/canon/ENTITY_MAP_SPEC.md
  */
 
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import type { EntityNode, EntityEdge, EdgeState, SessionCitationEvent, ActionImpactMap } from './types';
 
-// ── Constants ──────────────────────────────────────────────
+// Dynamic import — react-force-graph-3d requires browser APIs
+const ForceGraph3D = dynamic(() => import('react-force-graph-3d'), { ssr: false });
 
-const CX = 300;
-const CY = 300;
-const RING_RADII: Record<number, number> = { 1: 115, 2: 210, 3: 285 };
-const BRAND_RADIUS = 28;
-const MIN_ARC_GAP_DEG = 15;
-const MAX_NODES_PER_RING = 8;
+// ── Color Map ──────────────────────────────────────────────
+
+const KIND_COLORS: Record<string, string> = {
+  brand: '#A855F7',         // iris
+  ai_engine: '#00D9FF',     // cyan
+  journalist: '#E879F9',    // magenta
+  publication: '#E879F9',   // magenta
+  topic_cluster: '#14B8A6', // teal
+};
 
 const PILLAR_COLORS: Record<string, string> = {
   PR: '#E879F9',
@@ -31,67 +37,18 @@ const PILLAR_COLORS: Record<string, string> = {
   AEO: '#A855F7',
 };
 
-const RING_LABELS: Record<number, string> = {
-  1: 'OWNED',
-  2: 'EARNED',
-  3: 'PERCEIVED',
-};
-
-// ── Helpers ────────────────────────────────────────────────
-
-function getNodeRadius(node: EntityNode): number {
-  if (node.kind === 'brand') return BRAND_RADIUS;
-  return 7 + (node.authority_weight / 100) * 10;
+function getNodeColor(node: EntityNode): string {
+  return KIND_COLORS[node.kind] ?? '#00D9FF';
 }
 
-function getPillarColor(pillar: string | null): string {
-  if (!pillar) return '#A855F7'; // Brand Core = iris purple
-  return PILLAR_COLORS[pillar] ?? '#00D9FF';
+function getNodeSize(node: EntityNode): number {
+  if (node.kind === 'brand') return 14;
+  return 3 + (node.authority_weight / 100) * 8;
 }
 
-function getEdgeVisuals(state: EdgeState): { dashArray: string; baseOpacity: number; animate: boolean } {
-  switch (state) {
-    case 'verified_solid':
-      return { dashArray: '', baseOpacity: 0.6, animate: false };
-    case 'verified_pending':
-      return { dashArray: '', baseOpacity: 0.25, animate: false };
-    case 'gap':
-      return { dashArray: '5,4', baseOpacity: 0.3, animate: false };
-    case 'in_progress':
-      return { dashArray: '5,4', baseOpacity: 0.5, animate: true };
-  }
-}
-
-function getEdgeWidth(strength: number): number {
-  if (strength >= 85) return 2;
-  if (strength >= 30) return 1;
-  return 0.5;
-}
-
-/**
- * Position a node on its ring by affinity_score.
- * Top of ring (−π/2) = highest affinity. Clockwise.
- */
-function computeNodePosition(
-  node: EntityNode,
-  sortedRingNodes: EntityNode[],
-): { x: number; y: number } {
-  if (node.kind === 'brand') return { x: CX, y: CY };
-
-  const radius = RING_RADII[node.ring] ?? 200;
-  const index = sortedRingNodes.findIndex((n) => n.id === node.id);
-  const count = sortedRingNodes.length;
-
-  const minGapRad = (MIN_ARC_GAP_DEG * Math.PI) / 180;
-  const arcStep = Math.min((Math.PI * 2) / Math.max(count, 1), Math.PI * 2 - minGapRad);
-  const usedArc = count > 1 ? arcStep : 0;
-
-  const angle = -Math.PI / 2 + index * usedArc;
-
-  return {
-    x: CX + Math.cos(angle) * radius,
-    y: CY + Math.sin(angle) * radius,
-  };
+function getEdgeColor(edge: EntityEdge): string {
+  if (edge.state === 'gap') return 'rgba(255,255,255,0.15)';
+  return PILLAR_COLORS[edge.pillar ?? ''] ?? '#00D9FF';
 }
 
 // ── Types ──────────────────────────────────────────────────
@@ -104,7 +61,36 @@ interface EntityMapProps {
   hoveredActionId?: string | null;
   executingActionId?: string | null;
   onNodeClick?: (nodeId: string) => void;
-  zoom?: number; // 0.6 – 1.5, default 1.0
+  zoom?: number;
+}
+
+interface GraphNode {
+  id: string;
+  label: string;
+  kind: string;
+  color: string;
+  size: number;
+  ring: number;
+  pillar: string | null;
+  authorityWeight: number;
+  affinityScore: number;
+  connectionStatus: EdgeState;
+  entityInsight: string;
+  impactPillars: string[];
+  linkedActionId: string | null;
+  isTopNode: boolean;
+  x?: number;
+  y?: number;
+  z?: number;
+}
+
+interface GraphLink {
+  source: string;
+  target: string;
+  color: string;
+  width: number;
+  dashed: boolean;
+  id: string;
 }
 
 // ── Component ──────────────────────────────────────────────
@@ -112,409 +98,206 @@ interface EntityMapProps {
 export function EntityMap({
   nodes,
   edges,
-  sessionEvents = [],
-  actionImpacts = {},
-  hoveredActionId,
-  executingActionId,
   onNodeClick,
-  zoom = 1.0,
 }: EntityMapProps) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [pulsingNodes, setPulsingNodes] = useState<Set<string>>(new Set());
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const fgRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isRotating = useRef(true);
 
-  // ── Group + sort nodes by ring ──
-  const nodesByRing = useMemo(() => {
-    const map = new Map<number, EntityNode[]>();
-    for (const node of nodes) {
-      if (!map.has(node.ring)) map.set(node.ring, []);
-      map.get(node.ring)!.push(node);
-    }
-    // Sort each ring by affinity descending
-    for (const [, ringNodes] of map) {
-      ringNodes.sort((a, b) => b.affinity_score - a.affinity_score);
-    }
-    return map;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Top 5 nodes by authority for permanent labels
+  const topNodeIds = useMemo(() => {
+    const sorted = [...nodes]
+      .filter(n => n.kind !== 'brand')
+      .sort((a, b) => b.authority_weight - a.authority_weight);
+    return new Set(sorted.slice(0, 5).map(n => n.id));
   }, [nodes]);
 
-  // ── Handle cluster overflow (>8 per ring) ──
-  const displayNodes = useMemo(() => {
-    const result: EntityNode[] = [];
-    for (const [ring, ringNodes] of nodesByRing) {
-      if (ring === 0) {
-        result.push(...ringNodes);
-        continue;
-      }
-      if (ringNodes.length <= MAX_NODES_PER_RING) {
-        result.push(...ringNodes);
-      } else {
-        // Keep top 7, cluster the rest
-        const visible = ringNodes.slice(0, 7);
-        const overflow = ringNodes.slice(7);
-        result.push(...visible);
-        // Synthetic cluster node
-        const avgAffinity = overflow.reduce((s, n) => s + n.affinity_score, 0) / overflow.length;
-        const avgAuthority = overflow.reduce((s, n) => s + n.authority_weight, 0) / overflow.length;
-        result.push({
-          id: `cluster-ring-${ring}`,
-          kind: overflow[0].kind,
-          label: `+${overflow.length} more`,
-          ring: ring as 0 | 1 | 2 | 3,
-          pillar: overflow[0].pillar,
-          affinity_score: avgAffinity,
-          authority_weight: avgAuthority,
-          connection_status: 'verified_pending',
-          linked_action_id: null,
-          entity_insight: `${overflow.length} additional entities in this ring.`,
-          impact_pillars: [],
-          last_updated: new Date().toISOString(),
-          meta: { is_cluster: true, count: overflow.length },
-        });
-      }
-    }
-    return result;
-  }, [nodesByRing]);
+  // Build graph data
+  const graphData = useMemo(() => {
+    const graphNodes: GraphNode[] = nodes.map(n => ({
+      id: n.id,
+      label: n.label,
+      kind: n.kind,
+      color: getNodeColor(n),
+      size: getNodeSize(n),
+      ring: n.ring,
+      pillar: n.pillar,
+      authorityWeight: n.authority_weight,
+      affinityScore: n.affinity_score,
+      connectionStatus: n.connection_status,
+      entityInsight: n.entity_insight ?? '',
+      impactPillars: n.impact_pillars ?? [],
+      linkedActionId: n.linked_action_id,
+      isTopNode: n.kind === 'brand' || topNodeIds.has(n.id),
+    }));
 
-  // ── Recompute sorted ring lists for display nodes ──
-  const displayByRing = useMemo(() => {
-    const map = new Map<number, EntityNode[]>();
-    for (const node of displayNodes) {
-      if (!map.has(node.ring)) map.set(node.ring, []);
-      map.get(node.ring)!.push(node);
-    }
-    for (const [, ringNodes] of map) {
-      ringNodes.sort((a, b) => b.affinity_score - a.affinity_score);
-    }
-    return map;
-  }, [displayNodes]);
+    const graphLinks: GraphLink[] = edges.map(e => ({
+      source: e.from,
+      target: e.to,
+      color: getEdgeColor(e),
+      width: e.state === 'verified_solid' ? 1.5 : 0.5,
+      dashed: e.state === 'gap' || e.state === 'in_progress',
+      id: e.id,
+    }));
 
-  // ── Compute positions ──
-  const positions = useMemo(() => {
-    const pos = new Map<string, { x: number; y: number }>();
-    for (const node of displayNodes) {
-      const sortedRing = displayByRing.get(node.ring) ?? [];
-      pos.set(node.id, computeNodePosition(node, sortedRing));
-    }
-    return pos;
-  }, [displayNodes, displayByRing]);
+    return { nodes: graphNodes, links: graphLinks };
+  }, [nodes, edges, topNodeIds]);
 
-  // ── Chain illumination: connected nodes for selected node ──
-  const chainNodes = useMemo(() => {
-    if (!selectedNodeId) return new Set<string>();
-    const chain = new Set<string>([selectedNodeId, 'brand']);
-    for (const edge of edges) {
-      if (edge.from === selectedNodeId || edge.to === selectedNodeId) {
-        chain.add(edge.from);
-        chain.add(edge.to);
-      }
-    }
-    return chain;
-  }, [selectedNodeId, edges]);
-
-  const chainEdges = useMemo(() => {
-    if (!selectedNodeId) return new Set<string>();
-    const set = new Set<string>();
-    for (const edge of edges) {
-      if (edge.from === selectedNodeId || edge.to === selectedNodeId) {
-        set.add(edge.id);
-      }
-    }
-    return set;
-  }, [selectedNodeId, edges]);
-
-  // ── Action hover impact ──
-  const hoveredImpact = useMemo(() => {
-    if (hoveredActionId && actionImpacts[hoveredActionId]) {
-      return actionImpacts[hoveredActionId];
-    }
-    return null;
-  }, [hoveredActionId, actionImpacts]);
-
-  // ── Execute pulse ──
+  // Auto-rotation
   useEffect(() => {
-    if (!executingActionId || !actionImpacts[executingActionId]) return;
-    const impact = actionImpacts[executingActionId];
-    setPulsingNodes(new Set(impact.impacted_nodes));
-    const timer = setTimeout(() => setPulsingNodes(new Set()), 800);
-    return () => clearTimeout(timer);
-  }, [executingActionId, actionImpacts]);
+    if (!fgRef.current) return;
+    const controls = fgRef.current.controls();
+    if (controls) {
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.4;
+    }
+  }, [mounted]);
+
+  // Pause rotation on interaction, resume after idle
+  const pauseRotation = useCallback(() => {
+    if (fgRef.current?.controls()) {
+      fgRef.current.controls().autoRotate = false;
+      isRotating.current = false;
+    }
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => {
+      if (fgRef.current?.controls()) {
+        fgRef.current.controls().autoRotate = true;
+        isRotating.current = true;
+      }
+    }, 5000);
+  }, []);
 
   const handleNodeClick = useCallback(
-    (nodeId: string) => {
-      setSelectedNodeId((prev) => (prev === nodeId ? null : nodeId));
-      onNodeClick?.(nodeId);
+    (node: GraphNode) => {
+      pauseRotation();
+      setSelectedNodeId(prev => (prev === node.id ? null : node.id));
+      onNodeClick?.(node.id);
     },
-    [onNodeClick],
+    [onNodeClick, pauseRotation],
   );
 
-  const selectedNode = selectedNodeId ? displayNodes.find((n) => n.id === selectedNodeId) : null;
-  const hasChain = selectedNodeId !== null;
-  const hasHover = hoveredImpact !== null;
+  // Custom node rendering with Three.js
+  const nodeThreeObject = useCallback(
+    (node: GraphNode) => {
+      if (typeof window === 'undefined') return undefined;
+      const THREE = require('three');
 
-  // ── Opacity logic ──
-  function getNodeOpacity(node: EntityNode): number {
-    if (hasChain) return chainNodes.has(node.id) ? 1 : 0.15;
-    if (hasHover) return hoveredImpact!.impacted_nodes.includes(node.id) ? 1 : 0.3;
-    return 1;
-  }
+      const group = new THREE.Group();
 
-  function getEdgeOpacity(edge: EntityEdge): number {
-    const vis = getEdgeVisuals(edge.state);
-    if (hasChain) return chainEdges.has(edge.id) ? Math.min(vis.baseOpacity * 1.5, 1) : 0.05;
-    if (hasHover) return hoveredImpact!.impacted_edges.includes(edge.id) ? Math.min(vis.baseOpacity * 1.5, 1) : 0.05;
-    return vis.baseOpacity;
-  }
+      // Sphere
+      const geometry = new THREE.SphereGeometry(node.size, 16, 16);
+      const material = new THREE.MeshPhongMaterial({
+        color: node.color,
+        transparent: true,
+        opacity: node.kind === 'brand' ? 1 : 0.85,
+        emissive: node.color,
+        emissiveIntensity: node.kind === 'brand' ? 0.5 : 0.2,
+      });
+      const sphere = new THREE.Mesh(geometry, material);
+      group.add(sphere);
+
+      // Glow ring for brand
+      if (node.kind === 'brand') {
+        const glowGeo = new THREE.RingGeometry(node.size + 2, node.size + 4, 32);
+        const glowMat = new THREE.MeshBasicMaterial({
+          color: '#A855F7',
+          transparent: true,
+          opacity: 0.3,
+          side: THREE.DoubleSide,
+        });
+        const ring = new THREE.Mesh(glowGeo, glowMat);
+        group.add(ring);
+      }
+
+      return group;
+    },
+    [],
+  );
+
+  // Node label visibility: top 5 + hovered + selected
+  const nodeLabel = useCallback(
+    (node: GraphNode) => {
+      const show =
+        node.isTopNode ||
+        node.id === hoveredNodeId ||
+        node.id === selectedNodeId;
+      if (!show) return '';
+      return `<div style="color:${node.color};font-size:11px;font-weight:600;text-shadow:0 0 4px rgba(0,0,0,0.8);padding:2px 6px;background:rgba(10,10,15,0.85);border-radius:4px;border:1px solid ${node.color}40;">${node.label}</div>`;
+    },
+    [hoveredNodeId, selectedNodeId],
+  );
+
+  const selectedNode = selectedNodeId
+    ? graphData.nodes.find(n => n.id === selectedNodeId)
+    : null;
+
+  // Container dimensions
+  const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ro = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        setDimensions({
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
+        });
+      }
+    });
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
 
   return (
-    <div className="entity-map-v3 relative w-full h-full">
-      <svg
-        viewBox="0 0 600 600"
-        className="w-full h-full"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <g transform={`translate(300, 300) scale(${zoom}) translate(-300, -300)`}>
-        <defs>
-          {/* Glow filters per pillar */}
-          {Object.entries(PILLAR_COLORS).map(([key, color]) => (
-            <filter key={key} id={`glow-${key}`} x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
-              <feFlood floodColor={color} floodOpacity="0.4" />
-              <feComposite in2="blur" operator="in" />
-              <feMerge>
-                <feMergeNode />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          ))}
-          {/* Brand pulse gradient */}
-          <radialGradient id="brand-pulse-grad">
-            <stop offset="0%" stopColor="#A855F7" stopOpacity="0.15" />
-            <stop offset="100%" stopColor="#A855F7" stopOpacity="0" />
-          </radialGradient>
-          {/* Ring zone fill gradients */}
-          <radialGradient id="ring1-fill" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#00D9FF" stopOpacity="0" />
-            <stop offset="100%" stopColor="#00D9FF" stopOpacity="0.025" />
-          </radialGradient>
-          <radialGradient id="ring2-fill" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#E879F9" stopOpacity="0" />
-            <stop offset="100%" stopColor="#E879F9" stopOpacity="0.02" />
-          </radialGradient>
-          <radialGradient id="ring3-fill" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#A855F7" stopOpacity="0" />
-            <stop offset="100%" stopColor="#A855F7" stopOpacity="0.02" />
-          </radialGradient>
-        </defs>
-
-        {/* ── Ring boundaries ── */}
-        {[1, 2, 3].map((ring) => (
-          <circle
-            key={`ring-boundary-${ring}`}
-            cx={CX}
-            cy={CY}
-            r={RING_RADII[ring]}
-            fill="none"
-            stroke="rgba(255,255,255,0.05)"
-            strokeWidth={1}
-          />
-        ))}
-
-        {/* ── Ring zone fills — subtle radial territory color ── */}
-        {/* Ring 3 fill (outermost first so inner rings paint over) */}
-        <circle cx={300} cy={300} r={285} fill="url(#ring3-fill)" />
-        {/* Ring 2 fill */}
-        <circle cx={300} cy={300} r={210} fill="url(#ring2-fill)" />
-        {/* Ring 1 fill */}
-        <circle cx={300} cy={300} r={115} fill="url(#ring1-fill)" />
-
-        {/* ── Ring labels — upper-right quadrant (45° from top) ── */}
-        {[1, 2, 3].map((ring) => {
-          const angle = -Math.PI / 4; // 45° clockwise from top
-          const lx = CX + Math.cos(angle) * RING_RADII[ring];
-          const ly = CY + Math.sin(angle) * RING_RADII[ring];
-          const label = RING_LABELS[ring];
-          const charWidth = 6.5; // approximate per-char width at fontSize 9
-          const pillW = label.length * charWidth + 12;
-          const pillH = 16;
-
-          return (
-            <g key={`ring-label-${ring}`}>
-              <rect
-                x={lx - pillW / 2}
-                y={ly - pillH / 2}
-                width={pillW}
-                height={pillH}
-                rx={8}
-                fill="rgba(0,0,0,0.45)"
-                stroke="rgba(255,255,255,0.08)"
-                strokeWidth={0.5}
-              />
-              <text
-                x={lx}
-                y={ly + 3.5}
-                textAnchor="middle"
-                fill="rgba(255,255,255,0.35)"
-                fontSize={9}
-                fontWeight={600}
-                letterSpacing="0.1em"
-              >
-                {label}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* ── Edges ── */}
-        <g className="edges">
-          {edges.map((edge) => {
-            const fromPos = positions.get(edge.from);
-            const toPos = positions.get(edge.to);
-            if (!fromPos || !toPos) return null;
-
-            const vis = getEdgeVisuals(edge.state);
-            const width = getEdgeWidth(edge.strength);
-            const opacity = getEdgeOpacity(edge);
-            const color = edge.state === 'gap' ? 'rgba(255,255,255,0.28)' : getPillarColor(edge.pillar);
-
-            return (
-              <line
-                key={edge.id}
-                x1={fromPos.x}
-                y1={fromPos.y}
-                x2={toPos.x}
-                y2={toPos.y}
-                stroke={color}
-                strokeWidth={width}
-                strokeOpacity={opacity}
-                strokeDasharray={vis.dashArray || undefined}
-                className={vis.animate ? 'animate-dash-travel' : ''}
-                style={{ transition: 'stroke-opacity 200ms ease-out' }}
-              />
-            );
-          })}
-        </g>
-
-        {/* ── Brand Core pulse ring ── */}
-        <circle
-          cx={CX}
-          cy={CY}
-          r={BRAND_RADIUS + 12}
-          fill="url(#brand-pulse-grad)"
-          className="animate-brand-pulse"
+    <div ref={containerRef} className="entity-map-v4 relative w-full h-full">
+      {mounted && (
+        <ForceGraph3D
+          ref={fgRef}
+          graphData={graphData}
+          width={dimensions.width}
+          height={dimensions.height}
+          backgroundColor="rgba(0,0,0,0)"
+          nodeThreeObject={nodeThreeObject as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+          nodeLabel={nodeLabel as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+          nodeVal={((node: any) => node.size) as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+          linkColor={((link: any) => link.color) as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+          linkWidth={((link: any) => link.width) as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+          linkOpacity={0.4}
+          onNodeClick={handleNodeClick as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+          onNodeHover={((node: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+            pauseRotation();
+            setHoveredNodeId(node?.id ?? null);
+          }) as any}
+          showNavInfo={false}
+          enableNodeDrag={true}
+          d3AlphaDecay={0.02}
+          d3VelocityDecay={0.3}
+          warmupTicks={50}
+          cooldownTicks={100}
         />
-
-        {/* ── Nodes ── */}
-        <g className="nodes">
-          {displayNodes.map((node) => {
-            const pos = positions.get(node.id);
-            if (!pos) return null;
-
-            const r = getNodeRadius(node);
-            const color = getPillarColor(node.pillar);
-            const opacity = getNodeOpacity(node);
-            const isSelected = node.id === selectedNodeId;
-            const isPulsing = pulsingNodes.has(node.id);
-            const isVerified = node.connection_status === 'verified_solid';
-            const scale = isSelected ? 1.3 : isPulsing ? 1.15 : 1;
-            const isBrand = node.kind === 'brand';
-
-            return (
-              <g
-                key={node.id}
-                transform={`translate(${pos.x}, ${pos.y}) scale(${scale})`}
-                onClick={() => handleNodeClick(node.id)}
-                className="cursor-pointer"
-                style={{
-                  opacity,
-                  transition: 'opacity 200ms ease-out',
-                }}
-              >
-                {/* Glow for verified-solid nodes */}
-                {isVerified && !hasChain && (
-                  <circle
-                    r={r + 4}
-                    fill="none"
-                    stroke={color}
-                    strokeWidth={1}
-                    strokeOpacity={0.3}
-                    filter={node.pillar ? `url(#glow-${node.pillar})` : undefined}
-                  />
-                )}
-
-                {/* Node circle */}
-                <circle
-                  r={r}
-                  fill={isBrand ? '#A855F7' : `${color}20`}
-                  stroke={color}
-                  strokeWidth={isSelected ? 2 : 1}
-                  strokeOpacity={isBrand ? 1 : 0.6}
-                />
-
-                {/* Label */}
-                <text
-                  y={r + 12}
-                  textAnchor="middle"
-                  fill="white"
-                  fillOpacity={
-                    isSelected
-                      ? 1
-                      : hasChain
-                        ? chainNodes.has(node.id)
-                          ? 0.85
-                          : 0.15
-                        : 0.7
-                  }
-                  fontSize={isBrand ? 11 : 9}
-                  fontWeight={isBrand ? 700 : 500}
-                >
-                  {node.label}
-                </text>
-              </g>
-            );
-          })}
-        </g>
-
-        {/* ── Session citation particles ── */}
-        {sessionEvents.map((event, i) => {
-          const sourcePos = positions.get(event.entity_id_source);
-          const perceiverPos = positions.get(event.entity_id_perceiver);
-          if (!sourcePos || !perceiverPos) return null;
-
-          return (
-            <circle key={`citation-particle-${i}`} r={3} fill="#00D9FF" opacity={0}>
-              <animateMotion
-                dur="1.5s"
-                begin={`${i * 0.5}s`}
-                fill="freeze"
-                path={`M${sourcePos.x},${sourcePos.y} L${perceiverPos.x},${perceiverPos.y}`}
-              />
-              <animate
-                attributeName="opacity"
-                values="0;0.8;0.4;0"
-                dur="3s"
-                begin={`${i * 0.5}s`}
-                fill="freeze"
-              />
-            </circle>
-          );
-        })}
-
-        </g>{/* close zoom wrapper */}
-      </svg>
+      )}
 
       {/* ── Progressive Disclosure Panel ── */}
       {selectedNode && (
         <div
-          className="absolute top-2 right-2 w-[240px] bg-slate-2 border border-border-subtle rounded-lg p-3 shadow-lg"
+          className="absolute top-2 right-2 w-[240px] bg-slate-2 border border-border-subtle rounded-lg p-3 shadow-lg z-10"
           style={{ animation: 'slideInRight 250ms ease-out' }}
         >
-          {/* Header */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2 min-w-0">
               <span
                 className="shrink-0 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded"
                 style={{
-                  backgroundColor: `${getPillarColor(selectedNode.pillar)}15`,
-                  color: getPillarColor(selectedNode.pillar),
+                  backgroundColor: `${selectedNode.color}15`,
+                  color: selectedNode.color,
                 }}
               >
                 {selectedNode.kind.replace('_', ' ')}
@@ -532,40 +315,36 @@ export function EntityMap({
             </button>
           </div>
 
-          {/* Metrics */}
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div>
               <span className="text-[10px] text-white/40 uppercase tracking-wide">Affinity</span>
-              <p className="text-sm font-bold text-white/90 font-mono">{selectedNode.affinity_score}</p>
+              <p className="text-sm font-bold text-white/90 font-mono">{selectedNode.affinityScore}</p>
             </div>
             <div>
               <span className="text-[10px] text-white/40 uppercase tracking-wide">Authority</span>
-              <p className="text-sm font-bold text-white/90 font-mono">{selectedNode.authority_weight}</p>
+              <p className="text-sm font-bold text-white/90 font-mono">{selectedNode.authorityWeight}</p>
             </div>
           </div>
 
-          {/* Connection Status */}
           <div className="mb-3">
             <span className="text-[10px] text-white/40 uppercase tracking-wide">Connection</span>
             <p className="text-xs text-white/70 mt-0.5 capitalize">
-              {selectedNode.connection_status.replaceAll('_', ' ')}
+              {selectedNode.connectionStatus.replaceAll('_', ' ')}
             </p>
           </div>
 
-          {/* Intelligence Brief */}
           <div className="mb-3">
             <span className="text-[10px] text-white/40 uppercase tracking-wide">Intelligence</span>
             <p className="text-xs text-white/70 mt-0.5 leading-relaxed">
-              {selectedNode.entity_insight}
+              {selectedNode.entityInsight}
             </p>
           </div>
 
-          {/* Pillar Impact */}
-          {selectedNode.impact_pillars.length > 0 && (
+          {selectedNode.impactPillars.length > 0 && (
             <div className="mb-3">
               <span className="text-[10px] text-white/40 uppercase tracking-wide">Pillar Impact</span>
               <div className="flex items-center gap-1.5 mt-1">
-                {selectedNode.impact_pillars.map((p) => (
+                {selectedNode.impactPillars.map((p) => (
                   <span
                     key={p}
                     className="px-1.5 py-0.5 text-[10px] font-medium rounded"
@@ -581,8 +360,7 @@ export function EntityMap({
             </div>
           )}
 
-          {/* Linked Action */}
-          {selectedNode.linked_action_id && (
+          {selectedNode.linkedActionId && (
             <button className="w-full text-left px-2 py-1.5 text-xs text-brand-cyan hover:bg-brand-cyan/5 border border-brand-cyan/20 rounded transition-colors">
               Open linked action &rarr;
             </button>
@@ -590,39 +368,10 @@ export function EntityMap({
         </div>
       )}
 
-      {/* ── Animation styles ── */}
       <style jsx>{`
-        @keyframes brand-pulse {
-          0%,
-          100% {
-            opacity: 0.15;
-            r: ${BRAND_RADIUS + 12};
-          }
-          50% {
-            opacity: 0;
-            r: ${BRAND_RADIUS + 24};
-          }
-        }
-        .animate-brand-pulse {
-          animation: brand-pulse 3s ease-in-out infinite;
-        }
-        @keyframes dash-travel {
-          to {
-            stroke-dashoffset: -18;
-          }
-        }
-        .animate-dash-travel {
-          animation: dash-travel 2s linear infinite;
-        }
         @keyframes slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(12px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
+          from { opacity: 0; transform: translateX(12px); }
+          to { opacity: 1; transform: translateX(0); }
         }
       `}</style>
     </div>
