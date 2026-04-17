@@ -78,3 +78,13 @@ Tests cover:
 | Before deploy | Full manual checklist |
 | Weekly | AI feature spot-check (press release + pitch quality) |
 | After env var changes | Auth + email flows |
+
+## Brand Name Verification
+- [ ] SAGE™ appears with ™ on first use in every major view
+- [ ] CRAFT™ appears with ™ on first use in every major view
+- [ ] CiteMind™ appears with ™ on first use in every major view
+- [ ] EVI™ appears with ™ in Strategy Panel header
+- [ ] No instances of "AUTOMATE" remain in user-facing copy
+- [ ] Telemetry panel shows SAGE™/CRAFT™/CiteMind™ labels
+- [ ] Legal pages (Terms, Acceptable Use) reference CRAFT not AUTOMATE
+- [ ] Billing plan descriptions reference CRAFT not AUTOMATE

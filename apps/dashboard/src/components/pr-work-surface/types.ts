@@ -462,7 +462,7 @@ export interface PitchPipelineItem {
 }
 
 // ============================================
-// V1.1 TYPES — IMPACT STRIP (SAGE/EVI/AUTOMATE)
+// V1.1 TYPES — IMPACT STRIP (SAGE/EVI/CRAFT)
 // ============================================
 
 export type SAGEDimension = 'signal' | 'authority' | 'growth' | 'exposure';

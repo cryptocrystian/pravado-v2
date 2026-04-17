@@ -52,14 +52,14 @@ const PLANS = [
   {
     slug: 'growth',
     name: 'Pravado Growth',
-    description: 'For organizations running full-stack visibility with AUTOMATE',
+    description: 'For organizations running full-stack visibility with CRAFT',
     monthlyPriceCents: 79900, // $799/month
     features: [
       '10 team seats',
       'Unlimited SAGE proposals',
       'Unlimited CiteMind scores',
       '20,000,000 LLM tokens/month',
-      'AUTOMATE (autopilot mode)',
+      'CRAFT (autopilot mode)',
       'Advanced analytics',
       'API integrations (GSC, etc.)',
       'Dedicated support',

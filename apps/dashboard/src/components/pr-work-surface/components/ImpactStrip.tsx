@@ -3,7 +3,7 @@
 /**
  * Impact Strip V1.1 - DS 3.0
  *
- * Compact UI element showing SAGE/EVI/AUTOMATE context.
+ * Compact UI element showing SAGE/EVI/CRAFT context.
  * Makes the system feel like an "organism," not disconnected modules.
  *
  * @see /docs/canon/PR_WORK_SURFACE_CONTRACT.md (V1.1 section)

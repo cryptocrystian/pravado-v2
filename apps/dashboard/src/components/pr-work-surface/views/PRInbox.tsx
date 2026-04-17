@@ -420,7 +420,7 @@ function AuditLogPanel({ entries = MOCK_PR_AUDIT_LOG }: { entries?: typeof MOCK_
             Live
           </span>
         </div>
-        <span className="text-[13px] text-white/30">Auto-executed by AUTOMATE</span>
+        <span className="text-[13px] text-white/30">Auto-executed by CRAFT</span>
       </div>
       <div className="space-y-1 max-h-[180px] overflow-y-auto">
         {entries.slice(0, 5).map((item) => (

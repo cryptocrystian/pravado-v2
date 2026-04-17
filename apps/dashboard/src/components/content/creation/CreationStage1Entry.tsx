@@ -141,7 +141,7 @@ export function CreationStage1Entry({
           <div className="flex items-center gap-1.5 mb-4">
             <Lightning className="w-3.5 h-3.5 text-brand-iris" weight="fill" />
             <span className="text-[11px] font-bold uppercase tracking-wider text-brand-iris">
-              SAGE Recommends
+              SAGE&trade; Recommends
             </span>
           </div>
 

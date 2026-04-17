@@ -94,7 +94,7 @@ export default function AcceptableUsePage() {
         </li>
         <li>
           Attempting to discover the proprietary logic behind EVI scoring, SAGE
-          recommendations, CiteMind analysis, or AUTOMATE orchestration.
+          recommendations, CiteMind analysis, or CRAFT orchestration.
         </li>
         <li>
           Probing, testing, or benchmarking the Service&apos;s AI outputs to

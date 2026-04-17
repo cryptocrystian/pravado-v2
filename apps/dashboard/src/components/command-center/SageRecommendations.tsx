@@ -9,8 +9,8 @@ export function SageRecommendations() {
       {/* Section header */}
       <div className="mb-3">
         <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60 inline-flex items-center gap-1.5">
-          SAGE Recommends
-          <InfoTooltip content="SAGE (Strategy AI for Growth Engine) analyzes your PR, content, and SEO data to recommend the highest-impact actions. Each recommendation shows its expected EVI impact." />
+          SAGE&trade; Recommends
+          <InfoTooltip content="SAGE (Signal, Authority, Growth, Exposure) analyzes your PR, content, and SEO data to recommend the highest-impact actions. SAGE works with CRAFT (Coordinated Response &amp; Action Flow Technology) to not just identify actions, but execute them." />
         </span>
       </div>
 

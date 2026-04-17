@@ -21,7 +21,7 @@ export function NewDocumentDropdown() {
   const options = [
     {
       icon: <Lightning size={18} weight="regular" className="text-cc-cyan" />,
-      label: 'From SAGE Brief',
+      label: 'From SAGE\u2122 Brief',
       sublabel: `${mockBriefs.length} ready`,
       onClick: () => { setOpen(false); router.push('/app/content/new?view=briefs'); },
       highlight: true,
@@ -77,7 +77,7 @@ export function NewDocumentDropdown() {
               </div>
               {opt.highlight && (
                 <span className="ml-auto text-[11px] font-semibold uppercase tracking-wider text-cc-cyan bg-cc-cyan/10 px-1.5 py-0.5 rounded-full">
-                  SAGE
+                  SAGE&trade;
                 </span>
               )}
             </button>

@@ -179,7 +179,7 @@ export function CommandCenterTopbar({
   userAvatarUrl,
 }: CommandCenterTopbarProps) {
   const pathname = usePathname();
-  const [activeChips, setActiveChips] = useState<Set<string>>(new Set(['media-monitoring']));
+  const [activeChips, setActiveChips] = useState<Set<string>>(new Set(['sage', 'citemind']));
 
   const toggleChip = (chipId: string) => {
     setActiveChips((prev) => {
@@ -194,8 +194,9 @@ export function CommandCenterTopbar({
   };
 
   const contextChips = [
-    { id: 'media-monitoring', label: 'Media Monitoring', color: 'brand-magenta' },
-    { id: 'content-quality', label: 'Content Quality', color: 'brand-iris' },
+    { id: 'sage', label: 'SAGE\u2122', color: 'brand-cyan' },
+    { id: 'craft', label: 'CRAFT\u2122', color: 'brand-magenta' },
+    { id: 'citemind', label: 'CiteMind\u2122', color: 'brand-iris' },
   ];
 
   // Check if a nav item is active
