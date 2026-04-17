@@ -65,11 +65,12 @@ test.describe('Legal pages render', () => {
   });
 });
 
-test.describe('Root redirect', () => {
-  test('/ redirects to /login', async ({ page }) => {
-    await page.goto(BASE);
-    await page.waitForURL('**/login**', { timeout: 5000 });
-    expect(page.url()).toContain('/login');
+test.describe('Marketing homepage', () => {
+  test('/ loads marketing landing page (200)', async ({ page }) => {
+    const response = await page.goto(BASE);
+    expect(response?.status()).toBe(200);
+    const text = await page.textContent('body');
+    expect(text).toContain('Pravado');
   });
 });
 
