@@ -21,7 +21,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
 
         {/* Center nav links */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          {[['Platform', '/platform'], ['Pricing', '/pricing'], ['About', '/about']].map(([label, href]) => (
+          {[['Platform', '/platform'], ['Models', '/models'], ['Pricing', '/pricing'], ['About', '/about']].map(([label, href]) => (
             <Link key={href} href={href} style={{
               fontSize: 14, color: 'rgba(255,255,255,0.6)',
               textDecoration: 'none',
