@@ -52,7 +52,8 @@ export default function PlatformPage() {
         position: 'relative', overflow: 'hidden',
         minHeight: 680, display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        padding: '80px 24px 60px', textAlign: 'center',
+        padding: '100px 5% 60px', textAlign: 'center',
+        background: '#0A0A0F',
       }}>
         {/* Grid background */}
         <div style={{
@@ -127,7 +128,8 @@ export default function PlatformPage() {
       {/* ═══════════════════════════════════
           SECTION 2: THE ARCHITECTURE
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 48px', maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: '100px 5%', background: '#0D0D14' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div style={{ marginBottom: 12, fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' as const }}>
           THE ARCHITECTURE
         </div>
@@ -254,13 +256,14 @@ export default function PlatformPage() {
             <span> re-analyzes</span>
           </p>
         </div>
+        </div>
       </section>
 
       {/* ═══════════════════════════════════
           SECTION 3: SAGE DEEP DIVE
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 48px', background: '#0D0D14' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: '100px 5%', background: '#0D0A0F' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           <div style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: '#A855F7', marginBottom: 8, textTransform: 'uppercase' as const }}>
             SAGE{'\u2122'}
           </div>
@@ -380,8 +383,8 @@ export default function PlatformPage() {
       {/* ═══════════════════════════════════
           SECTION 4: CRAFT DEEP DIVE
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 48px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: '100px 5%', background: '#0A0D0F' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           <div style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: '#00D9FF', marginBottom: 8, textTransform: 'uppercase' as const }}>
             CRAFT{'\u2122'}
           </div>
@@ -436,8 +439,8 @@ export default function PlatformPage() {
       {/* ═══════════════════════════════════
           SECTION 5: CITEMIND DEEP DIVE
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 48px', background: '#0D0D14' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: '100px 5%', background: '#0D0A0D' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           <div style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: '#E879F9', marginBottom: 8, textTransform: 'uppercase' as const }}>
             CiteMind{'\u2122'}
           </div>
@@ -532,7 +535,7 @@ export default function PlatformPage() {
       {/* ═══════════════════════════════════
           SECTION 6: EVI EXPLAINED
           ═══════════════════════════════════ */}
-      <section ref={eviRef} style={{ padding: '100px 48px', textAlign: 'center' }}>
+      <section ref={eviRef} style={{ padding: '100px 5%', textAlign: 'center', background: '#0D0D14' }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
           <div style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: '#22C55E', marginBottom: 8, textTransform: 'uppercase' as const }}>
             EVI{'\u2122'}

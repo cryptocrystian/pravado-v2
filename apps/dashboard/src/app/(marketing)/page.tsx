@@ -287,9 +287,10 @@ export default function MarketingPage() {
           ═══════════════════════════════════ */}
       <section style={{
         position: 'relative', overflow: 'hidden',
-        minHeight: 680, display: 'flex', flexDirection: 'column',
+        minHeight: '90vh', display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        padding: '80px 24px 60px', textAlign: 'center',
+        padding: '120px 5% 80px', textAlign: 'center',
+        background: '#0A0A0F',
       }}>
         {/* Grid background */}
         <div style={{
@@ -313,7 +314,7 @@ export default function MarketingPage() {
           background: 'radial-gradient(ellipse 60% 50% at 50% 100%, rgba(168,85,247,0.07) 0%, transparent 70%)',
         }} />
 
-        <div style={{ position: 'relative', maxWidth: 720 }}>
+        <div style={{ position: 'relative', maxWidth: 820, margin: '0 auto' }}>
           {/* Eyebrow */}
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -391,7 +392,7 @@ export default function MarketingPage() {
       {/* ═══════════════════════════════════
           SECTION 2: THE PROBLEM
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 5%' }}>
+      <section style={{ padding: '100px 5%', background: '#0D0D14' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div style={{ marginBottom: 12, fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' as const }}>THE PROBLEM</div>
         <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, margin: '0 0 60px', color: '#ffffff', lineHeight: 1.1, maxWidth: 640 }}>
@@ -566,7 +567,7 @@ export default function MarketingPage() {
       {/* ═══════════════════════════════════
           SECTION 4: PLATFORM (tabbed pillars)
           ═══════════════════════════════════ */}
-      <section id="platform" style={{ padding: '100px 5%' }}>
+      <section id="platform" style={{ padding: '100px 5%', background: '#0A0A0F' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div style={{ marginBottom: 12, fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' as const }}>THE PLATFORM</div>
         <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, margin: '0 0 48px', color: '#ffffff', lineHeight: 1.1 }}>
@@ -764,7 +765,7 @@ export default function MarketingPage() {
       {/* ═══════════════════════════════════
           SECTION 6: PRICING / BETA CTA
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 5%', textAlign: 'center' }}>
+      <section style={{ padding: '100px 5%', textAlign: 'center', background: '#0A0A0F' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', marginBottom: 12, textTransform: 'uppercase' as const }}>PRICING</div>
         <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, margin: '0 0 8px', color: '#ffffff', lineHeight: 1.1 }}>
