@@ -49,26 +49,30 @@ const KIND_RADIUS: Record<string, string> = {
   publication: '12px',
 };
 
-const KIND_ICONS: Record<string, string> = {
-  brand: '◆',
-  ai_engine: '⬡',
-  journalist: '✎',
-  publication: '⬢',
-  topic_cluster: '◈',
-};
-
 function getColor(node: EntityNode): string {
   return KIND_COLORS[node.kind] ?? '#00D9FF';
 }
 
 function getNodeWidth(node: EntityNode): number {
-  if (node.kind === 'brand') return 120;
-  return 56 + (node.authority_weight / 100) * 40;
+  switch (node.kind) {
+    case 'brand': return 140;
+    case 'ai_engine': return 88;
+    case 'journalist':
+    case 'publication': return 96;
+    case 'topic_cluster': return 80;
+    default: return 80;
+  }
 }
 
 function getNodeHeight(node: EntityNode): number {
-  if (node.kind === 'brand') return 52;
-  return 32 + (node.authority_weight / 100) * 8;
+  switch (node.kind) {
+    case 'brand': return 68;
+    case 'ai_engine': return 52;
+    case 'journalist':
+    case 'publication': return 52;
+    case 'topic_cluster': return 48;
+    default: return 48;
+  }
 }
 
 // ── Types ──────────────────────────────────────────────────
@@ -123,7 +127,7 @@ export function EntityMap({
   const particlesRef = useRef<Particle[]>([]);
   const rafRef = useRef<number>(0);
   const simLinksRef = useRef<SimLink[]>([]);
-  const starsRef = useRef<Array<{ x: number; y: number; o: number }>>([]);
+  const starsRef = useRef<Array<{ x: number; y: number; o: number; r: number }>>([]);
 
   const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
 
@@ -171,14 +175,25 @@ export function EntityMap({
     return { simNodes: sn, simLinks: sl };
   }, [nodes, edges, dimensions.width, dimensions.height]);
 
-  // Generate stars once
+  // Generate stars once — mix of dim + bright
   useEffect(() => {
-    const stars = [];
-    for (let i = 0; i < 80; i++) {
+    const stars: Array<{ x: number; y: number; o: number; r: number }> = [];
+    // Regular stars
+    for (let i = 0; i < 120; i++) {
       stars.push({
         x: Math.random() * dimensions.width,
         y: Math.random() * dimensions.height,
-        o: 0.02 + Math.random() * 0.04,
+        o: 0.04 + Math.random() * 0.06,
+        r: 1,
+      });
+    }
+    // Bright accent stars
+    for (let i = 0; i < 10; i++) {
+      stars.push({
+        x: Math.random() * dimensions.width,
+        y: Math.random() * dimensions.height,
+        o: 0.15 + Math.random() * 0.05,
+        r: 1.5,
       });
     }
     starsRef.current = stars;
@@ -252,7 +267,7 @@ export function EntityMap({
       // Stars
       for (const star of starsRef.current) {
         ctx.beginPath();
-        ctx.arc(star.x, star.y, 1, 0, Math.PI * 2);
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255,255,255,${star.o})`;
         ctx.fill();
       }
@@ -342,6 +357,19 @@ export function EntityMap({
       className="entity-map-v6 relative overflow-hidden"
       style={{ width: '100%', height: '100%', minHeight: 300, transform: `scale(${zoom})`, transformOrigin: 'center center' }}
     >
+      {/* Gradient mesh — gives glassmorphism cards something to blur over */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `
+            radial-gradient(ellipse 60% 40% at 20% 50%, rgba(168,85,247,0.08) 0%, transparent 70%),
+            radial-gradient(ellipse 50% 60% at 80% 30%, rgba(0,217,255,0.06) 0%, transparent 70%),
+            radial-gradient(ellipse 40% 50% at 60% 80%, rgba(232,121,249,0.05) 0%, transparent 70%)
+          `,
+          animation: 'mesh-drift 12s ease-in-out infinite alternate',
+        }}
+      />
+
       {/* Canvas layer — edges + particles + stars */}
       <canvas
         ref={canvasRef}
@@ -367,9 +395,9 @@ export function EntityMap({
               top: y,
               width: node.w,
               height: node.h,
-              background: 'rgba(10, 10, 20, 0.6)',
-              backdropFilter: 'blur(16px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+              background: 'rgba(8, 8, 18, 0.72)',
+              backdropFilter: 'blur(20px) saturate(200%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(200%)',
               border: `1px solid rgba(${hexToRgb(color)}, 0.35)`,
               borderRadius: KIND_RADIUS[node.entity.kind] ?? '8px',
               boxShadow: `0 0 ${isSelected ? 32 : 24}px rgba(${hexToRgb(color)}, ${glowIntensity}), 0 8px 32px rgba(0,0,0,0.4)`,
@@ -379,44 +407,89 @@ export function EntityMap({
             onMouseEnter={() => setHoveredNodeId(node.id)}
             onMouseLeave={() => setHoveredNodeId(null)}
           >
+            {/* Frosted highlight — inner top edge */}
+            <div className="absolute inset-x-0 top-0 h-px"
+              style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)' }}
+            />
+
             {/* Content */}
-            <div className="flex items-center gap-1.5 px-2 h-full overflow-hidden">
-              <span style={{ color, fontSize: isBrand ? 16 : 12, flexShrink: 0 }}>
-                {KIND_ICONS[node.entity.kind] ?? '◇'}
+            <div className="relative w-full h-full flex flex-col justify-center px-3 py-2 overflow-hidden">
+              {/* Entity type label */}
+              <span style={{
+                fontFamily: 'monospace', fontSize: 9,
+                letterSpacing: '0.15em', textTransform: 'uppercase' as const,
+                color: `rgba(${hexToRgb(color)}, 0.7)`,
+                lineHeight: 1,
+              }}>
+                {node.entity.kind.replace('_', ' ')}
               </span>
-              <span
-                className="truncate"
-                style={{
-                  fontFamily: 'monospace',
-                  fontSize: isBrand ? 13 : 11,
-                  fontWeight: isBrand ? 700 : 500,
-                  color: isBrand ? '#ffffff' : 'rgba(255,255,255,0.85)',
-                  letterSpacing: isBrand ? '0.05em' : undefined,
-                }}
-              >
+
+              {/* Primary label */}
+              <span style={{
+                fontFamily: 'monospace',
+                fontSize: isBrand ? 14 : 12,
+                fontWeight: isBrand ? 700 : 600,
+                color: '#ffffff',
+                letterSpacing: '0.02em',
+                lineHeight: 1.2,
+                marginTop: 3,
+              }}>
                 {node.entity.label}
               </span>
+
+              {/* Metric pill for non-brand */}
+              {!isBrand && (
+                <div className="flex items-center gap-1" style={{ marginTop: 5 }}>
+                  <div style={{
+                    width: `${node.entity.affinity_score}%`,
+                    maxWidth: '70%',
+                    height: 2,
+                    borderRadius: 1,
+                    background: `linear-gradient(90deg, ${color}, ${color}88)`,
+                  }} />
+                  <span style={{ fontSize: 9, color: `rgba(${hexToRgb(color)}, 0.6)`, fontFamily: 'monospace' }}>
+                    {node.entity.affinity_score}
+                  </span>
+                </div>
+              )}
+
+              {/* Brand: pillar indicators */}
+              {isBrand && (
+                <div className="flex items-center gap-2" style={{ marginTop: 6 }}>
+                  {['PR', 'SEO', 'AEO'].map(p => (
+                    <span key={p} style={{
+                      fontSize: 9, fontFamily: 'monospace',
+                      color: PILLAR_COLORS[p], letterSpacing: '0.1em',
+                    }}>{p}</span>
+                  ))}
+                </div>
+              )}
             </div>
-            {/* Bottom bar — connection strength */}
-            <div
-              className="absolute bottom-0 left-0 right-0"
-              style={{
-                height: 2,
-                borderRadius: '0 0 4px 4px',
-                background: `linear-gradient(90deg, ${color}, transparent)`,
-                opacity: node.entity.connection_status === 'verified_solid' ? 0.7 : 0.2,
-              }}
-            />
-            {/* Brand pulse ring */}
+
+            {/* Brand: triple pulse rings */}
             {isBrand && (
-              <div
-                className="absolute inset-[-6px] rounded-[22px] pointer-events-none"
-                style={{
-                  border: `2px solid ${color}`,
-                  opacity: 0.3,
-                  animation: 'entity-pulse-ring 2.5s ease-in-out infinite',
-                }}
-              />
+              <>
+                <div className="absolute pointer-events-none" style={{
+                  inset: -8, borderRadius: 22,
+                  border: '1px solid rgba(168,85,247,0.5)',
+                  animation: 'entity-pulse-ring 2s ease-in-out infinite',
+                }} />
+                <div className="absolute pointer-events-none" style={{
+                  inset: -16, borderRadius: 26,
+                  border: '1px solid rgba(168,85,247,0.25)',
+                  animation: 'entity-pulse-ring 2s ease-in-out 0.66s infinite',
+                }} />
+                <div className="absolute pointer-events-none" style={{
+                  inset: -26, borderRadius: 32,
+                  border: '1px solid rgba(168,85,247,0.1)',
+                  animation: 'entity-pulse-ring 2s ease-in-out 1.33s infinite',
+                }} />
+                {/* Corner accent glow */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  borderRadius: 16,
+                  background: 'radial-gradient(ellipse at 30% 30%, rgba(168,85,247,0.15), transparent 60%)',
+                }} />
+              </>
             )}
           </div>
         );
@@ -509,6 +582,10 @@ export function EntityMap({
         @keyframes entity-pulse-ring {
           0%, 100% { opacity: 0.3; transform: scale(1); }
           50% { opacity: 0.08; transform: scale(1.08); }
+        }
+        @keyframes mesh-drift {
+          0% { opacity: 0.8; transform: scale(1) translate(0, 0); }
+          100% { opacity: 1; transform: scale(1.05) translate(-10px, 5px); }
         }
         @keyframes slideInRight {
           from { opacity: 0; transform: translateX(12px); }
