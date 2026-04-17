@@ -556,7 +556,7 @@ export default function MarketingPage() {
               'Replace 5 disconnected tools with one score that proves it\u2019s working',
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                <span style={{ color: '#22C55E', fontSize: 14, flexShrink: 0, marginTop: 1 }}>&check;</span>
+                <span style={{ color: '#22C55E', fontSize: 14, flexShrink: 0, marginTop: 1 }}>✓</span>
                 <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>{item}</span>
               </div>
             ))}
