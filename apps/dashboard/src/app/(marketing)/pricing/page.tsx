@@ -93,59 +93,62 @@ export default function PricingPage() {
       {/* SECTION 1 — HERO */}
       <section
         style={{
-          padding: '100px 48px',
+          padding: '100px 5%',
           textAlign: 'center',
-          maxWidth: 800,
-          margin: '0 auto',
         }}
       >
-        <p
-          style={{
-            fontSize: 11,
-            fontFamily: 'monospace',
-            textTransform: 'uppercase',
-            letterSpacing: '0.2em',
-            color: 'rgba(255,255,255,0.3)',
-            marginBottom: 16,
-          }}
-        >
-          PRICING
-        </p>
-        <h1
-          style={{
-            fontSize: 'clamp(28px, 3.5vw, 42px)',
-            fontWeight: 800,
-            color: '#ffffff',
-            lineHeight: 1.2,
-            marginBottom: 32,
-          }}
-        >
-          Built for teams that take AI visibility seriously.
-        </h1>
-        <div
-          style={{
-            padding: '16px 24px',
-            borderRadius: 10,
-            border: '1px solid rgba(0,217,255,0.3)',
-            background: 'rgba(0,217,255,0.05)',
-            textAlign: 'center',
-            fontSize: 14,
-            color: 'rgba(255,255,255,0.7)',
-          }}
-        >
-          All plans free during private beta. We review applications within 48
-          hours.
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+          <p
+            style={{
+              fontSize: 11,
+              fontFamily: 'monospace',
+              textTransform: 'uppercase',
+              letterSpacing: '0.2em',
+              color: 'rgba(255,255,255,0.3)',
+              marginBottom: 16,
+            }}
+          >
+            PRICING
+          </p>
+          <h1
+            style={{
+              fontSize: 'clamp(28px, 3.5vw, 42px)',
+              fontWeight: 800,
+              color: '#ffffff',
+              lineHeight: 1.2,
+              marginBottom: 32,
+              maxWidth: 660,
+              margin: '0 auto 32px',
+            }}
+          >
+            Built for teams that take AI visibility seriously.
+          </h1>
+          <div
+            style={{
+              padding: '16px 24px',
+              borderRadius: 10,
+              border: '1px solid rgba(0,217,255,0.3)',
+              background: 'rgba(0,217,255,0.05)',
+              textAlign: 'center',
+              fontSize: 14,
+              color: 'rgba(255,255,255,0.7)',
+              maxWidth: 660,
+              margin: '0 auto',
+            }}
+          >
+            All plans free during private beta. We review applications within 48
+            hours.
+          </div>
         </div>
       </section>
 
       {/* SECTION 2 — PLAN CARDS */}
       <section
         style={{
-          maxWidth: 1200,
-          margin: '0 auto',
-          padding: '0 48px 100px',
+          padding: '0 5% 100px',
         }}
       >
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div
           className="grid gap-4"
           style={{
@@ -223,84 +226,87 @@ export default function PricingPage() {
             </div>
           ))}
         </div>
+        </div>
       </section>
 
       {/* SECTION 3 — FAQ */}
       <section
         style={{
-          maxWidth: 720,
-          margin: '0 auto',
-          padding: '60px 48px',
+          padding: '80px 5%',
         }}
       >
-        <p
-          style={{
-            fontSize: 11,
-            fontFamily: 'monospace',
-            textTransform: 'uppercase',
-            letterSpacing: '0.2em',
-            color: 'rgba(255,255,255,0.3)',
-            marginBottom: 32,
-          }}
-        >
-          FREQUENTLY ASKED QUESTIONS
-        </p>
-        {faqs.map((faq, index) => (
-          <div
-            key={index}
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+          <p
             style={{
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              fontSize: 11,
+              fontFamily: 'monospace',
+              textTransform: 'uppercase',
+              letterSpacing: '0.2em',
+              color: 'rgba(255,255,255,0.3)',
+              marginBottom: 32,
             }}
           >
-            <div
-              style={{
-                padding: '20px 0',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                cursor: 'pointer',
-              }}
-              onClick={() =>
-                setOpenFaq(openFaq === index ? null : index)
-              }
-            >
-              <span
+            FREQUENTLY ASKED QUESTIONS
+          </p>
+          <div style={{ maxWidth: 720 }}>
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
                 style={{
-                  fontSize: 15,
-                  fontWeight: 500,
-                  color: '#ffffff',
+                  borderBottom: '1px solid rgba(255,255,255,0.06)',
                 }}
               >
-                {faq.question}
-              </span>
-              <span
-                style={{
-                  fontSize: 14,
-                  color: 'rgba(255,255,255,0.3)',
-                  transition: 'transform 0.2s',
-                  transform:
-                    openFaq === index ? 'rotate(180deg)' : 'rotate(0deg)',
-                  flexShrink: 0,
-                  marginLeft: 16,
-                }}
-              >
-                &#9660;
-              </span>
-            </div>
-            {openFaq === index && (
-              <p
-                style={{
-                  fontSize: 14,
-                  color: 'rgba(255,255,255,0.65)',
-                  lineHeight: 1.75,
-                  paddingBottom: 20,
-                }}
-              >
-                {faq.answer}
-              </p>
-            )}
+                <div
+                  style={{
+                    padding: '20px 0',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() =>
+                    setOpenFaq(openFaq === index ? null : index)
+                  }
+                >
+                  <span
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 500,
+                      color: '#ffffff',
+                    }}
+                  >
+                    {faq.question}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 14,
+                      color: 'rgba(255,255,255,0.3)',
+                      transition: 'transform 0.2s',
+                      transform:
+                        openFaq === index ? 'rotate(180deg)' : 'rotate(0deg)',
+                      flexShrink: 0,
+                      marginLeft: 16,
+                    }}
+                  >
+                    &#9660;
+                  </span>
+                </div>
+                {openFaq === index && (
+                  <p
+                    style={{
+                      fontSize: 14,
+                      color: 'rgba(255,255,255,0.65)',
+                      lineHeight: 1.75,
+                      paddingBottom: 20,
+                    }}
+                  >
+                    {faq.answer}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </section>
     </div>
   );

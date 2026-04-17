@@ -30,34 +30,36 @@ export default function AboutPage() {
   return (
     <div style={{ backgroundColor: '#0A0A0F', minHeight: '100vh' }}>
       {/* SECTION 1 — MISSION */}
-      <section style={{ padding: '100px 48px', maxWidth: 800, margin: '0 auto' }}>
-        <div style={labelStyle}>OUR MISSION</div>
-        <h1 style={headlineStyle}>
-          Build the operating system for AI-era marketing.
-        </h1>
-        <p style={bodyStyle}>
-          The way buyers discover products has fundamentally changed. They ask ChatGPT
-          before they ask Google. AI engines synthesize answers, make recommendations,
-          and shape purchase decisions&mdash;often without a single click to your website.
-          The brands that thrive in this new world won&rsquo;t be the ones with the best
-          SEO tricks. They&rsquo;ll be the ones whose authority is so deeply embedded in
-          the knowledge layer that AI systems can&rsquo;t help but cite them.
-        </p>
-        <p style={bodyStyle}>
-          Most marketing teams don&rsquo;t have the infrastructure to operate in this
-          reality. They&rsquo;re stitching together point tools built for a world that&rsquo;s
-          disappearing&mdash;one for PR, another for content, another for search&mdash;with
-          no unified strategy, no citation intelligence, and no way to measure what
-          actually matters. Pravado is that infrastructure. Powered by SAGE&trade;,
-          CRAFT&trade;, CiteMind&trade;, and EVI&trade;, it&rsquo;s the first platform
-          where PR, Content, and SEO compound each other through shared strategy and
-          governed execution.
-        </p>
+      <section style={{ padding: '100px 5%' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+          <div style={labelStyle}>OUR MISSION</div>
+          <h1 style={headlineStyle}>
+            Build the operating system for AI-era marketing.
+          </h1>
+          <p style={{ ...bodyStyle, maxWidth: 660 }}>
+            The way buyers discover products has fundamentally changed. They ask ChatGPT
+            before they ask Google. AI engines synthesize answers, make recommendations,
+            and shape purchase decisions&mdash;often without a single click to your website.
+            The brands that thrive in this new world won&rsquo;t be the ones with the best
+            SEO tricks. They&rsquo;ll be the ones whose authority is so deeply embedded in
+            the knowledge layer that AI systems can&rsquo;t help but cite them.
+          </p>
+          <p style={{ ...bodyStyle, maxWidth: 660 }}>
+            Most marketing teams don&rsquo;t have the infrastructure to operate in this
+            reality. They&rsquo;re stitching together point tools built for a world that&rsquo;s
+            disappearing&mdash;one for PR, another for content, another for search&mdash;with
+            no unified strategy, no citation intelligence, and no way to measure what
+            actually matters. Pravado is that infrastructure. Powered by SAGE&trade;,
+            CRAFT&trade;, CiteMind&trade;, and EVI&trade;, it&rsquo;s the first platform
+            where PR, Content, and SEO compound each other through shared strategy and
+            governed execution.
+          </p>
+        </div>
       </section>
 
       {/* SECTION 2 — THE PROBLEM WE'RE OBSESSED WITH */}
-      <section style={{ backgroundColor: '#0D0D14', padding: '100px 48px' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto' }}>
+      <section style={{ backgroundColor: '#0D0D14', padding: '100px 5%' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           <div style={labelStyle}>THE PROBLEM</div>
           <h2 style={{ ...headlineStyle, marginBottom: 48 }}>
             The problem we&rsquo;re obsessed with.
@@ -121,7 +123,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <p style={bodyStyle}>
+          <p style={{ ...bodyStyle, maxWidth: 660 }}>
             The entire marketing stack&mdash;every tool, every playbook, every
             metric&mdash;was built for Google&rsquo;s world: rank on page one, win
             the click, convert the visitor. That world is ending. AI engines don&rsquo;t
@@ -133,49 +135,51 @@ export default function AboutPage() {
       </section>
 
       {/* SECTION 3 — THE COMPANY */}
-      <section style={{ padding: '100px 48px', maxWidth: 800, margin: '0 auto' }}>
-        <div style={labelStyle}>THE COMPANY</div>
-        <h2 style={headlineStyle}>
-          Who we are.
-        </h2>
-        <p style={bodyStyle}>
-          Pravado is built by Saipien Labs LLC, a venture studio focused on
-          AI-native infrastructure for marketing and communications. We&rsquo;re
-          not a feature factory chasing trends&mdash;we&rsquo;re building the
-          foundational operating system that marketing teams will run on for the
-          next decade.
-        </p>
-        <p style={bodyStyle}>
-          We&rsquo;re currently in private beta, working with select teams who
-          understand that the shift to AI-mediated discovery isn&rsquo;t coming&mdash;it&rsquo;s
-          here. If you&rsquo;re ready to build authority that compounds across every
-          channel, we&rsquo;d love to hear from you.
-        </p>
-        <p style={{ ...bodyStyle, marginBottom: 40 }}>
-          Get in touch:{' '}
-          <a
-            href="mailto:hello@pravado.io"
-            style={{ color: '#00D9FF', textDecoration: 'none' }}
+      <section style={{ padding: '100px 5%' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+          <div style={labelStyle}>THE COMPANY</div>
+          <h2 style={headlineStyle}>
+            Who we are.
+          </h2>
+          <p style={{ ...bodyStyle, maxWidth: 660 }}>
+            Pravado is built by Saipien Labs LLC, a venture studio focused on
+            AI-native infrastructure for marketing and communications. We&rsquo;re
+            not a feature factory chasing trends&mdash;we&rsquo;re building the
+            foundational operating system that marketing teams will run on for the
+            next decade.
+          </p>
+          <p style={{ ...bodyStyle, maxWidth: 660 }}>
+            We&rsquo;re currently in private beta, working with select teams who
+            understand that the shift to AI-mediated discovery isn&rsquo;t coming&mdash;it&rsquo;s
+            here. If you&rsquo;re ready to build authority that compounds across every
+            channel, we&rsquo;d love to hear from you.
+          </p>
+          <p style={{ ...bodyStyle, maxWidth: 660, marginBottom: 40 }}>
+            Get in touch:{' '}
+            <a
+              href="mailto:hello@pravado.io"
+              style={{ color: '#00D9FF', textDecoration: 'none' }}
+            >
+              hello@pravado.io
+            </a>
+          </p>
+          <Link
+            href="/beta"
+            style={{
+              display: 'inline-block',
+              padding: '14px 32px',
+              backgroundColor: '#00D9FF',
+              color: '#0A0A0F',
+              fontSize: 14,
+              fontWeight: 700,
+              borderRadius: 6,
+              textDecoration: 'none',
+              letterSpacing: '0.02em',
+            }}
           >
-            hello@pravado.io
-          </a>
-        </p>
-        <Link
-          href="/beta"
-          style={{
-            display: 'inline-block',
-            padding: '14px 32px',
-            backgroundColor: '#00D9FF',
-            color: '#0A0A0F',
-            fontSize: 14,
-            fontWeight: 700,
-            borderRadius: 6,
-            textDecoration: 'none',
-            letterSpacing: '0.02em',
-          }}
-        >
-          Apply for Early Access
-        </Link>
+            Apply for Early Access
+          </Link>
+        </div>
       </section>
     </div>
   );

@@ -391,9 +391,10 @@ export default function MarketingPage() {
       {/* ═══════════════════════════════════
           SECTION 2: THE PROBLEM
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 48px', maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: '100px 5%' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div style={{ marginBottom: 12, fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' as const }}>THE PROBLEM</div>
-        <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, margin: '0 0 60px', color: '#ffffff', lineHeight: 1.1, maxWidth: 600 }}>
+        <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, margin: '0 0 60px', color: '#ffffff', lineHeight: 1.1, maxWidth: 640 }}>
           Five tools. Zero connection.<br />No idea what&apos;s working.
         </h2>
 
@@ -492,13 +493,14 @@ export default function MarketingPage() {
             </div>
           </div>
         </div>
+        </div>{/* close 1400 wrapper */}
       </section>
 
       {/* ═══════════════════════════════════
           SECTION 3: EVI
           ═══════════════════════════════════ */}
-      <section ref={eviRef} style={{ padding: '100px 48px', background: '#0D0D14', textAlign: 'center' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
+      <section ref={eviRef} style={{ padding: '100px 5%', background: '#0D0D14', textAlign: 'center' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           <div style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', marginBottom: 12, textTransform: 'uppercase' as const }}>
             EARNED VISIBILITY INDEX
           </div>
@@ -564,7 +566,8 @@ export default function MarketingPage() {
       {/* ═══════════════════════════════════
           SECTION 4: PLATFORM (tabbed pillars)
           ═══════════════════════════════════ */}
-      <section id="platform" style={{ padding: '100px 48px', maxWidth: 1200, margin: '0 auto' }}>
+      <section id="platform" style={{ padding: '100px 5%' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div style={{ marginBottom: 12, fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' as const }}>THE PLATFORM</div>
         <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, margin: '0 0 48px', color: '#ffffff', lineHeight: 1.1 }}>
           Three pillars. One operating system.
@@ -612,13 +615,14 @@ export default function MarketingPage() {
 
           <BrowserFrame variant={tab.variant} height={360} />
         </div>
+        </div>{/* close 1400 wrapper */}
       </section>
 
       {/* ═══════════════════════════════════
           SECTION 4.5: THE ARCHITECTURE
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 48px', background: '#0D0D14' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+      <section style={{ padding: '100px 5%', background: '#0D0D14' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           <div style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', marginBottom: 12, textTransform: 'uppercase' as const }}>THE PRAVADO ARCHITECTURE</div>
           <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, margin: '0 0 16px', color: '#ffffff', lineHeight: 1.1 }}>
             This isn&apos;t a bundle of tools. It&apos;s an operating system.
@@ -630,91 +634,93 @@ export default function MarketingPage() {
             one number: your EVI&trade;.
           </p>
 
-          {/* Orbital diagram */}
-          <div style={{ position: 'relative', width: 480, height: 480, margin: '0 auto 60px' }}>
-            {/* Rings */}
-            <div style={{ position: 'absolute', inset: 80, borderRadius: '50%', border: '1px solid rgba(168,85,247,0.2)' }} />
-            <div style={{ position: 'absolute', inset: 40, borderRadius: '50%', border: '1px solid rgba(0,217,255,0.15)' }} />
-            <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid rgba(232,121,249,0.12)' }} />
-
-            {/* EVI center */}
-            <div style={{
-              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-              width: 120, height: 120, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(34,197,94,0.15), rgba(10,10,15,0.9))',
-              border: '2px solid rgba(34,197,94,0.5)',
-              boxShadow: '0 0 40px rgba(34,197,94,0.2)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.1em', color: 'rgba(34,197,94,0.7)' }}>EVI&trade;</span>
-              <span style={{ fontSize: 28, fontWeight: 900, fontFamily: 'monospace', color: '#22C55E', lineHeight: 1 }}>74.2</span>
-              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>STRONG</span>
-            </div>
-
-            {/* SAGE node — top */}
-            <div style={{
-              position: 'absolute', top: 55, left: '50%', transform: 'translateX(-50%)',
-              padding: '8px 14px', borderRadius: 8,
-              background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.4)',
-              boxShadow: '0 0 20px rgba(168,85,247,0.15)', textAlign: 'center', whiteSpace: 'nowrap' as const,
-            }}>
-              <div style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', color: '#A855F7' }}>SAGE&trade;</div>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>STRATEGY</div>
-            </div>
-
-            {/* CRAFT node — bottom-left */}
-            <div style={{
-              position: 'absolute', bottom: 60, left: 20,
-              padding: '8px 14px', borderRadius: 8,
-              background: 'rgba(0,217,255,0.08)', border: '1px solid rgba(0,217,255,0.35)',
-              boxShadow: '0 0 20px rgba(0,217,255,0.12)', textAlign: 'center', whiteSpace: 'nowrap' as const,
-            }}>
-              <div style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', color: '#00D9FF' }}>CRAFT&trade;</div>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>EXECUTION</div>
-            </div>
-
-            {/* CiteMind node — bottom-right */}
-            <div style={{
-              position: 'absolute', bottom: 55, right: 10,
-              padding: '8px 14px', borderRadius: 8,
-              background: 'rgba(232,121,249,0.08)', border: '1px solid rgba(232,121,249,0.35)',
-              boxShadow: '0 0 20px rgba(232,121,249,0.12)', textAlign: 'center', whiteSpace: 'nowrap' as const,
-            }}>
-              <div style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', color: '#E879F9' }}>CiteMind&trade;</div>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>INTELLIGENCE</div>
-            </div>
-
-            {/* SVG arrows */}
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}>
+          {/* Layered perspective diagram + right column */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center', marginBottom: 60 }}>
+            <svg viewBox="0 0 600 520" style={{ width: '100%', maxWidth: 600 }}>
               <defs>
-                <marker id="arr-iris" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-                  <path d="M 0 0 L 6 3 L 0 6 z" fill="rgba(168,85,247,0.7)" />
-                </marker>
-                <marker id="arr-cyan" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-                  <path d="M 0 0 L 6 3 L 0 6 z" fill="rgba(0,217,255,0.7)" />
-                </marker>
-                <marker id="arr-mag" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-                  <path d="M 0 0 L 6 3 L 0 6 z" fill="rgba(232,121,249,0.7)" />
-                </marker>
+                <marker id="hm-arr-iris" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,1 L0,7 L7,4 z" fill="rgba(168,85,247,0.7)" /></marker>
+                <marker id="hm-arr-cyan" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,1 L0,7 L7,4 z" fill="rgba(0,217,255,0.7)" /></marker>
+                <marker id="hm-arr-mag" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,1 L0,7 L7,4 z" fill="rgba(232,121,249,0.7)" /></marker>
+                <marker id="hm-arr-grn" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,1 L0,7 L7,4 z" fill="rgba(34,197,94,0.5)" /></marker>
               </defs>
-              <line x1="240" y1="100" x2="240" y2="180" stroke="rgba(168,85,247,0.4)" strokeWidth="1.5" markerEnd="url(#arr-iris)" strokeDasharray="4 3" />
-              <line x1="120" y1="380" x2="200" y2="270" stroke="rgba(0,217,255,0.4)" strokeWidth="1.5" markerEnd="url(#arr-cyan)" strokeDasharray="4 3" />
-              <line x1="360" y1="375" x2="280" y2="270" stroke="rgba(232,121,249,0.4)" strokeWidth="1.5" markerEnd="url(#arr-mag)" strokeDasharray="4 3" />
-              <path d="M 200 130 Q 80 260 140 360" stroke="rgba(168,85,247,0.25)" strokeWidth="1" fill="none" strokeDasharray="3 4" />
-              <path d="M 390 350 Q 420 200 300 110" stroke="rgba(232,121,249,0.2)" strokeWidth="1" fill="none" strokeDasharray="3 4" />
+              {/* Layer labels */}
+              <text x="20" y="110" fill="rgba(255,255,255,0.25)" fontSize="9" fontFamily="monospace" letterSpacing="2">STRATEGY</text>
+              <text x="20" y="240" fill="rgba(255,255,255,0.25)" fontSize="9" fontFamily="monospace" letterSpacing="2">EXECUTION</text>
+              <text x="20" y="370" fill="rgba(255,255,255,0.25)" fontSize="9" fontFamily="monospace" letterSpacing="2">INTELLIGENCE</text>
+              <text x="20" y="470" fill="rgba(255,255,255,0.25)" fontSize="9" fontFamily="monospace" letterSpacing="2">OUTPUT</text>
+              {/* Vertical axis */}
+              <line x1="310" y1="80" x2="310" y2="450" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="4 4" />
+              {/* SAGE ellipse + node */}
+              <ellipse cx="310" cy="105" rx="180" ry="28" fill="none" stroke="rgba(168,85,247,0.3)" strokeWidth="1.5" />
+              <rect x="436" y="79" width="88" height="32" rx="6" fill="rgba(168,85,247,0.12)" stroke="rgba(168,85,247,0.5)" strokeWidth="1.5" />
+              <text x="480" y="92" textAnchor="middle" fill="#A855F7" fontSize="11" fontWeight="700" fontFamily="monospace">SAGE&trade;</text>
+              <text x="480" y="105" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="monospace">STRATEGY</text>
+              <circle cx="480" cy="105" r="4" fill="#A855F7" opacity="0.6" />
+              {/* SAGE → CRAFT arrow */}
+              <path d="M 310 133 L 310 188" stroke="rgba(168,85,247,0.5)" strokeWidth="1.5" markerEnd="url(#hm-arr-iris)" />
+              <text x="318" y="165" fill="rgba(255,255,255,0.3)" fontSize="9" fontFamily="monospace">dispatches action</text>
+              {/* CRAFT ellipse + node */}
+              <ellipse cx="310" cy="230" rx="180" ry="28" fill="none" stroke="rgba(0,217,255,0.25)" strokeWidth="1.5" />
+              <rect x="96" y="204" width="88" height="32" rx="6" fill="rgba(0,217,255,0.08)" stroke="rgba(0,217,255,0.45)" strokeWidth="1.5" />
+              <text x="140" y="217" textAnchor="middle" fill="#00D9FF" fontSize="11" fontWeight="700" fontFamily="monospace">CRAFT&trade;</text>
+              <text x="140" y="230" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="monospace">EXECUTION</text>
+              <circle cx="140" cy="230" r="4" fill="#00D9FF" opacity="0.6" />
+              {/* CRAFT → CiteMind arrow */}
+              <path d="M 310 258 L 310 313" stroke="rgba(0,217,255,0.5)" strokeWidth="1.5" markerEnd="url(#hm-arr-cyan)" />
+              <text x="318" y="290" fill="rgba(255,255,255,0.3)" fontSize="9" fontFamily="monospace">generates signals</text>
+              {/* CiteMind ellipse + node */}
+              <ellipse cx="310" cy="355" rx="180" ry="28" fill="none" stroke="rgba(232,121,249,0.2)" strokeWidth="1.5" />
+              <rect x="432" y="329" width="96" height="32" rx="6" fill="rgba(232,121,249,0.08)" stroke="rgba(232,121,249,0.4)" strokeWidth="1.5" />
+              <text x="480" y="342" textAnchor="middle" fill="#E879F9" fontSize="11" fontWeight="700" fontFamily="monospace">CiteMind&trade;</text>
+              <text x="480" y="355" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="monospace">INTELLIGENCE</text>
+              <circle cx="480" cy="355" r="4" fill="#E879F9" opacity="0.6" />
+              {/* CiteMind → EVI arrow */}
+              <path d="M 310 383 L 310 428" stroke="rgba(232,121,249,0.5)" strokeWidth="1.5" markerEnd="url(#hm-arr-mag)" />
+              <text x="318" y="410" fill="rgba(255,255,255,0.3)" fontSize="9" fontFamily="monospace">citation data</text>
+              {/* EVI center */}
+              <circle cx="310" cy="455" r="36" fill="rgba(34,197,94,0.1)" stroke="rgba(34,197,94,0.5)" strokeWidth="2" />
+              <circle cx="310" cy="455" r="28" fill="rgba(34,197,94,0.05)" stroke="rgba(34,197,94,0.3)" strokeWidth="1" />
+              <text x="310" y="450" textAnchor="middle" fill="rgba(34,197,94,0.8)" fontSize="10" fontFamily="monospace" letterSpacing="1">EVI&trade;</text>
+              <text x="310" y="465" textAnchor="middle" fill="#22C55E" fontSize="16" fontWeight="900" fontFamily="monospace">74.2</text>
+              {/* Feedback loop */}
+              <path d="M 274 455 Q 80 455 80 230 Q 80 105 200 100" stroke="rgba(34,197,94,0.3)" strokeWidth="1" fill="none" strokeDasharray="5 4" markerEnd="url(#hm-arr-grn)" />
+              <text x="58" y="280" fill="rgba(34,197,94,0.4)" fontSize="9" fontFamily="monospace" transform="rotate(-90, 58, 280)">re-analysis loop</text>
             </svg>
+
+            {/* Right column */}
+            <div>
+              <h3 style={{ fontSize: 24, fontWeight: 700, color: '#ffffff', marginBottom: 16, lineHeight: 1.2 }}>Three layers. One direction.</h3>
+              <p style={{ fontSize: 15, lineHeight: 1.75, color: 'rgba(255,255,255,0.6)', marginBottom: 24 }}>
+                SAGE&trade; operates at the strategy layer &mdash; reading signals, identifying gaps, ranking actions by EVI&trade; impact.
+                CRAFT&trade; operates at the execution layer &mdash; building campaigns, drafting pitches, deploying content.
+                CiteMind&trade; operates at the intelligence layer &mdash; scanning AI engines continuously, detecting every citation,
+                feeding results back into EVI&trade;. Each layer informs the next. The loop never stops.
+              </p>
+              <div style={{ fontFamily: 'monospace', fontSize: 13, lineHeight: 2 }}>
+                <span style={{ color: '#A855F7', fontWeight: 700 }}>SAGE&trade;</span>
+                <span style={{ color: 'rgba(255,255,255,0.3)' }}> &rarr; </span>
+                <span style={{ color: '#00D9FF', fontWeight: 700 }}>CRAFT&trade;</span>
+                <span style={{ color: 'rgba(255,255,255,0.3)' }}> &rarr; </span>
+                <span style={{ color: '#E879F9', fontWeight: 700 }}>CiteMind&trade;</span>
+                <span style={{ color: 'rgba(255,255,255,0.3)' }}> &rarr; </span>
+                <span style={{ color: '#22C55E', fontWeight: 700 }}>EVI&trade;</span>
+                <span style={{ color: 'rgba(255,255,255,0.3)' }}> &rarr; </span>
+                <span style={{ color: '#A855F7', fontWeight: 700 }}>SAGE&trade;</span>
+              </div>
+            </div>
           </div>
 
-          {/* 3-column outcomes */}
+          {/* 3-column outcomes with links */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 32 }}>
             {[
-              { name: 'SAGE\u2122', color: '#A855F7', desc: 'Analyzes 50+ signals daily. Surfaces your 3 highest-impact actions ranked by EVI\u2122 improvement.' },
-              { name: 'CRAFT\u2122', color: '#00D9FF', desc: 'Drafts pitches, sequences outreach, publishes briefs. SAGE\u2122 identifies, CRAFT\u2122 executes.' },
-              { name: 'CiteMind\u2122', color: '#E879F9', desc: 'Scans ChatGPT, Perplexity, Claude, Gemini 24/7. Every citation feeds back into EVI\u2122.' },
-            ].map(({ name, color, desc }) => (
+              { name: 'SAGE\u2122', color: '#A855F7', desc: 'Analyzes 50+ signals daily. Surfaces your 3 highest-impact actions ranked by EVI\u2122 improvement.', href: '/models#sage' },
+              { name: 'CRAFT\u2122', color: '#00D9FF', desc: 'Drafts pitches, sequences outreach, publishes briefs. SAGE\u2122 identifies, CRAFT\u2122 executes.', href: '/models#craft' },
+              { name: 'CiteMind\u2122', color: '#E879F9', desc: 'Scans ChatGPT, Perplexity, Claude, Gemini 24/7. Every citation feeds back into EVI\u2122.', href: '/models#citemind' },
+            ].map(({ name, color, desc, href }) => (
               <div key={name} style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: 13, fontWeight: 700, fontFamily: 'monospace', color, marginBottom: 8 }}>{name}</div>
-                <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.55)', margin: 0 }}>{desc}</p>
+                <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.55)', margin: '0 0 8px' }}>{desc}</p>
+                <Link href={href} style={{ fontSize: 12, color, textDecoration: 'none', fontWeight: 500 }}>Learn more &rarr;</Link>
               </div>
             ))}
           </div>
@@ -724,8 +730,8 @@ export default function MarketingPage() {
       {/* ═══════════════════════════════════
           SECTION 5: HOW SAGE WORKS
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 48px', background: '#0D0D14' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+      <section style={{ padding: '100px 5%', background: '#0D0D14' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
             <div style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', marginBottom: 12, textTransform: 'uppercase' as const }}>HOW IT WORKS</div>
             <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, color: '#ffffff', lineHeight: 1.1 }}>
@@ -758,7 +764,8 @@ export default function MarketingPage() {
       {/* ═══════════════════════════════════
           SECTION 6: PRICING / BETA CTA
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 48px', maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
+      <section style={{ padding: '100px 5%', textAlign: 'center' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', marginBottom: 12, textTransform: 'uppercase' as const }}>PRICING</div>
         <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, margin: '0 0 8px', color: '#ffffff', lineHeight: 1.1 }}>
           Private Beta &mdash; Free While We Build Together
@@ -809,6 +816,7 @@ export default function MarketingPage() {
             textDecoration: 'none',
           }}>Apply for Beta Access &rarr;</Link>
         </div>
+        </div>{/* close 1400 wrapper */}
       </section>
 
       {/* CSS animations */}
