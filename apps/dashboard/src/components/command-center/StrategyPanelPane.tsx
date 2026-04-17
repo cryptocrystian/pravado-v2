@@ -119,7 +119,7 @@ function EVIHero({ evi }: { evi: EarnedVisibilityIndex }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-xs text-white/50 uppercase tracking-wide font-semibold inline-flex items-center gap-1">
-          Earned Visibility Index
+          EVI&trade; &mdash; Earned Visibility Index
           <InfoTooltip content="Your Earned Visibility Index (EVI) measures how prominently your brand appears in AI-generated responses across ChatGPT, Perplexity, Claude, and Gemini. Scale: 0-100. Below 30 is At Risk, 30-60 is Building, 60-80 is Strong, 80+ is Elite." size={11} />
         </h3>
         <span className={`text-xs px-2 py-0.5 rounded-full ${status.bg}/20 ${status.color} font-semibold`}>

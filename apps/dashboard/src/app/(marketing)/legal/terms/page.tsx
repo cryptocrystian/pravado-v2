@@ -65,10 +65,10 @@ export default function TermsPage() {
           recommendations for visibility improvement.
         </li>
         <li>
-          <strong className="text-white">AUTOMATE</strong> -- A governed
-          execution layer that turns strategic recommendations into traceable,
-          mode-aware tasks with three operational modes (Manual, Copilot, and
-          Autopilot).
+          <strong className="text-white">CRAFT</strong> -- Coordinated Response
+          &amp; Action Flow Technology. A governed execution layer that turns
+          strategic recommendations into traceable, mode-aware tasks with three
+          operational modes (Manual, Copilot, and Autopilot).
         </li>
         <li>
           <strong className="text-white">CiteMind</strong> -- A citation
@@ -338,7 +338,7 @@ export default function TermsPage() {
       <P>
         The Service, including all software, algorithms, user interfaces,
         designs, documentation, and proprietary systems -- including but not
-        limited to EVI, SAGE, CiteMind, and AUTOMATE -- are the exclusive
+        limited to EVI, SAGE, CiteMind, and CRAFT -- are the exclusive
         property of Saipien Labs LLC and are protected by intellectual property
         laws. Nothing in these Terms grants you any right, title, or interest in
         our intellectual property except the limited right to use the Service as

@@ -589,7 +589,7 @@ export function ActionStreamPane({
             <span className="w-2 h-2 rounded-full bg-brand-iris
               shadow-[0_0_8px_rgba(168,85,247,0.8)] animate-pulse" />
             <span className="text-xs font-bold uppercase tracking-widest text-brand-iris">
-              SAGE Daily Brief
+              SAGE&trade; Daily Brief
             </span>
             {data?.daily_brief && (
               <span className="ml-auto text-xs text-white/30">

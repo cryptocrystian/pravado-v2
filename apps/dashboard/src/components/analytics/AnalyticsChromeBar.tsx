@@ -172,7 +172,7 @@ export function AnalyticsChromeBar() {
           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-brand-cyan/8 border border-brand-cyan/15">
             <Lightning className="w-3 h-3 text-brand-cyan/70" weight="fill" />
             <span className="text-[11px] font-semibold text-brand-cyan/80 tracking-wide">
-              SAGE ACTIVE
+              SAGE&trade; ACTIVE
             </span>
           </div>
         </div>

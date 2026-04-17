@@ -566,7 +566,7 @@ export function ExplainabilityDrawer({
         {/* Footer */}
         <div className="shrink-0 border-t border-slate-4 px-5 py-3 bg-slate-2">
           <p className="text-xs text-white/40 text-center">
-            Explainability per UX Continuity Canon §6 • AUTOMATE Execution Model
+            Explainability per UX Continuity Canon §6 • CRAFT Execution Model
           </p>
         </div>
       </div>

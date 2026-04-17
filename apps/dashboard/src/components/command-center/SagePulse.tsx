@@ -8,8 +8,8 @@ export function SagePulse() {
     <div className="bg-cc-surface border border-white/8 rounded-2xl p-5">
       {/* Header */}
       <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60 inline-flex items-center gap-1.5">
-        SAGE Pulse
-        <InfoTooltip content="Real-time signals from SAGE about changes in your visibility landscape. Includes competitor moves, trending topics, and emerging opportunities." />
+        SAGE&trade; Pulse
+        <InfoTooltip content="Real-time signals from SAGE about changes in your visibility landscape. Includes competitor moves, trending topics, and emerging opportunities. CRAFT executes on these signals when in Copilot or Autopilot mode." />
       </span>
 
       {/* Signals */}

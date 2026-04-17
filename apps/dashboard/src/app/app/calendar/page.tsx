@@ -3,7 +3,7 @@
  *
  * Route: /app/calendar
  * The Calendar answers "When will the system act, and when do I need to intervene?"
- * It is AUTOMATE's execution timeline made visible.
+ * It is CRAFT's execution timeline made visible.
  *
  * @see /docs/canon/ORCHESTRATION_CALENDAR_CONTRACT.md
  */

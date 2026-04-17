@@ -136,7 +136,7 @@ function ActivityLog({
             {entries.length}
           </span>
         </div>
-        <span className="text-xs text-white/30">by AUTOMATE</span>
+        <span className="text-xs text-white/30">by CRAFT</span>
       </button>
 
       {!isCollapsed && (

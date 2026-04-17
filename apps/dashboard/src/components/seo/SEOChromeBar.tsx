@@ -121,7 +121,7 @@ export function SEOChromeBar() {
           </div>
           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-brand-teal/10 border border-brand-teal/25">
             <Lightning size={10} weight="fill" className="text-brand-teal" />
-            <span className="text-[11px] font-bold tracking-wider text-brand-teal uppercase">SAGE ACTIVE</span>
+            <span className="text-[11px] font-bold tracking-wider text-brand-teal uppercase">SAGE&trade; ACTIVE</span>
           </div>
         </div>
 

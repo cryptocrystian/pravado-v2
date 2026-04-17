@@ -391,7 +391,7 @@ export function IntelligenceCanvasPane({
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-semantic-success animate-pulse" />
               <span className="text-xs font-bold uppercase tracking-wide text-white/60 inline-flex items-center gap-1">
-                CiteMind Feed
+                CiteMind&trade; Feed
                 <InfoTooltip content="CiteMind continuously scans ChatGPT, Perplexity, Claude, and Gemini to find citations of your brand, content, and competitors. Connect GSC to correlate AI citations with your organic search performance." size={11} />
               </span>
             </div>

@@ -64,7 +64,7 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     apiIntegrations: true,
     autopilotMode: false,
   },
-  /** Growth — $799/mo: 10 seats, unlimited proposals, unlimited CiteMind, 20M tokens, AUTOMATE */
+  /** Growth — $799/mo: 10 seats, unlimited proposals, unlimited CiteMind, 20M tokens, CRAFT */
   growth: {
     seats: 10,
     contentDocumentsPerMonth: 500,

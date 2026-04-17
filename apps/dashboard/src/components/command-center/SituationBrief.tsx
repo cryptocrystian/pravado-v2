@@ -1,6 +1,6 @@
 'use client';
 
-const EMPTY_BRIEF = 'SAGE is analyzing your signals. Your first daily brief will appear here once enough data has been collected.';
+const EMPTY_BRIEF = 'SAGE\u2122 is analyzing your signals. Your first daily brief will appear here once enough data has been collected.';
 
 interface SituationBriefProps {
   compact?: boolean;
@@ -28,7 +28,7 @@ export function SituationBrief({ compact, briefText }: SituationBriefProps) {
               <span className="w-1.5 h-1.5 rounded-full bg-brand-iris animate-pulse
                 shadow-[0_0_6px_rgba(168,85,247,0.9)]" />
               <span className="text-[10px] font-bold uppercase tracking-widest text-brand-iris">
-                SAGE
+                SAGE&trade;
               </span>
             </div>
             <span className="text-[9px] text-white/30 uppercase tracking-wide whitespace-nowrap">
@@ -67,7 +67,7 @@ export function SituationBrief({ compact, briefText }: SituationBriefProps) {
       {/* Header row */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-[13px] font-semibold uppercase tracking-wider text-white/60">
-          SAGE Situation Brief
+          SAGE&trade; Situation Brief
         </span>
         {briefText && (
           <span className="text-xs text-white/45">Today</span>

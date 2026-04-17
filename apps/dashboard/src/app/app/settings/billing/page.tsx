@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 const PLANS = [
   { id: 'starter', name: 'Starter', price: 99, users: 1, features: ['Basic SAGE proposals', 'Content editor', 'PR outreach'] },
-  { id: 'pro', name: 'Pro', price: 299, users: 3, features: ['Full SAGE + CiteMind', 'Manual AUTOMATE', '3 team members'] },
+  { id: 'pro', name: 'Pro', price: 299, users: 3, features: ['Full SAGE + CiteMind', 'Manual CRAFT', '3 team members'] },
   { id: 'growth', name: 'Growth', price: 799, users: 10, features: ['Full stack + Autopilot', '10 team members', 'Priority support'] },
 ];
 

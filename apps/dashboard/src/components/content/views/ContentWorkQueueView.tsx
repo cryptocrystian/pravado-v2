@@ -1115,7 +1115,7 @@ function _ExecutionGravityPane({
                   {recentlyHandled.length}
                 </span>
               </div>
-              <span className="text-xs text-white/30">by AUTOMATE</span>
+              <span className="text-xs text-white/30">by CRAFT</span>
             </button>
             {/* Collapsible content - P2.6: Structured audit ledger display */}
             {!auditLogCollapsed && (

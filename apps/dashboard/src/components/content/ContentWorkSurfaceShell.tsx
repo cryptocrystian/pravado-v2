@@ -555,7 +555,7 @@ export function ContentWorkSurfaceShell({
             <div className="w-px h-3.5 bg-white/10 mx-3 shrink-0" />
             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-brand-iris/8 border border-brand-iris/15 shrink-0">
               <Lightning className="w-3 h-3 text-brand-iris/70" weight="fill" />
-              <span className="text-[11px] font-semibold text-brand-iris/80 tracking-wide">SAGE ACTIVE</span>
+              <span className="text-[11px] font-semibold text-brand-iris/80 tracking-wide">SAGE&trade; ACTIVE</span>
             </div>
             <div className="w-px h-4 bg-white/10 mx-3 shrink-0" />
 
