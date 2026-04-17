@@ -59,7 +59,7 @@ function getNodeWidth(node: EntityNode): number {
     case 'ai_engine': return 88;
     case 'journalist':
     case 'publication': return 96;
-    case 'topic_cluster': return 80;
+    case 'topic_cluster': return 130;
     default: return 80;
   }
 }
