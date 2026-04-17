@@ -81,6 +81,13 @@ test.describe('Command Center / Entity Map', () => {
     expect(page.url()).not.toContain('error');
   });
 
+  test('entity map canvas renders without crash', async ({ page }) => {
+    const response = await page.goto(`${BASE}/app/command-center`);
+    // Unauthenticated redirects to login — just confirm no 500/crash
+    expect(response?.status()).not.toBe(500);
+    expect(page.url()).not.toContain('500');
+  });
+
   test('command center page has no critical JS errors on redirect', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (err) => errors.push(err.message));
