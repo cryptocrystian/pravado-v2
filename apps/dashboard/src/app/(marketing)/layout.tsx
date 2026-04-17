@@ -18,6 +18,18 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
         <Link href="/" style={{ textDecoration: 'none' }}>
           <PravadoLogo iconSize={28} fontSize="18px" />
         </Link>
+
+        {/* Center nav links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+          {[['Platform', '/platform'], ['Pricing', '/pricing'], ['About', '/about']].map(([label, href]) => (
+            <Link key={href} href={href} style={{
+              fontSize: 14, color: 'rgba(255,255,255,0.6)',
+              textDecoration: 'none',
+            }}>{label}</Link>
+          ))}
+        </div>
+
+        {/* Right CTAs */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Link href="/login" style={{
             padding: '8px 16px', borderRadius: 8, fontSize: 14,
@@ -41,7 +53,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
         <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>
-          &copy; 2026 Pravado &middot; Saipien Labs LLC
+          &copy; 2026 Pravado &middot; Powered by Saipien Labs LLC
         </span>
         <div style={{ display: 'flex', gap: 24 }}>
           {[['Terms', '/legal/terms'], ['Privacy', '/legal/privacy'], ['Cookies', '/legal/cookies']].map(([label, href]) => (

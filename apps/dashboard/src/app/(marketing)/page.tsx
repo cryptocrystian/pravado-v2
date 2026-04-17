@@ -120,13 +120,15 @@ function BrowserFrame({ variant = 'command-center', height = 400 }: { variant?: 
             ))}
             {/* SAGE section */}
             <div style={{ marginTop: 12, fontSize: 8, fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>SAGE&trade; RECOMMENDS</div>
-            {[1,2,3].map(i => (
-              <div key={i} style={{ display: 'flex', gap: 6, padding: '6px 4px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#00D9FF', fontFamily: 'monospace', width: 16 }}>{i}</span>
-                <div>
-                  <div style={{ height: 6, width: 80 + i * 10, borderRadius: 2, background: 'rgba(255,255,255,0.06)' }} />
-                  <div style={{ height: 4, width: 60, borderRadius: 2, background: 'rgba(255,255,255,0.03)', marginTop: 4 }} />
-                </div>
+            {[
+              { label: 'Pitch Sarah Chen \u2014 TechCrunch', evi: '+4.2' },
+              { label: 'Publish AEO guide \u2014 Perplexity', evi: '+3.1' },
+              { label: 'Schema fix \u2014 Entity SEO', evi: '+2.8' },
+            ].map((r, i) => (
+              <div key={i} style={{ display: 'flex', gap: 6, padding: '5px 4px', borderBottom: '1px solid rgba(255,255,255,0.03)', alignItems: 'center' }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#00D9FF', fontFamily: 'monospace', width: 14, flexShrink: 0 }}>{i + 1}</span>
+                <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.55)', fontFamily: 'monospace', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{r.label}</span>
+                <span style={{ fontSize: 8, color: '#00D9FF', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0 }}>{r.evi}</span>
               </div>
             ))}
           </div>
@@ -395,6 +397,23 @@ export default function MarketingPage() {
           Five tools. Zero connection.<br />No idea what&apos;s working.
         </h2>
 
+        {/* Persona pain cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 48 }}>
+          {[
+            { role: 'VP MARKETING / CMO', color: '#A855F7', pain: 'ChatGPT is sending traffic to my competitors. I can see it in analytics. I have no idea how to fix it \u2014 and neither does anyone on my team.' },
+            { role: 'PR DIRECTOR', color: '#E879F9', pain: 'I got a TechCrunch placement. My CEO wants to know what it was worth in real business terms. My agency sent a PDF with impressions. That\u2019s not an answer anymore.' },
+            { role: 'CONTENT / SEO MANAGER', color: '#14B8A6', pain: 'I published 30 articles last quarter. Two are being cited in AI answers. I don\u2019t know which two, why those two, or what I should write next.' },
+          ].map(({ role, color, pain }) => (
+            <div key={role} style={{
+              padding: '20px 24px', background: 'rgba(255,255,255,0.02)',
+              border: `1px solid ${color}`, borderRadius: 10,
+            }}>
+              <div style={{ fontSize: 10, fontFamily: 'monospace', letterSpacing: '0.15em', color, marginBottom: 12 }}>{role}</div>
+              <p style={{ fontSize: 14, fontStyle: 'italic', color: 'rgba(255,255,255,0.65)', lineHeight: 1.7, margin: 0 }}>&ldquo;{pain}&rdquo;</p>
+            </div>
+          ))}
+        </div>
+
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'start' }}>
           <div>
             <p style={{ fontSize: 16, lineHeight: 1.75, color: 'rgba(255,255,255,0.65)', marginBottom: 24 }}>
@@ -519,9 +538,24 @@ export default function MarketingPage() {
           </p>
 
           {/* AI engine row */}
-          <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 48 }}>
             {['ChatGPT', 'Perplexity', 'Claude', 'Gemini'].map(e => (
               <span key={e} style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>{e}</span>
+            ))}
+          </div>
+
+          {/* Outcome checkmarks */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 32px', textAlign: 'left', maxWidth: 600, margin: '0 auto' }}>
+            {[
+              'Know your AI visibility baseline within 24 hours',
+              'See exactly which PR placements moved your score \u2014 and by how much',
+              'Know if ChatGPT and Perplexity are recommending you \u2014 updated daily',
+              'Replace 5 disconnected tools with one score that proves it\u2019s working',
+            ].map((item, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                <span style={{ color: '#22C55E', fontSize: 14, flexShrink: 0, marginTop: 1 }}>&check;</span>
+                <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>{item}</span>
+              </div>
             ))}
           </div>
         </div>
@@ -577,6 +611,113 @@ export default function MarketingPage() {
           </div>
 
           <BrowserFrame variant={tab.variant} height={360} />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════
+          SECTION 4.5: THE ARCHITECTURE
+          ═══════════════════════════════════ */}
+      <section style={{ padding: '100px 48px', background: '#0D0D14' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)', marginBottom: 12, textTransform: 'uppercase' as const }}>THE PRAVADO ARCHITECTURE</div>
+          <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, margin: '0 0 16px', color: '#ffffff', lineHeight: 1.1 }}>
+            This isn&apos;t a bundle of tools. It&apos;s an operating system.
+          </h2>
+          <p style={{ fontSize: 16, lineHeight: 1.75, color: 'rgba(255,255,255,0.6)', maxWidth: 640, marginBottom: 60 }}>
+            Most platforms give you data and leave execution to you.
+            Pravado closes the loop &mdash; from signal detection to strategic guidance
+            to automated execution to citation measurement, all in service of
+            one number: your EVI&trade;.
+          </p>
+
+          {/* Orbital diagram */}
+          <div style={{ position: 'relative', width: 480, height: 480, margin: '0 auto 60px' }}>
+            {/* Rings */}
+            <div style={{ position: 'absolute', inset: 80, borderRadius: '50%', border: '1px solid rgba(168,85,247,0.2)' }} />
+            <div style={{ position: 'absolute', inset: 40, borderRadius: '50%', border: '1px solid rgba(0,217,255,0.15)' }} />
+            <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid rgba(232,121,249,0.12)' }} />
+
+            {/* EVI center */}
+            <div style={{
+              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+              width: 120, height: 120, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(34,197,94,0.15), rgba(10,10,15,0.9))',
+              border: '2px solid rgba(34,197,94,0.5)',
+              boxShadow: '0 0 40px rgba(34,197,94,0.2)',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span style={{ fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.1em', color: 'rgba(34,197,94,0.7)' }}>EVI&trade;</span>
+              <span style={{ fontSize: 28, fontWeight: 900, fontFamily: 'monospace', color: '#22C55E', lineHeight: 1 }}>74.2</span>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>STRONG</span>
+            </div>
+
+            {/* SAGE node — top */}
+            <div style={{
+              position: 'absolute', top: 55, left: '50%', transform: 'translateX(-50%)',
+              padding: '8px 14px', borderRadius: 8,
+              background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.4)',
+              boxShadow: '0 0 20px rgba(168,85,247,0.15)', textAlign: 'center', whiteSpace: 'nowrap' as const,
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', color: '#A855F7' }}>SAGE&trade;</div>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>STRATEGY</div>
+            </div>
+
+            {/* CRAFT node — bottom-left */}
+            <div style={{
+              position: 'absolute', bottom: 60, left: 20,
+              padding: '8px 14px', borderRadius: 8,
+              background: 'rgba(0,217,255,0.08)', border: '1px solid rgba(0,217,255,0.35)',
+              boxShadow: '0 0 20px rgba(0,217,255,0.12)', textAlign: 'center', whiteSpace: 'nowrap' as const,
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', color: '#00D9FF' }}>CRAFT&trade;</div>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>EXECUTION</div>
+            </div>
+
+            {/* CiteMind node — bottom-right */}
+            <div style={{
+              position: 'absolute', bottom: 55, right: 10,
+              padding: '8px 14px', borderRadius: 8,
+              background: 'rgba(232,121,249,0.08)', border: '1px solid rgba(232,121,249,0.35)',
+              boxShadow: '0 0 20px rgba(232,121,249,0.12)', textAlign: 'center', whiteSpace: 'nowrap' as const,
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', color: '#E879F9' }}>CiteMind&trade;</div>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>INTELLIGENCE</div>
+            </div>
+
+            {/* SVG arrows */}
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}>
+              <defs>
+                <marker id="arr-iris" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                  <path d="M 0 0 L 6 3 L 0 6 z" fill="rgba(168,85,247,0.7)" />
+                </marker>
+                <marker id="arr-cyan" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                  <path d="M 0 0 L 6 3 L 0 6 z" fill="rgba(0,217,255,0.7)" />
+                </marker>
+                <marker id="arr-mag" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                  <path d="M 0 0 L 6 3 L 0 6 z" fill="rgba(232,121,249,0.7)" />
+                </marker>
+              </defs>
+              <line x1="240" y1="100" x2="240" y2="180" stroke="rgba(168,85,247,0.4)" strokeWidth="1.5" markerEnd="url(#arr-iris)" strokeDasharray="4 3" />
+              <line x1="120" y1="380" x2="200" y2="270" stroke="rgba(0,217,255,0.4)" strokeWidth="1.5" markerEnd="url(#arr-cyan)" strokeDasharray="4 3" />
+              <line x1="360" y1="375" x2="280" y2="270" stroke="rgba(232,121,249,0.4)" strokeWidth="1.5" markerEnd="url(#arr-mag)" strokeDasharray="4 3" />
+              <path d="M 200 130 Q 80 260 140 360" stroke="rgba(168,85,247,0.25)" strokeWidth="1" fill="none" strokeDasharray="3 4" />
+              <path d="M 390 350 Q 420 200 300 110" stroke="rgba(232,121,249,0.2)" strokeWidth="1" fill="none" strokeDasharray="3 4" />
+            </svg>
+          </div>
+
+          {/* 3-column outcomes */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 32 }}>
+            {[
+              { name: 'SAGE\u2122', color: '#A855F7', desc: 'Analyzes 50+ signals daily. Surfaces your 3 highest-impact actions ranked by EVI\u2122 improvement.' },
+              { name: 'CRAFT\u2122', color: '#00D9FF', desc: 'Drafts pitches, sequences outreach, publishes briefs. SAGE\u2122 identifies, CRAFT\u2122 executes.' },
+              { name: 'CiteMind\u2122', color: '#E879F9', desc: 'Scans ChatGPT, Perplexity, Claude, Gemini 24/7. Every citation feeds back into EVI\u2122.' },
+            ].map(({ name, color, desc }) => (
+              <div key={name} style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, fontFamily: 'monospace', color, marginBottom: 8 }}>{name}</div>
+                <p style={{ fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,0.55)', margin: 0 }}>{desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -667,26 +808,6 @@ export default function MarketingPage() {
             fontSize: 15, fontWeight: 700, background: '#00D9FF', color: '#0A0A0F',
             textDecoration: 'none',
           }}>Apply for Beta Access &rarr;</Link>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════
-          SECTION 7: FOUNDER NOTE
-          ═══════════════════════════════════ */}
-      <section style={{ padding: '80px 48px', textAlign: 'center' }}>
-        <div style={{ maxWidth: 560, margin: '0 auto' }}>
-          <p style={{ fontSize: 16, lineHeight: 1.7, color: 'rgba(255,255,255,0.6)', marginBottom: 16 }}>
-            Built by Christian Dibrell, Founder of Saipien Labs &mdash;
-            because AI is changing how brands get found, and most teams aren&apos;t ready.
-          </p>
-          <a
-            href="https://www.linkedin.com/in/christiandibrell/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ fontSize: 14, fontWeight: 500, color: '#00D9FF', textDecoration: 'none' }}
-          >
-            Connect on LinkedIn &rarr;
-          </a>
         </div>
       </section>
 
