@@ -37,36 +37,182 @@ function useInView(threshold = 0.3) {
   return { ref, inView };
 }
 
-// ── Browser frame component ──
-function BrowserFrame({ label, height = 400 }: { label: string; height?: number }) {
+// ── Browser frame with CSS mockup of the app ──
+function BrowserFrame({ variant = 'command-center', height = 400 }: { variant?: 'command-center' | 'pr' | 'content' | 'seo'; height?: number }) {
   return (
     <div style={{
       borderRadius: '10px 10px 8px 8px', overflow: 'hidden',
       border: '1px solid rgba(255,255,255,0.08)',
       boxShadow: '0 40px 80px rgba(168,85,247,0.12), 0 20px 40px rgba(0,0,0,0.5)',
     }}>
+      {/* Browser chrome */}
       <div style={{
-        height: 36, background: '#1A1A24',
+        height: 32, background: '#1A1A24',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
         display: 'flex', alignItems: 'center', padding: '0 12px', gap: 6,
       }}>
         {['rgba(239,68,68,0.5)', 'rgba(245,158,11,0.5)', 'rgba(34,197,94,0.5)'].map((c, i) => (
-          <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
+          <div key={i} style={{ width: 9, height: 9, borderRadius: '50%', background: c }} />
         ))}
         <div style={{
-          marginLeft: 12, flex: 1, height: 20, borderRadius: 4,
+          marginLeft: 12, flex: 1, height: 18, borderRadius: 4,
           background: 'rgba(255,255,255,0.04)',
           display: 'flex', alignItems: 'center', paddingLeft: 8,
-          fontSize: 11, color: 'rgba(255,255,255,0.25)',
-        }}>app.pravado.io</div>
+          fontSize: 10, color: 'rgba(255,255,255,0.25)', fontFamily: 'monospace',
+        }}>app.pravado.io/app/{variant}</div>
       </div>
-      <div style={{
-        height, background: '#06060A',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: 'rgba(255,255,255,0.15)', fontSize: 13, fontFamily: 'monospace',
-        borderTop: '1px solid rgba(255,255,255,0.04)',
-      }}>
-        {label}
+      {/* App mockup */}
+      <div style={{ height, background: '#0A0A0F', overflow: 'hidden', position: 'relative' }}>
+        {/* Topbar */}
+        <div style={{
+          height: 40, background: '#0D0D14', borderBottom: '1px solid rgba(255,255,255,0.06)',
+          display: 'flex', alignItems: 'center', padding: '0 16px', gap: 12,
+        }}>
+          <div style={{ width: 20, height: 20, borderRadius: 4, background: 'linear-gradient(135deg, #00D9FF, #A855F7)' }} />
+          <span style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: 800, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.8)' }}>PRAVADO</span>
+          <div style={{ flex: 1 }} />
+          {[
+            { n: 'Command', v: 'command-center', c: '#00D9FF' },
+            { n: 'PR', v: 'pr', c: '#E879F9' },
+            { n: 'Content', v: 'content', c: '#14B8A6' },
+            { n: 'SEO', v: 'seo', c: '#00D9FF' },
+            { n: 'Calendar', v: '', c: '' },
+            { n: 'Analytics', v: '', c: '' },
+          ].map(item => {
+            const active = item.v === variant;
+            return (
+              <span key={item.n} style={{
+                fontSize: 10, fontWeight: 600, padding: '4px 8px', borderRadius: 4,
+                color: active ? '#ffffff' : 'rgba(255,255,255,0.4)',
+                background: active ? `${item.c}15` : 'transparent',
+              }}>{item.n}</span>
+            );
+          })}
+          <div style={{ flex: 1 }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#00D9FF', boxShadow: '0 0 6px #00D9FF' }} />
+            <span style={{ fontSize: 9, fontWeight: 600, color: '#00D9FF', letterSpacing: '0.1em' }}>AI ACTIVE</span>
+          </div>
+        </div>
+        {/* Content area */}
+        <div style={{ display: 'flex', height: height - 40 }}>
+          {/* Left panel — strategy */}
+          <div style={{ width: '28%', borderRight: '1px solid rgba(255,255,255,0.04)', padding: 12, overflow: 'hidden' }}>
+            {/* EVI card */}
+            <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 8, padding: 12, border: '1px solid rgba(255,255,255,0.05)', marginBottom: 10 }}>
+              <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>AI VISIBILITY</div>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginBottom: 2 }}>EVI</div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: '#00D9FF', fontFamily: 'monospace', lineHeight: 1 }}>74.2</div>
+              <div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.06)', marginTop: 8 }}>
+                <div style={{ width: '74%', height: '100%', borderRadius: 2, background: 'linear-gradient(90deg, #00D9FF, #A855F7)' }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
+                <span style={{ fontSize: 8, color: '#00D9FF' }}>Strong</span>
+                <span style={{ fontSize: 8, color: '#22C55E' }}>+3.4 this month</span>
+              </div>
+            </div>
+            {/* Sub-scores */}
+            {[{ name: 'Visibility', score: 78.1 }, { name: 'Authority', score: 71.3 }, { name: 'Momentum', score: 68.5 }].map(s => (
+              <div key={s.name} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 4px', fontSize: 9 }}>
+                <span style={{ color: 'rgba(255,255,255,0.5)' }}>{s.name}</span>
+                <span style={{ color: '#00D9FF', fontWeight: 600, fontFamily: 'monospace' }}>{s.score}</span>
+              </div>
+            ))}
+            {/* SAGE section */}
+            <div style={{ marginTop: 12, fontSize: 8, fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>SAGE&trade; RECOMMENDS</div>
+            {[1,2,3].map(i => (
+              <div key={i} style={{ display: 'flex', gap: 6, padding: '6px 4px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#00D9FF', fontFamily: 'monospace', width: 16 }}>{i}</span>
+                <div>
+                  <div style={{ height: 6, width: 80 + i * 10, borderRadius: 2, background: 'rgba(255,255,255,0.06)' }} />
+                  <div style={{ height: 4, width: 60, borderRadius: 2, background: 'rgba(255,255,255,0.03)', marginTop: 4 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Center panel — entity map area */}
+          <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+            {/* Gradient mesh */}
+            <div style={{
+              position: 'absolute', inset: 0, pointerEvents: 'none',
+              background: `
+                radial-gradient(ellipse 50% 40% at 30% 50%, rgba(168,85,247,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 50% at 70% 40%, rgba(0,217,255,0.04) 0%, transparent 70%)
+              `,
+            }} />
+            {/* Mock entity nodes */}
+            {[
+              { x: '45%', y: '38%', w: 72, h: 36, label: 'Pravado', color: '#A855F7', big: true },
+              { x: '20%', y: '22%', w: 52, h: 24, label: 'ChatGPT', color: '#00D9FF', big: false },
+              { x: '70%', y: '18%', w: 52, h: 24, label: 'Perplexity', color: '#00D9FF', big: false },
+              { x: '15%', y: '58%', w: 52, h: 24, label: 'TechCrunch', color: '#E879F9', big: false },
+              { x: '72%', y: '62%', w: 52, h: 24, label: 'AI Search', color: '#14B8A6', big: false },
+              { x: '38%', y: '70%', w: 44, h: 24, label: 'Claude', color: '#00D9FF', big: false },
+              { x: '58%', y: '75%', w: 44, h: 24, label: 'Gemini', color: '#00D9FF', big: false },
+            ].map((n, i) => (
+              <div key={i} style={{
+                position: 'absolute', left: n.x, top: n.y,
+                width: n.w, height: n.h, transform: 'translate(-50%, -50%)',
+                background: 'rgba(8,8,18,0.72)', backdropFilter: 'blur(12px)',
+                border: `1px solid ${n.color}40`, borderRadius: n.big ? 10 : 6,
+                boxShadow: `0 0 16px ${n.color}20`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: n.big ? 10 : 8, fontFamily: 'monospace', fontWeight: n.big ? 700 : 500,
+                color: n.big ? '#ffffff' : 'rgba(255,255,255,0.7)',
+              }}>
+                {n.label}
+              </div>
+            ))}
+            {/* Mock connection lines via SVG */}
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+              {[
+                { x1: '45%', y1: '38%', x2: '20%', y2: '22%', c: '#A855F7' },
+                { x1: '45%', y1: '38%', x2: '70%', y2: '18%', c: '#00D9FF' },
+                { x1: '45%', y1: '38%', x2: '15%', y2: '58%', c: '#E879F9' },
+                { x1: '45%', y1: '38%', x2: '72%', y2: '62%', c: '#14B8A6' },
+                { x1: '45%', y1: '38%', x2: '38%', y2: '70%', c: '#00D9FF' },
+                { x1: '45%', y1: '38%', x2: '58%', y2: '75%', c: '#00D9FF' },
+              ].map((l, i) => (
+                <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
+                  stroke={l.c} strokeWidth={1} strokeOpacity={0.25} />
+              ))}
+            </svg>
+          </div>
+          {/* Right panel — action stream */}
+          <div style={{ width: '24%', borderLeft: '1px solid rgba(255,255,255,0.04)', padding: 12, overflow: 'hidden' }}>
+            <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>ACTION STREAM</div>
+            {[
+              { tag: 'PR', color: '#E879F9', text: 'Pitch TechCrunch re: AI visibility' },
+              { tag: 'SEO', color: '#00D9FF', text: 'Optimize landing page for AEO' },
+              { tag: 'Content', color: '#14B8A6', text: 'Rewrite "AI Search" article' },
+              { tag: 'PR', color: '#E879F9', text: 'Follow up: Wired journalist' },
+            ].map((a, i) => (
+              <div key={i} style={{
+                padding: '8px 8px', marginBottom: 4, borderRadius: 6,
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.04)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                  <span style={{ fontSize: 7, fontWeight: 700, padding: '1px 4px', borderRadius: 3, background: `${a.color}15`, color: a.color }}>{a.tag}</span>
+                  <span style={{ fontSize: 7, color: 'rgba(255,255,255,0.25)' }}>+{(3.2 - i * 0.5).toFixed(1)} EVI</span>
+                </div>
+                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', lineHeight: 1.3 }}>{a.text}</div>
+              </div>
+            ))}
+            {/* CiteMind Feed */}
+            <div style={{ marginTop: 10, fontSize: 8, fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>CITEMIND&trade; FEED</div>
+            {[
+              { engine: 'GPT', query: '"ai visibility platform"', pos: '#2' },
+              { engine: 'Perp', query: '"earned media tracking"', pos: '#1' },
+            ].map((c, i) => (
+              <div key={i} style={{ display: 'flex', gap: 6, padding: '4px 4px', fontSize: 8 }}>
+                <span style={{ color: '#00D9FF', fontWeight: 700, fontFamily: 'monospace', width: 24 }}>{c.engine}</span>
+                <span style={{ color: 'rgba(255,255,255,0.35)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{c.query}</span>
+                <span style={{ color: '#22C55E', fontWeight: 600, fontFamily: 'monospace' }}>{c.pos}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -76,7 +222,7 @@ function BrowserFrame({ label, height = 400 }: { label: string; height?: number 
 const TAB_DATA: Record<string, {
   color: string; label: string; headline: string;
   body: string; stats: Array<{ n: string; label: string }>;
-  screenshot: string;
+  variant: 'command-center' | 'pr' | 'content' | 'seo';
 }> = {
   PR: {
     color: '#E879F9',
@@ -88,7 +234,7 @@ const TAB_DATA: Record<string, {
       { n: '8.4M', label: 'estimated monthly reach from earned media' },
       { n: '+5.2', label: 'avg EVI\u2122 points from a single TechCrunch placement' },
     ],
-    screenshot: 'SCREENSHOT: Analytics PR view \u2014 EVI LIFT column',
+    variant: 'pr',
   },
   Content: {
     color: '#14B8A6',
@@ -100,7 +246,7 @@ const TAB_DATA: Record<string, {
       { n: '77%', label: 'of searches now end with an AI answer, not a click' },
       { n: '90%', label: 'of cited AI sources can change within 90 days' },
     ],
-    screenshot: 'SCREENSHOT: Content pillar \u2014 CiteMind citation feed',
+    variant: 'content',
   },
   SEO: {
     color: '#00D9FF',
@@ -112,7 +258,7 @@ const TAB_DATA: Record<string, {
       { n: '61%', label: 'drop in organic CTR when AI Overview appears' },
       { n: '$1T', label: 'in commerce projected to shift to AI assistants by 2029' },
     ],
-    screenshot: 'SCREENSHOT: SEO pillar \u2014 SAGE recommendations',
+    variant: 'seo',
   },
 };
 
@@ -430,7 +576,7 @@ export default function MarketingPage() {
             </div>
           </div>
 
-          <BrowserFrame label={tab.screenshot} height={360} />
+          <BrowserFrame variant={tab.variant} height={360} />
         </div>
       </section>
 
