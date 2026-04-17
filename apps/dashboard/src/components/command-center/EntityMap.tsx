@@ -120,6 +120,8 @@ export function EntityMap({
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [nodePositions, setNodePositions] = useState<SimNode[]>([]);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [viewScale, setViewScale] = useState(1);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -128,6 +130,9 @@ export function EntityMap({
   const rafRef = useRef<number>(0);
   const simLinksRef = useRef<SimLink[]>([]);
   const starsRef = useRef<Array<{ x: number; y: number; o: number; r: number }>>([]);
+  const isDraggingCanvas = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const panStart = useRef({ x: 0, y: 0 });
 
   const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
 
@@ -339,6 +344,31 @@ export function EntityMap({
     };
   }, [dimensions.width, dimensions.height]);
 
+  // ── Pan + zoom handlers ──
+  const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
+    if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'CANVAS') {
+      isDraggingCanvas.current = true;
+      dragStart.current = { x: e.clientX, y: e.clientY };
+      panStart.current = { x: pan.x, y: pan.y };
+    }
+  }, [pan]);
+
+  const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDraggingCanvas.current) return;
+    const dx = e.clientX - dragStart.current.x;
+    const dy = e.clientY - dragStart.current.y;
+    setPan({ x: panStart.current.x + dx, y: panStart.current.y + dy });
+  }, []);
+
+  const handleCanvasMouseUp = useCallback(() => {
+    isDraggingCanvas.current = false;
+  }, []);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    setViewScale(s => Math.max(0.4, Math.min(2.5, s - e.deltaY * 0.001)));
+  }, []);
+
   const handleNodeClick = useCallback(
     (nodeId: string) => {
       setSelectedNodeId(prev => (prev === nodeId ? null : nodeId));
@@ -355,7 +385,13 @@ export function EntityMap({
     <div
       ref={containerRef}
       className="entity-map-v6 relative overflow-hidden"
-      style={{ width: '100%', height: '100%', minHeight: 300, transform: `scale(${zoom})`, transformOrigin: 'center center' }}
+      style={{ width: '100%', height: '100%', minHeight: 300, cursor: isDraggingCanvas.current ? 'grabbing' : 'grab' }}
+      onMouseDown={handleCanvasMouseDown}
+      onMouseMove={handleCanvasMouseMove}
+      onMouseUp={handleCanvasMouseUp}
+      onMouseLeave={handleCanvasMouseUp}
+      onWheel={handleWheel}
+      onDoubleClick={() => { setPan({ x: 0, y: 0 }); setViewScale(1); }}
     >
       {/* Gradient mesh — gives glassmorphism cards something to blur over */}
       <div
@@ -370,14 +406,24 @@ export function EntityMap({
         }}
       />
 
-      {/* Canvas layer — edges + particles + stars */}
-      <canvas
-        ref={canvasRef}
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-      />
+      {/* Pannable + zoomable content layer */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          transform: `translate(${pan.x}px, ${pan.y}px) scale(${(zoom ?? 1) * viewScale})`,
+          transformOrigin: 'center center',
+          pointerEvents: 'none',
+        }}
+      >
+        {/* Canvas layer — edges + particles + stars */}
+        <canvas
+          ref={canvasRef}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'auto' }}
+        />
 
-      {/* Node overlay — glassmorphism cards */}
-      {nodePositions.map(node => {
+        {/* Node overlay — glassmorphism cards */}
+        {nodePositions.map(node => {
         const x = (node.x ?? 0) - node.w / 2;
         const y = (node.y ?? 0) - node.h / 2;
         const isBrand = node.entity.kind === 'brand';
@@ -395,6 +441,7 @@ export function EntityMap({
               top: y,
               width: node.w,
               height: node.h,
+              pointerEvents: 'auto',
               background: 'rgba(8, 8, 18, 0.72)',
               backdropFilter: 'blur(20px) saturate(200%)',
               WebkitBackdropFilter: 'blur(20px) saturate(200%)',
@@ -494,6 +541,7 @@ export function EntityMap({
           </div>
         );
       })}
+      </div>{/* close pannable content layer */}
 
       {/* ── Progressive Disclosure Panel ── */}
       {selectedEntity && (
