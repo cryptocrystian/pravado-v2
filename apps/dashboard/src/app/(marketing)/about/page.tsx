@@ -30,7 +30,7 @@ export default function AboutPage() {
   return (
     <div style={{ backgroundColor: '#0A0A0F', minHeight: '100vh' }}>
       {/* SECTION 1 — MISSION */}
-      <section style={{ padding: '100px 5%' }}>
+      <section style={{ backgroundColor: '#0A0A0F', padding: '100px 5%' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           <div style={labelStyle}>OUR MISSION</div>
           <h1 style={headlineStyle}>
@@ -135,7 +135,7 @@ export default function AboutPage() {
       </section>
 
       {/* SECTION 3 — THE COMPANY */}
-      <section style={{ padding: '100px 5%' }}>
+      <section style={{ backgroundColor: '#0A0A0F', padding: '100px 5%' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           <div style={labelStyle}>THE COMPANY</div>
           <h2 style={headlineStyle}>

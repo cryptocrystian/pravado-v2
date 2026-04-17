@@ -93,6 +93,7 @@ export default function PricingPage() {
       {/* SECTION 1 — HERO */}
       <section
         style={{
+          backgroundColor: '#0A0A0F',
           padding: '100px 5%',
           textAlign: 'center',
         }}
@@ -145,6 +146,7 @@ export default function PricingPage() {
       {/* SECTION 2 — PLAN CARDS */}
       <section
         style={{
+          backgroundColor: '#0D0D14',
           padding: '0 5% 100px',
         }}
       >
@@ -232,6 +234,7 @@ export default function PricingPage() {
       {/* SECTION 3 — FAQ */}
       <section
         style={{
+          backgroundColor: '#0A0A0F',
           padding: '80px 5%',
         }}
       >

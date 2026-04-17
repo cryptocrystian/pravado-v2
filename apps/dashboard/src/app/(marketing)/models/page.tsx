@@ -352,7 +352,7 @@ export default function ModelsPage() {
       {/* ═══════════════════════════════════
           SECTION 0: INTRO
           ═══════════════════════════════════ */}
-      <section style={{ padding: '100px 5%' }}>
+      <section style={{ padding: '100px 5%', background: '#0A0A0F' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto' }}>
 
           {/* Label */}
@@ -433,7 +433,7 @@ export default function ModelsPage() {
       <section
         id="sage"
         ref={sageRef}
-        style={{ padding: '80px 5%', background: 'rgba(168,85,247,0.03)' }}
+        style={{ padding: '80px 5%', background: '#0D0A0F' }}
       >
         <div style={{
           maxWidth: 1400, margin: '0 auto',
@@ -508,7 +508,7 @@ export default function ModelsPage() {
       <section
         id="craft"
         ref={craftRef}
-        style={{ padding: '80px 5%', background: 'rgba(0,217,255,0.02)' }}
+        style={{ padding: '80px 5%', background: '#0A0D0F' }}
       >
         <div style={{
           maxWidth: 1400, margin: '0 auto',
@@ -621,7 +621,7 @@ export default function ModelsPage() {
       <section
         id="citemind"
         ref={citemindRef}
-        style={{ padding: '80px 5%', background: 'rgba(232,121,249,0.02)' }}
+        style={{ padding: '80px 5%', background: '#0D0A0D' }}
       >
         <div style={{
           maxWidth: 1400, margin: '0 auto',
@@ -740,7 +740,7 @@ export default function ModelsPage() {
       {/* ═══════════════════════════════════
           END CTA
           ═══════════════════════════════════ */}
-      <section style={{ padding: '80px 5%' }}>
+      <section style={{ padding: '80px 5%', background: '#0A0A0F' }}>
         <div style={{
           maxWidth: 1400, margin: '0 auto',
           textAlign: 'center',
