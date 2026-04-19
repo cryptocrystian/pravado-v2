@@ -29,6 +29,19 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
           ))}
         </div>
 
+        {/* Audit CTA */}
+        <Link href="/audit" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '5px 12px', borderRadius: 20,
+          border: '1px solid rgba(0,217,255,0.3)',
+          background: 'rgba(0,217,255,0.08)',
+          fontSize: 11, fontFamily: 'monospace', color: '#00D9FF',
+          textDecoration: 'none', letterSpacing: '0.08em',
+        }}>
+          <span style={{ opacity: 0.6, fontSize: 9 }}>FREE</span>
+          Silo Tax Audit
+        </Link>
+
         {/* Right CTAs */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Link href="/login" style={{

@@ -5,7 +5,7 @@ import { useState } from 'react';
 const plans = [
   {
     name: 'Starter',
-    price: 'Free',
+    price: '$199/mo',
     features: [
       '3 SAGE\u2122 actions/day',
       'Daily CiteMind\u2122 scans',
@@ -16,8 +16,8 @@ const plans = [
     ],
   },
   {
-    name: 'Growth',
-    price: '$49/mo',
+    name: 'Pro',
+    price: '$599/mo',
     features: [
       '10 SAGE\u2122 actions/day',
       'Hourly CiteMind\u2122 scans',
@@ -28,8 +28,8 @@ const plans = [
     ],
   },
   {
-    name: 'Pro',
-    price: '$149/mo',
+    name: 'Growth',
+    price: '$1,199/mo',
     features: [
       'Unlimited SAGE\u2122 actions',
       'Real-time CiteMind\u2122',

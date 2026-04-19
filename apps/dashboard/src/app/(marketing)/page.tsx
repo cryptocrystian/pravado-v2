@@ -265,15 +265,16 @@ const TAB_DATA: Record<string, {
 };
 
 const PLANS = [
-  { name: 'Starter', price: 'Free', desc: 'For individuals getting started', features: ['1 seat', '10K tokens/mo', '5 playbook runs/mo'] },
-  { name: 'Growth', price: '$49/mo', desc: 'For growing teams', features: ['5 seats', '100K tokens/mo', '50 playbook runs/mo'] },
-  { name: 'Pro', price: '$149/mo', desc: 'For professional teams', features: ['15 seats', '500K tokens/mo', '200 playbook runs/mo'] },
-  { name: 'Enterprise', price: 'Custom', desc: 'For large organizations', features: ['Unlimited seats', 'Custom limits', 'Dedicated support'] },
+  { name: 'Starter', price: '$199/mo', annual: '$159/mo', desc: 'For individuals getting started', features: ['3 SAGE\u2122 actions/day', 'Daily CiteMind\u2122', '10 CRAFT\u2122/mo', '1 seat'] },
+  { name: 'Pro', price: '$599/mo', annual: '$479/mo', desc: 'For professional teams', badge: 'Most Popular', features: ['Unlimited SAGE\u2122', 'Real-time CiteMind\u2122', 'Unlimited CRAFT\u2122', '15 seats'] },
+  { name: 'Growth', price: '$1,199/mo', annual: '$959/mo', desc: 'For scaling organizations', features: ['Everything in Pro', 'Full 283K journalist DB', '1-year EVI\u2122 history', 'Priority support'] },
+  { name: 'Enterprise', price: 'Custom', annual: 'Custom', desc: 'For large organizations', features: ['Dedicated CSM', 'Custom integrations', 'SLA guarantee', 'Unlimited seats'] },
 ];
 
 // ── Page ──
 export default function MarketingPage() {
   const [activeTab, setActiveTab] = useState<'PR' | 'Content' | 'SEO'>('PR');
+  const [isAnnual, setIsAnnual] = useState(true);
   const { ref: eviRef, inView: eviInView } = useInView();
   const eviValue = useCounter(74.2, 2000, eviInView);
   const eviColor = eviValue < 30 ? '#EF4444' : eviValue < 60 ? '#F59E0B' : '#00D9FF';
@@ -364,6 +365,14 @@ export default function MarketingPage() {
               border: '1px solid rgba(255,255,255,0.15)', textDecoration: 'none',
             }}>See the Platform &rarr;</a>
           </div>
+
+          <p style={{ marginTop: 16, fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
+            or{' '}
+            <Link href="/audit" style={{ color: '#00D9FF', textDecoration: 'none',
+                                          borderBottom: '1px solid rgba(0,217,255,0.3)' }}>
+              run your free Silo Tax Audit &rarr;
+            </Link>
+          </p>
 
           {/* Stat bar */}
           <div style={{
@@ -771,23 +780,55 @@ export default function MarketingPage() {
         <h2 style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 800, margin: '0 0 8px', color: '#ffffff', lineHeight: 1.1 }}>
           Private Beta &mdash; Free While We Build Together
         </h2>
-        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', marginBottom: 48 }}>
+        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', marginBottom: 32 }}>
           During beta, all features are available at no cost.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 48 }}>
-          {PLANS.map(plan => (
+        {/* Annual/Monthly toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 48 }}>
+          <span style={{ fontSize: 13, color: isAnnual ? 'rgba(255,255,255,0.4)' : '#ffffff' }}>Monthly</span>
+          <button
+            onClick={() => setIsAnnual(!isAnnual)}
+            style={{
+              width: 48, height: 26, borderRadius: 13, border: 'none', cursor: 'pointer',
+              background: isAnnual ? '#00D9FF' : 'rgba(255,255,255,0.15)',
+              position: 'relative', transition: 'background 0.2s',
+            }}
+          >
+            <div style={{
+              width: 20, height: 20, borderRadius: '50%', background: '#ffffff',
+              position: 'absolute', top: 3,
+              left: isAnnual ? 25 : 3, transition: 'left 0.2s',
+            }} />
+          </button>
+          <span style={{ fontSize: 13, color: isAnnual ? '#ffffff' : 'rgba(255,255,255,0.4)' }}>
+            Annual
+          </span>
+          {isAnnual && (
+            <span style={{ fontSize: 11, fontFamily: 'monospace', padding: '2px 8px', borderRadius: 10, background: 'rgba(34,197,94,0.15)', color: '#22C55E', border: '1px solid rgba(34,197,94,0.3)' }}>
+              Save 20%
+            </span>
+          )}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+          {PLANS.map((plan: any) => (
             <div key={plan.name} style={{
               padding: '24px 20px', borderRadius: 12, textAlign: 'left',
               background: 'rgba(8,8,18,0.72)',
-              border: '1px solid rgba(168,85,247,0.15)',
-              display: 'flex', flexDirection: 'column',
+              border: plan.badge ? '1px solid rgba(0,217,255,0.3)' : '1px solid rgba(168,85,247,0.15)',
+              display: 'flex', flexDirection: 'column', position: 'relative',
             }}>
+              {plan.badge && (
+                <div style={{ position: 'absolute', top: -10, right: 16, padding: '2px 10px', borderRadius: 10, fontSize: 10, fontWeight: 700, fontFamily: 'monospace', background: '#00D9FF', color: '#0A0A0F' }}>
+                  {plan.badge}
+                </div>
+              )}
               <div style={{ fontSize: 16, fontWeight: 700, color: '#ffffff', marginBottom: 4 }}>{plan.name}</div>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#00D9FF', marginBottom: 4, fontFamily: 'monospace' }}>{plan.price}</div>
+              <div style={{ fontSize: 24, fontWeight: 800, color: '#00D9FF', marginBottom: 4, fontFamily: 'monospace' }}>{isAnnual ? plan.annual : plan.price}</div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 16 }}>{plan.desc}</div>
               <div style={{ flex: 1, marginBottom: 16 }}>
-                {plan.features.map(f => (
+                {plan.features.map((f: string) => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
                     <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#00D9FF', flexShrink: 0 }} />
                     {f}
@@ -801,6 +842,11 @@ export default function MarketingPage() {
             </div>
           ))}
         </div>
+
+        {/* Replaces comparison */}
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 48, fontFamily: 'monospace' }}>
+          Muck Rack ($833/mo) + Profound ($399/mo) + Semrush ($400/mo) = $1,632/mo &mdash; replaced by Pravado Growth at $959/mo
+        </p>
 
         {/* CTA banner */}
         <div style={{

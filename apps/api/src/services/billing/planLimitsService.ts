@@ -35,14 +35,30 @@ export interface PlanLimits {
   apiIntegrations: boolean;
   /** Autopilot mode available */
   autopilotMode: boolean;
+  /** Number of AI engines CiteMind can monitor */
+  citeMindEngineLimit: number;
 }
 
 export const PLAN_LIMITS: Record<string, PlanLimits> = {
-  /** Starter — $99/mo: 1 seat, 5 SAGE proposals/day, 50 CiteMind/mo, 500K tokens */
+  /** Trial — 72H audit window: 1 seat, 2 CiteMind engines, limited everything */
+  trial: {
+    seats: 1,
+    contentDocumentsPerMonth: 1,
+    sageProposalsPerMonth: 10,
+    citemindScoresPerMonth: 10,
+    llmTokensPerMonth: 500_000,
+    journalistContacts: 0,
+    competitors: 2,
+    advancedAnalytics: false,
+    apiIntegrations: false,
+    autopilotMode: false,
+    citeMindEngineLimit: 2,
+  },
+  /** Starter — $199/mo: 1 seat, 3 SAGE actions/day, daily CiteMind, 500K tokens */
   starter: {
     seats: 1,
     contentDocumentsPerMonth: 25,
-    sageProposalsPerMonth: 150, // ~5/day
+    sageProposalsPerMonth: 90, // ~3/day
     citemindScoresPerMonth: 50,
     llmTokensPerMonth: 500_000,
     journalistContacts: 200,
@@ -50,32 +66,35 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     advancedAnalytics: false,
     apiIntegrations: false,
     autopilotMode: false,
+    citeMindEngineLimit: 5,
   },
-  /** Pro — $299/mo: 3 seats, 50 SAGE proposals/day, 500 CiteMind/mo, citation monitoring, 5M tokens */
+  /** Pro — $599/mo: 15 seats, unlimited SAGE, real-time CiteMind, unlimited CRAFT, 5M tokens */
   pro: {
-    seats: 3,
+    seats: 15,
     contentDocumentsPerMonth: 100,
-    sageProposalsPerMonth: 1500, // ~50/day
-    citemindScoresPerMonth: 500,
+    sageProposalsPerMonth: 999_999,
+    citemindScoresPerMonth: 999_999,
     llmTokensPerMonth: 5_000_000,
     journalistContacts: 1000,
     competitors: 20,
     advancedAnalytics: true,
     apiIntegrations: true,
     autopilotMode: false,
+    citeMindEngineLimit: 5,
   },
-  /** Growth — $799/mo: 10 seats, unlimited proposals, unlimited CiteMind, 20M tokens, CRAFT */
+  /** Growth — $1,199/mo: 50 seats, everything in Pro, full journalist DB, 50M tokens, CRAFT autopilot */
   growth: {
-    seats: 10,
+    seats: 50,
     contentDocumentsPerMonth: 500,
-    sageProposalsPerMonth: 999_999, // effectively unlimited
-    citemindScoresPerMonth: 999_999, // effectively unlimited
-    llmTokensPerMonth: 20_000_000,
-    journalistContacts: 5000,
+    sageProposalsPerMonth: 999_999,
+    citemindScoresPerMonth: 999_999,
+    llmTokensPerMonth: 50_000_000,
+    journalistContacts: 283_000,
     competitors: 50,
     advancedAnalytics: true,
     apiIntegrations: true,
     autopilotMode: true,
+    citeMindEngineLimit: 5,
   },
   /** Internal dev — unlimited (for development) */
   'internal-dev': {
@@ -89,6 +108,7 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     advancedAnalytics: true,
     apiIntegrations: true,
     autopilotMode: true,
+    citeMindEngineLimit: 5,
   },
 };
 

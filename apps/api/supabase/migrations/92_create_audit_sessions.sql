@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS audit_sessions (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid,
+  email text,
+  brand_url text NOT NULL,
+  competitor_urls text[],
+  evi_score integer,
+  silo_tax_monthly integer,
+  monthly_cash_loss integer,
+  risk_premium integer,
+  authority_leakage integer,
+  ppc_replacement integer,
+  hallucination_overhead integer,
+  gaps jsonb,
+  top_competitor_advantage text,
+  total_authority_void boolean DEFAULT false,
+  stage text DEFAULT 'scanned',
+  trial_expires_at timestamptz,
+  created_at timestamptz DEFAULT now()
+);
