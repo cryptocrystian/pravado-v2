@@ -209,12 +209,15 @@ export default function SiloTaxAuditPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        brand_url: brandUrl,
-        competitors: competitors.filter(Boolean),
+        brandUrl,
+        competitorUrls: competitors.filter(Boolean),
       }),
     })
-      .then((res) => res.json())
-      .then((data: AuditResult) => {
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok || data.error || typeof data.evi_score !== 'number') {
+          throw new Error(data.error || 'Invalid response');
+        }
         setResult(data);
       })
       .catch(() => {

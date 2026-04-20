@@ -261,7 +261,7 @@ Rules:
       let orgId: string;
 
       const { data: existingOrg } = await supabase
-        .from('organizations')
+        .from('orgs')
         .select('id')
         .eq('slug', slug)
         .single();
@@ -270,7 +270,7 @@ Rules:
         orgId = existingOrg.id;
       } else {
         const { data: newOrg, error: orgErr } = await supabase
-          .from('organizations')
+          .from('orgs')
           .insert({ name: company, slug })
           .select('id')
           .single();
