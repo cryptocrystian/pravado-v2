@@ -79,7 +79,7 @@ import { adminRoutes } from './routes/admin'; // Admin panel
 import { clientLogsRoutes } from './routes/clientLogs'; // S79
 import { notificationRoutes } from './routes/notifications';
 import { siloTaxAuditRoutes } from './routes/siloTaxAudit';
-import agencyRoutes from './routes/agency'; // D004 — Agency OS
+// import agencyRoutes from './routes/agency'; // D004 — Agency OS (uncommitted — do not import until routes/agency is committed)
 
 const logger = createLogger('api:server');
 
@@ -435,8 +435,8 @@ export async function createServer() {
     prefix: '/api/v1/admin',
   });
 
-  // Agency OS routes (D004) — multi-tenant agency management + video pipeline
-  await server.register(agencyRoutes);
+  // Agency OS routes (D004) — disabled until routes/agency is committed
+  // await server.register(agencyRoutes);
 
   // Root endpoint
   server.get('/', async () => {
