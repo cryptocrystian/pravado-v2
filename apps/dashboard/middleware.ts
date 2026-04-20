@@ -21,16 +21,8 @@ const MARKETING_PATHS = [
   '/about',
 ];
 
-// Auth/utility paths — served from both domains
-const SHARED_PATHS = [
-  '/login',
-  '/beta',
-  '/callback',
-  '/legal',
-  '/terms',
-  '/privacy',
-  '/cookies',
-];
+// Auth/utility paths — served from both domains (reserved for domain routing)
+// const SHARED_PATHS = ['/login', '/beta', '/callback', '/legal', '/terms', '/privacy', '/cookies'];
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
@@ -54,9 +46,8 @@ export function middleware(request: NextRequest) {
   );
   const isDashboardPath = path.startsWith('/app/');
   const isApiPath = path.startsWith('/api/');
-  const isSharedPath = SHARED_PATHS.some(
-    (p) => path === p || path.startsWith(p + '/')
-  );
+  // Shared paths check (reserved for future domain routing)
+  // SHARED_PATHS.some((p) => path === p || path.startsWith(p + '/'));
   const isStaticPath =
     path.startsWith('/_next/') ||
     path.startsWith('/favicon') ||
