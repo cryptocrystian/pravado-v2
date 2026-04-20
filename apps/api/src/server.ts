@@ -78,6 +78,8 @@ import { betaRoutes } from './routes/beta'; // S-INT-09
 import { adminRoutes } from './routes/admin'; // Admin panel
 import { clientLogsRoutes } from './routes/clientLogs'; // S79
 import { notificationRoutes } from './routes/notifications';
+import { siloTaxAuditRoutes } from './routes/siloTaxAudit';
+import agencyRoutes from './routes/agency'; // D004 — Agency OS
 
 const logger = createLogger('api:server');
 
@@ -418,6 +420,11 @@ export async function createServer() {
     prefix: '/api/v1/beta',
   });
 
+  // Silo Tax Audit — public acquisition funnel
+  await server.register(siloTaxAuditRoutes, {
+    prefix: '/api/v1/silo-tax',
+  });
+
   // Push notification device token routes
   await server.register(notificationRoutes, {
     prefix: '/api/v1/notifications',
@@ -427,6 +434,9 @@ export async function createServer() {
   await server.register(adminRoutes, {
     prefix: '/api/v1/admin',
   });
+
+  // Agency OS routes (D004) — multi-tenant agency management + video pipeline
+  await server.register(agencyRoutes);
 
   // Root endpoint
   server.get('/', async () => {
