@@ -996,7 +996,7 @@ export default function SiloTaxAuditPage() {
                 {/* CTA buttons */}
                 <div style={{ display: 'flex', gap: 12 }}>
                   <Link
-                    href="/beta"
+                    href="https://app.pravado.io/beta"
                     style={{
                       padding: '12px 24px',
                       borderRadius: 10,
@@ -1012,7 +1012,7 @@ export default function SiloTaxAuditPage() {
                     Fix My Visibility &rarr;
                   </Link>
                   <Link
-                    href="/platform"
+                    href="https://pravado.io/platform"
                     style={{
                       padding: '12px 24px',
                       borderRadius: 10,
@@ -1189,7 +1189,7 @@ export default function SiloTaxAuditPage() {
                 {/* Fix CTA */}
                 <div style={{ marginTop: 24 }}>
                   <Link
-                    href="/pricing"
+                    href="https://pravado.io/pricing"
                     style={{
                       display: 'block',
                       textAlign: 'center',
@@ -1402,7 +1402,7 @@ export default function SiloTaxAuditPage() {
                 </p>
 
                 <Link
-                  href="/beta"
+                  href="https://app.pravado.io/beta"
                   style={{
                     display: 'block',
                     textAlign: 'center',
