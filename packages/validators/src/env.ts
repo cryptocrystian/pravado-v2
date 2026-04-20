@@ -22,6 +22,10 @@ export const apiEnvSchema = baseEnvSchema.extend({
   SUPABASE_ANON_KEY: z.string().min(1),
   COOKIE_SECRET: z.string().default('pravado-cookie-secret'),
   // Email configuration (optional - falls back to console logging)
+  // Resend (primary)
+  RESEND_API_KEY: z.string().optional(),
+  RESEND_FROM_EMAIL: z.string().optional().default('hello@pravado.io'),
+  // Mailgun (legacy fallback)
   MAILGUN_API_KEY: z.string().optional(),
   MAILGUN_DOMAIN: z.string().optional(),
   MAILGUN_FROM_EMAIL: z.string().email().optional(),

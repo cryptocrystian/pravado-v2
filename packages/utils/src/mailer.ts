@@ -1,5 +1,5 @@
 /**
- * Mailer abstraction with Mailgun and console implementations
+ * Mailer abstraction with Resend and console implementations
  */
 
 import type { MailPayload } from '@pravado/types';
@@ -12,6 +12,9 @@ export interface Mailer {
 }
 
 export interface MailerConfig {
+  resendApiKey?: string;
+  resendFromEmail?: string;
+  // Legacy Mailgun (kept for backward compat, unused if Resend is configured)
   mailgunApiKey?: string;
   mailgunDomain?: string;
   mailgunFromEmail?: string;
@@ -19,12 +22,12 @@ export interface MailerConfig {
 
 /**
  * Console mailer - logs emails instead of sending them
- * Used when Mailgun is not configured or in development
+ * Used when no email provider is configured or in development
  */
 export function createConsoleMailer(): Mailer {
   return {
     async sendMail(payload: MailPayload): Promise<void> {
-      logger.info('📧 [Console Mailer] Email would be sent:', {
+      logger.info('[Console Mailer] Email would be sent:', {
         to: payload.to,
         subject: payload.subject,
         from: payload.from,
@@ -40,9 +43,58 @@ export function createConsoleMailer(): Mailer {
 }
 
 /**
- * Mailgun mailer - sends real emails via Mailgun API
+ * Resend mailer - sends real emails via Resend API
+ * https://resend.com/docs/api-reference/emails/send-email
  */
-export function createMailgunMailer(config: Required<MailerConfig>): Mailer {
+export function createResendMailer(apiKey: string, defaultFrom: string): Mailer {
+  return {
+    async sendMail(payload: MailPayload): Promise<void> {
+      const to = Array.isArray(payload.to) ? payload.to : [payload.to];
+
+      try {
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: payload.from || defaultFrom,
+            to,
+            subject: payload.subject,
+            html: payload.html,
+            text: payload.text || undefined,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.text();
+          logger.error('Resend API error:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorBody,
+          });
+          throw new Error(`Resend API error: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json() as { id?: string };
+        logger.info('Email sent successfully via Resend:', {
+          to: payload.to,
+          subject: payload.subject,
+          id: result.id,
+        });
+      } catch (error) {
+        logger.error('Failed to send email via Resend:', error instanceof Error ? { error: error.message } : { error });
+        throw error;
+      }
+    },
+  };
+}
+
+/**
+ * Mailgun mailer (legacy) - sends real emails via Mailgun API
+ */
+export function createMailgunMailer(config: { mailgunApiKey: string; mailgunDomain: string; mailgunFromEmail: string }): Mailer {
   const { mailgunApiKey, mailgunDomain, mailgunFromEmail } = config;
 
   return {
@@ -58,10 +110,7 @@ export function createMailgunMailer(config: Required<MailerConfig>): Mailer {
 
       formData.append('subject', payload.subject);
       formData.append('html', payload.html);
-
-      if (payload.text) {
-        formData.append('text', payload.text);
-      }
+      if (payload.text) formData.append('text', payload.text);
 
       const url = `https://api.mailgun.net/v3/${mailgunDomain}/messages`;
 
@@ -77,20 +126,12 @@ export function createMailgunMailer(config: Required<MailerConfig>): Mailer {
 
         if (!response.ok) {
           const errorText = await response.text();
-          logger.error('Mailgun API error:', {
-            status: response.status,
-            statusText: response.statusText,
-            body: errorText,
-          });
-          throw new Error(`Mailgun API error: ${response.status} ${response.statusText}`);
+          logger.error('Mailgun API error:', { status: response.status, body: errorText });
+          throw new Error(`Mailgun API error: ${response.status}`);
         }
 
         const result = await response.json() as { id?: string };
-        logger.info('Email sent successfully via Mailgun:', {
-          to: payload.to,
-          subject: payload.subject,
-          id: result.id,
-        });
+        logger.info('Email sent via Mailgun:', { to: payload.to, id: result.id });
       } catch (error) {
         logger.error('Failed to send email via Mailgun:', error instanceof Error ? { error: error.message } : { error });
         throw error;
@@ -100,29 +141,34 @@ export function createMailgunMailer(config: Required<MailerConfig>): Mailer {
 }
 
 /**
- * Check if Mailgun configuration is complete
+ * Check if Mailgun configuration is complete (legacy)
  */
-export function hasMailgunConfig(config: MailerConfig): config is Required<MailerConfig> {
-  return !!(
-    config.mailgunApiKey &&
-    config.mailgunDomain &&
-    config.mailgunFromEmail
-  );
+export function hasMailgunConfig(config: MailerConfig): boolean {
+  return !!(config.mailgunApiKey && config.mailgunDomain && config.mailgunFromEmail);
 }
 
 /**
  * Create appropriate mailer based on configuration
- * Falls back to console mailer if Mailgun is not configured
+ * Priority: Resend > Mailgun > Console
  */
 export function createMailer(config: MailerConfig): Mailer {
-  if (hasMailgunConfig(config)) {
-    logger.info('Initializing Mailgun mailer', {
-      domain: config.mailgunDomain,
-      from: config.mailgunFromEmail,
-    });
-    return createMailgunMailer(config);
+  // Resend takes priority
+  if (config.resendApiKey) {
+    const from = config.resendFromEmail || 'hello@pravado.io';
+    logger.info('Initializing Resend mailer', { from });
+    return createResendMailer(config.resendApiKey, from);
   }
 
-  logger.warn('Mailgun not configured, using console mailer (emails will be logged only)');
+  // Fall back to Mailgun if configured
+  if (config.mailgunApiKey && config.mailgunDomain && config.mailgunFromEmail) {
+    logger.info('Initializing Mailgun mailer (legacy)', { domain: config.mailgunDomain });
+    return createMailgunMailer({
+      mailgunApiKey: config.mailgunApiKey,
+      mailgunDomain: config.mailgunDomain,
+      mailgunFromEmail: config.mailgunFromEmail,
+    });
+  }
+
+  logger.warn('No email provider configured, using console mailer (emails will be logged only)');
   return createConsoleMailer();
 }
