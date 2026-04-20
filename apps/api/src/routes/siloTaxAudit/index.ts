@@ -87,6 +87,56 @@ const FALLBACK_RESULT: LlmResult = {
   entity_collision_risk_pct: 35,
 };
 
+function buildAuditClaimEmailHtml(name: string, eviScore: number, siloTax: number, magicLinkUrl: string): string {
+  const eviColor = eviScore < 30 ? '#EF4444' : eviScore < 60 ? '#F59E0B' : '#22C55E';
+  const eviLabel = eviScore < 30 ? 'At Risk' : eviScore < 60 ? 'Building' : 'Strong';
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f8;padding:40px 0;"><tr><td align="center">
+<table width="520" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+<tr><td style="padding:32px 32px 24px;text-align:center;border-bottom:2px solid #00D9FF;">
+  <span style="font-family:monospace;font-weight:800;font-size:20px;letter-spacing:3px;color:#1a1a2e;">PRAVADO</span>
+</td></tr>
+<tr><td style="padding:32px;">
+  <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#111118;">Your Silo Tax Audit is ready, ${name}.</h1>
+
+  <div style="display:flex;gap:16px;margin:0 0 24px;">
+    <div style="flex:1;padding:20px;background:#f8f8fc;border-radius:8px;text-align:center;border:1px solid #eee;">
+      <div style="font-size:11px;color:#666;font-family:monospace;letter-spacing:0.1em;margin-bottom:8px;">EVI&trade; SCORE</div>
+      <div style="font-size:36px;font-weight:900;font-family:monospace;color:${eviColor};">${eviScore}</div>
+      <div style="font-size:12px;color:${eviColor};margin-top:4px;">${eviLabel}</div>
+    </div>
+    <div style="flex:1;padding:20px;background:#f8f8fc;border-radius:8px;text-align:center;border:1px solid #eee;">
+      <div style="font-size:11px;color:#666;font-family:monospace;letter-spacing:0.1em;margin-bottom:8px;">SILO TAX</div>
+      <div style="font-size:36px;font-weight:900;font-family:monospace;color:#00D9FF;">$${siloTax.toLocaleString()}</div>
+      <div style="font-size:12px;color:#666;margin-top:4px;">/month lost</div>
+    </div>
+  </div>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;"><tr><td align="center">
+    <a href="${magicLinkUrl}" style="display:inline-block;background:#00D9FF;color:#0A0A0F;font-size:15px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:8px;">
+      Access Your Dashboard &rarr;
+    </a>
+  </td></tr></table>
+
+  <div style="padding:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;margin:0 0 24px;">
+    <p style="margin:0;font-size:13px;color:#166534;">
+      <strong>CiteMind&trade; 72H Window Active</strong><br>
+      We're scanning ChatGPT and Perplexity for citations of your brand right now.
+      You'll receive an email when results are detected.
+    </p>
+  </div>
+
+  <p style="margin:0;font-size:13px;color:#888;line-height:1.6;">
+    This magic link expires in 24 hours. If you have questions, reply to this email &mdash; you'll reach Christian directly.
+  </p>
+</td></tr>
+<tr><td style="padding:20px 32px;background:#f9f9fb;text-align:center;border-top:1px solid #eee;">
+  <p style="margin:0;font-size:12px;color:#aaa;">Pravado &middot; AI-Powered Visibility Platform &middot; <a href="https://pravado.io" style="color:#00D9FF;text-decoration:none;">pravado.io</a></p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
 export async function siloTaxAuditRoutes(server: FastifyInstance) {
   const supabaseUrl = process.env.SUPABASE_URL!;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -300,6 +350,46 @@ Rules:
           trial_expires_at: trialExpiresAt,
         })
         .eq('id', audit_id);
+
+      // Fetch audit data for email
+      const { data: auditData } = await supabase
+        .from('audit_sessions')
+        .select('evi_score, silo_tax_monthly')
+        .eq('id', audit_id)
+        .single();
+
+      // Generate magic link for passwordless login
+      let magicLinkUrl = 'https://app.pravado.io/login';
+      try {
+        const { data: linkData } = await supabase.auth.admin.generateLink({
+          type: 'magiclink',
+          email,
+          options: {
+            redirectTo: 'https://app.pravado.io/app/command-center',
+          },
+        });
+        if (linkData?.properties?.action_link) {
+          magicLinkUrl = linkData.properties.action_link;
+        }
+      } catch (linkErr) {
+        logger.error('Failed to generate magic link', { error: (linkErr as Error).message });
+      }
+
+      // Send welcome email with results + magic link
+      const eviScore = auditData?.evi_score ?? 0;
+      const siloTax = auditData?.silo_tax_monthly ?? 0;
+      try {
+        await server.mailer.sendMail({
+          to: email,
+          from: 'christian@pravado.io',
+          subject: 'Your Pravado Silo Tax results + dashboard access',
+          html: buildAuditClaimEmailHtml(name, eviScore, siloTax, magicLinkUrl),
+          text: `Hi ${name}, your Silo Tax Audit is complete. EVI Score: ${eviScore}/100. Estimated Silo Tax: $${siloTax.toLocaleString()}/mo. Access your dashboard: ${magicLinkUrl}`,
+        });
+        logger.info('Audit claim email sent', { email });
+      } catch (emailErr) {
+        logger.error('Failed to send audit claim email', { error: (emailErr as Error).message });
+      }
 
       logger.info('Audit claimed', { email, audit_id, org_id: orgId });
 
