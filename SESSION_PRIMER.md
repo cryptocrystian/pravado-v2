@@ -9,6 +9,8 @@
 Both `pravado.io` (marketing) and `app.pravado.io` (dashboard) are live and
 separated. The Silo Tax Audit acquisition funnel is functional end-to-end with
 real Claude Haiku analysis, Supabase persistence, and Resend email delivery.
+The magic link in the email is currently broken (Supabase Site URL wrong) —
+fix is documented below and must be first action in next session.
 
 ---
 
@@ -18,189 +20,283 @@ real Claude Haiku analysis, Supabase persistence, and Resend email delivery.
 |---------|-----|--------|
 | Marketing site | https://pravado.io | ✅ Live |
 | Dashboard | https://app.pravado.io | ✅ Live |
-| API | https://pravado-api.onrender.com | ✅ Live |
+| API | https://pravado-api.onrender.com | ✅ Live (b85e9ff) |
 | Supabase | kroexsdyyqmlxfpbwajv | ✅ Live |
 | Email | Resend / hello@pravado.io | ✅ Live |
+| Vercel | pravado-dashboard project | ✅ Both domains |
 
-**Render:** Pro plan, pipeline minutes are metered ($5/1K) not hard-capped.
-**Vercel:** Both pravado.io and app.pravado.io pointed to pravado-dashboard project.
-**DNS:** Namecheap (NOT Cloudflare) — A record @ → 216.150.1.1, CNAME www → Vercel.
-**Email DNS:** Resend DKIM/SPF/MX verified on pravado.io at Namecheap.
+**Render:** Pro plan. Pipeline minutes are METERED ($5/1K) — not hard-capped.
+Heavy sprint burned significant minutes. Builds are working.
+
+**DNS (Namecheap — NOT Cloudflare):**
+- A record @ → 216.150.1.1 (Vercel)
+- CNAME www → 9f1f38c7c596ca86.vercel-dns-017.com (Vercel specific)
+- Resend DKIM TXT: resend._domainkey → [key]
+- Resend SPF TXT: send → v=spf1 include:amazonses.com ~all
+- Resend MX: send → feedback-smtp.us-east-1.amazonses.com (priority 10)
+
+**Render Environment Variables (confirmed set):**
+- ANTHROPIC_API_KEY — Claude Haiku for audit scans
+- RESEND_API_KEY — Resend email delivery
+- RESEND_FROM_EMAIL — hello@pravado.io
+- SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+- STRIPE_SECRET_KEY
+- MAILGUN_* — legacy, can be removed (ignored by mailer)
 
 ---
 
 ## WHAT WAS BUILT THIS SESSION
 
 ### 1. Marketing Site — 5 pages live at pravado.io
-- `/` — Homepage: hero, persona pain cards, EVI section, layered architecture
-  diagram, How It Works, pricing preview
-- `/platform` — Architecture deep-dive with second orbital diagram
-- `/models` — Three engine deep-dives (SAGE™/CRAFT™/CiteMind™) with per-engine
-  process SVG diagrams
-- `/pricing` — $199/$599/$1,199/Custom with annual/monthly toggle, "Most
-  Popular" badge on Pro, "Replaces" comparison line
-- `/about` — Mission, problem stats, company
 
-**Design rules confirmed:**
+**Pages:** `/` `/platform` `/models` `/pricing` `/about`
+
+**Design rules (MUST maintain):**
 - 100% inline styles — NO Tailwind color utilities
-- Technical grid background (#0A0A0F + 1px lines)
-- Solid backgrounds on ALL sections (alternating #0A0A0F / #0D0D14)
-- Cyber-industrial aesthetic
+- Technical grid background: #0A0A0F with 1px rgba(255,255,255,0.025) lines
+- ALL sections have explicit solid backgrounds (alternating #0A0A0F / #0D0D14)
+- Section padding: `80-100px 5%` with `maxWidth: 1400, margin: '0 auto'` inner wrapper
+- Body copy constrained to maxWidth 640-680px inside sections
+- Never transparent/rgba section backgrounds — caused invisible content bug
 
-### 2. Architecture Diagram — Layered Perspective (homepage + platform)
-Replaced old concentric circles with stacked orbital ellipses showing:
-- STRATEGY layer → SAGE™ (iris #A855F7)
-- EXECUTION layer → CRAFT™ (cyan #00D9FF)
-- INTELLIGENCE layer → CiteMind™ (magenta #E879F9)
-- OUTPUT → EVI™ 74.2 (green #22C55E) at convergence point
-- Directional flow arrows between each layer
-- Green feedback loop on left side "re-analysis loop"
-- Right column: "Three layers. One direction." + loop statement in brand colors
+**Nav:** Platform | Models | Pricing | About | [FREE Silo Tax Audit pill] | Sign In | Get Early Access
 
-### 3. Silo Tax Audit — Primary Acquisition Flow
+### 2. Layered Architecture Diagram (homepage + platform)
 
-**Live at: pravado.io/audit**
+SVG, 600×520 viewBox. Three orbital ellipses at different altitudes showing:
+- Left side: STRATEGY / EXECUTION / INTELLIGENCE / OUTPUT layer labels
+- SAGE™ (iris #A855F7) on STRATEGY orbital
+- CRAFT™ (cyan #00D9FF) on EXECUTION orbital
+- CiteMind™ (magenta #E879F9) on INTELLIGENCE orbital
+- Vertical flow arrows: "dispatches action" → "generates signals" → "citation data"
+- EVI™ 74.2 (green #22C55E) at convergence bottom
+- Green dashed feedback loop on left: "re-analysis loop" EVI→SAGE
+- Right column (2-col layout): "Three layers. One direction." + loop statement
 
-4-step state machine: input → scanning → teaser → results
+### 3. Models Page (/models)
 
-**Backend:**
-- Route: `apps/api/src/routes/siloTaxAudit/index.ts`
-- Registered at: `/api/v1/silo-tax` on Render API
-- Model: `claude-haiku-4-5-20251001` (~$0.002/audit confirmed)
-- Silo Tax formula:
-  - Authority Leakage = unlinked_mentions × $18 CPM
-  - PPC Replacement = citation_gap_queries × $2.40 × 120
-  - Hallucination Overhead = (1200 × entity_collision_risk%) × $1.20
-  - Monthly Cash Loss = Authority Leakage + PPC Replacement
-  - Compounding Risk Premium = Hallucination Overhead
-- Supabase table: `audit_sessions` (live, RLS enabled)
-- Magic link generated via `supabase.auth.admin.generateLink()`
-- Email sent via Resend after account creation
+Three anchored sections (#sage #craft #citemind) with per-engine process diagrams:
+- SAGE™: Radial input SVG — 7 signal sources flowing inward, output arrow → CRAFT™
+- CRAFT™: Horizontal 5-stage pipeline SVG with feedback loop + 3 execution type cards
+- CiteMind™: Circular scanning SVG — 4 AI engine nodes, citation type legend, mock feed
+- Intro section with 3 quick-nav cards linking to anchors
 
-**Proxy routes (Next.js → Render):**
-- `apps/dashboard/src/app/api/audit/scan/route.ts` → `/api/v1/silo-tax/scan`
-- `apps/dashboard/src/app/api/audit/claim/route.ts` → `/api/v1/silo-tax/claim`
+### 4. Pricing (Canonical — all files updated)
 
-**Key fixes applied this session:**
-- `listUsers({ perPage: 1000 })` — was 1, caused user lookup to fail
-- `organizations` → `orgs` — correct Supabase table name
-- agencyRoutes import commented out in server.ts (uncommitted, was crashing Render)
-- Field names: `brandUrl`/`competitorUrls` (not `brand_url`/`competitors`)
+| Plan | Monthly | Annual | Key limits |
+|------|---------|--------|-----------|
+| Starter | $199 | $159 | 3 seats, 300 SAGE/mo, 100 CiteMind scans |
+| Pro ★ | $599 | $479 | 5 seats, 1500 SAGE/mo, 1000 CiteMind scans |
+| Growth | $1,199 | $959 | 15 seats, 10K SAGE/mo, 5000 CiteMind scans |
+| Enterprise | Custom | Custom | Unlimited |
 
-### 4. Email Infrastructure
-- Provider: Resend (re_xxxx key in Render env)
+Annual/monthly toggle with "Save 20%" badge. Pro has "Most Popular" badge.
+"Replaces" comparison: Muck Rack + Profound + Semrush = $1,632/mo
+
+Files updated: `planLimitsService.ts`, `bootstrapStripeBilling.ts`,
+`(marketing)/pricing/page.tsx`, `(marketing)/page.tsx`
+
+Trial tier added: 1 seat, 2 CiteMind engines (ChatGPT+Perplexity), 10 SAGE
+proposals, 500K tokens, 1 CRAFT execution.
+
+### 5. Silo Tax Audit — Primary Acquisition Flow
+
+**URL:** pravado.io/audit  
+**Model:** claude-haiku-4-5-20251001 (~$0.002/audit — confirmed, NOT $0.30)  
+**At scale:** 10K audits/month = ~$20 in LLM costs
+
+**4-step state machine:** input → scanning → teaser (gated) → results
+
+**Silo Tax Formula:**
+```
+Authority Leakage    = unlinked_mentions × $18 CPM
+PPC Replacement      = citation_gap_queries × $2.40 × 120
+Hallucination Overhead = (1200 × entity_collision_risk%) × $1.20
+Monthly Cash Loss    = Authority Leakage + PPC Replacement
+Compounding Risk     = Hallucination Overhead (grows 10× if uncorrected)
+Silo Tax Total       = All three combined
+```
+
+**Files:**
+- Frontend: `apps/dashboard/src/app/(marketing)/audit/page.tsx`
+- API scan: `apps/api/src/routes/siloTaxAudit/index.ts`
+- Proxy scan: `apps/dashboard/src/app/api/audit/scan/route.ts`
+- Proxy claim: `apps/dashboard/src/app/api/audit/claim/route.ts`
+- Supabase table: `audit_sessions` (live, RLS, references `orgs` not `organizations`)
+
+**Claim route flow:**
+1. `listUsers({ perPage: 1000 })` to check existing user
+2. Creates Supabase auth user + org
+3. Links audit_session to org, sets `trial_expires_at = now() + 72 hours`
+4. Generates magic link → `https://app.pravado.io/app/command-center`
+5. Sends Resend email with EVI card + Silo Tax + CTA button
+
+**Key bugs fixed:**
+- `listUsers({ perPage: 1 })` → `perPage: 1000` (user lookup was always failing)
+- `organizations` → `orgs` (correct Supabase table name)
+- `brand_url`/`competitors` → `brandUrl`/`competitorUrls` (field name mismatch)
+- agencyRoutes import commented out in server.ts (was crashing Render on every deploy)
+- Null safety on result display (toLocaleString crash)
+
+### 6. Email Infrastructure
+
+- Provider: Resend (replacing Mailgun)
 - From: hello@pravado.io
-- Domain verified: pravado.io (DKIM + SPF + MX in Namecheap)
-- Mailer plugin: `apps/api/src/plugins/mailer.ts`
-  - Reads `process.env.RESEND_API_KEY` directly (bypasses validateEnv)
-  - Priority: Resend → Mailgun → Console
-- `createMailer()` in `packages/utils/src/mailer.ts` supports Resend natively
+- Mailer plugin: reads `process.env.RESEND_API_KEY` directly (bypasses validateEnv
+  Zod schema which was stripping the key)
+- Priority order: Resend → Mailgun (legacy) → Console (dev fallback)
+- `createMailer()` in `packages/utils/src/mailer.ts` — uses fetch to Resend API
+- Email template: EVI score card + Silo Tax + magic link CTA + CiteMind 72H notice
 
-### 5. Domain Separation
-- `apps/dashboard/middleware.ts` — hostname routing
-  - `pravado.io` → serves marketing pages, redirects /app/* to app.pravado.io
-  - `app.pravado.io` → serves dashboard, redirects marketing routes to pravado.io
-- `apps/dashboard/src/lib/domains.ts` — DOMAINS helper, marketingUrl(), appUrl()
-- Env vars in Vercel: NEXT_PUBLIC_MARKETING_URL, NEXT_PUBLIC_APP_URL
+**Email strategy decision:**
+- Transactional: Resend (confirmed working)
+- Business inboxes: Zoho Mail recommended ($1/user/mo, unlimited domains) — NOT YET SET UP
+- Decision: Don't use single provider for both — keep them separate
 
-### 6. Pricing (Canonical — confirmed in planLimitsService + bootstrapStripeBilling)
-| Plan | Monthly | Annual |
-|------|---------|--------|
-| Starter | $199/mo | $159/mo |
-| Pro (Most Popular) | $599/mo | $479/mo |
-| Growth | $1,199/mo | $959/mo |
-| Enterprise | Custom (floor $2,500) | Custom |
+### 7. Domain Separation
 
-Trial tier added: 1 seat, 2 CiteMind engines, 10 SAGE proposals, 500K tokens
+- `apps/dashboard/middleware.ts` — hostname routing middleware
+- `apps/dashboard/src/lib/domains.ts` — DOMAINS helper
+- Vercel env vars: NEXT_PUBLIC_MARKETING_URL, NEXT_PUBLIC_APP_URL
 
 ---
 
-## OUTSTANDING ISSUES — MUST FIX NEXT SESSION
+## OUTSTANDING ISSUES — PRIORITIZED FOR NEXT SESSION
 
-### 🔴 P0 — Blocking
+### 🔴 P0 — Do First (blocks magic link / funnel conversion)
 
-**1. Supabase Site URL wrong (magic link broken)**
+**1. Supabase Site URL is wrong**
 - Current: Site URL = `https://agency.sapientdigital.io` (set during agency-os work)
-- Fix: Go to supabase.com/dashboard/project/kroexsdyyqmlxfpbwajv/auth/url-configuration
+- This causes magic links to redirect to agency domain (no DNS → broken link)
+- Fix (30 seconds, manual in Supabase dashboard):
+  - URL: supabase.com/dashboard/project/kroexsdyyqmlxfpbwajv/auth/url-configuration
   - Site URL → `https://app.pravado.io`
-  - Redirect URLs → add `https://app.pravado.io/**` and `https://pravado.io/**`
-- Status: NOT YET DONE — do this first in next session
+  - Redirect URLs → ensure these are in allowlist:
+    - `https://app.pravado.io/**`
+    - `https://pravado.io/**`
+    - `https://agency.sapientdigital.io/**` (keep for future)
+  - Click Save
 
-**2. Audit funnel UX restructure needed**
-Current flow has three problems identified by Christian:
-  a) Email captured AFTER scan — no protection against bots/competitors
-  b) Results shown immediately after account creation — email CTA is redundant
-  c) Visual design needs assessment — "on the border between good marketing
-     and gimmicky" — needs eyes-on review before sharing publicly
+**2. Audit funnel UX restructure**
 
-**Agreed redesign:**
+Current flow problems identified by Christian:
+  a) Email captured AFTER scan — no bot protection, competitors can abuse
+  b) Results shown immediately on screen after account creation — email CTA redundant
+  c) Visual design unreviewed — "on the border between good and gimmicky"
+  d) No email validation (format not checked server-side)
+
+Agreed redesign:
 ```
 NEW FLOW:
-Step 1: URL input + email upfront (required, rate-limited 1/email/24h)
-Step 2: Scanning animation (Haiku runs)
-Step 3: Full results shown directly (no blur gate — email already captured)
+Step 1: URL input + email REQUIRED upfront
+         Rate limit: 1 scan per email per 24 hours (prevent abuse)
+         Simple email format validation
+Step 2: Scanning animation (Haiku runs in background)
+Step 3: Full results shown directly — NO blur gate (email already captured)
 Step 4: "Save to dashboard" CTA → name + company → creates full account
-         → Resend sends magic link for ongoing access
+         Resend sends magic link for ongoing access
 ```
 
-**3. Visual design review needed**
-- Haven't done a full visual inspection of the complete audit flow
-- Christian says it's "pretty good but on the border between good and gimmicky"
-- Need: screenshot or Loom of each step for honest assessment
+Benefits: Captures lead before spending $0.002, stops bot abuse, less gimmicky.
+
+**3. Visual design assessment of audit flow**
+- Haven't done full eyes-on review of complete flow
+- Christian says "pretty good but on the border between good and gimmicky"
+- Need to screenshot/record each step and assess:
+  - Input page (confirmed good)
+  - Scanning animation (confirmed good)
+  - Teaser gate (confirmed working — blurred EVI + Silo Tax + form)
+  - Full results: EVI score, odometer, formula reveal, gap cards, CiteMind panel
+  - Transitions between steps
+  - Whether Silo Tax numbers feel credible or inflated
+
+**4. Email template branding**
+- Email delivered successfully ✅
+- Christian says branding "needs work"
+- Template in `buildAuditClaimEmailHtml()` in `siloTaxAudit/index.ts`
+- Assess: logo treatment, typography, color usage vs DS v3 brand standards
 
 ### 🟡 P1 — Important
 
-**4. Email validation missing**
-- No server-side email format validation in the claim route
-- Add regex check before Supabase user creation
-
-**5. Dashboard first-session UX**
+**5. Dashboard first-session UX for audit users**
 - Users who click magic link land in Command Center cold
-- No context tied to their audit data
-- audit_sessions.org_id is set — data is there, just not surfaced
+- No connection between their audit data and what they see
+- `audit_sessions.org_id` is set — data exists, just not surfaced
+- Need: "Welcome" state that shows their EVI score and top gaps from audit
 
-**6. Agency OS uncommitted files**
-- `apps/agency-os/` — entire app is untracked, NOT in git
-- `apps/api/src/routes/agency/` — routes untracked, NOT in git
-- `apps/api/src/routes/agency` is referenced by server.ts but commented out
-- DO NOT commit these yet — requires its own planned sprint
+**6. Pre-existing Render API errors (non-blocking)**
+- Redis SSL error: `ssl3_get_record:wrong version number`
+  → BullMQ queues disabled, jobs run on-demand. Pre-existing, low priority.
+- Scheduler tick error every 60s: EVI scheduler skipped due to no Redis
+  → Pre-existing. Not affecting any user-facing functionality.
+- 47 TypeScript errors in apps/api: ALL in `routes/agency/**` (uncommitted)
+  → Not imported, not compiled. Safe to ignore until agency sprint.
+- Sentry DSN not configured → just a warning, doesn't affect operation
 
-### 🟢 P2 — When Pipeline Minutes Allow
-
-**7. Render pipeline minutes**
-- Currently metered at $5/1K minutes (not hard-capped)
-- Heavy sprint burned significant minutes
-- Shell patches made during session are TEMPORARY — will revert on next deploy
-- All shell patches ARE committed to git, so next deploy will be correct
-
-**8. Wellstead external dependencies**
+**7. Wellstead external dependencies**
 - Stripe, RevenueCat, Google Maps API, FusionPBX — blocking App Store submission
-- Separate sprint required
+- Separate dedicated sprint required
+
+### 🟢 P2 — Future Sprints
+
+**8. Annual billing in Stripe**
+- Annual price IDs not yet created (only monthly exists in bootstrapStripeBilling.ts)
+- Toggle UI exists on pricing page, but Stripe doesn't have annual prices yet
+
+**9. 80% usage warning emails**
+- `isApproachingLimit()` utility added to planLimitsService
+- Cron job to send warning emails not built yet
+
+**10. Agency OS (DO NOT COMMIT without planning)**
+- `apps/agency-os/**` — entire app, untracked
+- `apps/api/src/routes/agency/**` — routes, untracked
+- server.ts import is COMMENTED OUT — safe
+- Requires its own planned sprint + Work Order
 
 ---
 
 ## BRAND ARCHITECTURE — LOCKED
 
 ```
-SAGE™    = Signal · Authority · Growth · Exposure (strategic intelligence)
-CRAFT™   = Coordinated Response & Action Flow Technology (execution)
-CiteMind™ = AI citation intelligence engine
-EVI™     = Earned Visibility Index (0-100, unified output metric)
+SAGE™    = Signal · Authority · Growth · Exposure
+CRAFT™   = Coordinated Response & Action Flow Technology
+CiteMind™ = AI citation intelligence engine (compound word, not acronym)
+EVI™     = Earned Visibility Index (0-100)
 ```
 
-**Loop statement (use verbatim):**
-`SAGE™ → CRAFT™ → CiteMind™ → EVI™ → SAGE™`
+**Loop statement:** `SAGE™ → CRAFT™ → CiteMind™ → EVI™ → SAGE™`
 
 **System statement:**
 `SAGE™ identifies the gap. CRAFT™ closes it. CiteMind™ confirms it happened.
 EVI™ tells you if it's working.`
 
-**TM rules:** Use ™ (unregistered). File USPTO Class 42+35 before using ®.
+**TM rules:** Use ™ (unregistered claim). File USPTO Class 42+35 before ®.
+
+**Telemetry panel (canonical):**
+```
+● SAGE™      Active — 3 recommendations queued
+● CRAFT™     Running — 2 campaigns in flight
+● CiteMind™  Monitoring — 4 new citations detected
+```
 
 ---
 
-## GIT STATE — LAST KNOWN COMMITS
+## COMPETITIVE CONTEXT (for audit copy)
 
+**Pravado replaces:**
+- Muck Rack: ~$833/mo (mid-market avg $12,874/yr)
+- Profound (AEO): $399/mo Growth
+- Semrush: $400/mo
+- BuzzSumo: $300/mo
+- **Total current stack: ~$1,632–1,932/mo**
+
+**Growth plan at $1,199/mo = ~$700/mo savings + unified platform**
+
+---
+
+## GIT STATE
+
+**Latest commits (main branch):**
 ```
 b85e9ff fix(api): rewrite mailerPlugin — reads process.env directly
 bd91d70 fix: listUsers perPage 1→1000
@@ -209,53 +305,60 @@ b6a2a1c fix(api): add Silo Tax audit routes to Render API
 601e4c5 feat: Silo Tax Audit — primary acquisition flow
 1070a9d fix(marketing): replace &check; with Unicode checkmark
 e01b58b fix(marketing): solid backgrounds on all sections
-79faaf3 feat: layered diagram + models page
+79faaf3 feat: layered diagram + models page + margin fixes
 83bf7a4 feat: marketing site persona cards + orbital diagram
+0047520 fix(middleware): remove unused SHARED_PATHS variable
+0309d92 feat: AUTOMATE→CRAFT™ rename across 30 files
 ```
 
-**Untracked (do NOT commit without planning):**
-- `apps/agency-os/**` — Agency OS app (separate venture, separate sprint)
-- `apps/api/src/routes/agency/**` — Agency OS API routes
-- `apps/api/.env.agency`
-- `AGENCY_OS_SESSION_2.md`
-- `E2E_AUDIT_REPORT.md`
-- `mobile-audit/`
-
----
-
-## REPO STRUCTURE QUICK REF
-
+**Untracked — DO NOT COMMIT without planning:**
 ```
-pravado-v2/
-├── apps/
-│   ├── dashboard/          ← Next.js (Vercel) — marketing + dashboard
-│   │   ├── src/app/(marketing)/  ← pravado.io pages
-│   │   │   ├── page.tsx          ← Homepage
-│   │   │   ├── audit/page.tsx    ← Silo Tax Audit (acquisition)
-│   │   │   ├── platform/page.tsx
-│   │   │   ├── models/page.tsx
-│   │   │   ├── pricing/page.tsx
-│   │   │   └── about/page.tsx
-│   │   ├── src/app/app/          ← app.pravado.io dashboard
-│   │   └── middleware.ts         ← Domain separation routing
-│   └── api/                ← Fastify (Render) — backend API
-│       └── src/
-│           ├── server.ts         ← Route registration
-│           ├── routes/
-│           │   ├── siloTaxAudit/ ← Silo Tax scan + claim
-│           │   └── [others]
-│           └── plugins/
-│               └── mailer.ts     ← Resend email (process.env direct)
-├── packages/
-│   ├── utils/src/mailer.ts  ← createMailer() — Resend > Mailgun > Console
-│   └── validators/src/env.ts ← RESEND_API_KEY optional in schema
-└── supabase/
-    └── migrations/          ← audit_sessions table included
+apps/agency-os/**           ← Agency OS (separate venture sprint)
+apps/api/src/routes/agency/ ← Agency OS API routes
+apps/api/.env.agency
+AGENCY_OS_SESSION_2.md
+E2E_AUDIT_REPORT.md
+mobile-audit/
+scripts/reclassify-journalist-beats.sql
+vercel.agency-os.json
+docs/canon/AGENCY_OS_SPEC.md
+docs/canon/VIDEO_PIPELINE_AMENDMENT.md
 ```
 
 ---
 
-## SKILLS AVAILABLE
+## REPO / FILE QUICK REFERENCE
+
+```
+apps/dashboard/
+  middleware.ts                          ← Domain separation (pravado.io vs app.)
+  src/lib/domains.ts                     ← DOMAINS helper
+  src/app/(marketing)/
+    page.tsx                             ← Homepage
+    layout.tsx                           ← Marketing nav (Platform|Models|Pricing|About|Audit pill)
+    audit/page.tsx                       ← Silo Tax Audit (4-step state machine)
+    platform/page.tsx                    ← Architecture deep-dive
+    models/page.tsx                      ← Three engine deep-dives
+    pricing/page.tsx                     ← Pricing with toggle
+    about/page.tsx                       ← Mission + company
+  src/app/api/audit/
+    scan/route.ts                        ← Proxy → /api/v1/silo-tax/scan
+    claim/route.ts                       ← Proxy → /api/v1/silo-tax/claim
+
+apps/api/src/
+  server.ts                              ← Route registration (agency COMMENTED OUT)
+  plugins/mailer.ts                      ← Resend via process.env (no validateEnv)
+  routes/siloTaxAudit/index.ts          ← Scan + claim handlers + email template
+  services/billing/planLimitsService.ts ← Trial + paid tier limits
+
+packages/
+  utils/src/mailer.ts                   ← createMailer() Resend>Mailgun>Console
+  validators/src/env.ts                 ← RESEND_API_KEY optional in schema
+```
+
+---
+
+## SKILLS AVAILABLE (read before writing code)
 
 ```
 /mnt/skills/user/pravado-design/SKILL.md  ← DS v3 tokens, cyber-industrial rules
@@ -267,41 +370,26 @@ pravado-v2/
 
 ---
 
-## ENVIRONMENT VARIABLES (Render — production)
+## NEXT SESSION — DO IN THIS ORDER
 
-Key vars confirmed set:
-- `ANTHROPIC_API_KEY` — Claude Haiku for audit scans
-- `RESEND_API_KEY` — Email delivery
-- `RESEND_FROM_EMAIL` — hello@pravado.io
-- `SUPABASE_URL` — kroexsdyyqmlxfpbwajv
-- `SUPABASE_SERVICE_ROLE_KEY` — service role
-- `STRIPE_SECRET_KEY` — Stripe billing
-
-NOT set (Mailgun legacy — can be removed):
-- `MAILGUN_API_KEY`, `MAILGUN_DOMAIN`, `MAILGUN_FROM_EMAIL`
-
----
-
-## NEXT SESSION CHECKLIST — DO IN ORDER
-
-1. ✅ Read this file completely
-2. ✅ Fix Supabase Site URL (P0 — 30 seconds, manual)
-3. ✅ Visual audit of audit flow (screenshot each step)
-4. ✅ Redesign audit funnel — email upfront, remove blur gate
-5. ✅ Assess email template branding
-6. ✅ Dashboard first-session UX for audit users
-7. Then: Wellstead sprint OR other venture priority per Christian
+1. **Read this file completely** before touching any code
+2. **Fix Supabase Site URL** (P0, 30 seconds, manual) — unblocks magic link
+3. **Visual inspection** of full audit flow (screenshot each step, assess)
+4. **Email template** branding assessment + fix
+5. **Audit funnel restructure** — email upfront, remove blur gate
+6. **Dashboard first-session UX** for users arriving from magic link
+7. Address Wellstead or other venture priority per Christian
 
 ---
 
 ## MCP STABILITY NOTES
 
-Chrome MCP (`Claude in Chrome`) drops frequently during long sessions.
-**Mitigation:**
-- Use Claude Code for all file edits and code tasks
+Chrome MCP (`Claude in Chrome`) drops frequently in long sessions.
+- Start new session if MCP drops more than 2-3 times
+- Use Claude Code for all file edits — more reliable
 - Use MCP only for visual verification / browser automation
-- Start new session if MCP drops more than 3 times
 - Filesystem MCP is more stable than Chrome MCP
+- When MCP is down, use Render Web Shell for server-side fixes
 
 ---
-*This file is the canonical session handoff. Update at end of every session.*
+*Update this file at the end of every session before closing.*
