@@ -1,16 +1,4 @@
-/**
- * Mailer plugin for Fastify
- * Adds mailer instance to Fastify server
- *
- * Wrapped with fastify-plugin to skip encapsulation — makes
- * server.mailer visible to all child route plugins.
- *
- * Priority: Resend > Mailgun > Console (log only)
- */
-
-import fp from 'fastify-plugin';
 import { createMailer, type Mailer } from '@pravado/utils';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
 import { FastifyInstance } from 'fastify';
 
 declare module 'fastify' {
@@ -19,22 +7,16 @@ declare module 'fastify' {
   }
 }
 
-async function mailerPluginImpl(server: FastifyInstance) {
-  const env = validateEnv(apiEnvSchema);
-
+export async function mailerPlugin(server: FastifyInstance) {
+  // Read directly from process.env — bypass validateEnv so
+  // RESEND_API_KEY is not stripped by the Zod schema
   const mailer = createMailer({
-    // Resend (primary)
-    resendApiKey: env.RESEND_API_KEY,
-    resendFromEmail: env.RESEND_FROM_EMAIL,
-    // Mailgun (legacy fallback)
-    mailgunApiKey: env.MAILGUN_API_KEY,
-    mailgunDomain: env.MAILGUN_DOMAIN,
-    mailgunFromEmail: env.MAILGUN_FROM_EMAIL,
+    resendApiKey: process.env.RESEND_API_KEY,
+    resendFromEmail: process.env.RESEND_FROM_EMAIL
+      || 'hello@pravado.io',
+    mailgunApiKey: process.env.MAILGUN_API_KEY,
+    mailgunDomain: process.env.MAILGUN_DOMAIN,
+    mailgunFromEmail: process.env.MAILGUN_FROM_EMAIL,
   });
-
   server.decorate('mailer', mailer);
 }
-
-export const mailerPlugin = fp(mailerPluginImpl, {
-  name: 'mailer',
-});
