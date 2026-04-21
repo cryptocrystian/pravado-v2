@@ -288,7 +288,7 @@ Rules:
 
       // Create or find auth user
       let userId: string;
-      const { data: listData } = await supabase.auth.admin.listUsers({ perPage: 1 });
+      const { data: listData } = await supabase.auth.admin.listUsers({ perPage: 1000 });
       const existingUser = listData?.users?.find((u: { email?: string }) => u.email === email);
 
       if (existingUser) {
