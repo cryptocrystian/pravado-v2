@@ -14,8 +14,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function runRepairSQL() {
-  const connectionString = process.env.DATABASE_URL ||
-    'postgresql://postgres.kroexsdyyqmlxfpbwajv:dD7Z%21mQ6fx5LS%218@aws-0-us-west-2.pooler.supabase.com:6543/postgres';
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    console.error('DATABASE_URL is required');
+    process.exit(1);
+  }
 
   const client = new Client({
     connectionString,
