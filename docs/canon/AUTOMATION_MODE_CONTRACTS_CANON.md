@@ -152,7 +152,7 @@ This canon operates within a hierarchy of authority:
 
 ### Superior Canons (override this canon if conflict)
 - `PRODUCT_CONSTITUTION.md` — Core mission and non-negotiables
-- `AUTOMATE_EXECUTION_MODEL.md` — Execution authority and risk model
+- `CRAFT_EXECUTION_MODEL.md` — Execution authority and risk model
 
 ### Peer Canons (coordinate with this canon)
 - `AUTOMATION_MODES_UX.md` — UX patterns for mode implementation

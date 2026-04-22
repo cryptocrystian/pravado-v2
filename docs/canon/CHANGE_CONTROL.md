@@ -10,7 +10,7 @@ Prevent context drift by making product truth explicit, versioned, and enforced.
 ## When a Canon Amendment is Required
 A PR MUST be labeled `AMENDMENT:` if it changes:
 - product scope or behavior
-- SAGE/AUTOMATE semantics
+- SAGE/CRAFT semantics
 - UX surfaces or flows
 - DS v3/v3.1 principles
 - automation modes / approval chains

@@ -1,12 +1,45 @@
 # PRAVADO v2 — CANON INDEX
-Version: v1.9
+Version: v2.0
+Last updated: 2026-04-22
 
-> **CONFLICT RESOLUTION RULE:** When two canon files disagree, the higher priority file wins. Priority order: PRODUCT_CONSTITUTION → SAGE/AUTOMATE → DS v3 → UX Flows/Modes → UX Surfaces → V1 Freeze Contracts (per surface) → Plans/Limits → contracts/*. Full chain documented in `/CLAUDE.md`.
+> **CONFLICT RESOLUTION RULE:** When two canon files disagree, the higher priority file wins. Priority order: PRODUCT_CONSTITUTION → SAGE/CRAFT → DS v3 → UX Flows/Modes → UX Surfaces → V1 Freeze Contracts (per surface) → Plans/Limits → contracts/*. Full chain documented in `/CLAUDE.md`.
 
 > **SUPERSEDED FILES:** Files marked ~~strikethrough~~ or **SUPERSEDED** below have been archived to `docs/_archive/canon-superseded/`. They are non-authoritative. Do not implement from them.
 
 ## Purpose
 This index lists every canonical file that must exist, what it's for, and its category.
+
+---
+
+## Canon Scope
+
+Pravado's canon contains only architectural, product, business, and operational decisions
+specific to the Pravado SaaS product. Sibling ventures under the Saipien Labs umbrella —
+including Sapient Digital (agency services and multi-tenant platform), Wellstead, Iron & Honor,
+Aivery, Coeo, and any future Saipien Labs ventures — maintain their own canonical documentation
+in their respective repositories.
+
+Technical infrastructure shared across ventures (including the shared Supabase instance,
+authentication layer, and common libraries) will be documented at the Saipien Labs umbrella
+level when such documentation is established. Until then, shared-infrastructure decisions that
+affect Pravado are documented here with explicit notes that they apply beyond Pravado.
+
+**The following categories of content do not belong in Pravado's canon:**
+
+- Any other venture's product architecture, pricing, marketing, or operations
+- Agency services, managed service offerings, or white-label partner programs (these belong
+  to Sapient Digital)
+- Cross-venture infrastructure decisions that are not primarily about Pravado (these belong
+  to Saipien Labs umbrella canon when established)
+- Customer-facing documentation for products not branded as Pravado
+
+**Test for whether a document belongs in Pravado canon:** If the document primarily describes
+something a Pravado customer interacts with under the Pravado brand, or describes internal
+Pravado architecture, or documents a decision about Pravado's product, then yes. If the
+document primarily describes another venture, a shared infrastructure concern, or an
+unbranded capability used across ventures, then no.
+
+When in doubt, ask the architect before committing.
 
 ---
 
@@ -52,7 +85,7 @@ These files define WHAT Pravado is and HOW it should work:
 |------|---------|
 | `PRODUCT_CONSTITUTION.md` | Mission, non-negotiables, success definition |
 | `SAGE_v2.md` | Strategy mesh specification (S-A-G-E) |
-| `AUTOMATE_v2.md` | Execution layer specification |
+| `CRAFT_v2.md` | Execution layer specification |
 | `UX_SURFACES.md` | The 7 canonical user-facing surfaces |
 | `COMMAND-CENTER-UI.md` | Command Center interaction patterns and styling |
 | `CORE_UX_FLOWS.md` | The 7 canonical user flows |
@@ -116,7 +149,7 @@ These files define trade secrets and patent-eligible systems:
 | File | Purpose |
 |------|---------|
 | `SAGE_OPERATING_MODEL.md` | SAGE internal operating model (RESTRICTED) |
-| `AUTOMATE_EXECUTION_MODEL.md` | AUTOMATE execution model (RESTRICTED) |
+| `CRAFT_EXECUTION_MODEL.md` | CRAFT execution model (RESTRICTED) |
 | `EVI_MATHEMATICS.md` | EVI calculation mathematics (RESTRICTED) |
 | `INFLUENCE_FIELD_VISUALIZATION.md` | Physics-based visualization (RESTRICTED) |
 | `CITEMIND_SYSTEM.md` | CiteMind multi-engine system (RESTRICTED) |

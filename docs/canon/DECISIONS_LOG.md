@@ -9,7 +9,7 @@ Per CHANGE_CONTROL.md: if it is not in canon, it is not a requirement.
 ### Decision Entry Template
 - **Date:** YYYY-MM-DD
 - **Decision ID:** D###
-- **Area:** (SAGE / AUTOMATE / UX / DS / Plans / Contracts / Infra)
+- **Area:** (SAGE / CRAFT / UX / DS / Plans / Contracts / Infra)
 - **Decision:**
 - **Rationale:**
 - **Canon Files Impacted:**
@@ -292,5 +292,85 @@ Per CHANGE_CONTROL.md: if it is not in canon, it is not a requirement.
   - ✅ Insights: authority summary, top performers, SAGE recommendations — no errors
   - ⬜ Asset Editor (Phase 2): structured section editor, CiteMind passage-level feedback, FAQ component, derivative panel
   - ⬜ Brief Editor (Phase 2): 7-section brief, derivative map, generate draft CTA
+
+---
+
+## D025 — Canon terminology alignment: AUTOMATE → CRAFT
+
+**Date:** 2026-04-22
+**Decision owner:** Christian Dibrell (Founder/Architect)
+**Classification:** INTERNAL
+
+### Context
+Visual inspection on 2026-04-22 confirmed that the shipped Pravado v2 product — marketing site (pravado.io) and authenticated app (app.pravado.io) — consistently uses "CRAFT" as the execution layer name. Canon documentation retained the earlier "AUTOMATE" terminology in multiple files, creating drift between documented architecture and shipped reality.
+
+### Decision
+The execution layer canonical name is **CRAFT**. "AUTOMATE" is deprecated as a canon term and is replaced throughout canon documentation. The shipped product does not require changes — it is already on CRAFT. Canon is being brought into alignment with shipped reality.
+
+### Scope of change
+- Renamed: `AUTOMATE_v2.md` → `CRAFT_v2.md`
+- Renamed: `AUTOMATE_EXECUTION_MODEL.md` → `CRAFT_EXECUTION_MODEL.md`
+- Replaced: all current-tense AUTOMATE references in canon prose with CRAFT
+- Preserved: historical references that document the original naming choice
+- Updated: canon README index and cross-references
+
+### Rationale
+CRAFT was chosen over AUTOMATE in an earlier product decision (the decision itself predates this decision log entry and is not documented in detail). "AUTOMATE" implies runaway automation with no human governance; "CRAFT" signals deliberate, governed execution with quality as a first-class concern. The shipped product reflects this positioning, and canon now matches.
+
+### Also captured in this update
+Three additional drift items discovered during the same visual inspection are addressed in this commit:
+
+1. **EVI band nomenclature.** Canon specifies bands as At Risk / Emerging / Competitive / Dominant. Shipped homepage shows At Risk / Building / Strong / Elite. This decision DOES NOT reconcile that drift — it is noted here for explicit follow-up. A separate decision (D026 or later) will determine which nomenclature wins.
+
+2. **EVI description scope.** Canon defines EVI as 40% Visibility + 35% Authority + 25% Momentum across all discovery surfaces. Shipped homepage copy narrows EVI to "how prominently your brand appears in AI-generated responses." This decision DOES NOT reconcile that drift — noted for explicit follow-up.
+
+3. **Pricing display format.** Shipped pricing page defaults the monthly/annual toggle to annual-discounted prices ($159/$479/$959), while memory and canon treat the undiscounted monthly prices ($199/$599/$1199) as source-of-truth. This is a merchandising choice, not a price change. Noted for documentation completeness.
+
+### References
+- Source visual inspection: `docs/audit/VISUAL_INSPECTION_2026-04-22.md`
+- Prior decision introducing CRAFT (if present in DECISIONS_LOG): TBD
+- Canon index version bump: v1.9 → v2.0
+
+### Follow-up required
+- D026 (future): EVI band nomenclature reconciliation decision
+- D027 (future): EVI description scope reconciliation decision
+- Silo Tax sunset completion (navigation badge removal, audit page replacement) — tracked in visual inspection report action items
+
+### Canon hygiene — relocation of misfiled Sapient Digital documents
+
+During the D025 drift audit execution, two files in Pravado's canon directory were identified
+as belonging to Sapient Digital rather than Pravado:
+
+- `AGENCY_OS_SPEC.md` — spec for Sapient Digital's multi-tenant agency platform
+- `VIDEO_PIPELINE_AMENDMENT.md` — Sapient Digital's video pipeline capability (originally
+  drafted as an amendment to CITEMIND_SYSTEM.md)
+
+Both files have been relocated to Sapient Digital's repository at
+`/home/saipienlabs/projects/sapient-digital/docs/canon/`. The scope exclusion rule added to
+Pravado's `README.md` in this same commit formalizes the principle that only Pravado-specific
+content belongs in Pravado's canon. Sibling ventures maintain their own canons.
+
+**Architectural decision codified:** Sapient Digital operates as a fully independent venture
+under the Saipien Labs umbrella, with distinct brand, distinct customer base, distinct
+pricing, and independent canonical documentation. The only shared surface between Pravado
+and Sapient is technical infrastructure (Supabase instance). Marketing, positioning,
+product offerings, and canon documentation are strictly separated.
+
+**Video add-on pattern:** When Pravado eventually offers a video add-on, it will be sold
+under the Pravado brand with Pravado billing. The underlying pipeline capability remains
+Sapient's technical responsibility. This establishes the canonical pattern for any future
+cross-venture capabilities: Sapient owns technical capabilities, Pravado owns customer
+experience, intercompany settlement is handled outside canon.
+
+**Files affected in Pravado canon:** 2 removed from `docs/canon/`; `README.md` modified to
+add scope exclusion rule; `DECISIONS_LOG.md` modified (this extension).
+
+**Future work:**
+- When Pravado productizes video as a customer-facing add-on, Pravado will draft
+  `VIDEO_ADDON.md` describing the add-on product
+- When a formal Saipien Labs umbrella canon is established, shared-infrastructure
+  decisions currently in Pravado's canon (if any) may be reviewed for relocation
+- The scope exclusion rule in `README.md` should be revisited at beta-launch to confirm
+  no new drift has crept into canon
 
 (End)

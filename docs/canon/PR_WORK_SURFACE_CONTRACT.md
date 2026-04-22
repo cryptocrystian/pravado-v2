@@ -408,7 +408,7 @@ To modify this contract:
 
 ### 13.1 Overview
 
-V1.1 transforms PR from "modules" into a unified **Influence Orchestration System** with short task routes, CRM depth, and visible SAGE/EVI/AUTOMATE interoperability.
+V1.1 transforms PR from "modules" into a unified **Influence Orchestration System** with short task routes, CRM depth, and visible SAGE/EVI/CRAFT interoperability.
 
 **Non-negotiables:**
 - Manual/Copilot/Autopilot ceilings MUST remain enforced
@@ -428,7 +428,7 @@ V1.1 transforms PR from "modules" into a unified **Influence Orchestration Syste
 All PR surfaces MUST display the **Impact Strip** showing:
 - **SAGE contribution tags** (Signal / Authority / Growth / Exposure)
 - **EVI driver direction** (Visibility / Authority / Momentum +/0/-)
-- **AUTOMATE mode badge** (Manual / Copilot / Autopilot) with tooltip
+- **CRAFT mode badge** (Manual / Copilot / Autopilot) with tooltip
 
 This strip makes the system feel like an "organism," not disconnected modules.
 
@@ -461,7 +461,7 @@ The Distribution view MUST distinguish between:
 | `PRInbox.tsx` | `views/` | PR Inbox / Work Queue view |
 | `ContactRelationshipLedger.tsx` | `components/` | Timeline with explainability |
 | `PRPitchPipeline.tsx` | `views/` | Stage-based pitch tracking |
-| `ImpactStrip.tsx` | `components/` | SAGE/EVI/AUTOMATE indicator |
+| `ImpactStrip.tsx` | `components/` | SAGE/EVI/CRAFT indicator |
 
 ### 13.7 V1.1 Compliance Checklist
 

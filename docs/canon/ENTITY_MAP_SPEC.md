@@ -21,11 +21,11 @@ This question cannot be answered by a ranked list or a score. It requires spatia
 ### Why This Is Differentiated
 Competitors show **scores** — abstract numbers that tell you where you are but not why or what to do. Pravado shows **territory** — a knowledge graph that makes authority gaps structurally visible and connects them directly to executable actions. The goal for the user is to colonize the map: converting dashed (gap) edges to solid glowing connections across all three rings.
 
-### Relationship to SAGE, AUTOMATE, and CiteMind
+### Relationship to SAGE, CRAFT, and CiteMind
 - **SAGE** generates the proposals that explain what to do about each node relationship. Proposals surface in the Action Stream and as the `entity_insight` field in node-level progressive disclosure.
-- **AUTOMATE** executes actions and materializes Action Stream records. When SAGE detects a new gap node, AUTOMATE creates the corresponding Action Stream record and writes `linked_action_id` back to the entity node — this is the coherence enforcement mechanism.
+- **CRAFT** executes actions and materializes Action Stream records. When SAGE detects a new gap node, CRAFT creates the corresponding Action Stream record and writes `linked_action_id` back to the entity node — this is the coherence enforcement mechanism.
 - **CiteMind** runs daily citation scans and emits `SessionCitationEvent` objects when new citations are detected. The map animates these on session load — not as a continuous live stream.
-- The Entity Map is the **visual proof** that SAGE, AUTOMATE, and CiteMind are working together. It shows the outcomes of the full orchestration loop.
+- The Entity Map is the **visual proof** that SAGE, CRAFT, and CiteMind are working together. It shows the outcomes of the full orchestration loop.
 
 ---
 
@@ -104,7 +104,7 @@ Every edge represents a specific, data-backed relationship. If the data doesn't 
 | **Verified — solid** | Solid line, pillar color, 0.6 opacity | Confirmed, indexed, structured relationship |
 | **Verified — pending** | Solid line, pillar color, 0.25 opacity | Verified on authority side, not yet confirmed by a perceiver |
 | **Gap** | Dashed line (5px dash, 4px gap), dark gray | SAGE identified this connection should exist but doesn't |
-| **In-progress** | Dashed line, pillar color, traveling dash | Action executed, awaiting AUTOMATE confirmation |
+| **In-progress** | Dashed line, pillar color, traveling dash | Action executed, awaiting CRAFT confirmation |
 
 ### Dashed Line Directional Meaning
 Each gap edge tells a different story:
@@ -213,9 +213,9 @@ Animation is **event-driven and surgical**. CiteMind runs daily citation scans w
 
 **Session-load citation particle (D013):** When CiteMind has detected new citations since the last session, a particle travels from the Ring 2 source node toward the Ring 3 perceiver node (1.5s), then a second particle from Ring 3 toward the Brand Core (1.5s). Total: 3s per event. Fires once per new citation event on session load. Also fires on manual refresh from map toolbar. Correctly communicates "here's what changed since you were last here."
 
-**Dashed-to-solid transition:** When AUTOMATE confirms a verified connection, the edge animates dashed → solid over 2.5s. Color intensifies, opacity rises, gaps fill progressively from Brand Core outward. The payoff moment of the orchestration loop — must feel earned.
+**Dashed-to-solid transition:** When CRAFT confirms a verified connection, the edge animates dashed → solid over 2.5s. Color intensifies, opacity rises, gaps fill progressively from Brand Core outward. The payoff moment of the orchestration loop — must feel earned.
 
-**In-progress traveling dash:** Continuous 2s loop dash in pillar color on in-progress edges. Stops the instant AUTOMATE confirmation fires.
+**In-progress traveling dash:** Continuous 2s loop dash in pillar color on in-progress edges. Stops the instant CRAFT confirmation fires.
 
 **Chain illumination reveal:** 200ms dim / 300ms chain with 80ms stagger / 250ms panel ease-out.
 
@@ -248,14 +248,14 @@ SYNERGY_FLOW must not show stub UI or static data in V1. Label only.
 ## 9. Action Stream Coherence
 
 ### Single Source of Truth
-One SAGE proposal → one AUTOMATE Action Stream record → identical everywhere it appears. Title, priority score, and status are the same in CC Action Stream, surface Action Streams, and Entity Map progressive disclosure. Any discrepancy is a critical bug.
+One SAGE proposal → one CRAFT Action Stream record → identical everywhere it appears. Title, priority score, and status are the same in CC Action Stream, surface Action Streams, and Entity Map progressive disclosure. Any discrepancy is a critical bug.
 
-### AUTOMATE as Record Creator — D016
+### CRAFT as Record Creator — D016
 Trigger chain:
 1. SAGE detects gap → emits `gap_node_detected` (`entity_id`, `ring`, `pillar`, `proposal_id`)
-2. AUTOMATE creates Action Stream record
+2. CRAFT creates Action Stream record
 3. Status: `Priority` if confidence ≥ 0.7, `Pending` otherwise
-4. AUTOMATE writes `linked_action_id` back to entity node record
+4. CRAFT writes `linked_action_id` back to entity node record
 
 ### Cross-Surface Coherence Test
 At any moment, a user must be able to:
@@ -347,10 +347,10 @@ Any broken step is a system error.
 - Chain illumination on node click
 - Progressive disclosure with SAGE `entity_insight` (D015)
 - Session-load citation particle (event-driven, D013)
-- Dashed-to-solid on AUTOMATE confirmation
+- Dashed-to-solid on CRAFT confirmation
 - ENTITY_MAP and ORCHESTRATION_EDITOR tabs
 - SYNERGY_FLOW tab: "Coming Soon" label only
-- AUTOMATE as Action Stream record creator (D016)
+- CRAFT as Action Stream record creator (D016)
 - Surface-filtered views on PR, Content, SEO
 
 ### V2 (Post-Launch)

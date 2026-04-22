@@ -252,7 +252,7 @@ This is served by `GET /api/v1/sage/strategy-panel` → proxied through the Next
 1. **No user feedback loop** — dismissed or executed proposals do not yet train the scorer. A future version will downweight signal types the user consistently ignores.
 2. **No cross-pillar proposal weighting** — a signal that affects multiple pillars (e.g., a journalist who also writes about a topic cluster the brand hasn't covered) generates separate proposals. Future: cross-pillar synthesis.
 3. **LLM proposal quality degrades with sparse data** — the stub fallback is used when data is thin. It produces useful but less personalized proposals.
-4. **Mode filtering is read-only** — proposals respect `copilot`/`manual` mode preferences in their labeling but AUTOMATE execution (autopilot mode) is not yet wired.
+4. **Mode filtering is read-only** — proposals respect `copilot`/`manual` mode preferences in their labeling but CRAFT execution (autopilot mode) is not yet wired.
 
 ---
 

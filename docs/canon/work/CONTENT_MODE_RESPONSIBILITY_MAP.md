@@ -9,7 +9,7 @@
 
 ## 1. Purpose
 
-This map defines what MUST be visible, editable, hidden, and primary-action per automation mode (Manual, Copilot, Autopilot) for the Content pillar. It establishes semantic and UX responsibilities that drive design decisions without prescribing layout, column count, or visual arrangement. The goal is to ensure each mode delivers a distinct operational posture—Workbench (operator), Plan Review (decision gate), or Exception Console (supervisor)—while honoring the behavioral contracts defined in `AUTOMATION_MODE_CONTRACTS_CANON.md` and the explainability requirements of `AUTOMATE_EXECUTION_MODEL.md`.
+This map defines what MUST be visible, editable, hidden, and primary-action per automation mode (Manual, Copilot, Autopilot) for the Content pillar. It establishes semantic and UX responsibilities that drive design decisions without prescribing layout, column count, or visual arrangement. The goal is to ensure each mode delivers a distinct operational posture—Workbench (operator), Plan Review (decision gate), or Exception Console (supervisor)—while honoring the behavioral contracts defined in `AUTOMATION_MODE_CONTRACTS_CANON.md` and the explainability requirements of `CRAFT_EXECUTION_MODEL.md`.
 
 ---
 
@@ -46,7 +46,7 @@ This map defines what MUST be visible, editable, hidden, and primary-action per 
 | **Entity checklist + constraint satisfaction view** | REQUIRED | REQUIRED | ALLOWED | Brief constraints and entity associations visible for review; Autopilot surfaces only violations |
 | **Confidence + risk + reversibility signaling** | ALLOWED | REQUIRED | REQUIRED | Per `AI_VISUAL_COMMUNICATION_CANON.md`: users must perceive confidence and reversibility before action |
 | **Low-confidence fallback gate** (confidence < 0.70) | N/A | REQUIRED | N/A | **RESOLVED:** If Copilot confidence < 0.70, item auto-falls back to Manual-required posture. Treated as behavioral gate equivalent to mode ceiling. |
-| **Explainability access (Level 1: User Summary)** | ALLOWED | REQUIRED | REQUIRED | Per `AUTOMATE_EXECUTION_MODEL.md` Section 7.2: always available on demand |
+| **Explainability access (Level 1: User Summary)** | ALLOWED | REQUIRED | REQUIRED | Per `CRAFT_EXECUTION_MODEL.md` Section 7.2: always available on demand |
 | **Explainability access (Level 2: Technical Detail)** | ALLOWED | ALLOWED | ALLOWED | Available on drill-down for all modes |
 | **Explainability access (Level 3: Causal Chain)** | SUPPRESSED | ALLOWED | REQUIRED | Autopilot users need causal understanding of automated actions |
 | **Audit log / "auto-handled" ledger** | ALLOWED | ALLOWED | REQUIRED | Autopilot must show audit trail prominently |
@@ -242,7 +242,7 @@ This working spec synthesizes the following canonical documents:
 | `AI_VISUAL_COMMUNICATION_CANON.md` | Perceptual states (idle/evaluating/ready/executing/blocked/escalating), confidence signaling, reversibility |
 | `CONTENT_WORK_SURFACE_CONTRACT.md` | Content routes, CiteMind gates, mode ceilings, governance |
 | `CITEMIND_SYSTEM.md` | Engine governance, gating requirements, EVI integration |
-| `AUTOMATE_EXECUTION_MODEL.md` | Explainability levels, risk classification, confidence thresholds, audit requirements |
+| `CRAFT_EXECUTION_MODEL.md` | Explainability levels, risk classification, confidence thresholds, audit requirements |
 
 ---
 

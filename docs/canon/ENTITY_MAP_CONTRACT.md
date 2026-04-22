@@ -204,7 +204,7 @@ RELATED ACTION
 [TARGET NODE — CTA]
 ```
 
-**Coherence requirement:** The RELATED ACTION field must always link to an existing Action Stream record. Every node on the map has a corresponding Action Stream record. This is enforced by AUTOMATE (see Section 8). A node with no linked Action Stream record is a system error, not an acceptable state.
+**Coherence requirement:** The RELATED ACTION field must always link to an existing Action Stream record. Every node on the map has a corresponding Action Stream record. This is enforced by CRAFT (see Section 8). A node with no linked Action Stream record is a system error, not an acceptable state.
 
 ### 6.3 Hover State
 
@@ -232,7 +232,7 @@ Animation is **event-driven and surgical**. Every animation communicates a speci
 
 **Session-load citation event particle:** When CiteMind has detected new citations since the last session, a particle travels from the relevant Ring 2 node toward the relevant Ring 3 node (1.5s), then a second particle travels from Ring 3 toward the Brand Core (1.5s). Total: 3s. Fires once per new citation event on session load. Also fires on manual refresh trigger in the map toolbar. Does NOT fire as a continuous live stream — CiteMind scan latency is 1–24 hours and the animation must be honest about data freshness.
 
-**Dashed-to-solid transition:** When AUTOMATE confirms an action has produced a verified connection, the edge animates from dashed to solid over 2.5s. Color intensifies, opacity rises, dash gaps fill in progressively from the Brand Core outward. This is the payoff moment of the orchestration loop.
+**Dashed-to-solid transition:** When CRAFT confirms an action has produced a verified connection, the edge animates from dashed to solid over 2.5s. Color intensifies, opacity rises, dash gaps fill in progressively from the Brand Core outward. This is the payoff moment of the orchestration loop.
 
 **In-progress traveling dash:** For in-progress edge state, a dash travels along the edge path continuously (2s loop, pillar color). Stops immediately when confirmation fires and triggers dashed-to-solid transition.
 
@@ -255,7 +255,7 @@ Animation is **event-driven and surgical**. Every animation communicates a speci
 
 ### 8.1 Single Source of Truth
 
-SAGE produces one proposal object per insight. AUTOMATE materializes it as one Action Stream record. That record is the canonical item that appears in all contexts:
+SAGE produces one proposal object per insight. CRAFT materializes it as one Action Stream record. That record is the canonical item that appears in all contexts:
 
 | Context | Behavior |
 |---------|----------|
@@ -265,13 +265,13 @@ SAGE produces one proposal object per insight. AUTOMATE materializes it as one A
 
 The title, priority score, and status of an Action Stream record must be **identical** everywhere it appears. Any discrepancy is a critical bug.
 
-### 8.2 AUTOMATE as Record Creator
+### 8.2 CRAFT as Record Creator
 
 Trigger chain:
 1. SAGE detects gap → emits `gap_node_detected` event (`entity_id`, `ring`, `pillar`, `proposal_id`)
-2. AUTOMATE subscribes → creates Action Stream record
+2. CRAFT subscribes → creates Action Stream record
 3. Status: `Priority` if SAGE confidence ≥ 0.7, `Pending` otherwise
-4. AUTOMATE writes `linked_entity_id` back to entity node record
+4. CRAFT writes `linked_entity_id` back to entity node record
 
 There are no "map-only" recommendations. Every gap node on the map has a corresponding Action Stream record. This is an architectural invariant, not a UX preference.
 
@@ -417,4 +417,4 @@ Implementations MUST satisfy:
 | Date | Version | Change |
 |------|---------|--------|
 | 2026-01-13 | 1.0 | V1 semantic lock — SAGE zone model, frozen for release |
-| 2026-02-23 | 2.0 | Superseded per D012–D017: concentric ring architecture, event-driven animation, cluster nodes, topic cluster Ring 1, AUTOMATE record creation, SAGE entity_insight field |
+| 2026-02-23 | 2.0 | Superseded per D012–D017: concentric ring architecture, event-driven animation, cluster nodes, topic cluster Ring 1, CRAFT record creation, SAGE entity_insight field |

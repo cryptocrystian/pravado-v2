@@ -185,11 +185,11 @@ Common failure modes:
 - "It used the default template"
 - "It matched a keyword"
 
-### AUTOMATE: Intelligent Governance
+### CRAFT: Intelligent Governance
 
-Pravado's AUTOMATE layer is not just automation—it is **execution governance**. The difference:
+Pravado's CRAFT layer is not just automation—it is **execution governance**. The difference:
 
-| Dumb Automation | AUTOMATE |
+| Dumb Automation | CRAFT |
 |-----------------|----------|
 | Binary: on/off | Graduated: Manual → Copilot → Autopilot |
 | Executes on schedule | Executes on confidence and risk assessment |
@@ -199,7 +199,7 @@ Pravado's AUTOMATE layer is not just automation—it is **execution governance**
 
 ### The Trust Ladder
 
-AUTOMATE implements a trust ladder. Organizations start with human-in-the-loop. As the system demonstrates reliability, more autonomy is earned:
+CRAFT implements a trust ladder. Organizations start with human-in-the-loop. As the system demonstrates reliability, more autonomy is earned:
 
 1. **New**: Everything requires explicit approval
 2. **Established**: Routine actions can proceed with confirmation
@@ -228,7 +228,7 @@ SAGE maintains continuous state about your visibility position. This state decay
 
 **3. It has governance**
 
-AUTOMATE isn't just executing—it's governing. Every action is classified, authorized, and audited. This governance layer is what makes enterprise-grade automation possible.
+CRAFT isn't just executing—it's governing. Every action is classified, authorized, and audited. This governance layer is what makes enterprise-grade automation possible.
 
 **4. It has a feedback loop**
 
@@ -325,7 +325,7 @@ Pravado is not another marketing tool. It is a Visibility Operating System that:
 1. **Unifies** PR, Content, and SEO into a coherent system
 2. **Measures** earned visibility with a single, defensible metric (EVI)
 3. **Strategizes** through a living intelligence mesh (SAGE)
-4. **Executes** with graduated, governed automation (AUTOMATE)
+4. **Executes** with graduated, governed automation (CRAFT)
 5. **Learns** through closed-loop feedback and pattern reinforcement
 
 The result: marketing leaders who see what's happening, understand what it means, know what to do, and execute with confidence—without the fragmentation tax that burdens their competitors.

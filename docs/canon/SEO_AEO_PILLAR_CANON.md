@@ -354,7 +354,7 @@ Every tool in this category monitors AI citation share *after the fact*. They sh
 **Additional structural gaps (applies to most tools in this category):**
 - No PR pillar. "PR" features, where they exist, mean press release distribution or link building — not journalist intelligence, relationship modeling, or coverage → citation attribution.
 - No cross-pillar attribution. Insights exist in separate modules. There is no SAGE layer connecting them. A user cannot see "This TechCrunch article increased our ChatGPT citation rate 18% for this query cluster."
-- Automation is tactical maintenance (technical SEO fixes), not strategic command layer (AUTOMATE with approval chains, mode governance, outcome tracing).
+- Automation is tactical maintenance (technical SEO fixes), not strategic command layer (CRAFT with approval chains, mode governance, outcome tracing).
 - Agency-first architecture, not enterprise-ready. No per-pillar mode governance, no compliance-aware approval chains, no policy-based ceilings for brands with legal review requirements or multi-stakeholder workflows.
 
 ---
@@ -596,7 +596,7 @@ The SEO/AEO surface Impact Strip must show:
 **Technical tab in Copilot:**
 - AI-prioritized findings (AEO-impact-sorted, not severity-sorted)
 - Each finding: issue + AEO bridge + "Let AI fix this" [Approve] vs. "I'll handle this" [Assign to me]
-- Approving "Let AI fix" queues the action in AUTOMATE with audit trail
+- Approving "Let AI fix" queues the action in CRAFT with audit trail
 
 **What renders ONLY in Copilot:**
 - SAGE proposal banner at top of Overview
@@ -659,7 +659,7 @@ The SEO/AEO surface Impact Strip must show:
 │                                                              │
 │  IF EXCEPTIONS EXIST:                                        │
 │  Each exception shows:                                       │
-│   • What AUTOMATE was trying to do                           │
+│   • What CRAFT was trying to do                           │
 │   • Why it stopped (hit ceiling, ambiguous, risk threshold)  │
 │   • What the user needs to decide                            │
 │   • [Approve] [Reject] [Escalate] actions                    │

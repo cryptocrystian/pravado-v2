@@ -21,7 +21,7 @@ This system inherits all constraints from:
 - `CONTENT_PILLAR_CANON.md`
 - CiteMind governance rules
 - SAGE strategic guidance
-- AUTOMATE execution modes
+- CRAFT execution modes
 - Pravado Design System v2
 
 **If any implementation detail below conflicts with CONTENT_PILLAR_CANON.md, the canon wins.**
@@ -139,7 +139,7 @@ Only the following views are permitted.
 - Multi-format lanes
 - Campaign grouping
 - PR + AEO visibility
-- AUTOMATE mode indicators
+- CRAFT mode indicators
 
 ### 3.3 Content Editor
 
@@ -213,7 +213,7 @@ Only agents that map directly to system objects.
 
 ## 5. Canonical Content Playbooks
 
-Each playbook aligns to AUTOMATE modes and mirrors PR discipline.
+Each playbook aligns to CRAFT modes and mirrors PR discipline.
 
 ### 5.1 Authority-Driven Content Brief Creation
 

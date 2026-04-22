@@ -5,7 +5,7 @@ You are operating on the PRAVADO v2 codebase.
 ## Authority Chain (Never Violate)
 1) /docs/canon/PRODUCT_CONSTITUTION.md
 2) /docs/canon/SAGE_v2.md
-3) /docs/canon/AUTOMATE_v2.md
+3) /docs/canon/CRAFT_v2.md
 4) /docs/canon/DS_v3_PRINCIPLES.md + /docs/canon/DS_v3_1_EXPRESSION.md
 5) /docs/canon/CORE_UX_FLOWS.md
 6) /docs/canon/AUTOMATION_MODES_UX.md
@@ -39,7 +39,7 @@ For any plan, task, or PR summary, include:
 - Test plan
 
 ## Non-Negotiable Product Invariants
-- SAGE + AUTOMATE are central and visible.
+- SAGE + CRAFT are central and visible.
 - Automation is always labeled, explainable, and interruptible.
 - No dead-end drilldowns.
 - Work Surfaces: PR, Content, SEO.

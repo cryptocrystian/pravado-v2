@@ -34,8 +34,8 @@ A "surface" is a coherent unit of user attention with a clear role, inputs, and 
 | S3 | **Exception Surface** | Display blocked items, guardrail violations, escalations | Supervisor | Exception queue, guardrails, CiteMind blocks | Intervention decision | `AUTOMATION_MODE_CONTRACTS_CANON.md` §3 (Autopilot) |
 | S4 | **Editor Surface** | Direct content creation and structured editing | Operator | Brief, outline, entity constraints | Draft content | `CONTENT_WORK_SURFACE_CONTRACT.md` §5.4 |
 | S5 | **Context Surface** | Entity associations, constraints, CiteMind gating | All | Asset/brief context, entity map | Constraint awareness | `CITEMIND_SYSTEM.md` §1.2 |
-| S6 | **Explainability Surface** | 3-level explanation (summary, technical, causal) | All | Action context | Understanding | `AUTOMATE_EXECUTION_MODEL.md` §7.2 |
-| S7 | **Audit Surface** | Auto-handled ledger, provenance, execution history | Supervisor | Execution records | Trust verification | `AUTOMATE_EXECUTION_MODEL.md` §7.1 |
+| S6 | **Explainability Surface** | 3-level explanation (summary, technical, causal) | All | Action context | Understanding | `CRAFT_EXECUTION_MODEL.md` §7.2 |
+| S7 | **Audit Surface** | Auto-handled ledger, provenance, execution history | Supervisor | Execution records | Trust verification | `CRAFT_EXECUTION_MODEL.md` §7.1 |
 | S8 | **Cross-Pillar Impact Surface** | PR/SEO hooks and downstream effects | All | Derivatives, cross-pillar deps | Coordination awareness | `UX_CONTINUITY_CANON.md` §7 |
 | S9 | **Temporal Surface** | Deadlines, freshness indicators, urgency calibration | All | Timestamps, deadlines | Time-pressure awareness | `AI_VISUAL_COMMUNICATION_CANON.md` §4 |
 | S10 | **AI State Surface** | Ambient and local AI state indicators | All | AI perceptual state | System status awareness | `AI_VISUAL_COMMUNICATION_CANON.md` §2 |
@@ -100,7 +100,7 @@ A "surface" is a coherent unit of user attention with a clear role, inputs, and 
   - **Copilot:** REQUIRED; Level 1-2 visible, Level 3 on drill-down
   - **Autopilot:** REQUIRED; Level 3 prominently for causal understanding
 - **Reachability rule:** Must be accessible within 1 interaction from any action-bearing surface
-- **Canon link:** `AUTOMATE_EXECUTION_MODEL.md` Section 7.2
+- **Canon link:** `CRAFT_EXECUTION_MODEL.md` Section 7.2
 
 #### S7: Audit Surface
 - **Purpose:** Show "auto-handled" ledger and execution provenance
@@ -110,7 +110,7 @@ A "surface" is a coherent unit of user attention with a clear role, inputs, and 
   - **Autopilot:** REQUIRED; prominent proof-of-work indicator
 - **Key affordances:** Execution ledger, timestamps, actor attribution
 - **Supervised items count:** Displayed as ambient indicator even when exceptions=0
-- **Canon link:** `AUTOMATE_EXECUTION_MODEL.md` Section 7.1
+- **Canon link:** `CRAFT_EXECUTION_MODEL.md` Section 7.1
 
 #### S8: Cross-Pillar Impact Surface
 - **Purpose:** Show how content actions affect PR and SEO pillars
@@ -468,7 +468,7 @@ These recommendations are spec-level guidance, not code prescriptions.
 | `AI_VISUAL_COMMUNICATION_CANON.md` | Perceptual states, confidence signaling, mode expression |
 | `CONTENT_WORK_SURFACE_CONTRACT.md` | Content routes, CiteMind gates, mode ceilings, component inventory |
 | `CITEMIND_SYSTEM.md` | Engine governance, gating requirements |
-| `AUTOMATE_EXECUTION_MODEL.md` | Explainability levels, risk classification, audit requirements |
+| `CRAFT_EXECUTION_MODEL.md` | Explainability levels, risk classification, audit requirements |
 | `CONTENT_MODE_RESPONSIBILITY_MAP.md` | Working spec from Step 1; resolved decisions on proof-of-work, fallback, cross-pillar |
 
 ---

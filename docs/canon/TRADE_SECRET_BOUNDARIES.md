@@ -179,19 +179,19 @@ This document establishes clear boundaries for what information about Pravado's 
 
 ---
 
-## 5. AUTOMATE Classifications
+## 5. CRAFT Classifications
 
 ### 5.1 PUBLIC
 
 | Information | Rationale |
 |-------------|-----------|
-| AUTOMATE governs execution | Capability description |
+| CRAFT governs execution | Capability description |
 | Three modes exist (Manual/Copilot/Autopilot) | Feature marketing |
 | Guardrails exist | Trust/safety messaging |
 | Actions are auditable | Compliance messaging |
 
 **Allowed Statements:**
-- "AUTOMATE ensures every action is visible, traceable, and reversible."
+- "CRAFT ensures every action is visible, traceable, and reversible."
 - "Choose your comfort level: Manual control, Copilot assistance, or Autopilot efficiency."
 - "Built-in guardrails prevent runaway automation and protect your brand."
 
@@ -227,7 +227,7 @@ This document establishes clear boundaries for what information about Pravado's 
 
 | Information | Rationale |
 |-------------|-----------|
-| Full AUTOMATE_EXECUTION_MODEL.md | Core IP |
+| Full CRAFT_EXECUTION_MODEL.md | Core IP |
 | Trust decay formulas | Proprietary model |
 | Risk classification weights | Core differentiator |
 | Approval chain logic | Core architecture |
@@ -448,8 +448,8 @@ In cases of required legal disclosure:
 | PRODUCT_CONSTITUTION.md | INTERNAL |
 | SAGE_v2.md | CUSTOMER |
 | SAGE_OPERATING_MODEL.md | RESTRICTED |
-| AUTOMATE_v2.md | CUSTOMER |
-| AUTOMATE_EXECUTION_MODEL.md | RESTRICTED |
+| CRAFT_v2.md | CUSTOMER |
+| CRAFT_EXECUTION_MODEL.md | RESTRICTED |
 | EARNED_VISIBILITY_INDEX.md | CUSTOMER |
 | EVI_MATHEMATICS.md | RESTRICTED |
 | ENTITY-MAP-SAGE.md | INTERNAL |

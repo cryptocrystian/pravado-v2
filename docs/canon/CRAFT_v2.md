@@ -1,8 +1,8 @@
-# PRAVADO v2 — AUTOMATE v2 SPEC
+# PRAVADO v2 — CRAFT v2 SPEC
 Version: v1.0 (Canon)
 
 ## Purpose
-AUTOMATE is Pravado's execution and governance layer:
+CRAFT is Pravado's execution and governance layer:
 - turns SAGE proposals into tasks
 - manages concurrency and cost
 - enforces approvals and safeguards
@@ -22,15 +22,15 @@ AUTOMATE is Pravado's execution and governance layer:
 6) Entity Map gap → Action Stream record creation (D016)
 
 ## Entity Map Action Stream Coherence (D016)
-When SAGE detects a new Entity Map gap node, AUTOMATE is responsible for materializing the corresponding Action Stream record. SAGE generates the proposal; AUTOMATE creates the record.
+When SAGE detects a new Entity Map gap node, CRAFT is responsible for materializing the corresponding Action Stream record. SAGE generates the proposal; CRAFT creates the record.
 
 Trigger chain:
 - SAGE emits `gap_node_detected` event: `{ entity_id, ring, pillar, proposal_id, confidence }`
-- AUTOMATE subscribes and creates Action Stream record
+- CRAFT subscribes and creates Action Stream record
 - Initial status: `Priority` if confidence ≥ 0.7, `Pending` otherwise
-- AUTOMATE writes `linked_action_id` back to the entity node record
+- CRAFT writes `linked_action_id` back to the entity node record
 
-This is an architectural invariant: every Entity Map gap node must have a corresponding Action Stream record. A gap node without `linked_action_id` is a system error. AUTOMATE is the enforcement layer for this invariant, not SAGE.
+This is an architectural invariant: every Entity Map gap node must have a corresponding Action Stream record. A gap node without `linked_action_id` is a system error. CRAFT is the enforcement layer for this invariant, not SAGE.
 
 ## Risk and Approval
 Actions are classified by:
@@ -51,7 +51,7 @@ Approvals can be:
 - degradation modes (cheaper model, reduced frequency, queued execution)
 
 ## UX Requirements
-AUTOMATE must be visible via:
+CRAFT must be visible via:
 - calendar items: status + dependencies + approvals + logs
 - queue processing states
 - "why this ran" annotations

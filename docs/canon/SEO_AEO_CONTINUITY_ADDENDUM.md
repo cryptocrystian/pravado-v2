@@ -3,7 +3,7 @@
 > **Version:** 0.1
 > **Status:** Canonical / Foundational / Invariants-Only
 > **Last Updated:** 2026-01-27
-> **Authority:** UX_CONTINUITY_CANON.md (primary), AUTOMATE_EXECUTION_MODEL.md, SAGE_OPERATING_MODEL.md
+> **Authority:** UX_CONTINUITY_CANON.md (primary), CRAFT_EXECUTION_MODEL.md, SAGE_OPERATING_MODEL.md
 
 ---
 
@@ -29,7 +29,7 @@ This addendum inherits from and extends the following canonical documents:
 | Document | Relationship |
 |----------|--------------|
 | `UX_CONTINUITY_CANON.md` | **Primary authority** — all 10 invariants apply to SEO/AEO |
-| `AUTOMATE_EXECUTION_MODEL.md` | Mode governance for SEO actions |
+| `CRAFT_EXECUTION_MODEL.md` | Mode governance for SEO actions |
 | `AUTOMATION_MODES_UX.md` | Mode definitions (Manual/Copilot/Autopilot) |
 | `SAGE_OPERATING_MODEL.md` | Cross-pillar reinforcement coefficients |
 | `CITEMIND_SYSTEM.md` | AI ingestion/citation quality enforcement |
@@ -126,7 +126,7 @@ The following patterns violate execution gravity:
 
 ## 6. Mode System Invariant
 
-Per AUTOMATE_EXECUTION_MODEL.md and AUTOMATION_MODES_UX.md:
+Per CRAFT_EXECUTION_MODEL.md and AUTOMATION_MODES_UX.md:
 
 > **Reuse existing Manual/Copilot/Autopilot modes. Do NOT reinvent mode vocabulary.**
 
@@ -153,13 +153,13 @@ Organization Mode Settings
     └── Structural Changes: Manual (ceiling)
 ```
 
-**Invariant:** SEO actions MUST use the AUTOMATE mode vocabulary. No "SEO-specific automation levels" or custom mode names. Mode ceiling enforcement per AUTOMATE_EXECUTION_MODEL.md risk classification.
+**Invariant:** SEO actions MUST use the CRAFT mode vocabulary. No "SEO-specific automation levels" or custom mode names. Mode ceiling enforcement per CRAFT_EXECUTION_MODEL.md risk classification.
 
 ---
 
 ## 7. Explainability & Governance Invariants
 
-Per AUTOMATE_EXECUTION_MODEL.md Section 4 (Explainability Framework):
+Per CRAFT_EXECUTION_MODEL.md Section 4 (Explainability Framework):
 
 ### 3-Level Explainability Requirements
 
@@ -185,7 +185,7 @@ Per CITEMIND_SYSTEM.md, SEO recommendations affecting AI visibility MUST pass Ci
 
 ### Audit Trail Requirements
 
-Per AUTOMATE_EXECUTION_MODEL.md Section 6:
+Per CRAFT_EXECUTION_MODEL.md Section 6:
 
 - All SEO changes logged with: timestamp, actor (user/AI), mode, before/after state
 - Rollback capability for Copilot/Autopilot actions
@@ -244,10 +244,10 @@ This section explicitly forbids patterns that would violate platform continuity.
 | **Vanity metric displays** | Execution gravity | Rankings without action binding are noise |
 | **Keyword stuffing suggestions** | Mental model (authority, not manipulation) | Violates "Ingestion Readiness" principle |
 | **Standalone rank tracker** | Entry point invariant | Blank-page-first, no context |
-| **SEO-only automation mode** | Mode system invariant | Must use platform AUTOMATE modes |
+| **SEO-only automation mode** | Mode system invariant | Must use platform CRAFT modes |
 | **Black-box AI recommendations** | Explainability invariant | Must support 3-level explainability |
 | **Competitor-only views** | Cross-pillar visibility | Must tie to own authority/content gaps |
-| **Bulk action without approval** | Mode ceiling (High/Critical actions) | Violates AUTOMATE governance |
+| **Bulk action without approval** | Mode ceiling (High/Critical actions) | Violates CRAFT governance |
 
 ### Non-Goals for v0.1
 
@@ -289,9 +289,9 @@ Terms used in this document as defined in parent canon:
 | **Authority Signal Optimization** | SAGE_OPERATING_MODEL.md | Building topical authority through SAGE mesh |
 | **Citation Eligibility** | CITEMIND_SYSTEM.md | Content meeting Engine 1 thresholds for AI citation |
 | **Execution Gravity** | UX_CONTINUITY_CANON.md | Work tied to real objects/outcomes |
-| **Mode Ceiling** | AUTOMATE_EXECUTION_MODEL.md | Maximum automation level for action risk class |
+| **Mode Ceiling** | CRAFT_EXECUTION_MODEL.md | Maximum automation level for action risk class |
 | **SAGE Mesh** | SAGE_OPERATING_MODEL.md | Signal-Authority-Growth-Exposure reinforcement network |
-| **3-Level Explainability** | AUTOMATE_EXECUTION_MODEL.md | User Summary / Technical Detail / Causal Chain |
+| **3-Level Explainability** | CRAFT_EXECUTION_MODEL.md | User Summary / Technical Detail / Causal Chain |
 | **Context-First Entry** | UX_CONTINUITY_CANON.md | No blank-page-first interaction patterns |
 
 ---
@@ -302,7 +302,7 @@ Future implementers MUST verify these invariants before SEO/AEO work surface dev
 
 - [ ] Entry points require context (no blank keyword explorer)
 - [ ] All metrics bind to execution targets (assets, actions, calendar slots)
-- [ ] Mode system uses AUTOMATE vocabulary (Manual/Copilot/Autopilot)
+- [ ] Mode system uses CRAFT vocabulary (Manual/Copilot/Autopilot)
 - [ ] Mode ceilings enforced per risk classification
 - [ ] 3-level explainability implemented for AI recommendations
 - [ ] CiteMind gating for AI visibility claims

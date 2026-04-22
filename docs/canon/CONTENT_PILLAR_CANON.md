@@ -48,7 +48,7 @@ Users already have:
 It is:
 - A best-in-class content execution environment
 - Governed by CiteMind trust constraints
-- Orchestrated by AUTOMATE
+- Orchestrated by CRAFT
 - Strategically guided by SAGE
 
 It is not:

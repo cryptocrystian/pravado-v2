@@ -21,7 +21,7 @@ CiteMind is NOT:
 
 CiteMind IS:
 - A **multi-engine system** comprising three specialized engines working in coordination
-- A **governed subsystem** of AUTOMATE with explicit invocation rules and cost controls
+- A **governed subsystem** of CRAFT with explicit invocation rules and cost controls
 - A **Signal → Authority → Momentum amplifier** feeding into SAGE and EVI
 - A **cross-pillar intelligence layer** connecting PR, Content, and SEO surfaces
 
@@ -42,7 +42,7 @@ CiteMind IS:
 │                                  │                                       │
 │                                  ▼                                       │
 │                      ┌─────────────────────┐                            │
-│                      │   AUTOMATE Layer    │  ← Governance              │
+│                      │   CRAFT Layer    │  ← Governance              │
 │                      │   (Cost + Approval) │                            │
 │                      └──────────┬──────────┘                            │
 │                                 │                                        │
@@ -59,7 +59,7 @@ CiteMind IS:
 
 ### 1.3 Governance Principle
 
-> **CiteMind is governed by AUTOMATE.**
+> **CiteMind is governed by CRAFT.**
 >
 > Every CiteMind engine operation is subject to:
 > - Mode eligibility (Manual/Copilot/Autopilot)
@@ -351,11 +351,11 @@ Citation Detected
 
 ---
 
-## 6. AUTOMATE Governance
+## 6. CRAFT Governance
 
 ### 6.1 CiteMind as Governed Subsystem
 
-CiteMind operates under AUTOMATE governance with:
+CiteMind operates under CRAFT governance with:
 
 | Governance Layer | CiteMind Implementation |
 |------------------|------------------------|
@@ -395,7 +395,7 @@ CiteMind implementations MUST satisfy:
 - [ ] Engine 2 audio transformation requires explicit user action in V1
 - [ ] Engine 3 monitoring operates within cost guardrails
 - [ ] All operations generate audit trail entries
-- [ ] Mode eligibility follows AUTOMATE governance
+- [ ] Mode eligibility follows CRAFT governance
 - [ ] Cost caps enforced per-engine
 - [ ] Citation detection feeds into EVI calculation
 - [ ] Entity Map reflects CiteMind intelligence
@@ -414,7 +414,7 @@ Modifications require:
 1. Product review sign-off
 2. IP/Legal review for patent implications
 3. Engineering cost assessment
-4. Update to AUTOMATE and SAGE dependent specifications
+4. Update to CRAFT and SAGE dependent specifications
 
 ### 8.3 Trade Secret Classification
 

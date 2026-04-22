@@ -243,7 +243,7 @@ The Inbox MUST display items in grouped sections with counts:
 Every Inbox item MUST display the Impact Strip showing:
 - SAGE contribution tags (Signal / Authority / Growth / Exposure)
 - EVI driver direction (Visibility/Authority/Momentum +/0/-)
-- AUTOMATE mode badge (Manual/Copilot/Autopilot)
+- CRAFT mode badge (Manual/Copilot/Autopilot)
 
 ---
 

@@ -859,7 +859,7 @@ SAGE content proposals must be surfaced in the library and overview views, not i
 **Required expressions:**
 - SAGE proposal cards in the Overview must show the competitive gap, estimated EVI impact, and a one-click "Create from Brief" action
 - In the Library view, assets with available SAGE optimization recommendations should show an indicator badge
-- SAGE must provide at least one content proposal per active topic cluster per week (automation via AUTOMATE in Autopilot mode)
+- SAGE must provide at least one content proposal per active topic cluster per week (automation via CRAFT in Autopilot mode)
 
 ## 10. Non-Goals / Drift Guardrails
 

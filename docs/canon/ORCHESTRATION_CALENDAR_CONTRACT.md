@@ -13,7 +13,7 @@ The Orchestration Calendar answers ONE question:
 
 > **"When will the system act, and when do I need to intervene?"**
 
-Every item, every indicator, every interaction serves this question. The calendar shows AUTOMATE's execution timeline — what's scheduled, what's running, what needs approval, and what completed.
+Every item, every indicator, every interaction serves this question. The calendar shows CRAFT's execution timeline — what's scheduled, what's running, what needs approval, and what completed.
 
 ---
 
@@ -21,7 +21,7 @@ Every item, every indicator, every interaction serves this question. The calenda
 
 | Attribute | Definition |
 |-----------|------------|
-| **AUTOMATE Timeline** | The visual representation of AUTOMATE's execution schedule |
+| **CRAFT Timeline** | The visual representation of CRAFT's execution schedule |
 | **Intervention Surface** | Shows where human input is required (approvals, reviews, decisions) |
 | **Execution Monitor** | Displays status of running and completed actions |
 | **Mode Indicator** | Shows which actions are Autopilot vs Copilot vs Manual |
@@ -66,7 +66,7 @@ Every calendar item MUST declare:
 | `pillar` | enum | `pr` \| `content` \| `seo` |
 | `title` | string | Human-readable action title |
 | `status` | enum | Current execution status |
-| `mode` | enum | AUTOMATE mode (manual/copilot/autopilot) |
+| `mode` | enum | CRAFT mode (manual/copilot/autopilot) |
 
 ### 4.2 Required Detail Fields
 
@@ -181,7 +181,7 @@ planned → drafting → awaiting_approval → scheduled → published
 
 | Owner | Meaning | Visual |
 |-------|---------|--------|
-| **AI** | SAGE/AUTOMATE is responsible | AI icon or "AI" label |
+| **AI** | SAGE/CRAFT is responsible | AI icon or "AI" label |
 | **User** | Human is responsible | User icon or no special marker |
 
 ### 8.2 Authority Implications
@@ -362,7 +362,7 @@ The following are FROZEN for V1:
 Any change to this contract requires:
 
 1. Product review documenting necessity
-2. Impact analysis on AUTOMATE integration
+2. Impact analysis on CRAFT integration
 3. Canon update through formal process
 4. CI gate verification
 

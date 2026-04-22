@@ -13,7 +13,7 @@ This document defines **experience-level invariants** that ensure Pravado feels 
 
 These invariants govern:
 - How users perceive and navigate the platform
-- How AI systems (SAGE, AUTOMATE, CiteMind) manifest in the experience
+- How AI systems (SAGE, CRAFT, CiteMind) manifest in the experience
 - How pillars relate to each other visually and behaviorally
 - How progress, feedback, and explainability are communicated
 
@@ -60,7 +60,7 @@ Requirements:
 - The platform must surface prioritized actions within the first interaction
 - Entry points must communicate: (1) what's urgent, (2) what's progressing, (3) what's blocked
 - Users must not be required to navigate to discover what needs their attention
-- SAGE proposals and AUTOMATE suggestions must be immediately visible on entry
+- SAGE proposals and CRAFT suggestions must be immediately visible on entry
 
 Violation indicators:
 - User lands on an empty or static dashboard
@@ -117,7 +117,7 @@ Requirements:
   - Ideally: a preview or summary of the cross-pillar effect
 - Cross-pillar hooks must be bidirectional and discoverable
 - EVI (Earned Visibility Index) contributions must be attributable across pillars
-- AUTOMATE orchestration across pillars must be visible (e.g., content feeding PR pitches)
+- CRAFT orchestration across pillars must be visible (e.g., content feeding PR pitches)
 
 Violation indicators:
 - User is surprised by changes in another pillar
@@ -134,7 +134,7 @@ Requirements:
 - Long-running operations must show progress indicators
 - Completed actions must confirm success and summarize outcomes
 - Blocked or failed actions must explain why and offer remediation paths
-- Background AI activity (AUTOMATE) must be observable without interrupting flow
+- Background AI activity (CRAFT) must be observable without interrupting flow
 - State changes must be acknowledged visually within 200ms
 
 Violation indicators:
@@ -193,7 +193,7 @@ This canon operates in relationship with other canonical documents:
 | `DS_v3_PRINCIPLES.md` | Design tokens, color system, typography. UX Continuity Canon governs behavior; DS_v3 governs appearance. |
 | `DS_v3_1_EXPRESSION.md` | Visual expression guidelines. UX Continuity Canon is agnostic to specific visual treatments. |
 | `AUTOMATION_MODES_UX.md` | Detailed mode behavior. UX Continuity Canon defines the invariant; AUTOMATION_MODES_UX defines implementation. |
-| `AUTOMATE_EXECUTION_MODEL.md` | Technical execution model. UX Continuity Canon governs how execution is surfaced to users. |
+| `CRAFT_EXECUTION_MODEL.md` | Technical execution model. UX Continuity Canon governs how execution is surfaced to users. |
 | `CONTENT_WORK_SURFACE_CONTRACT.md` | Content pillar contract. Must comply with UX Continuity Canon invariants. |
 | `PR_WORK_SURFACE_CONTRACT.md` | PR pillar contract. Must comply with UX Continuity Canon invariants. |
 | `COMMAND-CENTER-UI.md` | Command Center contract. Must comply with UX Continuity Canon invariants. |

@@ -1,4 +1,4 @@
-# AUTOMATE EXECUTION MODEL
+# CRAFT EXECUTION MODEL
 
 > **Status:** CANONICAL
 > **Authority:** This document defines the execution governance framework for Pravado.
@@ -9,17 +9,17 @@
 
 ## 1. Formal Definition
 
-### 1.1 What AUTOMATE Is
+### 1.1 What CRAFT Is
 
-**AUTOMATE** is the **execution governance layer** that converts SAGE proposals into controlled, auditable actions with explicit authority boundaries.
+**CRAFT** is the **execution governance layer** that converts SAGE proposals into controlled, auditable actions with explicit authority boundaries.
 
-AUTOMATE is NOT:
+CRAFT is NOT:
 - A workflow engine
 - A task queue
 - A cron scheduler
 - A simple rule processor
 
-AUTOMATE IS:
+CRAFT IS:
 - A **decision authority framework** that determines who/what can approve and execute actions
 - A **risk classification system** that categorizes actions by consequence and reversibility
 - A **cost governor** that enforces resource consumption limits
@@ -40,7 +40,7 @@ This principle is non-negotiable. Any implementation that allows hidden, untrace
 
 ### 2.1 Authority Modes
 
-AUTOMATE operates in three authority modes, each with explicit boundaries:
+CRAFT operates in three authority modes, each with explicit boundaries:
 
 | Mode | Authority | User Role | System Role | Applicability |
 |------|-----------|-----------|-------------|---------------|
@@ -436,7 +436,7 @@ System generates compliance-ready reports:
 
 ### 10.1 Proposal Ingestion
 
-AUTOMATE receives proposals from SAGE with:
+CRAFT receives proposals from SAGE with:
 
 | Field | Source | Usage |
 |-------|--------|-------|
@@ -449,7 +449,7 @@ AUTOMATE receives proposals from SAGE with:
 
 ### 10.2 Outcome Feedback
 
-AUTOMATE feeds execution outcomes back to SAGE:
+CRAFT feeds execution outcomes back to SAGE:
 
 | Outcome | Feedback to SAGE |
 |---------|------------------|
@@ -460,21 +460,21 @@ AUTOMATE feeds execution outcomes back to SAGE:
 
 ### 10.3 Cross-Pillar Coordination
 
-When an action in one pillar completes, AUTOMATE:
+When an action in one pillar completes, CRAFT:
 1. Notifies SAGE of outcome
 2. SAGE evaluates cross-pillar reinforcement effects
 3. SAGE generates follow-on proposals in related pillars
-4. AUTOMATE queues new proposals
+4. CRAFT queues new proposals
 
 Example flow:
 ```
 PR Action Completed: TechCrunch coverage published
-  ↓ (AUTOMATE → SAGE)
+  ↓ (CRAFT → SAGE)
 SAGE Evaluates: PR → Content reinforcement (0.50)
   ↓
 SAGE Proposes: Content brief for related topic
-  ↓ (SAGE → AUTOMATE)
-AUTOMATE Queues: Content brief proposal with PR attribution
+  ↓ (SAGE → CRAFT)
+CRAFT Queues: Content brief proposal with PR attribution
 ```
 
 ---
@@ -514,7 +514,7 @@ AUTOMATE Queues: Content brief proposal with PR attribution
 
 ### 12.1 CiteMind as Governed Subsystem
 
-CiteMind is a multi-engine system operating under AUTOMATE governance. Each CiteMind engine is subject to the full AUTOMATE authority framework, with engine-specific risk profiles determining mode eligibility.
+CiteMind is a multi-engine system operating under CRAFT governance. Each CiteMind engine is subject to the full CRAFT authority framework, with engine-specific risk profiles determining mode eligibility.
 
 **Reference:** See `/docs/canon/CITEMIND_SYSTEM.md` for complete system specification.
 
@@ -567,7 +567,7 @@ Mode Ceiling = Manual (per Section 5.3)
 
 ### 12.5 CiteMind Cost Guardrails
 
-CiteMind engines are subject to plan-tier cost guardrails in addition to general AUTOMATE guardrails:
+CiteMind engines are subject to plan-tier cost guardrails in addition to general CRAFT guardrails:
 
 | CiteMind Operation | Starter | Growth | Pro | Enterprise |
 |-------------------|---------|--------|-----|------------|
@@ -579,7 +579,7 @@ CiteMind engines are subject to plan-tier cost guardrails in addition to general
 
 ### 12.6 CiteMind Audit Trail Extension
 
-In addition to standard AUTOMATE audit fields, CiteMind actions include:
+In addition to standard CRAFT audit fields, CiteMind actions include:
 
 | Field | Description | Retention |
 |-------|-------------|-----------|
@@ -595,11 +595,11 @@ In addition to standard AUTOMATE audit fields, CiteMind actions include:
 
 ### 13.1 Canon Authority
 
-This document is the authoritative specification for AUTOMATE behavior. Any implementation that deviates is non-compliant.
+This document is the authoritative specification for CRAFT behavior. Any implementation that deviates is non-compliant.
 
 ### 13.2 Compliance Verification
 
-AUTOMATE implementations must demonstrate:
+CRAFT implementations must demonstrate:
 - [ ] No action executes without audit trail
 - [ ] Mode eligibility follows specified matrix
 - [ ] Confidence thresholds are enforced

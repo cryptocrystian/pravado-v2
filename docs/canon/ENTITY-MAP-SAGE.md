@@ -187,9 +187,9 @@ interface SAGEProposalEntityExtension {
 
 ---
 
-## AUTOMATE Integration
+## CRAFT Integration
 
-Per Decision D016, AUTOMATE is responsible for:
+Per Decision D016, CRAFT is responsible for:
 
 1. Subscribing to SAGE `gap_node_detected` events
 2. Creating Action Stream records from SAGE proposals
@@ -219,7 +219,7 @@ When user clicks a node on the Entity Map:
 5. Progressive disclosure panel slides in (250ms ease-out)
 
 ### Execute Pulse Animation
-When an action executes via AUTOMATE:
+When an action executes via CRAFT:
 1. Driver node pulses with pillar glow (300ms ease-out)
 2. Ripple propagates through affected edges
 3. Each affected node pulses as wave reaches it (100ms stagger per hop)
@@ -315,7 +315,7 @@ File: `scripts/check-entity-map-spec.mjs`
 - [ ] Chain illumination fires on node click with 80ms stagger
 - [ ] Cross-ring synergy edges revealed only during chain illumination
 - [ ] Citation particle animation fires on `session_events`, not as continuous stream
-- [ ] Dashed-to-solid transition fires on AUTOMATE confirmation event
+- [ ] Dashed-to-solid transition fires on CRAFT confirmation event
 - [ ] Brand Core pulse is the only continuous animation
 - [ ] No position recalculation during interaction
 - [ ] Hover highlighting coordinates with Action Stream
@@ -329,4 +329,4 @@ File: `scripts/check-entity-map-spec.mjs`
 |------|---------|--------|
 | (prior) | 1.0 | Initial SAGE zone-based spec |
 | (prior) | 2.0 | TypeScript contract and CI guardrail additions |
-| 2026-02-23 | 3.0 | Concentric ring architecture (D012). Event-driven animation (D013). Cluster nodes (D014). SAGE entity_insight field (D015). AUTOMATE record creation (D016). Topic cluster Ring 1 (D017). |
+| 2026-02-23 | 3.0 | Concentric ring architecture (D012). Event-driven animation (D013). Cluster nodes (D014). SAGE entity_insight field (D015). CRAFT record creation (D016). Topic cluster Ring 1 (D017). |

@@ -165,7 +165,7 @@ Each competitor listed below can only see and act on one segment of this chain. 
 - **What they do well:** Best topic cluster strategy tool in market; automated content inventory maps entire site; identifies authority gaps with competitive context
 - **What they do poorly:** Zero AEO citation tracking; zero PR; no content creation; strategy only
 - **Threat level:** MEDIUM — strategy layer overlaps with SAGE content proposals; no execution
-- **Pravado wedge:** SAGE executes on gaps (not just identifies them); cross-pillar execution through AUTOMATE
+- **Pravado wedge:** SAGE executes on gaps (not just identifies them); cross-pillar execution through CRAFT
 
 ### Enterprise Content Intelligence
 

@@ -3,11 +3,11 @@ Version: v1.0 (Canon)
 
 ## Mission
 Pravado is an AI-native Visibility Operating System.
-It unifies PR, Content, and SEO into a single orchestrated system driven by SAGE (strategy mesh) and governed by AUTOMATE (execution layer), with CiteMind as the intelligence engine for AEO/citation visibility.
+It unifies PR, Content, and SEO into a single orchestrated system driven by SAGE (strategy mesh) and governed by CRAFT (execution layer), with CiteMind as the intelligence engine for AEO/citation visibility.
 
 ## Non-Negotiable Truths
 - Pravado is a first-class PR + Content + SEO platform (not an "insights layer").
-- SAGE + AUTOMATE overlays are central and visible in-product.
+- SAGE + CRAFT overlays are central and visible in-product.
 - Cross-pillar orchestration is experiential: "this insight caused that action."
 - Each pillar must be best-in-class, not MVP-lite.
 - AEO/Citation intelligence is powered by CiteMind and surfaced in Analytics/Reporting and intelligence views.
@@ -30,6 +30,6 @@ Pravado functions as a self-optimizing visibility system:
 
 ## Compliance Checklist
 - [ ] SAGE is visible in UX as a mesh (not hidden architecture)
-- [ ] AUTOMATE is visible as execution/logs/queue/calendar causality
+- [ ] CRAFT is visible as execution/logs/queue/calendar causality
 - [ ] PR/Content/SEO each have real workflows (not "empty pages")
 - [ ] Analytics reports outcomes + causality, not provider-internal cost mechanics

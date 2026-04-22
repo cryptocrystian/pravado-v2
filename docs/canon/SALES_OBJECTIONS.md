@@ -12,7 +12,7 @@
 This document provides structured responses to common sales objections. Each response:
 1. Acknowledges the objection
 2. Reframes the concern
-3. Maps to SAGE/EVI/AUTOMATE logic
+3. Maps to SAGE/EVI/CRAFT logic
 4. Provides proof points when available
 
 **Do NOT read responses verbatim.** Adapt to conversation context.
@@ -79,7 +79,7 @@ Pravado reduces complexity. Instead of coordinating across tools manually—whic
 
 The proposals SAGE generates come with context: why this matters, what the confidence level is, what the expected impact is. Your team doesn't have to figure that out—they just decide whether to act."
 
-**AUTOMATE Connection:**
+**CRAFT Connection:**
 "And here's the key: you control the automation level. Start in Manual mode. Your team sees every proposal and decides. As they get comfortable, move to Copilot—the system assists but humans approve. Autopilot only happens when you're ready, for actions you trust."
 
 ### Proof Points
@@ -151,8 +151,8 @@ Loss of control. Past negative experiences. Brand risk.
 **Reframe:**
 "Pravado's automation is fundamentally different because we built governance in from the start. This isn't about taking humans out of the loop—it's about putting humans at the right place in the loop."
 
-**AUTOMATE Connection:**
-"Here's how AUTOMATE works:
+**CRAFT Connection:**
+"Here's how CRAFT works:
 
 First, you control the mode:
 - **Manual**: SAGE proposes, you decide and execute
@@ -319,9 +319,9 @@ First, we're not trying to replace your execution tools. Your CMS, your email pl
 
 Second, our integration is about shared state, not shared UI. SAGE knows what's happening in your PR tool because it reads the signals—it doesn't need you to move your PR workflow.
 
-Third, we designed for progressive adoption. You don't have to go all-in on day one. Start with visibility (EVI), add proposals (SAGE), add automation (AUTOMATE) when you're ready."
+Third, we designed for progressive adoption. You don't have to go all-in on day one. Start with visibility (EVI), add proposals (SAGE), add automation (CRAFT) when you're ready."
 
-**SAGE/AUTOMATE Distinction:**
+**SAGE/CRAFT Distinction:**
 "Here's the key difference: most 'platforms' are really tool bundles with a shared database. Pravado is a strategy mesh with an execution governance layer.
 
 SAGE isn't a dashboard—it's an operating model that maintains state, decays without activity, and learns from outcomes. That's fundamentally different from 'here are 5 tools that share data.'"
@@ -359,7 +359,7 @@ Second, the value is immediate and obvious. When a team member sees a proposal t
 
 Third, we replace work, not add it. The cross-tool coordination your team does manually today—that goes away. They spend less time in spreadsheets and meetings trying to connect dots."
 
-**AUTOMATE Connection:**
+**CRAFT Connection:**
 "And here's the adoption flywheel: as the team executes SAGE proposals and sees results, trust builds. What starts as 'another tool' becomes 'the system that tells me what to do next.' That shift typically happens in weeks, not months."
 
 **Training Reality:**
@@ -405,7 +405,7 @@ This is not really an objection—it's buying signal. Respond appropriately.
 - EVI baseline: Where you stand today across visibility surfaces
 - SAGE proposals: What the system recommends based on your current signals
 - Influence Field: How actions would affect your entity relationships
-- AUTOMATE governance: How execution control works
+- CRAFT governance: How execution control works
 
 We'll use your real data, not a generic demo. Much more valuable."
 
@@ -450,13 +450,13 @@ Legitimate buying process. Not an objection to address, but a step to facilitate
 | Objection | Primary System Component | Key Message |
 |-----------|-------------------------|-------------|
 | "We already use X" | SAGE | Orchestration layer, not replacement |
-| "This sounds complicated" | SAGE + AUTOMATE | Reduces complexity, graduated control |
+| "This sounds complicated" | SAGE + CRAFT | Reduces complexity, graduated control |
 | "How is this different from SEO?" | SAGE + EVI | Multi-surface visibility, not just search |
-| "Why trust automation?" | AUTOMATE | Governance, trust ladder, audit trail |
+| "Why trust automation?" | CRAFT | Governance, trust ladder, audit trail |
 | "How long until value?" | SAGE + EVI | Immediate intelligence, compounding value |
 | "This is too expensive" | EVI | ROI calculation, consolidation value |
 | "We tried this before" | SAGE Architecture | Intelligence layer, not tool bundle |
-| "My team won't use it" | SAGE + AUTOMATE | Proposals push to user, replaces work |
+| "My team won't use it" | SAGE + CRAFT | Proposals push to user, replaces work |
 | "We need to see it" | All | Schedule demo with real data |
 | "I need to involve others" | All | Facilitate, don't push |
 
