@@ -373,4 +373,101 @@ add scope exclusion rule; `DECISIONS_LOG.md` modified (this extension).
 - The scope exclusion rule in `README.md` should be revisited at beta-launch to confirm
   no new drift has crept into canon
 
+---
+
+## D026 — AgencyOS Extraction and Sapient Digital Architectural Principles
+
+**Date:** 2026-04-22
+**Status:** Executed
+**Supersedes:** Implicit architectural assumption in prior Sapient planning sessions that Pravado and Sapient would share codebase and infrastructure
+
+### Context
+
+During pre-beta work, Claude Code's stop conditions repeatedly surfaced that AgencyOS (Sapient Digital's multi-tenant agency management portal) had been built inside Pravado's monorepo at `apps/agency-os/`, with declared workspace dependencies on four Pravado packages. The architecture originated in an earlier session where "don't fork Pravado" was interpreted as "build everything in one repo," which was an over-correction.
+
+Discovery (executed as read-only work order) confirmed:
+
+- AgencyOS declared but never actually used the four `@pravado/*` workspace dependencies (vestigial coupling)
+- No bidirectional coupling (Pravado does not import from AgencyOS)
+- AgencyOS uses the shared Supabase project but queries a separate `agency` schema
+- AgencyOS has its own auth flow, its own deployment config, its own env vars
+- Extraction is mechanical relocation, not complex untangling
+
+### Decisions
+
+**D026.1 — Architecture principle: Ventures share capabilities through public APIs, not infrastructure.**
+
+Saipien Labs ventures do not share Supabase projects, codebases, monorepo workspaces, or authentication instances. They may share capabilities through well-defined public APIs. This principle governs all current and future cross-venture integrations.
+
+**D026.2 — Sapient Digital operates on fully air-gapped infrastructure.**
+
+Sapient Digital runs on its own Supabase project, its own deployment infrastructure, its own repo, its own domain. Complete infrastructure independence is a business model requirement for Saipien Labs (exit flexibility, security boundaries, operational independence) and not negotiable.
+
+**D026.3 — Sapient consumes Pravado's intelligence via public API.**
+
+AgencyOS accesses Pravado's intelligence layer (SAGE, CRAFT, CiteMind, EVI, journalist database) through Pravado's public API as a first-party API consumer. No database access, no code imports, no shared auth. API consumption is bidirectionally compatible with Pravado's planned public API for external developers and white-label partners.
+
+**D026.4 — Extraction executed as file-level relocation to parked state in Sapient repo.**
+
+AgencyOS code, supporting config, Supabase migrations, session notes, and audit reports relocated to `sapient-digital/parked/agency-os/` and `sapient-digital/docs/extraction-archive/`. Activation (creating Sapient's Supabase project, migrating schema, wiring AgencyOS to Pravado's API) is sequenced to begin immediately after Pravado beta launches.
+
+**D026.5 — Pravado's `apps/api/src/routes/agency/` stays in Pravado as the future Agency API surface.**
+
+These routes are Pravado's platform-level API surface for agency consumers, not AgencyOS-specific code. They remain uncommitted and not wired to server.ts pending a dedicated API development effort post-beta. A README in the directory explains context.
+
+### Scope of this extraction (what moved)
+
+From Pravado to Sapient:
+- `apps/agency-os/` (entire Next.js app, 81 files, 5,759 LOC)
+- `apps/api/supabase/migrations/90_create_agency_schema.sql`
+- `apps/api/supabase/migrations/91_seed_agency_demo_data.sql`
+- `apps/api/.env.agency`
+- `vercel.agency-os.json`
+- `AGENCY_OS_SESSION_2.md` (root-level)
+- `E2E_AUDIT_REPORT.md` (root-level)
+
+From Pravado, deleted or edited:
+- `apps/api/src/server.ts` — removed two commented-out agencyRoutes references
+- `apps/api/src/routes/agency/` — retained with new README explaining status
+
+### Scope of activation (future work, not part of this extraction)
+
+- Creation of dedicated Sapient Supabase project
+- Migration of `agency` schema and data from shared Supabase to dedicated Sapient Supabase
+- Pravado public API development (fix 47 TS errors in routes/agency, wire to server.ts, authentication, rate limiting, documentation)
+- AgencyOS frontend updates to consume Pravado API
+- Sapient Vercel deployment setup
+
+Timeline: activation begins immediately after Pravado beta launches.
+
+### Why this decision was delayed until now
+
+The original "one repo" architecture was chosen under pressure to avoid forking Pravado, without sufficient consideration of venture studio operating requirements (exit flexibility, infrastructure independence, brand separation). The coupling was partial (vestigial dependencies, no real code sharing) which made extraction tractable but the architectural signal was wrong.
+
+Correcting before Pravado's beta customer acquisition is substantially cheaper than correcting after. Caught during canon hygiene cleanup when Claude Code's stop conditions surfaced the uncommitted agency-os state multiple times in a row.
+
+### Discovery accuracy note
+
+Discovery conducted as a read-only inventory identified AgencyOS as "uncommitted" based on the bulk state of the codebase. Execution revealed five files in `apps/agency-os/` had been tracked in prior commits (`package.json`, three source files from TypeScript fixes, and `vercel.json`). These files are recorded as deletions in this commit; content preserved in Sapient's parked artifacts. Future discovery work orders should verify tracked-file state across the full target subtree, not just the bulk-uncommitted state.
+
+### Files affected in Pravado repo (this commit)
+
+- `docs/canon/DECISIONS_LOG.md` — this D026 entry added
+- `apps/api/src/server.ts` — two agencyRoutes references removed
+- `apps/api/src/routes/agency/README.md` — new file explaining parked status
+- Tracked-file deletions (5 files in `apps/agency-os/` that had been committed in prior Pravado history; content preserved in Sapient's `parked/agency-os/`):
+  - `apps/agency-os/package.json`
+  - `apps/agency-os/src/app/(agency)/tasks/TasksClient.tsx`
+  - `apps/agency-os/src/app/(client)/[clientSlug]/reports/page.tsx`
+  - `apps/agency-os/src/app/(client)/[clientSlug]/video/page.tsx`
+  - `apps/agency-os/vercel.json`
+- Untracked deletions (files never committed to Pravado; simply disappear from working tree):
+  - Remainder of `apps/agency-os/` subtree
+  - `apps/api/.env.agency`
+  - `apps/api/supabase/migrations/90_create_agency_schema.sql`
+  - `apps/api/supabase/migrations/91_seed_agency_demo_data.sql`
+  - `vercel.agency-os.json`
+  - `AGENCY_OS_SESSION_2.md`
+  - `E2E_AUDIT_REPORT.md`
+
 (End)
