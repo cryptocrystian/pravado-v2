@@ -23,6 +23,12 @@ coverage
 .env.test.local
 .env.production.local
 
+# Production and staging env files (not just .local variants)
+.env.production
+.env.staging
+*.env.production
+*.env.staging
+
 # Turborepo
 .turbo
 
