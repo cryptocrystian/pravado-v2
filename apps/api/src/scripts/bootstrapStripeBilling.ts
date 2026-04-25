@@ -22,14 +22,14 @@ const PLANS = [
   {
     slug: 'starter',
     name: 'Pravado Starter',
-    description: 'For individuals getting started with AI-powered visibility',
+    description: 'For small teams getting started with AI-powered visibility',
     monthlyPriceCents: 19900, // $199/month
     features: [
       '1 team seat',
       '3 SAGE actions/day',
       'Daily CiteMind scanning',
       '10 CRAFT executions/month',
-      '500,000 LLM tokens/month',
+      '2,500,000 LLM tokens/month',
       'Email support',
     ],
   },

@@ -265,7 +265,7 @@ const TAB_DATA: Record<string, {
 };
 
 const PLANS = [
-  { name: 'Starter', price: '$199/mo', annual: '$159/mo', desc: 'For individuals getting started', features: ['3 SAGE\u2122 actions/day', 'Daily CiteMind\u2122', '10 CRAFT\u2122/mo', '1 seat'] },
+  { name: 'Starter', price: '$199/mo', annual: '$159/mo', desc: 'For small teams getting started', features: ['3 SAGE\u2122 actions/day', 'Daily CiteMind\u2122', '10 CRAFT\u2122/mo', '1 seat'] },
   { name: 'Pro', price: '$599/mo', annual: '$479/mo', desc: 'For professional teams', badge: 'Most Popular', features: ['Unlimited SAGE\u2122', 'Real-time CiteMind\u2122', 'Unlimited CRAFT\u2122', '15 seats'] },
   { name: 'Growth', price: '$1,199/mo', annual: '$959/mo', desc: 'For scaling organizations', features: ['Everything in Pro', 'Full 283K journalist DB', '1-year EVI\u2122 history', 'Priority support'] },
   { name: 'Enterprise', price: 'Custom', annual: 'Custom', desc: 'For large organizations', features: ['Dedicated CSM', 'Custom integrations', 'SLA guarantee', 'Unlimited seats'] },

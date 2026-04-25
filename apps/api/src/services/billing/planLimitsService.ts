@@ -54,13 +54,13 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     autopilotMode: false,
     citeMindEngineLimit: 2,
   },
-  /** Starter — $199/mo: 1 seat, 3 SAGE actions/day, daily CiteMind, 500K tokens */
+  /** Starter — $199/mo: 1 seat, 3 SAGE actions/day, daily CiteMind, 10 CRAFT/mo, 2.5M tokens */
   starter: {
     seats: 1,
-    contentDocumentsPerMonth: 25,
+    contentDocumentsPerMonth: 10,
     sageProposalsPerMonth: 90, // ~3/day
     citemindScoresPerMonth: 50,
-    llmTokensPerMonth: 500_000,
+    llmTokensPerMonth: 2_500_000,
     journalistContacts: 200,
     competitors: 5,
     advancedAnalytics: false,
