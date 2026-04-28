@@ -31,6 +31,20 @@ If a task requires modifying restricted paths:
 
 ---
 
+## Required Boot Sequence
+
+**Before doing ANY work in this repo, read these files in this exact order:**
+
+1. `/ARCHITECT_BRIEFING.md` (repo root) — architectural context, product overview, technical decisions, V1 frozen state, current modules
+2. `/SESSION_PRIMER.md` (repo root) — current state of work, infrastructure status, outstanding issues, recent commits, in-flight decisions
+3. `/docs/canon/README.md` — canon index, then follow the reading order specified there
+
+**This boot sequence is non-negotiable.** Do not start strategic work, draft documents, or make architectural recommendations without completing it. The conversation summary at session start and userMemories are NOT a substitute for these files — they are context fragments, not orientation.
+
+**When boot sequence reveals canon drift or in-flight work that contradicts a planned task:** STOP and flag the conflict before proceeding. Do not draft replacements for documents that already exist.
+
+---
+
 ## Canon Authority
 
 **CRITICAL: Read canon FIRST before any product work.**
