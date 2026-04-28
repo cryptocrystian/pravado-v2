@@ -1,6 +1,56 @@
 # SESSION PRIMER — Pravado v2
 > Single source of truth for cross-session continuity.
-> Last Updated: 2026-04-21 — Marketing Site + Silo Tax Audit Sprint
+> Last Updated: 2026-04-28 — Security Hardening + Starter Tier Calibration + Boot Sequence
+
+---
+
+## UPDATE 2026-04-28 — Security Hardening, Tier Calibration, Boot Sequence
+
+Work landed since the 2026-04-21 sprint primer. P0 outstanding issues
+documented further down (Supabase Site URL fix, etc.) remain valid — this
+section is additive context, not a replacement.
+
+### Git history was rewritten on 2026-04-24
+
+A surgical history purge removed 5 credential patterns from the Pravado v2
+git history. SHAs prior to `0805e75` no longer exist in this repo.
+
+- **Pre-purge backup:** `/home/saipienlabs/projects/pravado-v2-backup-2026-04-24`
+  (full clone of repo state immediately before the purge — keep until rotation
+  audit is signed off).
+- **Post-purge HEAD anchor:** `0805e75` (the working-tree security remediation
+  commit; this same change existed pre-purge as SHA `9144f05`).
+- **Implication:** any external reference (PR comments, deploy logs, ops notes)
+  to commit SHAs older than `0805e75` will not resolve in `origin/main`. Use the
+  backup clone if archaeological lookup is needed.
+
+### Commits landed since 2026-04-21 primer
+
+| SHA | Subject | Notes |
+|-----|---------|-------|
+| `0805e75` | security(secrets): untrack .env.production, sanitize docs, fix hardcoded key | Post-purge HEAD anchor. Untracks `.env.production`, removes mobile hardcoded JWT, sanitizes docs. Pre-purge SHA was `9144f05`. |
+| `e929dc2` | feat(billing): Starter tier calibration — 2.5M tokens, 10 CRAFT/mo | CRAFT pieces 25→10 (code aligned DOWN to Stripe-advertised copy). LLM tokens 500K→2.5M (5x increase). Stripe bootstrap copy: "individuals" → "small teams getting started". Pre-beta calibration window. |
+| `4cb9fdc` | docs(claude): add mandatory boot sequence to CLAUDE.md | New "Required Boot Sequence" section in `CLAUDE.md` requiring future sessions to read `/ARCHITECT_BRIEFING.md` and `/SESSION_PRIMER.md` (this file) before `/docs/canon/README.md`. Structural fix for cross-session orientation drift. |
+
+### Credential rotations completed (Christian)
+
+Following the history purge, the following secrets were rotated. Render env
+vars and any other consumers should reflect the new values.
+
+- **PostHog** — rotated.
+- **Sentry** — rotated.
+- **Cloudflare** — rotated AND split per venture (separate keys per Saipien
+  property; no longer a single shared key).
+
+### Known follow-ups queued
+
+- **Plans Reconciliation work order** — `planLimitsService.ts` and
+  `bootstrapStripeBilling.ts` still disagree on Starter dimensions (seats,
+  SAGE quotas, CiteMind frequency, journalist contacts). The Starter tokens +
+  CRAFT calibration in `e929dc2` was scoped intentionally; the remaining
+  dimensions need a single canonical reconciliation pass before beta launch.
+- **Pre-beta = no active customers**, so plan-limit drift is non-blocking but
+  must close before paid signups are enabled.
 
 ---
 
