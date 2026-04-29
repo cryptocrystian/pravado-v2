@@ -2,10 +2,19 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import {
+  GoogleLogo,
+  Robot,
+  Compass,
+  Sparkle,
+  Globe,
+  Lock,
+} from '@phosphor-icons/react';
+import type { Icon } from '@phosphor-icons/react';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-type AuditStep = 'input' | 'scanning' | 'teaser' | 'results';
+type AuditStep = 'input' | 'scanning' | 'results';
 
 interface AuditResult {
   evi_score: number;
@@ -40,6 +49,19 @@ function sevColor(severity: 'HIGH' | 'MEDIUM' | 'LOW'): string {
     case 'LOW': return '#22C55E';
   }
 }
+
+// EVI canonical bands per docs/canon/EARNED_VISIBILITY_INDEX.md.
+// Hex values are approved DS v3.1 tokens (semantic-danger / brand-amber /
+// brand-cyan / semantic-success) — verified against DS_v3_COMPLIANCE_CHECKLIST.
+function eviBand(score: number): { label: string; color: string; bgColor: string } {
+  if (score <= 40) return { label: 'At Risk',     color: '#EF4444', bgColor: 'rgba(239,68,68,0.15)' };
+  if (score <= 60) return { label: 'Emerging',    color: '#F59E0B', bgColor: 'rgba(245,158,11,0.15)' };
+  if (score <= 80) return { label: 'Competitive', color: '#00D9FF', bgColor: 'rgba(0,217,255,0.15)' };
+  return                  { label: 'Dominant',    color: '#22C55E', bgColor: 'rgba(34,197,94,0.15)' };
+}
+
+// Mirror of the server-side regex in apps/api/src/routes/siloTaxAudit/index.ts.
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // ── Odometer ───────────────────────────────────────────────────────────────────
 
@@ -111,12 +133,12 @@ const SCAN_LOGS = [
 
 // ── Engine Row Data ────────────────────────────────────────────────────────────
 
-const ENGINES = [
-  { name: 'Google', icon: '🔍' },
-  { name: 'ChatGPT', icon: '🤖' },
-  { name: 'Perplexity', icon: '🔮' },
-  { name: 'Gemini', icon: '✨' },
-  { name: 'Bing', icon: '🌐' },
+const ENGINES: Array<{ name: string; Icon: Icon }> = [
+  { name: 'Google',     Icon: GoogleLogo },
+  { name: 'ChatGPT',    Icon: Robot },
+  { name: 'Perplexity', Icon: Compass },
+  { name: 'Gemini',     Icon: Sparkle },
+  { name: 'Bing',       Icon: Globe },
 ];
 
 const CITEMIND_ENGINES = [
@@ -153,7 +175,7 @@ export default function SiloTaxAuditPage() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(72 * 60 * 60); // 72 hours in seconds
 
   // Countdown timer for CiteMind window
@@ -181,13 +203,28 @@ export default function SiloTaxAuditPage() {
   }, []);
 
   // ── Scan Handler ───────────────────────────────────────────────────────────
+  // Single-transaction submit: validates inputs client-side, transitions to
+  // scanning, and on a successful response goes straight to results — the
+  // server creates the account, generates the magic link, and emails it.
 
   const handleStartScan = useCallback(async () => {
+    setScanError(null);
+
+    // Client-side validation. Server re-validates.
+    if (!brandUrl || !email || !name || !company) {
+      setScanError('Please fill in all required fields.');
+      return;
+    }
+    if (!EMAIL_REGEX.test(email.trim())) {
+      setScanError('Please enter a valid email address.');
+      return;
+    }
+
     setStep('scanning');
     setScanProgress(0);
     setActiveLog(0);
 
-    // Progress animation (5 seconds)
+    // Progress animation (5 seconds — runs in parallel with the API call).
     const progressPromise = new Promise<void>((resolve) => {
       const totalMs = 5000;
       const interval = 50;
@@ -204,71 +241,79 @@ export default function SiloTaxAuditPage() {
       }, interval);
     });
 
-    // API call
-    const fetchPromise = fetch('/api/audit/scan', {
+    type ScanOutcome =
+      | { kind: 'success'; data: AuditResult }
+      | { kind: 'rate_limit'; message: string }
+      | { kind: 'validation'; message: string }
+      | { kind: 'fallback' };
+
+    const fetchPromise: Promise<ScanOutcome> = fetch('/api/audit/scan', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         brandUrl,
+        email: email.trim(),
+        name: name.trim(),
+        company: company.trim(),
         competitorUrls: competitors.filter(Boolean),
       }),
     })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok || data.error || typeof data.evi_score !== 'number') {
-          throw new Error(data.error || 'Invalid response');
+      .then<ScanOutcome>(async (res) => {
+        const raw: unknown = await res.json().catch(() => ({}));
+        const data = (raw ?? {}) as Record<string, unknown>;
+        if (res.status === 429) {
+          const message = typeof data.message === 'string'
+            ? data.message
+            : 'You already ran an audit for this email. Try again later.';
+          return { kind: 'rate_limit', message };
         }
-        setResult(data);
+        if (res.status === 400) {
+          const message = typeof data.error === 'string' ? data.error : 'Invalid input.';
+          return { kind: 'validation', message };
+        }
+        if (!res.ok || typeof data.evi_score !== 'number') {
+          throw new Error(typeof data.error === 'string' ? data.error : 'Invalid response');
+        }
+        return { kind: 'success', data: data as unknown as AuditResult };
       })
-      .catch(() => {
-        // Fallback mock result
-        setResult({
-          evi_score: 23,
-          silo_tax_monthly: 14200,
-          monthly_cash_loss: 8400,
-          risk_premium: 5800,
-          authority_leakage: 4200,
-          ppc_replacement: 6800,
-          hallucination_overhead: 3200,
-          gaps: [
-            { type: 'entity', severity: 'HIGH', title: 'No Knowledge Graph Entity', description: 'Your brand has no structured entity in Google Knowledge Graph. AI engines cannot confirm your existence.', affected_engine: 'Google, Gemini' },
-            { type: 'citation', severity: 'HIGH', title: 'Zero ChatGPT Citations', description: 'ChatGPT does not reference your brand in any category-related queries. Competitors own this space.', affected_engine: 'ChatGPT' },
-            { type: 'schema', severity: 'MEDIUM', title: 'Missing Organization Schema', description: 'No Organization or LocalBusiness schema detected. Search engines infer rather than confirm your identity.', affected_engine: 'Google, Bing' },
-            { type: 'authority', severity: 'MEDIUM', title: 'Thin Backlink Authority', description: 'Domain authority is below industry median. AI engines weight authoritative sources for citation selection.', affected_engine: 'Perplexity, Gemini' },
-            { type: 'content', severity: 'LOW', title: 'No FAQ/HowTo Structured Data', description: 'Missing FAQ and HowTo schema reduces chance of featured snippet and AI answer inclusion.', affected_engine: 'Google, Bing' },
-          ],
-          top_competitor_advantage: 'Competitor has 3x more entity coverage and active Knowledge Graph presence',
-          total_authority_void: true,
-          audit_id: 'aud_' + Math.random().toString(36).slice(2, 10),
-        });
-      });
+      .catch<ScanOutcome>(() => ({ kind: 'fallback' }));
 
-    await Promise.all([progressPromise, fetchPromise]);
-    setStep('teaser');
-  }, [brandUrl, competitors]);
+    const [, outcome] = await Promise.all([progressPromise, fetchPromise]);
 
-  // ── Account Create Handler ─────────────────────────────────────────────────
-
-  const handleAccountCreate = useCallback(async () => {
-    if (!email) return;
-    setIsSubmitting(true);
-    try {
-      await fetch('/api/audit/claim', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          name,
-          company,
-          audit_id: result?.audit_id,
-        }),
-      });
-    } catch {
-      // proceed anyway
+    if (outcome.kind === 'rate_limit' || outcome.kind === 'validation') {
+      setScanError(outcome.message);
+      setStep('input');
+      return;
     }
-    setIsSubmitting(false);
+
+    if (outcome.kind === 'success') {
+      setResult(outcome.data);
+    } else {
+      // Network / 5xx fallback — show a demo result so the marketing page
+      // still works when the API is degraded. Not used for 4xx.
+      setResult({
+        evi_score: 23,
+        silo_tax_monthly: 14200,
+        monthly_cash_loss: 8400,
+        risk_premium: 5800,
+        authority_leakage: 4200,
+        ppc_replacement: 6800,
+        hallucination_overhead: 3200,
+        gaps: [
+          { type: 'entity', severity: 'HIGH', title: 'No Knowledge Graph Entity', description: 'Your brand has no structured entity in Google Knowledge Graph. AI engines cannot confirm your existence.', affected_engine: 'Google, Gemini' },
+          { type: 'citation', severity: 'HIGH', title: 'Zero ChatGPT Citations', description: 'ChatGPT does not reference your brand in any category-related queries. Competitors own this space.', affected_engine: 'ChatGPT' },
+          { type: 'schema', severity: 'MEDIUM', title: 'Missing Organization Schema', description: 'No Organization or LocalBusiness schema detected. Search engines infer rather than confirm your identity.', affected_engine: 'Google, Bing' },
+          { type: 'authority', severity: 'MEDIUM', title: 'Thin Backlink Authority', description: 'Domain authority is below industry median. AI engines weight authoritative sources for citation selection.', affected_engine: 'Perplexity, Gemini' },
+          { type: 'content', severity: 'LOW', title: 'No FAQ/HowTo Structured Data', description: 'Missing FAQ and HowTo schema reduces chance of featured snippet and AI answer inclusion.', affected_engine: 'Google, Bing' },
+        ],
+        top_competitor_advantage: 'Competitor has 3x more entity coverage and active Knowledge Graph presence',
+        total_authority_void: true,
+        audit_id: 'aud_' + Math.random().toString(36).slice(2, 10),
+      });
+    }
+
     setStep('results');
-  }, [email, name, company, result]);
+  }, [brandUrl, email, name, company, competitors]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -372,7 +417,7 @@ export default function SiloTaxAuditPage() {
                   required
                   placeholder="https://yourcompany.com"
                   value={brandUrl}
-                  onChange={(e) => setBrandUrl(e.target.value)}
+                  onChange={(e) => { setBrandUrl(e.target.value); setScanError(null); }}
                   style={{
                     width: '100%',
                     padding: '14px 16px',
@@ -385,6 +430,105 @@ export default function SiloTaxAuditPage() {
                     boxSizing: 'border-box',
                   }}
                 />
+              </div>
+
+              {/* Work email */}
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: 'rgba(255,255,255,0.7)',
+                    marginBottom: 6,
+                  }}
+                >
+                  Work email *
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="you@yourcompany.com"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setScanError(null); }}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    borderRadius: 10,
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'rgba(255,255,255,0.04)',
+                    color: '#ffffff',
+                    fontSize: 15,
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Name + Company side-by-side on wider, stacked on narrow */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: 'rgba(255,255,255,0.7)',
+                      marginBottom: 6,
+                    }}
+                  >
+                    Full name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Jane Smith"
+                    value={name}
+                    onChange={(e) => { setName(e.target.value); setScanError(null); }}
+                    style={{
+                      width: '100%',
+                      padding: '14px 16px',
+                      borderRadius: 10,
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      background: 'rgba(255,255,255,0.04)',
+                      color: '#ffffff',
+                      fontSize: 15,
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: 'rgba(255,255,255,0.7)',
+                      marginBottom: 6,
+                    }}
+                  >
+                    Company *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Acme Inc"
+                    value={company}
+                    onChange={(e) => { setCompany(e.target.value); setScanError(null); }}
+                    style={{
+                      width: '100%',
+                      padding: '14px 16px',
+                      borderRadius: 10,
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      background: 'rgba(255,255,255,0.04)',
+                      color: '#ffffff',
+                      fontSize: 15,
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Competitor URLs */}
@@ -422,6 +566,24 @@ export default function SiloTaxAuditPage() {
                   />
                 ))}
               </div>
+
+              {/* Inline error (rate limit, validation) */}
+              {scanError && (
+                <div
+                  role="alert"
+                  style={{
+                    padding: '12px 16px',
+                    borderRadius: 10,
+                    background: 'rgba(239,68,68,0.08)',
+                    border: '1px solid rgba(239,68,68,0.25)',
+                    color: '#FCA5A5',
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {scanError}
+                </div>
+              )}
 
               {/* CTA */}
               <button
@@ -465,9 +627,9 @@ export default function SiloTaxAuditPage() {
                 marginTop: 48,
               }}
             >
-              {ENGINES.map((engine) => (
+              {ENGINES.map(({ name: engineName, Icon }) => (
                 <div
-                  key={engine.name}
+                  key={engineName}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -477,8 +639,8 @@ export default function SiloTaxAuditPage() {
                     color: 'rgba(255,255,255,0.35)',
                   }}
                 >
-                  <span style={{ fontSize: 24 }}>{engine.icon}</span>
-                  {engine.name}
+                  <Icon size={24} weight="regular" color="rgba(255,255,255,0.55)" />
+                  {engineName}
                 </div>
               ))}
             </div>
@@ -639,225 +801,7 @@ export default function SiloTaxAuditPage() {
           </div>
         )}
 
-        {/* ── STEP 3: TEASER ────────────────────────────────────────────────── */}
-        {step === 'teaser' && result && (
-          <div
-            style={{
-              maxWidth: 1100,
-              margin: '0 auto',
-              padding: '100px 24px 80px',
-              display: 'grid',
-              gridTemplateColumns: '3fr 2fr',
-              gap: 48,
-              alignItems: 'start',
-            }}
-          >
-            {/* Left: blurred preview */}
-            <div style={{ position: 'relative' }}>
-              <div style={{ filter: 'blur(4px)', pointerEvents: 'none' }}>
-                {/* Faux results preview */}
-                <div
-                  style={{
-                    padding: 32,
-                    borderRadius: 16,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    marginBottom: 16,
-                  }}
-                >
-                  <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>
-                    Entity Visibility Index
-                  </div>
-                  <div style={{ fontSize: 56, fontWeight: 800, color: '#EF4444' }}>
-                    {result.evi_score}
-                  </div>
-                  <div
-                    style={{
-                      height: 8,
-                      borderRadius: 4,
-                      background: 'rgba(255,255,255,0.06)',
-                      marginTop: 16,
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: `${result.evi_score}%`,
-                        height: '100%',
-                        borderRadius: 4,
-                        background: '#EF4444',
-                      }}
-                    />
-                  </div>
-                </div>
-                <div
-                  style={{
-                    padding: 32,
-                    borderRadius: 16,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                  }}
-                >
-                  <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>
-                    Monthly Silo Tax
-                  </div>
-                  <div style={{ fontSize: 48, fontWeight: 800, color: '#E879F9' }}>
-                    ${result.silo_tax_monthly.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-
-              {/* Overlay badge */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  padding: '16px 32px',
-                  borderRadius: 12,
-                  background: 'rgba(239,68,68,0.15)',
-                  border: '1px solid rgba(239,68,68,0.3)',
-                  textAlign: 'center',
-                }}
-              >
-                <div style={{ fontSize: 32, marginBottom: 4 }}>&#9888;</div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#EF4444' }}>
-                  {result.gaps.length} CRITICAL GAPS DETECTED
-                </div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 4 }}>
-                  Create a free account to view full results
-                </div>
-              </div>
-            </div>
-
-            {/* Right: account creation form */}
-            <div
-              style={{
-                position: 'sticky',
-                top: 80,
-                padding: 32,
-                borderRadius: 16,
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(168,85,247,0.2)',
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: 22,
-                  fontWeight: 700,
-                  color: '#ffffff',
-                  marginBottom: 4,
-                  marginTop: 0,
-                }}
-              >
-                Unlock your full audit
-              </h3>
-              <p
-                style={{
-                  fontSize: 14,
-                  color: 'rgba(255,255,255,0.5)',
-                  marginBottom: 24,
-                }}
-              >
-                Free account &mdash; see every gap, your EVI score, and your
-                personalized Silo Tax<TM /> breakdown.
-              </p>
-
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleAccountCreate();
-                }}
-                style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
-              >
-                <input
-                  type="email"
-                  required
-                  placeholder="Work email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: 8,
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    background: 'rgba(255,255,255,0.04)',
-                    color: '#ffffff',
-                    fontSize: 14,
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
-                />
-                <input
-                  type="text"
-                  placeholder="Full name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: 8,
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    background: 'rgba(255,255,255,0.04)',
-                    color: '#ffffff',
-                    fontSize: 14,
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
-                />
-                <input
-                  type="text"
-                  placeholder="Company"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: 8,
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    background: 'rgba(255,255,255,0.04)',
-                    color: '#ffffff',
-                    fontSize: 14,
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
-                />
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  style={{
-                    padding: '14px 24px',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: '#00D9FF',
-                    color: '#0A0A0F',
-                    fontSize: 15,
-                    fontWeight: 700,
-                    cursor: isSubmitting ? 'wait' : 'pointer',
-                    opacity: isSubmitting ? 0.6 : 1,
-                    marginTop: 4,
-                  }}
-                >
-                  {isSubmitting ? 'Unlocking...' : 'Unlock My Results \u2192'}
-                </button>
-              </form>
-
-              <p
-                style={{
-                  fontSize: 11,
-                  color: 'rgba(255,255,255,0.3)',
-                  marginTop: 16,
-                  marginBottom: 0,
-                  textAlign: 'center',
-                }}
-              >
-                No credit card &middot; Instant access &middot; Cancel anytime
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* ── STEP 4: RESULTS ───────────────────────────────────────────────── */}
+        {/* ── STEP 3: RESULTS ───────────────────────────────────────────────── */}
         {step === 'results' && result && (
           <div style={{ maxWidth: 1100, margin: '0 auto', padding: '100px 24px 80px' }}>
             {/* Row 1: EVI + Silo Tax */}
@@ -870,165 +814,146 @@ export default function SiloTaxAuditPage() {
               }}
             >
               {/* EVI Panel */}
-              <div
-                style={{
-                  padding: 32,
-                  borderRadius: 16,
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: 'rgba(255,255,255,0.4)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: 12,
-                  }}
-                >
-                  Entity Visibility Index (EVI<TM />)
-                </div>
-
-                {/* Score */}
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 16 }}>
-                  <span
-                    style={{
-                      fontSize: 64,
-                      fontWeight: 800,
-                      color:
-                        result.evi_score < 30
-                          ? '#EF4444'
-                          : result.evi_score < 60
-                            ? '#F59E0B'
-                            : '#22C55E',
-                      lineHeight: 1,
-                    }}
-                  >
-                    {result.evi_score}
-                  </span>
-                  <span style={{ fontSize: 24, color: 'rgba(255,255,255,0.3)' }}>/100</span>
-                </div>
-
-                {/* Scale bar */}
-                <div
-                  style={{
-                    height: 8,
-                    borderRadius: 4,
-                    background: 'rgba(255,255,255,0.06)',
-                    marginBottom: 16,
-                    position: 'relative',
-                  }}
-                >
+              {(() => {
+                const band = eviBand(result.evi_score);
+                return (
                   <div
                     style={{
-                      width: `${result.evi_score}%`,
-                      height: '100%',
-                      borderRadius: 4,
-                      background:
-                        result.evi_score < 30
-                          ? '#EF4444'
-                          : result.evi_score < 60
-                            ? '#F59E0B'
-                            : '#22C55E',
-                      transition: 'width 1s ease-out',
-                    }}
-                  />
-                </div>
-
-                {/* Status badge */}
-                <div style={{ marginBottom: 16 }}>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      padding: '4px 12px',
-                      borderRadius: 6,
-                      fontSize: 12,
-                      fontWeight: 600,
-                      background:
-                        result.evi_score < 30
-                          ? 'rgba(239,68,68,0.15)'
-                          : result.evi_score < 60
-                            ? 'rgba(245,158,11,0.15)'
-                            : 'rgba(34,197,94,0.15)',
-                      color:
-                        result.evi_score < 30
-                          ? '#EF4444'
-                          : result.evi_score < 60
-                            ? '#F59E0B'
-                            : '#22C55E',
+                      padding: 32,
+                      borderRadius: 16,
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.06)',
                     }}
                   >
-                    {result.evi_score < 30
-                      ? 'CRITICAL — Invisible to AI Engines'
-                      : result.evi_score < 60
-                        ? 'AT RISK — Partial AI Visibility'
-                        : 'HEALTHY — Strong AI Presence'}
-                  </span>
-                </div>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: 'rgba(255,255,255,0.4)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        marginBottom: 12,
+                      }}
+                    >
+                      Earned Visibility Index (EVI<TM />)
+                    </div>
 
-                {/* Narrative */}
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, margin: 0, marginBottom: 24 }}>
-                  {result.total_authority_void
-                    ? 'Your brand is effectively invisible to AI engines. When prospects ask ChatGPT, Perplexity, or Gemini about your category, competitors are cited — you are not. This is not a future risk; it is current revenue loss.'
-                    : 'Your brand has partial visibility across AI engines but significant gaps remain. Competitors with stronger entity presence are capturing the citations and authority signals that should be yours.'}
-                </p>
+                    {/* Score */}
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 16 }}>
+                      <span
+                        style={{
+                          fontSize: 64,
+                          fontWeight: 800,
+                          color: band.color,
+                          lineHeight: 1,
+                        }}
+                      >
+                        {result.evi_score}
+                      </span>
+                      <span style={{ fontSize: 24, color: 'rgba(255,255,255,0.3)' }}>/100</span>
+                    </div>
 
-                {/* Competitor note */}
-                {result.top_competitor_advantage && (
-                  <div
-                    style={{
-                      padding: '12px 16px',
-                      borderRadius: 8,
-                      background: 'rgba(239,68,68,0.06)',
-                      border: '1px solid rgba(239,68,68,0.12)',
-                      fontSize: 13,
-                      color: 'rgba(255,255,255,0.6)',
-                      marginBottom: 24,
-                    }}
-                  >
-                    <strong style={{ color: '#EF4444' }}>Competitor Edge:</strong>{' '}
-                    {result.top_competitor_advantage}
+                    {/* Scale bar */}
+                    <div
+                      style={{
+                        height: 8,
+                        borderRadius: 4,
+                        background: 'rgba(255,255,255,0.06)',
+                        marginBottom: 16,
+                        position: 'relative',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${result.evi_score}%`,
+                          height: '100%',
+                          borderRadius: 4,
+                          background: band.color,
+                          transition: 'width 1s ease-out',
+                        }}
+                      />
+                    </div>
+
+                    {/* Status badge */}
+                    <div style={{ marginBottom: 16 }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '4px 12px',
+                          borderRadius: 6,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          background: band.bgColor,
+                          color: band.color,
+                        }}
+                      >
+                        {band.label}
+                      </span>
+                    </div>
+
+                    {/* Narrative */}
+                    <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, margin: 0, marginBottom: 24 }}>
+                      {result.total_authority_void
+                        ? 'Your brand is effectively invisible to AI engines. When prospects ask ChatGPT, Perplexity, or Gemini about your category, competitors are cited — you are not. This is not a future risk; it is current revenue loss.'
+                        : 'Your brand has partial visibility across AI engines but significant gaps remain. Competitors with stronger entity presence are capturing the citations and authority signals that should be yours.'}
+                    </p>
+
+                    {/* Competitor note */}
+                    {result.top_competitor_advantage && (
+                      <div
+                        style={{
+                          padding: '12px 16px',
+                          borderRadius: 8,
+                          background: 'rgba(239,68,68,0.06)',
+                          border: '1px solid rgba(239,68,68,0.12)',
+                          fontSize: 13,
+                          color: 'rgba(255,255,255,0.6)',
+                          marginBottom: 24,
+                        }}
+                      >
+                        <strong style={{ color: '#EF4444' }}>Competitor Edge:</strong>{' '}
+                        {result.top_competitor_advantage}
+                      </div>
+                    )}
+
+                    {/* CTA buttons */}
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <Link
+                        href="https://app.pravado.io/beta"
+                        style={{
+                          padding: '12px 24px',
+                          borderRadius: 10,
+                          border: 'none',
+                          background: '#A855F7',
+                          color: '#ffffff',
+                          fontSize: 14,
+                          fontWeight: 700,
+                          textDecoration: 'none',
+                          display: 'inline-block',
+                        }}
+                      >
+                        Fix My Visibility &rarr;
+                      </Link>
+                      <Link
+                        href="https://pravado.io/platform"
+                        style={{
+                          padding: '12px 24px',
+                          borderRadius: 10,
+                          border: '1px solid rgba(255,255,255,0.12)',
+                          background: 'transparent',
+                          color: 'rgba(255,255,255,0.7)',
+                          fontSize: 14,
+                          fontWeight: 600,
+                          textDecoration: 'none',
+                          display: 'inline-block',
+                        }}
+                      >
+                        Learn How PRAVADO Works
+                      </Link>
+                    </div>
                   </div>
-                )}
-
-                {/* CTA buttons */}
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <Link
-                    href="https://app.pravado.io/beta"
-                    style={{
-                      padding: '12px 24px',
-                      borderRadius: 10,
-                      border: 'none',
-                      background: '#A855F7',
-                      color: '#ffffff',
-                      fontSize: 14,
-                      fontWeight: 700,
-                      textDecoration: 'none',
-                      display: 'inline-block',
-                    }}
-                  >
-                    Fix My Visibility &rarr;
-                  </Link>
-                  <Link
-                    href="https://pravado.io/platform"
-                    style={{
-                      padding: '12px 24px',
-                      borderRadius: 10,
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      background: 'transparent',
-                      color: 'rgba(255,255,255,0.7)',
-                      fontSize: 14,
-                      fontWeight: 600,
-                      textDecoration: 'none',
-                      display: 'inline-block',
-                    }}
-                  >
-                    Learn How PRAVADO Works
-                  </Link>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Silo Tax Panel */}
               <div
@@ -1127,7 +1052,7 @@ export default function SiloTaxAuditPage() {
                     marginBottom: showFormula ? 16 : 0,
                   }}
                 >
-                  {showFormula ? 'Hide formula \u25B2' : 'Show formula \u25BC'}
+                  {showFormula ? 'Hide formula ▲' : 'Show formula ▼'}
                 </button>
 
                 {showFormula && (
@@ -1363,6 +1288,9 @@ export default function SiloTaxAuditPage() {
                       </span>
                       <span
                         style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
                           fontSize: 11,
                           fontWeight: 600,
                           padding: '3px 10px',
@@ -1372,7 +1300,7 @@ export default function SiloTaxAuditPage() {
                               ? '#22C55E'
                               : engine.status === 'monitoring'
                                 ? '#00D9FF'
-                                : 'rgba(255,255,255,0.3)',
+                                : 'rgba(255,255,255,0.5)',
                           background:
                             engine.status === 'active'
                               ? 'rgba(34,197,94,0.12)'
@@ -1381,7 +1309,12 @@ export default function SiloTaxAuditPage() {
                                 : 'rgba(255,255,255,0.04)',
                         }}
                       >
-                        {engine.locked ? '🔒 Locked' : engine.status === 'active' ? 'Active' : 'Monitoring'}
+                        {engine.locked ? (
+                          <>
+                            <Lock size={11} weight="fill" />
+                            Locked
+                          </>
+                        ) : engine.status === 'active' ? 'Active' : 'Monitoring'}
                       </span>
                     </div>
                   ))}
