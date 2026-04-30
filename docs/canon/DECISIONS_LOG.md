@@ -470,4 +470,102 @@ Discovery conducted as a read-only inventory identified AgencyOS as "uncommitted
   - `AGENCY_OS_SESSION_2.md`
   - `E2E_AUDIT_REPORT.md`
 
+
+## D027 — Audit Funnel Repositioning: Silo Tax → Three-Path EVI Scorecard
+
+**Date:** 2026-04-21 (decided); 2026-04-28 (formally captured to canon)
+**Status:** Adopted
+**Supersedes:** "Silo Tax Audit" framing in `apps/dashboard/src/app/(marketing)/audit/page.tsx`, `apps/api/src/routes/siloTaxAudit/index.ts`, and any homepage/marketing copy treating Silo Tax as the top-of-funnel acquisition instrument.
+
+### Context
+
+The "Silo Tax" audit at /audit was constructed as a top-of-funnel acquisition instrument that combined two incompatible goals: a credible measurement instrument AND a marketing hook with a bold dollar figure. Those goals pull in opposite directions. Credible measurement wants narrow scope, wide error bars, and "insufficient data" outputs. Marketing hooks want bold numbers, universal applicability, and a CTA. The v1 implementation over-indexed on marketing and broke credibility — a single Haiku call cannot defensibly produce a monthly dollar-loss figure for arbitrary brands across arbitrary categories. The category itself confirms this: Semrush, Profound, Search Atlas, Otterly — all credible AI visibility players ship score-based audits, not dollar calculators. The single tool attempting a dollar-figure approach is a small Mexico-based agency (aiseo.com.mx). The category has moved past the calculator model.
+
+A second strategic problem: the audit, as built, is AEO-centric. It positions Pravado as another entrant in the crowded AI visibility audit category (where Semrush has 300M+ ARR and Profound is VC-scaled). It frames Pravado around a single pillar instead of around its actual differentiation, which is cross-pillar orchestration of PR + Content + AEO/SEO. A Cision/Muck Rack refugee landing on the audit gets an AEO scorecard back and bounces — wrong inference about the product. Same for HubSpot/Contently and Semrush/Profound refugees through different doors. The audit filters out non-AEO-led ICP before they engage with what makes Pravado different.
+
+### Decision
+
+Replace the Silo Tax audit with a three-path EVI scorecard. Three landing pages, one audit instrument, three results-page narratives.
+
+**Audit instrument (shared across all three paths):**
+EVI as the primary anchor — `Earned Visibility Index`, decomposed into three pillar sub-scores:
+
+- **PR Authority** — domain authority of citing sites, recency/frequency of earned mentions, named-person quotes vs brand-only mentions. Pravado's 283K-profile media database is a direct asset.
+- **Content Authority** — topical coverage breadth/depth, schema completeness, content freshness, topic cluster integrity, external content references.
+- **AI Citation Authority** — brand mention rate across engines, unlinked mention handling, entity disambiguation, competitive share-of-voice in AI answers.
+
+EVI is canonical (At Risk / Emerging / Competitive / Dominant per `EARNED_VISIBILITY_INDEX.md`). The orchestration story is told through the variance across the three pillar scores — high variance is the orchestration opportunity, the explicit Pravado value wedge.
+
+The audit produces:
+- Top-line EVI score (canonical bands)
+- Three pillar sub-scores with status
+- Specific gap enumeration per pillar with evidence ("your brand was misattributed to [competitor] in 3 of 5 ChatGPT citation tests")
+- Each gap paired with what CRAFT would do about it — remediation preview, not generic product pitch
+- Category-relative positioning where calibration data permits ("bottom quartile for B2B SaaS")
+
+**No dollar figures.** No monthly tax, no odometer, no fabricated precision. The CTA is a sales conversation, not a self-serve close. Dollar figures may live later in two specific places:
+1. In the sales conversation, where prospect P&L is co-constructed
+2. In a paid Pravado feature where first-party data (revenue, traffic, category) makes the math defensible
+
+Neither belongs in a free top-of-funnel scan with no prospect data.
+
+**Three entry paths, one audit:**
+
+| Path | Buyer | Vocabulary | Competitive frame |
+|------|-------|------------|-------------------|
+| `/audit/pr` | Cision / Muck Rack refugees | Earned media authority, what your PR work is actually worth beyond placement counts | PR-first; AEO/Content as limiting pillars |
+| `/audit/content` | HubSpot / Contently / Marketo refugees | Content authority, why your content isn't compounding | Content-first; PR/AEO as limiting pillars |
+| `/audit/ai` | Semrush / Profound / Search Atlas refugees | AI visibility, where your AEO strategy is blind | AEO-first; PR/Content as limiting pillars |
+| `/audit` | Cold traffic, generic | Three-pillar earned visibility | All three pillars peer-level |
+
+All four paths run the same audit at the backend. What differs:
+- Headline and hook language
+- Competitive reference points
+- Order in which pillar scores are revealed (entry-pillar first, then the limiting pillars)
+- Remediation framing ("what's missing from your current stack" specific to the tool they're likely replacing)
+- Social proof relevant to that buyer's category
+
+The buyer who arrived through `/audit/pr` sees their PR pillar first ("your earned media work is doing its job"), then the pivot reveals the underperforming pillars they didn't come in thinking about ("your PR hits aren't compounding because the content they should point to isn't there, and the AI citations that should echo your media moments are going to competitors"). Same scan, same data, different narrative ordering — each native to the entry path.
+
+The entry path is also implicit buyer qualification: a `/audit/pr` lead is a PR-led buyer, sales sequence frames around PR pain. `/audit/ai` leads get a different sequence. Same product, different conversation opener.
+
+### Why this decision
+
+1. **Defensibility.** Every claim is qualitative or relative. EVI is an index (comparison-based). Gap analysis is descriptive. Category comparison is relative. There's no dollar figure to challenge, so there's nothing to catch the instrument lying.
+2. **Universality.** Solo consultant or Fortune 500, EVI and gap analysis are meaningful for all of them because they're relative measures. The "doesn't fit all sizes" problem evaporates.
+3. **Demonstrates the orchestration thesis by showing it.** Three scores that should correlate and often don't. The variance is the Pravado value wedge — visualizing the silos in silo-breaking terms.
+4. **Meets every prospect where they are.** PR-led, content-led, AEO-led — each sees themselves in their entry path AND learns the pillars they weren't thinking about that are part of why they're struggling.
+5. **Categorically differentiable.** Pravado isn't competing on the same axis as Semrush or Cision. Cross-pillar earned visibility orchestration is a category no competitor occupies.
+6. **Cleaner sales handoff.** "Your EVI is 68, here are the gaps, let's talk about what a remediation program would look like and what it's worth to your specific P&L" is a better first sales call than defending a $37K/mo Silo Tax the prospect is already skeptical of.
+7. **Acquisition channel separation.** Three smaller fights you can win beat one large fight you can't. `/audit/pr` lets Pravado win on "Cision alternative" / "Muck Rack alternative" — sharper differentiation, weaker incumbent, lower CPC — while still serving AEO-led traffic on `/audit/ai`.
+8. **Phase 2 optionality preserved.** A user-input-driven AI Visibility ROI Projector can ship later as a paid-tier feature or a second free tool. Different defensibility profile (assumptions are the user's), different placement in the funnel.
+
+### What this is not
+
+- This is not a retreat from the Silo Tax concept's core insight (PR/Content/SEO siloing causes authority loss). That insight survives, expressed as the variance across pillar scores.
+- This is not "Pravado becomes an AEO tool." The opposite — the audit explicitly de-centers AEO and makes Pravado about cross-pillar orchestration.
+- This is not a copy refresh. It is a structural rebuild of the audit instrument and the funnel.
+
+### Halo pillar
+
+The PR pillar is Pravado's best shot at unambiguously defensible best-in-class status. AEO is the most crowded category (Semrush ~$300M ARR, Profound VC-scaled, Search Atlas ~$12M ARR). Content is HubSpot's category. PR software is stale (Cision and Muck Rack are legacy products) and Pravado has structural advantage (283K-profile database + AI-native workflow).
+
+**Implication:** `/audit/pr` is the first acquisition path to invest in to production-quality bar. The PR pillar's standalone excellence halos the entire product. This shapes phasing and engineering allocation.
+
+### Phasing
+
+This is a 60–100 hour effort across all components. Phasing:
+
+- **Phase 1 (audit funnel + three-pillar EVI audit):** Strip Silo Tax, build three-pillar EVI scorecard, ship `/audit/pr` to production-quality bar, ship `/audit/content` and `/audit/ai` with shared template, ship generic `/audit`. Email template flips. Ship before broader marketing site rebalance. **Sprint: docs/sprints/D027-AUDIT-REBUILD/**
+- **Phase 2 (marketing site rebalance):** Homepage, Platform, Models, Pricing, About passes informed by Phase 1 acquisition data.
+- **Phase 3 (future):** AI Visibility ROI Projector as paid-tier or second free tool — user-input-driven, defensible.
+
+### Recovery note
+
+Commit `c8fcaf7` (2026-04-28) shipped the audit funnel restructure (mechanics: email upfront, rate limit, removed blur gate, EVI canonical bands, Phosphor icons, email template fixes). Those mechanics are correct and stay. The Silo Tax framing in that commit is wrong and is undone by Phase 1 of this decision. The funnel mechanics work is salvaged, not redone.
+
+### Why this decision is being captured to canon now (2026-04-28)
+
+The decision was made in conversation on 2026-04-21 and never written to canon. As a result, the strategic context drifted out of the lead architect's working memory. Commit `c8fcaf7` was generated against the wrong assumption ("Silo Tax framing stays") and pushed to main before the drift was caught. This is the precise failure mode that motivated the 2026-04-28 CLAUDE.md Required Boot Sequence amendment (commit `4cb9fdc`). Going forward, every load-bearing strategic decision lands in `DECISIONS_LOG.md` at the moment it's made, not at some imagined "end of session." The boot sequence reads `DECISIONS_LOG.md` so future sessions inherit the decision automatically.
+
 (End)
