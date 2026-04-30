@@ -1,12 +1,30 @@
 /**
- * Silo Tax Audit Routes — Public Acquisition Flow
+ * Audit Routes — Public Acquisition Flow (Three-Path EVI Scorecard)
+ *
+ * Per docs/canon/DECISIONS_LOG.md D027 — Audit Funnel Repositioning:
+ * Silo Tax → Three-Path EVI Scorecard. Phase 1A scope: backend rewrite.
+ * See docs/sprints/D027-AUDIT-REBUILD/WORK_ORDER.md for the full work
+ * order. The customer-facing path (`/api/v1/silo-tax/scan`) is preserved
+ * to avoid breaking deployed clients; the route handler now produces a
+ * three-pillar EVI scorecard instead of a single-pillar Silo Tax score.
  *
  * Public endpoints (no auth required):
- * - POST /scan   — Run SAGE™ audit, create account, send magic link.
- *                  Single transaction: email/name/company are required upfront,
- *                  rate-limited 1 per email per 24h.
- * - POST /claim  — DEPRECATED. Retained as an idempotent shim for any in-flight
- *                  legacy clients. New flow handles claim work inside /scan.
+ * - POST /scan   — Run three-pillar EVI audit, create account, send
+ *                  magic link. Single transaction: email/name/company
+ *                  required upfront, rate-limited 1 per email per 24h.
+ * - POST /claim  — DEPRECATED. Idempotent shim retained for any
+ *                  in-flight legacy clients. New flow handles claim
+ *                  work inside /scan.
+ *
+ * Composite EVI in this audit uses the same 40/35/25 weighting as
+ * the in-product EVI defined in docs/canon/EVI_MATHEMATICS.md:
+ *   in-product EVI = (Visibility × 0.40) + (Authority × 0.35) + (Momentum × 0.25)
+ *   audit EVI      = (PR        × 0.40) + (Content   × 0.35) + (AI       × 0.25)
+ * The bands (At Risk / Emerging / Competitive / Dominant) are
+ * canonical and shared across both surfaces. Pillar weights map to
+ * V/A/M weights deliberately: PR drives Visibility, Content drives
+ * Authority, AI Citation drives Momentum (where citation velocity
+ * lives in the in-product model).
  *
  * Separate from /api/v1/audit (internal audit logging, S35).
  */
@@ -15,13 +33,7 @@ import type { FastifyInstance } from 'fastify';
 import { createClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
 
-const logger = createLogger('silo-tax-audit');
-
-// ── Silo Tax calculation constants ────────────────────
-const AVG_CPM = 18;
-const AVG_CPC = 2.40;
-const MONTHLY_QUERY_VOL = 1200;
-const BRI_RECOVERY_COST = 1.20;
+const logger = createLogger('audit-scorecard');
 
 // ── Rate-limit window ─────────────────────────────────
 const RATE_LIMIT_WINDOW_HOURS = 24;
@@ -31,12 +43,44 @@ const RATE_LIMIT_WINDOW_SECONDS = RATE_LIMIT_WINDOW_HOURS * 60 * 60;
 // Standard email shape — server-side floor; UI does its own check too.
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// ── Engines the AI Citation pillar reasons about ──────
+// The LLM simulates citation behavior across these surfaces. Stored
+// in scan_metadata so the results page can show "scanned across"
+// transparency.
+const ENGINES_CONSULTED = ['ChatGPT', 'Perplexity', 'Gemini', 'Claude', 'Bing Copilot'] as const;
+
+// ── EVI canonical bands ───────────────────────────────
+// Source of truth: docs/canon/EARNED_VISIBILITY_INDEX.md §4.
+type EVIBand = 'At Risk' | 'Emerging' | 'Competitive' | 'Dominant';
+
+function eviBand(score: number): EVIBand {
+  if (score <= 40) return 'At Risk';
+  if (score <= 60) return 'Emerging';
+  if (score <= 80) return 'Competitive';
+  return 'Dominant';
+}
+
+// Hex used in email rendering only — keeps the canonical band logic
+// in one place while allowing the email template to colour the score.
+function eviBandHex(score: number): string {
+  if (score <= 40) return '#EF4444';
+  if (score <= 60) return '#F59E0B';
+  if (score <= 80) return '#00D9FF';
+  return '#22C55E';
+}
+
+// ── ScanBody / response types ─────────────────────────
+type EntryPath = 'pr' | 'content' | 'ai' | 'generic';
+type PillarKey = 'pr' | 'content' | 'ai';
+type Severity = 'high' | 'medium' | 'low';
+
 interface ScanBody {
   brandUrl: string;
   email: string;
   name: string;
   company: string;
   competitorUrls?: string[];
+  entry_path?: EntryPath;
 }
 
 interface ClaimBody {
@@ -46,71 +90,150 @@ interface ClaimBody {
   audit_id: string;
 }
 
-interface LlmResult {
-  evi_score: number;
-  gaps: Array<{
-    type: string;
-    severity: 'HIGH' | 'MEDIUM' | 'LOW';
-    title: string;
-    description: string;
-    affected_engine: string;
-  }>;
-  top_competitor_advantage: string;
-  total_authority_void: boolean;
-  unlinked_mentions_estimate: number;
-  citation_gap_queries: number;
-  entity_collision_risk_pct: number;
+interface PillarGap {
+  title: string;
+  description: string;
+  severity: Severity;
+  remediation: string;
 }
 
-const FALLBACK_RESULT: LlmResult = {
-  evi_score: 15,
-  gaps: [
-    {
-      type: 'topic_void',
-      severity: 'HIGH',
-      title: 'Limited AI Engine Presence Detected',
-      description: 'Minimal citation presence across major AI engines. Perplexity and ChatGPT are not surfacing this brand for relevant category queries.',
-      affected_engine: 'All engines',
+interface PillarScore {
+  score: number;          // 0–100
+  band: EVIBand;
+  signals: Record<string, string>;
+  gaps: PillarGap[];
+}
+
+interface Variance {
+  spread: number;         // max pillar score minus min pillar score
+  leading_pillar: PillarKey;
+  lagging_pillar: PillarKey;
+  orchestration_opportunity: string;
+}
+
+interface Benchmark {
+  category_quartile: 1 | 2 | 3 | 4 | null;
+  category_label: string | null;
+}
+
+interface ScanMetadata {
+  brand_url: string;
+  competitor_urls: string[];
+  scanned_at: string;     // ISO 8601
+  engines_consulted: string[];
+}
+
+interface ScanResult {
+  evi_score: number;
+  evi_band: EVIBand;
+  pillars: { pr: PillarScore; content: PillarScore; ai: PillarScore };
+  variance: Variance;
+  benchmark: Benchmark;
+  scan_metadata: ScanMetadata;
+  magic_link_sent: boolean;
+}
+
+// API response wraps ScanResult with onboarding context (audit_id,
+// org_id, trial_expires_at) the dashboard needs for the magic-link
+// landing experience. These wrap the pure ScanResult and are not
+// part of the public scorecard contract.
+interface ScanResponse extends ScanResult {
+  audit_id: string | null;
+  org_id: string;
+  trial_expires_at: string;
+  entry_path: EntryPath;
+}
+
+// ── LLM-side schema (subset of ScanResult) ────────────
+// The LLM produces qualitative pillar assessments and the
+// orchestration narrative. The route computes the deterministic
+// pieces (composite EVI, bands, variance numerics) so audit math is
+// not at the mercy of model arithmetic.
+interface LlmPillarOutput {
+  score: number;
+  signals: Record<string, string>;
+  gaps: PillarGap[];
+}
+
+interface LlmAuditOutput {
+  pillars: { pr: LlmPillarOutput; content: LlmPillarOutput; ai: LlmPillarOutput };
+  orchestration_opportunity: string;
+  benchmark: { category_quartile: number | null; category_label: string | null };
+}
+
+// Dev / no-key fallback. Mid-band scores with generic gaps so the
+// response shape is well-formed for local development. NEVER reached
+// when ANTHROPIC_API_KEY is set — production scans always go through
+// the LLM, with a 502 on repeated malformed output.
+const FALLBACK_LLM_OUTPUT: LlmAuditOutput = {
+  pillars: {
+    pr: {
+      score: 50,
+      signals: {
+        earned_media_frequency: 'Insufficient signal — homepage shows no named-journalist quotes or press archive.',
+        domain_authority_estimate: 'Mixed — likely citing sites are mid-tier industry blogs.',
+      },
+      gaps: [
+        {
+          title: 'No earned media archive surfaced',
+          description: 'No press page, no journalist-attributed quotes, no awards section detected. Without surfaced earned coverage, AI engines cannot infer authority transfer from media to brand.',
+          severity: 'high',
+          remediation: 'CRAFT routes a weekly press release through Pravado\'s 283K-profile media database with named-journalist matching and pitches the resulting coverage as schema-marked authority signals.',
+        },
+        {
+          title: 'No named-spokesperson coverage',
+          description: 'Brand mentions in inferred coverage are brand-name only, not attributed to a person. Named-quote coverage is heavier-weighted in citation graphs.',
+          severity: 'medium',
+          remediation: 'CRAFT operationalizes named-spokesperson positioning across the pitch pipeline, prioritizing journalists who quote founders and executives.',
+        },
+      ],
     },
-    {
-      type: 'authority_leakage',
-      severity: 'HIGH',
-      title: 'Schema-LD Coverage Gap',
-      description: 'Media mentions lack structured data markup, preventing AI crawlers from attributing authority signals to the brand entity.',
-      affected_engine: 'Google AI',
+    content: {
+      score: 55,
+      signals: {
+        topical_coverage: 'Narrow — surface content covers product features, not category authority.',
+        schema_completeness: 'Partial — basic Organization schema present, no Article/HowTo coverage.',
+      },
+      gaps: [
+        {
+          title: 'Topic cluster gaps in primary category',
+          description: 'No deep-coverage hubs detected for the brand\'s strategic topics. Authority infrastructure requires hub-and-spoke topic ownership.',
+          severity: 'high',
+          remediation: 'CRAFT generates topic-pillar content with structured FAQ and HowTo schema, governed by CiteMind for AEO citation worthiness before publish.',
+        },
+      ],
     },
-    {
-      type: 'citation_drift',
-      severity: 'MEDIUM',
-      title: 'Competitor Citation Advantage',
-      description: 'Category competitors are receiving 3-5x more AI citations for core product queries.',
-      affected_engine: 'ChatGPT',
+    ai: {
+      score: 45,
+      signals: {
+        citation_rate_estimate: 'Low — buyer-intent queries surface category leaders, not this brand.',
+        entity_disambiguation: 'Some risk — brand name overlaps with other entities in adjacent categories.',
+      },
+      gaps: [
+        {
+          title: 'Buyer-intent queries surface competitors',
+          description: 'Representative buyer questions in this category cite competitors, not this brand. AI engines learn category leadership from training data and crawl signals.',
+          severity: 'high',
+          remediation: 'CRAFT runs CiteMind\'s share-of-model program: weekly query monitoring, entity disambiguation pages, and orchestrated content + PR pushes targeting the gaps.',
+        },
+      ],
     },
-    {
-      type: 'entity_collision',
-      severity: 'MEDIUM',
-      title: 'Brand Entity Disambiguation Risk',
-      description: 'AI models may confuse brand entity with similarly-named entities in adjacent categories.',
-      affected_engine: 'Perplexity',
-    },
-  ],
-  top_competitor_advantage: 'Top competitor has 4x more AI citations due to stronger entity markup and content structure.',
-  total_authority_void: true,
-  unlinked_mentions_estimate: 8,
-  citation_gap_queries: 45,
-  entity_collision_risk_pct: 35,
+  },
+  orchestration_opportunity: 'Pillar scores are close enough that no single discipline is the obvious culprit. The compounding loop is broken in both directions: PR mentions are not echoing into AI answers, and content pieces are not being cited as supporting evidence in either earned media or AI responses. Closing the loop requires shared schema across all three pillars.',
+  benchmark: { category_quartile: null, category_label: null },
 };
 
-// ── EVI band logic — canonical 4-band per docs/canon/EARNED_VISIBILITY_INDEX.md
-function eviBandForEmail(score: number): { label: string; hex: string } {
-  if (score <= 40) return { label: 'At Risk',     hex: '#EF4444' };
-  if (score <= 60) return { label: 'Emerging',    hex: '#F59E0B' };
-  if (score <= 80) return { label: 'Competitive', hex: '#00D9FF' };
-  return                  { label: 'Dominant',    hex: '#22C55E' };
-}
+// ── Pillar weights (canonical, mirror EVI_MATHEMATICS V/A/M) ──
+const PILLAR_WEIGHTS = { pr: 0.40, content: 0.35, ai: 0.25 } as const;
 
-function buildAuditClaimEmailHtml(name: string, eviScore: number, siloTax: number, magicLinkUrl: string): string {
-  const { label: eviLabel, hex: eviColor } = eviBandForEmail(eviScore);
+// ── Email rendering ───────────────────────────────────
+// Phase 1A keeps this minimal — single EVI tile, no Silo Tax,
+// no dollar figures. Phase 1E rebuilds the body to a three-pillar
+// table-based layout. Subject line and Outlook compatibility shape
+// from c8fcaf7 are preserved.
+function buildAuditClaimEmailHtml(name: string, eviScore: number, magicLinkUrl: string): string {
+  const eviLabel = eviBand(eviScore);
+  const eviColor = eviBandHex(eviScore);
   return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f4f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f8;padding:40px 0;"><tr><td align="center">
@@ -119,25 +242,16 @@ function buildAuditClaimEmailHtml(name: string, eviScore: number, siloTax: numbe
   <span style="font-family:monospace;font-weight:800;font-size:20px;letter-spacing:3px;color:#1a1a2e;">PRAVADO</span>
 </td></tr>
 <tr><td style="padding:32px;">
-  <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#13131A;">Your Silo Tax Audit is ready, ${name}.</h1>
+  <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#13131A;">Your earned visibility scorecard is ready, ${name}.</h1>
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;border-collapse:separate;border-spacing:0;">
     <tr>
-      <td width="50%" valign="top" style="padding-right:8px;">
+      <td valign="top">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8fc;border-radius:8px;border:1px solid #eee;">
-          <tr><td style="padding:20px;text-align:center;">
+          <tr><td style="padding:24px;text-align:center;">
             <div style="font-size:11px;color:#666;font-family:monospace;letter-spacing:0.1em;margin-bottom:8px;">EVI&trade; SCORE</div>
-            <div style="font-size:36px;font-weight:900;font-family:monospace;color:${eviColor};line-height:1;">${eviScore}</div>
-            <div style="font-size:12px;color:${eviColor};margin-top:4px;">${eviLabel}</div>
-          </td></tr>
-        </table>
-      </td>
-      <td width="50%" valign="top" style="padding-left:8px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8fc;border-radius:8px;border:1px solid #eee;">
-          <tr><td style="padding:20px;text-align:center;">
-            <div style="font-size:11px;color:#666;font-family:monospace;letter-spacing:0.1em;margin-bottom:8px;">SILO TAX</div>
-            <div style="font-size:36px;font-weight:900;font-family:monospace;color:#00D9FF;line-height:1;">$${siloTax.toLocaleString()}</div>
-            <div style="font-size:12px;color:#666;margin-top:4px;">/month lost</div>
+            <div style="font-size:48px;font-weight:900;font-family:monospace;color:${eviColor};line-height:1;">${eviScore}</div>
+            <div style="font-size:13px;color:${eviColor};margin-top:6px;font-weight:600;">${eviLabel}</div>
           </td></tr>
         </table>
       </td>
@@ -146,7 +260,7 @@ function buildAuditClaimEmailHtml(name: string, eviScore: number, siloTax: numbe
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;"><tr><td align="center">
     <a href="${magicLinkUrl}" style="display:inline-block;background:#00D9FF;color:#0A0A0F;font-size:15px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:8px;">
-      Access Your Dashboard &rarr;
+      Open your full scorecard &rarr;
     </a>
   </td></tr></table>
 
@@ -168,6 +282,242 @@ function buildAuditClaimEmailHtml(name: string, eviScore: number, siloTax: numbe
 </table></td></tr></table></body></html>`;
 }
 
+// ── LLM prompt construction ───────────────────────────
+const SYSTEM_PROMPT = `You are SAGE, Pravado's strategic intelligence engine. You produce three-pillar earned visibility scorecards.
+
+You score three pillars on a 0–100 scale:
+  • PR Authority — domain authority of likely citing sites, frequency/recency of earned media, named-spokesperson coverage vs brand-only mentions, awards / press archive presence.
+  • Content Authority — topical coverage breadth and depth, schema completeness, content freshness, topic cluster integrity, structured-data hygiene.
+  • AI Citation Authority — citation rate across major AI engines for representative buyer-intent queries, entity disambiguation risk versus competitors, share-of-model in category answers.
+
+For each pillar produce 3–5 specific gaps. Each gap pairs with a "remediation" string describing what Pravado's CRAFT execution layer would do — operational and concrete (not a generic product pitch).
+
+You also produce one "orchestration_opportunity" narrative — 2–3 sentences in buyer's language explaining what the variance across pillar scores reveals about why the brand's earned visibility isn't compounding.
+
+Optionally, you produce a category benchmark only when the brand's category is unambiguous from the URL.
+
+Output rules — these are absolute:
+  • Return ONLY valid JSON. No markdown, no preamble, no code fences, no commentary outside the JSON.
+  • Do NOT include dollar figures, monetary loss claims, monthly tax, projected revenue impact, or any number with a currency symbol.
+  • Do NOT use the phrase "Silo Tax" or any time-bounded loss framing ("losing $X per month", "$X/year leaking", etc.).
+  • Do NOT use scareware framing or panic language. The audit is diagnostic, not alarmist.
+  • Be specific — name actual AI engines, query types, competitor names where reasonable. Generic statements fail the bar.`;
+
+function buildUserPrompt(brandUrl: string, competitorUrls: string[]): string {
+  const competitorBlock = competitorUrls.length > 0
+    ? `Competitor URLs: ${competitorUrls.join(', ')}`
+    : 'No competitor URLs provided — analyze this brand against likely category leaders inferred from the brand URL.';
+
+  return `Brand URL: ${brandUrl}
+${competitorBlock}
+
+Engines to reason about for AI Citation Authority: ChatGPT, Perplexity, Gemini, Claude, Bing Copilot.
+
+Return this exact JSON structure with no additional text:
+{
+  "pillars": {
+    "pr": {
+      "score": <integer 0-100>,
+      "signals": { "<key>": "<one-sentence evidence>", "<key2>": "<...>" },
+      "gaps": [
+        {
+          "title": "<concise gap title under 70 chars>",
+          "description": "<2-3 sentences naming specific evidence: outlets, journalists, query types, or competitor advantages>",
+          "severity": "<high|medium|low>",
+          "remediation": "<concrete sentence describing what Pravado's CRAFT layer would execute — name the operational mechanism>"
+        }
+      ]
+    },
+    "content": {
+      "score": <integer 0-100>,
+      "signals": { "<key>": "<one-sentence evidence>" },
+      "gaps": [ <same shape, 3-5 gaps> ]
+    },
+    "ai": {
+      "score": <integer 0-100>,
+      "signals": { "<key>": "<one-sentence evidence>" },
+      "gaps": [ <same shape, 3-5 gaps> ]
+    }
+  },
+  "orchestration_opportunity": "<2-3 sentence narrative; buyer's language; explains variance across pillars and why earned visibility isn't compounding>",
+  "benchmark": {
+    "category_quartile": <integer 1-4 OR null if category cannot be confidently inferred>,
+    "category_label": "<e.g., 'B2B SaaS', 'D2C wellness'> OR null"
+  }
+}
+
+Each pillar must produce 3–5 gaps. Severity values are lowercase strings: "high", "medium", "low". Use null (not the string "null") when category cannot be inferred.`;
+}
+
+// ── LLM output validation ─────────────────────────────
+function isValidLlmOutput(value: unknown): value is LlmAuditOutput {
+  if (!value || typeof value !== 'object') return false;
+  const v = value as Record<string, unknown>;
+
+  if (!v.pillars || typeof v.pillars !== 'object') return false;
+  const pillars = v.pillars as Record<string, unknown>;
+  for (const key of ['pr', 'content', 'ai'] as const) {
+    if (!isValidPillar(pillars[key])) return false;
+  }
+
+  if (typeof v.orchestration_opportunity !== 'string' || v.orchestration_opportunity.trim().length === 0) {
+    return false;
+  }
+
+  if (!v.benchmark || typeof v.benchmark !== 'object') return false;
+  const b = v.benchmark as Record<string, unknown>;
+  const quartileOk = b.category_quartile === null
+    || (typeof b.category_quartile === 'number'
+        && Number.isInteger(b.category_quartile)
+        && b.category_quartile >= 1
+        && b.category_quartile <= 4);
+  const labelOk = b.category_label === null || typeof b.category_label === 'string';
+  if (!quartileOk || !labelOk) return false;
+
+  return true;
+}
+
+function isValidPillar(value: unknown): value is LlmPillarOutput {
+  if (!value || typeof value !== 'object') return false;
+  const p = value as Record<string, unknown>;
+  if (typeof p.score !== 'number' || p.score < 0 || p.score > 100) return false;
+  if (!p.signals || typeof p.signals !== 'object' || Array.isArray(p.signals)) return false;
+  if (!Array.isArray(p.gaps) || p.gaps.length < 1) return false;
+  for (const gap of p.gaps) {
+    if (!gap || typeof gap !== 'object') return false;
+    const g = gap as Record<string, unknown>;
+    if (typeof g.title !== 'string' || g.title.trim().length === 0) return false;
+    if (typeof g.description !== 'string' || g.description.trim().length === 0) return false;
+    if (g.severity !== 'high' && g.severity !== 'medium' && g.severity !== 'low') return false;
+    if (typeof g.remediation !== 'string' || g.remediation.trim().length === 0) return false;
+  }
+  return true;
+}
+
+async function callAnthropic(apiKey: string, brandUrl: string, competitorUrls: string[]): Promise<string> {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2048,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildUserPrompt(brandUrl, competitorUrls) }],
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Anthropic API returned ${res.status}`);
+  }
+
+  const data = await res.json() as { content?: Array<{ text?: string }> };
+  return data.content?.[0]?.text ?? '';
+}
+
+function tryParseJson(raw: string): unknown {
+  // Tolerate accidental code-fence wrapping. Reject anything that
+  // can't parse outright — we will retry once.
+  const stripped = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  try {
+    return JSON.parse(stripped);
+  } catch {
+    return null;
+  }
+}
+
+async function runLlmScan(apiKey: string, brandUrl: string, competitorUrls: string[]): Promise<LlmAuditOutput> {
+  let lastFailure: string | null = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const raw = await callAnthropic(apiKey, brandUrl, competitorUrls);
+      const parsed = tryParseJson(raw);
+      if (isValidLlmOutput(parsed)) {
+        return parsed;
+      }
+      lastFailure = parsed === null ? 'JSON parse failed' : 'schema validation failed';
+      logger.warn('LLM produced invalid output', { attempt, reason: lastFailure });
+    } catch (err) {
+      lastFailure = (err as Error).message;
+      logger.error('LLM call failed', { attempt, error: lastFailure });
+    }
+  }
+  throw new Error(`LLM_INVALID_OUTPUT: ${lastFailure ?? 'unknown'}`);
+}
+
+// ── Pillar-score → ScanResult assembly ────────────────
+function assemblePillar(p: LlmPillarOutput): PillarScore {
+  const score = Math.round(p.score);
+  return {
+    score,
+    band: eviBand(score),
+    signals: p.signals,
+    gaps: p.gaps,
+  };
+}
+
+function computeVariance(
+  pillars: { pr: PillarScore; content: PillarScore; ai: PillarScore },
+  orchestrationOpportunity: string,
+): Variance {
+  const entries: Array<[PillarKey, number]> = [
+    ['pr', pillars.pr.score],
+    ['content', pillars.content.score],
+    ['ai', pillars.ai.score],
+  ];
+  const sorted = [...entries].sort((a, b) => b[1] - a[1]);
+  const leading_pillar = sorted[0][0];
+  const lagging_pillar = sorted[sorted.length - 1][0];
+  const spread = sorted[0][1] - sorted[sorted.length - 1][1];
+  return { spread, leading_pillar, lagging_pillar, orchestration_opportunity: orchestrationOpportunity };
+}
+
+function buildScanResult(llm: LlmAuditOutput, brandUrl: string, competitorUrls: string[], magicLinkSent: boolean): ScanResult {
+  const pillars = {
+    pr: assemblePillar(llm.pillars.pr),
+    content: assemblePillar(llm.pillars.content),
+    ai: assemblePillar(llm.pillars.ai),
+  };
+
+  // Composite EVI matches docs/canon/EVI_MATHEMATICS.md weighting.
+  // PR : Visibility :: Content : Authority :: AI : Momentum.
+  const evi_score = Math.round(
+    pillars.pr.score * PILLAR_WEIGHTS.pr
+    + pillars.content.score * PILLAR_WEIGHTS.content
+    + pillars.ai.score * PILLAR_WEIGHTS.ai,
+  );
+
+  const variance = computeVariance(pillars, llm.orchestration_opportunity);
+
+  const benchmark: Benchmark = {
+    category_quartile: (llm.benchmark.category_quartile === 1
+      || llm.benchmark.category_quartile === 2
+      || llm.benchmark.category_quartile === 3
+      || llm.benchmark.category_quartile === 4)
+      ? llm.benchmark.category_quartile
+      : null,
+    category_label: llm.benchmark.category_label,
+  };
+
+  return {
+    evi_score,
+    evi_band: eviBand(evi_score),
+    pillars,
+    variance,
+    benchmark,
+    scan_metadata: {
+      brand_url: brandUrl,
+      competitor_urls: competitorUrls,
+      scanned_at: new Date().toISOString(),
+      engines_consulted: [...ENGINES_CONSULTED],
+    },
+    magic_link_sent: magicLinkSent,
+  };
+}
+
 export async function siloTaxAuditRoutes(server: FastifyInstance) {
   const supabaseUrl = process.env.SUPABASE_URL!;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -175,11 +525,15 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
   const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // POST /scan — SAGE™ audit + account + magic link in one transaction
+  // POST /scan — Three-pillar EVI audit + account + magic link in one transaction
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   server.post<{ Body: ScanBody }>('/scan', async (request, reply) => {
     try {
-      const { brandUrl, email, name, company, competitorUrls = [] } = request.body ?? ({} as ScanBody);
+      const body = request.body ?? ({} as ScanBody);
+      const { brandUrl, email, name, company, competitorUrls = [] } = body;
+      const entry_path: EntryPath = (body.entry_path === 'pr' || body.entry_path === 'content' || body.entry_path === 'ai' || body.entry_path === 'generic')
+        ? body.entry_path
+        : 'generic';
 
       // ── Input validation ──────────────────────
       if (!brandUrl || !email || !name || !company) {
@@ -233,81 +587,22 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
           });
       }
 
-      // ── Run Claude Haiku (LLM scan) ───────────
-      let llmResult: LlmResult = FALLBACK_RESULT;
-
+      // ── Run Claude Haiku scan (with retry on malformed JSON) ──
+      let llm: LlmAuditOutput;
       if (anthropicApiKey) {
         try {
-          const systemPrompt = `You are SAGE™, Pravado's strategic intelligence engine. Analyze brand and competitor URLs to identify AI visibility gaps, entity drift, and citation opportunities. Be specific and direct — name actual AI engines, query types, and competitor advantages where possible. Return ONLY valid JSON. No markdown, no preamble, no explanation outside the JSON.`;
-
-          const userPrompt = `Analyze this brand: ${brandUrl}
-${competitorUrls.length > 0 ? `Competitors: ${competitorUrls.join(', ')}` : 'No competitors provided — analyze brand in isolation.'}
-
-Return this exact JSON structure with no additional text:
-{
-  "evi_score": <integer 0-100 estimating current AI visibility>,
-  "gaps": [
-    {
-      "type": "<entity_collision|authority_leakage|citation_drift|topic_void>",
-      "severity": "<HIGH|MEDIUM|LOW>",
-      "title": "<concise gap title under 60 chars>",
-      "description": "<specific 1-2 sentence description naming AI engines or competitors>",
-      "affected_engine": "<ChatGPT|Perplexity|Gemini|Google AI|All engines>"
-    }
-  ],
-  "top_competitor_advantage": "<1 sentence on main competitor AI advantage, or empty string if none>",
-  "total_authority_void": <true if brand has near-zero AI presence>,
-  "unlinked_mentions_estimate": <integer 0-50>,
-  "citation_gap_queries": <integer 0-200>,
-  "entity_collision_risk_pct": <integer 0-100>
-}
-
-Rules:
-- Generate exactly 3-5 gaps
-- Be specific: name actual engines, query types, competitor names
-- evi_score should reflect realistic AI presence for the brand
-- If no competitors provided, focus on gaps vs category leaders
-- total_authority_void = true only for very new/unknown brands`;
-
-          const res = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': anthropicApiKey,
-              'anthropic-version': '2023-06-01',
-            },
-            body: JSON.stringify({
-              model: 'claude-haiku-4-5-20251001',
-              max_tokens: 1024,
-              system: systemPrompt,
-              messages: [{ role: 'user', content: userPrompt }],
-            }),
+          llm = await runLlmScan(anthropicApiKey, brandUrl, competitorUrls);
+        } catch (err) {
+          logger.error('Three-pillar scan failed after retry', { error: (err as Error).message });
+          return reply.code(502).send({
+            error: 'scan_unavailable',
+            message: 'We couldn\'t generate your scorecard right now. Please try again in a few minutes.',
           });
-
-          if (res.ok) {
-            const data = await res.json() as { content?: Array<{ text?: string }> };
-            const rawText = data.content?.[0]?.text ?? '';
-            const cleanJson = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-            llmResult = JSON.parse(cleanJson);
-          } else {
-            logger.error('Anthropic API error', { status: res.status });
-          }
-        } catch (llmErr) {
-          logger.error('LLM call failed, using fallback', { error: (llmErr as Error).message });
         }
       } else {
-        logger.warn('No ANTHROPIC_API_KEY — using fallback result');
+        logger.warn('No ANTHROPIC_API_KEY — using fallback scan output (dev mode)');
+        llm = FALLBACK_LLM_OUTPUT;
       }
-
-      // ── Silo Tax calculation ──────────────────
-      const authority_leakage = Math.round(llmResult.unlinked_mentions_estimate * AVG_CPM);
-      const ppc_replacement = Math.round(llmResult.citation_gap_queries * AVG_CPC * 120);
-      const hallucination_overhead = Math.round(
-        (MONTHLY_QUERY_VOL * llmResult.entity_collision_risk_pct / 100) * BRI_RECOVERY_COST
-      );
-      const silo_tax_monthly = authority_leakage + ppc_replacement + hallucination_overhead;
-      const monthly_cash_loss = authority_leakage + ppc_replacement;
-      const risk_premium = hallucination_overhead;
 
       // ── Find or create auth user ──────────────
       let userId: string;
@@ -361,6 +656,11 @@ Rules:
         });
       }
 
+      // ── Assemble ScanResult (math + bands + variance) ──
+      // Magic-link send status is patched in below once we have it;
+      // assemble first so the persistence layer has the full shape.
+      const scanResult = buildScanResult(llm, brandUrl, competitorUrls, false);
+
       // ── Persist audit session (already account-linked) ─
       const trialExpiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString();
       let auditId: string | null = null;
@@ -372,15 +672,27 @@ Rules:
             email: normalizedEmail,
             brand_url: brandUrl,
             competitor_urls: competitorUrls,
-            evi_score: llmResult.evi_score,
-            silo_tax_monthly, monthly_cash_loss, risk_premium,
-            authority_leakage, ppc_replacement, hallucination_overhead,
-            gaps: llmResult.gaps,
-            top_competitor_advantage: llmResult.top_competitor_advantage,
-            total_authority_void: llmResult.total_authority_void,
-            unlinked_mentions_estimate: llmResult.unlinked_mentions_estimate,
-            citation_gap_queries: llmResult.citation_gap_queries,
-            entity_collision_risk_pct: llmResult.entity_collision_risk_pct,
+            evi_score: scanResult.evi_score,
+            // Three-pillar scorecard columns (migration 94)
+            pr_score:      scanResult.pillars.pr.score,
+            pr_band:       scanResult.pillars.pr.band,
+            pr_signals:    scanResult.pillars.pr.signals,
+            pr_gaps:       scanResult.pillars.pr.gaps,
+            content_score: scanResult.pillars.content.score,
+            content_band:  scanResult.pillars.content.band,
+            content_signals: scanResult.pillars.content.signals,
+            content_gaps:  scanResult.pillars.content.gaps,
+            ai_score:      scanResult.pillars.ai.score,
+            ai_band:       scanResult.pillars.ai.band,
+            ai_signals:    scanResult.pillars.ai.signals,
+            ai_gaps:       scanResult.pillars.ai.gaps,
+            variance_spread:           scanResult.variance.spread,
+            leading_pillar:            scanResult.variance.leading_pillar,
+            lagging_pillar:            scanResult.variance.lagging_pillar,
+            orchestration_opportunity: scanResult.variance.orchestration_opportunity,
+            category_quartile: scanResult.benchmark.category_quartile,
+            category_label:    scanResult.benchmark.category_label,
+            entry_path,
             stage: 'account_created',
             trial_expires_at: trialExpiresAt,
           })
@@ -408,15 +720,18 @@ Rules:
         logger.error('Failed to generate magic link', { error: (linkErr as Error).message });
       }
 
-      // ── Send welcome email with results + magic link ─
+      // ── Send welcome email with EVI score + magic link ─
+      // Phase 1A: minimal email body (single EVI tile, no Silo Tax,
+      // no dollar figures). Phase 1E rebuilds to a three-pillar table
+      // layout per the work order.
       let magicLinkSent = false;
       try {
         await server.mailer.sendMail({
           to: normalizedEmail,
           from: 'christian@pravado.io',
-          subject: `Your EVI score and Silo Tax breakdown — ${trimmedName}`,
-          html: buildAuditClaimEmailHtml(trimmedName, llmResult.evi_score, silo_tax_monthly, magicLinkUrl),
-          text: `Hi ${trimmedName}, your Silo Tax Audit is complete. EVI Score: ${llmResult.evi_score}/100. Estimated Silo Tax: $${silo_tax_monthly.toLocaleString()}/mo. Access your dashboard: ${magicLinkUrl}`,
+          subject: `Your EVI score and earned visibility breakdown — ${trimmedName}`,
+          html: buildAuditClaimEmailHtml(trimmedName, scanResult.evi_score, magicLinkUrl),
+          text: `Hi ${trimmedName}, your earned visibility scorecard is ready. EVI Score: ${scanResult.evi_score}/100 (${scanResult.evi_band}). Open your full scorecard: ${magicLinkUrl}`,
         });
         magicLinkSent = true;
         logger.info('Audit email sent', { email: normalizedEmail });
@@ -424,22 +739,19 @@ Rules:
         logger.error('Failed to send audit email', { error: (emailErr as Error).message });
       }
 
-      logger.info('Audit scan completed', { email: normalizedEmail, audit_id: auditId, org_id: orgId });
+      logger.info('Audit scan completed', { email: normalizedEmail, audit_id: auditId, org_id: orgId, entry_path });
 
-      return reply.send({
+      const response: ScanResponse = {
+        ...scanResult,
+        magic_link_sent: magicLinkSent,
         audit_id: auditId,
-        evi_score: llmResult.evi_score,
-        silo_tax_monthly, monthly_cash_loss, risk_premium,
-        authority_leakage, ppc_replacement, hallucination_overhead,
-        gaps: llmResult.gaps,
-        top_competitor_advantage: llmResult.top_competitor_advantage,
-        total_authority_void: llmResult.total_authority_void,
         org_id: orgId,
         trial_expires_at: trialExpiresAt,
-        magic_link_sent: magicLinkSent,
-      });
+        entry_path,
+      };
+      return reply.send(response);
     } catch (err) {
-      logger.error('Silo tax scan failed', { error: (err as Error).message });
+      logger.error('Audit scan failed', { error: (err as Error).message });
       return reply.code(500).send({ error: 'Scan failed' });
     }
   });
