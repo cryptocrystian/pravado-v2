@@ -1,6 +1,22 @@
 # SESSION PRIMER — Pravado v2
 > Single source of truth for cross-session continuity.
-> Last Updated: 2026-04-28 — Security Hardening + Starter Tier Calibration + Boot Sequence
+> Last Updated: 2026-04-29 — Phase 1A Architect Checkpoint Passed
+
+---
+
+## UPDATE 2026-04-29 — Phase 1A Architect Checkpoint Passed
+
+**Phase 1A** (commit f66a1ca) and **Phase 1A.1** (commit 1d40535) shipped the backend three-pillar EVI scoring API + schema migration per `docs/sprints/D027-AUDIT-REBUILD/WORK_ORDER.md`. Architect checkpoint per work order Phase Sequencing section completed 2026-04-29.
+
+**Validation outcome:**
+- Architect-review harness ran 7 brand scans (B2B SaaS, D2C, agency, niche)
+- 7/7 valid LLM output, 0 retries needed, 0 forbidden-pattern violations (no dollar figures, no "Silo Tax" leakage, no scareware framing)
+- EVI calibration spans the full band range: Dominant (Stripe 88, HubSpot 83), Competitive (Figma 78, Notion 73, Allbirds 68, Muck Rack 68), Emerging (Wellstead 45)
+- Sample narrative quality met the bar: real outlets named (Wall Street Journal, Bloomberg, American Banker, Pymnts, Fast Company), real people named (Patrick Collison, Evan Sharp), real competitors named (Square, PayPal, Adobe, Canva), operationally concrete remediations with timelines and counts
+
+**Latency:** 19-26 seconds per scan. Phase 1B scanning-step UX must mask this with progress indicators / staged messaging.
+
+**Phase 1B (frontend results renderer rebuild) is cleared to start in a fresh Claude Code session.**
 
 ---
 
