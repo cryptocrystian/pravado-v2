@@ -266,7 +266,7 @@ export function AuditForm({
         />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div className="audit-form-name-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
           <label style={labelStyle}>Full name *</label>
           <input
@@ -356,8 +356,19 @@ export function AuditForm({
       </button>
 
       <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: 0 }}>
-        No credit card required &middot; Results in under 60 seconds &middot; SOC 2 compliant
+        No credit card required &middot; Results in under 30 seconds &middot; SOC 2 compliant
       </p>
+
+      {/* Mobile reflow — name + company stack at narrow viewports.   */}
+      {/* Inline style sets gridTemplateColumns at desktop; this rule */}
+      {/* overrides at <480px.                                        */}
+      <style jsx>{`
+        @media (max-width: 480px) {
+          .audit-form-name-row {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </form>
   );
 }

@@ -150,6 +150,7 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
 
       {/* ── Three pillar cards (ordered by entryPath) ──────────── */}
       <div
+        className="evi-pillars-grid"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
@@ -324,8 +325,8 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
           The orchestration opportunity
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-          <div style={{ minWidth: 120, textAlign: 'right' }}>
+        <div className="evi-variance-row" style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+          <div className="evi-variance-label evi-variance-label-lagging" style={{ minWidth: 120, textAlign: 'right' }}>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>
               Lagging
             </div>
@@ -358,7 +359,7 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
               }}
             />
           </div>
-          <div style={{ minWidth: 120 }}>
+          <div className="evi-variance-label evi-variance-label-leading" style={{ minWidth: 120 }}>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>
               Leading
             </div>
@@ -459,6 +460,28 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
           We&apos;ve emailed you a magic link to access this scorecard from your dashboard anytime.
         </p>
       )}
+
+      {/* Mobile reflow — pillar grid stacks at <768px; the variance  */}
+      {/* row stacks (lagging label / spread bar / leading label) at  */}
+      {/* <640px so the labels keep readable widths.                  */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .evi-pillars-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .evi-variance-row {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 12px !important;
+          }
+          .evi-variance-label {
+            min-width: 0 !important;
+            text-align: center !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -125,6 +125,7 @@ export default function AuditPrPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         <section style={{ background: '#0A0A0F', padding: '120px 5% 80px' }}>
           <div
+            className="audit-hero-grid"
             style={{
               maxWidth: 1200,
               margin: '0 auto',
@@ -215,6 +216,7 @@ export default function AuditPrPage() {
 
             {/* Right: form */}
             <div
+              className="audit-hero-form-col"
               style={{
                 padding: 32,
                 borderRadius: 16,
@@ -363,6 +365,7 @@ export default function AuditPrPage() {
 
             {/* Three-tool diagram */}
             <div
+              className="audit-tools-grid"
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
@@ -482,6 +485,7 @@ export default function AuditPrPage() {
 
             {/* PR Pillar — long treatment */}
             <div
+              className="audit-pr-feature-grid"
               style={{
                 padding: 40,
                 borderRadius: 16,
@@ -530,6 +534,7 @@ export default function AuditPrPage() {
                   rest of the platform.
                 </p>
                 <ul
+                  className="audit-pr-features-list"
                   style={{
                     listStyle: 'none',
                     padding: 0,
@@ -559,7 +564,7 @@ export default function AuditPrPage() {
             </div>
 
             {/* Content + AI — briefer treatment */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+            <div className="audit-pillars-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
               <div
                 style={{
                   padding: 32,
@@ -767,6 +772,7 @@ export default function AuditPrPage() {
 
             {/* Comparison table */}
             <div
+              className="audit-compare-wrapper"
               style={{
                 borderRadius: 14,
                 background: 'rgba(255,255,255,0.025)',
@@ -775,6 +781,7 @@ export default function AuditPrPage() {
               }}
             >
               <div
+                className="audit-compare-grid"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: 'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
@@ -806,6 +813,7 @@ export default function AuditPrPage() {
               ].map((row, i) => (
                 <div
                   key={row.capability}
+                  className="audit-compare-grid"
                   style={{
                     display: 'grid',
                     gridTemplateColumns: 'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
@@ -1004,6 +1012,48 @@ export default function AuditPrPage() {
           </div>
         </section>
       </div>
+
+      {/* ── Mobile reflow ─────────────────────────────────────────── */}
+      {/* Inline-style grids set desktop layout; these breakpoint rules */}
+      {/* override at narrow viewports. !important is required because  */}
+      {/* inline styles win specificity by default.                     */}
+      {/* Comparison table uses overflow-x scroll rather than 1fr stack */}
+      {/* so the row/column relationship between vendors and the seven  */}
+      {/* capabilities stays legible.                                   */}
+      <style jsx global>{`
+        @media (max-width: 768px) {
+          .audit-hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 48px !important;
+          }
+          .audit-hero-form-col {
+            position: static !important;
+            top: auto !important;
+          }
+          .audit-tools-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .audit-pr-feature-grid {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+            padding: 28px !important;
+          }
+          .audit-pillars-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .audit-pr-features-list {
+            grid-template-columns: 1fr !important;
+          }
+          .audit-compare-wrapper {
+            overflow-x: auto !important;
+          }
+          .audit-compare-grid {
+            min-width: 600px !important;
+          }
+        }
+      `}</style>
     </>
   );
 }
