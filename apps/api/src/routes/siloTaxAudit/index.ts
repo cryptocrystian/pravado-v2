@@ -318,24 +318,24 @@ Return this exact JSON structure with no additional text:
   "pillars": {
     "pr": {
       "score": <integer 0-100>,
-      "signals": { "<key>": "<one-sentence evidence>", "<key2>": "<...>" },
+      "signals": { "<key>": "<short evidence, max 20 words>", "<key2>": "<...>" },
       "gaps": [
         {
           "title": "<concise gap title under 70 chars>",
-          "description": "<2-3 sentences naming specific evidence: outlets, journalists, query types, or competitor advantages>",
+          "description": "<1-2 sentences, max 35 words; name specific outlets, journalists, query types, or competitors>",
           "severity": "<high|medium|low>",
-          "remediation": "<concrete sentence describing what Pravado's CRAFT layer would execute — name the operational mechanism>"
+          "remediation": "<1 sentence, max 30 words; name what CRAFT would execute operationally>"
         }
       ]
     },
     "content": {
       "score": <integer 0-100>,
-      "signals": { "<key>": "<one-sentence evidence>" },
+      "signals": { "<key>": "<short evidence, max 20 words>", "<key2>": "<...>" },
       "gaps": [ <same shape, 3-5 gaps> ]
     },
     "ai": {
       "score": <integer 0-100>,
-      "signals": { "<key>": "<one-sentence evidence>" },
+      "signals": { "<key>": "<short evidence, max 20 words>", "<key2>": "<...>" },
       "gaps": [ <same shape, 3-5 gaps> ]
     }
   },
@@ -346,7 +346,7 @@ Return this exact JSON structure with no additional text:
   }
 }
 
-Each pillar must produce 3–5 gaps. Severity values are lowercase strings: "high", "medium", "low". Use null (not the string "null") when category cannot be inferred.`;
+Each pillar must produce 3–5 gaps. Each pillar must include 2–3 signals (not more). Severity values are lowercase strings: "high", "medium", "low". Use null (not the string "null") when category cannot be inferred.`;
 }
 
 // ── LLM output validation ─────────────────────────────
@@ -404,7 +404,7 @@ async function callAnthropic(apiKey: string, brandUrl: string, competitorUrls: s
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
+      max_tokens: 4096,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: buildUserPrompt(brandUrl, competitorUrls) }],
     }),
