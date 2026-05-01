@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import {
   GoogleLogo,
@@ -8,7 +8,11 @@ import {
   Compass,
   Sparkle,
   Globe,
-  Lock,
+  Newspaper,
+  FileText,
+  Brain,
+  ArrowsHorizontal,
+  ArrowRight,
 } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
 
@@ -16,24 +20,55 @@ import type { Icon } from '@phosphor-icons/react';
 
 type AuditStep = 'input' | 'scanning' | 'results';
 
-interface AuditResult {
+// Mirror of apps/api/src/routes/siloTaxAudit/index.ts ScanResponse.
+// Three-pillar EVI scorecard per docs/canon/DECISIONS_LOG.md D027.
+type EVIBand = 'At Risk' | 'Emerging' | 'Competitive' | 'Dominant';
+type PillarKey = 'pr' | 'content' | 'ai';
+type EntryPath = 'pr' | 'content' | 'ai' | 'generic';
+type Severity = 'high' | 'medium' | 'low';
+
+interface PillarGap {
+  title: string;
+  description: string;
+  severity: Severity;
+  remediation: string;
+}
+
+interface PillarScore {
+  score: number;
+  band: EVIBand;
+  signals: Record<string, string>;
+  gaps: PillarGap[];
+}
+
+interface ScanResult {
   evi_score: number;
-  silo_tax_monthly: number;
-  monthly_cash_loss: number;
-  risk_premium: number;
-  authority_leakage: number;
-  ppc_replacement: number;
-  hallucination_overhead: number;
-  gaps: Array<{
-    type: string;
-    severity: 'HIGH' | 'MEDIUM' | 'LOW';
-    title: string;
-    description: string;
-    affected_engine: string;
-  }>;
-  top_competitor_advantage: string;
-  total_authority_void: boolean;
-  audit_id: string;
+  evi_band: EVIBand;
+  pillars: { pr: PillarScore; content: PillarScore; ai: PillarScore };
+  variance: {
+    spread: number;
+    leading_pillar: PillarKey;
+    lagging_pillar: PillarKey;
+    orchestration_opportunity: string;
+  };
+  benchmark: {
+    category_quartile: 1 | 2 | 3 | 4 | null;
+    category_label: string | null;
+  };
+  scan_metadata: {
+    brand_url: string;
+    competitor_urls: string[];
+    scanned_at: string;
+    engines_consulted: string[];
+  };
+  magic_link_sent: boolean;
+}
+
+interface ScanResponse extends ScanResult {
+  audit_id: string | null;
+  org_id: string;
+  trial_expires_at: string;
+  entry_path: EntryPath;
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -42,11 +77,40 @@ function TM() {
   return <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>;
 }
 
-function sevColor(severity: 'HIGH' | 'MEDIUM' | 'LOW'): string {
+function sevColor(severity: Severity): string {
   switch (severity) {
-    case 'HIGH': return '#EF4444';
-    case 'MEDIUM': return '#F59E0B';
-    case 'LOW': return '#22C55E';
+    case 'high': return '#EF4444';
+    case 'medium': return '#F59E0B';
+    case 'low': return '#22C55E';
+  }
+}
+
+function sevLabel(severity: Severity): string {
+  return severity.toUpperCase();
+}
+
+// Pillar-specific accent palette. Mapped from the marketing brand
+// colors used elsewhere on pravado.io: PR pillar inherits the magenta
+// CiteMind accent (PR's earned-media work feeds the citation graph),
+// Content uses the iris SAGE accent (strategy/authority infrastructure),
+// AI Citation uses the cyan CRAFT accent (the execution layer that
+// drives AI engine surface presence).
+const PILLAR_CONFIG: Record<PillarKey, { label: string; accent: string; bgAccent: string; Icon: Icon }> = {
+  pr:      { label: 'PR Authority',          accent: '#E879F9', bgAccent: 'rgba(232,121,249,0.10)', Icon: Newspaper },
+  content: { label: 'Content Authority',     accent: '#A855F7', bgAccent: 'rgba(168,85,247,0.10)',  Icon: FileText  },
+  ai:      { label: 'AI Citation Authority', accent: '#00D9FF', bgAccent: 'rgba(0,217,255,0.10)',   Icon: Brain     },
+};
+
+// Pillar order shown to the user is determined by entry_path so the
+// buyer sees their entry-pillar first. Variance section renders after
+// all three pillars regardless of order.
+function pillarOrder(entryPath: EntryPath): PillarKey[] {
+  switch (entryPath) {
+    case 'pr':      return ['pr', 'content', 'ai'];
+    case 'content': return ['content', 'pr', 'ai'];
+    case 'ai':      return ['ai', 'pr', 'content'];
+    case 'generic':
+    default:        return ['pr', 'content', 'ai'];
   }
 }
 
@@ -63,55 +127,6 @@ function eviBand(score: number): { label: string; color: string; bgColor: string
 // Mirror of the server-side regex in apps/api/src/routes/siloTaxAudit/index.ts.
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// ── Odometer ───────────────────────────────────────────────────────────────────
-
-function Odometer({
-  target,
-  prefix = '',
-  duration = 2000,
-}: {
-  target: number;
-  prefix?: string;
-  duration?: number;
-}) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    let triggered = false;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !triggered) {
-          triggered = true;
-          const start = performance.now();
-          const animate = (now: number) => {
-            const elapsed = now - start;
-            const progress = Math.min(elapsed / duration, 1);
-            // ease-out cubic
-            const eased = 1 - Math.pow(1 - progress, 3);
-            setValue(Math.round(eased * target));
-            if (progress < 1) requestAnimationFrame(animate);
-          };
-          requestAnimationFrame(animate);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [target, duration]);
-
-  return (
-    <span ref={ref} style={{ fontVariantNumeric: 'tabular-nums' }}>
-      {prefix}{value.toLocaleString()}
-    </span>
-  );
-}
-
 // ── Scan Log Messages ──────────────────────────────────────────────────────────
 
 const SCAN_LOGS = [
@@ -126,7 +141,7 @@ const SCAN_LOGS = [
   'Calculating schema.org coverage depth...',
   'Cross-referencing competitor entity footprints...',
   'Building Authority Gap matrix...',
-  'Computing Silo Tax estimate...',
+  'Computing earned visibility breakdown...',
   'Generating EVI score...',
   'Finalizing audit report...',
 ];
@@ -139,14 +154,6 @@ const ENGINES: Array<{ name: string; Icon: Icon }> = [
   { name: 'Perplexity', Icon: Compass },
   { name: 'Gemini',     Icon: Sparkle },
   { name: 'Bing',       Icon: Globe },
-];
-
-const CITEMIND_ENGINES = [
-  { name: 'Google Knowledge Graph', status: 'monitoring' as const, locked: false },
-  { name: 'ChatGPT / OpenAI', status: 'active' as const, locked: false },
-  { name: 'Perplexity AI', status: 'locked' as const, locked: true },
-  { name: 'Gemini / Google AI', status: 'locked' as const, locked: true },
-  { name: 'Claude / Anthropic', status: 'locked' as const, locked: true },
 ];
 
 // ── CSS Keyframes ──────────────────────────────────────────────────────────────
@@ -162,37 +169,75 @@ const KEYFRAMES = `
 }
 `;
 
+// ── Fallback result for degraded API ───────────────────────────────────────────
+// Mid-band three-pillar shape so the marketing page still renders if /api/audit/scan
+// fails. Never reached for 4xx — only for network errors / 5xx.
+
+function buildFallbackResult(): ScanResponse {
+  return {
+    evi_score: 52,
+    evi_band: 'Emerging',
+    pillars: {
+      pr: {
+        score: 50,
+        band: 'Emerging',
+        signals: { earned_media_frequency: 'Limited surfaced press archive on homepage; few named-spokesperson quotes detected.' },
+        gaps: [
+          { title: 'No named-spokesperson coverage detected', description: 'Brand mentions are organization-level, not person-attributed. Citation graphs weight named-quote coverage more heavily.', severity: 'medium', remediation: 'CRAFT operationalizes named-spokesperson positioning across the pitch pipeline with weekly journalist briefs.' },
+          { title: 'Press archive not surfaced', description: 'No /press or /news section detected. Without surfaced earned coverage, AI engines cannot infer authority transfer.', severity: 'medium', remediation: 'CRAFT routes a structured press archive build with schema-marked authority signals.' },
+        ],
+      },
+      content: {
+        score: 55,
+        band: 'Emerging',
+        signals: { topical_coverage: 'Surface content covers product features, not category authority hubs.' },
+        gaps: [
+          { title: 'Topic-cluster gaps in primary category', description: 'No deep-coverage hubs detected for strategic topics. Authority infrastructure requires hub-and-spoke topic ownership.', severity: 'high', remediation: 'CRAFT generates topic-pillar content with structured FAQ and HowTo schema, governed by CiteMind for AEO citation worthiness.' },
+        ],
+      },
+      ai: {
+        score: 48,
+        band: 'Emerging',
+        signals: { citation_rate_estimate: 'Buyer-intent queries surface category leaders, not this brand.' },
+        gaps: [
+          { title: 'Buyer-intent queries surface competitors', description: 'Representative buyer questions in category cite competitors, not this brand. Engines learn category leadership from training data and crawl signals.', severity: 'high', remediation: 'CRAFT runs CiteMind\'s share-of-model program: weekly query monitoring, entity disambiguation, orchestrated content + PR pushes.' },
+        ],
+      },
+    },
+    variance: {
+      spread: 7,
+      leading_pillar: 'content',
+      lagging_pillar: 'ai',
+      orchestration_opportunity: 'Pillar scores are close enough that no single discipline is the obvious culprit. The compounding loop is broken: PR mentions are not echoing into AI answers, and content pieces are not being cited as supporting evidence.',
+    },
+    benchmark: { category_quartile: null, category_label: null },
+    scan_metadata: {
+      brand_url: '',
+      competitor_urls: [],
+      scanned_at: new Date().toISOString(),
+      engines_consulted: ['ChatGPT', 'Perplexity', 'Gemini', 'Claude', 'Bing Copilot'],
+    },
+    magic_link_sent: false,
+    audit_id: null,
+    org_id: '',
+    trial_expires_at: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
+    entry_path: 'generic',
+  };
+}
+
 // ── Main Page ──────────────────────────────────────────────────────────────────
 
-export default function SiloTaxAuditPage() {
+export default function AuditPage() {
   const [step, setStep] = useState<AuditStep>('input');
   const [brandUrl, setBrandUrl] = useState('');
   const [competitors, setCompetitors] = useState(['', '', '']);
   const [scanProgress, setScanProgress] = useState(0);
   const [activeLog, setActiveLog] = useState(0);
-  const [result, setResult] = useState<AuditResult | null>(null);
-  const [showFormula, setShowFormula] = useState(false);
+  const [result, setResult] = useState<ScanResponse | null>(null);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
   const [scanError, setScanError] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState(72 * 60 * 60); // 72 hours in seconds
-
-  // Countdown timer for CiteMind window
-  useEffect(() => {
-    if (step !== 'results') return;
-    const timer = setInterval(() => {
-      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [step]);
-
-  const formatCountdown = useCallback((seconds: number) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  }, []);
 
   const updateCompetitor = useCallback((index: number, value: string) => {
     setCompetitors((prev) => {
@@ -242,7 +287,7 @@ export default function SiloTaxAuditPage() {
     });
 
     type ScanOutcome =
-      | { kind: 'success'; data: AuditResult }
+      | { kind: 'success'; data: ScanResponse }
       | { kind: 'rate_limit'; message: string }
       | { kind: 'validation'; message: string }
       | { kind: 'fallback' };
@@ -256,6 +301,9 @@ export default function SiloTaxAuditPage() {
         name: name.trim(),
         company: company.trim(),
         competitorUrls: competitors.filter(Boolean),
+        // /audit is the neutral, three-pillar-balanced entry. Sub-pages
+        // /audit/pr, /audit/content, /audit/ai (Phase 1C/1D) override.
+        entry_path: 'generic' as EntryPath,
       }),
     })
       .then<ScanOutcome>(async (res) => {
@@ -271,10 +319,10 @@ export default function SiloTaxAuditPage() {
           const message = typeof data.error === 'string' ? data.error : 'Invalid input.';
           return { kind: 'validation', message };
         }
-        if (!res.ok || typeof data.evi_score !== 'number') {
+        if (!res.ok || typeof data.evi_score !== 'number' || !data.pillars) {
           throw new Error(typeof data.error === 'string' ? data.error : 'Invalid response');
         }
-        return { kind: 'success', data: data as unknown as AuditResult };
+        return { kind: 'success', data: data as unknown as ScanResponse };
       })
       .catch<ScanOutcome>(() => ({ kind: 'fallback' }));
 
@@ -289,27 +337,9 @@ export default function SiloTaxAuditPage() {
     if (outcome.kind === 'success') {
       setResult(outcome.data);
     } else {
-      // Network / 5xx fallback — show a demo result so the marketing page
+      // Network / 5xx fallback — three-pillar demo so the marketing page
       // still works when the API is degraded. Not used for 4xx.
-      setResult({
-        evi_score: 23,
-        silo_tax_monthly: 14200,
-        monthly_cash_loss: 8400,
-        risk_premium: 5800,
-        authority_leakage: 4200,
-        ppc_replacement: 6800,
-        hallucination_overhead: 3200,
-        gaps: [
-          { type: 'entity', severity: 'HIGH', title: 'No Knowledge Graph Entity', description: 'Your brand has no structured entity in Google Knowledge Graph. AI engines cannot confirm your existence.', affected_engine: 'Google, Gemini' },
-          { type: 'citation', severity: 'HIGH', title: 'Zero ChatGPT Citations', description: 'ChatGPT does not reference your brand in any category-related queries. Competitors own this space.', affected_engine: 'ChatGPT' },
-          { type: 'schema', severity: 'MEDIUM', title: 'Missing Organization Schema', description: 'No Organization or LocalBusiness schema detected. Search engines infer rather than confirm your identity.', affected_engine: 'Google, Bing' },
-          { type: 'authority', severity: 'MEDIUM', title: 'Thin Backlink Authority', description: 'Domain authority is below industry median. AI engines weight authoritative sources for citation selection.', affected_engine: 'Perplexity, Gemini' },
-          { type: 'content', severity: 'LOW', title: 'No FAQ/HowTo Structured Data', description: 'Missing FAQ and HowTo schema reduces chance of featured snippet and AI answer inclusion.', affected_engine: 'Google, Bing' },
-        ],
-        top_competitor_advantage: 'Competitor has 3x more entity coverage and active Knowledge Graph presence',
-        total_authority_void: true,
-        audit_id: 'aud_' + Math.random().toString(36).slice(2, 10),
-      });
+      setResult(buildFallbackResult());
     }
 
     setStep('results');
@@ -372,7 +402,7 @@ export default function SiloTaxAuditPage() {
                 backgroundClip: 'text',
               }}
             >
-              Discover your Silo Tax.
+              Your earned visibility, scored.
             </h1>
 
             <p
@@ -382,13 +412,14 @@ export default function SiloTaxAuditPage() {
                 color: 'rgba(255,255,255,0.55)',
                 lineHeight: 1.6,
                 marginBottom: 48,
-                maxWidth: 520,
+                maxWidth: 560,
                 marginLeft: 'auto',
                 marginRight: 'auto',
               }}
             >
-              See how much revenue you lose every month because your PR, Content,
-              and SEO operate in disconnected silos. Free, instant, no credit card.
+              A free, three-pillar diagnostic of your PR Authority, Content
+              Authority, and AI Citation Authority &mdash; and the variance
+              between them that&apos;s costing you compounding visibility.
             </p>
 
             {/* Form */}
@@ -600,7 +631,7 @@ export default function SiloTaxAuditPage() {
                   marginTop: 8,
                 }}
               >
-                Run Silo Tax<TM /> Audit &rarr;
+                Get my EVI<TM /> scorecard &rarr;
               </button>
             </form>
 
@@ -802,558 +833,456 @@ export default function SiloTaxAuditPage() {
         )}
 
         {/* ── STEP 3: RESULTS ───────────────────────────────────────────────── */}
-        {step === 'results' && result && (
-          <div style={{ maxWidth: 1100, margin: '0 auto', padding: '100px 24px 80px' }}>
-            {/* Row 1: EVI + Silo Tax */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '2fr 1fr',
-                gap: 24,
-                marginBottom: 24,
-              }}
-            >
-              {/* EVI Panel */}
-              {(() => {
-                const band = eviBand(result.evi_score);
-                return (
-                  <div
-                    style={{
-                      padding: 32,
-                      borderRadius: 16,
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: 'rgba(255,255,255,0.4)',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                        marginBottom: 12,
-                      }}
-                    >
-                      Earned Visibility Index (EVI<TM />)
-                    </div>
+        {/* Three-pillar EVI scorecard. Pillar order responds to entry_path     */}
+        {/* (PR / Content / AI / generic) so the buyer sees their entry-pillar  */}
+        {/* first; variance section always renders after all three pillars.    */}
+        {step === 'results' && result && (() => {
+          const band = eviBand(result.evi_score);
+          const order = pillarOrder(result.entry_path);
+          const variance = result.variance;
+          const benchmark = result.benchmark;
+          const leadingConfig = PILLAR_CONFIG[variance.leading_pillar];
+          const laggingConfig = PILLAR_CONFIG[variance.lagging_pillar];
+          const leadingScore = result.pillars[variance.leading_pillar].score;
+          const laggingScore = result.pillars[variance.lagging_pillar].score;
+          const quartileLabel = (q: 1 | 2 | 3 | 4): string => (
+            q === 1 ? 'Top quartile' :
+            q === 2 ? '2nd quartile' :
+            q === 3 ? '3rd quartile' :
+            'Bottom quartile'
+          );
 
-                    {/* Score */}
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 16 }}>
-                      <span
-                        style={{
-                          fontSize: 64,
-                          fontWeight: 800,
-                          color: band.color,
-                          lineHeight: 1,
-                        }}
-                      >
-                        {result.evi_score}
-                      </span>
-                      <span style={{ fontSize: 24, color: 'rgba(255,255,255,0.3)' }}>/100</span>
-                    </div>
+          return (
+            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '100px 24px 80px' }}>
 
-                    {/* Scale bar */}
-                    <div
-                      style={{
-                        height: 8,
-                        borderRadius: 4,
-                        background: 'rgba(255,255,255,0.06)',
-                        marginBottom: 16,
-                        position: 'relative',
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: `${result.evi_score}%`,
-                          height: '100%',
-                          borderRadius: 4,
-                          background: band.color,
-                          transition: 'width 1s ease-out',
-                        }}
-                      />
-                    </div>
-
-                    {/* Status badge */}
-                    <div style={{ marginBottom: 16 }}>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '4px 12px',
-                          borderRadius: 6,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          background: band.bgColor,
-                          color: band.color,
-                        }}
-                      >
-                        {band.label}
-                      </span>
-                    </div>
-
-                    {/* Narrative */}
-                    <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, margin: 0, marginBottom: 24 }}>
-                      {result.total_authority_void
-                        ? 'Your brand is effectively invisible to AI engines. When prospects ask ChatGPT, Perplexity, or Gemini about your category, competitors are cited — you are not. This is not a future risk; it is current revenue loss.'
-                        : 'Your brand has partial visibility across AI engines but significant gaps remain. Competitors with stronger entity presence are capturing the citations and authority signals that should be yours.'}
-                    </p>
-
-                    {/* Competitor note */}
-                    {result.top_competitor_advantage && (
-                      <div
-                        style={{
-                          padding: '12px 16px',
-                          borderRadius: 8,
-                          background: 'rgba(239,68,68,0.06)',
-                          border: '1px solid rgba(239,68,68,0.12)',
-                          fontSize: 13,
-                          color: 'rgba(255,255,255,0.6)',
-                          marginBottom: 24,
-                        }}
-                      >
-                        <strong style={{ color: '#EF4444' }}>Competitor Edge:</strong>{' '}
-                        {result.top_competitor_advantage}
-                      </div>
-                    )}
-
-                    {/* CTA buttons */}
-                    <div style={{ display: 'flex', gap: 12 }}>
-                      <Link
-                        href="https://app.pravado.io/beta"
-                        style={{
-                          padding: '12px 24px',
-                          borderRadius: 10,
-                          border: 'none',
-                          background: '#A855F7',
-                          color: '#ffffff',
-                          fontSize: 14,
-                          fontWeight: 700,
-                          textDecoration: 'none',
-                          display: 'inline-block',
-                        }}
-                      >
-                        Fix My Visibility &rarr;
-                      </Link>
-                      <Link
-                        href="https://pravado.io/platform"
-                        style={{
-                          padding: '12px 24px',
-                          borderRadius: 10,
-                          border: '1px solid rgba(255,255,255,0.12)',
-                          background: 'transparent',
-                          color: 'rgba(255,255,255,0.7)',
-                          fontSize: 14,
-                          fontWeight: 600,
-                          textDecoration: 'none',
-                          display: 'inline-block',
-                        }}
-                      >
-                        Learn How PRAVADO Works
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Silo Tax Panel */}
+              {/* ── EVI hero ──────────────────────────────────────────── */}
               <div
                 style={{
-                  padding: 32,
+                  padding: 40,
                   borderRadius: 16,
-                  background: 'rgba(232,121,249,0.04)',
-                  border: '1px solid rgba(232,121,249,0.15)',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  marginBottom: 24,
+                  textAlign: 'center',
                 }}
               >
                 <div
                   style={{
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: 600,
                     color: 'rgba(255,255,255,0.4)',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: 12,
-                  }}
-                >
-                  Your Monthly Silo Tax<TM />
-                </div>
-
-                <div
-                  style={{
-                    fontSize: 48,
-                    fontWeight: 800,
-                    color: '#E879F9',
-                    lineHeight: 1,
+                    letterSpacing: '0.08em',
                     marginBottom: 16,
                   }}
                 >
-                  <Odometer target={result.silo_tax_monthly} prefix="$" duration={2000} />
+                  Earned Visibility Index (EVI<TM />)
                 </div>
 
                 <div
                   style={{
-                    fontSize: 13,
-                    color: 'rgba(255,255,255,0.4)',
-                    marginBottom: 24,
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    justifyContent: 'center',
+                    gap: 12,
+                    marginBottom: 16,
                   }}
                 >
-                  estimated revenue lost per month to siloed operations
-                </div>
-
-                {/* Breakdown */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
-                  <div
+                  <span
                     style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '10px 14px',
-                      borderRadius: 8,
-                      background: 'rgba(255,255,255,0.03)',
+                      fontSize: 96,
+                      fontWeight: 800,
+                      color: band.color,
+                      lineHeight: 1,
+                      fontVariantNumeric: 'tabular-nums',
                     }}
                   >
-                    <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
-                      Monthly Cash Loss
-                    </span>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: '#EF4444' }}>
-                      ${result.monthly_cash_loss.toLocaleString()}
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '10px 14px',
-                      borderRadius: 8,
-                      background: 'rgba(255,255,255,0.03)',
-                    }}
-                  >
-                    <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
-                      Risk Premium
-                    </span>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: '#F59E0B' }}>
-                      ${result.risk_premium.toLocaleString()}
-                    </span>
-                  </div>
+                    {result.evi_score}
+                  </span>
+                  <span style={{ fontSize: 32, color: 'rgba(255,255,255,0.3)' }}>/100</span>
                 </div>
 
-                {/* Formula reveal */}
-                <button
-                  onClick={() => setShowFormula((prev) => !prev)}
+                <div style={{ marginBottom: 20 }}>
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      padding: '6px 16px',
+                      borderRadius: 6,
+                      fontSize: 13,
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      background: band.bgColor,
+                      color: band.color,
+                    }}
+                  >
+                    {result.evi_band}
+                  </span>
+                </div>
+
+                <p
                   style={{
-                    background: 'none',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 8,
-                    padding: '8px 14px',
-                    color: 'rgba(255,255,255,0.5)',
-                    fontSize: 12,
-                    cursor: 'pointer',
-                    width: '100%',
-                    marginBottom: showFormula ? 16 : 0,
+                    fontSize: 13,
+                    color: 'rgba(255,255,255,0.45)',
+                    lineHeight: 1.6,
+                    margin: 0,
+                    marginBottom: benchmark.category_quartile ? 16 : 0,
+                    maxWidth: 560,
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
                   }}
                 >
-                  {showFormula ? 'Hide formula ▲' : 'Show formula ▼'}
-                </button>
+                  Composite of three pillars &mdash; weighted PR Authority &times; 0.40,
+                  Content Authority &times; 0.35, AI Citation Authority &times; 0.25.
+                </p>
 
-                {showFormula && (
+                {benchmark.category_quartile && benchmark.category_label && (
                   <div
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr 1fr',
-                      gap: 12,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '6px 14px',
+                      borderRadius: 999,
+                      background: 'rgba(255,255,255,0.04)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      fontSize: 12,
+                      color: 'rgba(255,255,255,0.65)',
                     }}
                   >
-                    <div
-                      style={{
-                        padding: 12,
-                        borderRadius: 8,
-                        background: 'rgba(255,255,255,0.02)',
-                        textAlign: 'center',
-                      }}
-                    >
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>
-                        Authority Leakage
-                      </div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: '#A855F7' }}>
-                        ${result.authority_leakage.toLocaleString()}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        padding: 12,
-                        borderRadius: 8,
-                        background: 'rgba(255,255,255,0.02)',
-                        textAlign: 'center',
-                      }}
-                    >
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>
-                        PPC Replacement
-                      </div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: '#00D9FF' }}>
-                        ${result.ppc_replacement.toLocaleString()}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        padding: 12,
-                        borderRadius: 8,
-                        background: 'rgba(255,255,255,0.02)',
-                        textAlign: 'center',
-                      }}
-                    >
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>
-                        KG Risk
-                      </div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: '#E879F9' }}>
-                        ${result.hallucination_overhead.toLocaleString()}
-                      </div>
-                    </div>
+                    {quartileLabel(benchmark.category_quartile)} for {benchmark.category_label}
                   </div>
                 )}
-
-                {/* Fix CTA */}
-                <div style={{ marginTop: 24 }}>
-                  <Link
-                    href="https://pravado.io/pricing"
-                    style={{
-                      display: 'block',
-                      textAlign: 'center',
-                      padding: '12px 20px',
-                      borderRadius: 10,
-                      background: 'linear-gradient(135deg, #A855F7, #E879F9)',
-                      color: '#ffffff',
-                      fontSize: 14,
-                      fontWeight: 700,
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Fix this for $199/mo &rarr;
-                  </Link>
-                </div>
               </div>
-            </div>
 
-            {/* Row 2: Entity Gaps + CiteMind Window */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: 24,
-              }}
-            >
-              {/* Entity Gaps */}
+              {/* ── Three pillar cards (ordered by entry_path) ────────── */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: 16,
+                  marginBottom: 24,
+                }}
+              >
+                {order.map((key) => {
+                  const pillar = result.pillars[key];
+                  const config = PILLAR_CONFIG[key];
+                  const PillarIcon = config.Icon;
+                  const pillarBand = eviBand(pillar.score);
+                  const topGaps = pillar.gaps.slice(0, 3);
+                  return (
+                    <div
+                      key={key}
+                      style={{
+                        padding: 24,
+                        borderRadius: 12,
+                        background: 'rgba(255,255,255,0.03)',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        borderTop: `2px solid ${config.accent}`,
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      {/* Pillar header */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                        <div
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 8,
+                            background: config.bgAccent,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <PillarIcon size={18} weight="regular" color={config.accent} />
+                        </div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}>
+                          {config.label}
+                        </div>
+                      </div>
+
+                      {/* Score + band */}
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
+                        <span
+                          style={{
+                            fontSize: 40,
+                            fontWeight: 800,
+                            color: config.accent,
+                            lineHeight: 1,
+                            fontVariantNumeric: 'tabular-nums',
+                          }}
+                        >
+                          {pillar.score}
+                        </span>
+                        <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.3)' }}>/100</span>
+                      </div>
+
+                      <div style={{ marginBottom: 20 }}>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '3px 10px',
+                            borderRadius: 4,
+                            fontSize: 11,
+                            fontWeight: 700,
+                            letterSpacing: '0.04em',
+                            background: pillarBand.bgColor,
+                            color: pillarBand.color,
+                          }}
+                        >
+                          {pillar.band}
+                        </span>
+                      </div>
+
+                      {/* Top gaps */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {topGaps.map((gap, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              padding: '12px 14px',
+                              borderRadius: 8,
+                              background: 'rgba(255,255,255,0.02)',
+                              borderLeft: `3px solid ${sevColor(gap.severity)}`,
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'flex-start',
+                                gap: 8,
+                                marginBottom: 6,
+                              }}
+                            >
+                              <span style={{ fontSize: 13, fontWeight: 600, color: '#ffffff', lineHeight: 1.35 }}>
+                                {gap.title}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  fontWeight: 700,
+                                  padding: '2px 6px',
+                                  borderRadius: 3,
+                                  letterSpacing: '0.04em',
+                                  color: sevColor(gap.severity),
+                                  background: `${sevColor(gap.severity)}1A`,
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {sevLabel(gap.severity)}
+                              </span>
+                            </div>
+                            <p
+                              style={{
+                                fontSize: 12,
+                                color: 'rgba(255,255,255,0.5)',
+                                lineHeight: 1.5,
+                                margin: 0,
+                                marginBottom: 8,
+                              }}
+                            >
+                              {gap.description}
+                            </p>
+                            <div
+                              style={{
+                                fontSize: 11,
+                                color: 'rgba(255,255,255,0.55)',
+                                lineHeight: 1.5,
+                                paddingTop: 8,
+                                borderTop: '1px solid rgba(255,255,255,0.05)',
+                              }}
+                            >
+                              <span style={{ color: config.accent, fontWeight: 600 }}>Pravado would: </span>
+                              {gap.remediation}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* ── Variance section (always after all three pillars) ─── */}
               <div
                 style={{
                   padding: 32,
                   borderRadius: 16,
                   background: 'rgba(255,255,255,0.03)',
                   border: '1px solid rgba(255,255,255,0.06)',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: 'rgba(255,255,255,0.4)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: 20,
-                  }}
-                >
-                  Entity &amp; Authority Gaps ({result.gaps.length})
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {result.gaps.map((gap, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        padding: '14px 16px',
-                        borderRadius: 10,
-                        background: 'rgba(255,255,255,0.02)',
-                        borderLeft: `3px solid ${sevColor(gap.severity)}`,
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: 4,
-                        }}
-                      >
-                        <span style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}>
-                          {gap.title}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: 10,
-                            fontWeight: 700,
-                            padding: '2px 8px',
-                            borderRadius: 4,
-                            color: sevColor(gap.severity),
-                            background: `${sevColor(gap.severity)}15`,
-                          }}
-                        >
-                          {gap.severity}
-                        </span>
-                      </div>
-                      <p
-                        style={{
-                          fontSize: 12,
-                          color: 'rgba(255,255,255,0.45)',
-                          lineHeight: 1.5,
-                          margin: 0,
-                          marginBottom: 4,
-                        }}
-                      >
-                        {gap.description}
-                      </p>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
-                        Affects: {gap.affected_engine}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* CiteMind 72H Window */}
-              <div
-                style={{
-                  padding: 32,
-                  borderRadius: 16,
-                  background: 'rgba(0,217,255,0.03)',
-                  border: '1px solid rgba(0,217,255,0.12)',
+                  marginBottom: 24,
                 }}
               >
                 <div
                   style={{
                     display: 'flex',
-                    justifyContent: 'space-between',
                     alignItems: 'center',
+                    gap: 8,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: 'rgba(255,255,255,0.4)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
                     marginBottom: 20,
                   }}
                 >
-                  <div
-                    style={{
-                      fontSize: 13,
-                      fontWeight: 600,
-                      color: 'rgba(255,255,255,0.4)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                    }}
-                  >
-                    CiteMind<TM /> 72H Window
+                  <ArrowsHorizontal size={14} weight="bold" color="rgba(255,255,255,0.4)" />
+                  The orchestration opportunity
+                </div>
+
+                {/* Spread bar */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 16,
+                    marginBottom: 20,
+                  }}
+                >
+                  <div style={{ minWidth: 120, textAlign: 'right' }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>
+                      Lagging
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: laggingConfig.accent }}>
+                      {laggingConfig.label}
+                    </div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>
+                      {laggingScore}
+                    </div>
                   </div>
                   <div
                     style={{
-                      fontSize: 13,
-                      fontWeight: 700,
-                      color: '#00D9FF',
-                      fontVariantNumeric: 'tabular-nums',
+                      flex: 1,
+                      height: 8,
+                      borderRadius: 4,
+                      background: 'rgba(255,255,255,0.06)',
+                      position: 'relative',
+                      overflow: 'hidden',
                     }}
                   >
-                    {formatCountdown(countdown)}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: `${Math.min(Math.max(variance.spread, 4), 100)}%`,
+                        borderRadius: 4,
+                        background: `linear-gradient(90deg, ${laggingConfig.accent}, ${leadingConfig.accent})`,
+                      }}
+                    />
+                  </div>
+                  <div style={{ minWidth: 120 }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>
+                      Leading
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: leadingConfig.accent }}>
+                      {leadingConfig.label}
+                    </div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>
+                      {leadingScore}
+                    </div>
                   </div>
                 </div>
 
-                {/* Engine rows */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-                  {CITEMIND_ENGINES.map((engine, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '12px 14px',
-                        borderRadius: 8,
-                        background: engine.locked
-                          ? 'rgba(255,255,255,0.02)'
-                          : 'rgba(0,217,255,0.04)',
-                        border: engine.locked
-                          ? '1px solid rgba(255,255,255,0.04)'
-                          : '1px solid rgba(0,217,255,0.1)',
-                        opacity: engine.locked ? 0.5 : 1,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: 13,
-                          color: engine.locked ? 'rgba(255,255,255,0.35)' : '#ffffff',
-                          fontWeight: engine.locked ? 400 : 500,
-                        }}
-                      >
-                        {engine.name}
-                      </span>
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          fontSize: 11,
-                          fontWeight: 600,
-                          padding: '3px 10px',
-                          borderRadius: 4,
-                          color:
-                            engine.status === 'active'
-                              ? '#22C55E'
-                              : engine.status === 'monitoring'
-                                ? '#00D9FF'
-                                : 'rgba(255,255,255,0.5)',
-                          background:
-                            engine.status === 'active'
-                              ? 'rgba(34,197,94,0.12)'
-                              : engine.status === 'monitoring'
-                                ? 'rgba(0,217,255,0.1)'
-                                : 'rgba(255,255,255,0.04)',
-                        }}
-                      >
-                        {engine.locked ? (
-                          <>
-                            <Lock size={11} weight="fill" />
-                            Locked
-                          </>
-                        ) : engine.status === 'active' ? 'Active' : 'Monitoring'}
-                      </span>
-                    </div>
-                  ))}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    fontSize: 12,
+                    color: 'rgba(255,255,255,0.5)',
+                    marginBottom: 20,
+                  }}
+                >
+                  Spread: {variance.spread} points
                 </div>
 
                 <p
                   style={{
-                    fontSize: 12,
-                    color: 'rgba(255,255,255,0.4)',
-                    lineHeight: 1.6,
+                    fontSize: 14,
+                    color: 'rgba(255,255,255,0.7)',
+                    lineHeight: 1.7,
                     margin: 0,
-                    marginBottom: 20,
+                    maxWidth: 720,
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    textAlign: 'center',
                   }}
                 >
-                  CiteMind<TM /> is actively monitoring 2 engines for your brand.
-                  Activate full stack to track all 5 engines and receive real-time
-                  citation alerts.
+                  {variance.orchestration_opportunity}
                 </p>
+              </div>
 
+              {/* ── CTAs ─────────────────────────────────────────────── */}
+              {/* No dollar figures, no upgrade pitch with a number per D027.   */}
+              {/* Primary: book a sales conversation. Secondary: open the      */}
+              {/* dashboard via the magic link already in the user's email.   */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: 12,
+                  flexWrap: 'wrap',
+                }}
+              >
                 <Link
-                  href="https://app.pravado.io/beta"
+                  href="https://pravado.io/contact"
                   style={{
-                    display: 'block',
-                    textAlign: 'center',
-                    padding: '14px 24px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '14px 28px',
                     borderRadius: 10,
                     background: '#00D9FF',
                     color: '#0A0A0F',
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: 700,
                     textDecoration: 'none',
                   }}
                 >
-                  Activate Full CiteMind<TM /> Stack &rarr;
+                  Book a call
+                  <ArrowRight size={16} weight="bold" />
+                </Link>
+                <Link
+                  href="https://app.pravado.io/login"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '14px 28px',
+                    borderRadius: 10,
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    background: 'transparent',
+                    color: 'rgba(255,255,255,0.85)',
+                    fontSize: 15,
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Save to dashboard
                 </Link>
               </div>
+
+              {/* Magic-link reassurance */}
+              {result.magic_link_sent && (
+                <p
+                  style={{
+                    fontSize: 12,
+                    color: 'rgba(255,255,255,0.4)',
+                    textAlign: 'center',
+                    marginTop: 20,
+                    marginBottom: 0,
+                  }}
+                >
+                  We&apos;ve emailed you a magic link to access this scorecard from your dashboard anytime.
+                </p>
+              )}
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     </>
   );
