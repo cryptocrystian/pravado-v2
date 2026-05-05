@@ -1,6 +1,41 @@
 # SESSION PRIMER — Pravado v2
 > Single source of truth for cross-session continuity.
-> Last Updated: 2026-04-29 — Phase 1A Architect Checkpoint Passed
+> Last Updated: 2026-05-05 — Migration 94 applied to deployed Supabase (D027 audit_sessions persistence fix)
+
+---
+
+## UPDATE 2026-05-05 — Migration 94 applied + migration-apply convention gap flagged
+
+**Issue:** Phase 1E live testing surfaced that audit_sessions inserts have been silently failing in production since Phase 1A. The route returned `audit_id: null` with no log line because the catch block was theatrical — Supabase JS returns `{ data, error }` on Postgres-level errors rather than throwing, so the swallowed error never reached the network-throw catch.
+
+**Diagnosis (commit `5235808`):** Surfaced the Supabase errors at all five audit_sessions / orgs call sites in `apps/api/src/routes/siloTaxAudit/index.ts` with sanitized logging (code/message/details/hint only — never the full error object, never the insert payload). Live test scan after the deploy emitted:
+
+```
+{
+  "level": "error",
+  "context": "audit-scorecard",
+  "message": "Could not find the 'ai_band' column of 'audit_sessions' in the schema cache",
+  "code": "PGRST204"
+}
+```
+
+**Root cause:** Migration `94_audit_sessions_three_pillar.sql` (committed with Phase 1A at `f66a1ca`) was never applied to the deployed Supabase. The API code that depends on its columns (`ai_band`, `pr_band`, `entry_path`, etc.) shipped to production at the same time the migration file landed in the repo, violating the documented hard rule in `docs/RUNBOOK.md:72`: *"Always apply migrations BEFORE deploying API code that depends on them. Never the reverse."* This invalidates the Phase 1A anomaly #4 hypothesis (FK pointing at `organizations` instead of `orgs`) — that's a separate latent issue but isn't what blocked the inserts. PostgREST rejected the writes at the column-cache layer before FK validation.
+
+**Fix:** Applied migration 94 directly via psql against the Supabase pooler (`aws-0-us-west-2.pooler.supabase.com:6543`) using the full file contents. All 8 `ALTER TABLE` statements + the `CREATE INDEX` succeeded; the single `NOTICE` was the IF-EXISTS pattern doing its job on a fresh apply. Followed with `NOTIFY pgrst, 'reload schema'` to refresh PostgREST's schema cache.
+
+**Verification:**
+- Pre-apply: 0 of 15 expected migration-94 columns present, 7 legacy Silo Tax rows in `audit_sessions`
+- Post-apply: all 15 columns present, CHECK constraint installed, schema cache reloaded
+- Live test scan returned `audit_id: 1c8d7cbe-8651-45d2-976b-c86779b39b5d` (non-null), full three-pillar payload persisted to DB (pr=92, content=88, ai=85, entry_path=pr, stage=account_created)
+- Render logs in the post-apply window show zero PGRST204 errors
+
+**Bonus finding (latent):** `public.organizations` table does not exist in the deployed schema (only `orgs`). Migration 92 declares `org_id uuid REFERENCES public.organizations(id)`. The FK isn't enforced today because its target doesn't exist, so it's not blocking inserts — but the declared schema lies about its referential integrity. Worth a small follow-up migration to drop the broken FK and recreate it against `orgs(id)`. Not done in this commit.
+
+**Convention gap surfaced:**
+
+The miss was a process failure, not a tooling failure. `docs/RUNBOOK.md` already documents the manual `supabase db push` workflow and the BEFORE-deploy ordering rule. Both are clear. What's missing is enforcement — there's no CI check that blocks API deploys carrying an un-applied migration, no PR-time reminder, no record of which migrations have been applied to which environment. The hard rule lives in a runbook one human is expected to remember.
+
+Flagged as P1 in OUTSTANDING ISSUES below. Convention fix is out of scope for this commit (the work order scoped this commit to fixing the specific miss + flagging the gap). Recommended follow-up sprint scope is at the bottom of the OUTSTANDING ISSUES section.
 
 ---
 
@@ -302,6 +337,16 @@ Benefits: Captures lead before spending $0.002, stops bot abuse, less gimmicky.
 **7. Wellstead external dependencies**
 - Stripe, RevenueCat, Google Maps API, FusionPBX — blocking App Store submission
 - Separate dedicated sprint required
+
+**8. Migration-apply convention has no enforcement**
+- Surfaced 2026-05-05 by the migration-94 miss (full incident log in the dated UPDATE block at the top of this file)
+- `docs/RUNBOOK.md:62-77` documents the rule clearly: migrations are manual via `supabase db push`, must apply BEFORE deploying API code that depends on them. The rule is correct. What's missing is enforcement.
+- The miss happened because Phase 1A merged the migration file + the API code that depends on it in the same commit, and only the API code path is automated (Render auto-deploys on push to main; migrations require a human to remember to run `supabase db push`).
+- Recommended follow-up sprint scope (not this commit):
+  1. **CI guard:** add a workflow that fails the API deploy if any new migration file in `apps/api/supabase/migrations/` has been merged to `main` since the last successful production migration apply. Tracking-state could live in a `production_migrations_applied` table in the DB itself, or a JSON file in the repo updated by the apply tooling.
+  2. **Apply tooling that records state:** wrap `supabase db push` in a script (`scripts/apply-migrations.sh`?) that records the applied filename + timestamp + SHA somewhere durable so the CI guard has a source of truth.
+  3. **PR template checkbox:** "If this PR adds a migration, has it been applied to staging?" — soft enforcement, but cheap.
+  4. **Latent FK to fix while in this neighborhood:** `audit_sessions.org_id` references `public.organizations(id)` per migration 92 line 3, but the deployed table is `orgs` and `organizations` does not exist. The FK isn't enforced (target table missing) so it's not blocking writes today, but the declared schema is lying. Drop + recreate against `orgs(id)` in a small follow-up migration.
 
 ### 🟢 P2 — Future Sprints
 
