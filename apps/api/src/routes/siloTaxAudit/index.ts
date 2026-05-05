@@ -655,7 +655,15 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
         .limit(1);
 
       if (recentErr) {
-        logger.error('Rate-limit lookup failed', { error: recentErr.message });
+        // Sanitized log: code/message/details/hint only — never the full
+        // error object (may contain row payloads or auth tokens) and never
+        // the request payload (PII).
+        logger.error('Rate-limit lookup failed', {
+          code: recentErr.code,
+          message: recentErr.message,
+          details: recentErr.details ?? null,
+          hint: recentErr.hint ?? null,
+        });
         // Fail open on lookup error — better to allow the scan than to falsely block.
       } else if (recent && recent.length > 0) {
         const last = recent[0];
@@ -713,11 +721,22 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
       const slug = trimmedCompany.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 50);
       let orgId: string;
 
-      const { data: existingOrg } = await supabase
+      const { data: existingOrg, error: existingOrgErr } = await supabase
         .from('orgs')
         .select('id')
         .eq('slug', slug)
         .single();
+
+      // PGRST116 = no rows matched — expected branch, falls through to insert.
+      // Anything else (RLS, auth, table missing) is a real error worth surfacing.
+      if (existingOrgErr && existingOrgErr.code !== 'PGRST116') {
+        logger.error('Org existence check failed', {
+          code: existingOrgErr.code,
+          message: existingOrgErr.message,
+          details: existingOrgErr.details ?? null,
+          hint: existingOrgErr.hint ?? null,
+        });
+      }
 
       if (existingOrg) {
         orgId = existingOrg.id;
@@ -729,7 +748,12 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
           .single();
 
         if (orgErr || !newOrg) {
-          logger.error('Failed to create org', { error: orgErr?.message });
+          logger.error('Failed to create org', {
+            code: orgErr?.code,
+            message: orgErr?.message,
+            details: orgErr?.details ?? null,
+            hint: orgErr?.hint ?? null,
+          });
           return reply.code(500).send({ error: 'Failed to create organization' });
         }
         orgId = newOrg.id;
@@ -747,10 +771,18 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
       const scanResult = buildScanResult(llm, brandUrl, competitorUrls, false);
 
       // ── Persist audit session (already account-linked) ─
+      // The Supabase JS client returns { data, error } on Postgres-level
+      // failures (FK violations, RLS blocks, type mismatches, schema drift)
+      // rather than throwing — so the surrounding try/catch only catches
+      // network throws. The destructure must capture `error` and log it
+      // through the sanitized logger; otherwise audit_id falls through to
+      // null with no production-log signal of what went wrong (this
+      // exact pattern is what hid the audit_sessions persistence regression
+      // surfaced in Phase 1E live testing).
       const trialExpiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString();
       let auditId: string | null = null;
       try {
-        const { data: session } = await supabase
+        const { data: session, error: insertError } = await supabase
           .from('audit_sessions')
           .insert({
             org_id: orgId,
@@ -783,9 +815,23 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
           })
           .select('id')
           .single();
-        auditId = session?.id ?? null;
+
+        if (insertError) {
+          // Sanitized log: code/message/details/hint only. Never the
+          // full error object and never the insert payload (PII).
+          logger.error('Failed to insert audit_session', {
+            code: insertError.code,
+            message: insertError.message,
+            details: insertError.details ?? null,
+            hint: insertError.hint ?? null,
+          });
+          auditId = null;
+        } else {
+          auditId = session?.id ?? null;
+        }
       } catch (dbErr) {
-        logger.error('Failed to store audit session', { error: (dbErr as Error).message });
+        // Network-level throw, not a Postgres error. Kept for completeness.
+        logger.error('Failed to store audit session (network)', { error: (dbErr as Error).message });
       }
 
       // ── Generate magic link ───────────────────
@@ -855,11 +901,22 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
         return reply.code(400).send({ error: 'email and audit_id are required' });
       }
 
-      const { data: session } = await supabase
+      const { data: session, error: lookupErr } = await supabase
         .from('audit_sessions')
         .select('id, org_id, trial_expires_at, stage')
         .eq('id', audit_id)
         .single();
+
+      // PGRST116 = no rows matched — handled by the 404 below. Anything
+      // else is a real Postgres-level error worth surfacing.
+      if (lookupErr && lookupErr.code !== 'PGRST116') {
+        logger.error('audit_session lookup failed', {
+          code: lookupErr.code,
+          message: lookupErr.message,
+          details: lookupErr.details ?? null,
+          hint: lookupErr.hint ?? null,
+        });
+      }
 
       if (!session) {
         return reply.code(404).send({ error: 'Audit session not found' });
