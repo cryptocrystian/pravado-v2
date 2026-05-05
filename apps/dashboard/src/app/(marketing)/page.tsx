@@ -370,7 +370,7 @@ export default function MarketingPage() {
             or{' '}
             <Link href="/audit" style={{ color: '#00D9FF', textDecoration: 'none',
                                           borderBottom: '1px solid rgba(0,217,255,0.3)' }}>
-              run your free Silo Tax Audit &rarr;
+              run your free earned visibility scorecard &rarr;
             </Link>
           </p>
 
