@@ -227,13 +227,78 @@ const FALLBACK_LLM_OUTPUT: LlmAuditOutput = {
 const PILLAR_WEIGHTS = { pr: 0.40, content: 0.35, ai: 0.25 } as const;
 
 // ── Email rendering ───────────────────────────────────
-// Phase 1A keeps this minimal — single EVI tile, no Silo Tax,
-// no dollar figures. Phase 1E rebuilds the body to a three-pillar
-// table-based layout. Subject line and Outlook compatibility shape
-// from c8fcaf7 are preserved.
-function buildAuditClaimEmailHtml(name: string, eviScore: number, magicLinkUrl: string): string {
-  const eviLabel = eviBand(eviScore);
-  const eviColor = eviBandHex(eviScore);
+// Phase 1E renders the three-pillar EVI scorecard. Layout mirrors the
+// live results page (apps/dashboard/src/components/marketing/
+// EVIScorecardResults.tsx): top-line EVI hero, three stacked pillar
+// mini-cards (each with score, band, top gap, remediation preview),
+// variance summary with leading/lagging pillars, magic-link CTA.
+//
+// Pillars are stacked rather than gridded to stay Outlook-safe at
+// 520px container width — Outlook's table-cell width math is brittle
+// for three side-by-side cards inside a 456px content well.
+//
+// Pillar accent palette mirrors dashboard PILLAR_CONFIG (keeps the
+// email visually continuous with the live scorecard the user lands on
+// via the magic link).
+//
+// HTML escaping: gap titles, remediation strings, and the orchestration
+// narrative come from the LLM. Apostrophes, ampersands, and angle
+// brackets must be entity-escaped before interpolation.
+function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+const PILLAR_EMAIL_META: Record<PillarKey, { label: string; accent: string; bgAccent: string }> = {
+  pr:      { label: 'PR Authority',          accent: '#E879F9', bgAccent: '#fdf4ff' },
+  content: { label: 'Content Authority',     accent: '#A855F7', bgAccent: '#faf5ff' },
+  ai:      { label: 'AI Citation Authority', accent: '#00D9FF', bgAccent: '#ecfeff' },
+};
+
+function buildAuditClaimEmailHtml(name: string, scanResult: ScanResult, magicLinkUrl: string): string {
+  const eviLabel = scanResult.evi_band;
+  const eviColor = eviBandHex(scanResult.evi_score);
+  const safeName = escapeHtml(name);
+
+  const pillarOrder: PillarKey[] = ['pr', 'content', 'ai'];
+  const pillarBlocks = pillarOrder.map((key) => {
+    const pillar = scanResult.pillars[key];
+    const meta = PILLAR_EMAIL_META[key];
+    const bandColor = eviBandHex(pillar.score);
+    const topGap = pillar.gaps[0];
+    const gapMarkup = topGap
+      ? `<tr><td colspan="2" style="padding-top:12px;font-size:13px;font-weight:600;color:#13131A;line-height:1.4;">${escapeHtml(topGap.title)}</td></tr>
+              <tr><td colspan="2" style="padding-top:6px;font-size:12px;color:#666;line-height:1.55;">
+                <span style="color:${meta.accent};font-weight:600;">Pravado would:</span> ${escapeHtml(topGap.remediation)}
+              </td></tr>`
+      : '';
+    return `
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 10px;background:${meta.bgAccent};border-radius:8px;border:1px solid #eee;border-left:3px solid ${meta.accent};">
+          <tr><td style="padding:14px 16px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="font-size:13px;font-weight:700;color:#13131A;letter-spacing:0.01em;">${meta.label}</td>
+                <td align="right" style="white-space:nowrap;">
+                  <span style="font-size:22px;font-weight:800;color:${meta.accent};font-family:monospace;line-height:1;vertical-align:middle;">${pillar.score}</span><span style="font-size:13px;color:#999;font-family:monospace;vertical-align:middle;">/100</span>
+                  &nbsp;<span style="display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;color:${bandColor};background-color:${bandColor}1A;letter-spacing:0.04em;vertical-align:middle;">${pillar.band}</span>
+                </td>
+              </tr>
+              ${gapMarkup}
+            </table>
+          </td></tr>
+        </table>`;
+  }).join('');
+
+  const variance = scanResult.variance;
+  const leadingMeta = PILLAR_EMAIL_META[variance.leading_pillar];
+  const laggingMeta = PILLAR_EMAIL_META[variance.lagging_pillar];
+  const leadingScore = scanResult.pillars[variance.leading_pillar].score;
+  const laggingScore = scanResult.pillars[variance.lagging_pillar].score;
+
   return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f4f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f8;padding:40px 0;"><tr><td align="center">
@@ -242,20 +307,40 @@ function buildAuditClaimEmailHtml(name: string, eviScore: number, magicLinkUrl: 
   <span style="font-family:monospace;font-weight:800;font-size:20px;letter-spacing:3px;color:#1a1a2e;">PRAVADO</span>
 </td></tr>
 <tr><td style="padding:32px;">
-  <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#13131A;">Your earned visibility scorecard is ready, ${name}.</h1>
+  <h1 style="margin:0 0 20px;font-size:22px;font-weight:700;color:#13131A;line-height:1.3;">Your earned visibility scorecard is ready, ${safeName}.</h1>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;border-collapse:separate;border-spacing:0;">
-    <tr>
-      <td valign="top">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8fc;border-radius:8px;border:1px solid #eee;">
-          <tr><td style="padding:24px;text-align:center;">
-            <div style="font-size:11px;color:#666;font-family:monospace;letter-spacing:0.1em;margin-bottom:8px;">EVI&trade; SCORE</div>
-            <div style="font-size:48px;font-weight:900;font-family:monospace;color:${eviColor};line-height:1;">${eviScore}</div>
-            <div style="font-size:13px;color:${eviColor};margin-top:6px;font-weight:600;">${eviLabel}</div>
-          </td></tr>
-        </table>
-      </td>
-    </tr>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f8f8fc;border-radius:8px;border:1px solid #eee;">
+    <tr><td style="padding:24px;text-align:center;">
+      <div style="font-size:11px;color:#666;font-family:monospace;letter-spacing:0.1em;margin-bottom:8px;">EVI&trade; SCORE</div>
+      <div style="font-size:52px;font-weight:900;font-family:monospace;color:${eviColor};line-height:1;">${scanResult.evi_score}<span style="font-size:22px;color:#999;font-weight:700;">/100</span></div>
+      <div style="margin-top:10px;">
+        <span style="display:inline-block;padding:4px 12px;border-radius:5px;font-size:12px;font-weight:700;color:${eviColor};background-color:${eviColor}1A;letter-spacing:0.04em;">${eviLabel}</span>
+      </div>
+      <div style="font-size:11px;color:#888;margin-top:14px;line-height:1.5;">
+        Composite of three pillars &mdash; PR &times;&nbsp;0.40, Content &times;&nbsp;0.35, AI Citation &times;&nbsp;0.25.
+      </div>
+    </td></tr>
+  </table>
+
+  <div style="font-size:11px;font-weight:700;color:#888;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 10px;">Pillar Breakdown</div>
+  ${pillarBlocks}
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0 24px;background:#fafafa;border-radius:8px;border:1px solid #eee;">
+    <tr><td style="padding:18px 18px 16px;">
+      <div style="font-size:11px;font-weight:700;color:#888;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">The Orchestration Opportunity</div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
+        <tr>
+          <td style="font-size:12px;color:#666;line-height:1.5;">
+            <span style="color:${leadingMeta.accent};font-weight:700;">Leading:</span> ${leadingMeta.label} (${leadingScore})
+            &nbsp;&middot;&nbsp;
+            <span style="color:${laggingMeta.accent};font-weight:700;">Lagging:</span> ${laggingMeta.label} (${laggingScore})
+            &nbsp;&middot;&nbsp;
+            <span style="color:#444;font-weight:700;">Spread:</span> ${variance.spread} pts
+          </td>
+        </tr>
+      </table>
+      <p style="margin:0;font-size:13px;color:#444;line-height:1.65;">${escapeHtml(variance.orchestration_opportunity)}</p>
+    </td></tr>
   </table>
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;"><tr><td align="center">
@@ -720,18 +805,17 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
         logger.error('Failed to generate magic link', { error: (linkErr as Error).message });
       }
 
-      // ── Send welcome email with EVI score + magic link ─
-      // Phase 1A: minimal email body (single EVI tile, no Silo Tax,
-      // no dollar figures). Phase 1E rebuilds to a three-pillar table
-      // layout per the work order.
+      // ── Send welcome email with three-pillar EVI scorecard + magic link
+      // Phase 1E: full three-pillar body (top-line EVI + per-pillar
+      // mini-cards + variance summary), mirroring the live results page.
       let magicLinkSent = false;
       try {
         await server.mailer.sendMail({
           to: normalizedEmail,
           from: 'christian@pravado.io',
           subject: `Your EVI score and earned visibility breakdown — ${trimmedName}`,
-          html: buildAuditClaimEmailHtml(trimmedName, scanResult.evi_score, magicLinkUrl),
-          text: `Hi ${trimmedName}, your earned visibility scorecard is ready. EVI Score: ${scanResult.evi_score}/100 (${scanResult.evi_band}). Open your full scorecard: ${magicLinkUrl}`,
+          html: buildAuditClaimEmailHtml(trimmedName, scanResult, magicLinkUrl),
+          text: `Hi ${trimmedName}, your earned visibility scorecard is ready. EVI Score: ${scanResult.evi_score}/100 (${scanResult.evi_band}). PR ${scanResult.pillars.pr.score}/100 · Content ${scanResult.pillars.content.score}/100 · AI Citation ${scanResult.pillars.ai.score}/100. Open your full scorecard: ${magicLinkUrl}`,
         });
         magicLinkSent = true;
         logger.info('Audit email sent', { email: normalizedEmail });
