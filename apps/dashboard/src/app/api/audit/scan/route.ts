@@ -11,9 +11,15 @@ export async function POST(request: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
       body,
     });
-    const data = await res.json();
-    return NextResponse.json(data);
+    const data = await res.json().catch(() => ({}));
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
-    return NextResponse.json({ error: 'Scan failed' }, { status: 500 });
+    console.error('[audit/scan proxy] upstream fetch failed', {
+      name: (error as Error)?.name ?? 'UnknownError',
+    });
+    return NextResponse.json(
+      { error: 'Scan service unreachable' },
+      { status: 502 },
+    );
   }
 }
