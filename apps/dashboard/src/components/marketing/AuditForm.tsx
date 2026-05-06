@@ -24,7 +24,6 @@ import { useState, useCallback } from 'react';
 import { ArrowRight } from '@phosphor-icons/react';
 import {
   EMAIL_REGEX,
-  buildFallbackResult,
   type EntryPath,
   type ScanResponse,
 } from './audit-types';
@@ -121,7 +120,7 @@ export function AuditForm({
       | { kind: 'success'; data: ScanResponse }
       | { kind: 'rate_limit'; message: string }
       | { kind: 'validation'; message: string }
-      | { kind: 'fallback' };
+      | { kind: 'error'; message: string };
 
     const fetchPromise: Promise<ScanOutcome> = fetch('/api/audit/scan', {
       method: 'POST',
@@ -148,26 +147,37 @@ export function AuditForm({
           const message = typeof data.error === 'string' ? data.error : 'Invalid input.';
           return { kind: 'validation', message };
         }
+        if (res.status === 404) {
+          return {
+            kind: 'error',
+            message: 'The scan service is temporarily unreachable. Please try again in a moment, or book a call directly.',
+          };
+        }
+        if (res.status >= 500) {
+          return {
+            kind: 'error',
+            message: 'Our scan service hit an error. Please try again in a moment, or book a call directly.',
+          };
+        }
         if (!res.ok || typeof data.evi_score !== 'number' || !data.pillars) {
           throw new Error(typeof data.error === 'string' ? data.error : 'Invalid response');
         }
         return { kind: 'success', data: data as unknown as ScanResponse };
       })
-      .catch<ScanOutcome>(() => ({ kind: 'fallback' }));
+      .catch<ScanOutcome>(() => ({
+        kind: 'error',
+        message: 'Something went wrong running your scan. Please try again in a moment, or book a call directly.',
+      }));
 
     const [, outcome] = await Promise.all([progressPromise, fetchPromise]);
 
-    if (outcome.kind === 'rate_limit' || outcome.kind === 'validation') {
+    if (outcome.kind !== 'success') {
       setScanError(outcome.message);
       setStep('idle');
       return;
     }
 
-    if (outcome.kind === 'success') {
-      onResult(outcome.data);
-    } else {
-      onResult(buildFallbackResult(entryPath));
-    }
+    onResult(outcome.data);
   }, [brandUrl, email, name, company, competitors, entryPath, onResult]);
 
   // ── Scanning view ────────────────────────────────────────────
