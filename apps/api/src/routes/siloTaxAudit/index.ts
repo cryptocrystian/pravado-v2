@@ -699,7 +699,14 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
 
       // ── Find or create auth user ──────────────
       let userId: string;
-      const { data: listData } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+      const { data: listData, error: listErr } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+      if (listErr) {
+        logger.error('auth.admin.listUsers failed', {
+          name: listErr.name ?? 'AuthError',
+          status: (listErr as { status?: number }).status ?? null,
+          message: listErr.message,
+        });
+      }
       const existingUser = listData?.users?.find((u: { email?: string }) => u.email === normalizedEmail);
 
       if (existingUser) {
@@ -711,7 +718,11 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
           user_metadata: { full_name: trimmedName, company: trimmedCompany },
         });
         if (createErr || !newUser.user) {
-          logger.error('Failed to create user', { error: createErr?.message });
+          logger.error('auth.admin.createUser failed', {
+            name: createErr?.name ?? 'AuthError',
+            status: (createErr as { status?: number } | null)?.status ?? null,
+            message: createErr?.message ?? 'no error returned but user is null',
+          });
           return reply.code(500).send({ error: 'Failed to create account' });
         }
         userId = newUser.user.id;
