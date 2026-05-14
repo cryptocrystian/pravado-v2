@@ -112,9 +112,15 @@ export default function CallbackPage() {
           }
 
           if (otpData.session) {
-            console.log('[Callback] OTP verified, redirecting to /app');
-            setStatus('success');
-            window.location.href = '/app';
+            // Magic-link / new-account-signup convergence point.
+            // Must route through the same server-authoritative org check
+            // as the OAuth path below (handleCallback's fall-through to
+            // redirectBasedOnOrgs at line ~164). Without this, new users
+            // (no org_members row) land in /app/command-center where the
+            // panes crash on NO_ORG and Chrome's renderer freezes.
+            // See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0A-COLD-START-UNBLOCK.md §1.
+            console.log('[Callback] OTP verified — routing via org check');
+            await redirectBasedOnOrgs();
             return;
           }
         }
@@ -170,6 +176,12 @@ export default function CallbackPage() {
     };
 
     const redirectBasedOnOrgs = async () => {
+      // Shared convergence target for BOTH callback paths:
+      //   - Magic-link / new-account-signup (token_hash branch above)
+      //   - OAuth / existing-session (getSession fall-through below)
+      // Both paths must end here so the server-authoritative org check runs
+      // exactly once per callback, regardless of which auth method was used.
+
       // Fire-and-forget welcome email for new users (backend handles idempotency)
       fetch('/api/auth/welcome-email', { method: 'POST' }).catch(() => {});
 
