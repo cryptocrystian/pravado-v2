@@ -47,6 +47,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { RedirectToOnboarding } from '@/components/auth/RedirectToOnboarding';
 import { ActionCard, type DensityLevel } from './ActionCard';
 import type { ActionItem, ActionStreamResponse, EVIFilterState, Priority } from './types';
 
@@ -223,22 +224,66 @@ export function ActionStreamPane({
   onClearEviFilter,
   onHoverActionChange,
 }: ActionStreamPaneProps) {
-  // Self-fetching from MSW endpoint
+  // Self-fetching from the command-center proxy.
+  //
+  // Phase 0 Track 0A: status-aware response handling. The proxy preserves
+  // upstream 403 NO_ORG responses, and the previous naive `r.json()` path
+  // treated the error-shaped body as success data and crashed on `.items`.
+  // See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0A-COLD-START-UNBLOCK.md §2.
   const [fetchedData, setFetchedData] = useState<ActionStreamResponse | null>(null);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState<Error | null>(null);
+  const [noOrgState, setNoOrgState] = useState(false);
 
   useEffect(() => {
-    fetch('/api/command-center/action-stream')
-      .then(r => r.json())
-      .then((d: ActionStreamResponse) => {
-        setFetchedData(d);
-        setFetchLoading(false);
-      })
-      .catch((e) => {
-        setFetchError(e instanceof Error ? e : new Error(String(e)));
-        setFetchLoading(false);
-      });
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const response = await fetch('/api/command-center/action-stream', {
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          const body = (await response.json().catch(() => null)) as
+            | { error?: { code?: string; message?: string } }
+            | null;
+
+          if (response.status === 403 && body?.error?.code === 'NO_ORG') {
+            if (!cancelled) {
+              setNoOrgState(true);
+              setFetchLoading(false);
+            }
+            return;
+          }
+
+          const message =
+            body?.error?.message ?? `Action stream fetch failed (${response.status})`;
+          if (!cancelled) {
+            setFetchError(new Error(message));
+            setFetchLoading(false);
+          }
+          return;
+        }
+
+        const data = (await response.json()) as ActionStreamResponse;
+        if (!cancelled) {
+          setFetchedData(data);
+          setFetchLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setFetchError(err instanceof Error ? err : new Error(String(err)));
+          setFetchLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Props override fetched data when explicitly provided
@@ -448,6 +493,13 @@ export function ActionStreamPane({
     : effectiveDensity === 'standard'
     ? 'p-3 space-y-2'
     : 'p-3 space-y-2.5'; // Comfortable - more spacious
+
+  // Phase 0 Track 0A: a user with no org membership should be sent to onboarding,
+  // not shown a crash-prone Action Stream. Early return AFTER all hooks to
+  // respect React rules of hooks.
+  if (noOrgState) {
+    return <RedirectToOnboarding reason="no-org" />;
+  }
 
   return (
     <div className="flex flex-col h-full">

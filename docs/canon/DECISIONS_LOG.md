@@ -569,3 +569,10 @@ Commit `c8fcaf7` (2026-04-28) shipped the audit funnel restructure (mechanics: e
 The decision was made in conversation on 2026-04-21 and never written to canon. As a result, the strategic context drifted out of the lead architect's working memory. Commit `c8fcaf7` was generated against the wrong assumption ("Silo Tax framing stays") and pushed to main before the drift was caught. This is the precise failure mode that motivated the 2026-04-28 CLAUDE.md Required Boot Sequence amendment (commit `4cb9fdc`). Going forward, every load-bearing strategic decision lands in `DECISIONS_LOG.md` at the moment it's made, not at some imagined "end of session." The boot sequence reads `DECISIONS_LOG.md` so future sessions inherit the decision automatically.
 
 (End)
+
+
+## 2026-05-14
+
+- **FOLLOW-UP (Phase 0 Track 0A merge):** RLS policy on `org_members` may have a latent issue per the original "Skip org_members query" workaround comment removed in this PR (`apps/dashboard/src/app/callback/page.tsx`). Service-role `getCurrentUser` sidesteps it for cold-start, but a Phase 1 ticket should audit and fix RLS proper for any future client-side query against `org_members`.
+
+(End)
