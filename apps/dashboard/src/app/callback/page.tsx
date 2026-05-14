@@ -112,9 +112,15 @@ export default function CallbackPage() {
           }
 
           if (otpData.session) {
-            console.log('[Callback] OTP verified, redirecting to /app');
-            setStatus('success');
-            window.location.href = '/app';
+            // Magic-link / new-account-signup convergence point.
+            // Must route through the same server-authoritative org check
+            // as the OAuth path below (handleCallback's fall-through to
+            // redirectBasedOnOrgs at line ~164). Without this, new users
+            // (no org_members row) land in /app/command-center where the
+            // panes crash on NO_ORG and Chrome's renderer freezes.
+            // See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0A-COLD-START-UNBLOCK.md §1.
+            console.log('[Callback] OTP verified — routing via org check');
+            await redirectBasedOnOrgs();
             return;
           }
         }
@@ -170,15 +176,42 @@ export default function CallbackPage() {
     };
 
     const redirectBasedOnOrgs = async () => {
+      // Shared convergence target for BOTH callback paths:
+      //   - Magic-link / new-account-signup (token_hash branch above)
+      //   - OAuth / existing-session (getSession fall-through below)
+      // Both paths must end here so the server-authoritative org check runs
+      // exactly once per callback, regardless of which auth method was used.
+
       // Fire-and-forget welcome email for new users (backend handles idempotency)
       fetch('/api/auth/welcome-email', { method: 'POST' }).catch(() => {});
 
-      // Skip org_members query due to RLS policy issues
-      // Just redirect to /app - the app layout will handle routing based on auth state
-      console.log('[Callback] Session established, redirecting to /app');
-      setStatus('success');
-      // Use window.location.href for a full page navigation (more reliable than router.push)
-      window.location.href = '/app';
+      // Phase 0 Track 0A: server-authoritative org check.
+      // The client cannot read org_members directly (RLS), so we ask the
+      // server which path this user should take. New users (no org_members
+      // row) land on /onboarding/ai-intro; existing users on /app/command-center.
+      // See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0A-COLD-START-UNBLOCK.md.
+      try {
+        const checkRes = await fetch('/api/auth/session-check', { credentials: 'include' });
+        const checkBody = (await checkRes.json().catch(() => null)) as
+          | { hasOrg?: boolean; redirectTo?: string }
+          | null;
+
+        const redirectTo = checkBody?.redirectTo ?? '/onboarding/ai-intro';
+        console.log('[Callback] session-check →', {
+          status: checkRes.status,
+          hasOrg: checkBody?.hasOrg,
+          redirectTo,
+        });
+
+        setStatus('success');
+        // Full page navigation is more reliable than router.push for cross-shell hops
+        window.location.href = redirectTo;
+      } catch (err) {
+        console.error('[Callback] session-check failed:', err);
+        // Fail-safe: send to onboarding rather than the crash-prone command center
+        setStatus('success');
+        window.location.href = '/onboarding/ai-intro';
+      }
     };
 
     handleCallback();

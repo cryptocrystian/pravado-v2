@@ -27,6 +27,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { RedirectToOnboarding } from '@/components/auth/RedirectToOnboarding';
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
 import type {
   EarnedVisibilityIndex,
@@ -450,22 +451,66 @@ export function StrategyPanelPane({
   onDriverFilter,
   activeFilter,
 }: StrategyPanelPaneProps) {
-  // Self-fetching from MSW endpoint
+  // Self-fetching from the command-center proxy.
+  //
+  // Phase 0 Track 0A: status-aware response handling. The proxy preserves
+  // upstream 403 NO_ORG responses, and the previous naive `r.json()` path
+  // treated the error-shaped body as success data and crashed on `.evi`.
+  // See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0A-COLD-START-UNBLOCK.md §2.
   const [fetchedData, setFetchedData] = useState<StrategyPanelResponse | null>(null);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState<Error | null>(null);
+  const [noOrgState, setNoOrgState] = useState(false);
 
   useEffect(() => {
-    fetch('/api/command-center/strategy-panel')
-      .then(r => r.json())
-      .then((d: StrategyPanelResponse) => {
-        setFetchedData(d);
-        setFetchLoading(false);
-      })
-      .catch((e) => {
-        setFetchError(e instanceof Error ? e : new Error(String(e)));
-        setFetchLoading(false);
-      });
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const response = await fetch('/api/command-center/strategy-panel', {
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          const body = (await response.json().catch(() => null)) as
+            | { error?: { code?: string; message?: string } }
+            | null;
+
+          if (response.status === 403 && body?.error?.code === 'NO_ORG') {
+            if (!cancelled) {
+              setNoOrgState(true);
+              setFetchLoading(false);
+            }
+            return;
+          }
+
+          const message =
+            body?.error?.message ?? `Strategy panel fetch failed (${response.status})`;
+          if (!cancelled) {
+            setFetchError(new Error(message));
+            setFetchLoading(false);
+          }
+          return;
+        }
+
+        const data = (await response.json()) as StrategyPanelResponse;
+        if (!cancelled) {
+          setFetchedData(data);
+          setFetchLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setFetchError(err instanceof Error ? err : new Error(String(err)));
+          setFetchLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Props override fetched data when explicitly provided
@@ -515,6 +560,10 @@ export function StrategyPanelPane({
     });
   }, [onDriverFilter]);
 
+  // Phase 0 Track 0A: a user with no org membership should be sent to onboarding,
+  // not shown a crash-prone Strategy Panel. Early return AFTER all hooks to
+  // respect React rules of hooks.
+  if (noOrgState) return <RedirectToOnboarding reason="no-org" />;
   if (isLoading) return <LoadingSkeleton />;
   if (error) return <ErrorState error={error} />;
   if (!data) {
