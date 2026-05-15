@@ -575,4 +575,10 @@ The decision was made in conversation on 2026-04-21 and never written to canon. 
 
 - **FOLLOW-UP (Phase 0 Track 0A merge):** RLS policy on `org_members` may have a latent issue per the original "Skip org_members query" workaround comment removed in this PR (`apps/dashboard/src/app/callback/page.tsx`). Service-role `getCurrentUser` sidesteps it for cold-start, but a Phase 1 ticket should audit and fix RLS proper for any future client-side query against `org_members`.
 
+- **DECISION (one-time CI exception):** PR #2 (Phase 0 Track 0A, squash commit `7a95e03`) merged on red CI at 2026-05-14T22:15:50Z. Architect review verified all 6 failing checks (Type Check, Lint, Test, Canon Integrity, Density Guard, Shell Guard) are pre-existing on `main` since commit `b7e8567` (2026-05-07) and unrelated to PR #2's 7 changed files. The cold-start renderer-freeze fix is P0 in production and cannot wait for CI green-up. Future PRs require green CI without exception.
+
+- **DECISION (Phase 0 scope addition):** Track 0D (CI green-up) added to Phase 0 and must close before Tracks 0B and 0C start. Phase 0 exit criteria amended to include "CI green on three consecutive runs over 24h on `main`." See `docs/sprints/PHASE-0-FIRE-BREAK/README.md` (Track 0D to be authored after 0A is fully shipped).
+
+- **OBSERVATION (worth investigating in Track 0D):** `main` has had red CI continuously since 2026-05-07. This means either no merges have happened in 7 days, or merges have routinely occurred on red CI. Either is a cultural/process finding. Track 0D's plan should surface which it was and whether the precedent affects how the green-up is communicated to the team.
+
 (End)
