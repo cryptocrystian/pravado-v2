@@ -48,7 +48,7 @@ interface CommandCenterTopbarProps {
 }
 
 // Surface navigation items — canonical surfaces only (per UX_SURFACES.md)
-const surfaceNavItems = [
+const topbarSurfaces = [
   { name: 'Command Center', href: '/app/command-center', shortName: 'Command' },
   { name: 'PR', href: '/app/pr', shortName: 'PR' },
   { name: 'Content', href: '/app/content', shortName: 'Content' },
@@ -227,7 +227,7 @@ export function CommandCenterTopbar({
             MIDDLE CLUSTER: Surface Navigation (PROMINENT)
             ============================================ */}
         <nav className="hidden md:flex items-center gap-2 flex-1 ml-8">
-          {surfaceNavItems.map((item) => {
+          {topbarSurfaces.map((item) => {
             const active = isActive(item.href);
             return (
               <Link
