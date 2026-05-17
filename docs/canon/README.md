@@ -75,6 +75,8 @@ These files exist to prevent drift and ensure development discipline:
 | `DECISIONS_LOG.md` | Record of architectural decisions |
 | `CI_GATES_CHECKLIST.md` | Quality gates for CI/CD |
 | `SPRINT_ZERO_DEMO_SCRIPT.md` | Demo script for sprint reviews |
+| `JOURNALIST_DATABASE_GOVERNANCE.md` | Journalist database compliance, consent, retention policies |
+| `SPRINT_PLAN.md` | Sprint planning and tracking conventions |
 
 ---
 
@@ -118,6 +120,10 @@ These files define layout and interaction patterns specific to work surfaces:
 | `work/WORK_SURFACE_QA_GATE.md` | **AUTHORITATIVE** - Pass/fail verification checks |
 | `work/CONTENT_WORK_SURFACE_RECONSTRUCTION.md` | Content work surface reconstruction from canon sources |
 | ~~`work/EDITOR_FOCUS_LAYOUT_CANON.md`~~ | ~~Focus layout~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
+| `COMPETITIVE_INTELLIGENCE_2026.md` | Competitive intelligence model and surfaces |
+| `CONTENT_REBUILD_BRIEF.md` | Content surface rebuild brief and scope |
+| `SAGE_ARCHITECTURE.md` | SAGE architectural diagrams and component boundaries |
+| `UX_CONTINUITY_CANON.md` | Cross-surface UX continuity rules |
 
 > **Note:** `WORK_SURFACE_CONTRACT.md` consolidates and supersedes multiple micro-canons.
 > See the contract for the list of superseded documents.
@@ -140,6 +146,10 @@ These files define FROZEN behavior for V1 release:
 | `PR_CONTACT_LEDGER_CONTRACT.md` | V1.1 Contact Timeline / Relationship Ledger specification |
 | `PR_PITCH_PIPELINE_CONTRACT.md` | V1.1 Pitch Pipeline specification |
 | `CONTENT_WORK_SURFACE_CONTRACT.md` | V1 freeze contract for Content Work Surface |
+| `ANALYTICS_CONTRACT.md` | V1 freeze contract for Analytics surface |
+| `ENTITY_MAP_SPEC.md` | Entity Map data shape and rendering spec |
+| `OMNI_TRAY_SPEC.md` | Omni-Tray support surface specification |
+| `PRESS_RELEASE_DISTRIBUTION_CONTRACT.md` | Press release distribution channels and SLAs |
 
 ---
 
@@ -157,6 +167,7 @@ These files define trade secrets and patent-eligible systems:
 | `TRADE_SECRET_BOUNDARIES.md` | Disclosure classifications (INTERNAL) |
 | `EXECUTIVE_NARRATIVE.md` | CMO/CEO/Investor narrative (PUBLIC) |
 | `SALES_OBJECTIONS.md` | Sales objection handling (PUBLIC)
+| `EVI_FORMULA.md` | EVI formula (RESTRICTED) |
 
 ---
 
