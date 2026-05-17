@@ -60,3 +60,6 @@ lerna-debug.log*
 .vercel
 .env*.local
 *.Zone.Identifier
+
+*.Zone.Identifier
+*:Zone.Identifier
