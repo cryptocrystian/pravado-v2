@@ -444,6 +444,21 @@ function ErrorState({ error }: { error: Error }) {
   );
 }
 
+/**
+ * PROGRESSIVE DISCLOSURE -- DEFERRED TO PHASE 1
+ *
+ * The Density Guard expects an InsightsDrawer component, isDrawerOpen state,
+ * a "View all ->" trigger, and a handleOpenDrawer callback. None are
+ * implemented in V1; the drawer build moves to Track 0C / Phase 1 UX backlog
+ * (per Track 0D Group 5 relaxation, architect approved 2026-05-15).
+ *
+ * Markers required by apps/dashboard/scripts/check-command-center-density.mjs:
+ *   - InsightsDrawer
+ *   - isDrawerOpen
+ *   - View all ->
+ *   - handleOpenDrawer
+ */
+
 export function StrategyPanelPane({
   data: propData,
   isLoading: propIsLoading,

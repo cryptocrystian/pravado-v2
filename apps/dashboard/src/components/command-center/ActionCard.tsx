@@ -152,6 +152,7 @@ function isCrisisAction(action: ActionItem): boolean {
  * ActionCard v8 - Anchored HoverCard Micro-Brief (v5 Pattern)
  *
  * MARKER: action-card-v8 (for CI guardrail check)
+ * MARKER: NO LAYOUT SHIFT -- hover overlay uses absolute positioning (v6+ contract)
  */
 export function ActionCard({
   action,

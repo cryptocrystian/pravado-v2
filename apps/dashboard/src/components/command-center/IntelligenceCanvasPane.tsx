@@ -21,8 +21,9 @@ import { InfoTooltip } from '@/components/shared/InfoTooltip';
 // ── Tab definitions ──────────────────────────────────────
 
 type CanvasTab = 'entity_map' | 'orchestration_editor' | 'synergy_flow';
+type TabConfig = { id: CanvasTab; label: string; color: string; ready: boolean };
 
-const TABS: { id: CanvasTab; label: string; color: string; ready: boolean }[] = [
+const TABS: TabConfig[] = [
   { id: 'entity_map', label: 'Entity Map', color: 'text-brand-iris', ready: true },
   { id: 'orchestration_editor', label: 'Orchestration', color: 'text-brand-cyan', ready: false },
   { id: 'synergy_flow', label: 'Synergy Flow', color: 'text-white/30', ready: false },
@@ -301,7 +302,7 @@ export function IntelligenceCanvasPane({
         </div>
       </div>
 
-      {/* ── Content: square map row + feed row ── */}
+      {/* Content: TOP ROW = entity map; BOTTOM ROW = CiteMind feed (2-Row layout) */}
       <div ref={contentRef} className="relative flex-1 min-h-0 flex flex-col"
         style={{ background: '#06060A' }}>
 
