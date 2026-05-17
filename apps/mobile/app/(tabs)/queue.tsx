@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, TouchableOpacity, StyleSheet } from 'react-native';
+
+import { EmptyState } from '../../src/components/EmptyState';
+import { ProposalCard } from '../../src/components/ProposalCard';
 import { colors } from '../../src/constants/colors';
 import { useSAGE } from '../../src/hooks/useSAGE';
-import { ProposalCard } from '../../src/components/ProposalCard';
-import { EmptyState } from '../../src/components/EmptyState';
-import { PillarTag } from '../../src/components/PillarTag';
 
 const FILTERS = ['All', 'PR', 'Content', 'SEO'] as const;
 
 export default function QueueScreen() {
-  const { proposals, loading, approve, dismiss, refresh } = useSAGE();
+  const { proposals, approve, dismiss, refresh } = useSAGE();
   const [filter, setFilter] = useState<typeof FILTERS[number]>('All');
   const [refreshing, setRefreshing] = useState(false);
 

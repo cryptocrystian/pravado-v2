@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Linking, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../../src/constants/colors';
+
 import { EmptyState } from '../../../src/components/EmptyState';
 import { LoadingPulse } from '../../../src/components/LoadingPulse';
+import { colors } from '../../../src/constants/colors';
 import { apiFetch } from '../../../src/lib/api';
 
 interface Pitch {

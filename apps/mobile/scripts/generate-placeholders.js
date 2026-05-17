@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires -- CommonJS Node build script (run via `node ...`, no bundler) */
 /**
  * Generate placeholder PNG assets for EAS build.
  * Replace with real brand assets before App Store submission.

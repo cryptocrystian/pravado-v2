@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { View, Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
+
 import { colors } from '../constants/colors';
 
 export function LoadingPulse({ width = '100%', height = 16 }: { width?: number | string; height?: number }) {

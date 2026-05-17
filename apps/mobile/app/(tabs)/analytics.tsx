@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, StyleSheet, TouchableOpacity } from 'react-native';
+
+import { EmptyState } from '../../src/components/EmptyState';
+import { EVIScore } from '../../src/components/EVIScore';
 import { colors } from '../../src/constants/colors';
 import { useEVI } from '../../src/hooks/useEVI';
-import { EVIScore } from '../../src/components/EVIScore';
-import { EmptyState } from '../../src/components/EmptyState';
 
 const RANGES = ['7d', '30d', '60d', '90d'] as const;
 
 export default function AnalyticsScreen() {
   const [range, setRange] = useState<string>('30d');
-  const { data: evi, history, loading, refresh } = useEVI(range);
+  const { data: evi, refresh } = useEVI(range);
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => { setRefreshing(true); await refresh(); setRefreshing(false); };

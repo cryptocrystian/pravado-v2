@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+
 import { colors } from '../constants/colors';
 
 interface Props { icon: string; title: string; subtitle: string; actionLabel?: string; onAction?: () => void; }

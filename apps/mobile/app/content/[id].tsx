@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Linking, TouchableOpacity } from 'react-native';
-import { colors } from '../../src/constants/colors';
+
 import { CiteMindBadge } from '../../src/components/CiteMindBadge';
 import { EmptyState } from '../../src/components/EmptyState';
 import { LoadingPulse } from '../../src/components/LoadingPulse';
+import { colors } from '../../src/constants/colors';
 import { apiFetch } from '../../src/lib/api';
 
 interface ContentItem {

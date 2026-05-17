@@ -1,17 +1,18 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { colors } from '../../src/constants/colors';
-import { useContent } from '../../src/hooks/useContent';
+
 import { CiteMindBadge } from '../../src/components/CiteMindBadge';
 import { EmptyState } from '../../src/components/EmptyState';
+import { colors } from '../../src/constants/colors';
+import { useContent } from '../../src/hooks/useContent';
 
 const TABS = ['All', 'Drafts', 'Published', 'Review'] as const;
 const STATUS_MAP: Record<string, string> = { All: '', Drafts: 'draft', Published: 'published', Review: 'needs_review' };
 
 export default function ContentScreen() {
   const [tab, setTab] = useState<string>('All');
-  const { items, loading, refresh } = useContent(STATUS_MAP[tab] || undefined);
+  const { items, refresh } = useContent(STATUS_MAP[tab] || undefined);
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
 

@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+
 import { colors } from '../constants/colors';
 
 const PILLAR_COLORS: Record<string, string> = { PR: colors.pr, Content: colors.content, SEO: colors.seo };

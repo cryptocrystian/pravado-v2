@@ -1,9 +1,11 @@
+import { makeRedirectUri } from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { supabase } from '../../src/lib/supabase';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri } from 'expo-auth-session';
+
 import { colors } from '../../src/constants/colors';
+import { supabase } from '../../src/lib/supabase';
+
 
 WebBrowser.maybeCompleteAuthSession();
 

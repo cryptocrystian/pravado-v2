@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+
 import { colors } from '../constants/colors';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {

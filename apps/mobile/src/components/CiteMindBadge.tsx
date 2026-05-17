@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+
 import { colors } from '../constants/colors';
 
 const GATE_CONFIG: Record<string, { icon: string; bg: string; color: string }> = {

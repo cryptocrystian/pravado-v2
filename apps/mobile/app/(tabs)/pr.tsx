@@ -1,9 +1,10 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+
+import { EmptyState } from '../../src/components/EmptyState';
 import { colors } from '../../src/constants/colors';
 import { usePR } from '../../src/hooks/usePR';
-import { EmptyState } from '../../src/components/EmptyState';
 
 const TABS = ['Pitches', 'Coverage', 'Journalists'] as const;
 
@@ -13,7 +14,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function PRScreen() {
   const [tab, setTab] = useState<typeof TABS[number]>('Pitches');
-  const { pitches, coverage, journalists, loading, refresh } = usePR();
+  const { pitches, coverage, journalists, refresh } = usePR();
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
 

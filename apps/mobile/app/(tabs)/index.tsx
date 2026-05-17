@@ -1,13 +1,14 @@
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+
+import { EmptyState } from '../../src/components/EmptyState';
+import { EVIScore } from '../../src/components/EVIScore';
+import { ProposalCard } from '../../src/components/ProposalCard';
 import { colors } from '../../src/constants/colors';
 import { useEVI } from '../../src/hooks/useEVI';
 import { useSAGE } from '../../src/hooks/useSAGE';
 import { supabase } from '../../src/lib/supabase';
-import { EVIScore } from '../../src/components/EVIScore';
-import { ProposalCard } from '../../src/components/ProposalCard';
-import { EmptyState } from '../../src/components/EmptyState';
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -18,8 +19,8 @@ function getGreeting() {
 
 export default function TodayScreen() {
   const router = useRouter();
-  const { data: evi, loading: eviLoading, refresh: refreshEVI } = useEVI();
-  const { proposals, dailyBrief, loading: sageLoading, approve, dismiss, refresh: refreshSAGE } = useSAGE();
+  const { data: evi, refresh: refreshEVI } = useEVI();
+  const { proposals, dailyBrief, approve, dismiss, refresh: refreshSAGE } = useSAGE();
   const [userName, setUserName] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 

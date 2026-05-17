@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { Session } from '@supabase/supabase-js';
+import * as ExpoLinking from 'expo-linking';
+import * as Notifications from 'expo-notifications';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Session } from '@supabase/supabase-js';
-import { supabase } from '../src/lib/supabase';
+import { useEffect, useState } from 'react';
+
 import { registerForPushNotifications } from '../src/lib/notifications';
-import * as Notifications from 'expo-notifications';
-import * as ExpoLinking from 'expo-linking';
+import { supabase } from '../src/lib/supabase';
+
 
 export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
@@ -63,7 +65,7 @@ export default function RootLayout() {
         } else if (path.startsWith('/app/command-center') || path === '/app') {
           router.push('/(tabs)');
         }
-      } catch {}
+      } catch { /* ignore: bad deep-link URL is non-fatal */ }
     }
 
     const sub = ExpoLinking.addEventListener('url', handleUrl);

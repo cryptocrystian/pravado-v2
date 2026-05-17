@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors } from '../constants/colors';
+
 import { PillarTag } from './PillarTag';
+import { colors } from '../constants/colors';
 
 const PRIORITY_COLORS: Record<string, string> = {
   critical: colors.red, high: colors.yellow, medium: colors.cyberBlue, low: colors.textDim,
