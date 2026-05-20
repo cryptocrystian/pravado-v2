@@ -35,6 +35,7 @@ const ALLOWED_DOC_PATHS = [
   'docs/canon/',
   'docs/audit/',
   'docs/_archive/',
+  'docs/sprints/',
 ];
 
 // Explicitly allowed root-level docs in docs/
