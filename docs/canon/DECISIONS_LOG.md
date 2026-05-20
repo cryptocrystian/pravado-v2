@@ -582,3 +582,13 @@ The decision was made in conversation on 2026-04-21 and never written to canon. 
 - **OBSERVATION (worth investigating in Track 0D):** `main` has had red CI continuously since 2026-05-07. This means either no merges have happened in 7 days, or merges have routinely occurred on red CI. Either is a cultural/process finding. Track 0D's plan should surface which it was and whether the precedent affects how the green-up is communicated to the team.
 
 (End)
+
+## 2026-05-15
+
+- **OBSERVATION (Track 0D Group 1):** Local-only WIP in `apps/api/src/routes/` for agency-mode features produces ~35 TypeScript errors that do NOT appear in CI (untracked / not in the typecheck path CI runs). Confirmed during Group 1 surface review. Fate decision deferred to Phase 1: complete, archive to `_archive/`, or remove. Tracking only ? not fixed in this PR.
+
+- **DISCOVERY (Track 0D Group 1 A1):** `apps/api/src/routes/auth.ts` GET /me handler had a latent typo: `updatedAt` was sourced from `userData.created_at` (instead of `userData.updated_at`), causing user API responses to return a stale `updatedAt` always matching `createdAt`. Fixed alongside the missing-`email` field. Real bug masked by the typecheck failure on the same struct.
+
+- **DISCOVERY (Track 0D Group 1 B1):** SendGrid webhook endpoint at `POST /api/pr-outreach-deliverability/webhooks/:provider` has been silently dropping events in production. Three root causes: (a) `fastify-raw-body` plugin not installed (the type error surfaced this); (b) the handler fell back to `JSON.stringify(request.body)` when raw body was unavailable ? re-serialized JSON bytes do not match what SendGrid signed, so HMAC verification fails 100% of the time; (c) the route hardcodes `'placeholder-org-id'` at line 471 with a `TODO: Extract from payload or lookup`, so even if signature passed the event would not route to the right org. This PR fixes (a) by installing the plugin and registering it `global:false` with the route opted-in via `config.rawBody:true`, and (b) by returning a loud 500 `RAW_BODY_UNAVAILABLE` when raw body is missing (no silent re-stringify fallback). The hardcoded org-id (c) remains as a follow-up ? flagged as a Phase 1 P0 item for the PR pillar.
+
+(End)
