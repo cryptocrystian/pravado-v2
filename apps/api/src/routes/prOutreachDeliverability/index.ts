@@ -453,9 +453,28 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
 
       const timestamp = request.headers['x-twilio-email-event-webhook-timestamp'] as string;
 
-      // Get raw body for signature validation (or stringify if not available)
-      const rawBody = (request as any).rawBody?.toString() ||
-        (typeof request.body === 'string' ? request.body : JSON.stringify(request.body));
+      // Raw body required for HMAC signature verification. The route opts into
+      // @fastify/raw-body via `config: { rawBody: true }` above; the plugin is
+      // registered with global:false in server.ts. If rawBody is missing here,
+      // the plugin is misconfigured and we must REJECT the webhook (cannot fall
+      // back to JSON.stringify(request.body) ? re-serialized bytes ? original
+      // wire bytes, so signature verification would silently fail and the event
+      // would be ack'd to SendGrid while being dropped here. See Track 0D
+      // Group 1 B1 / DECISIONS_LOG 2026-05-15.).
+      const rawBody = request.rawBody?.toString();
+      if (!rawBody) {
+        fastify.log.error(
+          { provider, hasRawBody: false },
+          'Webhook rejected: raw body unavailable. @fastify/raw-body plugin must be registered globally:false with this route opted-in via config.rawBody:true.',
+        );
+        return reply.status(500).send({
+          success: false,
+          error: {
+            code: 'RAW_BODY_UNAVAILABLE',
+            message: 'Webhook signature validation requires raw body; plugin misconfiguration.',
+          },
+        });
+      }
 
       // For webhook processing, we need to determine the org ID from the payload
       // This is typically embedded in metadata or we can look it up by message ID

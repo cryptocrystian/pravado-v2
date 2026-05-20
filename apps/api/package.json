@@ -36,6 +36,7 @@
     "fast-xml-parser": "^5.3.3",
     "fastify": "^4.25.2",
     "fastify-plugin": "^4.5.1",
+    "fastify-raw-body": "^5.0.0",
     "ioredis": "^5.10.0",
     "openai": "^6.9.1",
     "stripe": "^20.0.0",

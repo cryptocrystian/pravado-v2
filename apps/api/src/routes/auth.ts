@@ -138,10 +138,11 @@ export async function authRoutes(server: FastifyInstance) {
 
       const user: User = {
         id: userData.id,
+        email: userData.email,
         fullName: userData.full_name,
         avatarUrl: userData.avatar_url,
         createdAt: userData.created_at,
-        updatedAt: userData.created_at,
+        updatedAt: userData.updated_at,
       };
 
       const { data: memberships } = await supabase

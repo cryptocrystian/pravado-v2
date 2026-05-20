@@ -87,20 +87,23 @@ const ENV_VARS: Array<{ key: string; value: string }> = [
   { key: 'RENDER_EXTERNAL_URL', value: 'https://pravado-api.onrender.com' },
 ];
 
-async function renderFetch(path: string, init: RequestInit = {}) {
+async function renderFetch<T = unknown>(
+  path: string,
+  init: RequestInit = {},
+): Promise<{ status: number; ok: boolean; body: T | null }> {
   const res = await fetch(`${RENDER_API_BASE}${path}`, { ...init, headers });
-  const body = await res.json().catch(() => null);
+  const body = (await res.json().catch(() => null)) as T | null;
   return { status: res.status, ok: res.ok, body };
 }
 
 async function findService(): Promise<string | null> {
-  const { ok, body } = await renderFetch(`/services?name=${encodeURIComponent(SERVICE_NAME)}&type=web&limit=1`);
+  const { ok, body } = await renderFetch<Array<{ service?: { id: string }; id?: string }>>(`/services?name=${encodeURIComponent(SERVICE_NAME)}&type=web&limit=1`);
   if (!ok || !Array.isArray(body) || body.length === 0) return null;
   return body[0].service?.id || body[0].id || null;
 }
 
 async function getOwnerId(): Promise<string> {
-  const { ok, body } = await renderFetch('/owners?limit=1');
+  const { ok, body } = await renderFetch<Array<{ owner: { id: string } }>>('/owners?limit=1');
   if (!ok || !Array.isArray(body) || body.length === 0) {
     console.error('Failed to fetch Render owner:', JSON.stringify(body, null, 2));
     process.exit(1);
@@ -111,7 +114,7 @@ async function getOwnerId(): Promise<string> {
 async function createService(): Promise<string> {
   const ownerId = await getOwnerId();
   console.log(`Creating service "${SERVICE_NAME}" on Render (owner: ${ownerId})...`);
-  const { ok, body } = await renderFetch('/services', {
+  const { ok, body } = await renderFetch<{ service?: { id: string }; id?: string }>('/services', {
     method: 'POST',
     body: JSON.stringify({
       type: 'web_service',
@@ -135,12 +138,16 @@ async function createService(): Promise<string> {
     }),
   });
 
-  if (!ok) {
+  if (!ok || !body) {
     console.error('Failed to create service:', JSON.stringify(body, null, 2));
     process.exit(1);
   }
 
-  const serviceId = body.service?.id || body.id;
+  const serviceId = body.service?.id ?? body.id;
+  if (!serviceId) {
+    console.error('Service created but response missing id:', JSON.stringify(body, null, 2));
+    process.exit(1);
+  }
   console.log(`Service created: ${serviceId}`);
   return serviceId;
 }

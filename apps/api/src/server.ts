@@ -2,6 +2,7 @@
  * Fastify server setup
  */
 
+import rawBody from 'fastify-raw-body';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
@@ -11,6 +12,19 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { FLAGS } from '@pravado/feature-flags';
 import { createLogger } from '@pravado/utils';
 import Fastify from 'fastify';
+
+// Module augmentation for fastify-raw-body ? the plugin's own plugin.d.ts
+// declares this but moduleResolution:Bundler doesn't pick it up because
+// the package's package.json#exports is empty. Mirror here so all routes
+// in apps/api see `FastifyRequest.rawBody` and `FastifyContextConfig.rawBody`.
+declare module 'fastify' {
+  interface FastifyRequest {
+    rawBody?: string | Buffer;
+  }
+  interface FastifyContextConfig {
+    rawBody?: boolean;
+  }
+}
 
 import { config } from './config';
 
@@ -105,6 +119,15 @@ export async function createServer() {
     logger: false, // We use our custom logger
     requestIdLogLabel: 'requestId',
     disableRequestLogging: false,
+  });
+
+  // Raw-body plugin (route opt-in via config.rawBody: true) ? required for
+  // SendGrid webhook HMAC signature verification at /api/pr-outreach-deliverability/webhooks/:provider
+  await server.register(rawBody, {
+    field: 'rawBody',
+    global: false,
+    encoding: 'utf8',
+    runFirst: true,
   });
 
   await server.register(cookie, {
