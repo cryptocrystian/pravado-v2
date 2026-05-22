@@ -36,6 +36,7 @@ const ALLOWED_DOC_PATHS = [
   'docs/audit/',
   'docs/_archive/',
   'docs/sprints/',
+  'docs/tests/',
 ];
 
 // Explicitly allowed root-level docs in docs/
