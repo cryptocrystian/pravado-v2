@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { Newspaper, ChartLineUp, User, ArrowRight } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
+
 import type { CrossPillarHook } from '../editor-mock-data';
 
 const pillarConfig = {

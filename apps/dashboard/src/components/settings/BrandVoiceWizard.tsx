@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { Check, X, Upload } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import { mockBrandVoice } from '@/components/content/content-mock-data';
 import type { BrandVoice } from '@/components/content/content-mock-data';
 

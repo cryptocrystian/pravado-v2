@@ -4,10 +4,13 @@
  * EngineBreakdown — By AI Engine score rows + Top Topics card.
  */
 
-import { useRouter } from 'next/navigation';
 import { ArrowUp, ArrowDown, Lightning, ArrowRight } from '@phosphor-icons/react';
-import { mockEngineScores, mockTopTopics } from './seo-mock-data';
+import { useRouter } from 'next/navigation';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import { mockEngineScores, mockTopTopics } from './seo-mock-data';
+
 
 const trendBadge: Record<string, { label: string; className: string }> = {
   hot: { label: 'Hot', className: 'bg-amber-500/10 text-amber-500' },

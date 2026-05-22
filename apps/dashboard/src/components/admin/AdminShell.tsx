@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { PravadoLogoIcon } from '@/components/brand/PravadoLogo';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
+
+import { PravadoLogoIcon } from '@/components/brand/PravadoLogo';
 
 const ADMIN_NAV = [
   { label: 'Overview', href: '/app/admin' },

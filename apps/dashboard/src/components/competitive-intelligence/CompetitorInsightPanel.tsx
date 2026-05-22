@@ -1,16 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import type { CompetitorInsight, CIInsightCategory } from '@pravado/types';
-import {
-  getInsightCategoryColor,
-  getInsightCategoryBgColor,
-  updateInsight,
-} from '@/lib/competitorIntelligenceApi';
 import {
   Lightbulb,
   AlertTriangle,
@@ -23,6 +13,18 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  getInsightCategoryColor,
+  getInsightCategoryBgColor,
+  updateInsight,
+} from '@/lib/competitorIntelligenceApi';
+import { cn } from '@/lib/utils';
+
 
 interface CompetitorInsightPanelProps {
   insight: CompetitorInsight;

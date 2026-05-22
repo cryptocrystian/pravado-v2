@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { BrandReputationEvent } from '@pravado/types';
+import { Activity, ArrowUp, ArrowDown, Minus, Zap } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getEventSeverityColor,
   getEventSeverityBgColor,
@@ -19,8 +22,7 @@ import {
   formatDelta,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { BrandReputationEvent } from '@pravado/types';
-import { Activity, ArrowUp, ArrowDown, Minus, Zap } from 'lucide-react';
+
 
 interface ReputationEventsListProps {
   events: BrandReputationEvent[];

@@ -4,10 +4,11 @@
  * CompetitorComparison — Donut chart, head-to-head, topic table, content gaps.
  */
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { CheckCircle, Warning, XCircle } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+
 import {
   mockShareOfVoice,
   mockPravadoProfile,

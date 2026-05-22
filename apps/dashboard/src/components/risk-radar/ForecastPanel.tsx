@@ -5,14 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { RiskLevelBadge } from './RiskLevelBadge';
-import type { RiskRadarForecast } from '@/lib/riskRadarApi';
-import { getHorizonLabel, formatProbability, formatRelativeTime } from '@/lib/riskRadarApi';
 import {
   TrendingUp,
   RefreshCw,
@@ -25,6 +17,16 @@ import {
   Loader2,
   Sparkles,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { RiskRadarForecast } from '@/lib/riskRadarApi';
+import { getHorizonLabel, formatProbability, formatRelativeTime } from '@/lib/riskRadarApi';
+import { cn } from '@/lib/utils';
+
+import { RiskLevelBadge } from './RiskLevelBadge';
 
 interface ForecastPanelProps {
   forecast?: RiskRadarForecast;

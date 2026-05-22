@@ -6,15 +6,16 @@
 
 'use client';
 
-import React from 'react';
-import { Search, X } from 'lucide-react';
 import type { NarrativeType, NarrativeStatus } from '@pravado/types';
 import {
   NARRATIVE_TYPE_LABELS,
   NARRATIVE_STATUS_LABELS,
 } from '@pravado/types';
-import { Input } from '@/components/ui/input';
+import { Search, X } from 'lucide-react';
+import React from 'react';
+
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,

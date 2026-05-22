@@ -5,9 +5,10 @@
  * Panel for reviewing and approving/rejecting scenario run steps
  */
 
-import { useState } from 'react';
 import type { ScenarioRunStep, ScenarioPlaybookStep, ScenarioStepStatus } from '@pravado/types';
 import { SCENARIO_STEP_STATUS_LABELS, STEP_STATUS_COLORS, SCENARIO_STEP_ACTION_TYPE_LABELS } from '@pravado/types';
+import { useState } from 'react';
+
 import { approveScenarioStep } from '../../lib/scenarioPlaybookApi';
 
 interface StepApprovalPanelProps {

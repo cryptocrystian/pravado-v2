@@ -15,14 +15,6 @@
  * @see /docs/canon/DS_v3_PRINCIPLES.md
  */
 
-import { useState, type ReactNode } from 'react';
-import { modeStyles } from './prWorkSurfaceStyles';
-import {
-  AmbientAIIndicator,
-  type AIPerceptualState,
-} from '@/components/ai';
-import { ImpactStrip } from '@/components/shared/ImpactStrip';
-import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
 import {
   Tray,
   SquaresFour,
@@ -39,6 +31,16 @@ import {
   User,
   Lightning,
 } from '@phosphor-icons/react';
+import { useState, type ReactNode } from 'react';
+
+import {
+  AmbientAIIndicator,
+  type AIPerceptualState,
+} from '@/components/ai';
+import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
+import { ImpactStrip } from '@/components/shared/ImpactStrip';
+
+import { modeStyles } from './prWorkSurfaceStyles';
 
 // Tab configuration
 export type PRTab = 'inbox' | 'overview' | 'database' | 'pitches' | 'coverage' | 'distribution' | 'settings';

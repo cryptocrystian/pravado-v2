@@ -7,6 +7,7 @@
 
 import type { AuditLogEntry } from '@/lib/auditApi';
 import { formatRelativeTime, getActorTypeDisplay } from '@/lib/auditApi';
+
 import { AuditEventTypeBadge } from './AuditEventTypeBadge';
 import { AuditSeverityBadge } from './AuditSeverityBadge';
 

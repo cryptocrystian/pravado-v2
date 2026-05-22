@@ -7,7 +7,12 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  CrisisIncident,
+  CrisisSignal,
+  CrisisAction,
+  CrisisBrief,
+} from '@pravado/types';
 import {
   X,
   ExternalLink,
@@ -28,12 +33,19 @@ import {
   ArrowUpRight,
   Plus,
 } from 'lucide-react';
-import type {
-  CrisisIncident,
-  CrisisSignal,
-  CrisisAction,
-  CrisisBrief,
-} from '@pravado/types';
+import React, { useState, useCallback } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   SEVERITY_COLORS,
   TRAJECTORY_COLORS,
@@ -42,20 +54,10 @@ import {
   formatTimeAgo,
 } from '@/lib/crisisApi';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import CrisisSignalList from './CrisisSignalList';
+
 import CrisisActionList from './CrisisActionList';
 import CrisisBriefPanel from './CrisisBriefPanel';
+import CrisisSignalList from './CrisisSignalList';
 
 interface CrisisIncidentDetailDrawerProps {
   incident: CrisisIncident | null;

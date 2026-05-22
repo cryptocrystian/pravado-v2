@@ -5,8 +5,9 @@
  * Displays summary statistics for scenario playbooks
  */
 
-import { useState, useEffect } from 'react';
 import type { ScenarioPlaybookStatsResponse, ScenarioStatsActivityItem } from '@pravado/types';
+import { useState, useEffect } from 'react';
+
 import { getScenarioPlaybookStats } from '../../lib/scenarioPlaybookApi';
 
 interface ScenarioPlaybookStatsProps {

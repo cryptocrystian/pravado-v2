@@ -6,6 +6,7 @@
  */
 
 import type { RealityMap } from '@pravado/types';
+
 import {
   STATUS_LABELS,
   getStatusBadgeClass,

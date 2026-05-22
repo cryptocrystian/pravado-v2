@@ -5,26 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { RiskLevelBadge } from './RiskLevelBadge';
-import { RiskIndicatorPanel } from './RiskIndicatorPanel';
-import { ForecastPanel } from './ForecastPanel';
-import { RiskDriverList } from './RiskDriverList';
-import { RiskNotesPanel } from './RiskNotesPanel';
-import type {
-  RiskRadarSnapshot,
-  RiskRadarIndicator,
-  RiskRadarForecast,
-  RiskRadarDriver,
-  RiskRadarNote,
-  RiskRadarNoteType,
-} from '@/lib/riskRadarApi';
-import { formatRelativeTime } from '@/lib/riskRadarApi';
 import {
   Radar,
   Activity,
@@ -35,6 +15,28 @@ import {
   RefreshCw,
   CheckCircle2,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type {
+  RiskRadarSnapshot,
+  RiskRadarIndicator,
+  RiskRadarForecast,
+  RiskRadarDriver,
+  RiskRadarNote,
+  RiskRadarNoteType,
+} from '@/lib/riskRadarApi';
+import { formatRelativeTime } from '@/lib/riskRadarApi';
+import { cn } from '@/lib/utils';
+
+import { ForecastPanel } from './ForecastPanel';
+import { RiskDriverList } from './RiskDriverList';
+import { RiskIndicatorPanel } from './RiskIndicatorPanel';
+import { RiskLevelBadge } from './RiskLevelBadge';
+import { RiskNotesPanel } from './RiskNotesPanel';
 
 interface SnapshotDetailDrawerProps {
   snapshot: RiskRadarSnapshot | null;

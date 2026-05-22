@@ -5,16 +5,6 @@
 
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { SeverityBadge } from './SeverityBadge';
-import { StatusBadge } from './StatusBadge';
-import type {
-  GovernanceFinding,
-  GovernanceFindingsQuery,
-  GovernanceFindingStatus,
-} from '@/lib/governanceApi';
-import { formatRelativeTime, getTargetSystemLabel } from '@/lib/governanceApi';
 import {
   Eye,
   CheckCircle,
@@ -24,6 +14,18 @@ import {
   ChevronRight,
   Filter,
 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type {
+  GovernanceFinding,
+  GovernanceFindingsQuery,
+  GovernanceFindingStatus,
+} from '@/lib/governanceApi';
+import { formatRelativeTime, getTargetSystemLabel } from '@/lib/governanceApi';
+
+import { SeverityBadge } from './SeverityBadge';
+import { StatusBadge } from './StatusBadge';
 
 interface FindingsListProps {
   findings: GovernanceFinding[];

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 'use client';
 
 /**
@@ -14,15 +15,14 @@
 
 import { useState, useCallback } from 'react';
 
+import { useGscStatus } from '@/lib/useGSC';
+
 import {
   MOCK_SEO_ASSETS,
   MOCK_TECHNICAL_FINDINGS,
   MOCK_CITATION_ACTIVITY,
   MOCK_TOPIC_CLUSTERS,
 } from './mock-data';
-
-import { useGscStatus } from '@/lib/useGSC';
-
 import {
   getAEOBandColor,
   getAEOBandBgColor,

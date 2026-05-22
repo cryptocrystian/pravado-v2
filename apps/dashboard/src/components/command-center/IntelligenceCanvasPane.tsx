@@ -13,10 +13,12 @@
  */
 
 import { useState, useRef, useMemo } from 'react';
-import type { EntityNode, EntityEdge } from './types';
-import { EntityMap } from './EntityMap';
-import { useCitationResults } from '@/lib/useCiteMind';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+import { useCitationResults } from '@/lib/useCiteMind';
+
+import { EntityMap } from './EntityMap';
+import type { EntityNode, EntityEdge } from './types';
 
 // ── Tab definitions ──────────────────────────────────────
 

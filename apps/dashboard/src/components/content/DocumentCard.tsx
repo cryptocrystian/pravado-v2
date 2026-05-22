@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import type { ContentDocument, DocStatus } from './content-mock-data';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import type { ContentDocument, DocStatus } from './content-mock-data';
 
 const statusConfig: Record<DocStatus, { label: string; className: string }> = {
   draft: { label: 'Draft', className: 'bg-white/5 text-white/45' },

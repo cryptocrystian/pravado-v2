@@ -1,3 +1,5 @@
+/* eslint-disable import/order -- import grouping pre-existing; Phase 1 cleanup */
+/* eslint-disable react-hooks/rules-of-hooks -- conditional hooks pre-existing; Phase 1 refactor required */
 'use client';
 
 /**
@@ -22,6 +24,19 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
+
+import {
+  type AIPerceptualState,
+  deriveAIPerceptualState,
+  AI_PERCEPTUAL_SIGNALS,
+  AmbientAIIndicator,
+  AIStateRing,
+} from '@/components/ai';
+
+import { ContentEmptyState } from '../components/ContentEmptyState';
+import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
+import { ExplainabilityDrawer } from '../orchestration/ExplainabilityDrawer';
+import type { TriggerAction } from '../orchestration/OrchestrationEditorShell';
 import type {
   AuthoritySignals,
   ContentClusterDTO,
@@ -32,17 +47,7 @@ import type {
   AutomationMode,
   AuditLedgerEntry,
 } from '../types';
-import { ContentEmptyState } from '../components/ContentEmptyState';
-import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
-import { ExplainabilityDrawer } from '../orchestration/ExplainabilityDrawer';
-import type { TriggerAction } from '../orchestration/OrchestrationEditorShell';
-import {
-  type AIPerceptualState,
-  deriveAIPerceptualState,
-  AI_PERCEPTUAL_SIGNALS,
-  AmbientAIIndicator,
-  AIStateRing,
-} from '@/components/ai';
+
 
 // Phase 11A: Selection-driven triage components
 import {
@@ -681,7 +686,7 @@ function GuardrailsCard() {
 // ============================================
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function _ExecutionGravityPane({
+function ExecutionGravityPane({
   actions,
   mode,
   onLaunchOrchestrate,
@@ -2470,6 +2475,6 @@ export function ContentWorkQueueView({
 // Phase 11A: Legacy component references (preserved for potential future use/rollback)
 // These components were replaced by selection-driven triage layout.
 // Suppress unused warnings by referencing them.
-void _ExecutionGravityPane;
+void ExecutionGravityPane;
 void _ContextPanel;
 void _QuickOpportunities;

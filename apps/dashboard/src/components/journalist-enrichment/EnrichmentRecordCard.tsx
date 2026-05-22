@@ -3,9 +3,6 @@
  * Card view of an enrichment record with key information
  */
 
-import React from 'react';
-import { ConfidenceBadge, ConfidenceBar } from './ConfidenceBadge';
-import { EnrichmentSourceBadge } from './EnrichmentSourceBadge';
 import {
   EnvelopeIcon,
   PhoneIcon,
@@ -16,6 +13,10 @@ import {
   ExclamationTriangleIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline';
+import React from 'react';
+
+import { ConfidenceBadge, ConfidenceBar } from './ConfidenceBadge';
+import { EnrichmentSourceBadge } from './EnrichmentSourceBadge';
 
 interface EnrichmentRecordCardProps {
   record: {

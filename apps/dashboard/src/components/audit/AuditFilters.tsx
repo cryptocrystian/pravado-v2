@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import type { ActorType, AuditEventTypeMetadata, AuditQueryFilters, AuditSeverity } from '@/lib/auditApi';
 import { getAuditEventTypes } from '@/lib/auditApi';
 

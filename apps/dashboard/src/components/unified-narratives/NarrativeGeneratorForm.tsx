@@ -6,16 +6,18 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { Loader2, Wand2 } from 'lucide-react';
 import type { NarrativeType, NarrativeSourceSystem, NarrativeFormatType } from '@pravado/types';
 import {
   NARRATIVE_TYPE_LABELS,
   NARRATIVE_SOURCE_SYSTEM_LABELS,
   NARRATIVE_FORMAT_LABELS,
 } from '@pravado/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Wand2 } from 'lucide-react';
+import React, { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -25,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 
 interface NarrativeGeneratorFormProps {
   onSubmit: (data: NarrativeFormData) => Promise<void>;

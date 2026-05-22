@@ -5,8 +5,9 @@
  * Panel for displaying paths and path comparisons
  */
 
-import { useState } from 'react';
 import type { RealityMapPath, PathComparison, RealityGraphPath } from '@pravado/types';
+import { useState } from 'react';
+
 import {
   OUTCOME_TYPE_LABELS,
   getOutcomeTypeBadgeClass,

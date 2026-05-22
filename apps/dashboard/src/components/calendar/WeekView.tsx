@@ -11,9 +11,10 @@
  */
 
 import { useMemo } from 'react';
-import type { CalendarItem } from '../command-center/types';
+
 import { CalendarItemCard } from './CalendarItemCard';
 import { PILLAR_CONFIG } from './types';
+import type { CalendarItem } from '../command-center/types';
 
 // ============================================
 // PROPS

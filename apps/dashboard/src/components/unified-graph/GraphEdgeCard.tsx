@@ -5,15 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  IntelligenceEdge,
-  getEdgeTypeLabel,
-  getEdgeTypeColor,
-  formatWeight,
-} from '@/lib/unifiedGraphApi';
 import {
   ArrowRight,
   ArrowLeftRight,
@@ -23,12 +14,22 @@ import {
   Trash2,
   Edit,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  IntelligenceEdge,
+  getEdgeTypeLabel,
+  getEdgeTypeColor,
+  formatWeight,
+} from '@/lib/unifiedGraphApi';
 
 interface GraphEdgeCardProps {
   edge: IntelligenceEdge;

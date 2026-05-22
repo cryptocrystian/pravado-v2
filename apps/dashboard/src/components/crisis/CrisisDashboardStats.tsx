@@ -7,7 +7,7 @@
 
 'use client';
 
-import React from 'react';
+import type { CrisisDashboardStats, CrisisSeverity, CrisisTrajectory } from '@pravado/types';
 import {
   AlertTriangle,
   Bell,
@@ -20,14 +20,15 @@ import {
   Clock,
   RefreshCw,
 } from 'lucide-react';
-import type { CrisisDashboardStats, CrisisSeverity, CrisisTrajectory } from '@pravado/types';
-import { SEVERITY_COLORS, TRAJECTORY_COLORS, formatTimeAgo } from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { SEVERITY_COLORS, TRAJECTORY_COLORS, formatTimeAgo } from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 interface CrisisDashboardStatsProps {
   stats: CrisisDashboardStats | null;

@@ -20,16 +20,17 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
+
 import {
   HealthStrip,
   CTACluster,
   computeCiteMindIssueCount,
   type ContentModeViewProps,
 } from './shared';
-import { ManualWorkbench } from '../work-queue';
+import { CiteMindPublishGate } from '../components/CiteMindPublishGate';
 import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
-import { CiteMindPublishGate } from '../components/CiteMindPublishGate';
+import { ManualWorkbench } from '../work-queue';
 
 export function ManualModeView({
   signals,

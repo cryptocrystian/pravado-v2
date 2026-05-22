@@ -22,8 +22,8 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import type { ActionItem, ActionSignal, Pillar } from './types';
 import type { ExecutionState } from './ActionCard';
+import type { ActionItem, ActionSignal, Pillar } from './types';
 
 // Signal tone colors - DS v3 semantic colors
 const signalToneColors: Record<ActionSignal['tone'], string> = {

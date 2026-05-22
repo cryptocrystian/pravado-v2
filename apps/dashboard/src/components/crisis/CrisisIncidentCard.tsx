@@ -7,7 +7,7 @@
 
 'use client';
 
-import React from 'react';
+import type { CrisisIncident } from '@pravado/types';
 import {
   AlertTriangle,
   TrendingUp,
@@ -19,7 +19,11 @@ import {
   ArrowUpRight,
   Radio,
 } from 'lucide-react';
-import type { CrisisIncident } from '@pravado/types';
+import React from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   SEVERITY_COLORS,
   TRAJECTORY_COLORS,
@@ -28,9 +32,6 @@ import {
   formatTimeAgo,
 } from '@/lib/crisisApi';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 interface CrisisIncidentCardProps {
   incident: CrisisIncident;

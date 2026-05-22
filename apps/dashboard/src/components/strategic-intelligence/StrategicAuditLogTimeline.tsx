@@ -5,18 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  type StrategicAuditLogEntry,
-  getEventLabel,
-  getStatusLabel,
-  getSectionTypeLabel,
-  formatRelativeTime,
-  formatDuration,
-  formatTokens,
-} from '@/lib/strategicIntelligenceApi';
 import {
   Plus,
   Edit,
@@ -32,6 +20,20 @@ import {
   Clock,
   Zap,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  type StrategicAuditLogEntry,
+  getEventLabel,
+  getStatusLabel,
+  getSectionTypeLabel,
+  formatRelativeTime,
+  formatDuration,
+  formatTokens,
+} from '@/lib/strategicIntelligenceApi';
+
 
 interface StrategicAuditLogTimelineProps {
   logs: StrategicAuditLogEntry[];

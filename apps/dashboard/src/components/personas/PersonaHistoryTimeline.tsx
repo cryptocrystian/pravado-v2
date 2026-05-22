@@ -5,10 +5,7 @@
 
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import type { AudiencePersonaHistory } from '@pravado/types';
-import { cn } from '@/lib/utils';
 import {
   ArrowDown,
   ArrowRight,
@@ -19,6 +16,11 @@ import {
   User,
 } from 'lucide-react';
 import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
 
 interface PersonaHistoryTimelineProps {
   history: AudiencePersonaHistory[];

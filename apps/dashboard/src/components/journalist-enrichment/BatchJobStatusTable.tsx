@@ -3,7 +3,6 @@
  * Table showing status of batch enrichment jobs
  */
 
-import React from 'react';
 import {
   ClockIcon,
   CheckCircleIcon,
@@ -12,6 +11,7 @@ import {
   ExclamationTriangleIcon,
   QueueListIcon,
 } from '@heroicons/react/24/outline';
+import React from 'react';
 
 interface BatchJob {
   id: string;

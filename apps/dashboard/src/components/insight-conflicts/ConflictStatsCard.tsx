@@ -6,6 +6,7 @@
  */
 
 import type { ConflictStats } from '@pravado/types';
+
 import {
   formatResolutionRate,
   formatAvgResolutionTime,

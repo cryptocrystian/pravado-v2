@@ -6,7 +6,7 @@
 
 'use client';
 
-import React from 'react';
+import type { UnifiedNarrative } from '@pravado/types';
 import {
   Calendar,
   Clock,
@@ -15,12 +15,14 @@ import {
   ChevronRight,
   User,
 } from 'lucide-react';
-import type { UnifiedNarrative } from '@pravado/types';
-import { formatNarrativePeriod, formatNarrativeDate } from '@/lib/unifiedNarrativeApi';
-import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatNarrativePeriod, formatNarrativeDate } from '@/lib/unifiedNarrativeApi';
+import { cn } from '@/lib/utils';
+
 import NarrativeStatusBadge from './NarrativeStatusBadge';
 import NarrativeTypeBadge from './NarrativeTypeBadge';
 

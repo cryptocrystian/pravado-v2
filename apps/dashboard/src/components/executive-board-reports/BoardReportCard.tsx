@@ -5,8 +5,15 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import {
+  FileText,
+  Users,
+  Calendar,
+  Clock,
+} from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import {
   type ExecBoardReportWithCounts,
@@ -19,12 +26,7 @@ import {
   formatRelativeTime,
 } from '@/lib/executiveBoardReportApi';
 import { cn } from '@/lib/utils';
-import {
-  FileText,
-  Users,
-  Calendar,
-  Clock,
-} from 'lucide-react';
+
 
 interface BoardReportCardProps {
   report: ExecBoardReportWithCounts;

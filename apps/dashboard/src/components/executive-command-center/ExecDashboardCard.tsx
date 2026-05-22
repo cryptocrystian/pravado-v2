@@ -5,15 +5,6 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  type ExecDashboardWithCounts,
-  getTimeWindowLabel,
-  getPrimaryFocusLabel,
-  formatRelativeTime,
-} from '@/lib/executiveCommandCenterApi';
-import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
   Clock,
@@ -23,6 +14,17 @@ import {
   Star,
   Archive,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  type ExecDashboardWithCounts,
+  getTimeWindowLabel,
+  getPrimaryFocusLabel,
+  formatRelativeTime,
+} from '@/lib/executiveCommandCenterApi';
+import { cn } from '@/lib/utils';
+
 
 interface ExecDashboardCardProps {
   dashboard: ExecDashboardWithCounts;

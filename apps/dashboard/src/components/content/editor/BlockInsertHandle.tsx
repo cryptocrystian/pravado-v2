@@ -7,8 +7,8 @@
  * is on an empty paragraph. Clicking opens the slash menu at that position.
  */
 
-import { useState, useEffect, useCallback } from 'react';
 import type { Editor } from '@tiptap/react';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface BlockInsertHandleProps {
   editor: Editor;

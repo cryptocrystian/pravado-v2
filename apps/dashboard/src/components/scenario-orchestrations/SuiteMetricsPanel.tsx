@@ -6,6 +6,7 @@
  */
 
 import type { ScenarioSuiteRun, ScenarioSuiteRunItem } from '@pravado/types';
+
 import { formatDuration, getRiskBadgeClass } from '../../lib/scenarioOrchestrationApi';
 
 interface SuiteMetricsPanelProps {

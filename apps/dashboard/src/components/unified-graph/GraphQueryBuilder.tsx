@@ -5,12 +5,22 @@
 
 'use client';
 
+import {
+  Search,
+  Network,
+  Route,
+  Sparkles,
+  Play,
+  Loader2,
+  X,
+} from 'lucide-react';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -19,7 +29,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   NodeType,
   EdgeType,
@@ -31,15 +41,6 @@ import {
   semanticSearch,
   explainPath,
 } from '@/lib/unifiedGraphApi';
-import {
-  Search,
-  Network,
-  Route,
-  Sparkles,
-  Play,
-  Loader2,
-  X,
-} from 'lucide-react';
 
 interface GraphQueryBuilderProps {
   onResults?: (results: GraphQueryResponse) => void;

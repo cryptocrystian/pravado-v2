@@ -4,7 +4,6 @@
  * TopicClusterList — Left panel cluster list (300px).
  */
 
-import { useState } from 'react';
 import {
   MagnifyingGlass,
   CaretDown,
@@ -14,6 +13,8 @@ import {
   Minus,
   WarningCircle,
 } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import {
   mockClusters,
   mockSuggestedClusters,

@@ -5,14 +5,15 @@
  * Headline metrics, EVI growth chart, attribution, top wins.
  */
 
-import { Suspense, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import { Suspense, useCallback } from 'react';
+
+import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
+import { mockHeadlineMetrics, mockAttribution, mockTopWins, mockNarratives } from '@/components/analytics/analytics-mock-data';
+import { CompetitiveSnapshot } from '@/components/analytics/CompetitiveSnapshot';
 import { HeadlineMetrics } from '@/components/analytics/HeadlineMetrics';
 import { PillarContribution } from '@/components/analytics/PillarContribution';
-import { CompetitiveSnapshot } from '@/components/analytics/CompetitiveSnapshot';
 import { TopWins } from '@/components/analytics/TopWins';
-import { mockHeadlineMetrics, mockAttribution, mockTopWins, mockNarratives } from '@/components/analytics/analytics-mock-data';
-import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
 const EviGrowthChart = dynamic(

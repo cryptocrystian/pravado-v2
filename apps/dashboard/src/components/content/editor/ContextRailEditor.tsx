@@ -11,8 +11,8 @@
 
 import { useCiteMindScore, useCiteMindTrigger } from '@/lib/useCiteMind';
 
-import type { ContentAsset, CiteMindStatus, CiteMindIssue, DerivativeType } from '../types';
 import { CiteMindStatusIndicator } from '../components/CiteMindStatusIndicator';
+import type { ContentAsset, CiteMindStatus, CiteMindIssue, DerivativeType } from '../types';
 
 // ============================================
 // TYPES

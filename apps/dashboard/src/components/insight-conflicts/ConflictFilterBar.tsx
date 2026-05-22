@@ -5,8 +5,9 @@
  * Filtering and search controls for insight conflicts
  */
 
-import { useState, useCallback } from 'react';
 import type { ConflictType, ConflictSeverity, ConflictStatus, ListConflictsQuery } from '@pravado/types';
+import { useState, useCallback } from 'react';
+
 import {
   getConflictTypeLabel,
   getConflictSeverityLabel,

@@ -5,8 +5,9 @@
  * Displays a list of AI scenario simulations with filtering and pagination
  */
 
-import { useState, useEffect } from 'react';
 import type { AIScenarioSimulation, ListAISimulationsQuery } from '@pravado/types';
+import { useState, useEffect } from 'react';
+
 import { SimulationCard } from './SimulationCard';
 import { listSimulations, deleteSimulation, startRun } from '../../lib/aiScenarioSimulationApi';
 

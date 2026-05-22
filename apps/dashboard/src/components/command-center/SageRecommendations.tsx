@@ -1,7 +1,8 @@
 'use client';
 
-import { sageRecommendations } from './cc-mock-data';
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import { sageRecommendations } from './cc-mock-data';
 
 export function SageRecommendations() {
   return (

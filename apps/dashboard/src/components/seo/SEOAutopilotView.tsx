@@ -13,6 +13,7 @@
  */
 
 import { useState } from 'react';
+
 import {
   MOCK_SHARE_OF_MODEL,
   MOCK_COMPETITORS,

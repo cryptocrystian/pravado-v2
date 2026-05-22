@@ -5,7 +5,6 @@
  * Displays a single scenario playbook with its details and actions
  */
 
-import { useState } from 'react';
 import type {
   ScenarioPlaybook,
   ScenarioRiskLevel,
@@ -18,6 +17,7 @@ import {
   SCENARIO_PLAYBOOK_STATUS_LABELS,
   SCENARIO_TRIGGER_TYPE_LABELS,
 } from '@pravado/types';
+import { useState } from 'react';
 
 interface PlaybookCardProps {
   playbook: ScenarioPlaybook;

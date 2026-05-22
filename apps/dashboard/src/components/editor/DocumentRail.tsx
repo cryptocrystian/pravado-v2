@@ -1,6 +1,7 @@
 'use client';
 
 import { FileText, Plus, MagnifyingGlass } from '@phosphor-icons/react';
+
 import type { EditorDocument } from './editor-mock-data';
 
 function scoreColor(score: number): string {

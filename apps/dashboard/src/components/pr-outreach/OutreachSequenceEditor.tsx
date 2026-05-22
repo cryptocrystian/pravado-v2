@@ -5,14 +5,14 @@
  * Create/edit outreach sequences with steps
  */
 
-import { useEffect, useState } from 'react';
-
 import type {
   CreateOutreachSequenceInput,
   CreateOutreachStepInput,
   OutreachSequence,
   OutreachSequenceStep,
 } from '@pravado/types';
+import { useEffect, useState } from 'react';
+
 
 import {
   createOutreachSequence,

@@ -5,8 +5,9 @@
  * DS v3.1 tokens. Pillar accent: brand-teal.
  */
 
-import { useRouter } from 'next/navigation';
 import { WarningCircle, Warning } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
+
 import type { Recommendation } from './seo-mock-data';
 
 const iconMap = {

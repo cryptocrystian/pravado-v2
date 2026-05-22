@@ -5,13 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  type ExecBoardReportAuditLog,
-  formatRelativeTime,
-} from '@/lib/executiveBoardReportApi';
-import { cn } from '@/lib/utils';
 import {
   History,
   Plus,
@@ -25,6 +18,15 @@ import {
   FileText,
   Settings,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  type ExecBoardReportAuditLog,
+  formatRelativeTime,
+} from '@/lib/executiveBoardReportApi';
+import { cn } from '@/lib/utils';
+
 
 interface BoardReportAuditLogProps {
   auditLogs: ExecBoardReportAuditLog[];

@@ -5,8 +5,9 @@
  * Interactive graph visualization for reality maps
  */
 
-import { useMemo, useState, useCallback } from 'react';
 import type { RealityMapGraphData, RealityMapGraphNode, RealityMapGraphEdge } from '@pravado/types';
+import { useMemo, useState, useCallback } from 'react';
+
 import {
   getNodeColor,
   getEdgeColor,

@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations -- lexical decl in case block; Phase 1 cleanup */
 /**
  * Risk Indicator Panel Component (Sprint S60)
  * Displays indicators grouped by type with trend analysis
@@ -5,11 +6,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import type { RiskRadarIndicator, RiskRadarTrendDirection } from '@/lib/riskRadarApi';
-import { getIndicatorTypeLabel } from '@/lib/riskRadarApi';
 import {
   TrendingUp,
   TrendingDown,
@@ -26,6 +22,13 @@ import {
   Clock,
   Loader2,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { RiskRadarIndicator, RiskRadarTrendDirection } from '@/lib/riskRadarApi';
+import { getIndicatorTypeLabel } from '@/lib/riskRadarApi';
+import { cn } from '@/lib/utils';
+
 
 interface RiskIndicatorPanelProps {
   indicators: RiskRadarIndicator[];

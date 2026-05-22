@@ -5,18 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  type StrategicSection,
-  getSectionTypeLabel,
-  getSectionIcon,
-  formatRelativeTime,
-} from '@/lib/strategicIntelligenceApi';
 import {
   Edit,
   Eye,
@@ -45,6 +33,19 @@ import {
   Lightbulb,
   Paperclip,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  type StrategicSection,
+  getSectionTypeLabel,
+  getSectionIcon,
+  formatRelativeTime,
+} from '@/lib/strategicIntelligenceApi';
 
 interface StrategicSectionEditorProps {
   section: StrategicSection;

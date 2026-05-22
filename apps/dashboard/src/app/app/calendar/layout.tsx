@@ -5,8 +5,8 @@
  * renders: CalendarModeProvider → CommandCenterTopbar → CalendarChromeBar → children
  */
 
-import { getCurrentUser } from '@/lib/getCurrentUser';
 import { CalendarShell } from '@/components/calendar/CalendarShell';
+import { getCurrentUser } from '@/lib/getCurrentUser';
 import { MSWProvider } from '@/mocks/MSWProvider';
 
 export const dynamic = 'force-dynamic';

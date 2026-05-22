@@ -6,9 +6,13 @@
 
 'use client';
 
-import React from 'react';
-import { FileText, Clock, Users, MessageSquare, Layers } from 'lucide-react';
 import type { MediaBriefing } from '@pravado/types';
+import { FileText, Clock, Users, MessageSquare, Layers } from 'lucide-react';
+import React from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getFormatLabel,
   getFormatIcon,
@@ -19,9 +23,6 @@ import {
   getConfidenceScoreColor,
 } from '@/lib/mediaBriefingApi';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 interface BriefingCardProps {
   briefing: MediaBriefing;

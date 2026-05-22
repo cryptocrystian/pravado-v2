@@ -22,6 +22,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from 'react';
+
 import { motion, citeMindStatus as citeMindTokens, surface, border, label as labelClass } from '../tokens';
 import type { AutomationMode, CiteMindStatus } from '../types';
 import { ModeSelector, ModeBehaviorBanner } from './ModeSelector';

@@ -9,8 +9,8 @@
  * @see /docs/canon/ORCHESTRATION_CALENDAR_CONTRACT.md §4–7
  */
 
-import type { CalendarItem } from '../command-center/types';
 import { STATUS_CONFIG, MODE_CONFIG, PILLAR_CONFIG, RISK_CONFIG } from './types';
+import type { CalendarItem } from '../command-center/types';
 
 interface CalendarItemCardProps {
   item: CalendarItem;

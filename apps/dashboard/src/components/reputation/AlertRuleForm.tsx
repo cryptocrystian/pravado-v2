@@ -6,13 +6,14 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import type {
   BrandReputationAlertRule,
   CreateReputationAlertRuleInput,
   ReputationAlertChannel,
   ReputationComponentKey,
 } from '@pravado/types';
+import { useState, useEffect } from 'react';
+
 import {
   createAlertRule,
   updateAlertRule,

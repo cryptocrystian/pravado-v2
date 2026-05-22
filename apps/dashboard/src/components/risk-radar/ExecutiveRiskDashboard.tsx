@@ -5,12 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { RiskLevelBadge } from './RiskLevelBadge';
-import type { RiskRadarSnapshot, RiskRadarForecast } from '@/lib/riskRadarApi';
-import { formatRelativeTime } from '@/lib/riskRadarApi';
 import {
   Radar,
   TrendingUp,
@@ -25,6 +19,16 @@ import {
   Users,
   BarChart3,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { RiskRadarSnapshot, RiskRadarForecast } from '@/lib/riskRadarApi';
+import { formatRelativeTime } from '@/lib/riskRadarApi';
+import { cn } from '@/lib/utils';
+
+import { RiskLevelBadge } from './RiskLevelBadge';
+
+
 
 interface ExecutiveRiskDashboardProps {
   snapshot?: RiskRadarSnapshot;

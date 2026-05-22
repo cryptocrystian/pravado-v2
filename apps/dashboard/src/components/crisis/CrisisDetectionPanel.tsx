@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import type { CrisisSourceSystem, DetectionResultResponse } from '@pravado/types';
 import {
   Radar,
   RefreshCw,
@@ -20,14 +20,17 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import type { CrisisSourceSystem, DetectionResultResponse } from '@pravado/types';
-import { formatTimeAgo, formatDuration } from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
+import React, { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -35,11 +38,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Switch } from '@/components/ui/switch';
+import { formatTimeAgo, formatDuration } from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 interface CrisisDetectionPanelProps {
   onRunDetection: (options?: DetectionOptions) => Promise<DetectionResultResponse | void>;

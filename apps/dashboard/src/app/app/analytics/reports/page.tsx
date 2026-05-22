@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 'use client';
 
 /**
@@ -5,12 +6,13 @@
  * Report builder with print-to-PDF generation for all 4 templates.
  */
 
-import { useRef, useCallback, useState } from 'react';
 import { FileText, Printer, SpinnerGap } from '@phosphor-icons/react';
+import { useRef, useCallback, useState } from 'react';
+
 import { mockReportTemplates } from '@/components/analytics/analytics-mock-data';
+import { BoardInvestorUpdate } from '@/components/analytics/reports/BoardInvestorUpdate';
 import { ExecutiveSummaryReport } from '@/components/analytics/reports/ExecutiveSummaryReport';
 import { PRCampaignReport } from '@/components/analytics/reports/PRCampaignReport';
-import { BoardInvestorUpdate } from '@/components/analytics/reports/BoardInvestorUpdate';
 import { SEOPresenceReport } from '@/components/analytics/reports/SEOPresenceReport';
 import { generatePdf } from '@/lib/pdf-export';
 

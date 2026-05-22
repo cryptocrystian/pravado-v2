@@ -5,7 +5,11 @@
 
 'use client';
 
+import type { InvestorPackFormat, InvestorPrimaryAudience } from '@pravado/types';
+import { Plus, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -15,9 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -26,9 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { createPack, type CreateInvestorPack } from '@/lib/investorRelationsApi';
-import { Plus, Loader2 } from 'lucide-react';
-import type { InvestorPackFormat, InvestorPrimaryAudience } from '@pravado/types';
 
 interface CreateInvestorPackDialogProps {
   onSuccess?: () => void;

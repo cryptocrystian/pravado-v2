@@ -5,6 +5,7 @@
  */
 
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
+
 import { mockEVITrend, mockCompetitorTrend } from './analytics-mock-data';
 
 const sparkData = mockEVITrend.map((p, i) => ({

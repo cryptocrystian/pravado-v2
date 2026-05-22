@@ -5,10 +5,14 @@
 
 'use client';
 
+import type { GenerationContext, PersonaSourceType, PersonaType } from '@pravado/types';
+import { AlertCircle, Loader2, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -17,11 +21,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
-import type { GenerationContext, PersonaSourceType, PersonaType } from '@pravado/types';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { AlertCircle, Loader2, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+
 
 interface PersonaGeneratorFormProps {
   onGenerate: (context: GenerationContext) => Promise<void>;

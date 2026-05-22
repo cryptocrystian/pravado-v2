@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useState, useEffect, useRef } from 'react';
 
 // ── Animated counter hook ──
 function useCounter(target: number, duration: number, trigger: boolean) {

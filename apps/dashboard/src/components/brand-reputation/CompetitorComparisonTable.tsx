@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { CompetitorReputationComparison } from '@pravado/types';
+import { Users, ArrowUp, ArrowDown, Minus, Trophy, Target } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getScoreColor,
   getTrendColor,
@@ -14,8 +17,7 @@ import {
   formatRankChange,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { CompetitorReputationComparison } from '@pravado/types';
-import { Users, ArrowUp, ArrowDown, Minus, Trophy, Target } from 'lucide-react';
+
 
 interface CompetitorComparisonTableProps {
   brandScore: number;

@@ -5,9 +5,10 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
 import * as journalistGraphApi from '@/lib/journalistGraphApi';
 import {
   getJournalistOutreachHistory,

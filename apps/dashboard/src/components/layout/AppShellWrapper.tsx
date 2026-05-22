@@ -14,11 +14,13 @@
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
-import { AppSidebar } from './AppSidebar';
-import { AIOrchestrationBar } from '@/components/orchestration';
-import { MSWProvider } from '@/mocks/MSWProvider';
-import { ModeProvider } from '@/lib/ModeContext';
 import { OmniTrayProvider } from '@/components/omni-tray';
+import { AIOrchestrationBar } from '@/components/orchestration';
+import { ModeProvider } from '@/lib/ModeContext';
+import { MSWProvider } from '@/mocks/MSWProvider';
+
+import { AppSidebar } from './AppSidebar';
+
 
 interface Org {
   id: string;

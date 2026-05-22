@@ -5,12 +5,21 @@
 
 'use client';
 
+import {
+  Users,
+  Plus,
+  Mail,
+  Eye,
+  MessageSquare,
+  CheckCircle,
+  Trash2,
+  Send,
+} from 'lucide-react';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -19,6 +28,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -34,16 +45,6 @@ import {
   formatRelativeTime,
 } from '@/lib/executiveBoardReportApi';
 import { cn } from '@/lib/utils';
-import {
-  Users,
-  Plus,
-  Mail,
-  Eye,
-  MessageSquare,
-  CheckCircle,
-  Trash2,
-  Send,
-} from 'lucide-react';
 
 interface BoardReportAudienceListProps {
   audience: ExecBoardReportAudience[];

@@ -6,8 +6,9 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import type { BrandReputationReport } from '@pravado/types';
+import { useState, useEffect, useCallback } from 'react';
+
 import {
   listReports,
   getReportStatusLabel,

@@ -14,8 +14,10 @@
  */
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { mockPlacements } from './analytics-mock-data';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import { mockPlacements } from './analytics-mock-data';
 
 function parseLift(lift: string): number {
   const match = lift.match(/[+-]?[\d.]+/);

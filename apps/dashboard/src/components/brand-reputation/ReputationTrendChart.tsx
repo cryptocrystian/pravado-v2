@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { ReputationTrendPoint, ReputationTimeWindow, ReputationTrendDirection } from '@pravado/types';
+import { ArrowUp, ArrowDown, Minus, Activity } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getTimeWindowLabel,
   getScoreColor,
@@ -14,8 +17,7 @@ import {
   prepareTrendChartData,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { ReputationTrendPoint, ReputationTimeWindow, ReputationTrendDirection } from '@pravado/types';
-import { ArrowUp, ArrowDown, Minus, Activity } from 'lucide-react';
+
 
 interface ReputationTrendChartProps {
   trendPoints: ReputationTrendPoint[];

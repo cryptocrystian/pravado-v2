@@ -6,8 +6,9 @@
 
 'use client';
 
-import React from 'react';
 import type { Competitor } from '@pravado/types';
+import React from 'react';
+
 import { getTierColor, getTierBgColor, getTierLabel, formatNumber } from '@/lib/competitorIntelligenceApi';
 
 interface CompetitorCardProps {

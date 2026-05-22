@@ -5,17 +5,7 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  type InvestorPackSection,
-  getSectionTypeLabel,
-  formatRelativeTime,
-} from '@/lib/investorRelationsApi';
-import { cn } from '@/lib/utils';
+import type { InvestorSectionType } from '@pravado/types';
 import {
   FileText,
   Star,
@@ -41,7 +31,18 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import type { InvestorSectionType } from '@pravado/types';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  type InvestorPackSection,
+  getSectionTypeLabel,
+  formatRelativeTime,
+} from '@/lib/investorRelationsApi';
+import { cn } from '@/lib/utils';
 
 interface InvestorPackSectionCardProps {
   section: InvestorPackSection;

@@ -5,8 +5,9 @@
  * Visualization of conflict relationships
  */
 
-import { useMemo } from 'react';
 import type { ConflictGraphData, ConflictGraphNode } from '@pravado/types';
+import { useMemo } from 'react';
+
 import {
   getGraphNodeColor,
   getGraphNodeSize,

@@ -5,8 +5,9 @@
  * Modal for creating a new AI scenario simulation
  */
 
-import { useState } from 'react';
 import type { CreateAISimulationInput, AIScenarioSimulation } from '@pravado/types';
+import { useState } from 'react';
+
 import { createSimulation } from '../../lib/aiScenarioSimulationApi';
 
 interface CreateSimulationModalProps {

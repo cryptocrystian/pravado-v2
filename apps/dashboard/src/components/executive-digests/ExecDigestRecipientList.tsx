@@ -5,27 +5,7 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  type ExecDigestRecipient,
-} from '@/lib/executiveDigestApi';
 import type { AddExecDigestRecipientInput } from '@pravado/validators';
-import { cn } from '@/lib/utils';
 import {
   Users,
   UserPlus,
@@ -35,6 +15,28 @@ import {
   Trash2,
   CheckCircle,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import {
+  type ExecDigestRecipient,
+} from '@/lib/executiveDigestApi';
+import { cn } from '@/lib/utils';
+
 
 interface ExecDigestRecipientListProps {
   recipients: ExecDigestRecipient[];

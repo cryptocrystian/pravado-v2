@@ -6,6 +6,7 @@
  */
 
 import type { RealityMapGraphNode, RealityMapNode, KeyDriver, RealityMapRiskFactor, OpportunityFactor } from '@pravado/types';
+
 import {
   NODE_TYPE_LABELS,
   getNodeTypeBadgeClass,

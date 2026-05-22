@@ -7,7 +7,12 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  MediaBriefing,
+  BriefingInsight,
+  TalkingPointCategory,
+  BriefingSourceType,
+} from '@pravado/types';
 import {
   X,
   ExternalLink,
@@ -20,12 +25,19 @@ import {
   Trash2,
   Archive,
 } from 'lucide-react';
-import type {
-  MediaBriefing,
-  BriefingInsight,
-  TalkingPointCategory,
-  BriefingSourceType,
-} from '@pravado/types';
+import React, { useState, useCallback } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 import {
   getFormatLabel,
   getFormatIcon,
@@ -35,17 +47,7 @@ import {
   formatRelativeTime,
 } from '@/lib/mediaBriefingApi';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+
 import BriefingEditor from './BriefingEditor';
 import InsightPanel from './InsightPanel';
 

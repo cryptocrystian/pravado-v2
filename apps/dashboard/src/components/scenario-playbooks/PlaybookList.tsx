@@ -5,9 +5,10 @@
  * Displays a list of scenario playbooks with filtering and pagination
  */
 
-import { useState, useEffect } from 'react';
 import type { ScenarioPlaybook, ScenarioListPlaybooksQuery } from '@pravado/types';
 import { SCENARIO_PLAYBOOK_STATUS_LABELS, SCENARIO_TRIGGER_TYPE_LABELS, SCENARIO_RISK_LEVEL_LABELS } from '@pravado/types';
+import { useState, useEffect } from 'react';
+
 import { PlaybookCard } from './PlaybookCard';
 import { listPlaybooks, activatePlaybook, archivePlaybook, deletePlaybook } from '../../lib/scenarioPlaybookApi';
 

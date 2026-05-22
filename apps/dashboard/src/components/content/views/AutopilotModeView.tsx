@@ -33,6 +33,12 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
+
+import {
+  type AIPerceptualState,
+  deriveAIPerceptualState,
+} from '@/components/ai';
+
 import {
   HealthStrip,
   SupervisedItemsCount,
@@ -46,14 +52,10 @@ import {
   MOCK_AUDIT_LEDGER,
   type ContentModeViewProps,
 } from './shared';
-import { QueueList, WorkbenchCanvas, ContextRail } from '../work-queue';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
 import { ExplainabilityDrawer } from '../orchestration/ExplainabilityDrawer';
 import type { AuditLedgerEntry } from '../types';
-import {
-  type AIPerceptualState,
-  deriveAIPerceptualState,
-} from '@/components/ai';
+import { QueueList, WorkbenchCanvas, ContextRail } from '../work-queue';
 
 // ============================================
 // GUARDRAILS CARD (Autopilot-specific)

@@ -15,6 +15,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+
 import { mockEVITrend, mockPlacements } from './analytics-mock-data';
 
 // Merge EVI trend with placement events

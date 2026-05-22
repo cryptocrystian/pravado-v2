@@ -5,9 +5,9 @@
  * Input form for press release generation
  */
 
+import type { PRGenerationInput, PRNewsType, PRTone } from '@pravado/types';
 import { useState } from 'react';
 
-import type { PRGenerationInput, PRNewsType, PRTone } from '@pravado/types';
 
 interface PRGeneratorFormProps {
   onSubmit: (input: PRGenerationInput) => void;

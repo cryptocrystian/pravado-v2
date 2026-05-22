@@ -5,13 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  getTimeWindowLabel,
-  formatDate,
-} from '@/lib/brandReputationApi';
-import { cn } from '@/lib/utils';
 import type { ExecutiveRadarSummary, ReputationTimeWindow } from '@pravado/types';
 import {
   FileText,
@@ -23,6 +16,15 @@ import {
   Clock,
   AlertCircle,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  getTimeWindowLabel,
+  formatDate,
+} from '@/lib/brandReputationApi';
+import { cn } from '@/lib/utils';
+
 
 interface ExecutiveSummaryPanelProps {
   summary: ExecutiveRadarSummary;

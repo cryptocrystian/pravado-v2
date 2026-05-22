@@ -11,11 +11,12 @@
  */
 
 import { useState, useMemo } from 'react';
-import type { ContentAsset, DensityLevel, ContentStatus, ContentType } from '../types';
+
 import { ContentAssetCard } from '../components/ContentAssetCard';
-import { ContentFiltersPanel } from '../components/ContentFiltersPanel';
 import { ContentEmptyState } from '../components/ContentEmptyState';
+import { ContentFiltersPanel } from '../components/ContentFiltersPanel';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
+import type { ContentAsset, DensityLevel, ContentStatus, ContentType } from '../types';
 
 interface ContentLibraryViewProps {
   /** Content assets to display */

@@ -5,8 +5,9 @@
  * Displays simulation run details with agent turns
  */
 
-import { useState, useEffect, useRef } from 'react';
 import type { AIScenarioRun, AIScenarioAgent, AIScenarioTurn } from '@pravado/types';
+import { useState, useEffect, useRef } from 'react';
+
 import {
   getRunDetail,
   stepRun,

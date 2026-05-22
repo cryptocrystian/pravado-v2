@@ -6,8 +6,9 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import type { BrandReputationAlertEvent, ReputationAlertStatus } from '@pravado/types';
+import { useState, useEffect, useCallback } from 'react';
+
 import {
   listAlertEvents,
   acknowledgeAlertEvent,

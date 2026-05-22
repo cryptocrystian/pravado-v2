@@ -5,8 +5,9 @@
 
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
 import { PravadoLogo } from '@/components/brand/PravadoLogo';
 
 // Force dynamic rendering

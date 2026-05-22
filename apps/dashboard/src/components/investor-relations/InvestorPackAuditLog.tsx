@@ -5,10 +5,7 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { type InvestorPackAuditLog, formatRelativeTime } from '@/lib/investorRelationsApi';
-import { cn } from '@/lib/utils';
+import type { InvestorEventType } from '@pravado/types';
 import {
   History,
   Plus,
@@ -20,7 +17,12 @@ import {
   FileText,
   Settings,
 } from 'lucide-react';
-import type { InvestorEventType } from '@pravado/types';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { type InvestorPackAuditLog, formatRelativeTime } from '@/lib/investorRelationsApi';
+import { cn } from '@/lib/utils';
+
 
 interface InvestorPackAuditLogProps {
   auditLogs: InvestorPackAuditLog[];

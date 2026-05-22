@@ -21,20 +21,6 @@
  * - See: /contracts/examples/omni-tray-pr-events.json
  */
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import useSWR from 'swr';
-import type { InboxItem, InboxItemType, SAGEDimension, Mode } from '../types';
-import { priorityStyles, modeStyles, eviDriverStyles } from '../prWorkSurfaceStyles';
-import {
-  LocalAIIndicator,
-  AIStateDot,
-  AmbientAIIndicator,
-  deriveUrgencyFromDeadline,
-  type AIPerceptualState,
-} from '@/components/ai';
-import { useMode } from '@/lib/ModeContext';
-import type { AutomationMode } from '@/lib/mode-preferences';
 import {
   Tray,
   Clock,
@@ -55,6 +41,24 @@ import {
   CaretRight,
   Warning,
 } from '@phosphor-icons/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import useSWR from 'swr';
+
+import {
+  LocalAIIndicator,
+  AIStateDot,
+  AmbientAIIndicator,
+  deriveUrgencyFromDeadline,
+  type AIPerceptualState,
+} from '@/components/ai';
+import type { AutomationMode } from '@/lib/mode-preferences';
+import { useMode } from '@/lib/ModeContext';
+
+import { priorityStyles, modeStyles, eviDriverStyles } from '../prWorkSurfaceStyles';
+import type { InboxItem, InboxItemType, SAGEDimension, Mode } from '../types';
+
+
 
 // ============================================
 // API TYPES & FETCHER

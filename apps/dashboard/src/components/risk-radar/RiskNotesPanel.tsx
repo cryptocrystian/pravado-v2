@@ -5,14 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
-import type { RiskRadarNote, RiskRadarNoteType } from '@/lib/riskRadarApi';
-import { getNoteTypeLabel, formatRelativeTime } from '@/lib/riskRadarApi';
 import {
   Loader2,
   MessageSquare,
@@ -25,6 +17,15 @@ import {
   BookOpen,
   Briefcase,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import type { RiskRadarNote, RiskRadarNoteType } from '@/lib/riskRadarApi';
+import { getNoteTypeLabel, formatRelativeTime } from '@/lib/riskRadarApi';
+import { cn } from '@/lib/utils';
 
 interface RiskNotesPanelProps {
   notes: RiskRadarNote[];

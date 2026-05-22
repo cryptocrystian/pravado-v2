@@ -6,8 +6,8 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import type { GovernanceSeverityLevel } from '@/lib/governanceApi';
+import { cn } from '@/lib/utils';
 
 interface SeverityBadgeProps {
   severity: GovernanceSeverityLevel;

@@ -21,6 +21,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+
 import { modeTokens, motion } from '../tokens';
 import type { AutomationMode } from '../types';
 

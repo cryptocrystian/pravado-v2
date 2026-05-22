@@ -1,7 +1,7 @@
 'use client';
 
-import { useEVICurrent } from '@/lib/useEVI';
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+import { useEVICurrent } from '@/lib/useEVI';
 
 function EviSkeleton() {
   return (

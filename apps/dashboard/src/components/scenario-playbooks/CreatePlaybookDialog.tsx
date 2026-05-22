@@ -5,8 +5,9 @@
  * Modal dialog for creating new scenario playbooks
  */
 
-import { useState } from 'react';
 import type { ScenarioPlaybook } from '@pravado/types';
+import { useState } from 'react';
+
 import { PlaybookStepEditor, type EditablePlaybookStep } from './PlaybookStepEditor';
 import { createPlaybook } from '../../lib/scenarioPlaybookApi';
 

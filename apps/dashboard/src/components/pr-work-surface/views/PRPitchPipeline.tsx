@@ -14,13 +14,14 @@
  */
 
 import { useState, useMemo } from 'react';
-import type { PitchPipelineItem, PitchPipelineStage, MediaContact, Pitch } from '../types';
+
 import { ImpactStrip } from '../components/ImpactStrip';
 import {
   prAccent,
   typography,
   buttonStyles,
 } from '../prWorkSurfaceStyles';
+import type { PitchPipelineItem, PitchPipelineStage, MediaContact, Pitch } from '../types';
 
 // ============================================
 // STAGE CONFIG (DS3)

@@ -6,6 +6,7 @@
 'use client';
 
 import React, { useState } from 'react';
+
 import { openPaymentPortal } from '@/lib/billingApi';
 
 interface StripePortalButtonProps {

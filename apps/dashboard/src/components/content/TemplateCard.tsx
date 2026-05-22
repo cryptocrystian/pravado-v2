@@ -11,6 +11,7 @@ import {
   EnvelopeSimple,
 } from '@phosphor-icons/react';
 import type { IconProps } from '@phosphor-icons/react';
+
 import type { ContentTemplate, TemplateTag } from './content-mock-data';
 
 const iconMap: Record<string, React.ComponentType<IconProps>> = {

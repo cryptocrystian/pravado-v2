@@ -6,7 +6,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import type { UnifiedNarrative } from '@pravado/types';
 import {
   CheckCircle2,
   Send,
@@ -16,15 +16,9 @@ import {
   MoreHorizontal,
   Loader2,
 } from 'lucide-react';
-import type { UnifiedNarrative } from '@pravado/types';
+import React, { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Dialog,
   DialogContent,
@@ -33,7 +27,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 interface NarrativeWorkflowActionsProps {
   narrative: UnifiedNarrative;

@@ -27,7 +27,6 @@ import type {
   GetRealityMapGlobalStatsResponse,
   PathOutcomeType,
 } from '@pravado/types';
-
 import {
   REALITY_MAP_STATUS_LABELS,
   REALITY_MAP_STATUS_COLORS,

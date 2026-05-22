@@ -5,9 +5,10 @@
  * Displays a list of scenario runs with filtering
  */
 
-import { useState, useEffect } from 'react';
 import type { ScenarioRun, ListScenarioRunsQuery } from '@pravado/types';
 import { SCENARIO_RUN_STATUS_LABELS } from '@pravado/types';
+import { useState, useEffect } from 'react';
+
 import { RunCard } from './RunCard';
 import {
   listScenarioRuns,

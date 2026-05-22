@@ -20,8 +20,9 @@
  *     'inline' (URL+email only, for repeat instances).
  */
 
-import { useState, useCallback } from 'react';
 import { ArrowRight } from '@phosphor-icons/react';
+import { useState, useCallback } from 'react';
+
 import {
   EMAIL_REGEX,
   type EntryPath,

@@ -6,6 +6,7 @@
  */
 
 import type { ScenarioSuiteRunItem, ScenarioSuiteItem } from '@pravado/types';
+
 import {
   SUITE_ITEM_STATUS_LABELS,
   SUITE_ITEM_STATUS_COLORS,

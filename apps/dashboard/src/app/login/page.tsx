@@ -9,10 +9,11 @@
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { useState, useEffect } from 'react';
+
 import { PravadoLogo } from '@/components/brand/PravadoLogo';
+import { supabase } from '@/lib/supabaseClient';
 
 // SVG Icons for OAuth providers
 const GoogleIcon = () => (

@@ -5,6 +5,20 @@
 
 'use client';
 
+import {
+  LayoutDashboard,
+  Clock,
+  Target,
+  AlertTriangle,
+  TrendingUp,
+  BarChart3,
+  FileText,
+  Lightbulb,
+  Star,
+  Edit,
+  MoreVertical,
+} from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,19 +36,6 @@ import {
   formatRelativeTime,
 } from '@/lib/executiveCommandCenterApi';
 import { cn } from '@/lib/utils';
-import {
-  LayoutDashboard,
-  Clock,
-  Target,
-  AlertTriangle,
-  TrendingUp,
-  BarChart3,
-  FileText,
-  Lightbulb,
-  Star,
-  Edit,
-  MoreVertical,
-} from 'lucide-react';
 
 interface ExecDashboardHeaderProps {
   dashboard: ExecDashboard | ExecDashboardWithCounts;

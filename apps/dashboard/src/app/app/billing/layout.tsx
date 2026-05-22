@@ -3,8 +3,8 @@
  * DS v3 topbar shell (no legacy sidebar)
  */
 
-import { getCurrentUser } from '@/lib/getCurrentUser';
 import { SettingsShell } from '@/components/settings/SettingsShell';
+import { getCurrentUser } from '@/lib/getCurrentUser';
 import { MSWProvider } from '@/mocks/MSWProvider';
 
 export const dynamic = 'force-dynamic';

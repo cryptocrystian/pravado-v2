@@ -13,6 +13,7 @@
 'use client';
 
 import Link from 'next/link';
+
 import { AIReasoningPopover, type AIReasoningContext } from '@/components/AIReasoningPopover';
 
 // Types

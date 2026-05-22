@@ -5,9 +5,6 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import type { GovernanceComplianceMetrics } from '@/lib/governanceApi';
 import {
   TrendingUp,
   TrendingDown,
@@ -19,6 +16,10 @@ import {
   Target,
   Zap,
 } from 'lucide-react';
+
+import { Card, CardContent } from '@/components/ui/card';
+import type { GovernanceComplianceMetrics } from '@/lib/governanceApi';
+import { cn } from '@/lib/utils';
 
 interface ComplianceMetricsPanelProps {
   metrics: GovernanceComplianceMetrics;

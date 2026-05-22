@@ -5,24 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import {
-  type ExecBoardReportSection,
-  getSectionTypeLabel,
-  getSectionTypeIcon,
-  getSectionStatusLabel,
-  getSectionStatusColor,
-  formatRelativeTime,
-} from '@/lib/executiveBoardReportApi';
-import { cn } from '@/lib/utils';
 import {
   FileText,
   BarChart2,
@@ -47,6 +29,25 @@ import {
   Clock,
   Edit,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import {
+  type ExecBoardReportSection,
+  getSectionTypeLabel,
+  getSectionTypeIcon,
+  getSectionStatusLabel,
+  getSectionStatusColor,
+  formatRelativeTime,
+} from '@/lib/executiveBoardReportApi';
+import { cn } from '@/lib/utils';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   'file-text': FileText,

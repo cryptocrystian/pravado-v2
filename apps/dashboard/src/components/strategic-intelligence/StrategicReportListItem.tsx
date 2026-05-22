@@ -5,6 +5,18 @@
 
 'use client';
 
+import {
+  MoreHorizontal,
+  Eye,
+  Edit,
+  Trash2,
+  FileText,
+  Users,
+  Calendar,
+  Target,
+} from 'lucide-react';
+import Link from 'next/link';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,17 +37,6 @@ import {
   formatScore,
   getScoreColor,
 } from '@/lib/strategicIntelligenceApi';
-import {
-  MoreHorizontal,
-  Eye,
-  Edit,
-  Trash2,
-  FileText,
-  Users,
-  Calendar,
-  Target,
-} from 'lucide-react';
-import Link from 'next/link';
 
 interface StrategicReportListItemProps {
   report: ReportListItem;

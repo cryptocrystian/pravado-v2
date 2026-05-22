@@ -5,12 +5,14 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { getScoreColor, getScoreLabel, getTrendColor } from '@/lib/mediaPerformanceApi';
 import type { TrendDirection } from '@pravado/types';
 import { ArrowUp, ArrowDown, Minus } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getScoreColor, getScoreLabel, getTrendColor } from '@/lib/mediaPerformanceApi';
+import { cn } from '@/lib/utils';
+
 
 interface PerformanceScoreCardProps {
   title: string;

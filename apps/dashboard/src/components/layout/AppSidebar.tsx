@@ -7,11 +7,12 @@
  * Command Center and Calendar use their own topbar-only shell.
  */
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { OrgSwitcher } from '@/components/OrgSwitcher';
+import { useState, useEffect } from 'react';
+
 import { PravadoLogo } from '@/components/brand/PravadoLogo';
+import { OrgSwitcher } from '@/components/OrgSwitcher';
 
 interface Org {
   id: string;

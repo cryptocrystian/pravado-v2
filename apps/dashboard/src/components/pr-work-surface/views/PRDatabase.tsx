@@ -18,6 +18,13 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import useSWR from 'swr';
+
+import { ContactFormModal } from '../components/ContactFormModal';
+import {
+  prAccent,
+  buttonStyles,
+  typography,
+} from '../prWorkSurfaceStyles';
 import type {
   MediaContact,
   EntityType,
@@ -30,12 +37,6 @@ import type {
   SavedSegment,
   DataQualityStats,
 } from '../types';
-import {
-  prAccent,
-  buttonStyles,
-  typography,
-} from '../prWorkSurfaceStyles';
-import { ContactFormModal } from '../components/ContactFormModal';
 
 // ============================================
 // API TYPES & FETCHER

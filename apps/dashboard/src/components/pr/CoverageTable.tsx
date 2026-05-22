@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { X, CheckCircle } from '@phosphor-icons/react';
-import type { CoverageRow, Sentiment } from './pr-mock-data';
+import { useState } from 'react';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import type { CoverageRow, Sentiment } from './pr-mock-data';
+
 
 const sentimentColors: Record<Sentiment, string> = {
   positive: 'text-semantic-success',

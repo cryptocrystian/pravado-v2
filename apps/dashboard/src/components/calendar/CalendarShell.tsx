@@ -8,9 +8,11 @@
  */
 
 import type { ReactNode } from 'react';
+
 import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
-import { CalendarModeProvider } from './CalendarModeContext';
+
 import { CalendarChromeBar } from './CalendarChromeBar';
+import { CalendarModeProvider } from './CalendarModeContext';
 
 interface CalendarShellProps {
   orgName: string;

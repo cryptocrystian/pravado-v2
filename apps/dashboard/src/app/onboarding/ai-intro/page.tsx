@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 'use client';
 
 /**
@@ -15,10 +16,11 @@
  * Exit criteria: fresh org gets real EVI score + real SAGE proposals within 10 minutes.
  */
 
-import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { track, Events, identifyUser } from '@/lib/analytics';
+import { useState, useEffect, useCallback } from 'react';
+
 import { PravadoLogoIcon } from '@/components/brand/PravadoLogo';
+import { track, Events, identifyUser } from '@/lib/analytics';
 
 export const dynamic = 'force-dynamic';
 

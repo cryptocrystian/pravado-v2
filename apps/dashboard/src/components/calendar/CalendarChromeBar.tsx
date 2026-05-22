@@ -13,7 +13,6 @@
  * @see /docs/canon/UX_CONTINUITY_CANON.md
  */
 
-import { useRef, useState, useEffect } from 'react';
 import {
   Lightning,
   Lock,
@@ -23,6 +22,8 @@ import {
   TrendUp,
   Info,
 } from '@phosphor-icons/react';
+import { useRef, useState, useEffect } from 'react';
+
 import { useCalendarMode, type AutomationMode } from './CalendarModeContext';
 import type { CalendarViewMode } from './types';
 

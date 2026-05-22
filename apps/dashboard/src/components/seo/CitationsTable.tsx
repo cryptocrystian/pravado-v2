@@ -4,7 +4,6 @@
  * CitationsTable — Full citation tracking table with slide-in detail panel.
  */
 
-import { useState } from 'react';
 import {
   House,
   Newspaper,
@@ -15,6 +14,8 @@ import {
   Lightning,
   Link as LinkIcon,
 } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import { mockCitations } from './seo-mock-data';
 import type { CitationRow } from './seo-mock-data';
 

@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { ReputationDriver } from '@pravado/types';
+import { TrendingUp, TrendingDown, ArrowUp, ArrowDown } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getDriverTypeColor,
   getDriverTypeBgColor,
@@ -15,8 +18,7 @@ import {
   formatRelativeTime,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { ReputationDriver } from '@pravado/types';
-import { TrendingUp, TrendingDown, ArrowUp, ArrowDown } from 'lucide-react';
+
 
 interface ReputationDriverListProps {
   positiveDrivers: ReputationDriver[];

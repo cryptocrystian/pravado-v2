@@ -1,6 +1,17 @@
 'use client';
 
+import type {
+  Competitor,
+  ComparativeAnalyticsResponse,
+  OverlapAnalysisResponse,
+  OverlapType,
+} from '@pravado/types';
+import { Loader2, TrendingUp, TrendingDown, Users, Building, AlertTriangle, Trophy } from 'lucide-react';
 import { useState, useEffect } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Sheet,
   SheetContent,
@@ -8,17 +19,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
-import type {
-  Competitor,
-  ComparativeAnalyticsResponse,
-  OverlapAnalysisResponse,
-  OverlapType,
-} from '@pravado/types';
 import {
   getComparativeAnalytics,
   analyzeOverlap,
@@ -28,8 +29,10 @@ import {
   getOverlapScoreColor,
   formatNumber,
 } from '@/lib/competitorIntelligenceApi';
+import { cn } from '@/lib/utils';
+
 import { CompetitorScoreBadge } from './CompetitorScoreBadge';
-import { Loader2, TrendingUp, TrendingDown, Users, Building, AlertTriangle, Trophy } from 'lucide-react';
+
 
 interface CompetitorComparisonDrawerProps {
   competitor: Competitor | null;

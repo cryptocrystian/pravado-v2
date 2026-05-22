@@ -5,9 +5,10 @@
 
 'use client';
 
+import { Loader2, type LucideIcon } from 'lucide-react';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Loader2, type LucideIcon } from 'lucide-react';
 
 interface InvestorPackStatsCardProps {
   title: string;

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 'use client';
 
 /**
@@ -5,9 +6,10 @@
  * Displays a list of scenarios with filtering and pagination
  */
 
-import { useState, useEffect } from 'react';
 import type { Scenario, ListScenariosQuery } from '@pravado/types';
 import { SCENARIO_TYPE_LABELS, SCENARIO_RUN_STATUS_LABELS } from '@pravado/types';
+import { useState, useEffect } from 'react';
+
 import { ScenarioCard } from './ScenarioCard';
 import { listScenarios, deleteScenario, simulateScenario, startScenarioRun } from '../../lib/scenarioPlaybookApi';
 

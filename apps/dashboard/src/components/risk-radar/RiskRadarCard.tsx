@@ -5,13 +5,17 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Radar, Clock, TrendingUp, CheckCircle2 } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { RiskLevelBadge } from './RiskLevelBadge';
+import { Card, CardContent } from '@/components/ui/card';
 import type { RiskRadarSnapshot } from '@/lib/riskRadarApi';
 import { formatRelativeTime } from '@/lib/riskRadarApi';
-import { Radar, Clock, TrendingUp, CheckCircle2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+import { RiskLevelBadge } from './RiskLevelBadge';
+
+
 
 interface RiskRadarCardProps {
   snapshot: RiskRadarSnapshot;

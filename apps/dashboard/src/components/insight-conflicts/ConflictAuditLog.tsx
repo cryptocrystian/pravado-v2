@@ -6,6 +6,7 @@
  */
 
 import type { InsightConflictAuditLog, ConflictActorType } from '@pravado/types';
+
 import { formatDate, formatRelativeTime } from '../../lib/insightConflictApi';
 
 interface ConflictAuditLogProps {

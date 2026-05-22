@@ -16,12 +16,12 @@
  * - Heading extraction for outline navigation
  */
 
+import Link from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder';
+import Underline from '@tiptap/extension-underline';
 import { useEditor, EditorContent, type Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import Link from '@tiptap/extension-link';
-import Underline from '@tiptap/extension-underline';
 import {
   useState,
   useEffect,
@@ -29,11 +29,12 @@ import {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import { FormatToolbar } from './FormatToolbar';
+
 import { BlockInsertHandle } from './BlockInsertHandle';
-import { CiteMindMark } from './CiteMindMark';
 import { CalloutExtension } from './CalloutExtension';
+import { CiteMindMark } from './CiteMindMark';
 import { EDITOR_V2 } from './editor-flags';
+import { FormatToolbar } from './FormatToolbar';
 
 // ============================================
 // TYPES

@@ -12,13 +12,14 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { Lightning, Layout, PencilSimple } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
 import { BriefCard } from '@/components/content/BriefCard';
-import { TemplateLibrary } from '@/components/content/TemplateLibrary';
 import { mockBriefs } from '@/components/content/content-mock-data';
+import { TemplateLibrary } from '@/components/content/TemplateLibrary';
 
 type ActiveSection = null | 'briefs' | 'templates';
 

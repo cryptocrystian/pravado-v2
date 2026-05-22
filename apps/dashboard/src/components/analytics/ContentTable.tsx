@@ -7,6 +7,7 @@
  *           phantom stroke colors → DS hex values.
  */
 
+import { ArrowUp, ArrowDown, Minus, Fire } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import {
   LineChart,
@@ -18,8 +19,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { ArrowUp, ArrowDown, Minus, Fire } from '@phosphor-icons/react';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
 import {
   mockContentRows,
   mockCitationVelocity,

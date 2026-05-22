@@ -10,10 +10,11 @@
  * Editor v2: Inline link editing UI replaces window.prompt.
  */
 
-import { useState, useRef, useEffect } from 'react';
 import type { Editor } from '@tiptap/react';
-import type { SaveState } from './TiptapEditor';
+import { useState, useRef, useEffect } from 'react';
+
 import { EDITOR_V2 } from './editor-flags';
+import type { SaveState } from './TiptapEditor';
 
 export interface FormatToolbarProps {
   editor: Editor;

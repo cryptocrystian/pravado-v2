@@ -5,13 +5,15 @@
 
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import type { AudiencePersonaTrait } from '@pravado/types';
-import { getTraitCategoryLabel } from '@/lib/personaApi';
-import { cn } from '@/lib/utils';
 import { Check, ChevronDown, ChevronUp, Shield } from 'lucide-react';
 import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { getTraitCategoryLabel } from '@/lib/personaApi';
+import { cn } from '@/lib/utils';
+
 
 interface PersonaTraitChipsProps {
   traits: AudiencePersonaTrait[];

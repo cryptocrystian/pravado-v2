@@ -12,6 +12,7 @@
  * @see /docs/canon/MODE_UX_ARCHITECTURE.md §5B
  */
 
+import type { TriggerAction } from '../orchestration/OrchestrationEditorShell';
 import type {
   AuthoritySignals,
   ContentClusterDTO,
@@ -22,7 +23,6 @@ import type {
   AutomationMode,
   AuditLedgerEntry,
 } from '../types';
-import type { TriggerAction } from '../orchestration/OrchestrationEditorShell';
 import type { QueueItem } from '../work-queue/QueueRow';
 
 // ============================================

@@ -6,7 +6,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import type { UnifiedNarrativeSection } from '@pravado/types';
 import {
   ChevronDown,
   ChevronUp,
@@ -17,12 +17,14 @@ import {
   Check,
   X,
 } from 'lucide-react';
-import type { UnifiedNarrativeSection } from '@pravado/types';
-import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+
 import NarrativeSectionTypeBadge from './NarrativeSectionTypeBadge';
 
 interface NarrativeSectionCardProps {

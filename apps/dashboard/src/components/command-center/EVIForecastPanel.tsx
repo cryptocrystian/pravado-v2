@@ -10,8 +10,10 @@
  */
 
 import { useState, useMemo } from 'react';
-import type { EVIForecast, ForecastScenario, EVIDriverType } from './types';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import type { EVIForecast, ForecastScenario, EVIDriverType } from './types';
 
 interface EVIForecastPanelProps {
   forecast: EVIForecast | null;

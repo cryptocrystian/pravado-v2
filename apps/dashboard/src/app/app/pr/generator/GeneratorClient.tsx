@@ -8,8 +8,9 @@
 
 'use client';
 
-import { useCallback, useState, useEffect } from 'react';
 import type { PRGeneratedRelease, PRGenerationInput } from '@pravado/types';
+import { useCallback, useState, useEffect } from 'react';
+
 import { PRGenerationResult, PRGeneratorForm, PRSidebarList } from '@/components/pr-generator';
 
 type GenerationStep = 'idle' | 'context' | 'angles' | 'headlines' | 'draft' | 'seo' | 'complete';

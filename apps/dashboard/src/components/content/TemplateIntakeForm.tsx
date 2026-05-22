@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import type { IntakeField } from './content-mock-data';
 import {
   thoughtLeadershipFields,

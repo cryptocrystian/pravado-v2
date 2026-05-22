@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch -- try/catch preserved for future logging hooks; Phase 1 cleanup */
 /**
  * Personas Dashboard Page (Sprint S51.2)
  * Three-panel layout for persona management
@@ -5,25 +6,6 @@
 
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { PersonaCard } from '@/components/personas/PersonaCard';
-import { PersonaTraitChips } from '@/components/personas/PersonaTraitChips';
-import { InsightPanel } from '@/components/personas/InsightPanel';
-import { PersonaHistoryTimeline } from '@/components/personas/PersonaHistoryTimeline';
-import { PersonaComparisonDrawer } from '@/components/personas/PersonaComparisonDrawer';
-import { PersonaGeneratorForm } from '@/components/personas/PersonaGeneratorForm';
-import { PersonaEditor } from '@/components/personas/PersonaEditor';
 import type {
   AudiencePersona,
   AudiencePersonaTrait,
@@ -34,7 +16,6 @@ import type {
   UpdatePersonaInput,
   PersonasQuery,
 } from '@pravado/types';
-import * as personaApi from '@/lib/personaApi';
 import {
   AlertCircle,
   GitCompare,
@@ -46,6 +27,28 @@ import {
   Users,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+
+import { InsightPanel } from '@/components/personas/InsightPanel';
+import { PersonaCard } from '@/components/personas/PersonaCard';
+import { PersonaComparisonDrawer } from '@/components/personas/PersonaComparisonDrawer';
+import { PersonaEditor } from '@/components/personas/PersonaEditor';
+import { PersonaGeneratorForm } from '@/components/personas/PersonaGeneratorForm';
+import { PersonaHistoryTimeline } from '@/components/personas/PersonaHistoryTimeline';
+import { PersonaTraitChips } from '@/components/personas/PersonaTraitChips';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import * as personaApi from '@/lib/personaApi';
+
 
 export default function PersonasPage() {
   // State

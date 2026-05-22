@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { computeEVI, validateEVIFormula, computeEVIForecast } from '../compute';
 import { EVI_WEIGHTS, EVI_BANDS } from '../types';
 import type { EVIInputSnapshot, ComputedEVI } from '../types';

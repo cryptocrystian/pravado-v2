@@ -7,10 +7,10 @@
  * Wraps the application to provide PostHog context.
  */
 
+import { usePathname } from 'next/navigation';
 import posthog from 'posthog-js';
 import { PostHogProvider as PHProvider } from 'posthog-js/react';
 import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 
 function PostHogPageviewTracker() {
   const pathname = usePathname();

@@ -10,10 +10,10 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useSEOMode } from '@/components/seo/SEOModeContext';
-import { SEOManualView } from '@/components/seo/SEOManualView';
-import { SEOCopilotView } from '@/components/seo/SEOCopilotView';
 import { SEOAutopilotView } from '@/components/seo/SEOAutopilotView';
+import { SEOCopilotView } from '@/components/seo/SEOCopilotView';
+import { SEOManualView } from '@/components/seo/SEOManualView';
+import { useSEOMode } from '@/components/seo/SEOModeContext';
 
 export default function SEOOverviewPage() {
   const { mode } = useSEOMode();

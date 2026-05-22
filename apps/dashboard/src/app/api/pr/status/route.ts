@@ -13,15 +13,15 @@
  * - Error summary
  */
 
-import { NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 import { getPRConfig, validatePRConfig } from '@/lib/env/pr-config';
 import { checkSupabaseHealth, hasServiceRoleKey } from '@/server/supabaseServerClient';
 
 // Import Supabase client factory directly to avoid 'server-only' issues in edge cases
-import { createServerClient } from '@supabase/ssr';
-import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

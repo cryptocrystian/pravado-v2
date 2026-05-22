@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { ComponentScore, ReputationComponent } from '@pravado/types';
+import { ArrowUp, ArrowDown, Minus, BarChart3 } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getScoreColor,
   getComponentLabel,
@@ -14,8 +17,7 @@ import {
   getTrendColor,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { ComponentScore, ReputationComponent } from '@pravado/types';
-import { ArrowUp, ArrowDown, Minus, BarChart3 } from 'lucide-react';
+
 
 interface ComponentScorePanelProps {
   componentScores: ComponentScore[];

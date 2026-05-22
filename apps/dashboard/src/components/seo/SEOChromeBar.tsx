@@ -6,12 +6,14 @@
  * Pillar accent: brand-teal. DS v3.1 tokens.
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { Lightning, TrendUp, CaretDown, User, Robot, Cpu } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Lightning, TrendUp, CaretDown, User, Robot, Cpu } from '@phosphor-icons/react';
-import { useSEOMode, type AutomationMode } from './SEOModeContext';
+import { useState, useRef, useEffect } from 'react';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import { useSEOMode, type AutomationMode } from './SEOModeContext';
 
 const TABS = [
   { label: 'Overview',        href: '/app/seo' },

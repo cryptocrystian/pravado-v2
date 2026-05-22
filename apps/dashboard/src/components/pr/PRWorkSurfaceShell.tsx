@@ -17,9 +17,6 @@
  * @see /docs/canon/UX_CONTINUITY_CANON.md
  */
 
-import { useState, useRef, useEffect, type ReactNode } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import {
   Tray,
   Users,
@@ -36,9 +33,13 @@ import {
   MegaphoneSimple,
   Plus,
 } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
+
+import { modeTokens } from '@/components/content/tokens';
 
 import { PRModeContext, type AutomationMode as PRAutomationMode } from './PRModeContext';
-import { modeTokens } from '@/components/content/tokens';
 
 // ============================================
 // TAB CONFIG

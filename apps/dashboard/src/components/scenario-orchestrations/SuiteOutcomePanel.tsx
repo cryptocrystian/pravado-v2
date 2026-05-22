@@ -5,8 +5,9 @@
  * Display narrative, risk map, and outcomes for a suite run
  */
 
-import { useState } from 'react';
 import type { ScenarioSuiteRun } from '@pravado/types';
+import { useState } from 'react';
+
 import {
   generateSuiteNarrative,
   generateSuiteRiskMap,

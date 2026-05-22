@@ -5,7 +5,10 @@
 
 'use client';
 
+import { Loader2, Sparkles, Clock, Brain, Zap } from 'lucide-react';
 import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -14,13 +17,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import type { RiskRadarForecastHorizon } from '@/lib/riskRadarApi';
 import { getHorizonLabel } from '@/lib/riskRadarApi';
-import { Loader2, Sparkles, Clock, Brain, Zap } from 'lucide-react';
 
 interface ForecastGenerationFormProps {
   snapshotId: string;

@@ -8,6 +8,7 @@
 export const dynamic = 'force-dynamic';
 
 import { Lightning, ArrowRight, TrendUp } from '@phosphor-icons/react';
+
 import { mockTopicActivity } from '@/components/pr/pr-mock-data';
 
 export default function IntelligencePage() {

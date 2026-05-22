@@ -5,7 +5,6 @@
  * Form for creating/editing a scenario suite
  */
 
-import { useState, useEffect } from 'react';
 import type {
   CreateScenarioSuiteInput,
   UpdateScenarioSuiteInput,
@@ -13,11 +12,13 @@ import type {
   CreateSuiteItemInput,
   AIScenarioSimulation,
 } from '@pravado/types';
+import { useState, useEffect } from 'react';
+
+import { listSimulations } from '../../lib/aiScenarioSimulationApi';
 import {
   CONDITION_TYPE_LABELS,
   CONDITION_TYPE_DESCRIPTIONS,
 } from '../../lib/scenarioOrchestrationApi';
-import { listSimulations } from '../../lib/aiScenarioSimulationApi';
 
 interface SuiteConfigFormProps {
   suite?: ScenarioSuite;

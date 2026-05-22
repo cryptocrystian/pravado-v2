@@ -5,9 +5,9 @@
  * Displays a single scenario with its details and actions
  */
 
-import { useState } from 'react';
 import type { Scenario, ScenarioType, ScenarioRunStatus } from '@pravado/types';
 import { SCENARIO_TYPE_LABELS, SCENARIO_RUN_STATUS_LABELS } from '@pravado/types';
+import { useState } from 'react';
 
 interface ScenarioCardProps {
   scenario: Scenario;

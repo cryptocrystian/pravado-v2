@@ -11,9 +11,11 @@
  */
 
 import type { ReactNode } from 'react';
+
 import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
-import { PRModeProvider } from './PRModeContext';
+
 import { PRChromeBar } from './PRChromeBar';
+import { PRModeProvider } from './PRModeContext';
 
 interface PRShellProps {
   children: ReactNode;

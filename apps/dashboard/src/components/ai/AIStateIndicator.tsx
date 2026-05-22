@@ -24,6 +24,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+
 import type { AIPerceptualState } from './ai-perception';
 import { AI_PERCEPTUAL_SIGNALS } from './ai-perception';
 

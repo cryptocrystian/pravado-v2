@@ -17,6 +17,7 @@ import {
   ResponsiveContainer,
   Label,
 } from 'recharts';
+
 import { mockTopicPerformance } from './analytics-mock-data';
 
 const scatterData = mockTopicPerformance.map((t) => ({

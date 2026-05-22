@@ -13,15 +13,16 @@
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import CharacterCount from '@tiptap/extension-character-count';
+import Highlight from '@tiptap/extension-highlight';
+import Link from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder';
+import Typography from '@tiptap/extension-typography';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import Typography from '@tiptap/extension-typography';
-import CharacterCount from '@tiptap/extension-character-count';
-import Link from '@tiptap/extension-link';
-import Highlight from '@tiptap/extension-highlight';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
 import { CiteMindMark } from './CiteMindMark';
 import type { ContentStatus } from '../types';
 import { CONTENT_STATUS_CONFIG } from '../types';

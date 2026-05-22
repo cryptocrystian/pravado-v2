@@ -5,6 +5,7 @@
  * Topic cluster performance, engine breakdown, competitive movement.
  */
 
+import { WarningCircle, Warning } from '@phosphor-icons/react';
 import { useCallback } from 'react';
 import {
   LineChart,
@@ -16,17 +17,17 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { WarningCircle, Warning } from '@phosphor-icons/react';
+
+import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
 import {
   mockSEOSummary,
   mockTopicPerformance,
   mockEngineTrend,
   mockNarratives,
 } from '@/components/analytics/analytics-mock-data';
-import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
-import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
 import { CitationVelocityByEngine } from '@/components/analytics/CitationVelocityByEngine';
 import { TopicOpportunityMatrix } from '@/components/analytics/TopicOpportunityMatrix';
+import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
 const engineColors: Record<string, string> = {
   ChatGPT: '#00E5CC',

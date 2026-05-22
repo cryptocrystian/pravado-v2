@@ -19,9 +19,6 @@
  * @see /docs/skills/PRAVADO_DESIGN_SKILL.md
  */
 
-import { useState, useEffect } from 'react';
-import type { ContentAsset, AutomationMode } from '../types';
-import { ContentAssetCard } from '../components/ContentAssetCard';
 import {
   Plus,
   Lightning,
@@ -41,6 +38,10 @@ import {
   Clock,
   Check,
 } from '@phosphor-icons/react';
+import { useState, useEffect } from 'react';
+
+import { ContentAssetCard } from '../components/ContentAssetCard';
+import type { ContentAsset, AutomationMode } from '../types';
 
 // ============================================
 // TYPES (exported for mock-data consumption)

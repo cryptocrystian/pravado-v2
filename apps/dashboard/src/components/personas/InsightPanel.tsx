@@ -5,10 +5,6 @@
 
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { AudiencePersonaInsight } from '@pravado/types';
 import {
   AlertCircle,
@@ -18,6 +14,11 @@ import {
   Zap,
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface InsightPanelProps {
   insights: AudiencePersonaInsight[];

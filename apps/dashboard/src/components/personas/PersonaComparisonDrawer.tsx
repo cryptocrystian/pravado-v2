@@ -5,23 +5,7 @@
 
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
 import type { PersonaComparisonResult, AudiencePersonaTrait } from '@pravado/types';
-import {
-  formatPersonaName,
-  getPersonaTypeLabel,
-  getTraitCategoryLabel,
-} from '@/lib/personaApi';
-import { cn } from '@/lib/utils';
 import {
   AlertTriangle,
   ArrowRight,
@@ -32,6 +16,24 @@ import {
   X,
 } from 'lucide-react';
 import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import {
+  formatPersonaName,
+  getPersonaTypeLabel,
+  getTraitCategoryLabel,
+} from '@/lib/personaApi';
+import { cn } from '@/lib/utils';
+
 
 interface PersonaComparisonDrawerProps {
   comparison: PersonaComparisonResult | null;

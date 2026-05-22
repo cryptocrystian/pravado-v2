@@ -6,6 +6,7 @@
 'use client';
 
 import type { MediaListSummary } from '@pravado/types';
+
 import { KeywordChips } from './KeywordChips';
 
 interface MediaListCardProps {

@@ -15,9 +15,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { useEVIHistory } from '@/lib/useEVI';
-import { useAnalyticsDate } from './AnalyticsDateContext';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+import { useEVIHistory } from '@/lib/useEVI';
+
+import { useAnalyticsDate } from './AnalyticsDateContext';
 
 function CustomTooltip({
   active,

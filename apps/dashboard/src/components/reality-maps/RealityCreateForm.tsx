@@ -5,7 +5,6 @@
  * Form for creating/editing a reality map
  */
 
-import { useState, useEffect } from 'react';
 import type {
   RealityMap,
   CreateRealityMapInput,
@@ -14,6 +13,8 @@ import type {
   NarrativeStyle,
   ProbabilityModelType,
 } from '@pravado/types';
+import { useState, useEffect } from 'react';
+
 import { PROBABILITY_MODELS, NARRATIVE_STYLES } from '../../lib/realityMapApi';
 import { listSuites } from '../../lib/scenarioOrchestrationApi';
 

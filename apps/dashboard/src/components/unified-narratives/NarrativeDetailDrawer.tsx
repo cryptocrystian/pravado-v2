@@ -6,7 +6,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import type {
+  UnifiedNarrative,
+  UnifiedNarrativeSection,
+  NarrativeInsight,
+} from '@pravado/types';
 import {
   X,
   Calendar,
@@ -18,28 +22,26 @@ import {
   Lightbulb,
   GitCompare,
 } from 'lucide-react';
-import type {
-  UnifiedNarrative,
-  UnifiedNarrativeSection,
-  NarrativeInsight,
-} from '@pravado/types';
-import { formatNarrativePeriod, formatNarrativeDate } from '@/lib/unifiedNarrativeApi';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect } from 'react';
+
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { formatNarrativePeriod, formatNarrativeDate } from '@/lib/unifiedNarrativeApi';
+
+import NarrativeInsightPanel from './NarrativeInsightPanel';
+import NarrativeSectionCard from './NarrativeSectionCard';
+import NarrativeSectionTypeBadge from './NarrativeSectionTypeBadge';
 import NarrativeStatusBadge from './NarrativeStatusBadge';
 import NarrativeTypeBadge from './NarrativeTypeBadge';
-import NarrativeSectionTypeBadge from './NarrativeSectionTypeBadge';
-import NarrativeSectionCard from './NarrativeSectionCard';
 import NarrativeWorkflowActions from './NarrativeWorkflowActions';
-import NarrativeInsightPanel from './NarrativeInsightPanel';
 
 interface NarrativeDetailDrawerProps {
   narrative: UnifiedNarrative | null;

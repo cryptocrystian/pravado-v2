@@ -3,14 +3,15 @@
  * Panel showing merge suggestions for deduplication
  */
 
-import React, { useState } from 'react';
-import { ConfidenceBadge } from './ConfidenceBadge';
 import {
   LightBulbIcon,
   CheckCircleIcon,
   XMarkIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
+import React, { useState } from 'react';
+
+import { ConfidenceBadge } from './ConfidenceBadge';
 
 interface MergeSuggestion {
   targetId: string;

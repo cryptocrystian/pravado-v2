@@ -5,18 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  getAlertSeverityColor,
-  getAlertSeverityBgColor,
-  formatRelativeTime,
-  acknowledgeAlert,
-  resolveAlert,
-} from '@/lib/brandReputationApi';
-import { cn } from '@/lib/utils';
 import type { BrandReputationAlert, ReputationAlertSeverity } from '@pravado/types';
 import {
   AlertTriangle,
@@ -27,6 +15,19 @@ import {
   CheckCircle,
   Loader2
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  getAlertSeverityColor,
+  getAlertSeverityBgColor,
+  formatRelativeTime,
+  acknowledgeAlert,
+  resolveAlert,
+} from '@/lib/brandReputationApi';
+import { cn } from '@/lib/utils';
 
 interface ReputationAlertsListProps {
   alerts: BrandReputationAlert[];

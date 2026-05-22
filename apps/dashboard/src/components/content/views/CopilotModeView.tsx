@@ -21,6 +21,12 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
+
+import {
+  type AIPerceptualState,
+  deriveAIPerceptualState,
+} from '@/components/ai';
+
 import {
   HealthStrip,
   CTACluster,
@@ -32,14 +38,10 @@ import {
   computeCiteMindIssueCount,
   type ContentModeViewProps,
 } from './shared';
-import { QueueList, WorkbenchCanvas, ContextRail } from '../work-queue';
 import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
 import { ExplainabilityDrawer } from '../orchestration/ExplainabilityDrawer';
-import {
-  type AIPerceptualState,
-  deriveAIPerceptualState,
-} from '@/components/ai';
+import { QueueList, WorkbenchCanvas, ContextRail } from '../work-queue';
 
 export function CopilotModeView({
   signals,

@@ -15,8 +15,10 @@
  */
 
 import { useState, type ReactNode } from 'react';
-import type { SEOView, AutomationMode } from './types';
+
 import { ImpactStrip } from '@/components/shared/ImpactStrip';
+
+import type { SEOView, AutomationMode } from './types';
 
 // ============================================
 // TYPES

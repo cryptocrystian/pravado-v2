@@ -19,14 +19,15 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useCallback, useRef } from 'react';
-import { ContentWorkSurfaceShell } from '@/components/content/ContentWorkSurfaceShell';
-import { ContentOverviewView } from '@/components/content/views/ContentOverviewView';
-import { ContentLibraryView } from '@/components/content/views/ContentLibraryView';
-import { ContentCalendarView } from '@/components/content/views/ContentCalendarView';
-import { ContentInsightsView } from '@/components/content/views/ContentInsightsView';
-import { ContentEditorView } from '@/components/content/views/ContentEditorView';
-import type { ContentView, ContentType, AutomationMode, EditorInitData, CreationContentType } from '@/components/content/types';
+
 import { CONTENT_OVERVIEW_MOCK } from '@/components/content/content-mock-data';
+import { ContentWorkSurfaceShell } from '@/components/content/ContentWorkSurfaceShell';
+import type { ContentView, ContentType, AutomationMode, EditorInitData, CreationContentType } from '@/components/content/types';
+import { ContentCalendarView } from '@/components/content/views/ContentCalendarView';
+import { ContentEditorView } from '@/components/content/views/ContentEditorView';
+import { ContentInsightsView } from '@/components/content/views/ContentInsightsView';
+import { ContentLibraryView } from '@/components/content/views/ContentLibraryView';
+import { ContentOverviewView } from '@/components/content/views/ContentOverviewView';
 
 // ============================================
 // MODULE-SCOPE CONSTANTS

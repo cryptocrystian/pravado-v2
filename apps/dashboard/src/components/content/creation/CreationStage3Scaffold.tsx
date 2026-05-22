@@ -9,7 +9,6 @@
  * @see /docs/skills/PRAVADO_DESIGN_SKILL.md
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Lightning,
   CheckCircle,
@@ -18,6 +17,8 @@ import {
   Trash,
   Plus,
 } from '@phosphor-icons/react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
 import type { AutomationMode, CreationContentType, OutlineSection } from '../types';
 
 // ============================================

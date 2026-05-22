@@ -4,10 +4,11 @@
  * Uses getCurrentUser for session, then checks is_admin via service-role query.
  */
 
-import { redirect } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
-import { getCurrentUser } from '@/lib/getCurrentUser';
+import { redirect } from 'next/navigation';
+
 import { AdminShell } from '@/components/admin/AdminShell';
+import { getCurrentUser } from '@/lib/getCurrentUser';
 
 export const dynamic = 'force-dynamic';
 

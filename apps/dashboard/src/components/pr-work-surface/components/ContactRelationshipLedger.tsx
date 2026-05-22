@@ -11,6 +11,7 @@
  */
 
 import { useMemo } from 'react';
+
 import type { LedgerEvent, LedgerEventType, NextBestAction, MediaContact } from '../types';
 import { ImpactStrip } from './ImpactStrip';
 

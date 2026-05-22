@@ -1,9 +1,10 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import type { CompetitorTier } from '@pravado/types';
+
+import { Badge } from '@/components/ui/badge';
 import { getTierLabel, getTierColor, getTierBgColor } from '@/lib/competitorIntelligenceApi';
+import { cn } from '@/lib/utils';
 
 interface CompetitorScoreBadgeProps {
   tier: CompetitorTier;

@@ -5,9 +5,6 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { type ExecBoardReportStats, formatRelativeTime } from '@/lib/executiveBoardReportApi';
-import { cn } from '@/lib/utils';
 import {
   FileText,
   Edit,
@@ -21,6 +18,10 @@ import {
   TrendingUp,
   Loader2,
 } from 'lucide-react';
+
+import { Card, CardContent } from '@/components/ui/card';
+import { type ExecBoardReportStats, formatRelativeTime } from '@/lib/executiveBoardReportApi';
+import { cn } from '@/lib/utils';
 
 interface BoardReportStatsCardProps {
   stats: ExecBoardReportStats;

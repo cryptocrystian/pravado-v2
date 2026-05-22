@@ -7,7 +7,11 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  CrisisAction,
+  CrisisActionStatus,
+  CrisisUrgency,
+} from '@pravado/types';
 import {
   CheckCircle2,
   ChevronDown,
@@ -22,24 +26,11 @@ import {
   User,
   X,
 } from 'lucide-react';
-import type {
-  CrisisAction,
-  CrisisActionStatus,
-  CrisisUrgency,
-} from '@pravado/types';
-import {
-  ACTION_STATUS_COLORS,
-  ACTION_TYPE_LABELS,
-  URGENCY_LABELS,
-  formatTimeAgo,
-  calculateUrgencyFromDue,
-} from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
+import React, { useState, useCallback } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Progress } from '@/components/ui/progress';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -48,6 +39,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  ACTION_STATUS_COLORS,
+  ACTION_TYPE_LABELS,
+  URGENCY_LABELS,
+  formatTimeAgo,
+  calculateUrgencyFromDue,
+} from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 interface CrisisActionListProps {
   actions: CrisisAction[];

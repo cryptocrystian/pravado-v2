@@ -9,9 +9,10 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import type { Factor } from '@supabase/supabase-js';
+import { useState, useEffect, useCallback } from 'react';
+
+import { supabase } from '@/lib/supabaseClient';
 
 type MFAState = 'loading' | 'not-enrolled' | 'enrolling' | 'verifying' | 'enrolled';
 

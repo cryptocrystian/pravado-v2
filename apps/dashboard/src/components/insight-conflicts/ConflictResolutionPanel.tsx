@@ -5,13 +5,14 @@
  * Panel for resolving insight conflicts
  */
 
-import { useState } from 'react';
 import type {
   InsightConflict,
   InsightConflictResolution,
   ConflictResolutionType,
   ResolveConflictInput,
 } from '@pravado/types';
+import { useState } from 'react';
+
 import {
   getResolutionTypeLabel,
   getResolutionTypeDescription,

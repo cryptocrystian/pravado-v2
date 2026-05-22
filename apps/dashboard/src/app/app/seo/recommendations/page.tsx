@@ -7,8 +7,9 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
 import { CaretDown } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import { RecommendationCard } from '@/components/seo/RecommendationCard';
 import { mockRecommendations, mockMediumCount } from '@/components/seo/seo-mock-data';
 

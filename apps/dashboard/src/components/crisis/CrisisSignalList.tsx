@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type { CrisisSignal, CrisisSeverity, CrisisSourceSystem } from '@pravado/types';
 import {
   Bell,
   CheckCircle2,
@@ -21,13 +21,11 @@ import {
   RefreshCw,
   Zap,
 } from 'lucide-react';
-import type { CrisisSignal, CrisisSeverity, CrisisSourceSystem } from '@pravado/types';
-import { SEVERITY_COLORS, formatTimeAgo } from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
+import React, { useState, useCallback } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -36,6 +34,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { SEVERITY_COLORS, formatTimeAgo } from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 interface CrisisSignalListProps {
   signals: CrisisSignal[];

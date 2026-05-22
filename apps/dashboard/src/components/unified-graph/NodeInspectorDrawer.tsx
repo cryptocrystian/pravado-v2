@@ -5,29 +5,6 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  NodeWithConnections,
-  getNodeTypeLabel,
-  getNodeTypeColor,
-  getEdgeTypeLabel,
-  formatCentrality,
-  getNodeWithConnections,
-  updateNode,
-} from '@/lib/unifiedGraphApi';
 import {
   CircleDot,
   Save,
@@ -37,6 +14,30 @@ import {
   Tag,
   Loader2,
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  NodeWithConnections,
+  getNodeTypeLabel,
+  getNodeTypeColor,
+  getEdgeTypeLabel,
+  formatCentrality,
+  getNodeWithConnections,
+  updateNode,
+} from '@/lib/unifiedGraphApi';
 
 interface NodeInspectorDrawerProps {
   nodeId: string | null;

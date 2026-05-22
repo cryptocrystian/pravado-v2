@@ -7,7 +7,10 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  CrisisBrief,
+  CrisisBriefSectionType,
+} from '@pravado/types';
 import {
   FileText,
   RefreshCw,
@@ -20,17 +23,15 @@ import {
   Edit2,
   Sparkles,
 } from 'lucide-react';
-import type {
-  CrisisBrief,
-  CrisisBriefSectionType,
-} from '@pravado/types';
-import { BRIEF_FORMAT_LABELS, formatTimeAgo } from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
+import React, { useState, useCallback } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { BRIEF_FORMAT_LABELS, formatTimeAgo } from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 interface CrisisBriefPanelProps {
   brief: CrisisBrief | null;

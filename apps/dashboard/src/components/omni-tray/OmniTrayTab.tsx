@@ -10,6 +10,7 @@
  */
 
 import { Lightning } from '@phosphor-icons/react';
+
 import { useOmniTray } from './useOmniTray';
 
 export function OmniTrayTab() {

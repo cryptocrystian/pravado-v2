@@ -5,15 +5,16 @@
 
 'use client';
 
+import { TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import type {
   GovernanceRiskHeatmapResponse,
   GovernanceRiskHeatmapCell,
   GovernanceScoreTrend,
 } from '@/lib/governanceApi';
 import { getEntityTypeLabel } from '@/lib/governanceApi';
-import { TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface RiskHeatmapProps {
   data: GovernanceRiskHeatmapResponse;

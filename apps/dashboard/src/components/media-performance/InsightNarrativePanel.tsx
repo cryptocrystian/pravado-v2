@@ -5,18 +5,19 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { MediaPerformanceInsight, InsightCategory } from '@pravado/types';
+import { X, CheckCircle, AlertCircle, TrendingUp, Lightbulb, Target, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getInsightCategoryColor,
   markInsightAsRead,
   dismissInsight,
 } from '@/lib/mediaPerformanceApi';
-import type { MediaPerformanceInsight, InsightCategory } from '@pravado/types';
-import { X, CheckCircle, AlertCircle, TrendingUp, Lightbulb, Target, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface InsightNarrativePanelProps {
   insights: MediaPerformanceInsight[];

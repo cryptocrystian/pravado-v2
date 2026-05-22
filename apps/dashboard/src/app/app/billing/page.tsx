@@ -8,8 +8,9 @@
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
 
-import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
+
 import {
   getBillingSummaryEnriched,
   getAvailablePlans,
@@ -24,14 +25,15 @@ import {
   type OrgBillingSummaryEnriched,
   type BillingAlertRecord
 } from '@/lib/billingApi';
-import { UsageBar } from './components/UsageBar';
-import { PlanRecommendationBadge } from './components/PlanRecommendationBadge';
-import { TrialBanner } from './components/TrialBanner';
-import { OverageBreakdown } from './components/OverageBreakdown';
-import { StripePortalButton } from './components/StripePortalButton';
+
 import { BillingPlanCard } from './components/BillingPlanCard';
 import { CancelSubscriptionModal } from './components/CancelSubscriptionModal';
 import { DowngradeBlockedDialog } from './components/DowngradeBlockedDialog';
+import { OverageBreakdown } from './components/OverageBreakdown';
+import { PlanRecommendationBadge } from './components/PlanRecommendationBadge';
+import { StripePortalButton } from './components/StripePortalButton';
+import { TrialBanner } from './components/TrialBanner';
+import { UsageBar } from './components/UsageBar';
 
 export default function BillingPage() {
   // State

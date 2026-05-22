@@ -5,8 +5,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { ArrowPathIcon, FunnelIcon } from '@heroicons/react/24/outline';
 import type { EnrichmentRecordStatus, EnrichmentSourceType } from '@pravado/types';
+import React, { useState, useEffect } from 'react';
+
+import { BatchJobStatusTable } from '@/components/journalist-enrichment/BatchJobStatusTable';
 import {
   EnrichmentGeneratorForm,
   type EnrichmentFormData,
@@ -14,9 +17,8 @@ import {
 import { EnrichmentRecordList } from '@/components/journalist-enrichment/EnrichmentRecordCard';
 import { EnrichmentRecordDetailDrawer } from '@/components/journalist-enrichment/EnrichmentRecordDetailDrawer';
 import { EnrichmentSuggestionsPanel } from '@/components/journalist-enrichment/EnrichmentSuggestionsPanel';
-import { BatchJobStatusTable } from '@/components/journalist-enrichment/BatchJobStatusTable';
 import * as enrichmentApi from '@/lib/journalistEnrichmentApi';
-import { ArrowPathIcon, FunnelIcon } from '@heroicons/react/24/outline';
+
 
 export default function EnrichmentPage() {
   // State

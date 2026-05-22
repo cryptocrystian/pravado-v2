@@ -6,8 +6,9 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import type { GetReputationReportInsightsResponse } from '@pravado/types';
+import { useState, useEffect, useCallback } from 'react';
+
 import {
   getReputationInsights,
   getScoreColor,

@@ -5,8 +5,8 @@
  * Toolbar for reality map operations and controls
  */
 
-import { useState } from 'react';
 import type { RealityMapStatus } from '@pravado/types';
+import { useState } from 'react';
 
 interface RealityMapToolbarProps {
   mapId: string;

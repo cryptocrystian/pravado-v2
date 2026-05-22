@@ -17,12 +17,6 @@
  * @see /docs/canon/DS_v3_1_EXPRESSION.md
  */
 
-import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
-import type { ContentView, AutomationMode, ContentType, CreationContentType, OutlineSection, EditorInitData } from './types';
-
-import { modeTokens } from './tokens';
-import { ContentCreationOverlay } from './creation/ContentCreationOverlay';
-import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
 import {
   ClipboardText,
   Archive,
@@ -41,6 +35,15 @@ import {
   ClockCounterClockwise,
   TrendUp,
 } from '@phosphor-icons/react';
+import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
+
+import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
+
+import { ContentCreationOverlay } from './creation/ContentCreationOverlay';
+import { modeTokens } from './tokens';
+import type { ContentView, AutomationMode, ContentType, CreationContentType, OutlineSection, EditorInitData } from './types';
+
+
 
 // ============================================
 // TYPES

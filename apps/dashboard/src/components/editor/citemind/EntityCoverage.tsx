@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckCircle, Warning, XCircle } from '@phosphor-icons/react';
+
 import type { EntityItem } from '../editor-mock-data';
 
 const statusConfig: Record<

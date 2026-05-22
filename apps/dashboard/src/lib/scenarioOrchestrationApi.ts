@@ -37,7 +37,6 @@ import type {
   GenerateSuiteRiskMapResponse,
   ListSuiteAuditEventsResponse,
 } from '@pravado/types';
-
 import {
   SCENARIO_SUITE_STATUS_LABELS,
   SCENARIO_SUITE_STATUS_COLORS,

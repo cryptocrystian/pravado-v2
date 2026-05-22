@@ -6,6 +6,7 @@
 'use client';
 
 import React from 'react';
+
 import { BillingPlan, OrgBillingSummaryEnriched } from '@/lib/billingApi';
 
 interface DowngradeBlockedDialogProps {

@@ -18,11 +18,12 @@
  */
 
 import { useState, useMemo } from 'react';
-import type { Coverage, OutletTier, Sentiment } from '../types';
+
 import {
   buttonStyles,
   glowEffects,
 } from '../prWorkSurfaceStyles';
+import type { Coverage, OutletTier, Sentiment } from '../types';
 
 // ============================================
 // TYPES

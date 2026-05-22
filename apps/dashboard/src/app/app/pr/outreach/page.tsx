@@ -6,11 +6,11 @@
  * S97: Added context preservation from URL params
  */
 
+import type { OutreachRun, OutreachSequence, OutreachStats } from '@pravado/types';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
-import type { OutreachRun, OutreachSequence, OutreachStats } from '@pravado/types';
 
 import { OutreachRunDetailDrawer } from '@/components/pr-outreach/OutreachRunDetailDrawer';
 import { OutreachRunList } from '@/components/pr-outreach/OutreachRunList';

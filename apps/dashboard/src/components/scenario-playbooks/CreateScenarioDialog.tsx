@@ -5,9 +5,10 @@
  * Modal dialog for creating new scenarios
  */
 
-import { useState, useEffect } from 'react';
 import type { Scenario, ScenarioPlaybook } from '@pravado/types';
 import { ScenarioType, ScenarioRiskLevel, SCENARIO_TYPE_LABELS, SCENARIO_RISK_LEVEL_LABELS } from '@pravado/types';
+import { useState, useEffect } from 'react';
+
 import { createScenario, listPlaybooks } from '../../lib/scenarioPlaybookApi';
 
 interface CreateScenarioDialogProps {

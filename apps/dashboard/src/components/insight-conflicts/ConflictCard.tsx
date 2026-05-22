@@ -6,6 +6,7 @@
  */
 
 import type { InsightConflict } from '@pravado/types';
+
 import {
   getConflictTypeLabel,
   getConflictTypeBgColor,

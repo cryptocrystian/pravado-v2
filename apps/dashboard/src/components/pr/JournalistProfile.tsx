@@ -9,6 +9,7 @@ import {
   CheckCircle,
   PencilSimple,
 } from '@phosphor-icons/react';
+
 import type { Journalist } from './pr-mock-data';
 import { citationBadgeConfig, relationshipDotConfig } from './pr-mock-data';
 

@@ -7,7 +7,15 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  CrisisEscalationRule,
+  CreateEscalationRuleRequest,
+  UpdateEscalationRuleRequest,
+  CrisisSeverity,
+  EscalationRuleType,
+  EscalationConditions,
+  EscalationAction,
+} from '@pravado/types';
 import {
   Plus,
   Edit2,
@@ -19,22 +27,23 @@ import {
   RefreshCw,
   Shield,
 } from 'lucide-react';
-import type {
-  CrisisEscalationRule,
-  CreateEscalationRuleRequest,
-  UpdateEscalationRuleRequest,
-  CrisisSeverity,
-  EscalationRuleType,
-  EscalationConditions,
-  EscalationAction,
-} from '@pravado/types';
-import { cn } from '@/lib/utils';
+import React, { useState, useCallback } from 'react';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
@@ -51,16 +60,8 @@ import {
   SheetDescription,
   SheetFooter,
 } from '@/components/ui/sheet';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 
 interface CrisisEscalationRuleEditorProps {
   rules: CrisisEscalationRule[];

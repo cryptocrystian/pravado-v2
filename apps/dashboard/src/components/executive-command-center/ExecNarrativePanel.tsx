@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 /**
  * Executive Narrative Panel Component (Sprint S61)
  * Displays the latest LLM-generated narrative with risks, opportunities, storyline
@@ -5,15 +6,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  type ExecDashboardNarrative,
-  formatRelativeTime,
-} from '@/lib/executiveCommandCenterApi';
-import { cn } from '@/lib/utils';
 import {
   FileText,
   RefreshCw,
@@ -26,6 +18,16 @@ import {
   Clock,
   Sparkles,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  type ExecDashboardNarrative,
+  formatRelativeTime,
+} from '@/lib/executiveCommandCenterApi';
+import { cn } from '@/lib/utils';
 
 interface ExecNarrativePanelProps {
   narrative: ExecDashboardNarrative | null;

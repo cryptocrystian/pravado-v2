@@ -6,7 +6,8 @@
 
 'use client';
 
-import React from 'react';
+import type { NarrativeInsight } from '@pravado/types';
+import { NARRATIVE_INSIGHT_STRENGTH_LABELS } from '@pravado/types';
 import {
   Lightbulb,
   AlertTriangle,
@@ -15,12 +16,12 @@ import {
   Zap,
   Link2,
 } from 'lucide-react';
-import type { NarrativeInsight } from '@pravado/types';
-import { NARRATIVE_INSIGHT_STRENGTH_LABELS } from '@pravado/types';
+import React from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getInsightStrengthColor } from '@/lib/unifiedNarrativeApi';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
 interface NarrativeInsightPanelProps {
   insights: NarrativeInsight[];

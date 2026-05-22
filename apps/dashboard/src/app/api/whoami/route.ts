@@ -4,8 +4,8 @@
  * NO auth required, NO database calls - always returns 200.
  */
 
-import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

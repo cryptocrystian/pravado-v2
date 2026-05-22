@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 'use client';
 
 /**
@@ -19,12 +20,13 @@
  */
 
 import { useState, useMemo } from 'react';
+
 import { DistributionDecisionMatrix } from '../components/DistributionDecisionMatrix';
-import type { PressRelease, Distribution, DistributionTrack } from '../types';
 import {
   buttonStyles,
   prAccent,
 } from '../prWorkSurfaceStyles';
+import type { PressRelease, Distribution, DistributionTrack } from '../types';
 
 // ============================================
 // TYPES - Scheduled Sends

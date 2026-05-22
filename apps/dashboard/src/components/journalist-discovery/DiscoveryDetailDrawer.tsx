@@ -5,12 +5,14 @@
  * Displays full discovery details with resolution actions
  */
 
-import { useState } from 'react';
 import type { DiscoveredJournalist, ResolveDiscoveryInput, SuggestedMatch } from '@pravado/types';
-import { ConfidenceBadge } from './ConfidenceBadge';
-import { SourceTypeBadge } from './SourceTypeBadge';
-import { SocialProfileChips } from './SocialProfileChips';
+import { useState } from 'react';
+
 import { resolveDiscovery } from '@/lib/journalistDiscoveryApi';
+
+import { ConfidenceBadge } from './ConfidenceBadge';
+import { SocialProfileChips } from './SocialProfileChips';
+import { SourceTypeBadge } from './SourceTypeBadge';
 
 export interface DiscoveryDetailDrawerProps {
   discovery: DiscoveredJournalist;

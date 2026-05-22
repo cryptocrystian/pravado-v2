@@ -6,9 +6,10 @@
  */
 
 import type { DiscoveredJournalist } from '@pravado/types';
+
 import { ConfidenceBadge } from './ConfidenceBadge';
-import { SourceTypeBadge } from './SourceTypeBadge';
 import { SocialProfileChips } from './SocialProfileChips';
+import { SourceTypeBadge } from './SourceTypeBadge';
 
 interface DiscoveryListProps {
   discoveries: DiscoveredJournalist[];

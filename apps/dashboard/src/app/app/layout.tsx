@@ -8,8 +8,8 @@
  * The AppShellWrapper client component handles the routing logic.
  */
 
-import { getCurrentUser } from '@/lib/getCurrentUser';
 import { AppShellWrapper } from '@/components/layout/AppShellWrapper';
+import { getCurrentUser } from '@/lib/getCurrentUser';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';

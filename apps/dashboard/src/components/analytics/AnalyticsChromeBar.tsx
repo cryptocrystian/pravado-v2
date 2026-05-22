@@ -12,12 +12,13 @@
  * @see /docs/canon/ANALYTICS_CONTRACT.md
  */
 
+import { Lightning, TrendUp, Info, Lock, User, CaretDown } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import { Lightning, TrendUp, Info, Lock, User, CaretDown } from '@phosphor-icons/react';
-import { useAnalyticsMode, type AnalyticsMode } from './AnalyticsModeContext';
+
 import { useAnalyticsDate, DATE_RANGES } from './AnalyticsDateContext';
+import { useAnalyticsMode, type AnalyticsMode } from './AnalyticsModeContext';
 
 // ============================================
 // TAB CONFIG

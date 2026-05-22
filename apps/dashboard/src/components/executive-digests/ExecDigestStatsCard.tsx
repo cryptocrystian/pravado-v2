@@ -5,9 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { type ExecDigestStats } from '@/lib/executiveDigestApi';
-import { cn } from '@/lib/utils';
 import {
   FileText,
   Users,
@@ -16,6 +13,10 @@ import {
   Activity,
   TrendingUp,
 } from 'lucide-react';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { type ExecDigestStats } from '@/lib/executiveDigestApi';
+import { cn } from '@/lib/utils';
 
 interface ExecDigestStatsCardProps {
   stats: ExecDigestStats;

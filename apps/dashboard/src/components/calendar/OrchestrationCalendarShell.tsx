@@ -1,10 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
+
+import { CalendarActionModal } from './CalendarActionModal';
 import { useCalendarMode } from './CalendarModeContext';
-import { WeekView } from './WeekView';
 import { DayView } from './DayView';
 import { MonthView } from './MonthView';
-import { CalendarActionModal } from './CalendarActionModal';
+import { WeekView } from './WeekView';
 import type { CalendarItem } from '../command-center/types';
 
 function todayISO() {

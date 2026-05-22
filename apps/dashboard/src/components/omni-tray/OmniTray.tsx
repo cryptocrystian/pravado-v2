@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { usePathname } from 'next/navigation';
 import { Sparkle, X, PaperPlaneRight } from '@phosphor-icons/react';
-import { useOmniTray } from './useOmniTray';
+import { usePathname } from 'next/navigation';
+import { useState, useRef, useEffect, useCallback } from 'react';
+
 import { getChipsForPath } from './omni-tray-context-chips';
+import { useOmniTray } from './useOmniTray';
 
 interface Message {
   id: string;

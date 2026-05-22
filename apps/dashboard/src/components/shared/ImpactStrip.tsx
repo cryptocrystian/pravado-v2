@@ -10,9 +10,9 @@
  * @see docs/skills/PRAVADO_DESIGN_SKILL.md (Impact Strip pattern)
  */
 
+import type { Pillar , AutomationMode } from '@/lib/mode-preferences';
+
 import { ModeSwitcher } from './ModeSwitcher';
-import type { Pillar } from '@/lib/mode-preferences';
-import type { AutomationMode } from '@/lib/mode-preferences';
 
 interface ImpactStripProps {
   sageTag: string;

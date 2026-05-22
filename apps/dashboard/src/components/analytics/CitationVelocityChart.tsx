@@ -15,6 +15,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+
 import { mockCitationVelocity, mockContentRows } from './analytics-mock-data';
 
 const PIECE_COLORS = ['#00D9FF', '#A855F7', '#E879F9'];

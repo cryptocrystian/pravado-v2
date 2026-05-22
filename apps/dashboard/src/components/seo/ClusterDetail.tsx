@@ -4,7 +4,6 @@
  * ClusterDetail — Right panel showing full cluster analysis.
  */
 
-import { useRouter } from 'next/navigation';
 import {
   CheckCircle,
   Warning,
@@ -13,6 +12,8 @@ import {
   House,
   Newspaper,
 } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
+
 import type { TopicCluster } from './seo-mock-data';
 
 

@@ -8,8 +8,9 @@
  * renders after all three pillars regardless of order.
  */
 
-import Link from 'next/link';
 import { ArrowsHorizontal, ArrowRight } from '@phosphor-icons/react';
+import Link from 'next/link';
+
 import {
   eviBand,
   sevColor,

@@ -11,8 +11,9 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useState, useMemo } from 'react';
+
 import { AIReasoningPopover, type AIReasoningContext } from '@/components/AIReasoningPopover';
 
 // Types

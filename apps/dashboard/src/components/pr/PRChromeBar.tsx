@@ -13,9 +13,6 @@
  * @see /docs/canon/UX_CONTINUITY_CANON.md
  */
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useRef, useState, useEffect } from 'react';
 import {
   Lightning,
   Lock,
@@ -23,8 +20,14 @@ import {
   CaretDown,
   TrendUp,
 } from '@phosphor-icons/react';
-import { usePRMode, type AutomationMode } from './PRModeContext';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useRef, useState, useEffect } from 'react';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import { usePRMode, type AutomationMode } from './PRModeContext';
+
 
 // ============================================
 // TAB CONFIG

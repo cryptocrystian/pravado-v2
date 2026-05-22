@@ -5,6 +5,18 @@
 
 'use client';
 
+import type {
+  AudiencePersona,
+  UpdatePersonaInput,
+  PersonaType,
+  CompanySize,
+  SeniorityLevel,
+  PersonaStatus,
+} from '@pravado/types';
+import { AlertCircle, Check, Loader2, X } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,17 +28,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import type {
-  AudiencePersona,
-  UpdatePersonaInput,
-  PersonaType,
-  CompanySize,
-  SeniorityLevel,
-  PersonaStatus,
-} from '@pravado/types';
-import { AlertCircle, Check, Loader2, X } from 'lucide-react';
-import { useState } from 'react';
 
 interface PersonaEditorProps {
   persona: AudiencePersona;

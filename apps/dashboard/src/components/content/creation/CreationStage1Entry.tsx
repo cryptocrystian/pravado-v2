@@ -9,7 +9,6 @@
  * @see /docs/skills/PRAVADO_DESIGN_SKILL.md
  */
 
-import { useState } from 'react';
 import type { Icon as PhosphorIcon } from '@phosphor-icons/react';
 import {
   Robot,
@@ -23,6 +22,8 @@ import {
   CaretUp,
   TrendUp,
 } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import type { AutomationMode, CreationContentType } from '../types';
 import { CREATION_TYPE_CONFIG } from '../types';
 

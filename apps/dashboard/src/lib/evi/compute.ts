@@ -10,6 +10,7 @@
  */
 
 import type { Trend } from '@/components/command-center/types';
+
 import type { ComputedEVI, EVIInputSnapshot, EVIDriverSnapshot } from './types';
 import { EVI_WEIGHTS, EVI_BANDS } from './types';
 

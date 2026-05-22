@@ -3,9 +3,9 @@
  * Server component — handles auth, passes session props to PRShell.
  */
 
+import { PRShell } from '@/components/pr/PRShell';
 import { getCurrentUser } from '@/lib/getCurrentUser';
 import { MSWProvider } from '@/mocks/MSWProvider';
-import { PRShell } from '@/components/pr/PRShell';
 
 export const dynamic = 'force-dynamic';
 

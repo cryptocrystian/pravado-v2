@@ -8,9 +8,10 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
+
 import { PitchWizard } from '@/components/pr/PitchWizard';
 import { mockJournalists } from '@/components/pr/pr-mock-data';
 

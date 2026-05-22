@@ -12,6 +12,7 @@
  */
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
+
 import type { CalendarViewMode } from './types';
 
 export type AutomationMode = 'manual' | 'copilot' | 'autopilot';

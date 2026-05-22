@@ -5,9 +5,23 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Send,
+  Clock,
+  Users,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  Loader,
+} from 'lucide-react';
+import { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Collapsible,
   CollapsibleContent,
@@ -22,19 +36,7 @@ import {
   formatRelativeTime,
 } from '@/lib/executiveDigestApi';
 import { cn } from '@/lib/utils';
-import {
-  Send,
-  Clock,
-  Users,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  ChevronDown,
-  ChevronRight,
-  FileText,
-  Loader,
-} from 'lucide-react';
-import { useState } from 'react';
+
 
 interface ExecDigestDeliveryHistoryProps {
   deliveryLogs: ExecDigestDeliveryLog[];

@@ -37,9 +37,10 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react';
+
+import type { ExecutionState } from './ActionCard';
 import { pillarAccents, priorityStyles, modeStyles } from './pillar-accents';
 import type { ActionItem, ActionSignal, ActionEvidence } from './types';
-import type { ExecutionState } from './ActionCard';
 
 // Signal tone colors - DS v3 semantic colors
 const signalToneColors: Record<ActionSignal['tone'], string> = {

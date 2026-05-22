@@ -4,8 +4,8 @@
  * Provides real-time CiteMind scores and gate status from the backend.
  */
 
-import useSWR, { mutate } from 'swr';
 import { useCallback, useState } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // ============================================================================
 // Types

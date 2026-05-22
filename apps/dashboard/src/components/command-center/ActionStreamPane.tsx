@@ -45,9 +45,11 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+
 import { RedirectToOnboarding } from '@/components/auth/RedirectToOnboarding';
+
 import { ActionCard, type DensityLevel } from './ActionCard';
 import type { ActionItem, ActionStreamResponse, EVIFilterState, Priority } from './types';
 

@@ -5,9 +5,18 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import {
+  FileText,
+  ChevronRight,
+  Calendar,
+  Users,
+  Layers,
+} from 'lucide-react';
+import Link from 'next/link';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   type InvestorPack,
   getFormatLabel,
@@ -19,14 +28,7 @@ import {
   formatRelativeTime,
 } from '@/lib/investorRelationsApi';
 import { cn } from '@/lib/utils';
-import {
-  FileText,
-  ChevronRight,
-  Calendar,
-  Users,
-  Layers,
-} from 'lucide-react';
-import Link from 'next/link';
+
 
 interface InvestorPackListItemProps {
   pack: InvestorPack;

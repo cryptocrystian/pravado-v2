@@ -5,13 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import {
-  GraphMetrics,
-  formatNodeCount,
-  formatCentrality,
-} from '@/lib/unifiedGraphApi';
 import {
   CircleDot,
   GitBranch,
@@ -20,6 +13,14 @@ import {
   Network,
   BarChart3,
 } from 'lucide-react';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import {
+  GraphMetrics,
+  formatNodeCount,
+  formatCentrality,
+} from '@/lib/unifiedGraphApi';
 
 interface GraphMetricsPanelProps {
   metrics: GraphMetrics;

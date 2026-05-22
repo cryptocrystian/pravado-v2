@@ -7,6 +7,7 @@ import {
   Warning,
 } from '@phosphor-icons/react';
 import type { IconProps } from '@phosphor-icons/react';
+
 import type { CCActionItem, ActionPriority, ActionSurface } from './cc-mock-data';
 import { actionQueueItems } from './cc-mock-data';
 

@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { ReputationTrendDirection } from '@pravado/types';
+import { ArrowUp, ArrowDown, Minus, TrendingUp } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getScoreColor,
   getScoreLabel,
@@ -14,8 +17,7 @@ import {
   formatDelta,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { ReputationTrendDirection } from '@pravado/types';
-import { ArrowUp, ArrowDown, Minus, TrendingUp } from 'lucide-react';
+
 
 interface ReputationScoreCardProps {
   score: number | null | undefined;

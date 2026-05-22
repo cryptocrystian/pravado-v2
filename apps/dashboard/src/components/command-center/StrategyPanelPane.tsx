@@ -27,8 +27,10 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+
 import { RedirectToOnboarding } from '@/components/auth/RedirectToOnboarding';
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
 import type {
   EarnedVisibilityIndex,
   EVIDriver,

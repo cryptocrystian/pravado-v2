@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useRef, useCallback } from 'react';
 
 // ── Types ──
 interface QuickNavCard {

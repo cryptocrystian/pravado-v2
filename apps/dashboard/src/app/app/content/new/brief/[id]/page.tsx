@@ -9,9 +9,10 @@
 
 export const dynamic = 'force-dynamic';
 
-import { use } from 'react';
-import Link from 'next/link';
 import { Lightning } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { use } from 'react';
+
 import { mockBriefs } from '@/components/content/content-mock-data';
 
 interface PageProps {

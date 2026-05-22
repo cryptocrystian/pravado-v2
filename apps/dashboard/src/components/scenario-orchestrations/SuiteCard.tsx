@@ -6,6 +6,7 @@
  */
 
 import type { ScenarioSuite } from '@pravado/types';
+
 import {
   SUITE_STATUS_LABELS,
   getStatusBadgeClass,

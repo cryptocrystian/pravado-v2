@@ -5,10 +5,11 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { useEffect, useState } from 'react';
+
 import { PravadoLogo } from '@/components/brand/PravadoLogo';
+import { supabase } from '@/lib/supabaseClient';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
@@ -126,7 +127,7 @@ export default function CallbackPage() {
         }
 
         // First, try to get existing session
-        let { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
         if (sessionError) {
           console.error('getSession error:', sessionError);

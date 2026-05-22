@@ -5,13 +5,15 @@
 
 'use client';
 
+import { Plus, Edit, Trash2, Archive, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { SeverityBadge } from './SeverityBadge';
-import { CategoryBadge } from './CategoryBadge';
 import type { GovernancePolicy, GovernancePoliciesQuery } from '@/lib/governanceApi';
 import { getScopeLabel, formatRelativeTime } from '@/lib/governanceApi';
-import { Plus, Edit, Trash2, Archive, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+
+import { CategoryBadge } from './CategoryBadge';
+import { SeverityBadge } from './SeverityBadge';
 
 interface PolicyListProps {
   policies: GovernancePolicy[];

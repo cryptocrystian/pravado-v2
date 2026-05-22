@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { backendFetch, getErrorResponse } from '@/server/backendProxy';
 
 export const dynamic = 'force-dynamic';

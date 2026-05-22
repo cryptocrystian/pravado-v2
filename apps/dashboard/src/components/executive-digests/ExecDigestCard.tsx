@@ -5,8 +5,19 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import {
+  FileText,
+  Clock,
+  Send,
+  Calendar,
+  CheckCircle,
+  XCircle,
+  Archive,
+  Pause,
+} from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   type ExecDigestWithCounts,
   getDeliveryPeriodLabel,
@@ -20,16 +31,7 @@ import {
   getDeliveryStatusLabel,
 } from '@/lib/executiveDigestApi';
 import { cn } from '@/lib/utils';
-import {
-  FileText,
-  Clock,
-  Send,
-  Calendar,
-  CheckCircle,
-  XCircle,
-  Archive,
-  Pause,
-} from 'lucide-react';
+
 
 interface ExecDigestCardProps {
   digest: ExecDigestWithCounts;

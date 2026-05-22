@@ -17,10 +17,11 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import type { ContentAsset } from '../types';
-import { PravadoEditor } from '../editor/PravadoEditor';
-import { DocumentRail } from '../editor/DocumentRail';
+
 import { ContextRailEditor, type ContextRailEditorProps } from '../editor/ContextRailEditor';
+import { DocumentRail } from '../editor/DocumentRail';
+import { PravadoEditor } from '../editor/PravadoEditor';
+import type { ContentAsset } from '../types';
 
 // ============================================
 // TYPES

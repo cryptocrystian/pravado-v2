@@ -23,7 +23,6 @@ import {
   MOCK_CITATION_ACTIVITY,
   MOCK_TOPIC_CLUSTERS,
 } from './mock-data';
-
 import {
   getAEOBandColor,
   getAEOBandBgColor,

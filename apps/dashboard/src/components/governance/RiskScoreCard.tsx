@@ -5,13 +5,16 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TrendingUp, TrendingDown, Minus, AlertTriangle, Shield, Activity } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
-import { SeverityBadge } from './SeverityBadge';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { GovernanceRiskScore, GovernanceScoreTrend } from '@/lib/governanceApi';
 import { getEntityTypeLabel, getTrendColor } from '@/lib/governanceApi';
-import { TrendingUp, TrendingDown, Minus, AlertTriangle, Shield, Activity } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+import { SeverityBadge } from './SeverityBadge';
+
 
 interface RiskScoreCardProps {
   riskScore: GovernanceRiskScore;

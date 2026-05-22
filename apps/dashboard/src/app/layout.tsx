@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+
 import './globals.css';
-import { ErrorBoundary } from './ErrorBoundary';
 import { PostHogProvider } from '@/providers/PostHogProvider';
+
+import { ErrorBoundary } from './ErrorBoundary';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';

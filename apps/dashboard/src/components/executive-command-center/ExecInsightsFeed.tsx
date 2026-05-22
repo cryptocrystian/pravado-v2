@@ -5,10 +5,21 @@
 
 'use client';
 
+import {
+  Lightbulb,
+  AlertTriangle,
+  TrendingUp,
+  ExternalLink,
+  Loader2,
+  Filter,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -24,16 +35,6 @@ import {
   formatRelativeTime,
 } from '@/lib/executiveCommandCenterApi';
 import { cn } from '@/lib/utils';
-import {
-  Lightbulb,
-  AlertTriangle,
-  TrendingUp,
-  ExternalLink,
-  Loader2,
-  Filter,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
 
 interface ExecInsightsFeedProps {
   insights: ExecDashboardInsight[];

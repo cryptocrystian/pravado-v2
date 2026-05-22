@@ -1,10 +1,19 @@
 'use client';
 
+import type {
+  Competitor,
+  CreateCompetitorRequest,
+  UpdateCompetitorRequest,
+  CompetitorTier,
+} from '@pravado/types';
+import { Plus, X, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -13,16 +22,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import type {
-  Competitor,
-  CreateCompetitorRequest,
-  UpdateCompetitorRequest,
-  CompetitorTier,
-} from '@pravado/types';
+import { Textarea } from '@/components/ui/textarea';
 import { createCompetitor, updateCompetitor } from '@/lib/competitorIntelligenceApi';
-import { Plus, X, Loader2 } from 'lucide-react';
+
 
 interface CompetitorFormProps {
   competitor?: Competitor | null;

@@ -6,8 +6,8 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import type { GovernanceFindingStatus } from '@/lib/governanceApi';
+import { cn } from '@/lib/utils';
 
 interface StatusBadgeProps {
   status: GovernanceFindingStatus;

@@ -6,11 +6,12 @@
  */
 
 import { useCallback } from 'react';
-import { ContentTable } from '@/components/analytics/ContentTable';
+
+import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
+import { mockContentRows, mockNarratives } from '@/components/analytics/analytics-mock-data';
 import { CitationVelocityChart } from '@/components/analytics/CitationVelocityChart';
 import { CiteMindDistribution } from '@/components/analytics/CiteMindDistribution';
-import { mockContentRows, mockNarratives } from '@/components/analytics/analytics-mock-data';
-import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
+import { ContentTable } from '@/components/analytics/ContentTable';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
 export default function ContentAnalyticsPage() {

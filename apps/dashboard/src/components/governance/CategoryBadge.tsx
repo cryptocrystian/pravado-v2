@@ -6,9 +6,9 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import type { GovernancePolicyCategory } from '@/lib/governanceApi';
 import { getCategoryLabel } from '@/lib/governanceApi';
+import { cn } from '@/lib/utils';
 
 interface CategoryBadgeProps {
   category: GovernancePolicyCategory;

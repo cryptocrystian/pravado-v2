@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations -- lexical decl in case block; Phase 1 cleanup */
 'use client';
 
 /**
@@ -6,6 +7,7 @@
  */
 
 import type { ScenarioSuiteItem, AIScenarioSimulation } from '@pravado/types';
+
 import {
   CONDITION_TYPE_LABELS,
   CONDITION_TYPE_DESCRIPTIONS,

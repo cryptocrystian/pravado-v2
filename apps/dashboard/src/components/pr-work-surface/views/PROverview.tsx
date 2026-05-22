@@ -17,8 +17,9 @@
  * @see /docs/canon/COMMAND_CENTER_CONTRACT.md
  */
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
+
 import type { PRSituationBrief } from '../types';
 
 // ============================================

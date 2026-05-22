@@ -5,17 +5,18 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import type {
   DiscoveredJournalist,
   DiscoveryQuery,
   DiscoveryStats,
 } from '@pravado/types';
-import * as journalistDiscoveryApi from '@/lib/journalistDiscoveryApi';
+import { useState, useEffect } from 'react';
+
+import { DiscoveryDetailDrawer } from '@/components/journalist-discovery/DiscoveryDetailDrawer';
 import { DiscoveryFilters } from '@/components/journalist-discovery/DiscoveryFilters';
 import { DiscoveryList } from '@/components/journalist-discovery/DiscoveryList';
-import { DiscoveryDetailDrawer } from '@/components/journalist-discovery/DiscoveryDetailDrawer';
 import { MergeConflictResolver } from '@/components/journalist-discovery/MergeConflictResolver';
+import * as journalistDiscoveryApi from '@/lib/journalistDiscoveryApi';
 
 export default function JournalistDiscoveryPage() {
   const [discoveries, setDiscoveries] = useState<DiscoveredJournalist[]>([]);

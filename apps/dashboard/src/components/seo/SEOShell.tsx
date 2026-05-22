@@ -8,8 +8,9 @@
  */
 
 import { CommandCenterTopbar } from '@/components/command-center';
-import { SEOModeProvider } from './SEOModeContext';
+
 import { SEOChromeBar } from './SEOChromeBar';
+import { SEOModeProvider } from './SEOModeContext';
 
 interface SEOShellProps {
   children: React.ReactNode;

@@ -5,8 +5,9 @@
  * Controls for advancing, pausing, or aborting a suite run
  */
 
-import { useState } from 'react';
 import type { ScenarioSuiteRun } from '@pravado/types';
+import { useState } from 'react';
+
 import {
   advanceSuiteRun,
   abortSuiteRun,

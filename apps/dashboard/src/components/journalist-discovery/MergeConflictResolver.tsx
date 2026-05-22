@@ -5,8 +5,9 @@
  * Shows field-level conflicts and resolution options when merging discoveries
  */
 
-import { useEffect, useState } from 'react';
 import type { MergePreview } from '@pravado/types';
+import { useEffect, useState } from 'react';
+
 import { generateMergePreview } from '@/lib/journalistDiscoveryApi';
 
 type MergeConflict = MergePreview['conflicts'][number];

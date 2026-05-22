@@ -6,8 +6,9 @@
  *           rounded-2xl → rounded-xl, text-emerald-500 → text-semantic-success.
  */
 
-import { mockPlacements, mockPRSummary } from './analytics-mock-data';
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import { mockPlacements, mockPRSummary } from './analytics-mock-data';
 
 export function PlacementsTable() {
   return (

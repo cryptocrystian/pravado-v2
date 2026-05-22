@@ -7,7 +7,10 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  BriefFormatType,
+  CreateBriefingRequest,
+} from '@pravado/types';
 import {
   FileText,
   Users,
@@ -19,18 +22,13 @@ import {
   Sparkles,
   Info,
 } from 'lucide-react';
-import type {
-  BriefFormatType,
-  CreateBriefingRequest,
-} from '@pravado/types';
-import { getFormatLabel, getFormatIcon } from '@/lib/mediaBriefingApi';
-import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import React, { useState, useCallback } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -38,6 +36,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { getFormatLabel, getFormatIcon } from '@/lib/mediaBriefingApi';
+import { cn } from '@/lib/utils';
 
 interface BriefingGenerationFormProps {
   onSubmit: (data: CreateBriefingRequest) => Promise<void>;

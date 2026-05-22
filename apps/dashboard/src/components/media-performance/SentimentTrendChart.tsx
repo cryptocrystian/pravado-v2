@@ -5,12 +5,14 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { getSentimentColor } from '@/lib/mediaPerformanceApi';
 import type { TrendDirection } from '@pravado/types';
 import { useMemo } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getSentimentColor } from '@/lib/mediaPerformanceApi';
+import { cn } from '@/lib/utils';
+
 
 interface SentimentDataPoint {
   timestamp: Date;

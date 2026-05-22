@@ -1,12 +1,14 @@
 'use client';
 
-import { useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import type { CompetitorMetricsSnapshot, CISentimentTrend } from '@pravado/types';
-import { formatNumber } from '@/lib/competitorIntelligenceApi';
 import { TrendingUp, TrendingDown, Minus, ArrowUp, ArrowDown } from 'lucide-react';
+import { useMemo } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatNumber } from '@/lib/competitorIntelligenceApi';
+import { cn } from '@/lib/utils';
+
 
 interface CompetitorTrendChartProps {
   snapshots: CompetitorMetricsSnapshot[];

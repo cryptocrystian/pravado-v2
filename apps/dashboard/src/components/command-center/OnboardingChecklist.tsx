@@ -1,6 +1,7 @@
 'use client';
 
 import { Check } from '@phosphor-icons/react';
+
 import { onboardingSteps } from './cc-mock-data';
 
 export function OnboardingChecklist() {

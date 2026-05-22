@@ -15,6 +15,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import { motion, citeMindStatus as citeMindTokens, modeTokens } from '../tokens';
 import type { AutomationMode } from '../types';
 import type { TriggerAction } from './OrchestrationEditorShell';

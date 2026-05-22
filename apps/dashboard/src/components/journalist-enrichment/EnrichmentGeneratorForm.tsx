@@ -3,8 +3,8 @@
  * Form for creating new enrichment records
  */
 
-import React, { useState } from 'react';
 import { PlusIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import React, { useState } from 'react';
 
 interface EnrichmentGeneratorFormProps {
   onGenerate: (data: EnrichmentFormData) => Promise<void>;

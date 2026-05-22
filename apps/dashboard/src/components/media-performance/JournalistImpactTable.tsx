@@ -5,13 +5,14 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { getScoreColor, getSentimentColor } from '@/lib/mediaPerformanceApi';
 import type { TopJournalist } from '@pravado/types';
 import { ArrowUpDown, TrendingUp, Award } from 'lucide-react';
 import { useState, useMemo } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getScoreColor, getSentimentColor } from '@/lib/mediaPerformanceApi';
+import { cn } from '@/lib/utils';
 
 interface JournalistImpactTableProps {
   journalists: TopJournalist[];

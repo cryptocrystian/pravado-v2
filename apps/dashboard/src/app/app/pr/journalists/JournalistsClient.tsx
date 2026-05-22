@@ -8,8 +8,8 @@
 
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
+import { useState, useTransition, useEffect } from 'react';
 
 /**
  * Journalist profile type (inline to avoid prDataServer import)

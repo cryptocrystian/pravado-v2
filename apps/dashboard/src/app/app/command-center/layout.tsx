@@ -15,8 +15,8 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { getCurrentUser } from '@/lib/getCurrentUser';
 import { CommandCenterTopbar } from '@/components/command-center';
+import { getCurrentUser } from '@/lib/getCurrentUser';
 import { MSWProvider } from '@/mocks/MSWProvider';
 
 // Force dynamic rendering to avoid SSG errors

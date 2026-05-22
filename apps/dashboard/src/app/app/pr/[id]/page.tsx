@@ -5,11 +5,11 @@
  * Detail view for a single press release
  */
 
+import type { PRAngleOption, PRGeneratedRelease, PRHeadlineVariant, PRSimilarRelease } from '@pravado/types';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import type { PRAngleOption, PRGeneratedRelease, PRHeadlineVariant, PRSimilarRelease } from '@pravado/types';
 
 import { PRGenerationResult } from '@/components/pr-generator';
 import {

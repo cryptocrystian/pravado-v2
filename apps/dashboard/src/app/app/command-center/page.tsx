@@ -14,10 +14,10 @@
 
 import { useState, useEffect } from 'react';
 
-import { TriPaneShell } from '@/components/command-center/TriPaneShell';
 import { ActionStreamPane } from '@/components/command-center/ActionStreamPane';
 import { IntelligenceCanvasPane } from '@/components/command-center/IntelligenceCanvasPane';
 import { StrategyPanelPane } from '@/components/command-center/StrategyPanelPane';
+import { TriPaneShell } from '@/components/command-center/TriPaneShell';
 
 // ── Hooks ──
 

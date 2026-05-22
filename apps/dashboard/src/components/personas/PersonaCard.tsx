@@ -5,9 +5,11 @@
 
 'use client';
 
+import type { AudiencePersona } from '@pravado/types';
+import { Building2, MapPin, TrendingUp, Users } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import type { AudiencePersona } from '@pravado/types';
 import {
   formatPersonaName,
   getPersonaTypeLabel,
@@ -15,7 +17,7 @@ import {
   getSeniorityLevelLabel,
 } from '@/lib/personaApi';
 import { cn } from '@/lib/utils';
-import { Building2, MapPin, TrendingUp, Users } from 'lucide-react';
+
 
 interface PersonaCardProps {
   persona: AudiencePersona;

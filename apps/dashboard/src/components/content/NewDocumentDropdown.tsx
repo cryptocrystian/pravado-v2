@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Lightning, Layout, PencilSimple, CaretDown } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect } from 'react';
+
 import { mockBriefs } from './content-mock-data';
 
 export function NewDocumentDropdown() {

@@ -5,22 +5,6 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PerformanceScoreCard } from '@/components/media-performance/PerformanceScoreCard';
-import { SentimentTrendChart } from '@/components/media-performance/SentimentTrendChart';
-import { CoverageVelocityChart } from '@/components/media-performance/CoverageVelocityChart';
-import { TierDistributionPie } from '@/components/media-performance/TierDistributionPie';
-import { JournalistImpactTable } from '@/components/media-performance/JournalistImpactTable';
-import { CampaignHeatmap } from '@/components/media-performance/CampaignHeatmap';
-import { InsightNarrativePanel } from '@/components/media-performance/InsightNarrativePanel';
-import {
-  getOverview,
-  getTrend,
-  getInsights,
-} from '@/lib/mediaPerformanceApi';
 import type {
   GetOverviewResponse,
   GetTrendResponse,
@@ -37,6 +21,23 @@ import {
   Calendar,
   AlertTriangle,
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+import { CampaignHeatmap } from '@/components/media-performance/CampaignHeatmap';
+import { CoverageVelocityChart } from '@/components/media-performance/CoverageVelocityChart';
+import { InsightNarrativePanel } from '@/components/media-performance/InsightNarrativePanel';
+import { JournalistImpactTable } from '@/components/media-performance/JournalistImpactTable';
+import { PerformanceScoreCard } from '@/components/media-performance/PerformanceScoreCard';
+import { SentimentTrendChart } from '@/components/media-performance/SentimentTrendChart';
+import { TierDistributionPie } from '@/components/media-performance/TierDistributionPie';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  getOverview,
+  getTrend,
+  getInsights,
+} from '@/lib/mediaPerformanceApi';
 
 export default function MediaPerformancePage() {
   // State

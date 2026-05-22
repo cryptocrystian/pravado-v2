@@ -20,8 +20,6 @@
  * Pillar accent: iris (#A855F7) — Content's pillar color.
  */
 
-import { useState } from 'react';
-import Link from 'next/link';
 import {
   FileText,
   Newspaper,
@@ -31,9 +29,12 @@ import {
   CaretDown,
   ArrowRight,
 } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { useState } from 'react';
+
+import type { ScanResponse } from '@/components/marketing/audit-types';
 import { AuditForm } from '@/components/marketing/AuditForm';
 import { EVIScorecardResults } from '@/components/marketing/EVIScorecardResults';
-import type { ScanResponse } from '@/components/marketing/audit-types';
 
 function TM() {
   return <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>;

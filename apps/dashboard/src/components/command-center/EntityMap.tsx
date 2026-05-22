@@ -13,7 +13,6 @@
  * @see /docs/canon/ENTITY_MAP_SPEC.md
  */
 
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import {
   forceSimulation,
   forceLink,
@@ -23,6 +22,8 @@ import {
   type SimulationNodeDatum,
   type SimulationLinkDatum,
 } from 'd3-force';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+
 import type { EntityNode, EntityEdge, SessionCitationEvent, ActionImpactMap } from './types';
 
 // ── Color Map ──────────────────────────────────────────────

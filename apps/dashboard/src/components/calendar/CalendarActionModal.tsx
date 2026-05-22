@@ -10,8 +10,9 @@
  */
 
 import { useEffect, useCallback } from 'react';
-import type { CalendarItem } from '../command-center/types';
+
 import { STATUS_CONFIG, MODE_CONFIG, PILLAR_CONFIG, RISK_CONFIG } from './types';
+import type { CalendarItem } from '../command-center/types';
 
 // ============================================
 // PROPS

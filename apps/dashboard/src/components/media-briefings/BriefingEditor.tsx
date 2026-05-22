@@ -7,7 +7,11 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  MediaBriefing,
+  TalkingPoint,
+  TalkingPointCategory,
+} from '@pravado/types';
 import {
   RefreshCw,
   Copy,
@@ -23,11 +27,13 @@ import {
   Archive,
   Sparkles,
 } from 'lucide-react';
-import type {
-  MediaBriefing,
-  TalkingPoint,
-  TalkingPointCategory,
-} from '@pravado/types';
+import React, { useState, useCallback } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   getFormatLabel,
   getFormatIcon,
@@ -41,11 +47,7 @@ import {
   getTalkingPointCategoryLabel,
 } from '@/lib/mediaBriefingApi';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
+
 import BriefingSection from './BriefingSection';
 import TalkingPointCard from './TalkingPointCard';
 

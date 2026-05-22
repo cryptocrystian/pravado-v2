@@ -6,9 +6,13 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { Copy, Check, ThumbsUp, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import type { TalkingPoint } from '@pravado/types';
+import { Copy, Check, ThumbsUp, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   getTalkingPointCategoryLabel,
   getTalkingPointCategoryColor,
@@ -16,9 +20,6 @@ import {
   getPriorityScoreColor,
 } from '@/lib/mediaBriefingApi';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 interface TalkingPointCardProps {
   talkingPoint: TalkingPoint;

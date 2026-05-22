@@ -6,7 +6,9 @@
 'use client';
 
 import React, { useState } from 'react';
+
 import { BillingPlan, formatCurrency, canDowngradeToPlan, OrgBillingSummaryEnriched } from '@/lib/billingApi';
+
 import { PlanRecommendationBadge } from './PlanRecommendationBadge';
 
 interface BillingPlanCardProps {

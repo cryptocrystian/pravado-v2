@@ -14,8 +14,14 @@
  * Design System: Pravado DS v2
  */
 
-import { useEffect, useState, useCallback } from 'react';
+import type { AIScenarioSimulation, AIScenarioSimulationStats } from '@pravado/types';
 import Link from 'next/link';
+import { useEffect, useState, useCallback } from 'react';
+
+import { AIReasoningPopover, type AIReasoningContext } from '@/components/AIReasoningPopover';
+import { OrchestrationSummaryCard } from '@/components/orchestration';
+import { PillarBadge, getPillarFromSource, getAffectedPillars } from '@/components/PillarContinuityLinks';
+import { listSimulations, getStats as getSimulationStats } from '@/lib/aiScenarioSimulationApi';
 import {
   execDashboardApi,
   type ExecDashboardKpi,
@@ -25,14 +31,9 @@ import {
   formatRelativeTime,
   getSourceSystemLabel,
 } from '@/lib/executiveCommandCenterApi';
-import { listRealityMaps, type RealityMap } from '@/lib/realityMapApi';
 import { listConflicts } from '@/lib/insightConflictApi';
-import { listSimulations, getStats as getSimulationStats } from '@/lib/aiScenarioSimulationApi';
-import type { AIScenarioSimulation, AIScenarioSimulationStats } from '@pravado/types';
+import { listRealityMaps, type RealityMap } from '@/lib/realityMapApi';
 import { listNarratives, getNarrativeStats, type UnifiedNarrative, type NarrativeStats } from '@/lib/unifiedNarrativeApi';
-import { OrchestrationSummaryCard } from '@/components/orchestration';
-import { AIReasoningPopover, type AIReasoningContext } from '@/components/AIReasoningPopover';
-import { PillarBadge, getPillarFromSource, getAffectedPillars } from '@/components/PillarContinuityLinks';
 
 interface DashboardClientProps {
   userName: string;

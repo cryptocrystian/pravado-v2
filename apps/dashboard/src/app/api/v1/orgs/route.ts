@@ -4,8 +4,8 @@
  * Requires SUPABASE_SERVICE_ROLE_KEY environment variable
  */
 
-import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   console.log('[API /orgs] POST request received');

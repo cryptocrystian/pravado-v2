@@ -3,9 +3,6 @@
  * Detailed view of enrichment record with all fields and actions
  */
 
-import React from 'react';
-import { ConfidenceBadge } from './ConfidenceBadge';
-import { EnrichmentSourceBadge } from './EnrichmentSourceBadge';
 import {
   XMarkIcon,
   EnvelopeIcon,
@@ -21,6 +18,10 @@ import {
   DocumentDuplicateIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
+import React from 'react';
+
+import { ConfidenceBadge } from './ConfidenceBadge';
+import { EnrichmentSourceBadge } from './EnrichmentSourceBadge';
 
 interface EnrichmentRecordDetailDrawerProps {
   record: any;

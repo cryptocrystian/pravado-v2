@@ -28,8 +28,8 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { CalendarItem, CalendarStatus, Mode, OrchestrationCalendarResponse, Pillar } from './types';
 

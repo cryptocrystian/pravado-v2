@@ -5,22 +5,6 @@
 
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  type StrategicIntelligenceReport,
-  getFormatLabel,
-  getStatusLabel,
-  getAudienceLabel,
-  formatPeriodRange,
-  formatFiscalQuarter,
-  formatScore,
-  getScoreColor,
-  canGenerate,
-  canApprove,
-  canPublish,
-  canArchive,
-} from '@/lib/strategicIntelligenceApi';
 import {
   ArrowLeft,
   Play,
@@ -41,6 +25,23 @@ import {
   Shield,
 } from 'lucide-react';
 import Link from 'next/link';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  type StrategicIntelligenceReport,
+  getFormatLabel,
+  getStatusLabel,
+  getAudienceLabel,
+  formatPeriodRange,
+  formatFiscalQuarter,
+  formatScore,
+  getScoreColor,
+  canGenerate,
+  canApprove,
+  canPublish,
+  canArchive,
+} from '@/lib/strategicIntelligenceApi';
 
 interface StrategicReportHeaderProps {
   report: StrategicIntelligenceReport;

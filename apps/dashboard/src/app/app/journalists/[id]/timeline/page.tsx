@@ -5,8 +5,6 @@
  * Displays comprehensive timeline of all journalist interactions
  */
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
 import type {
   JournalistTimelineEvent,
   TimelineQuery,
@@ -15,12 +13,15 @@ import type {
   JournalistNarrative,
   CreateManualNoteInput,
 } from '@pravado/types';
-import { TimelineEvent } from '@/components/journalist-timeline/TimelineEvent';
-import { TimelineFilters } from '@/components/journalist-timeline/TimelineFilters';
+import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
+import { AddNoteModal } from '@/components/journalist-timeline/AddNoteModal';
 import { EventDrawer } from '@/components/journalist-timeline/EventDrawer';
 import { HealthScoreBadge } from '@/components/journalist-timeline/HealthScoreBadge';
 import { NarrativePanel } from '@/components/journalist-timeline/NarrativePanel';
-import { AddNoteModal } from '@/components/journalist-timeline/AddNoteModal';
+import { TimelineEvent } from '@/components/journalist-timeline/TimelineEvent';
+import { TimelineFilters } from '@/components/journalist-timeline/TimelineFilters';
 import * as timelineApi from '@/lib/journalistTimelineApi';
 
 export default function JournalistTimelinePage() {

@@ -19,14 +19,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import {
-  getEVIBand,
-  DRIVER_CONFIGS,
-  TIME_RANGE_OPTIONS,
-  TIER_CONFIG,
-  ANALYTICS_PILLAR_CONFIG,
-} from './types';
-import type { TimeRange } from './types';
+
 import {
   MOCK_EVI_TIME_SERIES,
   MOCK_CURRENT_EVI,
@@ -35,6 +28,14 @@ import {
   MOCK_COVERAGE_EVENTS,
   MOCK_TOP_MOVERS,
 } from './mock-data';
+import {
+  getEVIBand,
+  DRIVER_CONFIGS,
+  TIME_RANGE_OPTIONS,
+  TIER_CONFIG,
+  ANALYTICS_PILLAR_CONFIG,
+} from './types';
+import type { TimeRange } from './types';
 
 // ============================================
 // SECTION 1: EVI SCORECARD

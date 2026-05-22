@@ -5,16 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import {
-  type StrategicSource,
-  getSourceLabel,
-  getSourceIcon,
-  formatRelativeTime,
-} from '@/lib/strategicIntelligenceApi';
 import {
   ExternalLink,
   Star,
@@ -36,6 +26,18 @@ import {
   Send,
   Box,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import {
+  type StrategicSource,
+  getSourceLabel,
+  getSourceIcon,
+  formatRelativeTime,
+} from '@/lib/strategicIntelligenceApi';
+
 
 interface StrategicSourcesListProps {
   sources: StrategicSource[];

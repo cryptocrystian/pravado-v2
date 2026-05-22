@@ -7,7 +7,12 @@
 
 'use client';
 
-import React from 'react';
+import type {
+  CrisisSeverity,
+  IncidentStatus,
+  CrisisTrajectory,
+  CrisisPropagationLevel,
+} from '@pravado/types';
 import {
   Search,
   Filter,
@@ -17,24 +22,10 @@ import {
   AlertTriangle,
   Radio,
 } from 'lucide-react';
-import type {
-  CrisisSeverity,
-  IncidentStatus,
-  CrisisTrajectory,
-  CrisisPropagationLevel,
-} from '@pravado/types';
-import { SEVERITY_COLORS, STATUS_COLORS, TRAJECTORY_COLORS, PROPAGATION_COLORS } from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -43,6 +34,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { SEVERITY_COLORS, STATUS_COLORS, TRAJECTORY_COLORS, PROPAGATION_COLORS } from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 export interface CrisisFilters {
   searchQuery?: string;

@@ -20,12 +20,14 @@
  */
 
 import { useState, useCallback } from 'react';
-import type { QueueItem } from './QueueRow';
-import type { AutomationMode } from '../types';
+
 import {
   type AIPerceptualState,
   AI_PERCEPTUAL_SIGNALS,
 } from '@/components/ai';
+
+import type { QueueItem } from './QueueRow';
+import type { AutomationMode } from '../types';
 
 // ============================================
 // TYPES

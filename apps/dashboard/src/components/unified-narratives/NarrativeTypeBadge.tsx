@@ -6,7 +6,7 @@
 
 'use client';
 
-import React from 'react';
+import type { NarrativeType } from '@pravado/types';
 import {
   Briefcase,
   Target,
@@ -21,9 +21,10 @@ import {
   Zap,
   Edit3,
 } from 'lucide-react';
-import type { NarrativeType } from '@pravado/types';
-import { getNarrativeTypeLabel } from '@/lib/unifiedNarrativeApi';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
+import { getNarrativeTypeLabel } from '@/lib/unifiedNarrativeApi';
 import { cn } from '@/lib/utils';
 
 interface NarrativeTypeBadgeProps {

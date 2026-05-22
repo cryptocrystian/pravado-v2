@@ -5,17 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { SeverityBadge } from './SeverityBadge';
-import { cn } from '@/lib/utils';
-import type {
-  GovernanceAuditInsight,
-  GovernanceInsightRecommendation,
-  GovernanceInsightTopRisk,
-} from '@/lib/governanceApi';
-import { formatDate, formatDateTime, getScopeLabel, getEntityTypeLabel } from '@/lib/governanceApi';
 import {
   Lightbulb,
   AlertTriangle,
@@ -26,6 +15,20 @@ import {
   FileText,
   RefreshCw,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type {
+  GovernanceAuditInsight,
+  GovernanceInsightRecommendation,
+  GovernanceInsightTopRisk,
+} from '@/lib/governanceApi';
+import { formatDate, formatDateTime, getScopeLabel, getEntityTypeLabel } from '@/lib/governanceApi';
+import { cn } from '@/lib/utils';
+
+import { SeverityBadge } from './SeverityBadge';
+
 
 interface InsightsSummaryProps {
   insights: GovernanceAuditInsight[];

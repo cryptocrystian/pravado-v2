@@ -1,7 +1,8 @@
 'use client';
 
-import { sageSignals } from './cc-mock-data';
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import { sageSignals } from './cc-mock-data';
 
 export function SagePulse() {
   return (

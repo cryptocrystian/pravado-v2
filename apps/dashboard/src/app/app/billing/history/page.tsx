@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 /**
  * Billing History Page (Sprint S34)
  * Displays invoice list with ability to view details and download PDFs
@@ -8,8 +9,9 @@
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
+
 import {
   getBillingHistory,
   syncInvoices,

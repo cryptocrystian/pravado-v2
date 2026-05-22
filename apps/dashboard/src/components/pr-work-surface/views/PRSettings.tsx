@@ -14,11 +14,12 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import type { AutomationMode, AutomationCeiling, PRGuardrails } from '../types';
+
 import {
   buttonStyles,
   glowEffects,
 } from '../prWorkSurfaceStyles';
+import type { AutomationMode, AutomationCeiling, PRGuardrails } from '../types';
 
 // ============================================
 // TOAST COMPONENT

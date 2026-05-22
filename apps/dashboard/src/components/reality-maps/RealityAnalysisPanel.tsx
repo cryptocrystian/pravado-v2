@@ -5,8 +5,9 @@
  * Panel for displaying analysis results: outcome universe, contradictions, correlations
  */
 
-import { useState } from 'react';
 import type { RealityMapAnalysisResponse, OutcomeUniverse, RealityMapRiskFactor, OpportunityFactor, DetectedContradiction, DetectedCorrelation } from '@pravado/types';
+import { useState } from 'react';
+
 import {
   formatProbability,
   formatScore,

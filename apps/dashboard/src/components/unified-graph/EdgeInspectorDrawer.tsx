@@ -5,21 +5,30 @@
 
 'use client';
 
+import {
+  ArrowRight,
+  ArrowLeftRight,
+  Save,
+  X,
+  Scale,
+  Loader2,
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
-import { Card, CardContent } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import {
   EdgeWithNodes,
   getEdgeTypeLabel,
@@ -29,14 +38,6 @@ import {
   getEdgeWithNodes,
   updateEdge,
 } from '@/lib/unifiedGraphApi';
-import {
-  ArrowRight,
-  ArrowLeftRight,
-  Save,
-  X,
-  Scale,
-  Loader2,
-} from 'lucide-react';
 
 interface EdgeInspectorDrawerProps {
   edgeId: string | null;

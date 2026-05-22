@@ -5,18 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import {
-  type InvestorQnA,
-  getQnACategoryLabel,
-  formatRelativeTime,
-} from '@/lib/investorRelationsApi';
-import { cn } from '@/lib/utils';
 import {
   HelpCircle,
   MessageSquare,
@@ -30,6 +18,19 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  type InvestorQnA,
+  getQnACategoryLabel,
+  formatRelativeTime,
+} from '@/lib/investorRelationsApi';
+import { cn } from '@/lib/utils';
 
 interface InvestorQnACardProps {
   qna: InvestorQnA;

@@ -5,15 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  type ExecDashboardKpi,
-  getSourceSystemLabel,
-  getSourceSystemColor,
-  getTrendIconClass,
-} from '@/lib/executiveCommandCenterApi';
-import { cn } from '@/lib/utils';
 import {
   TrendingUp,
   TrendingDown,
@@ -21,6 +12,17 @@ import {
   BarChart3,
   Loader2,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  type ExecDashboardKpi,
+  getSourceSystemLabel,
+  getSourceSystemColor,
+  getTrendIconClass,
+} from '@/lib/executiveCommandCenterApi';
+import { cn } from '@/lib/utils';
+
 
 interface ExecKpiGridProps {
   kpis: ExecDashboardKpi[];

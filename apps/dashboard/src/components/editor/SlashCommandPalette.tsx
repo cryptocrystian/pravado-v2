@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   PencilLine,
   Paragraph,
@@ -19,6 +18,8 @@ import {
   ListNumbers,
   Microphone,
 } from '@phosphor-icons/react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+
 import { slashCommands, slashCommandCategories } from './editor-mock-data';
 import type { SlashCommand } from './editor-mock-data';
 

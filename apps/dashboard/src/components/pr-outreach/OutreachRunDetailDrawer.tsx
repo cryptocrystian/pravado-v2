@@ -5,9 +5,9 @@
  * Displays full run details with events timeline
  */
 
+import type { OutreachRunWithDetails } from '@pravado/types';
 import { useEffect, useState } from 'react';
 
-import type { OutreachRunWithDetails } from '@pravado/types';
 
 import { advanceOutreachRun, getOutreachRun, stopOutreachRun } from '@/lib/prOutreachApi';
 

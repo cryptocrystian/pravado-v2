@@ -6,6 +6,7 @@
 'use client';
 
 import type { MediaListGenerationResult } from '@pravado/types';
+
 import { FitScoreBadge } from './FitScoreBadge';
 import { TierBadge } from './TierBadge';
 

@@ -12,7 +12,6 @@
  * docs/sprints/D027-AUDIT-REBUILD/WORK_ORDER.md Phase 1B/1C.
  */
 
-import { useState } from 'react';
 import {
   GoogleLogo,
   Robot,
@@ -21,9 +20,11 @@ import {
   Globe,
 } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
+import { useState } from 'react';
+
+import type { ScanResponse } from '@/components/marketing/audit-types';
 import { AuditForm } from '@/components/marketing/AuditForm';
 import { EVIScorecardResults } from '@/components/marketing/EVIScorecardResults';
-import type { ScanResponse } from '@/components/marketing/audit-types';
 
 function TM() {
   return <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>;

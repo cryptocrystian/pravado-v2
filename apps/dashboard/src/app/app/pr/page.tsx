@@ -13,15 +13,14 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Lightning,
   ArrowRight,
   Clock,
 } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
-import { usePRMode } from '@/components/pr/PRModeContext';
 import { ConversationThread } from '@/components/pr/ConversationThread';
 import {
   mockActions,
@@ -30,6 +29,7 @@ import {
 } from '@/components/pr/pr-mock-data';
 import type { PRActionItem } from '@/components/pr/pr-mock-data';
 import { PRActionCard } from '@/components/pr/PRActionCard';
+import { usePRMode } from '@/components/pr/PRModeContext';
 import { fetchInbox, adaptInboxToPRAction } from '@/lib/prApi';
 
 

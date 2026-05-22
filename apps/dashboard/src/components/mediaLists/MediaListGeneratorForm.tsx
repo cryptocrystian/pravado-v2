@@ -5,8 +5,8 @@
 
 'use client';
 
-import { useState } from 'react';
 import type { MediaListGenerationInput } from '@pravado/types';
+import { useState } from 'react';
 
 interface MediaListGeneratorFormProps {
   onGenerate: (input: MediaListGenerationInput) => void;

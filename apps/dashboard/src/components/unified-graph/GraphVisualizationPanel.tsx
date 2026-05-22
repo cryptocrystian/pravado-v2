@@ -5,16 +5,6 @@
 
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import {
-  IntelligenceNode,
-  IntelligenceEdge,
-  getNodeTypeColor,
-  getEdgeTypeColor,
-} from '@/lib/unifiedGraphApi';
 import {
   Network,
   ZoomIn,
@@ -22,6 +12,17 @@ import {
   Maximize2,
   RefreshCw,
 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import {
+  IntelligenceNode,
+  IntelligenceEdge,
+  getNodeTypeColor,
+  getEdgeTypeColor,
+} from '@/lib/unifiedGraphApi';
 
 interface GraphVisualizationPanelProps {
   nodes: IntelligenceNode[];

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+
 import type { SageBrief, BriefPriority } from './content-mock-data';
 
 const priorityConfig: Record<BriefPriority, { label: string; className: string; gapColor: string }> = {

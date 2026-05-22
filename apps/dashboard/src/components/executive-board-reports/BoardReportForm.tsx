@@ -5,11 +5,18 @@
 
 'use client';
 
+import {
+  EXEC_BOARD_REPORT_FORMAT_LABELS,
+  EXEC_BOARD_REPORT_SECTION_TYPE_LABELS,
+  EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER,
+} from '@pravado/types';
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -17,19 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
 import {
   type ExecBoardReport,
   type CreateExecBoardReportInput,
   type UpdateExecBoardReportInput,
   type ExecBoardReportSectionType,
 } from '@/lib/executiveBoardReportApi';
-import {
-  EXEC_BOARD_REPORT_FORMAT_LABELS,
-  EXEC_BOARD_REPORT_SECTION_TYPE_LABELS,
-  EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER,
-} from '@pravado/types';
-import { Loader2 } from 'lucide-react';
 
 interface BoardReportFormProps {
   initialValues?: ExecBoardReport;

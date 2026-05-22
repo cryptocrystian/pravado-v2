@@ -14,6 +14,7 @@
  */
 
 import { useState } from 'react';
+
 import type { EVIDriverType } from './types';
 
 interface EVIExplainerModalProps {

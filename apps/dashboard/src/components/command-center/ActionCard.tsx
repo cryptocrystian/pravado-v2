@@ -46,11 +46,13 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import type { ActionItem, Priority } from './types';
-import { HoverCard, HoverCardContent, HoverCardTrigger, HoverCardArrow } from '../ui/hover-card';
+import { Lock, CaretRight, Check } from '@phosphor-icons/react';
+
 import { ActionHoverBrief } from './ActionHoverBrief';
 import { pillarAccents } from './pillar-accents';
-import { Lock, CaretRight, Check } from '@phosphor-icons/react';
+import type { ActionItem, Priority } from './types';
+import { HoverCard, HoverCardContent, HoverCardTrigger, HoverCardArrow } from '../ui/hover-card';
+
 
 // Priority styling
 const priorityConfig: Record<Priority, {

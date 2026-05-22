@@ -11,9 +11,9 @@
  * @see /docs/canon/COMMAND_CENTER_GOLDEN_FLOW.md
  */
 
-import { useState, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useState, useMemo } from 'react';
 
 // ============================================
 // TYPES

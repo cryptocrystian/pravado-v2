@@ -14,8 +14,9 @@
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { TiptapEditor, type TiptapEditorHandle, type HeadingNode, type SaveState } from './TiptapEditor';
+
 import { DocumentOutline } from './DocumentOutline';
+import { TiptapEditor, type TiptapEditorHandle, type HeadingNode, type SaveState } from './TiptapEditor';
 import type { ContentStatus } from '../types';
 import { CONTENT_STATUS_CONFIG, CONTENT_TYPE_CONFIG } from '../types';
 

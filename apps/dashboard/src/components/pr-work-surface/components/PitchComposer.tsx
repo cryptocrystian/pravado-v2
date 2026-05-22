@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 'use client';
 
 /**
@@ -10,6 +11,7 @@
  */
 
 import { useState } from 'react';
+
 import type { MediaContact, Pitch } from '../types';
 
 interface Props {

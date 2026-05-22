@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { CaretDown, CaretRight, Upload, X } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import type { KBCategory } from '@/components/content/content-mock-data';
 
 interface KnowledgeBaseSectionProps {

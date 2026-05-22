@@ -8,6 +8,7 @@
  */
 
 import type { ReactNode } from 'react';
+
 import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
 
 interface SettingsShellProps {

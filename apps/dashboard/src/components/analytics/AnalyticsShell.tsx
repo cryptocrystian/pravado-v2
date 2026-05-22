@@ -7,10 +7,12 @@
  */
 
 import type { ReactNode } from 'react';
+
 import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
+
 import { AnalyticsChromeBar } from './AnalyticsChromeBar';
-import { AnalyticsModeProvider } from './AnalyticsModeContext';
 import { AnalyticsDateProvider } from './AnalyticsDateContext';
+import { AnalyticsModeProvider } from './AnalyticsModeContext';
 
 interface AnalyticsShellProps {
   orgName: string;

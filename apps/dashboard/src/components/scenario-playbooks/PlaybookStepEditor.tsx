@@ -5,9 +5,9 @@
  * Editor for creating and modifying playbook steps with drag-and-drop reordering
  */
 
-import { useState } from 'react';
 import type { ScenarioPlaybookStep } from '@pravado/types';
 import { ScenarioStepActionType, SCENARIO_STEP_ACTION_TYPE_LABELS } from '@pravado/types';
+import { useState } from 'react';
 
 /**
  * Editable step type for the UI editor - contains only UI-relevant fields

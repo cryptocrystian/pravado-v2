@@ -33,10 +33,11 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { CaretDown, Bell, Gear, User, CreditCard, BookOpen, ChatDots, SignOut } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CaretDown, Bell, Gear, User, CreditCard, BookOpen, ChatDots, SignOut } from '@phosphor-icons/react';
+import { useState, useRef, useEffect } from 'react';
+
 import { PravadoLogoIcon } from '@/components/brand/PravadoLogo';
 import { supabase } from '@/lib/supabaseClient';
 

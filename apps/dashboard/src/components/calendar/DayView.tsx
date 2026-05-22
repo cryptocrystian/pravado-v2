@@ -9,9 +9,9 @@
  * @see /docs/canon/ORCHESTRATION_CALENDAR_CONTRACT.md SS9.1
  */
 
-import type { CalendarItem } from '../command-center/types';
 import { CalendarItemCard } from './CalendarItemCard';
 import { TIME_GROUPS } from './types';
+import type { CalendarItem } from '../command-center/types';
 
 // ============================================
 // TYPES

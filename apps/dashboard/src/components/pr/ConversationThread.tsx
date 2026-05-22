@@ -1,6 +1,7 @@
 'use client';
 
 import { X } from '@phosphor-icons/react';
+
 import type { Journalist, ConversationMessage } from './pr-mock-data';
 
 interface ConversationThreadProps {

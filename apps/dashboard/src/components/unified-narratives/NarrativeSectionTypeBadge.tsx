@@ -6,10 +6,11 @@
 
 'use client';
 
-import React from 'react';
 import type { NarrativeSectionType } from '@pravado/types';
-import { getSectionTypeLabel } from '@/lib/unifiedNarrativeApi';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
+import { getSectionTypeLabel } from '@/lib/unifiedNarrativeApi';
 import { cn } from '@/lib/utils';
 
 interface NarrativeSectionTypeBadgeProps {

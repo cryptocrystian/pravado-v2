@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import type { BriefingInsight, InsightStrength, BriefingSourceType } from '@pravado/types';
 import {
   Lightbulb,
   ChevronDown,
@@ -21,17 +21,12 @@ import {
   Filter,
   X,
 } from 'lucide-react';
-import type { BriefingInsight, InsightStrength, BriefingSourceType } from '@pravado/types';
-import {
-  getInsightStrengthLabel,
-  getInsightStrengthColor,
-  getSourceTypeLabel,
-  getSourceTypeIcon,
-} from '@/lib/mediaBriefingApi';
-import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useMemo } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -39,7 +34,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  getInsightStrengthLabel,
+  getInsightStrengthColor,
+  getSourceTypeLabel,
+  getSourceTypeIcon,
+} from '@/lib/mediaBriefingApi';
+import { cn } from '@/lib/utils';
 
 interface InsightPanelProps {
   insights: BriefingInsight[];

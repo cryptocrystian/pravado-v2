@@ -3,7 +3,6 @@
  * Displays the source type of an enrichment record
  */
 
-import React from 'react';
 import {
   EnvelopeIcon,
   GlobeAltIcon,
@@ -14,6 +13,7 @@ import {
   DocumentTextIcon,
   ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
+import React from 'react';
 
 type EnrichmentSourceType =
   | 'email_verification'

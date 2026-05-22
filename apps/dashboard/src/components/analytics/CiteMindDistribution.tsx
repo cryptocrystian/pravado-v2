@@ -5,6 +5,7 @@
  */
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+
 import { mockContentRows } from './analytics-mock-data';
 
 const BANDS = [

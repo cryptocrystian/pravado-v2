@@ -6,9 +6,14 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { RefreshCw, Copy, Check, ChevronDown, ChevronUp, Edit2, Sparkles } from 'lucide-react';
 import type { BriefingSection as BriefingSectionType } from '@pravado/types';
+import { RefreshCw, Copy, Check, ChevronDown, ChevronUp, Edit2, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 import {
   getSectionTypeLabel,
   getSectionTypeIcon,
@@ -16,10 +21,6 @@ import {
   formatDuration,
 } from '@/lib/mediaBriefingApi';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 
 interface BriefingSectionProps {
   section: BriefingSectionType;
