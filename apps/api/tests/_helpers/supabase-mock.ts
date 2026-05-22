@@ -56,10 +56,28 @@ export interface MockQueryBuilder {
 }
 
 const BUILDER_METHODS = [
-  'select', 'insert', 'update', 'upsert', 'delete',
-  'eq', 'neq', 'in', 'is', 'gte', 'lte', 'gt', 'lt', 'match',
-  'order', 'limit', 'range', 'single', 'maybeSingle',
-  'ilike', 'contains', 'or',
+  'select',
+  'insert',
+  'update',
+  'upsert',
+  'delete',
+  'eq',
+  'neq',
+  'in',
+  'is',
+  'gte',
+  'lte',
+  'gt',
+  'lt',
+  'match',
+  'order',
+  'limit',
+  'range',
+  'single',
+  'maybeSingle',
+  'ilike',
+  'contains',
+  'or',
 ] as const;
 
 export function createMockQuery(resolvedValue: unknown): MockQueryBuilder {
@@ -69,7 +87,7 @@ export function createMockQuery(resolvedValue: unknown): MockQueryBuilder {
     builder[method] = vi.fn().mockReturnValue(builder);
   });
 
-  builder.then = <T,>(onFulfilled: (value: unknown) => T): Promise<T> =>
+  builder.then = <T>(onFulfilled: (value: unknown) => T): Promise<T> =>
     Promise.resolve(resolvedValue).then(onFulfilled);
 
   return builder;

@@ -20,13 +20,13 @@ Per architect (2026-05-15 directive):
 
 ## Summary
 
-| Category | Count | Action |
-|---|---|---|
-| A ? production-bug | 2 surface defects (across 9 test files that can't even load) | Phase 1 ticket per defect |
-| B ? defunct-test | 0 | n/a |
-| C ? drifted-expectations | 22 files (256 - 9 load-failures ? 247 individual tests) | Excluded via vitest config; rewrite in Phase 1 workstreams |
-| D ? flaky | 0 | n/a |
-| **Total files excluded** | **31** | See `apps/api/vitest.config.ts` |
+| Category                 | Count                                                        | Action                                                     |
+| ------------------------ | ------------------------------------------------------------ | ---------------------------------------------------------- |
+| A ? production-bug       | 2 surface defects (across 9 test files that can't even load) | Phase 1 ticket per defect                                  |
+| B ? defunct-test         | 0                                                            | n/a                                                        |
+| C ? drifted-expectations | 22 files (256 - 9 load-failures ? 247 individual tests)      | Excluded via vitest config; rewrite in Phase 1 workstreams |
+| D ? flaky                | 0                                                            | n/a                                                        |
+| **Total files excluded** | **31**                                                       | See `apps/api/vitest.config.ts`                            |
 
 ---
 
@@ -66,39 +66,39 @@ All 31 files share the same root cause: production code added chain methods (`.g
 
 Per-file pass/fail breakdown captured during triage (2026-05-15):
 
-| File | Failed | Passed | Notes |
-|---|---|---|---|
-| `__tests__/billingAlerts.test.ts` | 15 | 7 | drifted shapes |
-| `__tests__/billingInvoices.test.ts` | 18 | 2 | `select().eq().gte().lte().order` chain |
-| `__tests__/billingRoutes.test.ts` | n/a | n/a | file fails to load (imports broken production path) |
-| `__tests__/billingService.test.ts` | 5 | 8 | mixed |
-| `__tests__/overageBilling.test.ts` | 2 | 6 | mostly passing |
-| `__tests__/playbookRunView.test.ts` | n/a | n/a | file fails to load |
-| `tests/audiencePersonaService.test.ts` | 30 | 4 | "Cannot read properties of undefined" downstream of chain mismatch |
-| `tests/auth.test.ts` | n/a | n/a | file fails to load |
-| `tests/billingPlanManagement.test.ts` | 3 | 12 | mostly passing |
-| `tests/brandReputationService.test.ts` | 2 | 17 | mostly passing |
-| `tests/competitorIntelligenceService.test.ts` | n/a | n/a | file fails to load |
-| `tests/crisisService.test.ts` | 28 | 3 | heavy chain-mismatch |
-| `tests/executiveBoardReportService.test.ts` | 3 | 11 | partially fixed by Group 3 transformer |
-| `tests/executiveDigestService.test.ts` | 14 | 3 | drifted shapes |
-| `tests/governanceService.test.ts` | 36 | 0 | A2 production bug; entirely blocked |
-| `tests/insightConflictService.test.ts` | 19 | 0 | drifted |
-| `tests/journalistEnrichmentService.test.ts` | 11 | 14 | mixed |
-| `tests/journalistTimelineService.test.ts` | 1 | 23 | mostly passing |
-| `tests/mediaBriefingService.test.ts` | n/a | n/a | file fails to load |
-| `tests/mediaCrawlerService.test.ts` | 1 | 8 | mostly passing |
-| `tests/mediaListService.test.ts` | 9 | 3 | drifted |
-| `tests/mediaMonitoringService.test.ts` | 4 | 12 | partially passing |
-| `tests/mediaPerformanceService.test.ts` | n/a | n/a | file fails to load |
-| `tests/ops.test.ts` | n/a | n/a | file fails to load |
-| `tests/orgs.test.ts` | n/a | n/a | file fails to load |
-| `tests/prPitchService.test.ts` | 11 | 5 | drifted |
-| `tests/realityMapService.test.ts` | 19 | 10 | mixed |
-| `tests/riskRadarService.test.ts` | 11 | 25 | partially fixed; mostly passing |
-| `tests/scenarioOrchestrationService.test.ts` | n/a | n/a | file fails to load |
-| `tests/strategicIntelligenceService.test.ts` | 7 | 18 | partially passing |
-| `tests/unifiedGraphService.test.ts` | 7 | 45 | A1 production bug; mostly passing after Group 3 transformer fix |
+| File                                          | Failed | Passed | Notes                                                              |
+| --------------------------------------------- | ------ | ------ | ------------------------------------------------------------------ |
+| `__tests__/billingAlerts.test.ts`             | 15     | 7      | drifted shapes                                                     |
+| `__tests__/billingInvoices.test.ts`           | 18     | 2      | `select().eq().gte().lte().order` chain                            |
+| `__tests__/billingRoutes.test.ts`             | n/a    | n/a    | file fails to load (imports broken production path)                |
+| `__tests__/billingService.test.ts`            | 5      | 8      | mixed                                                              |
+| `__tests__/overageBilling.test.ts`            | 2      | 6      | mostly passing                                                     |
+| `__tests__/playbookRunView.test.ts`           | n/a    | n/a    | file fails to load                                                 |
+| `tests/audiencePersonaService.test.ts`        | 30     | 4      | "Cannot read properties of undefined" downstream of chain mismatch |
+| `tests/auth.test.ts`                          | n/a    | n/a    | file fails to load                                                 |
+| `tests/billingPlanManagement.test.ts`         | 3      | 12     | mostly passing                                                     |
+| `tests/brandReputationService.test.ts`        | 2      | 17     | mostly passing                                                     |
+| `tests/competitorIntelligenceService.test.ts` | n/a    | n/a    | file fails to load                                                 |
+| `tests/crisisService.test.ts`                 | 28     | 3      | heavy chain-mismatch                                               |
+| `tests/executiveBoardReportService.test.ts`   | 3      | 11     | partially fixed by Group 3 transformer                             |
+| `tests/executiveDigestService.test.ts`        | 14     | 3      | drifted shapes                                                     |
+| `tests/governanceService.test.ts`             | 36     | 0      | A2 production bug; entirely blocked                                |
+| `tests/insightConflictService.test.ts`        | 19     | 0      | drifted                                                            |
+| `tests/journalistEnrichmentService.test.ts`   | 11     | 14     | mixed                                                              |
+| `tests/journalistTimelineService.test.ts`     | 1      | 23     | mostly passing                                                     |
+| `tests/mediaBriefingService.test.ts`          | n/a    | n/a    | file fails to load                                                 |
+| `tests/mediaCrawlerService.test.ts`           | 1      | 8      | mostly passing                                                     |
+| `tests/mediaListService.test.ts`              | 9      | 3      | drifted                                                            |
+| `tests/mediaMonitoringService.test.ts`        | 4      | 12     | partially passing                                                  |
+| `tests/mediaPerformanceService.test.ts`       | n/a    | n/a    | file fails to load                                                 |
+| `tests/ops.test.ts`                           | n/a    | n/a    | file fails to load                                                 |
+| `tests/orgs.test.ts`                          | n/a    | n/a    | file fails to load                                                 |
+| `tests/prPitchService.test.ts`                | 11     | 5      | drifted                                                            |
+| `tests/realityMapService.test.ts`             | 19     | 10     | mixed                                                              |
+| `tests/riskRadarService.test.ts`              | 11     | 25     | partially fixed; mostly passing                                    |
+| `tests/scenarioOrchestrationService.test.ts`  | n/a    | n/a    | file fails to load                                                 |
+| `tests/strategicIntelligenceService.test.ts`  | 7      | 18     | partially passing                                                  |
+| `tests/unifiedGraphService.test.ts`           | 7      | 45     | A1 production bug; mostly passing after Group 3 transformer fix    |
 
 **Total active failures**: 256 across these 31 files. **Excluding them brings the apps/api suite to 34 files, 693 tests, all passing** (Track 0D Group 3 verification 2026-05-15).
 
@@ -115,6 +115,7 @@ For each excluded entry:
 5. The Phase 1 PR's CI must be green BEFORE merging (no further one-time exceptions)
 
 When an A-class production bug is fixed:
+
 1. Open or close the corresponding Phase 1 ticket
 2. Re-enable the dependent test file(s) as above
 
