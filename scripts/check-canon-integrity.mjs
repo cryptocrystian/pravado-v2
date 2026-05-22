@@ -48,6 +48,8 @@ const ALLOWED_DOC_PATHS = [
   'docs/evals/',
   'docs/playbooks/',
   'docs/product/',
+  'docs/skills/',
+  'docs/specs/',
 ];
 
 // Explicitly allowed root-level docs in docs/
