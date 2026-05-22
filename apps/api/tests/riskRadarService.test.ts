@@ -13,27 +13,7 @@ const mockSupabase = {
 
 // Create mock query builder
 function createMockQueryBuilder(data: unknown, error: unknown = null, count: number | null = null) {
-  const builder = {
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    delete: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    neq: vi.fn().mockReturnThis(),
-    in: vi.fn().mockReturnThis(),
-    gte: vi.fn().mockReturnThis(),
-    lte: vi.fn().mockReturnThis(),
-    lt: vi.fn().mockReturnThis(),
-    or: vi.fn().mockReturnThis(),
-    ilike: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
-    range: vi.fn().mockReturnThis(),
-    limit: vi.fn().mockReturnThis(),
-    single: vi.fn().mockResolvedValue({ data, error }),
-    maybeSingle: vi.fn().mockResolvedValue({ data, error }),
-    then: (resolve: (value: { data: unknown; error: unknown; count: number | null }) => unknown) =>
-      Promise.resolve({ data, error, count }).then(resolve),
-  };
+  const builder = createMockQuery({ data, error });
   return builder;
 }
 
@@ -49,6 +29,7 @@ vi.mock('@pravado/utils', () => ({
 
 // Import after mocking
 import { RiskRadarService } from '../src/services/riskRadarService';
+import { createMockQuery } from './_helpers/supabase-mock';
 
 describe('Risk Radar Service (S60)', () => {
   let riskRadarService: RiskRadarService;

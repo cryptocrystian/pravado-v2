@@ -37,6 +37,7 @@ import {
   GraphSnapshotStatus,
   GraphEventType,
 } from '@pravado/types';
+import { createMockQuery } from './_helpers/supabase-mock';
 
 // Mock OpenAI
 vi.mock('openai', () => ({
@@ -121,18 +122,10 @@ describe('UnifiedIntelligenceGraphService', () => {
       it('should create a node successfully', async () => {
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              insert: vi.fn().mockReturnValue({
-                select: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: mockNode, error: null }),
-                }),
-              }),
-            };
+            return createMockQuery({ data: mockNode, error: null });
           }
           if (table === 'intelligence_graph_audit_log') {
-            return {
-              insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-            };
+            return createMockQuery({ data: null, error: null });
           }
           return {};
         });
@@ -151,16 +144,10 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should throw error on database failure', async () => {
-        mockSupabase.from.mockReturnValue({
-          insert: vi.fn().mockReturnValue({
-            select: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
                 data: null,
                 error: { message: 'Database error' },
-              }),
-            }),
-          }),
-        });
+              }));
 
         await expect(
           createNode(ctx, {
@@ -173,12 +160,7 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('getNode', () => {
       it('should retrieve a node by ID', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({ data: mockNode, error: null }),
-          }),
-        });
+        mockSupabase.from.mockReturnValue(createMockQuery({ data: mockNode, error: null }));
 
         const result = await getNode(ctx, 'node-123');
 
@@ -188,15 +170,10 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should return null for non-existent node', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: null,
               error: { code: 'PGRST116', message: 'Not found' },
-            }),
-          }),
-        });
+            }));
 
         const result = await getNode(ctx, 'nonexistent');
 
@@ -210,19 +187,10 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              update: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                select: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: updatedNode, error: null }),
-                }),
-              }),
-            };
+            return createMockQuery({ data: updatedNode, error: null });
           }
           if (table === 'intelligence_graph_audit_log') {
-            return {
-              insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-            };
+            return createMockQuery({ data: null, error: null });
           }
           return {};
         });
@@ -244,18 +212,9 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              update: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                select: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: updatedNode, error: null }),
-                }),
-              }),
-            };
+            return createMockQuery({ data: updatedNode, error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await updateNode(ctx, 'node-123', {
@@ -279,9 +238,7 @@ describe('UnifiedIntelligenceGraphService', () => {
               }),
             };
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         await expect(deleteNode(ctx, 'node-123')).resolves.not.toThrow();
@@ -290,20 +247,11 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('listNodes', () => {
       it('should list nodes with pagination', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            in: vi.fn().mockReturnThis(),
-            overlaps: vi.fn().mockReturnThis(),
-            or: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockNode],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listNodes(ctx, {
           limit: 20,
@@ -316,18 +264,11 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter nodes by type', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            in: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockNode],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listNodes(ctx, {
           nodeTypes: [NodeType.CONTENT_PIECE],
@@ -338,18 +279,11 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter nodes by search term', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            or: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockNode],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listNodes(ctx, {
           search: 'test',
@@ -360,17 +294,11 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter by active status', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockNode],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listNodes(ctx, {
           isActive: true,
@@ -409,13 +337,7 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: [neighborNode], error: null }),
-                single: vi.fn().mockResolvedValue({ data: mockNode, error: null }),
-              }),
-            };
+            return createMockQuery({ data: mockNode, error: null });
           }
           if (table === 'intelligence_edges') {
             return {
@@ -465,29 +387,16 @@ describe('UnifiedIntelligenceGraphService', () => {
       it('should create an edge between two nodes', async () => {
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({
+            return createMockQuery({
                   data: [{ id: 'node-1' }, { id: 'node-2' }],
                   error: null,
-                }),
-              }),
-            };
+                });
           }
           if (table === 'intelligence_edges') {
-            return {
-              insert: vi.fn().mockReturnValue({
-                select: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: mockEdge, error: null }),
-                }),
-              }),
-            };
+            return createMockQuery({ data: mockEdge, error: null });
           }
           if (table === 'intelligence_graph_audit_log') {
-            return {
-              insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-            };
+            return createMockQuery({ data: null, error: null });
           }
           return {};
         });
@@ -508,15 +417,10 @@ describe('UnifiedIntelligenceGraphService', () => {
       it('should throw error if source or target node not found', async () => {
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({
+            return createMockQuery({
                   data: [{ id: 'node-1' }], // Only one node found
                   error: null,
-                }),
-              }),
-            };
+                });
           }
           return {};
         });
@@ -535,28 +439,15 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({
+            return createMockQuery({
                   data: [{ id: 'node-1' }, { id: 'node-2' }],
                   error: null,
-                }),
-              }),
-            };
+                });
           }
           if (table === 'intelligence_edges') {
-            return {
-              insert: vi.fn().mockReturnValue({
-                select: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: bidirectionalEdge, error: null }),
-                }),
-              }),
-            };
+            return createMockQuery({ data: bidirectionalEdge, error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await createEdge(ctx, {
@@ -572,12 +463,7 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('getEdge', () => {
       it('should retrieve an edge by ID', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({ data: mockEdge, error: null }),
-          }),
-        });
+        mockSupabase.from.mockReturnValue(createMockQuery({ data: mockEdge, error: null }));
 
         const result = await getEdge(ctx, 'edge-123');
 
@@ -587,15 +473,10 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should return null for non-existent edge', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: null,
               error: { code: 'PGRST116', message: 'Not found' },
-            }),
-          }),
-        });
+            }));
 
         const result = await getEdge(ctx, 'nonexistent');
 
@@ -609,18 +490,9 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_edges') {
-            return {
-              update: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                select: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: updatedEdge, error: null }),
-                }),
-              }),
-            };
+            return createMockQuery({ data: updatedEdge, error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await updateEdge(ctx, 'edge-123', {
@@ -635,18 +507,9 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_edges') {
-            return {
-              update: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                select: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: updatedEdge, error: null }),
-                }),
-              }),
-            };
+            return createMockQuery({ data: updatedEdge, error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await updateEdge(ctx, 'edge-123', {
@@ -667,9 +530,7 @@ describe('UnifiedIntelligenceGraphService', () => {
               }),
             };
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         await expect(deleteEdge(ctx, 'edge-123')).resolves.not.toThrow();
@@ -678,21 +539,11 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('listEdges', () => {
       it('should list edges with pagination', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            in: vi.fn().mockReturnThis(),
-            or: vi.fn().mockReturnThis(),
-            gte: vi.fn().mockReturnThis(),
-            lte: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockEdge],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listEdges(ctx, {
           limit: 20,
@@ -704,18 +555,11 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter edges by type', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            in: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockEdge],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listEdges(ctx, {
           edgeTypes: [EdgeType.AUTHORED_BY],
@@ -726,19 +570,11 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter edges by weight range', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            gte: vi.fn().mockReturnThis(),
-            lte: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockEdge],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listEdges(ctx, {
           minWeight: 1.0,
@@ -774,24 +610,14 @@ describe('UnifiedIntelligenceGraphService', () => {
         let callCount = 0;
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                single: vi.fn().mockResolvedValue({ data: mockEdge, error: null }),
-              }),
-            };
+            return createMockQuery({ data: mockEdge, error: null });
           }
           if (table === 'intelligence_nodes') {
             callCount++;
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({
+            return createMockQuery({
                   data: [sourceNode, targetNode],
                   error: null,
-                }),
-              }),
-            };
+                });
           }
           return {};
         });
@@ -853,38 +679,12 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockReturnValue({
-                  order: vi.fn().mockResolvedValue({
-                    data: mockNodes,
-                    error: null,
-                  }),
-                }),
-              }),
-              insert: vi.fn().mockReturnValue({
-                select: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: mergedNode, error: null }),
-                }),
-              }),
-              delete: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: null, error: null }),
-              }),
-            };
+            return createMockQuery({ data: null, error: null });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                or: vi.fn().mockResolvedValue({ data: [], count: 0, error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], count: 0, error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await mergeNodes(ctx, {
@@ -905,40 +705,12 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockReturnValue({
-                  order: vi.fn().mockResolvedValue({
-                    data: mockNodes,
-                    error: null,
-                  }),
-                }),
-              }),
-              update: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnValue({
-                  select: vi.fn().mockReturnValue({
-                    single: vi.fn().mockResolvedValue({ data: mergedNode, error: null }),
-                  }),
-                }),
-              }),
-              delete: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: null, error: null }),
-              }),
-            };
+            return createMockQuery({ data: null, error: null });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                or: vi.fn().mockResolvedValue({ data: [], count: 0, error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], count: 0, error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await mergeNodes(ctx, {
@@ -974,25 +746,12 @@ describe('UnifiedIntelligenceGraphService', () => {
       it('should query graph with filters', async () => {
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockReturnThis(),
-                range: vi.fn().mockResolvedValue({ data: [mockNode], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [mockNode], error: null });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                or: vi.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await queryGraph(ctx, {
@@ -1014,24 +773,12 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                range: vi.fn().mockResolvedValue({ data: multipleNodes, error: null }),
-              }),
-            };
+            return createMockQuery({ data: multipleNodes, error: null });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                or: vi.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await queryGraph(ctx, {
@@ -1071,17 +818,9 @@ describe('UnifiedIntelligenceGraphService', () => {
             };
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                or: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: [mockEdge], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [mockEdge], error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await traverseGraph(ctx, {
@@ -1099,24 +838,12 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                single: vi.fn().mockResolvedValue({ data: startNode, error: null }),
-              }),
-            };
+            return createMockQuery({ data: startNode, error: null });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await traverseGraph(ctx, {
@@ -1129,15 +856,10 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should throw error for non-existent start node', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: null,
               error: { code: 'PGRST116', message: 'Not found' },
-            }),
-          }),
-        });
+            }));
 
         await expect(
           traverseGraph(ctx, {
@@ -1163,26 +885,16 @@ describe('UnifiedIntelligenceGraphService', () => {
         let nodeRequestCount = 0;
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({
+            return createMockQuery({
                   data: [nodeA, nodeB],
                   error: null,
-                }),
-              }),
-            };
+                });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                or: vi.fn().mockResolvedValue({
+            return createMockQuery({
                   data: [edge],
                   error: null,
-                }),
-              }),
-            };
+                });
           }
           return {};
         });
@@ -1198,12 +910,7 @@ describe('UnifiedIntelligenceGraphService', () => {
       it('should return null when no path exists', async () => {
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                or: vi.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], error: null });
           }
           return {};
         });
@@ -1238,28 +945,12 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: nodes, error: null }),
-              }),
-              update: vi.fn().mockReturnValue({
-                eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-                in: vi.fn().mockResolvedValue({ data: null, error: null }),
-              }),
-            };
+            return createMockQuery({ data: null, error: null });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: edges, error: null }),
-              }),
-            };
+            return createMockQuery({ data: edges, error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await computeMetrics(ctx, {
@@ -1287,28 +978,12 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: nodes, error: null }),
-              }),
-              update: vi.fn().mockReturnValue({
-                eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-                in: vi.fn().mockResolvedValue({ data: null, error: null }),
-              }),
-            };
+            return createMockQuery({ data: null, error: null });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: edges, error: null }),
-              }),
-            };
+            return createMockQuery({ data: edges, error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await computeMetrics(ctx, {
@@ -1324,17 +999,10 @@ describe('UnifiedIntelligenceGraphService', () => {
     describe('getMetrics', () => {
       it('should return current graph metrics', async () => {
         mockSupabase.from.mockImplementation((table: string) => {
-          return {
-            select: vi.fn().mockReturnValue({
-              eq: vi.fn().mockReturnThis(),
-              not: vi.fn().mockReturnThis(),
-              order: vi.fn().mockReturnThis(),
-              limit: vi.fn().mockResolvedValue({
+          return createMockQuery({
                 data: [{ id: 'node-1', label: 'A', degree_centrality: 0.5 }],
                 error: null,
-              }),
-            }),
-          };
+              });
         });
 
         const result = await getMetrics(ctx);
@@ -1380,44 +1048,15 @@ describe('UnifiedIntelligenceGraphService', () => {
       it('should create a new snapshot', async () => {
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_graph_snapshots') {
-            return {
-              insert: vi.fn().mockReturnValue({
-                select: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: mockSnapshot, error: null }),
-                }),
-              }),
-              update: vi.fn().mockReturnValue({
-                eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-              }),
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                order: vi.fn().mockReturnThis(),
-                limit: vi.fn().mockReturnThis(),
-                single: vi.fn().mockResolvedValue({ data: null, error: null }),
-              }),
-            };
+            return createMockQuery({ data: null, error: null });
           }
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: [], error: null }),
-                not: vi.fn().mockReturnThis(),
-                order: vi.fn().mockReturnThis(),
-                limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], error: null });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await createSnapshot(ctx, {
@@ -1435,12 +1074,7 @@ describe('UnifiedIntelligenceGraphService', () => {
       it('should retrieve a snapshot by ID', async () => {
         const completeSnapshot = { ...mockSnapshot, status: 'complete', node_count: 100 };
 
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({ data: completeSnapshot, error: null }),
-          }),
-        });
+        mockSupabase.from.mockReturnValue(createMockQuery({ data: completeSnapshot, error: null }));
 
         const result = await getSnapshot(ctx, 'snapshot-123');
 
@@ -1450,15 +1084,10 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should return null for non-existent snapshot', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: null,
               error: { code: 'PGRST116', message: 'Not found' },
-            }),
-          }),
-        });
+            }));
 
         const result = await getSnapshot(ctx, 'nonexistent');
 
@@ -1468,17 +1097,11 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('listSnapshots', () => {
       it('should list snapshots with pagination', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockSnapshot],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listSnapshots(ctx, {
           limit: 20,
@@ -1492,17 +1115,11 @@ describe('UnifiedIntelligenceGraphService', () => {
       it('should filter snapshots by status', async () => {
         const completeSnapshot = { ...mockSnapshot, status: 'complete' };
 
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [completeSnapshot],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listSnapshots(ctx, {
           status: GraphSnapshotStatus.COMPLETE,
@@ -1519,41 +1136,15 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_graph_snapshots') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                single: vi.fn().mockResolvedValue({ data: existingSnapshot, error: null }),
-                order: vi.fn().mockReturnThis(),
-                limit: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: null, error: null }),
-                }),
-              }),
-              update: vi.fn().mockReturnValue({
-                eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-              }),
-            };
+            return createMockQuery({ data: null, error: null });
           }
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockResolvedValue({ data: [], error: null }),
-                not: vi.fn().mockReturnThis(),
-                order: vi.fn().mockReturnThis(),
-                limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], error: null });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], error: null });
           }
-          return {
-            insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-          };
+          return createMockQuery({ data: null, error: null });
         });
 
         const result = await regenerateSnapshot(ctx, 'snapshot-123');
@@ -1562,15 +1153,10 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should throw error for non-existent snapshot', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: null,
               error: { code: 'PGRST116', message: 'Not found' },
-            }),
-          }),
-        });
+            }));
 
         await expect(regenerateSnapshot(ctx, 'nonexistent')).rejects.toThrow(
           'Snapshot not found'
@@ -1605,17 +1191,11 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('listAuditLogs', () => {
       it('should list audit logs with pagination', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockAuditLog],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listAuditLogs(ctx, {
           limit: 50,
@@ -1628,17 +1208,11 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter by event type', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockAuditLog],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listAuditLogs(ctx, {
           eventType: GraphEventType.NODE_CREATED,
@@ -1648,17 +1222,11 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter by node ID', async () => {
-        mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({
+        mockSupabase.from.mockReturnValue(createMockQuery({
               data: [mockAuditLog],
               count: 1,
               error: null,
-            }),
-          }),
-        });
+            }));
 
         const result = await listAuditLogs(ctx, {
           nodeId: 'node-123',
@@ -1688,29 +1256,13 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                order: vi.fn().mockReturnThis(),
-                limit: vi.fn().mockResolvedValue({ data: [mockNode], count: 10, error: null }),
-              }),
-            };
+            return createMockQuery({ data: [mockNode], count: 10, error: null });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockResolvedValue({ data: [], count: 5, error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], count: 5, error: null });
           }
           if (table === 'intelligence_graph_snapshots') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                order: vi.fn().mockReturnThis(),
-                limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], error: null });
           }
           return {};
         });
@@ -1732,33 +1284,17 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                order: vi.fn().mockReturnThis(),
-                limit: vi.fn().mockResolvedValue({
+            return createMockQuery({
                   data: recentNodes,
                   count: 2,
                   error: null,
-                }),
-              }),
-            };
+                });
           }
           if (table === 'intelligence_edges') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockResolvedValue({ data: [], count: 0, error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], count: 0, error: null });
           }
           if (table === 'intelligence_graph_snapshots') {
-            return {
-              select: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnThis(),
-                order: vi.fn().mockReturnThis(),
-                limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            };
+            return createMockQuery({ data: [], error: null });
           }
           return {};
         });
@@ -1777,18 +1313,11 @@ describe('UnifiedIntelligenceGraphService', () => {
 
   describe('Edge Cases & Error Handling', () => {
     it('should handle empty results gracefully', async () => {
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnThis(),
-          in: vi.fn().mockReturnThis(),
-          order: vi.fn().mockReturnThis(),
-          range: vi.fn().mockResolvedValue({
+      mockSupabase.from.mockReturnValue(createMockQuery({
             data: [],
             count: 0,
             error: null,
-          }),
-        }),
-      });
+          }));
 
       const result = await listNodes(ctx, { limit: 20 });
 
@@ -1797,16 +1326,10 @@ describe('UnifiedIntelligenceGraphService', () => {
     });
 
     it('should handle database errors', async () => {
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnThis(),
-          order: vi.fn().mockReturnThis(),
-          range: vi.fn().mockResolvedValue({
+      mockSupabase.from.mockReturnValue(createMockQuery({
             data: null,
             error: { message: 'Connection timeout' },
-          }),
-        }),
-      });
+          }));
 
       await expect(listNodes(ctx, { limit: 20 })).rejects.toThrow(
         'Failed to list nodes: Connection timeout'
@@ -1842,12 +1365,7 @@ describe('UnifiedIntelligenceGraphService', () => {
         updated_by: null,
       };
 
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnThis(),
-          single: vi.fn().mockResolvedValue({ data: nodeWithNulls, error: null }),
-        }),
-      });
+      mockSupabase.from.mockReturnValue(createMockQuery({ data: nodeWithNulls, error: null }));
 
       const result = await getNode(ctx, 'node-123');
 
@@ -1870,17 +1388,11 @@ describe('UnifiedIntelligenceGraphService', () => {
           updated_at: '2024-01-01T00:00:00Z',
         }));
 
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnThis(),
-          order: vi.fn().mockReturnThis(),
-          range: vi.fn().mockResolvedValue({
+      mockSupabase.from.mockReturnValue(createMockQuery({
             data: manyNodes,
             count: 100,
             error: null,
-          }),
-        }),
-      });
+          }));
 
       const result = await listNodes(ctx, { limit: 100 });
 
