@@ -44,11 +44,17 @@ export function PersonaEditor({
 }: PersonaEditorProps) {
   const [name, setName] = useState(persona.name);
   const [description, setDescription] = useState(persona.description || '');
-  const [personaType, setPersonaType] = useState<PersonaType>(persona.personaType);
+  const [personaType, setPersonaType] = useState<PersonaType>(
+    persona.personaType
+  );
   const [role, setRole] = useState(persona.role || '');
   const [industry, setIndustry] = useState(persona.industry || '');
-  const [companySize, setCompanySize] = useState<CompanySize | undefined>(persona.companySize);
-  const [seniorityLevel, setSeniorityLevel] = useState<SeniorityLevel | undefined>(persona.seniorityLevel);
+  const [companySize, setCompanySize] = useState<CompanySize | undefined>(
+    persona.companySize
+  );
+  const [seniorityLevel, setSeniorityLevel] = useState<
+    SeniorityLevel | undefined
+  >(persona.seniorityLevel);
   const [location, setLocation] = useState(persona.location || '');
   const [status, setStatus] = useState<PersonaStatus>(persona.status);
   const [tags, setTags] = useState<string[]>(persona.tags || []);
@@ -235,7 +241,9 @@ export function PersonaEditor({
           <Label htmlFor="companySize">Company Size</Label>
           <Select
             value={companySize || ''}
-            onValueChange={(v) => setCompanySize(v as CompanySize || undefined)}
+            onValueChange={(v) =>
+              setCompanySize((v as CompanySize) || undefined)
+            }
             disabled={isSaving}
           >
             <SelectTrigger id="companySize">
@@ -255,7 +263,9 @@ export function PersonaEditor({
           <Label htmlFor="seniorityLevel">Seniority Level</Label>
           <Select
             value={seniorityLevel || ''}
-            onValueChange={(v) => setSeniorityLevel(v as SeniorityLevel || undefined)}
+            onValueChange={(v) =>
+              setSeniorityLevel((v as SeniorityLevel) || undefined)
+            }
             disabled={isSaving}
           >
             <SelectTrigger id="seniorityLevel">
@@ -301,7 +311,12 @@ export function PersonaEditor({
             placeholder="Add tag and press Enter"
             disabled={isSaving}
           />
-          <Button type="button" onClick={addTag} disabled={isSaving} variant="outline">
+          <Button
+            type="button"
+            onClick={addTag}
+            disabled={isSaving}
+            variant="outline"
+          >
             Add
           </Button>
         </div>
@@ -339,7 +354,12 @@ export function PersonaEditor({
             </>
           )}
         </Button>
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isSaving}
+        >
           Cancel
         </Button>
       </div>

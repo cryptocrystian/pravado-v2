@@ -12,7 +12,9 @@
  */
 
 import { FLAGS } from '@pravado/feature-flags';
-import { validateEnv, apiEnvSchema ,
+import {
+  validateEnv,
+  apiEnvSchema,
   createExecBoardReportSchema,
   updateExecBoardReportSchema,
   generateExecBoardReportSchema,
@@ -72,7 +74,10 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
   }
 
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const service = createExecutiveBoardReportService({
     supabase,
     openaiApiKey: env.LLM_OPENAI_API_KEY || '',
@@ -92,14 +97,18 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
     try {
       const orgId = getOrgId(request);
       const validated = listExecBoardReportsSchema.parse(request.query);
-      const response = await service.listReports(orgId, validated as ListExecBoardReportsQuery);
+      const response = await service.listReports(
+        orgId,
+        validated as ListExecBoardReportsQuery
+      );
 
       return reply.send({
         success: true,
         data: response,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error listing reports');
       return reply.status(500).send({
         success: false,
@@ -117,19 +126,26 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
       const orgId = getOrgId(request);
       const userId = getUserId(request);
       const validated = createExecBoardReportSchema.parse(request.body);
-      const report = await service.createReport(orgId, userId, validated as CreateExecBoardReportInput);
+      const report = await service.createReport(
+        orgId,
+        userId,
+        validated as CreateExecBoardReportInput
+      );
 
       return reply.status(201).send({
         success: true,
         data: report,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error creating report');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+      return reply
+        .status(errorMessage.includes('validation') ? 400 : 500)
+        .send({
+          success: false,
+          error: errorMessage,
+        });
     }
   });
 
@@ -147,7 +163,8 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
         data: stats,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error fetching report stats');
       return reply.status(500).send({
         success: false,
@@ -178,7 +195,8 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
         data: response,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error fetching report');
       return reply.status(500).send({
         success: false,
@@ -197,7 +215,12 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
       const userId = getUserId(request);
       const { id } = execBoardReportIdParamSchema.parse(request.params);
       const validated = updateExecBoardReportSchema.parse(request.body);
-      const report = await service.updateReport(orgId, id, userId, validated as UpdateExecBoardReportInput);
+      const report = await service.updateReport(
+        orgId,
+        id,
+        userId,
+        validated as UpdateExecBoardReportInput
+      );
 
       if (!report) {
         return reply.status(404).send({
@@ -211,12 +234,15 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
         data: report,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error updating report');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+      return reply
+        .status(errorMessage.includes('validation') ? 400 : 500)
+        .send({
+          success: false,
+          error: errorMessage,
+        });
     }
   });
 
@@ -224,28 +250,39 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
    * DELETE /executive-board-reports/:id
    * Delete (archive) a report
    */
-  server.delete('/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execBoardReportIdParamSchema.parse(request.params);
-      const hardDelete = (request.query as { hard?: string }).hard === 'true';
-      const result = await service.deleteReport(orgId, id, userId, hardDelete);
+  server.delete(
+    '/:id',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execBoardReportIdParamSchema.parse(request.params);
+        const hardDelete = (request.query as { hard?: string }).hard === 'true';
+        const result = await service.deleteReport(
+          orgId,
+          id,
+          userId,
+          hardDelete
+        );
 
-      return reply.send({
-        success: true,
-        data: result,
-        message: result.deleted ? 'Report permanently deleted' : 'Report archived successfully',
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error deleting report');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: result,
+          message: result.deleted
+            ? 'Report permanently deleted'
+            : 'Report archived successfully',
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error deleting report');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   // =========================================================================
   // GENERATION & WORKFLOW ENDPOINTS
@@ -255,102 +292,124 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
    * POST /executive-board-reports/:id/generate
    * Generate report content (sections) from aggregated data
    */
-  server.post('/:id/generate', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execBoardReportIdParamSchema.parse(request.params);
-      const validated = generateExecBoardReportSchema.parse(request.body || {});
-      const response = await service.generateReport(
-        orgId,
-        id,
-        userId,
-        validated as GenerateExecBoardReportInput
-      );
+  server.post(
+    '/:id/generate',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execBoardReportIdParamSchema.parse(request.params);
+        const validated = generateExecBoardReportSchema.parse(
+          request.body || {}
+        );
+        const response = await service.generateReport(
+          orgId,
+          id,
+          userId,
+          validated as GenerateExecBoardReportInput
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error generating report');
-      return reply.status(errorMessage.includes('not found') ? 404 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error generating report');
+        return reply
+          .status(errorMessage.includes('not found') ? 404 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   /**
    * POST /executive-board-reports/:id/approve
    * Approve a report for publishing
    */
-  server.post('/:id/approve', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execBoardReportIdParamSchema.parse(request.params);
-      const validated = approveExecBoardReportSchema.parse(request.body || {});
-      const report = await service.approveReport(
-        orgId,
-        id,
-        userId,
-        validated as ApproveExecBoardReportInput
-      );
+  server.post(
+    '/:id/approve',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execBoardReportIdParamSchema.parse(request.params);
+        const validated = approveExecBoardReportSchema.parse(
+          request.body || {}
+        );
+        const report = await service.approveReport(
+          orgId,
+          id,
+          userId,
+          validated as ApproveExecBoardReportInput
+        );
 
-      if (!report) {
-        return reply.status(404).send({
+        if (!report) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Report not found',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: report,
+          message: 'Report approved successfully',
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error approving report');
+        return reply.status(500).send({
           success: false,
-          error: 'Report not found',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: report,
-        message: 'Report approved successfully',
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error approving report');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * POST /executive-board-reports/:id/publish
    * Publish report to audience
    */
-  server.post('/:id/publish', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execBoardReportIdParamSchema.parse(request.params);
-      const validated = publishExecBoardReportSchema.parse(request.body || {});
-      const response = await service.publishReport(
-        orgId,
-        id,
-        userId,
-        validated as PublishExecBoardReportInput
-      );
+  server.post(
+    '/:id/publish',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execBoardReportIdParamSchema.parse(request.params);
+        const validated = publishExecBoardReportSchema.parse(
+          request.body || {}
+        );
+        const response = await service.publishReport(
+          orgId,
+          id,
+          userId,
+          validated as PublishExecBoardReportInput
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error publishing report');
-      return reply.status(errorMessage.includes('not found') ? 404 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error publishing report');
+        return reply
+          .status(errorMessage.includes('not found') ? 404 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   // =========================================================================
   // SECTION MANAGEMENT ENDPOINTS
@@ -360,98 +419,116 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
    * GET /executive-board-reports/:id/sections
    * List sections for a report
    */
-  server.get('/:id/sections', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = execBoardReportIdParamSchema.parse(request.params);
-      // Note: query params validated but sections are listed unfiltered
-      listExecBoardReportSectionsSchema.parse(request.query);
-      const sections = await service.listSections(orgId, id);
+  server.get(
+    '/:id/sections',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = execBoardReportIdParamSchema.parse(request.params);
+        // Note: query params validated but sections are listed unfiltered
+        listExecBoardReportSectionsSchema.parse(request.query);
+        const sections = await service.listSections(orgId, id);
 
-      return reply.send({
-        success: true,
-        data: { sections },
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error listing sections');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: { sections },
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error listing sections');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   /**
    * PATCH /executive-board-reports/:id/sections/:sectionId
    * Update a section
    */
-  server.patch('/:id/sections/:sectionId', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id, sectionId } = execBoardReportSectionIdParamSchema.parse(request.params);
-      const validated = updateExecBoardReportSectionSchema.parse(request.body);
-      const section = await service.updateSection(
-        orgId,
-        id,
-        sectionId,
-        userId,
-        validated as UpdateExecBoardReportSectionInput
-      );
+  server.patch(
+    '/:id/sections/:sectionId',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id, sectionId } = execBoardReportSectionIdParamSchema.parse(
+          request.params
+        );
+        const validated = updateExecBoardReportSectionSchema.parse(
+          request.body
+        );
+        const section = await service.updateSection(
+          orgId,
+          id,
+          sectionId,
+          userId,
+          validated as UpdateExecBoardReportSectionInput
+        );
 
-      if (!section) {
-        return reply.status(404).send({
+        if (!section) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Section not found',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: section,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error updating section');
+        return reply.status(500).send({
           success: false,
-          error: 'Section not found',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: section,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error updating section');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * POST /executive-board-reports/:id/sections/order
    * Update section ordering
    */
-  server.post('/:id/sections/order', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execBoardReportIdParamSchema.parse(request.params);
-      const validated = updateExecBoardReportSectionOrderSchema.parse(request.body);
-      const sections = await service.updateSectionOrder(
-        orgId,
-        id,
-        userId,
-        (validated as UpdateExecBoardReportSectionOrderInput).sections
-      );
+  server.post(
+    '/:id/sections/order',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execBoardReportIdParamSchema.parse(request.params);
+        const validated = updateExecBoardReportSectionOrderSchema.parse(
+          request.body
+        );
+        const sections = await service.updateSectionOrder(
+          orgId,
+          id,
+          userId,
+          (validated as UpdateExecBoardReportSectionOrderInput).sections
+        );
 
-      return reply.send({
-        success: true,
-        data: { sections },
-        message: 'Section order updated successfully',
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error updating section order');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: { sections },
+          message: 'Section order updated successfully',
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error updating section order');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   // =========================================================================
   // AUDIENCE MANAGEMENT ENDPOINTS
@@ -461,61 +538,72 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
    * GET /executive-board-reports/:id/audience
    * List audience members for a report
    */
-  server.get('/:id/audience', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = execBoardReportIdParamSchema.parse(request.params);
-      const validated = listExecBoardReportAudienceSchema.parse(request.query);
-      const response = await service.listAudienceMembers(
-        orgId,
-        id,
-        { ...validated, reportId: id } as ListExecBoardReportAudienceQuery
-      );
+  server.get(
+    '/:id/audience',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = execBoardReportIdParamSchema.parse(request.params);
+        const validated = listExecBoardReportAudienceSchema.parse(
+          request.query
+        );
+        const response = await service.listAudienceMembers(orgId, id, {
+          ...validated,
+          reportId: id,
+        } as ListExecBoardReportAudienceQuery);
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error listing audience');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error listing audience');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   /**
    * POST /executive-board-reports/:id/audience
    * Add an audience member to a report
    */
-  server.post('/:id/audience', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execBoardReportIdParamSchema.parse(request.params);
-      const validated = addExecBoardReportAudienceSchema.parse(request.body);
-      const member = await service.addAudienceMember(
-        orgId,
-        id,
-        userId,
-        validated as AddExecBoardReportAudienceInput
-      );
+  server.post(
+    '/:id/audience',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execBoardReportIdParamSchema.parse(request.params);
+        const validated = addExecBoardReportAudienceSchema.parse(request.body);
+        const member = await service.addAudienceMember(
+          orgId,
+          id,
+          userId,
+          validated as AddExecBoardReportAudienceInput
+        );
 
-      return reply.status(201).send({
-        success: true,
-        data: member,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error adding audience member');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.status(201).send({
+          success: true,
+          data: member,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error adding audience member');
+        return reply
+          .status(errorMessage.includes('validation') ? 400 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   /**
    * PATCH /executive-board-reports/:id/audience/:audienceId
@@ -527,8 +615,12 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
       try {
         const orgId = getOrgId(request);
         const userId = getUserId(request);
-        const { id, audienceId } = execBoardReportAudienceIdParamSchema.parse(request.params);
-        const validated = updateExecBoardReportAudienceSchema.parse(request.body);
+        const { id, audienceId } = execBoardReportAudienceIdParamSchema.parse(
+          request.params
+        );
+        const validated = updateExecBoardReportAudienceSchema.parse(
+          request.body
+        );
         const member = await service.updateAudienceMember(
           orgId,
           id,
@@ -549,7 +641,8 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
           data: member,
         });
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
         server.log.error({ err: error }, 'Error updating audience member');
         return reply.status(500).send({
           success: false,
@@ -569,7 +662,9 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
       try {
         const orgId = getOrgId(request);
         const userId = getUserId(request);
-        const { id, audienceId } = execBoardReportAudienceIdParamSchema.parse(request.params);
+        const { id, audienceId } = execBoardReportAudienceIdParamSchema.parse(
+          request.params
+        );
         await service.removeAudienceMember(orgId, id, audienceId, userId);
 
         return reply.send({
@@ -577,7 +672,8 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
           message: 'Audience member removed successfully',
         });
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
         server.log.error({ err: error }, 'Error removing audience member');
         return reply.status(500).send({
           success: false,
@@ -595,30 +691,35 @@ export async function executiveBoardReportRoutes(server: FastifyInstance) {
    * GET /executive-board-reports/:id/audit-logs
    * List audit logs for a report
    */
-  server.get('/:id/audit-logs', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = execBoardReportIdParamSchema.parse(request.params);
-      const validated = listExecBoardReportAuditLogsSchema.parse(request.query);
-      const response = await service.listAuditLogs(
-        orgId,
-        id,
-        { ...validated, reportId: id } as ListExecBoardReportAuditLogsQuery
-      );
+  server.get(
+    '/:id/audit-logs',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = execBoardReportIdParamSchema.parse(request.params);
+        const validated = listExecBoardReportAuditLogsSchema.parse(
+          request.query
+        );
+        const response = await service.listAuditLogs(orgId, id, {
+          ...validated,
+          reportId: id,
+        } as ListExecBoardReportAuditLogsQuery);
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error listing audit logs');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error listing audit logs');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 }
 
 export default executiveBoardReportRoutes;

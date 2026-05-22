@@ -7,7 +7,10 @@
 
 'use client';
 
-import type { CrisisSourceSystem, DetectionResultResponse } from '@pravado/types';
+import type {
+  CrisisSourceSystem,
+  DetectionResultResponse,
+} from '@pravado/types';
 import {
   Radar,
   RefreshCw,
@@ -43,7 +46,9 @@ import { formatTimeAgo, formatDuration } from '@/lib/crisisApi';
 import { cn } from '@/lib/utils';
 
 interface CrisisDetectionPanelProps {
-  onRunDetection: (options?: DetectionOptions) => Promise<DetectionResultResponse | void>;
+  onRunDetection: (
+    options?: DetectionOptions
+  ) => Promise<DetectionResultResponse | void>;
   isRunning?: boolean;
   lastRunAt?: string | Date;
   lastResults?: DetectionResultResponse | null;
@@ -86,10 +91,11 @@ export default function CrisisDetectionPanel({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [timeWindow, setTimeWindow] = useState('60');
   const [forceRefresh, setForceRefresh] = useState(false);
-  const [selectedSources, setSelectedSources] = useState<CrisisSourceSystem[]>([]);
-  const [localResults, setLocalResults] = useState<DetectionResultResponse | null>(
-    lastResults
+  const [selectedSources, setSelectedSources] = useState<CrisisSourceSystem[]>(
+    []
   );
+  const [localResults, setLocalResults] =
+    useState<DetectionResultResponse | null>(lastResults);
 
   const handleRunDetection = async () => {
     const options: DetectionOptions = {
@@ -158,7 +164,11 @@ export default function CrisisDetectionPanel({
         {/* Advanced Options */}
         <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
           <CollapsibleTrigger asChild>
-            <Button variant="ghost" size="sm" className="w-full justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-between"
+            >
               <span className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
                 Advanced Options
@@ -195,7 +205,11 @@ export default function CrisisDetectionPanel({
                 {SOURCE_SYSTEM_OPTIONS.map((source) => (
                   <Badge
                     key={source.value}
-                    variant={selectedSources.includes(source.value) ? 'default' : 'outline'}
+                    variant={
+                      selectedSources.includes(source.value)
+                        ? 'default'
+                        : 'outline'
+                    }
                     className="cursor-pointer"
                     onClick={() => toggleSource(source.value)}
                   >
@@ -271,7 +285,7 @@ export default function CrisisDetectionPanel({
 
             {/* Status Message */}
             {displayResults.signalsGenerated === 0 &&
-              displayResults.incidentsCreated === 0 ? (
+            displayResults.incidentsCreated === 0 ? (
               <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg">
                 <CheckCircle2 className="h-5 w-5 text-green-600" />
                 <div>

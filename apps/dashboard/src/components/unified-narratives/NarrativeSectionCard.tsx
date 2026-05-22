@@ -102,7 +102,10 @@ export default function NarrativeSectionCard({
             <div>
               <CardTitle className="text-base">{section.title}</CardTitle>
               <div className="flex items-center gap-2 mt-1">
-                <NarrativeSectionTypeBadge sectionType={section.sectionType} size="sm" />
+                <NarrativeSectionTypeBadge
+                  sectionType={section.sectionType}
+                  size="sm"
+                />
                 <span className="text-xs text-white/50">
                   Order: {section.sortOrder}
                 </span>
@@ -210,11 +213,7 @@ export default function NarrativeSectionCard({
               </h4>
               <div className="flex flex-wrap gap-2">
                 {section.sourceReferences.map((ref, idx) => (
-                  <Badge
-                    key={idx}
-                    variant="secondary"
-                    className="text-xs"
-                  >
+                  <Badge key={idx} variant="secondary" className="text-xs">
                     {ref.title || ref.sourceSystem}
                   </Badge>
                 ))}
@@ -223,21 +222,24 @@ export default function NarrativeSectionCard({
           )}
 
           {/* Supporting Data */}
-          {section.supportingData && Object.keys(section.supportingData).length > 0 && (
-            <div className="border-t pt-3">
-              <h4 className="text-xs font-semibold text-white/50 uppercase mb-2">
-                Supporting Data
-              </h4>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                {Object.entries(section.supportingData).slice(0, 6).map(([key, value]) => (
-                  <div key={key}>
-                    <span className="text-white/50">{key}:</span>{' '}
-                    <span>{String(value)}</span>
-                  </div>
-                ))}
+          {section.supportingData &&
+            Object.keys(section.supportingData).length > 0 && (
+              <div className="border-t pt-3">
+                <h4 className="text-xs font-semibold text-white/50 uppercase mb-2">
+                  Supporting Data
+                </h4>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {Object.entries(section.supportingData)
+                    .slice(0, 6)
+                    .map(([key, value]) => (
+                      <div key={key}>
+                        <span className="text-white/50">{key}:</span>{' '}
+                        <span>{String(value)}</span>
+                      </div>
+                    ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Low confidence warning */}
           {confidenceScore < 0.5 && (

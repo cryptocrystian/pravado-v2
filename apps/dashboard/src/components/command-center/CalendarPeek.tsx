@@ -31,7 +31,13 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { CalendarItem, CalendarStatus, Mode, OrchestrationCalendarResponse, Pillar } from './types';
+import type {
+  CalendarItem,
+  CalendarStatus,
+  Mode,
+  OrchestrationCalendarResponse,
+  Pillar,
+} from './types';
 
 interface CalendarPeekProps {
   data: OrchestrationCalendarResponse | null;
@@ -43,28 +49,76 @@ type ViewMode = 'day' | 'week' | 'month';
 type MobileTab = 'calendar' | 'agenda';
 
 // Pillar colors - contrast-allow: using brand colors per DS v3
-const pillarColors: Record<Pillar, { bg: string; text: string; border: string; dot: string }> = {
-  pr: { bg: 'bg-brand-magenta/10', text: 'text-brand-magenta', border: 'border-brand-magenta/30', dot: 'bg-brand-magenta' },
-  content: { bg: 'bg-brand-iris/10', text: 'text-brand-iris', border: 'border-brand-iris/30', dot: 'bg-brand-iris' },
-  seo: { bg: 'bg-brand-cyan/10', text: 'text-brand-cyan', border: 'border-brand-cyan/30', dot: 'bg-brand-cyan' },
+const pillarColors: Record<
+  Pillar,
+  { bg: string; text: string; border: string; dot: string }
+> = {
+  pr: {
+    bg: 'bg-brand-magenta/10',
+    text: 'text-brand-magenta',
+    border: 'border-brand-magenta/30',
+    dot: 'bg-brand-magenta',
+  },
+  content: {
+    bg: 'bg-brand-iris/10',
+    text: 'text-brand-iris',
+    border: 'border-brand-iris/30',
+    dot: 'bg-brand-iris',
+  },
+  seo: {
+    bg: 'bg-brand-cyan/10',
+    text: 'text-brand-cyan',
+    border: 'border-brand-cyan/30',
+    dot: 'bg-brand-cyan',
+  },
 };
 
 // Status styling
-const statusStyles: Record<CalendarStatus, { bg: string; text: string; label: string }> = {
+const statusStyles: Record<
+  CalendarStatus,
+  { bg: string; text: string; label: string }
+> = {
   planned: { bg: 'bg-white/5', text: 'text-white/50', label: 'Planned' },
-  drafting: { bg: 'bg-brand-iris/10', text: 'text-brand-iris', label: 'Drafting' },
-  awaiting_approval: { bg: 'bg-semantic-warning/10', text: 'text-semantic-warning', label: 'Pending' },
-  scheduled: { bg: 'bg-brand-cyan/10', text: 'text-brand-cyan', label: 'Scheduled' },
-  published: { bg: 'bg-semantic-success/10', text: 'text-semantic-success', label: 'Published' },
-  failed: { bg: 'bg-semantic-danger/10', text: 'text-semantic-danger', label: 'Failed' },
+  drafting: {
+    bg: 'bg-brand-iris/10',
+    text: 'text-brand-iris',
+    label: 'Drafting',
+  },
+  awaiting_approval: {
+    bg: 'bg-semantic-warning/10',
+    text: 'text-semantic-warning',
+    label: 'Pending',
+  },
+  scheduled: {
+    bg: 'bg-brand-cyan/10',
+    text: 'text-brand-cyan',
+    label: 'Scheduled',
+  },
+  published: {
+    bg: 'bg-semantic-success/10',
+    text: 'text-semantic-success',
+    label: 'Published',
+  },
+  failed: {
+    bg: 'bg-semantic-danger/10',
+    text: 'text-semantic-danger',
+    label: 'Failed',
+  },
 };
 
 // Mode icons
-const modeIcons: Record<Mode, { icon: JSX.Element; label: string; color: string }> = {
+const modeIcons: Record<
+  Mode,
+  { icon: JSX.Element; label: string; color: string }
+> = {
   autopilot: {
     icon: (
       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-        <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
     label: 'Autopilot',
@@ -82,7 +136,11 @@ const modeIcons: Record<Mode, { icon: JSX.Element; label: string; color: string 
   manual: {
     icon: (
       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
     label: 'Manual',
@@ -113,7 +171,13 @@ function getPillarDots(items: CalendarItem[]): Pillar[] {
 }
 
 // Agenda Item Row Component
-function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => void }) {
+function AgendaItemRow({
+  item,
+  onClick,
+}: {
+  item: CalendarItem;
+  onClick: () => void;
+}) {
   const pillarStyle = pillarColors[item.pillar];
   const statusStyle = statusStyles[item.status];
   const modeInfo = modeIcons[item.mode];
@@ -134,10 +198,14 @@ function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => v
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 mb-0.5">
-          <span className={`px-1 py-0.5 text-[11px] font-semibold rounded uppercase tracking-wide ${pillarStyle.bg} ${pillarStyle.text}`}>
+          <span
+            className={`px-1 py-0.5 text-[11px] font-semibold rounded uppercase tracking-wide ${pillarStyle.bg} ${pillarStyle.text}`}
+          >
             {item.pillar}
           </span>
-          <span className={`px-1 py-0.5 text-xs font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}>
+          <span
+            className={`px-1 py-0.5 text-xs font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}
+          >
             {statusStyle.label}
           </span>
         </div>
@@ -146,7 +214,10 @@ function AgendaItemRow({ item, onClick }: { item: CalendarItem; onClick: () => v
 
       {/* Quick Actions (visible on hover) */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <span className={`w-4 h-4 flex items-center justify-center rounded ${modeInfo.color}`} title={modeInfo.label}>
+        <span
+          className={`w-4 h-4 flex items-center justify-center rounded ${modeInfo.color}`}
+          title={modeInfo.label}
+        >
           {modeInfo.icon}
         </span>
       </div>
@@ -183,19 +254,22 @@ function CalendarDayCell({
         calendar-day-cell relative flex flex-col items-center justify-center rounded
         transition-all duration-200 ease-out
         ${compact ? 'w-full h-7' : 'w-full aspect-square'}
-        ${isSelected
-          ? 'bg-brand-cyan/20 border border-brand-cyan/40 shadow-[0_0_12px_rgba(0,217,255,0.15)]'
-          : isToday
-            ? 'bg-brand-iris/10 border border-brand-iris/30'
-            : 'hover:bg-slate-4 border border-transparent hover:border-slate-5'
+        ${
+          isSelected
+            ? 'bg-brand-cyan/20 border border-brand-cyan/40 shadow-[0_0_12px_rgba(0,217,255,0.15)]'
+            : isToday
+              ? 'bg-brand-iris/10 border border-brand-iris/30'
+              : 'hover:bg-slate-4 border border-transparent hover:border-slate-5'
         }
         ${!isCurrentMonth ? 'opacity-40' : ''}
       `}
     >
-      <span className={`
+      <span
+        className={`
         text-xs font-medium
         ${isSelected ? 'text-brand-cyan' : isToday ? 'text-brand-iris' : isCurrentMonth ? 'text-white/90' : 'text-white/30'}
-      `}>
+      `}
+      >
         {day}
       </span>
 
@@ -203,17 +277,24 @@ function CalendarDayCell({
       {!compact && pillarDots.length > 0 && (
         <div className="flex items-center gap-0.5 mt-0.5">
           {pillarDots.slice(0, 3).map((pillar, i) => (
-            <span key={i} className={`w-1 h-1 rounded-full ${pillarColors[pillar].dot}`} />
+            <span
+              key={i}
+              className={`w-1 h-1 rounded-full ${pillarColors[pillar].dot}`}
+            />
           ))}
         </div>
       )}
 
       {/* Item count badge - typography-allow: badge counts are intentionally small */}
       {itemCount > 0 && (
-        <span className={`
+        <span
+          className={`
           absolute flex items-center justify-center font-bold bg-brand-cyan text-black rounded-full
           ${compact ? '-top-0.5 -right-0.5 w-3.5 h-3.5 text-[11px] tabular-nums' : '-top-0.5 -right-0.5 w-4 h-4 text-[11px] tabular-nums'}
-        `}> {/* typography-allow: badge */}
+        `}
+        >
+          {' '}
+          {/* typography-allow: badge */}
           {itemCount > 9 ? '9+' : itemCount}
         </span>
       )}
@@ -239,7 +320,7 @@ function DayTimelineView({
   const dateLabel = selectedDate.toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   });
 
   // Define time blocks for the day (working hours: 8 AM - 8 PM)
@@ -269,12 +350,24 @@ function DayTimelineView({
           }}
           className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
         >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
         <div className="text-center">
-          <p className={`text-xs font-semibold ${isToday ? 'text-brand-cyan' : 'text-white/90'}`}>
+          <p
+            className={`text-xs font-semibold ${isToday ? 'text-brand-cyan' : 'text-white/90'}`}
+          >
             {isToday ? 'Today' : dateLabel}
           </p>
         </div>
@@ -286,8 +379,18 @@ function DayTimelineView({
           }}
           className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
         >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>
@@ -297,18 +400,34 @@ function DayTimelineView({
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="w-6 h-6 rounded-lg bg-slate-4 flex items-center justify-center mb-1.5">
-              <svg className="w-3 h-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                className="w-3 h-3 text-white/50"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
-            <p className="text-[11px] text-white/50">No items</p> {/* typography-allow: empty state */}
+            <p className="text-[11px] text-white/50">No items</p>{' '}
+            {/* typography-allow: empty state */}
           </div>
         ) : (
           <div className="relative h-full min-h-[140px]">
             {/* Time markers */}
             <div className="absolute left-0 top-0 bottom-0 w-10 flex flex-col justify-between py-1">
               {timeBlocks.map((time) => (
-                <span key={time} className="text-[11px] text-white/40 leading-none">{time}</span> // typography-allow: time marker
+                <span
+                  key={time}
+                  className="text-[11px] text-white/40 leading-none"
+                >
+                  {time}
+                </span> // typography-allow: time marker
               ))}
             </div>
 
@@ -330,18 +449,29 @@ function DayTimelineView({
                     className={`
                       absolute left-0 right-1 h-5 flex items-center gap-1.5 pl-2 pr-1.5 rounded
                       transition-all duration-200 group
-                      ${isSelected
-                        ? `${pillarStyle.bg} border ${pillarStyle.border} shadow-[0_0_8px_rgba(0,217,255,0.1)]`
-                        : 'hover:bg-slate-4'
+                      ${
+                        isSelected
+                          ? `${pillarStyle.bg} border ${pillarStyle.border} shadow-[0_0_8px_rgba(0,217,255,0.1)]`
+                          : 'hover:bg-slate-4'
                       }
                     `}
                     style={{ top: `${position}%` }}
                   >
                     {/* Pillar dot on timeline */}
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${pillarStyle.dot} ${isSelected ? 'ring-2 ring-white/20' : ''}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full flex-shrink-0 ${pillarStyle.dot} ${isSelected ? 'ring-2 ring-white/20' : ''}`}
+                    />
                     {/* Time + truncated title */}
-                    <span className="text-[11px] text-white/60 flex-shrink-0">{item.time}</span> {/* typography-allow: time */}
-                    <span className={`text-[11px] truncate ${isSelected ? 'text-white/90' : 'text-white/70'}`}>{item.title}</span> {/* typography-allow: event title */}
+                    <span className="text-[11px] text-white/60 flex-shrink-0">
+                      {item.time}
+                    </span>{' '}
+                    {/* typography-allow: time */}
+                    <span
+                      className={`text-[11px] truncate ${isSelected ? 'text-white/90' : 'text-white/70'}`}
+                    >
+                      {item.title}
+                    </span>{' '}
+                    {/* typography-allow: event title */}
                   </button>
                 );
               })}
@@ -365,12 +495,25 @@ function DayDetailsPanel({
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-3">
         <div className="w-8 h-8 rounded-lg bg-slate-4 flex items-center justify-center mb-2">
-          <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+          <svg
+            className="w-4 h-4 text-white/40"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
+            />
           </svg>
         </div>
         <p className="text-xs text-white/50">Select an item from timeline</p>
-        <p className="text-[11px] text-white/30 mt-0.5">Click to view details</p> {/* typography-allow: hint */}
+        <p className="text-[11px] text-white/30 mt-0.5">
+          Click to view details
+        </p>{' '}
+        {/* typography-allow: hint */}
       </div>
     );
   }
@@ -391,8 +534,18 @@ function DayDetailsPanel({
           onClick={onClose}
           className="p-0.5 text-white/40 hover:text-white/70 hover:bg-slate-4 rounded transition-colors"
         >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -401,44 +554,87 @@ function DayDetailsPanel({
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
         {/* Badges */}
         <div className="flex items-center gap-1 flex-wrap">
-          <span className={`px-1.5 py-0.5 text-[11px] font-semibold rounded uppercase ${pillarStyle.bg} ${pillarStyle.text}`}> {/* typography-allow: badge */}
+          <span
+            className={`px-1.5 py-0.5 text-[11px] font-semibold rounded uppercase ${pillarStyle.bg} ${pillarStyle.text}`}
+          >
+            {' '}
+            {/* typography-allow: badge */}
             {selectedItem.pillar}
           </span>
-          <span className={`px-1.5 py-0.5 text-[11px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}> {/* typography-allow: badge */}
+          <span
+            className={`px-1.5 py-0.5 text-[11px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}
+          >
+            {' '}
+            {/* typography-allow: badge */}
             {statusStyle.label}
           </span>
-          <span className={`flex items-center gap-0.5 px-1.5 py-0.5 text-[11px] rounded bg-slate-4 ${modeInfo.color}`}> {/* typography-allow: badge */}
+          <span
+            className={`flex items-center gap-0.5 px-1.5 py-0.5 text-[11px] rounded bg-slate-4 ${modeInfo.color}`}
+          >
+            {' '}
+            {/* typography-allow: badge */}
             {modeInfo.icon}
             <span>{modeInfo.label}</span>
           </span>
         </div>
 
         {/* Title */}
-        <h4 className="text-xs font-semibold text-white/90 leading-snug">{selectedItem.title}</h4>
+        <h4 className="text-xs font-semibold text-white/90 leading-snug">
+          {selectedItem.title}
+        </h4>
 
         {/* Time */}
-        <div className="flex items-center gap-1.5 text-[11px] text-white/60"> {/* typography-allow: meta */}
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div className="flex items-center gap-1.5 text-[11px] text-white/60">
+          {' '}
+          {/* typography-allow: meta */}
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <span>{selectedItem.time}</span>
         </div>
 
         {/* Summary */}
         {selectedItem.details?.summary && (
-          <p className="text-[11px] text-white/55 leading-relaxed">{selectedItem.details.summary}</p> // typography-allow: summary
+          <p className="text-[11px] text-white/55 leading-relaxed">
+            {selectedItem.details.summary}
+          </p> // typography-allow: summary
         )}
 
         {/* Quick info */}
         <div className="pt-1 border-t border-border-subtle space-y-1">
-          <div className="flex items-center justify-between text-[11px]"> {/* typography-allow: meta */}
+          <div className="flex items-center justify-between text-[11px]">
+            {' '}
+            {/* typography-allow: meta */}
             <span className="text-white/40">Owner</span>
-            <span className="text-white/70">{selectedItem.details?.owner || 'Unassigned'}</span>
+            <span className="text-white/70">
+              {selectedItem.details?.owner || 'Unassigned'}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-[11px]"> {/* typography-allow: meta */}
+          <div className="flex items-center justify-between text-[11px]">
+            {' '}
+            {/* typography-allow: meta */}
             <span className="text-white/40">Risk</span>
-            <span className={selectedItem.details?.risk === 'high' ? 'text-semantic-danger' : selectedItem.details?.risk === 'med' ? 'text-semantic-warning' : 'text-semantic-success'}>
-              {selectedItem.details?.risk?.charAt(0).toUpperCase() + selectedItem.details?.risk?.slice(1) || 'Low'}
+            <span
+              className={
+                selectedItem.details?.risk === 'high'
+                  ? 'text-semantic-danger'
+                  : selectedItem.details?.risk === 'med'
+                    ? 'text-semantic-warning'
+                    : 'text-semantic-success'
+              }
+            >
+              {selectedItem.details?.risk?.charAt(0).toUpperCase() +
+                selectedItem.details?.risk?.slice(1) || 'Low'}
             </span>
           </div>
         </div>
@@ -446,7 +642,11 @@ function DayDetailsPanel({
 
       {/* Action button */}
       <div className="px-2 pb-2 pt-1 border-t border-border-subtle">
-        <button className={`w-full px-2 py-1.5 text-[11px] font-semibold rounded ${pillarStyle.bg} ${pillarStyle.text} border ${pillarStyle.border} hover:brightness-110 transition-all`}> {/* typography-allow: button */}
+        <button
+          className={`w-full px-2 py-1.5 text-[11px] font-semibold rounded ${pillarStyle.bg} ${pillarStyle.text} border ${pillarStyle.border} hover:brightness-110 transition-all`}
+        >
+          {' '}
+          {/* typography-allow: button */}
           Open Full View
         </button>
       </div>
@@ -505,7 +705,7 @@ function WeekView({
   // Navigate week: ±7 days
   const navigateWeek = (direction: -1 | 1) => {
     const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() + (direction * 7));
+    newDate.setDate(newDate.getDate() + direction * 7);
     onDateSelect(newDate);
   };
 
@@ -518,8 +718,18 @@ function WeekView({
           className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
           aria-label="Previous week"
         >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
         <span className="text-xs font-medium text-white/70">{weekLabel}</span>
@@ -528,8 +738,18 @@ function WeekView({
           className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
           aria-label="Next week"
         >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>
@@ -568,17 +788,31 @@ function WeekView({
         <div className="flex items-center gap-1.5 mb-2">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
           <span className="text-xs font-semibold text-white/90">
-            {selectedKey === today ? 'Today' : selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+            {selectedKey === today
+              ? 'Today'
+              : selectedDate.toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                })}
           </span>
           <span className="text-xs text-white/50">{items.length} items</span>
         </div>
         {items.length === 0 ? (
-          <p className="text-xs text-white/50 text-center py-4">No items scheduled</p>
+          <p className="text-xs text-white/50 text-center py-4">
+            No items scheduled
+          </p>
         ) : (
           <div className="space-y-1">
-            {[...items].sort((a, b) => a.time.localeCompare(b.time)).map((item) => (
-              <AgendaItemRow key={item.id} item={item} onClick={() => onItemClick(item)} />
-            ))}
+            {[...items]
+              .sort((a, b) => a.time.localeCompare(b.time))
+              .map((item) => (
+                <AgendaItemRow
+                  key={item.id}
+                  item={item}
+                  onClick={() => onItemClick(item)}
+                />
+              ))}
           </div>
         )}
       </div>
@@ -625,7 +859,10 @@ function MonthView({
     // Next month days (fill to 42 for 6 rows)
     const remaining = 42 - result.length;
     for (let i = 1; i <= remaining; i++) {
-      result.push({ date: new Date(year, month + 1, i), isCurrentMonth: false });
+      result.push({
+        date: new Date(year, month + 1, i),
+        isCurrentMonth: false,
+      });
     }
 
     return result;
@@ -645,12 +882,25 @@ function MonthView({
           }}
           className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
         >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
         <span className="text-xs font-semibold text-white/90">
-          {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          {selectedDate.toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric',
+          })}
         </span>
         <button
           onClick={() => {
@@ -660,8 +910,18 @@ function MonthView({
           }}
           className="p-1 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded transition-colors"
         >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>
@@ -669,7 +929,12 @@ function MonthView({
       {/* Day headers */}
       <div className="grid grid-cols-7 gap-0.5 mb-1">
         {days.map((d, i) => (
-          <span key={i} className="text-xs text-white/50 text-center font-medium py-0.5">{d}</span>
+          <span
+            key={i}
+            className="text-xs text-white/50 text-center font-medium py-0.5"
+          >
+            {d}
+          </span>
         ))}
       </div>
 
@@ -716,7 +981,11 @@ function AgendaPanel({
   const isToday = formatDateKey(selectedDate) === formatDateKey(new Date());
   const dateLabel = isToday
     ? 'Today'
-    : selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    : selectedDate.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+      });
 
   const sortedItems = useMemo(() => {
     return [...items].sort((a, b) => a.time.localeCompare(b.time));
@@ -728,7 +997,9 @@ function AgendaPanel({
       <div className="flex items-center justify-between px-2 py-1.5 border-b border-border-subtle">
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
-          <span className="text-xs font-semibold text-white/90">{dateLabel}</span>
+          <span className="text-xs font-semibold text-white/90">
+            {dateLabel}
+          </span>
         </div>
         <span className="text-xs text-white/50">{items.length} items</span>
       </div>
@@ -738,15 +1009,29 @@ function AgendaPanel({
         {sortedItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-6 text-center">
             <div className="w-8 h-8 rounded-lg bg-slate-4 flex items-center justify-center mb-2">
-              <svg className="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                className="w-4 h-4 text-white/50"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <p className="text-xs text-white/50">No items scheduled</p>
           </div>
         ) : (
           sortedItems.map((item) => (
-            <AgendaItemRow key={item.id} item={item} onClick={() => onItemClick(item)} />
+            <AgendaItemRow
+              key={item.id}
+              item={item}
+              onClick={() => onItemClick(item)}
+            />
           ))
         )}
       </div>
@@ -764,7 +1049,9 @@ function ScheduleDrawer({
   onClose: () => void;
   item: CalendarItem | null;
 }) {
-  const [selectedMode, setSelectedMode] = useState<Mode>(item?.mode || 'copilot');
+  const [selectedMode, setSelectedMode] = useState<Mode>(
+    item?.mode || 'copilot'
+  );
 
   useEffect(() => {
     if (item) setSelectedMode(item.mode);
@@ -802,20 +1089,35 @@ function ScheduleDrawer({
   return (
     <div className="fixed inset-0 z-[100]">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-page/70 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-page/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
       {/* Drawer - slides from right */}
       <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-slate-1 border-l border-border-subtle shadow-2xl shadow-black/50 overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-page">
           <div className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-lg ${pillarStyle.bg} border ${pillarStyle.border} flex items-center justify-center`}>
-              <svg className={`w-4 h-4 ${pillarStyle.text}`} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+            <div
+              className={`w-8 h-8 rounded-lg ${pillarStyle.bg} border ${pillarStyle.border} flex items-center justify-center`}
+            >
+              <svg
+                className={`w-4 h-4 ${pillarStyle.text}`}
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-white/90">Schedule Details</h2>
+              <h2 className="text-sm font-semibold text-white/90">
+                Schedule Details
+              </h2>
               <p className="text-xs text-white/50">Item configuration</p>
             </div>
           </div>
@@ -823,8 +1125,18 @@ function ScheduleDrawer({
             onClick={onClose}
             className="p-1.5 text-white/50 hover:text-white/90 hover:bg-slate-4 rounded-lg transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -834,24 +1146,40 @@ function ScheduleDrawer({
           {/* Item Header */}
           <div className="p-3 bg-page border border-border-subtle rounded-lg">
             <div className="flex items-center gap-2 mb-2">
-              <span className={`px-1.5 py-0.5 text-[11px] font-semibold rounded uppercase ${pillarStyle.bg} ${pillarStyle.text}`}> {/* typography-allow: badge */}
+              <span
+                className={`px-1.5 py-0.5 text-[11px] font-semibold rounded uppercase ${pillarStyle.bg} ${pillarStyle.text}`}
+              >
+                {' '}
+                {/* typography-allow: badge */}
                 {item.pillar}
               </span>
-              <span className={`px-1.5 py-0.5 text-[11px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}> {/* typography-allow: badge */}
+              <span
+                className={`px-1.5 py-0.5 text-[11px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}
+              >
+                {' '}
+                {/* typography-allow: badge */}
                 {statusStyle.label}
               </span>
             </div>
-            <h3 className="text-sm font-semibold text-white/90 mb-1">{item.title}</h3>
+            <h3 className="text-sm font-semibold text-white/90 mb-1">
+              {item.title}
+            </h3>
             <p className="text-xs text-white/50">{item.details.summary}</p>
           </div>
 
           {/* Date & Time */}
           <div>
-            <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Schedule</h4>
+            <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">
+              Schedule
+            </h4>
             <div className="p-3 bg-page border border-border-subtle rounded-lg flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-white/90">
-                  {itemDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                  {itemDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
                 </p>
                 <p className="text-xs text-white/50">at {item.time}</p>
               </div>
@@ -863,7 +1191,9 @@ function ScheduleDrawer({
 
           {/* Mode Selector */}
           <div>
-            <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Automation Mode</h4>
+            <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">
+              Automation Mode
+            </h4>
             <div className="grid grid-cols-3 gap-2">
               {(['manual', 'copilot', 'autopilot'] as Mode[]).map((mode) => {
                 const info = modeIcons[mode];
@@ -874,16 +1204,23 @@ function ScheduleDrawer({
                     onClick={() => setSelectedMode(mode)}
                     className={`
                       p-2 rounded-lg border transition-all text-center
-                      ${isSelected
-                        ? `bg-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'white'}/10 border-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'white'}/30`
-                        : 'bg-page border-border-subtle hover:border-slate-5'
+                      ${
+                        isSelected
+                          ? `bg-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'white'}/10 border-${mode === 'autopilot' ? 'brand-cyan' : mode === 'copilot' ? 'brand-iris' : 'white'}/30`
+                          : 'bg-page border-border-subtle hover:border-slate-5'
                       }
                     `}
                   >
-                    <span className={`flex items-center justify-center ${isSelected ? info.color : 'text-white/50'}`}>
+                    <span
+                      className={`flex items-center justify-center ${isSelected ? info.color : 'text-white/50'}`}
+                    >
                       {info.icon}
                     </span>
-                    <p className={`text-xs mt-1 font-medium ${isSelected ? 'text-white/90' : 'text-white/50'}`}>{info.label}</p>
+                    <p
+                      className={`text-xs mt-1 font-medium ${isSelected ? 'text-white/90' : 'text-white/50'}`}
+                    >
+                      {info.label}
+                    </p>
                   </button>
                 );
               })}
@@ -892,22 +1229,31 @@ function ScheduleDrawer({
 
           {/* Details */}
           <div>
-            <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Details</h4>
+            <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">
+              Details
+            </h4>
             <div className="p-3 bg-page border border-border-subtle rounded-lg space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-white/50">Owner</span>
-                <span className="text-xs text-white/90">{item.details.owner}</span>
+                <span className="text-xs text-white/90">
+                  {item.details.owner}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-white/50">Risk Level</span>
-                <span className={`text-xs ${item.details.risk === 'high' ? 'text-semantic-danger' : item.details.risk === 'med' ? 'text-semantic-warning' : 'text-semantic-success'}`}>
-                  {item.details.risk.charAt(0).toUpperCase() + item.details.risk.slice(1)}
+                <span
+                  className={`text-xs ${item.details.risk === 'high' ? 'text-semantic-danger' : item.details.risk === 'med' ? 'text-semantic-warning' : 'text-semantic-success'}`}
+                >
+                  {item.details.risk.charAt(0).toUpperCase() +
+                    item.details.risk.slice(1)}
                 </span>
               </div>
               {item.details.estimated_duration && (
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-white/50">Duration</span>
-                  <span className="text-xs text-white/90">{item.details.estimated_duration}</span>
+                  <span className="text-xs text-white/90">
+                    {item.details.estimated_duration}
+                  </span>
                 </div>
               )}
             </div>
@@ -916,9 +1262,13 @@ function ScheduleDrawer({
           {/* Approval State */}
           {item.status === 'awaiting_approval' && (
             <div>
-              <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">Approval Required</h4>
+              <h4 className="text-xs text-white/50 uppercase tracking-wide font-semibold mb-2">
+                Approval Required
+              </h4>
               <div className="p-3 bg-semantic-warning/8 border border-semantic-warning/20 rounded-lg">
-                <p className="text-xs text-white/50 mb-2">This item requires approval before execution.</p>
+                <p className="text-xs text-white/50 mb-2">
+                  This item requires approval before execution.
+                </p>
                 <div className="flex items-center gap-2">
                   <button className="flex-1 px-3 py-1.5 text-xs font-semibold text-white/90 bg-semantic-success/10 border border-semantic-success/30 rounded hover:bg-semantic-success/20 transition-colors">
                     Approve
@@ -932,17 +1282,22 @@ function ScheduleDrawer({
           )}
 
           {/* Request Approval Button */}
-          {item.status !== 'awaiting_approval' && item.status !== 'published' && (
-            <button className="w-full px-3 py-2 text-xs font-semibold text-brand-iris bg-brand-iris/10 border border-brand-iris/30 rounded-lg hover:bg-brand-iris/20 transition-colors">
-              Request Approval
-            </button>
-          )}
+          {item.status !== 'awaiting_approval' &&
+            item.status !== 'published' && (
+              <button className="w-full px-3 py-2 text-xs font-semibold text-brand-iris bg-brand-iris/10 border border-brand-iris/30 rounded-lg hover:bg-brand-iris/20 transition-colors">
+                Request Approval
+              </button>
+            )}
         </div>
 
         {/* Footer */}
         <div className="px-4 py-3 border-t border-border-subtle bg-page">
           <p className="text-xs text-white/50 text-center">
-            Press <kbd className="px-1 py-0.5 bg-slate-4 rounded text-white/50">Esc</kbd> to close
+            Press{' '}
+            <kbd className="px-1 py-0.5 bg-slate-4 rounded text-white/50">
+              Esc
+            </kbd>{' '}
+            to close
           </p>
         </div>
       </div>
@@ -961,7 +1316,10 @@ function LoadingSkeleton() {
         <div className="bg-page border border-border-subtle rounded-lg animate-pulse" />
         <div className="space-y-1.5">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-10 bg-page border border-border-subtle rounded-lg animate-pulse" />
+            <div
+              key={i}
+              className="h-10 bg-page border border-border-subtle rounded-lg animate-pulse"
+            />
           ))}
         </div>
       </div>
@@ -976,12 +1334,17 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
   const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   // Day view: separate selection state for inline details panel
-  const [dayViewSelectedItem, setDayViewSelectedItem] = useState<CalendarItem | null>(null);
+  const [dayViewSelectedItem, setDayViewSelectedItem] =
+    useState<CalendarItem | null>(null);
 
   // Group items by date
   const itemsByDate = useMemo(() => {
     if (!data?.items) return new Map<string, CalendarItem[]>();
-    return getItemsByDate(data.items.filter((item) => !['published', 'failed'].includes(item.status)));
+    return getItemsByDate(
+      data.items.filter(
+        (item) => !['published', 'failed'].includes(item.status)
+      )
+    );
   }, [data]);
 
   // Get items for selected date
@@ -1036,7 +1399,9 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs font-semibold text-white/90">Calendar</h3>
         </div>
-        <p className="text-xs text-white/50 text-center py-3">No scheduled items</p>
+        <p className="text-xs text-white/50 text-center py-3">
+          No scheduled items
+        </p>
       </div>
     );
   }
@@ -1050,8 +1415,16 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
         {/* Header */}
         <div className="flex items-center justify-between mb-2 flex-shrink-0">
           <div className="flex items-center gap-2">
-            <svg className="w-4 h-4 text-brand-cyan" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+            <svg
+              className="w-4 h-4 text-brand-cyan"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                clipRule="evenodd"
+              />
             </svg>
             <h3 className="text-xs font-semibold text-white/90">Calendar</h3>
             {!isToday && (
@@ -1182,8 +1555,18 @@ export function CalendarPeek({ data, isLoading, error }: CalendarPeekProps) {
           className="mt-2 flex items-center justify-center gap-1.5 px-2 py-1 text-xs font-medium text-brand-cyan bg-brand-cyan/5 border border-brand-cyan/20 rounded hover:bg-brand-cyan/10 hover:border-brand-cyan/30 transition-all duration-200 group flex-shrink-0"
         >
           View Full Calendar
-          <svg className="w-3 h-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-3 h-3 transition-transform group-hover:translate-x-0.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </Link>
       </div>

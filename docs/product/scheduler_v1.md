@@ -29,6 +29,7 @@ Server Boot → Initialize Scheduler → Start Cron Tick (60s)
 ### Database Schema (Migration 47)
 
 **scheduler_tasks**
+
 - System-wide scheduled tasks
 - Cron expression scheduling
 - Enable/disable toggle
@@ -36,6 +37,7 @@ Server Boot → Initialize Scheduler → Start Cron Tick (60s)
 - Admin-only RLS policies
 
 **scheduler_task_runs**
+
 - Complete audit trail of executions
 - Success/failure status
 - Error messages and metadata
@@ -66,15 +68,16 @@ SchedulerService
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/scheduler/tasks` | List all scheduled tasks (admin) |
-| POST | `/api/v1/scheduler/tasks/:id/toggle` | Toggle task enabled/disabled (admin) |
-| POST | `/api/v1/scheduler/tasks/:name/run` | Run task immediately (admin) |
-| GET | `/api/v1/scheduler/runs` | List task run history (admin) |
-| GET | `/api/v1/scheduler/stats` | Get scheduler statistics (admin) |
+| Method | Endpoint                             | Description                          |
+| ------ | ------------------------------------ | ------------------------------------ |
+| GET    | `/api/v1/scheduler/tasks`            | List all scheduled tasks (admin)     |
+| POST   | `/api/v1/scheduler/tasks/:id/toggle` | Toggle task enabled/disabled (admin) |
+| POST   | `/api/v1/scheduler/tasks/:name/run`  | Run task immediately (admin)         |
+| GET    | `/api/v1/scheduler/runs`             | List task run history (admin)        |
+| GET    | `/api/v1/scheduler/stats`            | Get scheduler statistics (admin)     |
 
 All endpoints require:
+
 - `requireUser` authentication
 - `requireAdmin` authorization
 - Zod validation
@@ -82,10 +85,12 @@ All endpoints require:
 ## Scheduled Tasks
 
 ### Task 1: Hourly RSS Fetch
+
 **Schedule**: `0 * * * *` (every hour at :00)
 **Handler**: `executeHourlyRssFetch()`
 
 Workflow:
+
 1. Query all active RSS feeds across all orgs
 2. Group feeds by org_id
 3. Call `mediaCrawlerService.fetchAllActiveFeeds()` per org
@@ -93,20 +98,24 @@ Workflow:
 5. Track total feeds fetched and jobs created
 
 ### Task 2: Queue Pending Jobs
+
 **Schedule**: `*/10 * * * *` (every 10 minutes)
 **Handler**: `executeQueueJobs()`
 
 Workflow:
+
 1. Query crawl jobs with status='queued' (limit 100)
 2. Execute each job via `mediaCrawlerService.executeCrawlJob()`
 3. Track successful enqueues and errors
 4. Continue processing remaining jobs in next cycle
 
 ### Task 3: Nightly Cleanup
+
 **Schedule**: `0 0 * * *` (midnight daily)
 **Handler**: `executeNightlyCleanup()`
 
 Workflow:
+
 1. Delete `media_crawl_jobs` older than 30 days
 2. Delete `scheduler_task_runs` older than 60 days
 3. Track deletion counts
@@ -115,6 +124,7 @@ Workflow:
 ## Cron Matching
 
 ### Simple Cron Parser
+
 - Format: `minute hour day month weekday` (5 fields)
 - Supports: numbers, `*`, `*/N` (step values)
 - Matching logic:
@@ -123,7 +133,9 @@ Workflow:
   - Compare time since last run
 
 ### Production Enhancement
+
 Current implementation uses simple heuristic matching. Production would use:
+
 - `cron-parser` or `node-cron` library
 - Precise cron expression evaluation
 - Timezone-aware scheduling
@@ -132,13 +144,16 @@ Current implementation uses simple heuristic matching. Production would use:
 ## Dashboard UI
 
 ### Admin Scheduler Page (`/app/admin/scheduler`)
+
 **Layout**:
+
 - Header with title and description
 - 6 statistics cards (Total Tasks, Enabled, Runs, Success, Failed, Last 24h)
 - Task table with inline actions
 - Error alert banner
 
 **Features**:
+
 - Real-time task list with status indicators
 - Toggle switches for enable/disable
 - "Run Now" buttons for manual execution
@@ -147,12 +162,14 @@ Current implementation uses simple heuristic matching. Production would use:
 - Status badges (success/failure)
 
 **Components**:
+
 - `TaskListTable` - Main task display
 - `StatusBadge` - Color-coded status indicators
 - `ToggleButton` - Enable/disable switch
 - `RunNowButton` - Manual execution trigger
 
 **Security**:
+
 - Admin-only access (checked via API)
 - All mutations require confirmation
 - Error boundaries for graceful failures
@@ -160,6 +177,7 @@ Current implementation uses simple heuristic matching. Production would use:
 ## Server Integration
 
 ### Boot Sequence
+
 1. Check `ENABLE_SCHEDULER` feature flag
 2. Initialize monitoring and crawler services
 3. Create scheduler service instance
@@ -167,6 +185,7 @@ Current implementation uses simple heuristic matching. Production would use:
 5. Execute due tasks every 60 seconds
 
 ### Error Handling
+
 - Task execution errors don't crash scheduler
 - Failed tasks marked with error messages
 - Automatic retry on next cron cycle
@@ -175,12 +194,14 @@ Current implementation uses simple heuristic matching. Production would use:
 ## Statistics & Monitoring
 
 ### Metrics Tracked
+
 - Total tasks / enabled tasks
 - Total runs / successful runs / failed runs
 - Runs in last 24 hours
 - Per-task last run time and status
 
 ### RPC Function
+
 `get_scheduler_stats()` provides aggregated metrics with single query.
 
 Fallback to manual queries if RPC unavailable.
@@ -188,11 +209,13 @@ Fallback to manual queries if RPC unavailable.
 ## Security & Access Control
 
 ### Authentication
+
 - All endpoints require authenticated user
 - Admin role checked via `profiles.role = 'admin'`
 - RLS policies enforce admin-only access to tables
 
 ### Audit Trail
+
 - Every task execution recorded
 - Start time, end time, status, error
 - Metadata includes task-specific details
@@ -209,16 +232,19 @@ Fallback to manual queries if RPC unavailable.
 ## Configuration
 
 ### Feature Flag
+
 ```typescript
-ENABLE_SCHEDULER: true
+ENABLE_SCHEDULER: true;
 ```
 
 ### Cron Tick Interval
+
 ```typescript
-setInterval(() => schedulerService.executeDueTasks(), 60_000) // 60 seconds
+setInterval(() => schedulerService.executeDueTasks(), 60_000); // 60 seconds
 ```
 
 ### Task Parameters
+
 - Max crawl jobs per cycle: 100
 - Crawl job retention: 30 days
 - Task run retention: 60 days

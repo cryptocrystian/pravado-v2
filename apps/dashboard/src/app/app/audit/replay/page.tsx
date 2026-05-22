@@ -36,7 +36,8 @@ export default function AuditReplayPage() {
   const [runs, setRuns] = useState<AuditReplayRun[]>([]);
   const [selectedRun, setSelectedRun] = useState<AuditReplayRun | null>(null);
   const [timeline, setTimeline] = useState<ReplayTimelineEvent[]>([]);
-  const [selectedSnapshot, setSelectedSnapshot] = useState<ReplaySnapshot | null>(null);
+  const [selectedSnapshot, setSelectedSnapshot] =
+    useState<ReplaySnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,7 +55,9 @@ export default function AuditReplayPage() {
       setRuns(result.runs);
     } catch (err: unknown) {
       console.error('Failed to load replay runs:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load replay runs');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load replay runs'
+      );
     } finally {
       setLoading(false);
     }
@@ -104,7 +107,9 @@ export default function AuditReplayPage() {
       }
     } catch (err: unknown) {
       console.error('Failed to load run details:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load run details');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load run details'
+      );
     }
   };
 
@@ -169,7 +174,9 @@ export default function AuditReplayPage() {
 
           {/* Past Runs */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Past Replays</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Past Replays
+            </h3>
             {runs.length === 0 ? (
               <p className="text-gray-500 text-sm">No replay runs yet</p>
             ) : (
@@ -274,7 +281,10 @@ export default function AuditReplayPage() {
                   <div className="text-gray-500 mb-2">By Entity</div>
                   {Object.entries(selectedRun.result.entityBreakdown).map(
                     ([entity, count]) => (
-                      <div key={entity} className="flex justify-between text-xs">
+                      <div
+                        key={entity}
+                        className="flex justify-between text-xs"
+                      >
                         <span className="capitalize">{entity}</span>
                         <span>{count as number}</span>
                       </div>

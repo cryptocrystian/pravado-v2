@@ -96,7 +96,10 @@ export function NodeInspectorDrawer({
       await updateNode(nodeId, {
         label: formData.label,
         description: formData.description || undefined,
-        tags: formData.tags.split(',').map((t) => t.trim()).filter(Boolean),
+        tags: formData.tags
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean),
       });
       setEditMode(false);
       onUpdate?.();
@@ -134,14 +137,18 @@ export function NodeInspectorDrawer({
           <div className="space-y-6 mt-6">
             {/* Node Header */}
             <div className="flex items-start gap-4">
-              <div className={`p-3 rounded-full ${getNodeTypeColor(data.node.nodeType)}`}>
+              <div
+                className={`p-3 rounded-full ${getNodeTypeColor(data.node.nodeType)}`}
+              >
                 <CircleDot className="h-6 w-6" />
               </div>
               <div className="flex-1">
                 {editMode ? (
                   <Input
                     value={formData.label}
-                    onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, label: e.target.value })
+                    }
                     className="text-lg font-semibold"
                   />
                 ) : (
@@ -154,17 +161,27 @@ export function NodeInspectorDrawer({
               <div className="flex gap-2">
                 {editMode ? (
                   <>
-                    <Button size="sm" variant="outline" onClick={() => setEditMode(false)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setEditMode(false)}
+                    >
                       Cancel
                     </Button>
                     <Button size="sm" onClick={handleSave} disabled={isSaving}>
-                      {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      {isSaving && (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      )}
                       <Save className="h-4 w-4 mr-1" />
                       Save
                     </Button>
                   </>
                 ) : (
-                  <Button size="sm" variant="outline" onClick={() => setEditMode(true)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setEditMode(true)}
+                  >
                     Edit
                   </Button>
                 )}
@@ -175,7 +192,8 @@ export function NodeInspectorDrawer({
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="connections">
-                  Connections ({data.incomingEdges.length + data.outgoingEdges.length})
+                  Connections (
+                  {data.incomingEdges.length + data.outgoingEdges.length})
                 </TabsTrigger>
                 <TabsTrigger value="metrics">Metrics</TabsTrigger>
               </TabsList>
@@ -187,7 +205,12 @@ export function NodeInspectorDrawer({
                   {editMode ? (
                     <Textarea
                       value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
                       className="mt-1"
                       rows={3}
                     />
@@ -207,7 +230,9 @@ export function NodeInspectorDrawer({
                   {editMode ? (
                     <Input
                       value={formData.tags}
-                      onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, tags: e.target.value })
+                      }
                       placeholder="Comma-separated tags"
                       className="mt-1"
                     />
@@ -260,16 +285,26 @@ export function NodeInspectorDrawer({
                     </Label>
                     <div className="space-y-2">
                       {data.incomingEdges.map((edge) => {
-                        const sourceNode = data.neighbors.find((n) => n.id === edge.sourceNodeId);
+                        const sourceNode = data.neighbors.find(
+                          (n) => n.id === edge.sourceNodeId
+                        );
                         return (
-                          <Card key={edge.id} className="cursor-pointer hover:bg-muted/50"
-                            onClick={() => onNavigateToNode?.(edge.sourceNodeId)}>
+                          <Card
+                            key={edge.id}
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() =>
+                              onNavigateToNode?.(edge.sourceNodeId)
+                            }
+                          >
                             <CardContent className="py-3">
                               <div className="flex items-center gap-2">
                                 <span className="font-medium truncate flex-1">
-                                  {sourceNode?.label || edge.sourceNodeId.slice(0, 8)}
+                                  {sourceNode?.label ||
+                                    edge.sourceNodeId.slice(0, 8)}
                                 </span>
-                                <Badge variant="outline">{getEdgeTypeLabel(edge.edgeType)}</Badge>
+                                <Badge variant="outline">
+                                  {getEdgeTypeLabel(edge.edgeType)}
+                                </Badge>
                               </div>
                             </CardContent>
                           </Card>
@@ -288,15 +323,25 @@ export function NodeInspectorDrawer({
                     </Label>
                     <div className="space-y-2">
                       {data.outgoingEdges.map((edge) => {
-                        const targetNode = data.neighbors.find((n) => n.id === edge.targetNodeId);
+                        const targetNode = data.neighbors.find(
+                          (n) => n.id === edge.targetNodeId
+                        );
                         return (
-                          <Card key={edge.id} className="cursor-pointer hover:bg-muted/50"
-                            onClick={() => onNavigateToNode?.(edge.targetNodeId)}>
+                          <Card
+                            key={edge.id}
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() =>
+                              onNavigateToNode?.(edge.targetNodeId)
+                            }
+                          >
                             <CardContent className="py-3">
                               <div className="flex items-center gap-2">
-                                <Badge variant="outline">{getEdgeTypeLabel(edge.edgeType)}</Badge>
+                                <Badge variant="outline">
+                                  {getEdgeTypeLabel(edge.edgeType)}
+                                </Badge>
                                 <span className="font-medium truncate flex-1">
-                                  {targetNode?.label || edge.targetNodeId.slice(0, 8)}
+                                  {targetNode?.label ||
+                                    edge.targetNodeId.slice(0, 8)}
                                 </span>
                               </div>
                             </CardContent>
@@ -307,11 +352,12 @@ export function NodeInspectorDrawer({
                   </div>
                 )}
 
-                {data.incomingEdges.length === 0 && data.outgoingEdges.length === 0 && (
-                  <p className="text-sm text-white/50 text-center py-4">
-                    No connections
-                  </p>
-                )}
+                {data.incomingEdges.length === 0 &&
+                  data.outgoingEdges.length === 0 && (
+                    <p className="text-sm text-white/50 text-center py-4">
+                      No connections
+                    </p>
+                  )}
               </TabsContent>
 
               <TabsContent value="metrics" className="space-y-4 mt-4">
@@ -320,7 +366,9 @@ export function NodeInspectorDrawer({
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-2 mb-1">
                         <BarChart3 className="h-4 w-4 text-white/50" />
-                        <span className="text-sm text-white/50">Degree Centrality</span>
+                        <span className="text-sm text-white/50">
+                          Degree Centrality
+                        </span>
                       </div>
                       <p className="text-2xl font-bold">
                         {formatCentrality(data.node.degreeCentrality)}
@@ -342,7 +390,9 @@ export function NodeInspectorDrawer({
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-2 mb-1">
                         <BarChart3 className="h-4 w-4 text-white/50" />
-                        <span className="text-sm text-white/50">Betweenness</span>
+                        <span className="text-sm text-white/50">
+                          Betweenness
+                        </span>
                       </div>
                       <p className="text-2xl font-bold">
                         {formatCentrality(data.node.betweennessCentrality)}
@@ -365,13 +415,17 @@ export function NodeInspectorDrawer({
                 {data.node.clusterId && (
                   <div>
                     <Label className="text-sm text-white/50">Cluster ID</Label>
-                    <p className="text-sm font-mono mt-1">{data.node.clusterId}</p>
+                    <p className="text-sm font-mono mt-1">
+                      {data.node.clusterId}
+                    </p>
                   </div>
                 )}
 
                 {data.node.confidenceScore != null && (
                   <div>
-                    <Label className="text-sm text-white/50">Confidence Score</Label>
+                    <Label className="text-sm text-white/50">
+                      Confidence Score
+                    </Label>
                     <p className="text-sm mt-1">
                       {((data.node.confidenceScore ?? 0) * 100).toFixed(1)}%
                     </p>

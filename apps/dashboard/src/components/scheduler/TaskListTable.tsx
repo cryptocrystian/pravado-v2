@@ -57,7 +57,10 @@ export function TaskListTable({
         <tbody className="bg-white divide-y divide-gray-200">
           {tasks.length === 0 ? (
             <tr>
-              <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
+              <td
+                colSpan={6}
+                className="px-6 py-4 text-center text-sm text-gray-500"
+              >
                 No scheduler tasks found
               </td>
             </tr>
@@ -65,13 +68,19 @@ export function TaskListTable({
             tasks.map((task) => (
               <tr key={task.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{task.name}</div>
+                  <div className="text-sm font-medium text-gray-900">
+                    {task.name}
+                  </div>
                   {task.description && (
-                    <div className="text-sm text-gray-500">{task.description}</div>
+                    <div className="text-sm text-gray-500">
+                      {task.description}
+                    </div>
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <code className="text-xs bg-gray-100 px-2 py-1 rounded">{task.schedule}</code>
+                  <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                    {task.schedule}
+                  </code>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {formatDate(task.lastRunAt)}

@@ -41,7 +41,9 @@ export function OrgSwitcher({ currentOrg, allOrgs }: OrgSwitcherProps) {
 
     try {
       const { supabase } = await import('@/lib/supabaseClient');
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
         throw new Error('Not authenticated');
@@ -98,7 +100,9 @@ export function OrgSwitcher({ currentOrg, allOrgs }: OrgSwitcherProps) {
             {currentOrg.name}
           </p>
           <p className="text-xs text-white/55 truncate">
-            {currentOrg.name === 'Pravado Demo Org' ? 'Demo Organization' : 'Organization'}
+            {currentOrg.name === 'Pravado Demo Org'
+              ? 'Demo Organization'
+              : 'Organization'}
           </p>
         </div>
         <svg
@@ -107,7 +111,12 @@ export function OrgSwitcher({ currentOrg, allOrgs }: OrgSwitcherProps) {
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -155,8 +164,16 @@ export function OrgSwitcher({ currentOrg, allOrgs }: OrgSwitcherProps) {
                     {org.name}
                   </span>
                   {org.id === currentOrg.id && (
-                    <svg className="w-4 h-4 text-brand-iris" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg
+                      className="w-4 h-4 text-brand-iris"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   )}
                   {org.name === 'Pravado Demo Org' && (
@@ -177,8 +194,18 @@ export function OrgSwitcher({ currentOrg, allOrgs }: OrgSwitcherProps) {
                     className="w-full flex items-center space-x-3 p-2 rounded-md hover:bg-slate-3 transition-colors text-brand-cyan disabled:opacity-50"
                   >
                     <div className="w-6 h-6 rounded bg-brand-cyan/10 flex items-center justify-center">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
                       </svg>
                     </div>
                     <span className="text-sm">

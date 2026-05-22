@@ -5,6 +5,7 @@
 The AI Playbooks Runtime is the execution engine for automated multi-agent workflows in Pravado. Sprint S7 establishes the foundational execution system with database-backed playbooks, step-by-step execution, and comprehensive observability.
 
 **Key Capabilities:**
+
 - Create and manage playbook definitions with versioning
 - Execute playbooks step-by-step with status tracking
 - Support for AGENT, DATA, BRANCH, and API step types
@@ -40,10 +41,12 @@ playbooks (
 ```
 
 **Indexes:**
+
 - `(org_id, name, version)` - Lookup by name and version
 - `(org_id, status)` - Filter by status
 
 **Status Lifecycle:**
+
 - `DRAFT` - Under development, not ready for execution
 - `ACTIVE` - Ready for execution
 - `ARCHIVED` - Kept for historical purposes
@@ -72,6 +75,7 @@ playbook_steps (
 ```
 
 **Key Design:**
+
 - `key` uniquely identifies step within playbook (used for referencing)
 - `position` determines execution order (starting from 0)
 - `next_step_key` defines simple linear flow; BRANCH steps override this
@@ -99,10 +103,12 @@ playbook_runs (
 ```
 
 **Indexes:**
+
 - `(org_id, playbook_id, created_at DESC)` - Runs by playbook
 - `(org_id, status)` - Active/failed runs
 
 **Status Lifecycle:**
+
 1. `PENDING` - Created, not yet started
 2. `RUNNING` - Currently executing steps
 3. `SUCCEEDED` - All steps completed successfully
@@ -133,10 +139,12 @@ playbook_step_runs (
 ```
 
 **Indexes:**
+
 - `(org_id, run_id, created_at)` - Steps by run
 - `(org_id, playbook_id, step_key)` - Step execution history
 
 **Status Lifecycle:**
+
 1. `PENDING` - Queued for execution
 2. `RUNNING` - Currently executing
 3. `SUCCEEDED` - Completed successfully
@@ -181,10 +189,12 @@ Each step receives an execution context:
 ### Next Step Determination
 
 **Linear Flow:**
+
 - Use `next_step_key` from step definition
 - If `null`, execution ends
 
 **Branch Flow:**
+
 - BRANCH step evaluates conditions
 - Returns `{ nextStepKey: string }` in output
 - Engine uses this to determine next step
@@ -192,17 +202,20 @@ Each step receives an execution context:
 ### Error Handling
 
 **Step Failure:**
+
 - Mark step as FAILED
 - Store error details in `step_run.error`
 - Mark entire run as FAILED
 - Stop execution
 
 **Retry Logic (Future):**
+
 - Check `playbook.max_retries`
 - Retry failed step with exponential backoff
 - Track retry count in step_run metadata
 
 **Timeout (Future):**
+
 - Check `playbook.timeout_seconds`
 - Cancel execution if exceeded
 - Mark run as FAILED with timeout error
@@ -216,6 +229,7 @@ Each step receives an execution context:
 Executes an AI agent (LLM call).
 
 **Config Schema:**
+
 ```typescript
 {
   agentId: string;          // Agent identifier
@@ -228,6 +242,7 @@ Executes an AI agent (LLM call).
 ```
 
 **Example:**
+
 ```json
 {
   "agentId": "content-writer",
@@ -238,6 +253,7 @@ Executes an AI agent (LLM call).
 ```
 
 **S7 Implementation:**
+
 - Stubs LLM call with placeholder response
 - Returns structured output with prompt and simulated response
 - Future: Integrate with actual LLM router
@@ -247,6 +263,7 @@ Executes an AI agent (LLM call).
 Transforms data between steps.
 
 **Config Schema:**
+
 ```typescript
 {
   operation: 'pluck' | 'map' | 'merge' | 'filter' | 'transform';
@@ -259,6 +276,7 @@ Transforms data between steps.
 **Operations:**
 
 **`pluck`** - Extract specific fields:
+
 ```json
 {
   "operation": "pluck",
@@ -268,6 +286,7 @@ Transforms data between steps.
 ```
 
 **`map`** - Rename/remap fields:
+
 ```json
 {
   "operation": "map",
@@ -280,6 +299,7 @@ Transforms data between steps.
 ```
 
 **`merge`** - Combine with current input:
+
 ```json
 {
   "operation": "merge",
@@ -292,6 +312,7 @@ Transforms data between steps.
 Conditional logic / routing.
 
 **Config Schema:**
+
 ```typescript
 {
   sourceKey: string;                    // Step to evaluate
@@ -305,6 +326,7 @@ Conditional logic / routing.
 ```
 
 **Example:**
+
 ```json
 {
   "sourceKey": "sentiment-analysis",
@@ -325,6 +347,7 @@ Conditional logic / routing.
 ```
 
 **Evaluation:**
+
 - Conditions evaluated in order
 - First match determines next step
 - If no match and no default, execution fails
@@ -334,6 +357,7 @@ Conditional logic / routing.
 External API call.
 
 **Config Schema:**
+
 ```typescript
 {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -345,6 +369,7 @@ External API call.
 ```
 
 **Example:**
+
 ```json
 {
   "method": "POST",
@@ -361,6 +386,7 @@ External API call.
 ```
 
 **S7 Implementation:**
+
 - Stubs API call with placeholder response
 - Future: Actual HTTP client with retries and error handling
 
@@ -375,12 +401,14 @@ All endpoints require authentication and org membership.
 List playbooks for current org.
 
 **Query Parameters:**
+
 - `status` (string, optional): Filter by status
 - `limit` (integer, optional, default: 20, max: 100)
 - `offset` (integer, optional, default: 0)
 - `tags` (string, optional): Comma-separated tags
 
 **Response:**
+
 ```typescript
 {
   success: true,
@@ -395,6 +423,7 @@ List playbooks for current org.
 Get playbook definition with steps.
 
 **Response:**
+
 ```typescript
 {
   success: true,
@@ -412,6 +441,7 @@ Get playbook definition with steps.
 Create a new playbook.
 
 **Request Body:**
+
 ```typescript
 {
   name: string;
@@ -427,6 +457,7 @@ Create a new playbook.
 ```
 
 **Validation:**
+
 - Steps must have unique keys
 - All `nextStepKey` references must exist
 - Positions must be sequential starting from 0
@@ -445,13 +476,15 @@ Update playbook definition.
 Execute a playbook.
 
 **Request Body:**
+
 ```typescript
 {
-  input: unknown  // Any JSON input for playbook
+  input: unknown; // Any JSON input for playbook
 }
 ```
 
 **Response:**
+
 ```typescript
 {
   success: true,
@@ -465,6 +498,7 @@ Execute a playbook.
 ```
 
 **Execution:**
+
 - Creates run record
 - Executes synchronously (blocks until complete)
 - Returns full run with step results
@@ -474,6 +508,7 @@ Execute a playbook.
 Get playbook run with step runs.
 
 **Response:**
+
 ```typescript
 {
   success: true,
@@ -493,11 +528,13 @@ Get playbook run with step runs.
 ### Agent Memory (Future - Sprint S8+)
 
 **Context Hooks:**
+
 - Before step execution: Retrieve relevant memory
 - After step execution: Store step output in memory
 - Memory key format: `playbook:{playbookId}:run:{runId}:step:{stepKey}`
 
 **Use Cases:**
+
 - AGENT steps can access conversation history
 - DATA steps can merge with memory context
 - BRANCH steps can evaluate based on historical patterns
@@ -505,11 +542,13 @@ Get playbook run with step runs.
 ### Playbook Orchestration (Future - Sprint S9+)
 
 **Multi-Playbook Chaining:**
+
 - One playbook can trigger another
 - Pass output as input to next playbook
 - Track lineage across playbook runs
 
 **Parallel Execution:**
+
 - Execute multiple playbooks concurrently
 - Join outputs when all complete
 - Handle partial failures
@@ -521,6 +560,7 @@ Get playbook run with step runs.
 ### Simple 3-Step Playbook
 
 **Definition:**
+
 ```json
 {
   "name": "Content Approval Workflow",
@@ -569,6 +609,7 @@ Get playbook run with step runs.
 ```
 
 **Execution:**
+
 1. Create run with `input: { topic: "AI automation" }`
 2. Execute `generate-content` AGENT step
 3. Execute `check-quality` BRANCH step
@@ -592,17 +633,20 @@ Get playbook run with step runs.
 ### Planned Enhancements (S8+)
 
 **Sprint S8: Async Execution**
+
 - Background job queue (BullMQ, etc.)
 - Webhooks for completion notifications
 - Polling endpoint for run status
 
 **Sprint S9: Advanced Features**
+
 - Retry logic with exponential backoff
 - Timeout enforcement
 - Parallel step execution (fan-out/fan-in)
 - Sub-playbook calls
 
 **Sprint S10: Observability**
+
 - Real-time execution logs
 - Step duration metrics
 - Cost tracking (LLM tokens, API calls)
@@ -613,16 +657,19 @@ Get playbook run with step runs.
 ## Security & Multi-Tenancy
 
 **Row-Level Security (RLS):**
+
 - All playbook tables enforce org-scoped access
 - User must be member of org via `user_orgs` table
 - Playbook runs can only access playbooks from same org
 
 **Execution Isolation:**
+
 - Each run has isolated execution context
 - Step outputs stored per-run (no cross-run pollution)
 - Error details captured but sanitized before exposure
 
 **API Security:**
+
 - All endpoints require authentication (`requireUser`)
 - Org membership validated before any operation
 - Input validation via Zod schemas
@@ -640,6 +687,7 @@ Sprint S7 establishes the foundational playbook execution system:
 5. **Observability**: Full execution history with inputs/outputs stored
 
 **Next Steps:**
+
 - Sprint S8: Async execution + webhooks
 - Sprint S9: Real LLM integration + retry logic
 - Sprint S10: UI for playbook editor and run viewer

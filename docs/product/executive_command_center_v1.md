@@ -11,12 +11,14 @@ The Executive Command Center provides a unified dashboard experience for executi
 ## Key Features
 
 ### 1. Cross-System KPI Aggregation
+
 - **Unified Metrics**: Pulls key performance indicators from all connected Pravado systems
 - **Trend Analysis**: Shows directional trends (up/down/flat) with percentage changes
 - **Category Grouping**: KPIs organized by category (risk, reputation, growth, governance)
 - **Real-time Refresh**: On-demand data aggregation with configurable time windows
 
 ### 2. Insights Feed
+
 - **Top 5 Risks**: Highest severity risk indicators across all systems
 - **Top 5 Opportunities**: Most impactful growth opportunities identified
 - **Source Attribution**: Each insight linked to its originating system
@@ -24,6 +26,7 @@ The Executive Command Center provides a unified dashboard experience for executi
 - **Expandable Details**: Click-through to detailed descriptions and source links
 
 ### 3. LLM-Powered Narrative Generation
+
 - **This Week's Narrative**: AI-generated executive summary
 - **Risk Summary Section**: Consolidated risk narrative
 - **Opportunities Summary Section**: Growth opportunity highlights
@@ -31,6 +34,7 @@ The Executive Command Center provides a unified dashboard experience for executi
 - **Regeneration**: On-demand narrative refresh with latest data
 
 ### 4. Executive Dashboard Management
+
 - **Multiple Dashboards**: Create focused dashboards for different purposes
 - **Time Windows**: 24h, 7d, 30d, or 90d data aggregation periods
 - **Primary Focus Modes**: Mixed, Risk, Reputation, Growth, or Governance focus
@@ -85,29 +89,44 @@ exec_dashboard_audit_log (
 type ExecDashboardTimeWindow = '24h' | '7d' | '30d' | '90d';
 
 // Primary focus areas
-type ExecDashboardPrimaryFocus = 'risk' | 'reputation' | 'growth' | 'governance' | 'mixed';
+type ExecDashboardPrimaryFocus =
+  | 'risk'
+  | 'reputation'
+  | 'growth'
+  | 'governance'
+  | 'mixed';
 
 // Source systems for insights
 type ExecInsightSourceSystem =
-  | 'risk_radar' | 'crisis' | 'reputation' | 'governance'
-  | 'media_performance' | 'competitive_intel' | 'personas'
-  | 'outreach' | 'media_monitoring' | 'press_releases'
-  | 'pitches' | 'media_lists' | 'journalist_discovery' | 'other';
+  | 'risk_radar'
+  | 'crisis'
+  | 'reputation'
+  | 'governance'
+  | 'media_performance'
+  | 'competitive_intel'
+  | 'personas'
+  | 'outreach'
+  | 'media_monitoring'
+  | 'press_releases'
+  | 'pitches'
+  | 'media_lists'
+  | 'journalist_discovery'
+  | 'other';
 ```
 
 ### API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/exec-dashboards` | List all dashboards |
-| POST | `/api/v1/exec-dashboards` | Create new dashboard |
-| GET | `/api/v1/exec-dashboards/:id` | Get dashboard with KPIs/insights |
-| PATCH | `/api/v1/exec-dashboards/:id` | Update dashboard |
-| DELETE | `/api/v1/exec-dashboards/:id` | Delete/archive dashboard |
-| POST | `/api/v1/exec-dashboards/:id/refresh` | Refresh dashboard data |
-| GET | `/api/v1/exec-dashboards/:id/insights` | List insights |
-| GET | `/api/v1/exec-dashboards/:id/kpis` | List KPIs |
-| GET | `/api/v1/exec-dashboards/:id/narratives` | List narratives |
+| Method | Endpoint                                 | Description                      |
+| ------ | ---------------------------------------- | -------------------------------- |
+| GET    | `/api/v1/exec-dashboards`                | List all dashboards              |
+| POST   | `/api/v1/exec-dashboards`                | Create new dashboard             |
+| GET    | `/api/v1/exec-dashboards/:id`            | Get dashboard with KPIs/insights |
+| PATCH  | `/api/v1/exec-dashboards/:id`            | Update dashboard                 |
+| DELETE | `/api/v1/exec-dashboards/:id`            | Delete/archive dashboard         |
+| POST   | `/api/v1/exec-dashboards/:id/refresh`    | Refresh dashboard data           |
+| GET    | `/api/v1/exec-dashboards/:id/insights`   | List insights                    |
+| GET    | `/api/v1/exec-dashboards/:id/kpis`       | List KPIs                        |
+| GET    | `/api/v1/exec-dashboards/:id/narratives` | List narratives                  |
 
 ### Data Aggregation Sources
 
@@ -144,21 +163,27 @@ The service aggregates data from these upstream tables:
 ## Frontend Components
 
 ### ExecDashboardLayout
+
 Three-panel responsive layout with header, left sidebar (insights), center (KPIs + narrative), and right sidebar (dashboard selector).
 
 ### ExecDashboardHeader
+
 Dashboard title, focus badge, quick stats (KPIs, insights, risks, opportunities counts), and actions menu.
 
 ### ExecFilterBar
+
 Controls for time window, primary focus, refresh button, and dashboard management.
 
 ### ExecKpiGrid
+
 Responsive grid of KPI tiles with trend indicators, grouped by category.
 
 ### ExecInsightsFeed
+
 Scrollable feed with filtering by source system and risk/opportunity type.
 
 ### ExecNarrativePanel
+
 Collapsible sections for summary, risks, opportunities, and storyline with regeneration capability.
 
 ## Usage Examples
@@ -207,7 +232,7 @@ OPENAI_API_KEY=sk-...  # Required for narrative generation
 
 ```typescript
 // packages/feature-flags/src/flags.ts
-ENABLE_EXECUTIVE_COMMAND_CENTER: true
+ENABLE_EXECUTIVE_COMMAND_CENTER: true;
 ```
 
 ## Security
@@ -226,6 +251,7 @@ ENABLE_EXECUTIVE_COMMAND_CENTER: true
 ## Dependencies
 
 ### Upstream Sprints
+
 - S52: Media Performance (media_performance_snapshots)
 - S53: Competitive Intelligence (competitive_intel_snapshots)
 - S44: PR Outreach (pr_outreach_campaigns)
@@ -235,6 +261,7 @@ ENABLE_EXECUTIVE_COMMAND_CENTER: true
 - S60: Risk Radar (risk_radar_snapshots)
 
 ### Packages
+
 - `@pravado/types`: Type definitions
 - `@pravado/validators`: Zod validation schemas
 - `@pravado/feature-flags`: Feature flag management
@@ -243,12 +270,14 @@ ENABLE_EXECUTIVE_COMMAND_CENTER: true
 ## Testing
 
 ### Backend Tests
+
 - `apps/api/tests/executiveCommandCenterService.test.ts`
 - Dashboard CRUD operations
 - Insights/KPIs/Narratives management
 - Error handling and validation
 
 ### Frontend Tests
+
 - Component rendering tests
 - User interaction tests
 - API integration tests

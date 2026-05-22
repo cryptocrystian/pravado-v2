@@ -14,12 +14,14 @@
 **PR (Public Relations) Pillar** is an **Influence Orchestration System** that builds and manages journalist relationships, coordinates strategic outreach, and generates earned media coverage as inputs to SAGE.
 
 PR is NOT:
+
 - Press release distribution (wire service)
 - Mass email blasting
 - "Spray and pray" outreach
 - A Cision/Meltwater feature clone
 
 PR IS:
+
 - **Relationship-based** influence orchestration
 - **Strategic pitching** informed by journalist tracking and timing
 - **Media database** with entity-level intelligence across four contact types
@@ -42,13 +44,13 @@ Traditional PR tools optimize for **distribution**: send more releases to more o
 
 Pravado PR optimizes for **influence**: build relationships with decision-makers who drive narrative, get cited by AI systems, compound authority over time.
 
-| Distribution Approach | Influence Approach |
-|-----------------------|--------------------|
+| Distribution Approach                              | Influence Approach                                                     |
+| -------------------------------------------------- | ---------------------------------------------------------------------- |
 | Volume metrics (emails sent, releases distributed) | Quality metrics (response rate, coverage obtained, citation generated) |
-| Pay-per-release pricing | Relationship-based ROI |
-| One-way broadcast | Two-way engagement tracking |
-| Outlet-centric (T1/T2/T3) | Journalist-centric (individual track record) |
-| Campaign-based | Relationship-based |
+| Pay-per-release pricing                            | Relationship-based ROI                                                 |
+| One-way broadcast                                  | Two-way engagement tracking                                            |
+| Outlet-centric (T1/T2/T3)                          | Journalist-centric (individual track record)                           |
+| Campaign-based                                     | Relationship-based                                                     |
 
 ---
 
@@ -59,6 +61,7 @@ Pravado PR optimizes for **influence**: build relationships with decision-makers
 The Media Database is the foundation of the PR pillar — a curated, entity-enriched contact system spanning four contact types: traditional journalists, digital-first creators, KOLs, and podcasters.
 
 **Key Characteristics:**
+
 - **Entity-level intelligence**: Contact profile → Topics → Beat → Recent coverage → Response patterns
 - **Four contact types**: Unified schema with type-specific metadata via JSONB platform_metrics
 - **Relationship tracking**: Every interaction is logged and scored
@@ -68,44 +71,45 @@ The Media Database is the foundation of the PR pillar — a curated, entity-enri
 
 **Contact Types:**
 
-| Type | Definition | Primary Outreach Mechanic |
-|------|------------|--------------------------|
-| **journalist** | Staff or freelance reporters at traditional or digital outlets | Email pitch |
-| **digital_creator** | Newsletter authors, Substack writers, independent digital publishers | Email pitch |
-| **kol** | Key Opinion Leaders — platform influencers with topic authority | Contact/DM reference only — no campaign facilitation |
-| **podcaster** | Podcast hosts across any platform | Email pitch framed as appearance proposal |
+| Type                | Definition                                                           | Primary Outreach Mechanic                            |
+| ------------------- | -------------------------------------------------------------------- | ---------------------------------------------------- |
+| **journalist**      | Staff or freelance reporters at traditional or digital outlets       | Email pitch                                          |
+| **digital_creator** | Newsletter authors, Substack writers, independent digital publishers | Email pitch                                          |
+| **kol**             | Key Opinion Leaders — platform influencers with topic authority      | Contact/DM reference only — no campaign facilitation |
+| **podcaster**       | Podcast hosts across any platform                                    | Email pitch framed as appearance proposal            |
 
 **KOL Scope Boundary:** KOLs are discovery and contact surfaces only. Pravado provides profile data, platform metrics, and contact method. No rate cards, campaign briefs, payment facilitation, or sponsored engagement. This is a hard product boundary with no exceptions.
 
 **Media Database Fields:**
 
-| Field | Type | Source | Purpose |
-|-------|------|--------|---------|
-| **contact_id** | UUID | System | Primary key |
-| **contact_type** | Enum | System | journalist / digital_creator / kol / podcaster |
-| **name** | String | Import/Manual | Display |
-| **email** | Ephemeral/JIT | Enrichment pipeline | Outreach — never stored from static scrapes; fetched and validated on-demand, cached with staleness timer. See JOURNALIST_DATABASE_GOVERNANCE.md |
-| **email_verified_at** | DateTime | Enrichment pipeline | Staleness tracking |
-| **email_source** | String | Enrichment pipeline | Waterfall provider that returned this email |
-| **outlet_affiliations** | Junction[] | Import/Manual | Many-to-many outlet relationships with role, primary flag, and beat per outlet |
-| **platform_metrics** | JSONB | Import/AI-enriched | Type-specific metrics (beat, episode count, follower count, engagement rate, etc.) |
-| **beat_tags** | String[] | System taxonomy + AI | Three-layer taxonomy — system controlled, AI-derived, org-scoped. See JOURNALIST_DATABASE_GOVERNANCE.md |
-| **ai_derived_signals** | JSONB | AI pipeline | Current topic focus, writing style, pitch receptivity, topic velocity |
-| **recent_coverage** | URL[] | Monitoring | Context |
-| **response_rate** | Float | Calculated | Prioritization |
-| **relationship_score** | Float | Calculated | Health indicator |
-| **pitch_eligibility_score** | Float | Calculated | Gate score — must be ≥ 40 to pitch; < 40 is hard block |
-| **pitch_saturation_score** | Float | Computed (platform-wide) | Rolling platform outreach concentration — not stored, computed from platform_pitch_events |
-| **last_interaction** | DateTime | System | Recency |
-| **ai_citation_score** | Float | CiteMind | Citation influence |
-| **contact_state** | Enum | System | Full state machine — see JOURNALIST_DATABASE_GOVERNANCE.md |
-| **vector_embedding** | pgvector | AI pipeline | Semantic matching via Supabase pgvector; refreshed on activity cadence |
+| Field                       | Type          | Source                   | Purpose                                                                                                                                          |
+| --------------------------- | ------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **contact_id**              | UUID          | System                   | Primary key                                                                                                                                      |
+| **contact_type**            | Enum          | System                   | journalist / digital_creator / kol / podcaster                                                                                                   |
+| **name**                    | String        | Import/Manual            | Display                                                                                                                                          |
+| **email**                   | Ephemeral/JIT | Enrichment pipeline      | Outreach — never stored from static scrapes; fetched and validated on-demand, cached with staleness timer. See JOURNALIST_DATABASE_GOVERNANCE.md |
+| **email_verified_at**       | DateTime      | Enrichment pipeline      | Staleness tracking                                                                                                                               |
+| **email_source**            | String        | Enrichment pipeline      | Waterfall provider that returned this email                                                                                                      |
+| **outlet_affiliations**     | Junction[]    | Import/Manual            | Many-to-many outlet relationships with role, primary flag, and beat per outlet                                                                   |
+| **platform_metrics**        | JSONB         | Import/AI-enriched       | Type-specific metrics (beat, episode count, follower count, engagement rate, etc.)                                                               |
+| **beat_tags**               | String[]      | System taxonomy + AI     | Three-layer taxonomy — system controlled, AI-derived, org-scoped. See JOURNALIST_DATABASE_GOVERNANCE.md                                          |
+| **ai_derived_signals**      | JSONB         | AI pipeline              | Current topic focus, writing style, pitch receptivity, topic velocity                                                                            |
+| **recent_coverage**         | URL[]         | Monitoring               | Context                                                                                                                                          |
+| **response_rate**           | Float         | Calculated               | Prioritization                                                                                                                                   |
+| **relationship_score**      | Float         | Calculated               | Health indicator                                                                                                                                 |
+| **pitch_eligibility_score** | Float         | Calculated               | Gate score — must be ≥ 40 to pitch; < 40 is hard block                                                                                           |
+| **pitch_saturation_score**  | Float         | Computed (platform-wide) | Rolling platform outreach concentration — not stored, computed from platform_pitch_events                                                        |
+| **last_interaction**        | DateTime      | System                   | Recency                                                                                                                                          |
+| **ai_citation_score**       | Float         | CiteMind                 | Citation influence                                                                                                                               |
+| **contact_state**           | Enum          | System                   | Full state machine — see JOURNALIST_DATABASE_GOVERNANCE.md                                                                                       |
+| **vector_embedding**        | pgvector      | AI pipeline              | Semantic matching via Supabase pgvector; refreshed on activity cadence                                                                           |
 
 ### 2.2 Pitch Composer
 
 The Pitch Composer is the primary outreach tool — AI-assisted but human-controlled. It serves all four contact types with AI context assembly adapting to contact_type automatically.
 
 **Key Characteristics:**
+
 - **Context-aware**: Pulls contact profile, recent coverage, relevant company news, type-specific framing
 - **Type-adaptive AI framing**: Journalists receive story pitch framing; podcasters receive appearance proposal framing; KOLs receive collaboration inquiry framing
 - **Template library**: Pre-approved templates by pitch type and contact type
@@ -127,6 +131,7 @@ The Pitch Composer is the primary outreach tool — AI-assisted but human-contro
 ```
 
 **Personalization Minimum:**
+
 - Pitches with personalization score < 60% receive warning
 - Pitches with personalization score < 40% blocked from send
 - Generic templates without customization are not sendable
@@ -137,27 +142,29 @@ The Contact Timeline shows the complete relationship history with each contact.
 
 **Timeline Entry Types:**
 
-| Entry Type | Source | Significance |
-|------------|--------|--------------|
-| **Pitch Sent** | System | Outreach attempt |
-| **Email Opened** | Tracking | Engagement indicator |
-| **Reply Received** | Email integration | Response tracking |
-| **Coverage Published** | Monitoring | Outcome attribution |
-| **Meeting/Call** | Manual | Relationship milestone |
-| **Social Interaction** | Integration | Ambient engagement |
-| **Note** | Manual | Context/intelligence |
+| Entry Type             | Source            | Significance           |
+| ---------------------- | ----------------- | ---------------------- |
+| **Pitch Sent**         | System            | Outreach attempt       |
+| **Email Opened**       | Tracking          | Engagement indicator   |
+| **Reply Received**     | Email integration | Response tracking      |
+| **Coverage Published** | Monitoring        | Outcome attribution    |
+| **Meeting/Call**       | Manual            | Relationship milestone |
+| **Social Interaction** | Integration       | Ambient engagement     |
+| **Note**               | Manual            | Context/intelligence   |
 
 ### 2.4 Coverage Tracking
 
 Coverage tracking monitors earned media and attributes it back to PR activity.
 
 **Coverage Sources:**
+
 - Automated monitoring (brand mentions, outlet tracking)
 - Manual submission (user-reported coverage)
 - AI citation detection (CiteMind Engine 3)
 
 **Coverage Attribution:**
 Every piece of coverage is attributed to:
+
 1. **Origin pitch** (if traceable)
 2. **Contact relationship** (contact timeline context)
 3. **SAGE signal** (original opportunity)
@@ -171,22 +178,24 @@ Every piece of coverage is attributed to:
 
 Pravado PR supports two distribution paths:
 
-| Path | Description | Use Case | Mode Ceiling |
-|------|-------------|----------|--------------|
-| **CiteMind AEO Distribution** | Optimized for AI model ingestion via Pravado Newsroom | AI visibility, citation building | Copilot |
-| **Legacy Wire Integration** | Third-party wire services via manual fulfillment (API stub ready) | Compliance, SEC requirements, broad reach | Manual only — no exceptions |
+| Path                          | Description                                                       | Use Case                                  | Mode Ceiling                |
+| ----------------------------- | ----------------------------------------------------------------- | ----------------------------------------- | --------------------------- |
+| **CiteMind AEO Distribution** | Optimized for AI model ingestion via Pravado Newsroom             | AI visibility, citation building          | Copilot                     |
+| **Legacy Wire Integration**   | Third-party wire services via manual fulfillment (API stub ready) | Compliance, SEC requirements, broad reach | Manual only — no exceptions |
 
 ### 3.2 CiteMind AEO Distribution
 
 CiteMind Engine 1 powers the AEO (AI Engine Optimization) distribution path:
 
 **Pravado Newsroom:**
+
 - Hosted press release surface optimized for AI comprehension
 - Structured data (NewsArticle schema) auto-generated
 - IndexNow notification on publish
 - Citation tracking enabled
 
 **AEO Distribution Flow:**
+
 ```
 Press Release Draft
        │
@@ -217,15 +226,15 @@ For compliance and broad reach requirements, Pravado supports wire distribution 
 
 Wire distribution in V1 is fulfilled manually by Pravado operations staff after user submission and payment/credit confirmation. There is no live API connection to wire services at V1 launch.
 
-| Step | Actor | Action |
-|------|-------|--------|
-| 1 | User | Drafts and approves press release in Pravado |
-| 2 | User | Selects wire distribution, reviews cost, confirms payment/credits |
-| 3 | System | Generates submission package (formatted release + metadata) |
-| 4 | System | Emails submission package to Pravado operations inbox |
-| 5 | Pravado Ops | Manually submits to wire service within SLA (4 business hours) |
-| 6 | Pravado Ops | Logs distribution confirmation and wire tracking ID back in system |
-| 7 | System | Notifies user, activates citation tracking |
+| Step | Actor       | Action                                                             |
+| ---- | ----------- | ------------------------------------------------------------------ |
+| 1    | User        | Drafts and approves press release in Pravado                       |
+| 2    | User        | Selects wire distribution, reviews cost, confirms payment/credits  |
+| 3    | System      | Generates submission package (formatted release + metadata)        |
+| 4    | System      | Emails submission package to Pravado operations inbox              |
+| 5    | Pravado Ops | Manually submits to wire service within SLA (4 business hours)     |
+| 6    | Pravado Ops | Logs distribution confirmation and wire tracking ID back in system |
+| 7    | System      | Notifies user, activates citation tracking                         |
 
 **API Stub Architecture (Future-Ready):**
 
@@ -258,13 +267,14 @@ Distribution Request
 
 **Supported Wire Services:**
 
-| Wire Service | Use Case | V1 Status | API Stub Status |
-|--------------|----------|-----------|-----------------|
-| PR Newswire | SEC compliance, broad distribution | ✅ Manual fulfillment | Stub ready |
-| BusinessWire | Financial news, regulatory | ✅ Manual fulfillment | Stub ready |
-| GlobeNewswire | International distribution | Roadmap | Roadmap |
+| Wire Service  | Use Case                           | V1 Status             | API Stub Status |
+| ------------- | ---------------------------------- | --------------------- | --------------- |
+| PR Newswire   | SEC compliance, broad distribution | ✅ Manual fulfillment | Stub ready      |
+| BusinessWire  | Financial news, regulatory         | ✅ Manual fulfillment | Stub ready      |
+| GlobeNewswire | International distribution         | Roadmap               | Roadmap         |
 
 **Legacy Wire Constraints (all tiers, all times, permanent):**
+
 - Mode ceiling: Manual only — Copilot and Autopilot are never permitted, ever
 - Explicit cost display and confirmation required before every submission
 - Cannot be triggered by SAGE proposals automatically
@@ -272,13 +282,13 @@ Distribution Request
 
 ### 3.4 Distribution Decision Matrix
 
-| Content Type | Recommended Path | Rationale |
-|--------------|------------------|-----------|
-| General news | CiteMind AEO only | AI visibility focus |
-| Product launch | CiteMind AEO + Legacy Wire | Broad reach + AI |
-| SEC/Regulatory | Legacy Wire only | Compliance requirement |
-| Thought leadership | CiteMind AEO only | Long-term authority |
-| Crisis response | Legacy Wire + CiteMind | Immediate reach + record |
+| Content Type       | Recommended Path           | Rationale                |
+| ------------------ | -------------------------- | ------------------------ |
+| General news       | CiteMind AEO only          | AI visibility focus      |
+| Product launch     | CiteMind AEO + Legacy Wire | Broad reach + AI         |
+| SEC/Regulatory     | Legacy Wire only           | Compliance requirement   |
+| Thought leadership | CiteMind AEO only          | Long-term authority      |
+| Crisis response    | Legacy Wire + CiteMind     | Immediate reach + record |
 
 ---
 
@@ -288,43 +298,43 @@ Distribution Request
 
 PR actions have conservative mode ceilings due to external impact:
 
-| Action | Mode Ceiling | Rationale |
-|--------|--------------|-----------|
-| Contact research | Autopilot | Internal only |
-| Media list building | Autopilot | Internal only |
-| Coverage monitoring | Autopilot | Read-only |
-| Pitch draft generation | Copilot | AI assist, human review |
-| Pitch send | Manual | External, irreversible |
-| Press release draft | Copilot | AI assist, human review |
-| Pravado Newsroom publish | Copilot | External but controlled |
-| Wire distribution | Manual | External, costly, irreversible |
-| Contact follow-up | Manual | Relationship sensitive |
+| Action                   | Mode Ceiling | Rationale                      |
+| ------------------------ | ------------ | ------------------------------ |
+| Contact research         | Autopilot    | Internal only                  |
+| Media list building      | Autopilot    | Internal only                  |
+| Coverage monitoring      | Autopilot    | Read-only                      |
+| Pitch draft generation   | Copilot      | AI assist, human review        |
+| Pitch send               | Manual       | External, irreversible         |
+| Press release draft      | Copilot      | AI assist, human review        |
+| Pravado Newsroom publish | Copilot      | External but controlled        |
+| Wire distribution        | Manual       | External, costly, irreversible |
+| Contact follow-up        | Manual       | Relationship sensitive         |
 
 ### 4.2 SAGE Integration
 
 SAGE generates PR proposals based on signals:
 
-| Signal Type | SAGE Proposal | Mode Ceiling |
-|-------------|---------------|--------------|
-| Contact trend detected | "Pitch [Contact] on [Topic]" | Copilot (prepare pitch) |
-| Coverage gap identified | "Issue press release on [Topic]" | Copilot (draft release) |
-| Competitor coverage | "Counter-pitch [Topic] to [Outlet]" | Copilot (prepare pitch) |
-| Crisis signal | "Prepare response statement" | Manual (high risk) |
-| Relationship decay | "Re-engage [Contact]" | Manual (relationship) |
-| Inbound journalist request | "Respond to [Journalist] source request on [Topic]" | Manual |
-| Press release published | "Pitch relevant contacts for coverage" | Copilot (ranked list) |
+| Signal Type                | SAGE Proposal                                       | Mode Ceiling            |
+| -------------------------- | --------------------------------------------------- | ----------------------- |
+| Contact trend detected     | "Pitch [Contact] on [Topic]"                        | Copilot (prepare pitch) |
+| Coverage gap identified    | "Issue press release on [Topic]"                    | Copilot (draft release) |
+| Competitor coverage        | "Counter-pitch [Topic] to [Outlet]"                 | Copilot (prepare pitch) |
+| Crisis signal              | "Prepare response statement"                        | Manual (high risk)      |
+| Relationship decay         | "Re-engage [Contact]"                               | Manual (relationship)   |
+| Inbound journalist request | "Respond to [Journalist] source request on [Topic]" | Manual                  |
+| Press release published    | "Pitch relevant contacts for coverage"              | Copilot (ranked list)   |
 
 ### 4.3 What PR Can NEVER Autopilot
 
 The following actions are never eligible for Autopilot in any plan tier:
 
-| Action | Reason |
-|--------|--------|
-| **Pitch sending** | External communication, relationship impact |
-| **Wire distribution** | External publish, cost commitment, irreversible |
-| **Contact follow-up** | Relationship sensitivity, requires human judgment |
-| **Crisis response** | High stakes, requires human oversight |
-| **New contact outreach** | First impression, requires human approval |
+| Action                   | Reason                                            |
+| ------------------------ | ------------------------------------------------- |
+| **Pitch sending**        | External communication, relationship impact       |
+| **Wire distribution**    | External publish, cost commitment, irreversible   |
+| **Contact follow-up**    | Relationship sensitivity, requires human judgment |
+| **Crisis response**      | High stakes, requires human oversight             |
+| **New contact outreach** | First impression, requires human approval         |
 
 ---
 
@@ -334,36 +344,36 @@ The following actions are never eligible for Autopilot in any plan tier:
 
 The following practices are explicitly prohibited in Pravado PR:
 
-| Anti-Pattern | Why Prohibited | Detection |
-|--------------|----------------|-----------|
-| **Mass blast pitching** | Damages relationships, low quality | > 10 identical pitches in 24 hours |
-| **Spray and pray** | Anti-relationship, damages brand | Low personalization + high volume |
-| **Auto-send pitches** | No human judgment on external comms | Autopilot mode on pitch send |
-| **Purchased list outreach** | Unknown contacts, spam risk | Contacts without relationship history |
-| **Template-only pitches** | No personalization, low response | Personalization score < 40% |
-| **Excessive follow-up** | Damages relationship | > 2 follow-ups in 7 days |
-| **Saturation pile-on** | Burns out best contacts platform-wide, destroys database value for all users | Pitching contacts with saturation score > 80 without explicit acknowledgment |
-| **Static list recycling** | Same contacts served repeatedly with no diversity or personal history adjustment | Search results not adjusted for interaction history or platform saturation |
-| **KOL campaign facilitation** | FTC exposure, outside product scope | Any attempt to record rate cards, payments, or campaign briefs on KOL contacts |
+| Anti-Pattern                  | Why Prohibited                                                                   | Detection                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **Mass blast pitching**       | Damages relationships, low quality                                               | > 10 identical pitches in 24 hours                                             |
+| **Spray and pray**            | Anti-relationship, damages brand                                                 | Low personalization + high volume                                              |
+| **Auto-send pitches**         | No human judgment on external comms                                              | Autopilot mode on pitch send                                                   |
+| **Purchased list outreach**   | Unknown contacts, spam risk                                                      | Contacts without relationship history                                          |
+| **Template-only pitches**     | No personalization, low response                                                 | Personalization score < 40%                                                    |
+| **Excessive follow-up**       | Damages relationship                                                             | > 2 follow-ups in 7 days                                                       |
+| **Saturation pile-on**        | Burns out best contacts platform-wide, destroys database value for all users     | Pitching contacts with saturation score > 80 without explicit acknowledgment   |
+| **Static list recycling**     | Same contacts served repeatedly with no diversity or personal history adjustment | Search results not adjusted for interaction history or platform saturation     |
+| **KOL campaign facilitation** | FTC exposure, outside product scope                                              | Any attempt to record rate cards, payments, or campaign briefs on KOL contacts |
 
 ### 5.2 Quality Gates
 
 Quality gates prevent anti-patterns at the enforcement layer:
 
-| Gate | Threshold | Enforcement |
-|------|-----------|-------------|
-| **Contact state gate** | contact_state must be `pitch_eligible` | Hard block — no override at any tier |
-| **Pitch eligibility score** | Score ≥ 40 required to pitch | Score < 40: hard block with improvement path shown; score 40–49: warning, allowed |
-| **Personalization minimum** | Score > 40% to send | Block send |
-| **Personalization warning** | Score 40–60% | Warning banner, proceed allowed |
-| **Platform saturation** | Score > 80: explicit acknowledgment required | Warn with journalist impact context; user must confirm to proceed |
-| **Follow-up limit** | Max 2 per contact per 7 days | Block send |
-| **Daily pitch cap** | Starter: 5/day · Pro: 25/day · Enterprise: 100/day default (custom negotiable) | Queue additional sends until next day |
-| **Daily unlock cap** | Starter: 10/day · Pro: 50/day · Enterprise: 500/day default | Block until next day |
-| **Daily contact view cap** | Starter: 30/hour · Pro: 100/hour · Enterprise: 300/hour | Rate limit |
-| **New contact rate** | Max 20% new contacts per campaign | Warning |
-| **Bounce rate monitor** | > 10% triggers review | Alert + send limit halved automatically |
-| **Unsubscribe/opt-out honor** | Immediate, no override | Block contact globally and permanently |
+| Gate                          | Threshold                                                                      | Enforcement                                                                       |
+| ----------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| **Contact state gate**        | contact_state must be `pitch_eligible`                                         | Hard block — no override at any tier                                              |
+| **Pitch eligibility score**   | Score ≥ 40 required to pitch                                                   | Score < 40: hard block with improvement path shown; score 40–49: warning, allowed |
+| **Personalization minimum**   | Score > 40% to send                                                            | Block send                                                                        |
+| **Personalization warning**   | Score 40–60%                                                                   | Warning banner, proceed allowed                                                   |
+| **Platform saturation**       | Score > 80: explicit acknowledgment required                                   | Warn with journalist impact context; user must confirm to proceed                 |
+| **Follow-up limit**           | Max 2 per contact per 7 days                                                   | Block send                                                                        |
+| **Daily pitch cap**           | Starter: 5/day · Pro: 25/day · Enterprise: 100/day default (custom negotiable) | Queue additional sends until next day                                             |
+| **Daily unlock cap**          | Starter: 10/day · Pro: 50/day · Enterprise: 500/day default                    | Block until next day                                                              |
+| **Daily contact view cap**    | Starter: 30/hour · Pro: 100/hour · Enterprise: 300/hour                        | Rate limit                                                                        |
+| **New contact rate**          | Max 20% new contacts per campaign                                              | Warning                                                                           |
+| **Bounce rate monitor**       | > 10% triggers review                                                          | Alert + send limit halved automatically                                           |
+| **Unsubscribe/opt-out honor** | Immediate, no override                                                         | Block contact globally and permanently                                            |
 
 ---
 
@@ -373,12 +383,12 @@ Quality gates prevent anti-patterns at the enforcement layer:
 
 PR contributes to SAGE and EVI through these measured outcomes:
 
-| KPI | Definition | SAGE Component | Weight |
-|-----|------------|----------------|--------|
-| **Response Rate** | Contact replies / Pitches sent | Signal quality | 20% |
-| **Coverage Rate** | Coverage obtained / Pitches sent | Growth | 25% |
-| **Outlet Tier Quality** | Weighted tier of coverage | Authority | 30% |
-| **Citation Rate** | AI citations from coverage | Exposure | 25% |
+| KPI                     | Definition                       | SAGE Component | Weight |
+| ----------------------- | -------------------------------- | -------------- | ------ |
+| **Response Rate**       | Contact replies / Pitches sent   | Signal quality | 20%    |
+| **Coverage Rate**       | Coverage obtained / Pitches sent | Growth         | 25%    |
+| **Outlet Tier Quality** | Weighted tier of coverage        | Authority      | 30%    |
+| **Citation Rate**       | AI citations from coverage       | Exposure       | 25%    |
 
 ### 6.2 Relationship Health Score
 
@@ -413,12 +423,12 @@ Thresholds:
 
 PR actions contribute to EVI through:
 
-| PR Outcome | EVI Component | Contribution |
-|------------|---------------|--------------|
-| Coverage published | Visibility | +2-8 points (tier-weighted) |
-| High-tier mention | Authority | +1-5 points (outlet factor) |
-| Citation detected | Exposure | +1-3 points (surface factor) |
-| Relationship maintained | Growth velocity | Decay prevention |
+| PR Outcome              | EVI Component   | Contribution                 |
+| ----------------------- | --------------- | ---------------------------- |
+| Coverage published      | Visibility      | +2-8 points (tier-weighted)  |
+| High-tier mention       | Authority       | +1-5 points (outlet factor)  |
+| Citation detected       | Exposure        | +1-3 points (surface factor) |
+| Relationship maintained | Growth velocity | Decay prevention             |
 
 ---
 
@@ -426,34 +436,34 @@ PR actions contribute to EVI through:
 
 ### 7.1 PR → SAGE Outputs
 
-| PR Event | SAGE Signal | Cross-Pillar Effect |
-|----------|-------------|---------------------|
-| Coverage published | Authority signal | Content brief trigger, SEO backlink opportunity |
-| Contact relationship established | Growth signal | Future pitch opportunity |
-| Press release distributed | Visibility signal | Citation tracking activation |
-| Crisis coverage | Threat signal | All-pillar response trigger |
+| PR Event                         | SAGE Signal       | Cross-Pillar Effect                             |
+| -------------------------------- | ----------------- | ----------------------------------------------- |
+| Coverage published               | Authority signal  | Content brief trigger, SEO backlink opportunity |
+| Contact relationship established | Growth signal     | Future pitch opportunity                        |
+| Press release distributed        | Visibility signal | Citation tracking activation                    |
+| Crisis coverage                  | Threat signal     | All-pillar response trigger                     |
 
 ### 7.2 SAGE → PR Inputs
 
-| SAGE Signal | PR Proposal |
-|-------------|-------------|
-| Contact trending on relevant topic | Pitch opportunity |
-| Competitor coverage gap | Counter-narrative opportunity |
-| Content published (pillar page) | Press release opportunity |
-| SEO ranking achieved | Proof point for pitch |
-| Authority threshold crossed | Media tour opportunity |
-| Inbound journalist source request | Respond to active request |
-| Press release published | Ranked contact match for outreach |
+| SAGE Signal                        | PR Proposal                       |
+| ---------------------------------- | --------------------------------- |
+| Contact trending on relevant topic | Pitch opportunity                 |
+| Competitor coverage gap            | Counter-narrative opportunity     |
+| Content published (pillar page)    | Press release opportunity         |
+| SEO ranking achieved               | Proof point for pitch             |
+| Authority threshold crossed        | Media tour opportunity            |
+| Inbound journalist source request  | Respond to active request         |
+| Press release published            | Ranked contact match for outreach |
 
 ### 7.3 Cross-Pillar Reinforcement
 
 PR reinforces other pillars:
 
-| Reinforcement | Coefficient | Mechanism |
-|---------------|-------------|-----------|
-| PR → Content | 0.50 | Coverage creates content brief triggers |
-| PR → SEO | 0.35 | Media backlinks boost domain authority |
-| PR → PR | 1.00 | Coverage begets coverage |
+| Reinforcement | Coefficient | Mechanism                               |
+| ------------- | ----------- | --------------------------------------- |
+| PR → Content  | 0.50        | Coverage creates content brief triggers |
+| PR → SEO      | 0.35        | Media backlinks boost domain authority  |
+| PR → PR       | 1.00        | Coverage begets coverage                |
 
 ---
 
@@ -491,12 +501,12 @@ CiteMind Engine 3 provides PR intelligence:
 
 ### 9.1 Competitor Summary
 
-| Competitor | Strength | Structural Ceiling |
-|------------|----------|--------------------|
-| **Cision / Meltwater** | Massive journalist databases, monitoring depth, wire access | Distribution-first; no AEO layer; no cross-pillar attribution; treats coverage as impressions metric |
-| **Muck Rack** | Best journalist database accuracy, strong relationship tracking | No AEO/AI citation layer; no content or SEO pillar integration |
-| **Propel PRM** | Clean CRM-like interface, good relationship tools | Limited database depth; no AI citation tracking; siloed |
-| **Press Ranger** | 500K+ contacts, fast-growing (8K users April 2025), one-click outreach, Forbes 2026 recognition, emerging AEO awareness | One-click model encourages spray-and-pray; basic CRM; no relationship intelligence or scoring; wholesale distribution is sponsored placement not editorial; no cross-pillar attribution |
+| Competitor             | Strength                                                                                                                | Structural Ceiling                                                                                                                                                                      |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Cision / Meltwater** | Massive journalist databases, monitoring depth, wire access                                                             | Distribution-first; no AEO layer; no cross-pillar attribution; treats coverage as impressions metric                                                                                    |
+| **Muck Rack**          | Best journalist database accuracy, strong relationship tracking                                                         | No AEO/AI citation layer; no content or SEO pillar integration                                                                                                                          |
+| **Propel PRM**         | Clean CRM-like interface, good relationship tools                                                                       | Limited database depth; no AI citation tracking; siloed                                                                                                                                 |
+| **Press Ranger**       | 500K+ contacts, fast-growing (8K users April 2025), one-click outreach, Forbes 2026 recognition, emerging AEO awareness | One-click model encourages spray-and-pray; basic CRM; no relationship intelligence or scoring; wholesale distribution is sponsored placement not editorial; no cross-pillar attribution |
 
 ### 9.2 Shared Structural Gap
 
@@ -539,18 +549,19 @@ This document is the authoritative specification for PR pillar behavior. Any imp
 
 ### 11.2 Dependent Specifications
 
-| Document | Purpose |
-|----------|---------|
-| `JOURNALIST_DATABASE_GOVERNANCE.md` | Full contact database architecture, four contact types, JIT enrichment, state machine, tagging, saturation scoring, result diversity, BYOE sending model |
-| `PRESS_RELEASE_DISTRIBUTION_CONTRACT.md` | Wire distribution model, manual fulfillment workflow, credit billing, API stub specification |
-| `PR_CONTACT_LEDGER_CONTRACT.md` | Relationship timeline, stage model, explainability |
-| `PR_PITCH_PIPELINE_CONTRACT.md` | Pitch pipeline stages and follow-up workflow |
-| `PR_INBOX_CONTRACT.md` | PR work queue and action surface |
-| `PR_WORK_SURFACE_CONTRACT.md` | V1 frozen surface contract |
+| Document                                 | Purpose                                                                                                                                                  |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `JOURNALIST_DATABASE_GOVERNANCE.md`      | Full contact database architecture, four contact types, JIT enrichment, state machine, tagging, saturation scoring, result diversity, BYOE sending model |
+| `PRESS_RELEASE_DISTRIBUTION_CONTRACT.md` | Wire distribution model, manual fulfillment workflow, credit billing, API stub specification                                                             |
+| `PR_CONTACT_LEDGER_CONTRACT.md`          | Relationship timeline, stage model, explainability                                                                                                       |
+| `PR_PITCH_PIPELINE_CONTRACT.md`          | Pitch pipeline stages and follow-up workflow                                                                                                             |
+| `PR_INBOX_CONTRACT.md`                   | PR work queue and action surface                                                                                                                         |
+| `PR_WORK_SURFACE_CONTRACT.md`            | V1 frozen surface contract                                                                                                                               |
 
 ### 11.3 Change Control
 
 Modifications require:
+
 1. Product review sign-off
 2. Legal review for compliance implications
 3. Sales review for positioning impact
@@ -560,7 +571,7 @@ Modifications require:
 
 ## 12. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-01-14 | 1.0 | Initial PR Pillar Model specification |
-| 2026-02-26 | 1.1 | Email field updated to JIT ephemeral model; four contact types added with KOL scope boundary; contact_state and pitch_eligibility_score added; wire integration updated to dual-mode manual fulfillment + API stub architecture; saturation and static list recycling anti-patterns added; full quality gates with concrete tier limits added; pitch eligibility score formula added; competitive landscape section added; SAGE inbound request signal added; dependent specifications table added |
+| Date       | Version | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-01-14 | 1.0     | Initial PR Pillar Model specification                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 2026-02-26 | 1.1     | Email field updated to JIT ephemeral model; four contact types added with KOL scope boundary; contact_state and pitch_eligibility_score added; wire integration updated to dual-mode manual fulfillment + API stub architecture; saturation and static list recycling anti-patterns added; full quality gates with concrete tier limits added; pitch eligibility score formula added; competitive landscape section added; SAGE inbound request signal added; dependent specifications table added |

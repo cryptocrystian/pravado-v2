@@ -16,7 +16,13 @@
 
 import { useState } from 'react';
 
-import type { AutomationMode, CiteMindStatus, CiteMindIssue, DerivativeType, AuditLedgerEntry } from '../types';
+import type {
+  AutomationMode,
+  CiteMindStatus,
+  CiteMindIssue,
+  DerivativeType,
+  AuditLedgerEntry,
+} from '../types';
 
 // ============================================
 // TYPES
@@ -71,8 +77,18 @@ const CITEMIND_STATUS_CONFIG = {
     bg: 'bg-semantic-success/10',
     border: 'border-semantic-success/20',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
       </svg>
     ),
   },
@@ -82,8 +98,18 @@ const CITEMIND_STATUS_CONFIG = {
     bg: 'bg-semantic-warning/10',
     border: 'border-semantic-warning/20',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+        />
       </svg>
     ),
   },
@@ -93,8 +119,18 @@ const CITEMIND_STATUS_CONFIG = {
     bg: 'bg-semantic-danger/10',
     border: 'border-semantic-danger/20',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+        />
       </svg>
     ),
   },
@@ -104,8 +140,18 @@ const CITEMIND_STATUS_CONFIG = {
     bg: 'bg-white/5',
     border: 'border-white/10',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
       </svg>
     ),
   },
@@ -115,8 +161,18 @@ const CITEMIND_STATUS_CONFIG = {
     bg: 'bg-brand-cyan/10',
     border: 'border-brand-cyan/20',
     icon: (
-      <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      <svg
+        className="w-4 h-4 animate-spin"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+        />
       </svg>
     ),
   },
@@ -134,9 +190,24 @@ const DERIVATIVE_LABELS: Record<DerivativeType, string> = {
 // ============================================
 
 const GUARDRAILS = [
-  { id: 'g1', name: 'Critical Priority', description: 'Critical items always surface', active: true },
-  { id: 'g2', name: 'CiteMind Issues', description: 'Quality issues require review', active: true },
-  { id: 'g3', name: 'Deadline < 24h', description: 'Urgent deadlines need confirmation', active: true },
+  {
+    id: 'g1',
+    name: 'Critical Priority',
+    description: 'Critical items always surface',
+    active: true,
+  },
+  {
+    id: 'g2',
+    name: 'CiteMind Issues',
+    description: 'Quality issues require review',
+    active: true,
+  },
+  {
+    id: 'g3',
+    name: 'Deadline < 24h',
+    description: 'Urgent deadlines need confirmation',
+    active: true,
+  },
 ];
 
 // ============================================
@@ -157,23 +228,32 @@ export function ContextRail({
   onViewLibrary,
   onFixIssues,
 }: ContextRailProps) {
-  const [crossPillarCollapsed, setCrossPillarCollapsed] = useState(mode === 'autopilot');
+  const [crossPillarCollapsed, setCrossPillarCollapsed] = useState(
+    mode === 'autopilot'
+  );
   const [auditLogCollapsed, setAuditLogCollapsed] = useState(false);
 
-  const citeMindConf = citeMindStatus ? CITEMIND_STATUS_CONFIG[citeMindStatus] : null;
+  const citeMindConf = citeMindStatus
+    ? CITEMIND_STATUS_CONFIG[citeMindStatus]
+    : null;
   const isAutopilotReadOnly = mode === 'autopilot';
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       <div className="p-3 space-y-4">
-
         {/* SECTION: CiteMind Status */}
         {citeMindConf && (
-          <section className={`p-3 rounded-lg border ${citeMindConf.border} ${citeMindConf.bg}`}>
+          <section
+            className={`p-3 rounded-lg border ${citeMindConf.border} ${citeMindConf.bg}`}
+          >
             <div className="flex items-center gap-2 mb-2">
               <span className={citeMindConf.color}>{citeMindConf.icon}</span>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">CiteMind</h4>
-              <span className={`ml-auto px-1.5 py-0.5 text-xs font-bold rounded ${citeMindConf.color} ${citeMindConf.bg}`}>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">
+                CiteMind
+              </h4>
+              <span
+                className={`ml-auto px-1.5 py-0.5 text-xs font-bold rounded ${citeMindConf.color} ${citeMindConf.bg}`}
+              >
                 {citeMindConf.label}
               </span>
             </div>
@@ -181,7 +261,13 @@ export function ContextRail({
               <div className="space-y-1.5">
                 {citeMindIssues.slice(0, 3).map((issue, i) => (
                   <div key={i} className="flex items-start gap-2 text-xs">
-                    <span className={issue.severity === 'error' ? 'text-semantic-danger' : 'text-semantic-warning'}>
+                    <span
+                      className={
+                        issue.severity === 'error'
+                          ? 'text-semantic-danger'
+                          : 'text-semantic-warning'
+                      }
+                    >
                       {issue.severity === 'error' ? '!' : '?'}
                     </span>
                     <span className="text-white/60">{issue.message}</span>
@@ -203,10 +289,15 @@ export function ContextRail({
         {/* SECTION: Pipeline Status */}
         {pipelineCounts && (
           <section className="p-3 bg-slate-2 border border-slate-4 rounded-lg">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-2">Pipeline</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-2">
+              Pipeline
+            </h4>
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(pipelineCounts).map(([status, count]) => (
-                <div key={status} className="flex items-center justify-between text-xs">
+                <div
+                  key={status}
+                  className="flex items-center justify-between text-xs"
+                >
                   <span className="text-white/50 capitalize">{status}</span>
                   <span className="font-medium text-white/70">{count}</span>
                 </div>
@@ -225,15 +316,31 @@ export function ContextRail({
         {upcomingDeadlines && upcomingDeadlines.count > 0 && (
           <section className="p-3 bg-slate-2 border border-slate-4 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-4 h-4 text-semantic-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                className="w-4 h-4 text-semantic-warning"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">Deadlines</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">
+                Deadlines
+              </h4>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-white/70">{upcomingDeadlines.count} upcoming</span>
+              <span className="text-sm font-medium text-white/70">
+                {upcomingDeadlines.count} upcoming
+              </span>
               {upcomingDeadlines.nextDate && (
-                <span className="text-xs text-semantic-warning">Next: {upcomingDeadlines.nextDate}</span>
+                <span className="text-xs text-semantic-warning">
+                  Next: {upcomingDeadlines.nextDate}
+                </span>
               )}
             </div>
             <button
@@ -248,7 +355,9 @@ export function ContextRail({
         {/* SECTION: Entities */}
         {entities.length > 0 && (
           <section className="p-3 bg-slate-2 border border-slate-4 rounded-lg">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-2">Entities</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-2">
+              Entities
+            </h4>
             <div className="flex flex-wrap gap-1.5">
               {entities.map((entity) => (
                 <span
@@ -265,12 +374,23 @@ export function ContextRail({
         {/* SECTION: Derivatives */}
         {derivatives.length > 0 && (
           <section className="p-3 bg-slate-2 border border-slate-4 rounded-lg">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-2">Derivatives</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-2">
+              Derivatives
+            </h4>
             <div className="space-y-1.5">
               {derivatives.map((d) => (
-                <div key={d.type} className="flex items-center justify-between text-xs">
-                  <span className="text-white/60">{DERIVATIVE_LABELS[d.type]}</span>
-                  <span className={d.valid ? 'text-semantic-success' : 'text-white/30'}>
+                <div
+                  key={d.type}
+                  className="flex items-center justify-between text-xs"
+                >
+                  <span className="text-white/60">
+                    {DERIVATIVE_LABELS[d.type]}
+                  </span>
+                  <span
+                    className={
+                      d.valid ? 'text-semantic-success' : 'text-white/30'
+                    }
+                  >
                     {d.valid ? '✓ Ready' : '—'}
                   </span>
                 </div>
@@ -280,60 +400,95 @@ export function ContextRail({
         )}
 
         {/* SECTION: Cross-Pillar Impacts */}
-        {crossPillar && (crossPillar.prHooks > 0 || crossPillar.seoHooks > 0 || mode === 'autopilot') && (
-          <section className="p-3 bg-slate-2 border border-slate-4 rounded-lg">
-            <button
-              onClick={() => setCrossPillarCollapsed(!crossPillarCollapsed)}
-              className="w-full flex items-center justify-between"
-            >
-              <div className="flex items-center gap-2">
-                <svg className={`w-3.5 h-3.5 text-white/40 transition-transform ${crossPillarCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">Cross-Pillar</h4>
-              </div>
-              {isAutopilotReadOnly && (
-                <span className="px-1.5 py-0.5 text-xs font-medium text-white/30 bg-white/5 rounded">
-                  Read-Only
-                </span>
-              )}
-            </button>
-            {!crossPillarCollapsed && (
-              <div className="mt-2 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-white/50">PR Hooks</span>
-                  <span className="font-medium text-white/70">{crossPillar.prHooks}</span>
+        {crossPillar &&
+          (crossPillar.prHooks > 0 ||
+            crossPillar.seoHooks > 0 ||
+            mode === 'autopilot') && (
+            <section className="p-3 bg-slate-2 border border-slate-4 rounded-lg">
+              <button
+                onClick={() => setCrossPillarCollapsed(!crossPillarCollapsed)}
+                className="w-full flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <svg
+                    className={`w-3.5 h-3.5 text-white/40 transition-transform ${crossPillarCollapsed ? '' : 'rotate-180'}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">
+                    Cross-Pillar
+                  </h4>
                 </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-white/50">SEO Hooks</span>
-                  <span className="font-medium text-white/70">{crossPillar.seoHooks}</span>
-                </div>
-                {!isAutopilotReadOnly && (
-                  <button className="w-full mt-1 py-1.5 text-xs text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
-                    Manage Hooks →
-                  </button>
+                {isAutopilotReadOnly && (
+                  <span className="px-1.5 py-0.5 text-xs font-medium text-white/30 bg-white/5 rounded">
+                    Read-Only
+                  </span>
                 )}
-              </div>
-            )}
-          </section>
-        )}
+              </button>
+              {!crossPillarCollapsed && (
+                <div className="mt-2 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-white/50">PR Hooks</span>
+                    <span className="font-medium text-white/70">
+                      {crossPillar.prHooks}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-white/50">SEO Hooks</span>
+                    <span className="font-medium text-white/70">
+                      {crossPillar.seoHooks}
+                    </span>
+                  </div>
+                  {!isAutopilotReadOnly && (
+                    <button className="w-full mt-1 py-1.5 text-xs text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
+                      Manage Hooks →
+                    </button>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
 
         {/* SECTION: Guardrails (Autopilot only) */}
         {mode === 'autopilot' && (
           <section className="p-3 bg-brand-iris/5 border border-brand-iris/20 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-4 h-4 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              <svg
+                className="w-4 h-4 text-brand-iris"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
               </svg>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-brand-iris">Guardrails</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-brand-iris">
+                Guardrails
+              </h4>
             </div>
             <div className="space-y-1.5">
-              {GUARDRAILS.filter(g => g.active).map((guardrail) => (
+              {GUARDRAILS.filter((g) => g.active).map((guardrail) => (
                 <div key={guardrail.id} className="flex items-start gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
                   <div>
-                    <span className="text-xs font-medium text-white/70">{guardrail.name}</span>
-                    <p className="text-xs text-white/40">{guardrail.description}</p>
+                    <span className="text-xs font-medium text-white/70">
+                      {guardrail.name}
+                    </span>
+                    <p className="text-xs text-white/40">
+                      {guardrail.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -349,10 +504,22 @@ export function ContextRail({
               className="w-full flex items-center justify-between"
             >
               <div className="flex items-center gap-2">
-                <svg className={`w-3.5 h-3.5 text-white/40 transition-transform ${auditLogCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <svg
+                  className={`w-3.5 h-3.5 text-white/40 transition-transform ${auditLogCollapsed ? '' : 'rotate-180'}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">Auto-handled</h4>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">
+                  Auto-handled
+                </h4>
                 <span className="px-1.5 py-0.5 text-[11px] tabular-nums font-medium text-semantic-success bg-semantic-success/10 rounded">
                   {auditLedger.length}
                 </span>
@@ -361,8 +528,13 @@ export function ContextRail({
             {!auditLogCollapsed && (
               <div className="mt-2 space-y-1.5 max-h-[150px] overflow-y-auto">
                 {auditLedger.slice(0, 5).map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-3/50 rounded">
-                    <span className="text-white/60 truncate flex-1">{entry.summary}</span>
+                  <div
+                    key={entry.id}
+                    className="flex items-center justify-between text-xs px-2 py-1.5 bg-slate-3/50 rounded"
+                  >
+                    <span className="text-white/60 truncate flex-1">
+                      {entry.summary}
+                    </span>
                     <span className="text-white/30 shrink-0 ml-2">
                       {(() => {
                         const d = new Date(entry.timestamp);

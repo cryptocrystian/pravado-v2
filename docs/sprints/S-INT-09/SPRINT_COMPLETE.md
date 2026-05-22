@@ -20,20 +20,21 @@ Activated the existing Stripe billing system with plan-specific resource limits,
 
 Defines resource limits for three pricing tiers:
 
-| Resource | Starter ($99) | Pro ($299) | Growth ($799) |
-|----------|--------------|-----------|---------------|
-| Seats | 3 | 10 | 25 |
-| Content docs/mo | 25 | 100 | 500 |
-| SAGE proposals/mo | 50 | 200 | 1,000 |
-| CiteMind scores/mo | 100 | 500 | 2,000 |
-| LLM tokens/mo | 500K | 2M | 10M |
-| Journalist contacts | 200 | 1,000 | 5,000 |
-| Competitors | 5 | 20 | 50 |
-| Advanced analytics | No | Yes | Yes |
-| API integrations | No | Yes | Yes |
-| Autopilot mode | No | No | Yes |
+| Resource            | Starter ($99) | Pro ($299) | Growth ($799) |
+| ------------------- | ------------- | ---------- | ------------- |
+| Seats               | 3             | 10         | 25            |
+| Content docs/mo     | 25            | 100        | 500           |
+| SAGE proposals/mo   | 50            | 200        | 1,000         |
+| CiteMind scores/mo  | 100           | 500        | 2,000         |
+| LLM tokens/mo       | 500K          | 2M         | 10M           |
+| Journalist contacts | 200           | 1,000      | 5,000         |
+| Competitors         | 5             | 20         | 50            |
+| Advanced analytics  | No            | Yes        | Yes           |
+| API integrations    | No            | Yes        | Yes           |
+| Autopilot mode      | No            | No         | Yes           |
 
 **Key exports:**
+
 - `PLAN_LIMITS` — Static limits per plan slug
 - `getPlanLimits(planSlug)` — Get limits for a plan (falls back to starter)
 - `checkPlanLimit(supabase, orgId, resource)` — Non-throwing check
@@ -51,6 +52,7 @@ Both return `403 PLAN_LIMIT_EXCEEDED` with resource details when limit is hit.
 ### Existing Stripe Infrastructure (Verified)
 
 The following already existed from S28-S34 and requires NO changes:
+
 - `POST /billing/org/create-checkout` — Creates Stripe checkout session
 - `POST /billing/stripe/webhook` — Handles Stripe webhook events
 - `POST /billing/org/cancel` / `/resume` — Subscription lifecycle
@@ -92,13 +94,13 @@ No RLS — admin-only table accessed via service role key.
 **File:** `apps/api/src/routes/beta/index.ts`
 **Prefix:** `/api/v1/beta`
 
-| Method | Path | Auth | Purpose |
-|--------|------|------|---------|
-| POST | `/request` | Public | Submit beta access request |
-| GET | `/requests` | Admin | List all beta requests (filterable by status) |
-| POST | `/approve/:id` | Admin | Approve request + generate `PRAVADO-XXXXXXXX` invite code |
-| POST | `/validate-invite` | Public | Validate an invite code for signup |
-| POST | `/mark-used` | Public | Mark invite code as used after signup |
+| Method | Path               | Auth   | Purpose                                                   |
+| ------ | ------------------ | ------ | --------------------------------------------------------- |
+| POST   | `/request`         | Public | Submit beta access request                                |
+| GET    | `/requests`        | Admin  | List all beta requests (filterable by status)             |
+| POST   | `/approve/:id`     | Admin  | Approve request + generate `PRAVADO-XXXXXXXX` invite code |
+| POST   | `/validate-invite` | Public | Validate an invite code for signup                        |
+| POST   | `/mark-used`       | Public | Mark invite code as used after signup                     |
 
 ### Public Beta Request Page
 
@@ -115,6 +117,7 @@ No RLS — admin-only table accessed via service role key.
 **Login page updated:** `apps/dashboard/src/app/login/page.tsx`
 
 When `NEXT_PUBLIC_BETA_INVITE_REQUIRED=true`:
+
 - Signup form shows an "Invite code" field
 - Code is validated against `/api/beta/validate-invite` before `signUp()`
 - On successful signup, `/api/beta/mark-used` marks the code as consumed
@@ -138,9 +141,11 @@ Client-side toggle via `NEXT_PUBLIC_BETA_INVITE_REQUIRED` env var.
 ## Environment Variables
 
 ### New
+
 - `NEXT_PUBLIC_BETA_INVITE_REQUIRED` — Set to `'true'` to enable invite gating on signup
 
 ### Existing (Verified)
+
 - `STRIPE_SECRET_KEY` — Stripe API key
 - `STRIPE_WEBHOOK_SECRET` — Stripe webhook signing secret
 - `STRIPE_PRICE_STARTER` — Stripe price ID for Starter plan
@@ -151,22 +156,22 @@ Client-side toggle via `NEXT_PUBLIC_BETA_INVITE_REQUIRED` env var.
 
 ## Exit Criteria Verification
 
-| Criterion | Status |
-|-----------|--------|
-| planLimitsService defines 3 tiers with countable + boolean limits | PASS |
-| enforcePlanLimit wired into SAGE generate-proposals | PASS |
-| enforcePlanLimit wired into CiteMind score endpoint | PASS |
-| Exceeding limit returns 403 PLAN_LIMIT_EXCEEDED | PASS |
-| Existing Stripe checkout/webhook/portal flows verified present | PASS |
-| Migration 86 creates beta_requests table | PASS |
-| Public POST /beta/request stores request | PASS |
-| Admin POST /beta/approve/:id generates PRAVADO-XXXXXXXX invite code | PASS |
-| POST /beta/validate-invite validates code | PASS |
-| Signup form shows invite code field when BETA_INVITE_REQUIRED=true | PASS |
-| /beta public page collects waitlist requests | PASS |
-| BETA_INVITE_REQUIRED flag added | PASS |
-| Zero new TypeScript errors (11 pre-existing in PR/SEO files) | PASS |
-| SPRINT_COMPLETE.md | PASS |
+| Criterion                                                           | Status |
+| ------------------------------------------------------------------- | ------ |
+| planLimitsService defines 3 tiers with countable + boolean limits   | PASS   |
+| enforcePlanLimit wired into SAGE generate-proposals                 | PASS   |
+| enforcePlanLimit wired into CiteMind score endpoint                 | PASS   |
+| Exceeding limit returns 403 PLAN_LIMIT_EXCEEDED                     | PASS   |
+| Existing Stripe checkout/webhook/portal flows verified present      | PASS   |
+| Migration 86 creates beta_requests table                            | PASS   |
+| Public POST /beta/request stores request                            | PASS   |
+| Admin POST /beta/approve/:id generates PRAVADO-XXXXXXXX invite code | PASS   |
+| POST /beta/validate-invite validates code                           | PASS   |
+| Signup form shows invite code field when BETA_INVITE_REQUIRED=true  | PASS   |
+| /beta public page collects waitlist requests                        | PASS   |
+| BETA_INVITE_REQUIRED flag added                                     | PASS   |
+| Zero new TypeScript errors (11 pre-existing in PR/SEO files)        | PASS   |
+| SPRINT_COMPLETE.md                                                  | PASS   |
 
 ---
 

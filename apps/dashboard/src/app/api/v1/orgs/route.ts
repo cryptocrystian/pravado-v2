@@ -15,14 +15,27 @@ export async function POST(request: NextRequest) {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  console.log('[API /orgs] Env check - URL:', supabaseUrl ? 'present' : 'MISSING');
-  console.log('[API /orgs] Env check - Anon Key:', supabaseAnonKey ? 'present' : 'MISSING');
-  console.log('[API /orgs] Env check - Service Role Key:', serviceRoleKey ? 'present' : 'MISSING');
+  console.log(
+    '[API /orgs] Env check - URL:',
+    supabaseUrl ? 'present' : 'MISSING'
+  );
+  console.log(
+    '[API /orgs] Env check - Anon Key:',
+    supabaseAnonKey ? 'present' : 'MISSING'
+  );
+  console.log(
+    '[API /orgs] Env check - Service Role Key:',
+    serviceRoleKey ? 'present' : 'MISSING'
+  );
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('[API /orgs] Missing Supabase URL or Anon Key');
     return NextResponse.json(
-      { error: { message: 'Server configuration error: Missing Supabase credentials' } },
+      {
+        error: {
+          message: 'Server configuration error: Missing Supabase credentials',
+        },
+      },
       { status: 500 }
     );
   }
@@ -30,7 +43,11 @@ export async function POST(request: NextRequest) {
   if (!serviceRoleKey) {
     console.error('[API /orgs] Missing Service Role Key');
     return NextResponse.json(
-      { error: { message: 'Server configuration error: Missing service role key' } },
+      {
+        error: {
+          message: 'Server configuration error: Missing service role key',
+        },
+      },
       { status: 500 }
     );
   }
@@ -64,27 +81,29 @@ export async function POST(request: NextRequest) {
     console.log('[API /orgs] Access token length:', accessToken?.length || 0);
 
     // Create Supabase client and verify the token
-    const supabaseAuth = createClient(
-      supabaseUrl,
-      supabaseAnonKey,
-      {
-        global: {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      }
-    );
+      },
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
 
     // Get current user using the token
     console.log('[API /orgs] Getting user from token...');
-    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser(accessToken);
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseAuth.auth.getUser(accessToken);
 
-    console.log('[API /orgs] User result:', user ? `Found: ${user.email}` : 'No user');
+    console.log(
+      '[API /orgs] User result:',
+      user ? `Found: ${user.email}` : 'No user'
+    );
     if (userError) {
       console.error('[API /orgs] User error details:', {
         message: userError.message,
@@ -96,7 +115,11 @@ export async function POST(request: NextRequest) {
     if (userError || !user) {
       console.error('[API /orgs] Unauthorized - invalid token');
       return NextResponse.json(
-        { error: { message: `Unauthorized: ${userError?.message || 'Invalid token'}` } },
+        {
+          error: {
+            message: `Unauthorized: ${userError?.message || 'Invalid token'}`,
+          },
+        },
         { status: 401 }
       );
     }
@@ -104,16 +127,12 @@ export async function POST(request: NextRequest) {
     console.log('[API /orgs] Creating org for user:', user.id);
 
     // Create admin client with service role key to bypass RLS
-    const supabaseAdmin = createClient(
-      supabaseUrl,
-      serviceRoleKey,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      }
-    );
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
 
     // Ensure user exists in public.users table
     const { data: existingUser } = await supabaseAdmin
@@ -128,14 +147,22 @@ export async function POST(request: NextRequest) {
         .from('users')
         .insert({
           id: user.id,
-          full_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
-          avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+          full_name:
+            user.user_metadata?.full_name || user.user_metadata?.name || null,
+          avatar_url:
+            user.user_metadata?.avatar_url ||
+            user.user_metadata?.picture ||
+            null,
         });
 
       if (createUserError) {
         console.error('[API /orgs] Create user error:', createUserError);
         return NextResponse.json(
-          { error: { message: `Failed to create user profile: ${createUserError.message}` } },
+          {
+            error: {
+              message: `Failed to create user profile: ${createUserError.message}`,
+            },
+          },
           { status: 500 }
         );
       }
@@ -152,7 +179,11 @@ export async function POST(request: NextRequest) {
     if (orgError) {
       console.error('[API /orgs] Org creation error:', orgError);
       return NextResponse.json(
-        { error: { message: `Failed to create organization: ${orgError.message}` } },
+        {
+          error: {
+            message: `Failed to create organization: ${orgError.message}`,
+          },
+        },
         { status: 500 }
       );
     }
@@ -173,7 +204,11 @@ export async function POST(request: NextRequest) {
       // Try to clean up the org if member creation failed
       await supabaseAdmin.from('orgs').delete().eq('id', org.id);
       return NextResponse.json(
-        { error: { message: `Failed to add you as organization owner: ${memberError.message}` } },
+        {
+          error: {
+            message: `Failed to add you as organization owner: ${memberError.message}`,
+          },
+        },
         { status: 500 }
       );
     }
@@ -189,7 +224,8 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('[API /orgs] Unexpected error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
     console.error('[API /orgs] Error message:', errorMessage);
     console.error('[API /orgs] Error stack:', errorStack);

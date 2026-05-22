@@ -32,7 +32,7 @@
         {
           "action": "VIEW",
           "autoVerify": true,
-          "data": [{"scheme": "https", "host": "app.pravado.io"}],
+          "data": [{ "scheme": "https", "host": "app.pravado.io" }],
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
@@ -43,10 +43,13 @@
     "scheme": "pravado",
     "plugins": [
       "expo-router",
-      ["expo-notifications", {
-        "icon": "./assets/icon.png",
-        "color": "#A855F7"
-      }],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#A855F7"
+        }
+      ],
       "expo-secure-store"
     ],
     "extra": {

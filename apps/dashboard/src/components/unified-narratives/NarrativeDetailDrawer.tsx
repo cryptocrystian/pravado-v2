@@ -34,7 +34,10 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { formatNarrativePeriod, formatNarrativeDate } from '@/lib/unifiedNarrativeApi';
+import {
+  formatNarrativePeriod,
+  formatNarrativeDate,
+} from '@/lib/unifiedNarrativeApi';
 
 import NarrativeInsightPanel from './NarrativeInsightPanel';
 import NarrativeSectionCard from './NarrativeSectionCard';
@@ -55,7 +58,9 @@ interface NarrativeDetailDrawerProps {
   onPublish?: (channels?: string[]) => Promise<void>;
   onArchive?: (reason?: string) => Promise<void>;
   onRegenerate?: () => Promise<void>;
-  onExport?: (format: 'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json') => Promise<void>;
+  onExport?: (
+    format: 'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json'
+  ) => Promise<void>;
   onComputeDelta?: () => Promise<void>;
   isLoading?: boolean;
 }
@@ -85,8 +90,12 @@ export default function NarrativeDetailDrawer({
 
   if (!narrative) return null;
 
-  const periodLabel = formatNarrativePeriod(narrative.periodStart, narrative.periodEnd);
-  const isEditable = narrative.status === 'draft' || narrative.status === 'review';
+  const periodLabel = formatNarrativePeriod(
+    narrative.periodStart,
+    narrative.periodEnd
+  );
+  const isEditable =
+    narrative.status === 'draft' || narrative.status === 'review';
 
   // Group sections by sectionType
   const sectionsBySectionType = sections.reduce(
@@ -114,9 +123,7 @@ export default function NarrativeDetailDrawer({
                   <NarrativeStatusBadge status={narrative.status} />
                 </div>
                 {narrative.subtitle && (
-                  <p className="text-sm text-white/50">
-                    {narrative.subtitle}
-                  </p>
+                  <p className="text-sm text-white/50">{narrative.subtitle}</p>
                 )}
               </div>
               <Button variant="ghost" size="sm" onClick={onClose}>
@@ -205,32 +212,36 @@ export default function NarrativeDetailDrawer({
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {Object.entries(sectionsBySectionType).map(([sectionType, typeSections]) => (
-                      <div key={sectionType}>
-                        <div className="flex items-center gap-2 mb-3">
-                          <NarrativeSectionTypeBadge
-                            sectionType={sectionType as UnifiedNarrativeSection['sectionType']}
-                          />
-                          <ChevronRight className="h-4 w-4 text-white/50" />
-                          <span className="text-sm text-white/50">
-                            {typeSections.length} section(s)
-                          </span>
+                    {Object.entries(sectionsBySectionType).map(
+                      ([sectionType, typeSections]) => (
+                        <div key={sectionType}>
+                          <div className="flex items-center gap-2 mb-3">
+                            <NarrativeSectionTypeBadge
+                              sectionType={
+                                sectionType as UnifiedNarrativeSection['sectionType']
+                              }
+                            />
+                            <ChevronRight className="h-4 w-4 text-white/50" />
+                            <span className="text-sm text-white/50">
+                              {typeSections.length} section(s)
+                            </span>
+                          </div>
+                          <div className="space-y-4">
+                            {typeSections
+                              .sort((a, b) => a.sortOrder - b.sortOrder)
+                              .map((section) => (
+                                <NarrativeSectionCard
+                                  key={section.id}
+                                  section={section}
+                                  isEditable={isEditable}
+                                  onUpdate={onUpdateSection}
+                                  onRegenerate={onRegenerateSection}
+                                />
+                              ))}
+                          </div>
                         </div>
-                        <div className="space-y-4">
-                          {typeSections
-                            .sort((a, b) => a.sortOrder - b.sortOrder)
-                            .map((section) => (
-                              <NarrativeSectionCard
-                                key={section.id}
-                                section={section}
-                                isEditable={isEditable}
-                                onUpdate={onUpdateSection}
-                                onRegenerate={onRegenerateSection}
-                              />
-                            ))}
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    )}
 
                     {/* Delta Comparison */}
                     {onComputeDelta && narrative.previousNarrativeId && (
@@ -261,7 +272,8 @@ export default function NarrativeDetailDrawer({
                     <Database className="h-5 w-5" />
                     Data Sources
                   </h3>
-                  {narrative.sourceSystems && narrative.sourceSystems.length > 0 ? (
+                  {narrative.sourceSystems &&
+                  narrative.sourceSystems.length > 0 ? (
                     <div className="grid gap-3">
                       {narrative.sourceSystems.map((system) => (
                         <div
@@ -352,19 +364,25 @@ export default function NarrativeDetailDrawer({
                       {narrative.generatedAt && (
                         <div className="flex justify-between">
                           <span className="text-white/50">Generated:</span>
-                          <span>{formatNarrativeDate(narrative.generatedAt)}</span>
+                          <span>
+                            {formatNarrativeDate(narrative.generatedAt)}
+                          </span>
                         </div>
                       )}
                       {narrative.approvedAt && (
                         <div className="flex justify-between">
                           <span className="text-white/50">Approved:</span>
-                          <span>{formatNarrativeDate(narrative.approvedAt)}</span>
+                          <span>
+                            {formatNarrativeDate(narrative.approvedAt)}
+                          </span>
                         </div>
                       )}
                       {narrative.publishedAt && (
                         <div className="flex justify-between">
                           <span className="text-white/50">Published:</span>
-                          <span>{formatNarrativeDate(narrative.publishedAt)}</span>
+                          <span>
+                            {formatNarrativeDate(narrative.publishedAt)}
+                          </span>
                         </div>
                       )}
                     </div>

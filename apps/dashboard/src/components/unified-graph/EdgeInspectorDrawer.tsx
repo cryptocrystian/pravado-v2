@@ -114,7 +114,9 @@ export function EdgeInspectorDrawer({
     }
   };
 
-  const DirectionIcon = data?.edge.isBidirectional ? ArrowLeftRight : ArrowRight;
+  const DirectionIcon = data?.edge.isBidirectional
+    ? ArrowLeftRight
+    : ArrowRight;
 
   return (
     <Sheet open={!!edgeId} onOpenChange={(open) => !open && onClose()}>
@@ -140,7 +142,11 @@ export function EdgeInspectorDrawer({
             {/* Edge Header */}
             <div className="flex items-start justify-between">
               <div>
-                <Badge className={getEdgeTypeColor(data.edge.edgeType).replace('text-', 'bg-').replace('-600', '-100')}>
+                <Badge
+                  className={getEdgeTypeColor(data.edge.edgeType)
+                    .replace('text-', 'bg-')
+                    .replace('-600', '-100')}
+                >
                   {getEdgeTypeLabel(data.edge.edgeType)}
                 </Badge>
                 {data.edge.isBidirectional && (
@@ -152,28 +158,42 @@ export function EdgeInspectorDrawer({
                 {editMode ? (
                   <Input
                     value={formData.label}
-                    onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, label: e.target.value })
+                    }
                     placeholder="Edge label (optional)"
                     className="mt-2"
                   />
                 ) : data.edge.label ? (
-                  <h3 className="text-lg font-semibold mt-2">{data.edge.label}</h3>
+                  <h3 className="text-lg font-semibold mt-2">
+                    {data.edge.label}
+                  </h3>
                 ) : null}
               </div>
               <div className="flex gap-2">
                 {editMode ? (
                   <>
-                    <Button size="sm" variant="outline" onClick={() => setEditMode(false)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setEditMode(false)}
+                    >
                       Cancel
                     </Button>
                     <Button size="sm" onClick={handleSave} disabled={isSaving}>
-                      {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      {isSaving && (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      )}
                       <Save className="h-4 w-4 mr-1" />
                       Save
                     </Button>
                   </>
                 ) : (
-                  <Button size="sm" variant="outline" onClick={() => setEditMode(true)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setEditMode(true)}
+                  >
                     Edit
                   </Button>
                 )}
@@ -188,17 +208,23 @@ export function EdgeInspectorDrawer({
                     className="flex-1 p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/80 transition-colors"
                     onClick={() => onNavigateToNode?.(data.sourceNode.id)}
                   >
-                    <p className="font-medium truncate">{data.sourceNode.label}</p>
+                    <p className="font-medium truncate">
+                      {data.sourceNode.label}
+                    </p>
                     <p className="text-sm text-white/50">
                       {getNodeTypeLabel(data.sourceNode.nodeType)}
                     </p>
                   </div>
-                  <DirectionIcon className={`h-6 w-6 flex-shrink-0 ${getEdgeTypeColor(data.edge.edgeType)}`} />
+                  <DirectionIcon
+                    className={`h-6 w-6 flex-shrink-0 ${getEdgeTypeColor(data.edge.edgeType)}`}
+                  />
                   <div
                     className="flex-1 p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/80 transition-colors"
                     onClick={() => onNavigateToNode?.(data.targetNode.id)}
                   >
-                    <p className="font-medium truncate">{data.targetNode.label}</p>
+                    <p className="font-medium truncate">
+                      {data.targetNode.label}
+                    </p>
                     <p className="text-sm text-white/50">
                       {getNodeTypeLabel(data.targetNode.nodeType)}
                     </p>
@@ -213,7 +239,9 @@ export function EdgeInspectorDrawer({
               {editMode ? (
                 <Textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   className="mt-1"
                   rows={3}
                   placeholder="Edge description (optional)"
@@ -242,13 +270,17 @@ export function EdgeInspectorDrawer({
                   min={0}
                   max={10}
                   step={0.1}
-                  onValueChange={([v]) => setFormData({ ...formData, weight: v })}
+                  onValueChange={([v]) =>
+                    setFormData({ ...formData, weight: v })
+                  }
                 />
               ) : (
                 <div className="h-2 bg-muted rounded-full">
                   <div
                     className="h-full bg-primary rounded-full"
-                    style={{ width: `${Math.min((data.edge.weight / 10) * 100, 100)}%` }}
+                    style={{
+                      width: `${Math.min((data.edge.weight / 10) * 100, 100)}%`,
+                    }}
                   />
                 </div>
               )}
@@ -275,14 +307,17 @@ export function EdgeInspectorDrawer({
                   <Label className="text-sm text-white/50">Source System</Label>
                   <p className="text-sm mt-1">
                     {data.edge.sourceSystem}
-                    {data.edge.inferenceMethod && ` (${data.edge.inferenceMethod})`}
+                    {data.edge.inferenceMethod &&
+                      ` (${data.edge.inferenceMethod})`}
                   </p>
                 </div>
               )}
 
               {data.edge.confidenceScore != null && (
                 <div>
-                  <Label className="text-sm text-white/50">Confidence Score</Label>
+                  <Label className="text-sm text-white/50">
+                    Confidence Score
+                  </Label>
                   <p className="text-sm mt-1">
                     {((data.edge.confidenceScore ?? 0) * 100).toFixed(1)}%
                   </p>

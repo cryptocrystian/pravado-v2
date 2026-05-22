@@ -96,7 +96,9 @@ export function ContentInsightsView({
     return (
       <div className="p-4">
         <div className="p-4 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg">
-          <h4 className="text-sm font-semibold text-semantic-danger">Failed to load insights</h4>
+          <h4 className="text-sm font-semibold text-semantic-danger">
+            Failed to load insights
+          </h4>
           <p className="text-xs text-white/55 mt-1">{error.message}</p>
         </div>
       </div>
@@ -120,7 +122,9 @@ export function ContentInsightsView({
       {/* Authority Trend Summary */}
       {signals && (
         <section>
-          <h3 className="text-sm font-semibold text-white mb-3">Authority Summary</h3>
+          <h3 className="text-sm font-semibold text-white mb-3">
+            Authority Summary
+          </h3>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <InsightMetricCard
               label="Authority Score"
@@ -151,7 +155,9 @@ export function ContentInsightsView({
       {topAssets.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-white/95">Top Performing Content</h3>
+            <h3 className="text-sm font-semibold text-white/95">
+              Top Performing Content
+            </h3>
             <span className="text-xs text-white/40">By authority score</span>
           </div>
           <div className="space-y-2">
@@ -161,7 +167,9 @@ export function ContentInsightsView({
                 rank={index + 1}
                 asset={asset}
                 onOpenForRevision={() => handleOpenAssetForRevision(asset.id)}
-                onRegenerateDerivatives={() => handleRegenerateDerivatives(asset.id)}
+                onRegenerateDerivatives={() =>
+                  handleRegenerateDerivatives(asset.id)
+                }
               />
             ))}
           </div>
@@ -172,8 +180,12 @@ export function ContentInsightsView({
       {gaps.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-white/95">Content Opportunities</h3>
-            <span className="text-xs text-white/40">{gaps.length} gaps identified</span>
+            <h3 className="text-sm font-semibold text-white/95">
+              Content Opportunities
+            </h3>
+            <span className="text-xs text-white/40">
+              {gaps.length} gaps identified
+            </span>
           </div>
           <div className="space-y-2">
             {gaps.slice(0, 5).map((gap, index) => (
@@ -198,14 +210,20 @@ export function ContentInsightsView({
 
       {/* SAGE Recommendations with Actionable CTAs */}
       <section>
-        <h3 className="text-sm font-semibold text-white mb-3">SAGE Recommendations</h3>
+        <h3 className="text-sm font-semibold text-white mb-3">
+          SAGE Recommendations
+        </h3>
         <div className="space-y-3">
           <RecommendationCard
             type="opportunity"
             title="High-value keyword gap detected"
             description="Create content for 'marketing automation ROI' - high search volume, low competition"
             actions={[
-              { label: 'Start Writing', primary: true, onClick: () => handleCreateBrief('marketing automation ROI') },
+              {
+                label: 'Start Writing',
+                primary: true,
+                onClick: () => handleCreateBrief('marketing automation ROI'),
+              },
             ]}
           />
           <RecommendationCard
@@ -213,8 +231,17 @@ export function ContentInsightsView({
             title="Improve citation eligibility"
             description="3 assets have citation scores below 50. Add structured data and improve factual accuracy."
             actions={[
-              { label: 'View Assets', primary: false, onClick: () => router.push('/app/content?filter=low-citation') },
-              { label: 'Open First Asset', primary: true, onClick: () => topAssets[0] && handleOpenAssetForRevision(topAssets[0].id) },
+              {
+                label: 'View Assets',
+                primary: false,
+                onClick: () => router.push('/app/content?filter=low-citation'),
+              },
+              {
+                label: 'Open First Asset',
+                primary: true,
+                onClick: () =>
+                  topAssets[0] && handleOpenAssetForRevision(topAssets[0].id),
+              },
             ]}
           />
           <RecommendationCard
@@ -222,7 +249,12 @@ export function ContentInsightsView({
             title="Derivatives need refresh"
             description="2 assets have stale derivatives. Regenerate to maintain cross-pillar accuracy."
             actions={[
-              { label: 'Regenerate All', primary: true, onClick: () => topAssets[0] && handleRegenerateDerivatives(topAssets[0].id) },
+              {
+                label: 'Regenerate All',
+                primary: true,
+                onClick: () =>
+                  topAssets[0] && handleRegenerateDerivatives(topAssets[0].id),
+              },
             ]}
           />
         </div>
@@ -230,14 +262,28 @@ export function ContentInsightsView({
 
       {/* Authority Distribution Chart Placeholder */}
       <section>
-        <h3 className="text-sm font-semibold text-white mb-3">Authority Distribution</h3>
+        <h3 className="text-sm font-semibold text-white mb-3">
+          Authority Distribution
+        </h3>
         <div className="p-6 bg-slate-2 border border-border-subtle rounded-lg">
           <div className="flex items-center justify-center h-32">
             <div className="text-center">
-              <svg className="w-8 h-8 text-white/20 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <svg
+                className="w-8 h-8 text-white/20 mx-auto mb-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
               </svg>
-              <p className="text-xs text-white/40">Chart visualization coming soon</p>
+              <p className="text-xs text-white/40">
+                Chart visualization coming soon
+              </p>
             </div>
           </div>
         </div>
@@ -257,16 +303,29 @@ interface InsightMetricCardProps {
   description: string;
 }
 
-function InsightMetricCard({ label, value, trend, description }: InsightMetricCardProps) {
+function InsightMetricCard({
+  label,
+  value,
+  trend,
+  description,
+}: InsightMetricCardProps) {
   return (
     <div className="p-4 bg-slate-2 border border-border-subtle rounded-lg">
-      <div className="text-xs text-white/40 uppercase tracking-wider mb-2">{label}</div>
+      <div className="text-xs text-white/40 uppercase tracking-wider mb-2">
+        {label}
+      </div>
       <div className="flex items-baseline gap-2">
-        <span className={`text-2xl font-bold ${getScoreColor(value)}`}>{value}</span>
+        <span className={`text-2xl font-bold ${getScoreColor(value)}`}>
+          {value}
+        </span>
         {trend !== undefined && (
           <span
             className={`text-xs font-medium ${
-              trend > 0 ? 'text-semantic-success' : trend < 0 ? 'text-semantic-danger' : 'text-white/40'
+              trend > 0
+                ? 'text-semantic-success'
+                : trend < 0
+                  ? 'text-semantic-danger'
+                  : 'text-white/40'
             }`}
           >
             {trend > 0 ? '↑' : trend < 0 ? '↓' : '→'}
@@ -296,18 +355,29 @@ interface TopAssetRowProps {
   onRegenerateDerivatives?: () => void;
 }
 
-function TopAssetRow({ rank, asset, onOpenForRevision, onRegenerateDerivatives }: TopAssetRowProps) {
+function TopAssetRow({
+  rank,
+  asset,
+  onOpenForRevision,
+  onRegenerateDerivatives,
+}: TopAssetRowProps) {
   const score = asset.authoritySignals?.authorityContributionScore ?? 0;
 
   return (
     <div className="flex items-center gap-3 p-3 bg-slate-2 border border-border-subtle rounded-lg group hover:border-brand-iris/40 transition-colors">
-      <span className="text-lg font-bold text-white/30 w-6 text-center">#{rank}</span>
+      <span className="text-lg font-bold text-white/30 w-6 text-center">
+        #{rank}
+      </span>
       <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-medium text-white truncate">{asset.title}</h4>
+        <h4 className="text-sm font-medium text-white truncate">
+          {asset.title}
+        </h4>
         <p className="text-xs text-white/40">{asset.status}</p>
       </div>
       <div className="text-right mr-2">
-        <span className={`text-lg font-bold ${getScoreColor(score)}`}>{score}</span>
+        <span className={`text-lg font-bold ${getScoreColor(score)}`}>
+          {score}
+        </span>
         <p className="text-xs text-white/30 uppercase">Authority</p>
       </div>
       {/* Action buttons - visible on hover */}
@@ -317,8 +387,18 @@ function TopAssetRow({ rank, asset, onOpenForRevision, onRegenerateDerivatives }
           className="p-1.5 text-brand-iris hover:bg-brand-iris/10 rounded transition-colors"
           title="Open for revision"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
           </svg>
         </button>
         <button
@@ -326,8 +406,18 @@ function TopAssetRow({ rank, asset, onOpenForRevision, onRegenerateDerivatives }
           className="p-1.5 text-brand-cyan hover:bg-brand-cyan/10 rounded transition-colors"
           title="Regenerate derivatives"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
         </button>
       </div>
@@ -345,17 +435,26 @@ interface GapOpportunityRowProps {
   onViewDetails?: () => void;
 }
 
-function GapOpportunityRow({ gap, onCreateBrief, onViewDetails }: GapOpportunityRowProps) {
+function GapOpportunityRow({
+  gap,
+  onCreateBrief,
+  onViewDetails,
+}: GapOpportunityRowProps) {
   const scoreColor =
     gap.seoOpportunityScore >= 70
       ? 'text-semantic-success bg-semantic-success/10'
       : gap.seoOpportunityScore >= 40
-      ? 'text-semantic-warning bg-semantic-warning/10'
-      : 'text-white/50 bg-white/10';
+        ? 'text-semantic-warning bg-semantic-warning/10'
+        : 'text-white/50 bg-white/10';
 
   return (
     <div className="flex items-center justify-between p-3 bg-slate-2 border border-border-subtle rounded-lg group hover:border-brand-iris/40 transition-colors">
-      <div className="flex-1 min-w-0" onClick={onViewDetails} role="button" tabIndex={0}>
+      <div
+        className="flex-1 min-w-0"
+        onClick={onViewDetails}
+        role="button"
+        tabIndex={0}
+      >
         <h4 className="text-sm font-medium text-white/95">{gap.keyword}</h4>
         <div className="flex items-center gap-2 text-xs text-white/40 mt-0.5">
           {gap.intent && <span className="capitalize">{gap.intent}</span>}
@@ -370,7 +469,9 @@ function GapOpportunityRow({ gap, onCreateBrief, onViewDetails }: GapOpportunity
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${scoreColor}`}>
+        <span
+          className={`px-2 py-0.5 text-xs font-bold rounded-full ${scoreColor}`}
+        >
           {gap.seoOpportunityScore}
         </span>
         <button
@@ -401,12 +502,21 @@ interface RecommendationCardProps {
   actions: RecommendationAction[];
 }
 
-function RecommendationCard({ type, title, description, actions }: RecommendationCardProps) {
+function RecommendationCard({
+  type,
+  title,
+  description,
+  actions,
+}: RecommendationCardProps) {
   const typeConfig = {
     opportunity: {
       icon: (
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+          <path
+            fillRule="evenodd"
+            d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+            clipRule="evenodd"
+          />
         </svg>
       ),
       color: 'brand-cyan',
@@ -416,7 +526,11 @@ function RecommendationCard({ type, title, description, actions }: Recommendatio
     improvement: {
       icon: (
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
+          <path
+            fillRule="evenodd"
+            d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
+            clipRule="evenodd"
+          />
         </svg>
       ),
       color: 'brand-iris',

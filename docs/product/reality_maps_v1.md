@@ -11,18 +11,22 @@ The Reality Maps Engine is an advanced intelligence layer that generates branchi
 ## Key Concepts
 
 ### Reality Map
+
 A hierarchical visualization showing all possible outcome paths from a given starting scenario. Each map contains:
+
 - **Nodes**: Individual reality states with probability, risk, and opportunity metrics
 - **Edges**: Transitions between states with associated probabilities
 - **Paths**: Complete sequences from root to outcome nodes
 - **Analysis**: Aggregated insights including correlations and contradictions
 
 ### Node Types
+
 - **Root**: The initial scenario or starting point
 - **Branch**: Intermediate decision points or events
 - **Outcome**: Terminal nodes representing final states
 
 ### Outcome Types
+
 - **Positive**: Favorable outcomes with high opportunity scores
 - **Negative**: Unfavorable outcomes with high risk scores
 - **Neutral**: Balanced outcomes with moderate scores
@@ -32,6 +36,7 @@ A hierarchical visualization showing all possible outcome paths from a given sta
 ## Architecture
 
 ### Data Flow
+
 ```
 S71 Simulations → S72 Orchestration → S73 Reality Maps
        ↓                  ↓                   ↓
@@ -54,18 +59,18 @@ S71 Simulations → S72 Orchestration → S73 Reality Maps
 
 ### Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/v1/reality-maps` | List reality maps |
-| POST | `/api/v1/reality-maps` | Create new map |
-| GET | `/api/v1/reality-maps/:id` | Get map details |
-| PATCH | `/api/v1/reality-maps/:id` | Update map |
-| DELETE | `/api/v1/reality-maps/:id` | Delete map |
-| POST | `/api/v1/reality-maps/:id/generate` | Trigger generation |
-| GET | `/api/v1/reality-maps/:id/graph` | Get visualization data |
-| GET | `/api/v1/reality-maps/:id/analysis` | Get analysis results |
-| GET | `/api/v1/reality-maps/stats` | Get org-wide stats |
-| GET | `/api/v1/reality-maps/:id/audit-log` | Get audit events |
+| Method | Path                                 | Description            |
+| ------ | ------------------------------------ | ---------------------- |
+| GET    | `/api/v1/reality-maps`               | List reality maps      |
+| POST   | `/api/v1/reality-maps`               | Create new map         |
+| GET    | `/api/v1/reality-maps/:id`           | Get map details        |
+| PATCH  | `/api/v1/reality-maps/:id`           | Update map             |
+| DELETE | `/api/v1/reality-maps/:id`           | Delete map             |
+| POST   | `/api/v1/reality-maps/:id/generate`  | Trigger generation     |
+| GET    | `/api/v1/reality-maps/:id/graph`     | Get visualization data |
+| GET    | `/api/v1/reality-maps/:id/analysis`  | Get analysis results   |
+| GET    | `/api/v1/reality-maps/stats`         | Get org-wide stats     |
+| GET    | `/api/v1/reality-maps/:id/audit-log` | Get audit events       |
 
 ### Create Reality Map
 
@@ -89,15 +94,15 @@ POST /api/v1/reality-maps
 
 ### Generation Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| maxDepth | number | 5 | Maximum tree depth (1-10) |
-| branchingFactor | number | 3 | Maximum branches per node (1-10) |
-| minProbability | number | 0.05 | Minimum probability threshold (0-0.5) |
-| includeRiskAnalysis | boolean | true | Include risk scoring |
-| includeOpportunityAnalysis | boolean | true | Include opportunity scoring |
-| narrativeStyle | string | "executive" | AI narrative writing style |
-| probabilityModel | string | "weighted_average" | Probability calculation method |
+| Parameter                  | Type    | Default            | Description                           |
+| -------------------------- | ------- | ------------------ | ------------------------------------- |
+| maxDepth                   | number  | 5                  | Maximum tree depth (1-10)             |
+| branchingFactor            | number  | 3                  | Maximum branches per node (1-10)      |
+| minProbability             | number  | 0.05               | Minimum probability threshold (0-0.5) |
+| includeRiskAnalysis        | boolean | true               | Include risk scoring                  |
+| includeOpportunityAnalysis | boolean | true               | Include opportunity scoring           |
+| narrativeStyle             | string  | "executive"        | AI narrative writing style            |
+| probabilityModel           | string  | "weighted_average" | Probability calculation method        |
 
 ### Graph Response
 
@@ -207,49 +212,63 @@ POST /api/v1/reality-maps
 ## Probability Models
 
 ### Weighted Average (Default)
+
 Combines probabilities from simulation runs with historical data weights. Best for scenarios with extensive historical precedent.
 
 ### Bayesian
+
 Updates probabilities based on prior beliefs and observed evidence. Best for scenarios where expert opinion can inform initial estimates.
 
 ### Monte Carlo
+
 Simulates thousands of random paths to estimate outcome probabilities. Best for complex scenarios with many interdependencies.
 
 ## Narrative Styles
 
 ### Executive
+
 Concise, action-oriented summaries suitable for C-suite consumption. Focus on strategic implications and key decisions.
 
 ### Technical
+
 Detailed analysis with specific metrics and technical considerations. Suitable for operational teams.
 
 ### Strategic
+
 Long-term focused narratives emphasizing competitive position and market dynamics.
 
 ### Journalistic
+
 Clear, accessible language suitable for broad stakeholder communication.
 
 ## UI Components
 
 ### RealityMapCard
+
 Displays map summary in list view with status, node/path counts, and action buttons.
 
 ### RealityMapGraph
+
 Interactive SVG visualization with pan/zoom, node selection, and path highlighting.
 
 ### RealityNodeDetailDrawer
+
 Side panel showing full node details including AI summary, key drivers, risk factors, and opportunities.
 
 ### RealityPathPanel
+
 Tabbed panel for browsing paths and path comparisons with highlighting controls.
 
 ### RealityAnalysisPanel
+
 Dashboard showing outcome universe, aggregated risks/opportunities, contradictions, and correlations.
 
 ### RealityCreateForm
+
 Form for creating/editing maps with parameter configuration.
 
 ### RealityMapToolbar
+
 Action toolbar with generate, edit, export, and delete controls.
 
 ## Database Schema
@@ -273,12 +292,14 @@ Action toolbar with generate, edit, export, and delete controls.
 ## Integration Points
 
 ### Dependencies
+
 - **S71**: AI Scenario Simulation Engine (run data)
 - **S72**: Scenario Orchestration Engine (suite data)
 - **S60**: Risk Radar (risk factors)
 - **S70**: Unified Narrative Engine (narrative generation)
 
 ### Consumers
+
 - Executive dashboards
 - Strategic planning tools
 - Risk management systems
@@ -289,6 +310,7 @@ Action toolbar with generate, edit, export, and delete controls.
 Enable with: `ENABLE_REALITY_MAPS: true`
 
 When disabled:
+
 - All API endpoints return 503
 - UI components hide the feature
 - No background generation tasks run
@@ -310,16 +332,17 @@ When disabled:
 
 ## Error Handling
 
-| Error | Cause | Resolution |
-|-------|-------|------------|
-| No source data | Suite has no completed runs | Run simulations first |
-| Generation timeout | Tree too complex | Reduce depth/branching |
-| Probability overflow | Sum exceeds 100% | Review branching logic |
-| Empty paths | All filtered by threshold | Lower minProbability |
+| Error                | Cause                       | Resolution             |
+| -------------------- | --------------------------- | ---------------------- |
+| No source data       | Suite has no completed runs | Run simulations first  |
+| Generation timeout   | Tree too complex            | Reduce depth/branching |
+| Probability overflow | Sum exceeds 100%            | Review branching logic |
+| Empty paths          | All filtered by threshold   | Lower minProbability   |
 
 ## Changelog
 
 ### V1.0 (S73)
+
 - Initial release
 - Core generation engine
 - Interactive graph visualization

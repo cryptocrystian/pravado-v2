@@ -38,11 +38,14 @@ function getHeaders(): HeadersInit {
 export async function generateEnrichment(
   input: CreateEnrichmentRecordInput
 ): Promise<JournalistEnrichmentRecord> {
-  const response = await fetch(`${API_BASE}/api/v1/journalist-enrichment/generate`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${API_BASE}/api/v1/journalist-enrichment/generate`,
+    {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(input),
+    }
+  );
 
   if (!response.ok) {
     const error = await response.json();
@@ -77,7 +80,10 @@ export async function listEnrichmentRecords(
     params.append('maxConfidenceScore', query.maxConfidenceScore.toString());
   }
   if (query.minCompletenessScore !== undefined) {
-    params.append('minCompletenessScore', query.minCompletenessScore.toString());
+    params.append(
+      'minCompletenessScore',
+      query.minCompletenessScore.toString()
+    );
   }
   if (query.emailVerified !== undefined) {
     params.append('emailVerified', query.emailVerified.toString());
@@ -98,7 +104,10 @@ export async function listEnrichmentRecords(
     query.qualityFlags.forEach((flag) => params.append('qualityFlags', flag));
   }
   if (query.hasPotentialDuplicates !== undefined) {
-    params.append('hasPotentialDuplicates', query.hasPotentialDuplicates.toString());
+    params.append(
+      'hasPotentialDuplicates',
+      query.hasPotentialDuplicates.toString()
+    );
   }
   if (query.searchQuery) {
     params.append('searchQuery', query.searchQuery);
@@ -203,18 +212,19 @@ export async function deleteEnrichmentRecord(recordId: string): Promise<void> {
 /**
  * Batch enrichment processing
  */
-export async function batchEnrich(
-  request: BatchEnrichmentRequest
-): Promise<{
+export async function batchEnrich(request: BatchEnrichmentRequest): Promise<{
   jobId: string;
   status: string;
   message: string;
 }> {
-  const response = await fetch(`${API_BASE}/api/v1/journalist-enrichment/batch`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(request),
-  });
+  const response = await fetch(
+    `${API_BASE}/api/v1/journalist-enrichment/batch`,
+    {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(request),
+    }
+  );
 
   if (!response.ok) {
     const error = await response.json();
@@ -250,7 +260,10 @@ export async function listEnrichmentJobs(
     params.append('createdBy', query.createdBy);
   }
   if (query.minProgressPercentage !== undefined) {
-    params.append('minProgressPercentage', query.minProgressPercentage.toString());
+    params.append(
+      'minProgressPercentage',
+      query.minProgressPercentage.toString()
+    );
   }
   if (query.sortBy) {
     params.append('sortBy', query.sortBy);
@@ -287,11 +300,14 @@ export async function listEnrichmentJobs(
 export async function createEnrichmentJob(
   input: CreateEnrichmentJobInput
 ): Promise<JournalistEnrichmentJob> {
-  const response = await fetch(`${API_BASE}/api/v1/journalist-enrichment/jobs`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${API_BASE}/api/v1/journalist-enrichment/jobs`,
+    {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(input),
+    }
+  );
 
   if (!response.ok) {
     const error = await response.json();
@@ -308,9 +324,7 @@ export async function createEnrichmentJob(
 /**
  * Get merge suggestions for record
  */
-export async function getMergeSuggestions(
-  recordId: string
-): Promise<{
+export async function getMergeSuggestions(recordId: string): Promise<{
   suggestions: any[];
   totalSuggestions: number;
 }> {
@@ -333,12 +347,17 @@ export async function getMergeSuggestions(
 /**
  * Merge enrichment into journalist profile
  */
-export async function mergeEnrichment(input: MergeEnrichmentInput): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/v1/journalist-enrichment/merge`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(input),
-  });
+export async function mergeEnrichment(
+  input: MergeEnrichmentInput
+): Promise<void> {
+  const response = await fetch(
+    `${API_BASE}/api/v1/journalist-enrichment/merge`,
+    {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(input),
+    }
+  );
 
   if (!response.ok) {
     const error = await response.json();

@@ -9,7 +9,11 @@ import { MSWProvider } from '@/mocks/MSWProvider';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PRLayout({ children }: { children: React.ReactNode }) {
+export default async function PRLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getCurrentUser();
 
   return (

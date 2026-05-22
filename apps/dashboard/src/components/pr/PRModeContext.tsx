@@ -5,7 +5,7 @@
  *
  * Provides AutomationMode state across the entire PR surface.
  * Replaces prop-drilling through server-component layout boundaries.
- * 
+ *
  * Usage:
  *   const { mode, setMode } = usePRMode();
  */

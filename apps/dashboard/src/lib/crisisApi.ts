@@ -59,8 +59,10 @@ async function apiClient<T>(
 
   const headers = {
     'Content-Type': 'application/json',
-    'x-org-id': typeof window !== 'undefined' ? localStorage.getItem('orgId') || '' : '',
-    'x-user-id': typeof window !== 'undefined' ? localStorage.getItem('userId') || '' : '',
+    'x-org-id':
+      typeof window !== 'undefined' ? localStorage.getItem('orgId') || '' : '',
+    'x-user-id':
+      typeof window !== 'undefined' ? localStorage.getItem('userId') || '' : '',
     ...options.headers,
   };
 
@@ -110,7 +112,9 @@ export async function getDashboardStats(): Promise<CrisisDashboardStats> {
 // INCIDENT API
 // ============================================================================
 
-export async function createIncident(data: CreateIncidentRequest): Promise<CrisisIncident> {
+export async function createIncident(
+  data: CreateIncidentRequest
+): Promise<CrisisIncident> {
   const result = await apiClient<CrisisIncident>('/incidents', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -169,9 +173,12 @@ export async function escalateIncident(
 export async function generateRecommendations(
   incidentId: string
 ): Promise<CrisisAction[]> {
-  const result = await apiClient<CrisisAction[]>(`/incidents/${incidentId}/recommendations`, {
-    method: 'POST',
-  });
+  const result = await apiClient<CrisisAction[]>(
+    `/incidents/${incidentId}/recommendations`,
+    {
+      method: 'POST',
+    }
+  );
   return result.data!;
 }
 
@@ -219,7 +226,9 @@ export async function runDetection(
 // ACTION API
 // ============================================================================
 
-export async function createAction(data: CreateActionRequest): Promise<CrisisAction> {
+export async function createAction(
+  data: CreateActionRequest
+): Promise<CrisisAction> {
   const result = await apiClient<CrisisAction>('/actions', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -276,16 +285,23 @@ export async function generateBrief(
   incidentId: string,
   options?: GenerateCrisisBriefRequest
 ): Promise<BriefGenerationResponse> {
-  const result = await apiClient<BriefGenerationResponse>(`/incidents/${incidentId}/briefs`, {
-    method: 'POST',
-    body: JSON.stringify(options || {}),
-  });
+  const result = await apiClient<BriefGenerationResponse>(
+    `/incidents/${incidentId}/briefs`,
+    {
+      method: 'POST',
+      body: JSON.stringify(options || {}),
+    }
+  );
   return result.data!;
 }
 
-export async function getCurrentBrief(incidentId: string): Promise<CrisisBrief | null> {
+export async function getCurrentBrief(
+  incidentId: string
+): Promise<CrisisBrief | null> {
   try {
-    const result = await apiClient<CrisisBrief>(`/incidents/${incidentId}/briefs/current`);
+    const result = await apiClient<CrisisBrief>(
+      `/incidents/${incidentId}/briefs/current`
+    );
     return result.data || null;
   } catch {
     return null;
@@ -336,7 +352,9 @@ export async function updateSection(
 // ESCALATION RULE API
 // ============================================================================
 
-export async function createRule(data: CreateEscalationRuleRequest): Promise<CrisisEscalationRule> {
+export async function createRule(
+  data: CreateEscalationRuleRequest
+): Promise<CrisisEscalationRule> {
   const result = await apiClient<CrisisEscalationRule>('/rules', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -350,7 +368,10 @@ export async function getRules(
   offset: number = 0
 ): Promise<{ rules: CrisisEscalationRule[]; total: number }> {
   const query = buildQueryString({ isActive, limit, offset });
-  const result = await apiClient<{ rules: CrisisEscalationRule[]; total: number }>(`/rules?${query}`);
+  const result = await apiClient<{
+    rules: CrisisEscalationRule[];
+    total: number;
+  }>(`/rules?${query}`);
   return result.data!;
 }
 
@@ -365,7 +386,10 @@ export async function updateRule(
   return result.data!;
 }
 
-export async function toggleRule(id: string, isActive: boolean): Promise<CrisisEscalationRule> {
+export async function toggleRule(
+  id: string,
+  isActive: boolean
+): Promise<CrisisEscalationRule> {
   return updateRule(id, { isActive });
 }
 
@@ -379,15 +403,33 @@ export async function deleteRule(id: string): Promise<void> {
 // DISPLAY HELPERS
 // ============================================================================
 
-export const SEVERITY_COLORS: Record<CrisisSeverity, { bg: string; text: string; border: string }> = {
+export const SEVERITY_COLORS: Record<
+  CrisisSeverity,
+  { bg: string; text: string; border: string }
+> = {
   low: { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300' },
-  medium: { bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-300' },
-  high: { bg: 'bg-orange-100', text: 'text-orange-800', border: 'border-orange-300' },
-  critical: { bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-300' },
+  medium: {
+    bg: 'bg-yellow-100',
+    text: 'text-yellow-800',
+    border: 'border-yellow-300',
+  },
+  high: {
+    bg: 'bg-orange-100',
+    text: 'text-orange-800',
+    border: 'border-orange-300',
+  },
+  critical: {
+    bg: 'bg-red-100',
+    text: 'text-red-800',
+    border: 'border-red-300',
+  },
   severe: { bg: 'bg-red-200', text: 'text-red-900', border: 'border-red-500' },
 };
 
-export const TRAJECTORY_COLORS: Record<CrisisTrajectory, { bg: string; text: string }> = {
+export const TRAJECTORY_COLORS: Record<
+  CrisisTrajectory,
+  { bg: string; text: string }
+> = {
   improving: { bg: 'bg-green-100', text: 'text-green-800' },
   stable: { bg: 'bg-blue-100', text: 'text-blue-800' },
   worsening: { bg: 'bg-orange-100', text: 'text-orange-800' },
@@ -396,7 +438,10 @@ export const TRAJECTORY_COLORS: Record<CrisisTrajectory, { bg: string; text: str
   unknown: { bg: 'bg-gray-100', text: 'text-gray-500' },
 };
 
-export const PROPAGATION_COLORS: Record<CrisisPropagationLevel, { bg: string; text: string }> = {
+export const PROPAGATION_COLORS: Record<
+  CrisisPropagationLevel,
+  { bg: string; text: string }
+> = {
   contained: { bg: 'bg-green-100', text: 'text-green-800' },
   spreading: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
   viral: { bg: 'bg-orange-100', text: 'text-orange-800' },
@@ -404,14 +449,20 @@ export const PROPAGATION_COLORS: Record<CrisisPropagationLevel, { bg: string; te
   saturated: { bg: 'bg-red-200', text: 'text-red-900' },
 };
 
-export const STATUS_COLORS: Record<IncidentStatus, { bg: string; text: string }> = {
+export const STATUS_COLORS: Record<
+  IncidentStatus,
+  { bg: string; text: string }
+> = {
   active: { bg: 'bg-red-100', text: 'text-red-800' },
   contained: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
   resolved: { bg: 'bg-green-100', text: 'text-green-800' },
   closed: { bg: 'bg-gray-100', text: 'text-gray-600' },
 };
 
-export const ACTION_STATUS_COLORS: Record<CrisisActionStatus, { bg: string; text: string }> = {
+export const ACTION_STATUS_COLORS: Record<
+  CrisisActionStatus,
+  { bg: string; text: string }
+> = {
   recommended: { bg: 'bg-blue-100', text: 'text-blue-800' },
   approved: { bg: 'bg-indigo-100', text: 'text-indigo-800' },
   in_progress: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
@@ -507,7 +558,9 @@ export function getTrajectoryIcon(trajectory: CrisisTrajectory): string {
   }
 }
 
-export function calculateUrgencyFromDue(dueAt: Date | string | undefined): CrisisUrgency {
+export function calculateUrgencyFromDue(
+  dueAt: Date | string | undefined
+): CrisisUrgency {
   if (!dueAt) return 'normal';
 
   const now = new Date();

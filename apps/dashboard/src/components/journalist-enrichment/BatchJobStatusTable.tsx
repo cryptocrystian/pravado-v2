@@ -212,7 +212,9 @@ export function BatchJobStatusTable({
                       <div className="text-sm font-medium text-gray-900">
                         {getJobTypeLabel(job.jobType)}
                       </div>
-                      <div className="text-xs text-gray-500">ID: {job.id.slice(0, 8)}</div>
+                      <div className="text-xs text-gray-500">
+                        ID: {job.id.slice(0, 8)}
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -248,8 +250,8 @@ export function BatchJobStatusTable({
                           job.status === 'completed'
                             ? 'bg-green-600'
                             : job.status === 'failed'
-                            ? 'bg-red-600'
-                            : 'bg-blue-600'
+                              ? 'bg-red-600'
+                              : 'bg-blue-600'
                         }`}
                         style={{ width: `${job.progressPercentage}%` }}
                       ></div>

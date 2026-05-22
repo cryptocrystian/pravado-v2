@@ -73,8 +73,10 @@ export async function getServerAccessToken(): Promise<string> {
 
   debugLog('Token extraction started', {
     cookieCount: allCookies.length,
-    hasSbCookies: allCookies.some(c => c.name.includes('sb-')),
-    sbCookieNames: allCookies.filter(c => c.name.includes('sb-')).map(c => c.name),
+    hasSbCookies: allCookies.some((c) => c.name.includes('sb-')),
+    sbCookieNames: allCookies
+      .filter((c) => c.name.includes('sb-'))
+      .map((c) => c.name),
   });
 
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -88,7 +90,10 @@ export async function getServerAccessToken(): Promise<string> {
     },
   });
 
-  const { data: { session }, error } = await supabase.auth.getSession();
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
 
   if (error) {
     debugLog('Session error', { error: error.message });
@@ -103,7 +108,10 @@ export async function getServerAccessToken(): Promise<string> {
   });
 
   if (!session?.access_token) {
-    throw new ServerAuthError('AUTH_MISSING', 'No Supabase access token available in server request context');
+    throw new ServerAuthError(
+      'AUTH_MISSING',
+      'No Supabase access token available in server request context'
+    );
   }
 
   return session.access_token;

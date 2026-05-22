@@ -61,12 +61,14 @@ async function aggregateVisibilitySignals(
     .lte('created_at', periodEnd);
 
   const pitchesSent = pitches?.length ?? 0;
-  const pitchesOpened = pitches?.filter((p: { status: string }) =>
-    ['opened', 'replied', 'interested'].includes(p.status)
-  ).length ?? 0;
-  const pitchesReplied = pitches?.filter((p: { status: string }) =>
-    ['replied', 'interested'].includes(p.status)
-  ).length ?? 0;
+  const pitchesOpened =
+    pitches?.filter((p: { status: string }) =>
+      ['opened', 'replied', 'interested'].includes(p.status)
+    ).length ?? 0;
+  const pitchesReplied =
+    pitches?.filter((p: { status: string }) =>
+      ['replied', 'interested'].includes(p.status)
+    ).length ?? 0;
 
   // Get journalist DA scores for journalists associated with this org
   const { data: journalists } = await supabase
@@ -75,10 +77,14 @@ async function aggregateVisibilitySignals(
     .eq('org_id', orgId);
 
   const journalistCount = journalists?.length ?? 0;
-  const avgJournalistDA = journalistCount > 0
-    ? (journalists!.reduce((sum: number, j: { domain_authority: number | null }) =>
-        sum + (j.domain_authority ?? 0), 0) / journalistCount)
-    : 0;
+  const avgJournalistDA =
+    journalistCount > 0
+      ? journalists!.reduce(
+          (sum: number, j: { domain_authority: number | null }) =>
+            sum + (j.domain_authority ?? 0),
+          0
+        ) / journalistCount
+      : 0;
 
   // S-INT-05: Get citation mention rate from citation_summaries
   const { data: citationSummary } = await supabase
@@ -89,7 +95,9 @@ async function aggregateVisibilitySignals(
     .single();
 
   const citationMentionRate = citationSummary
-    ? Number((citationSummary as { mention_rate: number | null }).mention_rate ?? 0)
+    ? Number(
+        (citationSummary as { mention_rate: number | null }).mention_rate ?? 0
+      )
     : 0;
 
   return {
@@ -120,10 +128,14 @@ async function aggregateAuthoritySignals(
     .lte('scored_at', periodEnd);
 
   const publishedContentCount = qualityScores?.length ?? 0;
-  const avgContentQuality = publishedContentCount > 0
-    ? (qualityScores!.reduce((sum: number, q: { overall_score: number | null }) =>
-        sum + (q.overall_score ?? 0), 0) / publishedContentCount)
-    : 0;
+  const avgContentQuality =
+    publishedContentCount > 0
+      ? qualityScores!.reduce(
+          (sum: number, q: { overall_score: number | null }) =>
+            sum + (q.overall_score ?? 0),
+          0
+        ) / publishedContentCount
+      : 0;
 
   // High-DA backlinks (DA > 40)
   const { count: highDABacklinks } = await supabase
@@ -158,7 +170,9 @@ export async function aggregateSignals(
   periodDays: number = 30
 ): Promise<AggregatedSignals> {
   const periodEnd = new Date().toISOString();
-  const periodStart = new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000).toISOString();
+  const periodStart = new Date(
+    Date.now() - periodDays * 24 * 60 * 60 * 1000
+  ).toISOString();
 
   const [visibility, authority] = await Promise.all([
     aggregateVisibilitySignals(supabase, orgId, periodStart, periodEnd),

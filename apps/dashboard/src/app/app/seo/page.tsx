@@ -20,7 +20,6 @@ export default function SEOOverviewPage() {
 
   return (
     <div className="pt-6 pb-16 px-8 max-w-[1600px] mx-auto">
-
       {mode === 'manual' && <SEOManualView activeTab="overview" />}
       {mode === 'copilot' && <SEOCopilotView activeTab="overview" />}
       {mode === 'autopilot' && <SEOAutopilotView activeTab="overview" />}

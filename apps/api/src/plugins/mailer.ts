@@ -25,8 +25,7 @@ declare module 'fastify' {
 async function mailerPluginImpl(server: FastifyInstance) {
   const mailer = createMailer({
     resendApiKey: process.env.RESEND_API_KEY,
-    resendFromEmail: process.env.RESEND_FROM_EMAIL
-      || 'hello@pravado.io',
+    resendFromEmail: process.env.RESEND_FROM_EMAIL || 'hello@pravado.io',
     mailgunApiKey: process.env.MAILGUN_API_KEY,
     mailgunDomain: process.env.MAILGUN_DOMAIN,
     mailgunFromEmail: process.env.MAILGUN_FROM_EMAIL,

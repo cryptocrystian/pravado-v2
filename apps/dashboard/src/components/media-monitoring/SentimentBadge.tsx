@@ -12,7 +12,10 @@ interface SentimentBadgeProps {
   size?: 'sm' | 'md';
 }
 
-export function SentimentBadge({ sentiment, size = 'sm' }: SentimentBadgeProps) {
+export function SentimentBadge({
+  sentiment,
+  size = 'sm',
+}: SentimentBadgeProps) {
   const getStyle = () => {
     switch (sentiment) {
       case 'positive':
@@ -28,7 +31,8 @@ export function SentimentBadge({ sentiment, size = 'sm' }: SentimentBadgeProps) 
     return sentiment.charAt(0).toUpperCase() + sentiment.slice(1);
   };
 
-  const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm';
+  const sizeClasses =
+    size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm';
 
   return (
     <span

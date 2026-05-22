@@ -9,7 +9,6 @@ import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../middleware/requireUser';
 
-
 export async function invitesRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
   const supabase = createClient(

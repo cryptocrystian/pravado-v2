@@ -56,7 +56,9 @@ function ConfidenceImpactMeter({
       {/* Tick marks */}
       <div className="flex justify-between px-1">
         {[0, 25, 50, 75, 100].map((tick) => (
-          <span key={tick} className="text-[11px] text-white/50"> {/* typography-allow: meter ticks */}
+          <span key={tick} className="text-[11px] text-white/50">
+            {' '}
+            {/* typography-allow: meter ticks */}
             {tick}
           </span>
         ))}
@@ -91,8 +93,9 @@ function GateWarning({ gate }: { gate: ActionItem['gate'] }) {
           </p>
           {gate.min_plan && (
             <p className="text-[13px] text-semantic-warning mt-2">
-              Available on <span className="font-semibold">{gate.min_plan}</span>{' '}
-              plan and above
+              Available on{' '}
+              <span className="font-semibold">{gate.min_plan}</span> plan and
+              above
             </p>
           )}
         </div>
@@ -135,7 +138,11 @@ function DiffPlaceholder() {
   );
 }
 
-export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerProps) {
+export function ActionPeekDrawer({
+  action,
+  isOpen,
+  onClose,
+}: ActionPeekDrawerProps) {
   if (!action) return null;
 
   const pillarStyle = pillarAccents[action.pillar];
@@ -164,9 +171,7 @@ export function ActionPeekDrawer({ action, isOpen, onClose }: ActionPeekDrawerPr
 
               {/* Priority badge */}
               <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-4 rounded">
-                <span
-                  className={`w-2 h-2 rounded-full ${priorityStyle.dot}`}
-                />
+                <span className={`w-2 h-2 rounded-full ${priorityStyle.dot}`} />
                 <span className="text-[13px] text-white/70">
                   {priorityStyle.label}
                 </span>

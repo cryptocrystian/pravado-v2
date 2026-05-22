@@ -19,51 +19,51 @@ Single-page, copy-pasteable checklist for deploying Pravado to staging (Render A
 
 ### Service Settings
 
-| Setting | Value |
-|---------|-------|
-| **Service Type** | Web Service |
-| **Name** | `pravado-api-staging` |
-| **Region** | Oregon (US West) or closest to your users |
-| **Branch** | `main` |
-| **Root Directory** | _(leave empty - monorepo root)_ |
-| **Runtime** | Node |
-| **Node Version** | 20.x |
-| **Build Command** | `pnpm install && pnpm build` |
-| **Start Command** | `node --import tsx apps/api/dist/index.js` |
-| **Health Check Path** | `/health/live` |
+| Setting               | Value                                      |
+| --------------------- | ------------------------------------------ |
+| **Service Type**      | Web Service                                |
+| **Name**              | `pravado-api-staging`                      |
+| **Region**            | Oregon (US West) or closest to your users  |
+| **Branch**            | `main`                                     |
+| **Root Directory**    | _(leave empty - monorepo root)_            |
+| **Runtime**           | Node                                       |
+| **Node Version**      | 20.x                                       |
+| **Build Command**     | `pnpm install && pnpm build`               |
+| **Start Command**     | `node --import tsx apps/api/dist/index.js` |
+| **Health Check Path** | `/health/live`                             |
 
 ### Required Environment Variables (Render)
 
-| Variable | Description | Where to Find |
-|----------|-------------|---------------|
-| `NODE_ENV` | Set to `production` | Literal value |
-| `API_HOST` | Set to `0.0.0.0` | Literal value |
-| `API_PORT` | Set to `10000` | Render default port |
-| `SUPABASE_URL` | Supabase project URL | Local `.env` or Supabase Dashboard > Settings > API |
-| `SUPABASE_ANON_KEY` | Supabase anon/public key | Local `.env` or Supabase Dashboard > Settings > API |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (SECRET) | Local `.env` or Supabase Dashboard > Settings > API |
-| `CORS_ORIGIN` | Dashboard URL for CORS | Your Vercel staging URL (e.g., `https://pravado-staging.vercel.app`) |
-| `DASHBOARD_URL` | Same as CORS_ORIGIN | Your Vercel staging URL |
-| `COOKIE_SECRET` | Random 32-char string | Generate: `openssl rand -base64 24` |
+| Variable                    | Description                        | Where to Find                                                        |
+| --------------------------- | ---------------------------------- | -------------------------------------------------------------------- |
+| `NODE_ENV`                  | Set to `production`                | Literal value                                                        |
+| `API_HOST`                  | Set to `0.0.0.0`                   | Literal value                                                        |
+| `API_PORT`                  | Set to `10000`                     | Render default port                                                  |
+| `SUPABASE_URL`              | Supabase project URL               | Local `.env` or Supabase Dashboard > Settings > API                  |
+| `SUPABASE_ANON_KEY`         | Supabase anon/public key           | Local `.env` or Supabase Dashboard > Settings > API                  |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (SECRET) | Local `.env` or Supabase Dashboard > Settings > API                  |
+| `CORS_ORIGIN`               | Dashboard URL for CORS             | Your Vercel staging URL (e.g., `https://pravado-staging.vercel.app`) |
+| `DASHBOARD_URL`             | Same as CORS_ORIGIN                | Your Vercel staging URL                                              |
+| `COOKIE_SECRET`             | Random 32-char string              | Generate: `openssl rand -base64 24`                                  |
 
 ### Recommended Environment Variables (Render)
 
-| Variable | Description | Where to Find |
-|----------|-------------|---------------|
-| `LLM_PROVIDER` | `anthropic` or `openai` | Your preference |
-| `LLM_ANTHROPIC_API_KEY` | Anthropic API key (if using) | Local `.env` |
-| `LLM_OPENAI_API_KEY` | OpenAI API key (if using) | Local `.env` |
-| `LOG_LEVEL` | `info` | Literal value |
-| `PLATFORM_FREEZE` | `false` (or `true` to block writes) | Literal value |
+| Variable                | Description                         | Where to Find   |
+| ----------------------- | ----------------------------------- | --------------- |
+| `LLM_PROVIDER`          | `anthropic` or `openai`             | Your preference |
+| `LLM_ANTHROPIC_API_KEY` | Anthropic API key (if using)        | Local `.env`    |
+| `LLM_OPENAI_API_KEY`    | OpenAI API key (if using)           | Local `.env`    |
+| `LOG_LEVEL`             | `info`                              | Literal value   |
+| `PLATFORM_FREEZE`       | `false` (or `true` to block writes) | Literal value   |
 
 ### Optional Environment Variables (Render)
 
-| Variable | Description |
-|----------|-------------|
-| `STRIPE_SECRET_KEY` | For billing features |
-| `STRIPE_WEBHOOK_SECRET` | For Stripe webhooks |
-| `MAILGUN_API_KEY` | For email delivery |
-| `MAILGUN_DOMAIN` | For email delivery |
+| Variable                | Description          |
+| ----------------------- | -------------------- |
+| `STRIPE_SECRET_KEY`     | For billing features |
+| `STRIPE_WEBHOOK_SECRET` | For Stripe webhooks  |
+| `MAILGUN_API_KEY`       | For email delivery   |
+| `MAILGUN_DOMAIN`        | For email delivery   |
 
 ---
 
@@ -71,29 +71,29 @@ Single-page, copy-pasteable checklist for deploying Pravado to staging (Render A
 
 ### Project Settings
 
-| Setting | Value |
-|---------|-------|
-| **Framework** | Next.js (auto-detected) |
-| **Root Directory** | `apps/dashboard` |
-| **Build Command** | _(leave default / `pnpm build`)_ |
-| **Output Directory** | `.next` (default) |
-| **Install Command** | `pnpm install` |
-| **Node.js Version** | 20.x |
+| Setting              | Value                            |
+| -------------------- | -------------------------------- |
+| **Framework**        | Next.js (auto-detected)          |
+| **Root Directory**   | `apps/dashboard`                 |
+| **Build Command**    | _(leave default / `pnpm build`)_ |
+| **Output Directory** | `.next` (default)                |
+| **Install Command**  | `pnpm install`                   |
+| **Node.js Version**  | 20.x                             |
 
 ### Required Environment Variables (Vercel)
 
-| Variable | Description | Where to Find |
-|----------|-------------|---------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Local `.env` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key | Local `.env` |
-| `NEXT_PUBLIC_API_URL` | Render API URL | After Render deploy: `https://pravado-api-staging.onrender.com` |
+| Variable                        | Description          | Where to Find                                                   |
+| ------------------------------- | -------------------- | --------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL | Local `.env`                                                    |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key    | Local `.env`                                                    |
+| `NEXT_PUBLIC_API_URL`           | Render API URL       | After Render deploy: `https://pravado-api-staging.onrender.com` |
 
 ### Optional Environment Variables (Vercel)
 
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_DASHBOARD_URL` | Your Vercel staging URL (for links) |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | For billing UI |
+| Variable                             | Description                         |
+| ------------------------------------ | ----------------------------------- |
+| `NEXT_PUBLIC_DASHBOARD_URL`          | Your Vercel staging URL (for links) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | For billing UI                      |
 
 ---
 
@@ -113,6 +113,7 @@ Single-page, copy-pasteable checklist for deploying Pravado to staging (Render A
 8. Note the deployed URL: `https://pravado-api-staging.onrender.com`
 
 **Verify API:**
+
 ```bash
 curl -s "https://pravado-api-staging.onrender.com/health/ready" | jq
 # Expected: {"ready":true,"version":"1.0.0-rc1",...}
@@ -214,46 +215,46 @@ curl -s "$API_URL/health/info" | jq '.version, .environment'
 
 ### 2. Dashboard Access (2 min)
 
-| Check | URL | Pass |
-|-------|-----|------|
-| Landing loads | `/` | [ ] |
-| Login page renders | `/login` | [ ] |
-| No red console errors | DevTools > Console | [ ] |
+| Check                 | URL                | Pass |
+| --------------------- | ------------------ | ---- |
+| Landing loads         | `/`                | [ ]  |
+| Login page renders    | `/login`           | [ ]  |
+| No red console errors | DevTools > Console | [ ]  |
 
 ### 3. Authentication Flow (3 min)
 
-| Step | Expected | Pass |
-|------|----------|------|
-| Click login | Auth form appears | [ ] |
-| Enter valid credentials | Redirects to `/app` | [ ] |
-| Refresh page | Still logged in | [ ] |
-| Click logout | Redirects to `/login` | [ ] |
+| Step                    | Expected              | Pass |
+| ----------------------- | --------------------- | ---- |
+| Click login             | Auth form appears     | [ ]  |
+| Enter valid credentials | Redirects to `/app`   | [ ]  |
+| Refresh page            | Still logged in       | [ ]  |
+| Click logout            | Redirects to `/login` | [ ]  |
 
 ### 4. Core Navigation (3 min)
 
-| Route | Expected | Pass |
-|-------|----------|------|
-| `/app` | Dashboard home loads | [ ] |
-| `/app/playbooks` | Playbooks list (3+ if seeded) | [ ] |
-| `/app/content` | Content section loads | [ ] |
-| `/app/pr` | PR section with mentions | [ ] |
-| `/app/exec` | Executive command center | [ ] |
+| Route            | Expected                      | Pass |
+| ---------------- | ----------------------------- | ---- |
+| `/app`           | Dashboard home loads          | [ ]  |
+| `/app/playbooks` | Playbooks list (3+ if seeded) | [ ]  |
+| `/app/content`   | Content section loads         | [ ]  |
+| `/app/pr`        | PR section with mentions      | [ ]  |
+| `/app/exec`      | Executive command center      | [ ]  |
 
 ### 5. Executive Intelligence (2 min)
 
-| Route | Expected | Pass |
-|-------|----------|------|
-| `/app/exec/digests` | Digest list (1+ if seeded) | [ ] |
-| `/app/exec/board-reports` | Board reports list | [ ] |
-| `/app/unified-narratives` | Unified narratives page | [ ] |
+| Route                     | Expected                   | Pass |
+| ------------------------- | -------------------------- | ---- |
+| `/app/exec/digests`       | Digest list (1+ if seeded) | [ ]  |
+| `/app/exec/board-reports` | Board reports list         | [ ]  |
+| `/app/unified-narratives` | Unified narratives page    | [ ]  |
 
 ### 6. Advanced Features (2 min)
 
-| Route | Expected | Pass |
-|-------|----------|------|
-| `/app/scenarios` | Scenarios list | [ ] |
-| `/app/reality-maps` | Reality maps visualization | [ ] |
-| `/app/insight-conflicts` | Insight conflicts list | [ ] |
+| Route                    | Expected                   | Pass |
+| ------------------------ | -------------------------- | ---- |
+| `/app/scenarios`         | Scenarios list             | [ ]  |
+| `/app/reality-maps`      | Reality maps visualization | [ ]  |
+| `/app/insight-conflicts` | Insight conflicts list     | [ ]  |
 
 ### 7. API Integration Check (1 min)
 
@@ -267,15 +268,15 @@ Open DevTools > Network tab while navigating:
 
 ## Quick Result Summary
 
-| Check | Status |
-|-------|--------|
-| API Health | [ ] PASS / [ ] FAIL |
-| Dashboard Access | [ ] PASS / [ ] FAIL |
-| Authentication | [ ] PASS / [ ] FAIL |
-| Navigation | [ ] PASS / [ ] FAIL |
-| Executive Views | [ ] PASS / [ ] FAIL |
+| Check             | Status              |
+| ----------------- | ------------------- |
+| API Health        | [ ] PASS / [ ] FAIL |
+| Dashboard Access  | [ ] PASS / [ ] FAIL |
+| Authentication    | [ ] PASS / [ ] FAIL |
+| Navigation        | [ ] PASS / [ ] FAIL |
+| Executive Views   | [ ] PASS / [ ] FAIL |
 | Advanced Features | [ ] PASS / [ ] FAIL |
-| API Integration | [ ] PASS / [ ] FAIL |
+| API Integration   | [ ] PASS / [ ] FAIL |
 
 **Overall:** [ ] STAGING READY / [ ] NEEDS FIXES
 
@@ -283,14 +284,14 @@ Open DevTools > Network tab while navigating:
 
 ## Troubleshooting Quick Reference
 
-| Issue | Check |
-|-------|-------|
-| API returns 500 | Render logs, env vars |
-| Dashboard blank | Vercel function logs, browser console |
-| CORS errors | `CORS_ORIGIN` in Render matches Vercel URL |
+| Issue            | Check                                                          |
+| ---------------- | -------------------------------------------------------------- |
+| API returns 500  | Render logs, env vars                                          |
+| Dashboard blank  | Vercel function logs, browser console                          |
+| CORS errors      | `CORS_ORIGIN` in Render matches Vercel URL                     |
 | Auth not working | `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
-| No data | Run seed script |
-| API timeout | Render may be sleeping (free tier); wait 30s |
+| No data          | Run seed script                                                |
+| API timeout      | Render may be sleeping (free tier); wait 30s                   |
 
 ---
 

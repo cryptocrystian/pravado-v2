@@ -23,17 +23,17 @@ GET /reports
 
 #### Query Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| limit | integer | No | Number of results (default: 20, max: 100) |
-| offset | integer | No | Pagination offset (default: 0) |
-| status | string | No | Filter by status |
-| format | string | No | Filter by report format |
-| search | string | No | Search in title and description |
-| sortBy | string | No | Sort field (default: created_at) |
-| sortOrder | string | No | Sort direction: asc or desc (default: desc) |
-| periodStart | string | No | Filter by period start (ISO 8601) |
-| periodEnd | string | No | Filter by period end (ISO 8601) |
+| Parameter   | Type    | Required | Description                                 |
+| ----------- | ------- | -------- | ------------------------------------------- |
+| limit       | integer | No       | Number of results (default: 20, max: 100)   |
+| offset      | integer | No       | Pagination offset (default: 0)              |
+| status      | string  | No       | Filter by status                            |
+| format      | string  | No       | Filter by report format                     |
+| search      | string  | No       | Search in title and description             |
+| sortBy      | string  | No       | Sort field (default: created_at)            |
+| sortOrder   | string  | No       | Sort direction: asc or desc (default: desc) |
+| periodStart | string  | No       | Filter by period start (ISO 8601)           |
+| periodEnd   | string  | No       | Filter by period end (ISO 8601)             |
 
 #### Response
 
@@ -80,7 +80,11 @@ POST /reports
   "periodStart": "2024-10-01T00:00:00Z",
   "periodEnd": "2024-12-31T23:59:59Z",
   "description": "Quarterly strategic review for Q4 2024",
-  "customSections": ["executive_summary", "strategic_context", "recommendations"]
+  "customSections": [
+    "executive_summary",
+    "strategic_context",
+    "recommendations"
+  ]
 }
 ```
 
@@ -131,8 +135,8 @@ GET /reports/:id
     "brandHealthScore": 80,
     "summaryJson": {
       "keyInsights": ["..."],
-      "topRisks": [{"risk": "...", "severity": "high"}],
-      "topOpportunities": [{"opportunity": "...", "impact": "high"}]
+      "topRisks": [{ "risk": "...", "severity": "high" }],
+      "topOpportunities": [{ "opportunity": "...", "impact": "high" }]
     },
     "createdAt": "2024-12-15T10:00:00Z",
     "updatedAt": "2024-12-20T14:30:00Z",
@@ -439,7 +443,7 @@ POST /reports/:id/sources
   "sourceId": "uuid",
   "sourceType": "coverage_report",
   "sourceTitle": "December Coverage Report",
-  "contributionWeight": 0.10
+  "contributionWeight": 0.1
 }
 ```
 
@@ -575,11 +579,11 @@ GET /reports/:id/audit-logs
 
 #### Query Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| limit | integer | No | Number of results (default: 50) |
-| offset | integer | No | Pagination offset |
-| eventType | string | No | Filter by event type |
+| Parameter | Type    | Required | Description                     |
+| --------- | ------- | -------- | ------------------------------- |
+| limit     | integer | No       | Number of results (default: 50) |
+| offset    | integer | No       | Pagination offset               |
+| eventType | string  | No       | Filter by event type            |
 
 #### Response
 
@@ -605,94 +609,94 @@ GET /reports/:id/audit-logs
 
 ### Report Formats
 
-| Value | Description |
-|-------|-------------|
-| quarterly_strategic_review | Quarterly strategic assessment |
-| annual_strategic_assessment | Annual comprehensive review |
-| board_strategy_brief | Board-ready brief |
-| ceo_intelligence_brief | CEO daily/weekly summary |
-| investor_strategy_update | Investor-focused update |
-| crisis_strategic_response | Crisis mode guidance |
-| competitive_strategy_report | Competitive analysis |
-| custom | User-defined format |
+| Value                       | Description                    |
+| --------------------------- | ------------------------------ |
+| quarterly_strategic_review  | Quarterly strategic assessment |
+| annual_strategic_assessment | Annual comprehensive review    |
+| board_strategy_brief        | Board-ready brief              |
+| ceo_intelligence_brief      | CEO daily/weekly summary       |
+| investor_strategy_update    | Investor-focused update        |
+| crisis_strategic_response   | Crisis mode guidance           |
+| competitive_strategy_report | Competitive analysis           |
+| custom                      | User-defined format            |
 
 ### Report Status
 
-| Value | Description |
-|-------|-------------|
-| draft | Initial creation |
+| Value      | Description               |
+| ---------- | ------------------------- |
+| draft      | Initial creation          |
 | generating | AI generation in progress |
-| review | Pending human review |
-| approved | Approved for distribution |
-| published | Published and distributed |
-| archived | Historical record |
+| review     | Pending human review      |
+| approved   | Approved for distribution |
+| published  | Published and distributed |
+| archived   | Historical record         |
 
 ### Section Types
 
-| Value | Description |
-|-------|-------------|
-| executive_summary | High-level overview |
-| strategic_context | Market/industry analysis |
-| media_performance | PR and coverage metrics |
-| competitive_landscape | Competitor positioning |
-| crisis_assessment | Risk and crisis status |
-| brand_health | Brand perception |
-| stakeholder_analysis | Stakeholder insights |
-| risk_assessment | Risk profile |
-| opportunities | Growth opportunities |
-| recommendations | Strategic recommendations |
-| appendix | Supporting data |
+| Value                 | Description               |
+| --------------------- | ------------------------- |
+| executive_summary     | High-level overview       |
+| strategic_context     | Market/industry analysis  |
+| media_performance     | PR and coverage metrics   |
+| competitive_landscape | Competitor positioning    |
+| crisis_assessment     | Risk and crisis status    |
+| brand_health          | Brand perception          |
+| stakeholder_analysis  | Stakeholder insights      |
+| risk_assessment       | Risk profile              |
+| opportunities         | Growth opportunities      |
+| recommendations       | Strategic recommendations |
+| appendix              | Supporting data           |
 
 ### Target Audiences
 
-| Value | Description |
-|-------|-------------|
-| board | Board of Directors |
-| c_suite | C-Level Executives |
-| investors | Investors and Analysts |
-| executive_team | Executive Leadership |
-| strategy_team | Strategy Department |
+| Value               | Description            |
+| ------------------- | ---------------------- |
+| board               | Board of Directors     |
+| c_suite             | C-Level Executives     |
+| investors           | Investors and Analysts |
+| executive_team      | Executive Leadership   |
+| strategy_team       | Strategy Department    |
 | communications_team | Communications/PR Team |
-| crisis_team | Crisis Response Team |
+| crisis_team         | Crisis Response Team   |
 
 ### Source Systems
 
-| Value | Description |
-|-------|-------------|
-| pr_generator | Press Release Generator (S43) |
-| media_monitoring | Media Monitoring (S45) |
-| media_alerts | Media Alerts (S48) |
-| media_performance | Media Performance (S57) |
-| competitive_intel | Competitive Intelligence (S58) |
-| crisis_engine | Crisis Engine (S59) |
-| brand_reputation | Brand Reputation (S60) |
-| brand_alerts | Brand Alerts (S60) |
-| governance | Governance (S61) |
-| risk_radar | Risk Radar (S62) |
+| Value               | Description                    |
+| ------------------- | ------------------------------ |
+| pr_generator        | Press Release Generator (S43)  |
+| media_monitoring    | Media Monitoring (S45)         |
+| media_alerts        | Media Alerts (S48)             |
+| media_performance   | Media Performance (S57)        |
+| competitive_intel   | Competitive Intelligence (S58) |
+| crisis_engine       | Crisis Engine (S59)            |
+| brand_reputation    | Brand Reputation (S60)         |
+| brand_alerts        | Brand Alerts (S60)             |
+| governance          | Governance (S61)               |
+| risk_radar          | Risk Radar (S62)               |
 | exec_command_center | Executive Command Center (S63) |
-| exec_digest | Executive Digest (S63) |
-| board_reports | Board Reports (S64) |
-| investor_relations | Investor Relations (S64) |
-| journalist_graph | Journalist Graph (S53) |
-| media_lists | Media Lists (S52) |
-| outreach_engine | Outreach Engine (S49) |
+| exec_digest         | Executive Digest (S63)         |
+| board_reports       | Board Reports (S64)            |
+| investor_relations  | Investor Relations (S64)       |
+| journalist_graph    | Journalist Graph (S53)         |
+| media_lists         | Media Lists (S52)              |
+| outreach_engine     | Outreach Engine (S49)          |
 
 ### Event Types
 
-| Value | Description |
-|-------|-------------|
-| report_created | Report created |
-| report_updated | Report metadata updated |
-| report_generated | Content generated |
-| report_approved | Report approved |
-| report_published | Report published |
-| report_archived | Report archived |
-| section_updated | Section content updated |
-| section_regenerated | Section regenerated |
-| source_added | Source added |
-| source_removed | Source removed |
-| insights_refreshed | Insights refreshed |
-| export_requested | Export requested |
+| Value               | Description             |
+| ------------------- | ----------------------- |
+| report_created      | Report created          |
+| report_updated      | Report metadata updated |
+| report_generated    | Content generated       |
+| report_approved     | Report approved         |
+| report_published    | Report published        |
+| report_archived     | Report archived         |
+| section_updated     | Section content updated |
+| section_regenerated | Section regenerated     |
+| source_added        | Source added            |
+| source_removed      | Source removed          |
+| insights_refreshed  | Insights refreshed      |
+| export_requested    | Export requested        |
 
 ## Error Responses
 
@@ -701,9 +705,7 @@ GET /reports/:id/audit-logs
 ```json
 {
   "error": "Validation failed",
-  "details": [
-    { "field": "title", "message": "Title is required" }
-  ]
+  "details": [{ "field": "title", "message": "Title is required" }]
 }
 ```
 

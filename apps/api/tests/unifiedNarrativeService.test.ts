@@ -23,7 +23,9 @@ import type {
 const mockOrgId = 'org-test-123';
 const mockUserId = 'user-test-456';
 
-function createMockNarrative(overrides: Partial<UnifiedNarrative> = {}): UnifiedNarrative {
+function createMockNarrative(
+  overrides: Partial<UnifiedNarrative> = {}
+): UnifiedNarrative {
   return {
     id: 'narrative-1',
     orgId: mockOrgId,
@@ -36,7 +38,11 @@ function createMockNarrative(overrides: Partial<UnifiedNarrative> = {}): Unified
     periodEnd: new Date('2024-12-31'),
     fiscalYear: 2024,
     fiscalQuarter: 'Q4',
-    sourceSystems: ['media_monitoring', 'brand_reputation', 'competitive_intel'],
+    sourceSystems: [
+      'media_monitoring',
+      'brand_reputation',
+      'competitive_intel',
+    ],
     keyInsights: [],
     patterns: [],
     contradictions: [],
@@ -68,7 +74,9 @@ function createMockNarrative(overrides: Partial<UnifiedNarrative> = {}): Unified
   };
 }
 
-function createMockSection(overrides: Partial<UnifiedNarrativeSection> = {}): UnifiedNarrativeSection {
+function createMockSection(
+  overrides: Partial<UnifiedNarrativeSection> = {}
+): UnifiedNarrativeSection {
   return {
     id: 'section-1',
     narrativeId: 'narrative-1',
@@ -76,7 +84,8 @@ function createMockSection(overrides: Partial<UnifiedNarrativeSection> = {}): Un
     title: 'Executive Summary',
     sortOrder: 0,
     contentMd: '# Executive Summary\n\nThis is the executive summary content.',
-    contentHtml: '<h1>Executive Summary</h1><p>This is the executive summary content.</p>',
+    contentHtml:
+      '<h1>Executive Summary</h1><p>This is the executive summary content.</p>',
     sourceReferences: [],
     keyPoints: ['Key point 1', 'Key point 2'],
     confidenceScore: 0.9,
@@ -88,7 +97,9 @@ function createMockSection(overrides: Partial<UnifiedNarrativeSection> = {}): Un
   };
 }
 
-function createMockSource(overrides: Partial<UnifiedNarrativeSource> = {}): UnifiedNarrativeSource {
+function createMockSource(
+  overrides: Partial<UnifiedNarrativeSource> = {}
+): UnifiedNarrativeSource {
   return {
     id: 'source-1',
     narrativeId: 'narrative-1',
@@ -105,7 +116,9 @@ function createMockSource(overrides: Partial<UnifiedNarrativeSource> = {}): Unif
   };
 }
 
-function createMockInsight(overrides: Partial<NarrativeInsight> = {}): NarrativeInsight {
+function createMockInsight(
+  overrides: Partial<NarrativeInsight> = {}
+): NarrativeInsight {
   return {
     id: 'insight-1',
     title: 'Rising Brand Sentiment',
@@ -120,7 +133,9 @@ function createMockInsight(overrides: Partial<NarrativeInsight> = {}): Narrative
   };
 }
 
-function createMockDiff(overrides: Partial<UnifiedNarrativeDiff> = {}): UnifiedNarrativeDiff {
+function createMockDiff(
+  overrides: Partial<UnifiedNarrativeDiff> = {}
+): UnifiedNarrativeDiff {
   return {
     id: 'diff-1',
     narrativeId: 'narrative-1',
@@ -132,7 +147,8 @@ function createMockDiff(overrides: Partial<UnifiedNarrativeDiff> = {}): UnifiedN
     currentValue: { score: 0.8 },
     percentChange: 14.3,
     significance: 'high',
-    generatedNarrative: 'Sentiment has notably improved compared to the previous quarter.',
+    generatedNarrative:
+      'Sentiment has notably improved compared to the previous quarter.',
     createdAt: new Date(),
     ...overrides,
   };
@@ -148,7 +164,10 @@ describe('unifiedNarrativeService', () => {
           format: 'executive_brief' as NarrativeFormatType,
           periodStart: '2024-10-01',
           periodEnd: '2024-12-31',
-          sourceSystems: ['media_monitoring', 'brand_reputation'] as NarrativeSourceSystem[],
+          sourceSystems: [
+            'media_monitoring',
+            'brand_reputation',
+          ] as NarrativeSourceSystem[],
         };
 
         expect(input.title).toBe('Q4 Executive Summary');
@@ -244,9 +263,15 @@ describe('unifiedNarrativeService', () => {
         const narrative = createMockNarrative({
           sourceSystems: ['media_monitoring'],
         });
-        const newSystems: NarrativeSourceSystem[] = ['media_monitoring', 'brand_reputation', 'competitive_intel'];
+        const newSystems: NarrativeSourceSystem[] = [
+          'media_monitoring',
+          'brand_reputation',
+          'competitive_intel',
+        ];
 
-        expect(newSystems.length).toBeGreaterThan(narrative.sourceSystems.length);
+        expect(newSystems.length).toBeGreaterThan(
+          narrative.sourceSystems.length
+        );
       });
 
       it('should update tags', () => {
@@ -268,10 +293,16 @@ describe('unifiedNarrativeService', () => {
       it('should cascade delete sections', () => {
         const sections = [
           createMockSection({ narrativeId: 'narrative-1' }),
-          createMockSection({ id: 'section-2', narrativeId: 'narrative-1', sectionType: 'strategic_overview' }),
+          createMockSection({
+            id: 'section-2',
+            narrativeId: 'narrative-1',
+            sectionType: 'strategic_overview',
+          }),
         ];
 
-        expect(sections.every((s) => s.narrativeId === 'narrative-1')).toBe(true);
+        expect(sections.every((s) => s.narrativeId === 'narrative-1')).toBe(
+          true
+        );
       });
 
       it('should cascade delete sources', () => {
@@ -280,7 +311,9 @@ describe('unifiedNarrativeService', () => {
           createMockSource({ id: 'source-2', narrativeId: 'narrative-1' }),
         ];
 
-        expect(sources.every((s) => s.narrativeId === 'narrative-1')).toBe(true);
+        expect(sources.every((s) => s.narrativeId === 'narrative-1')).toBe(
+          true
+        );
       });
     });
 
@@ -292,7 +325,9 @@ describe('unifiedNarrativeService', () => {
           createMockNarrative({ id: 'n-3', narrativeType: 'executive' }),
         ];
 
-        const filtered = narratives.filter((n) => n.narrativeType === 'executive');
+        const filtered = narratives.filter(
+          (n) => n.narrativeType === 'executive'
+        );
 
         expect(filtered).toHaveLength(2);
       });
@@ -313,8 +348,16 @@ describe('unifiedNarrativeService', () => {
       it('should filter by fiscal year and quarter', () => {
         const narratives = [
           createMockNarrative({ fiscalYear: 2024, fiscalQuarter: 'Q4' }),
-          createMockNarrative({ id: 'n-2', fiscalYear: 2024, fiscalQuarter: 'Q3' }),
-          createMockNarrative({ id: 'n-3', fiscalYear: 2023, fiscalQuarter: 'Q4' }),
+          createMockNarrative({
+            id: 'n-2',
+            fiscalYear: 2024,
+            fiscalQuarter: 'Q3',
+          }),
+          createMockNarrative({
+            id: 'n-3',
+            fiscalYear: 2023,
+            fiscalQuarter: 'Q4',
+          }),
         ];
 
         const q4_2024 = narratives.filter(
@@ -361,7 +404,8 @@ describe('unifiedNarrativeService', () => {
         ];
 
         const sorted = [...narratives].sort(
-          (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          (a, b) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         );
 
         expect(sorted[0].id).toBe('n-2');
@@ -468,7 +512,11 @@ describe('unifiedNarrativeService', () => {
         ];
 
         const sections = sectionTypes.map((type, i) =>
-          createMockSection({ id: `section-${i}`, sectionType: type, sortOrder: i })
+          createMockSection({
+            id: `section-${i}`,
+            sectionType: type,
+            sortOrder: i,
+          })
         );
 
         expect(sections).toHaveLength(5);
@@ -533,7 +581,9 @@ describe('unifiedNarrativeService', () => {
         });
         const newPoints = ['New point 1', 'New point 2'];
 
-        expect(newPoints.length).toBeGreaterThan(section.keyPoints?.length || 0);
+        expect(newPoints.length).toBeGreaterThan(
+          section.keyPoints?.length || 0
+        );
       });
 
       it('should recalculate tokens used', () => {
@@ -573,8 +623,16 @@ describe('unifiedNarrativeService', () => {
       it('should return sections in sort order', () => {
         const sections = [
           createMockSection({ sortOrder: 2, sectionType: 'risk_analysis' }),
-          createMockSection({ id: 'section-2', sortOrder: 0, sectionType: 'executive_summary' }),
-          createMockSection({ id: 'section-3', sortOrder: 1, sectionType: 'key_findings' }),
+          createMockSection({
+            id: 'section-2',
+            sortOrder: 0,
+            sectionType: 'executive_summary',
+          }),
+          createMockSection({
+            id: 'section-3',
+            sortOrder: 1,
+            sectionType: 'key_findings',
+          }),
         ];
 
         const sorted = [...sections].sort((a, b) => a.sortOrder - b.sortOrder);
@@ -588,7 +646,10 @@ describe('unifiedNarrativeService', () => {
         const sections = [
           createMockSection({ sectionType: 'executive_summary' }),
           createMockSection({ id: 'section-2', sectionType: 'risk_analysis' }),
-          createMockSection({ id: 'section-3', sectionType: 'executive_summary' }),
+          createMockSection({
+            id: 'section-3',
+            sectionType: 'executive_summary',
+          }),
         ];
 
         const executiveSummaries = sections.filter(
@@ -605,8 +666,14 @@ describe('unifiedNarrativeService', () => {
       it('should extract insights from multiple source systems', () => {
         const insights = [
           createMockInsight({ sourceSystem: 'media_monitoring' }),
-          createMockInsight({ id: 'insight-2', sourceSystem: 'brand_reputation' }),
-          createMockInsight({ id: 'insight-3', sourceSystem: 'competitive_intel' }),
+          createMockInsight({
+            id: 'insight-2',
+            sourceSystem: 'brand_reputation',
+          }),
+          createMockInsight({
+            id: 'insight-3',
+            sourceSystem: 'competitive_intel',
+          }),
         ];
 
         const uniqueSystems = new Set(insights.map((i) => i.sourceSystem));
@@ -623,7 +690,9 @@ describe('unifiedNarrativeService', () => {
           createMockInsight({ id: 'insight-5', insightType: 'recommendation' }),
         ];
 
-        const opportunities = insights.filter((i) => i.insightType === 'opportunity');
+        const opportunities = insights.filter(
+          (i) => i.insightType === 'opportunity'
+        );
         const risks = insights.filter((i) => i.insightType === 'risk');
 
         expect(opportunities).toHaveLength(1);
@@ -741,9 +810,20 @@ describe('unifiedNarrativeService', () => {
 
       it('should generate diffs for each section type', () => {
         const diffs = [
-          createMockDiff({ sectionType: 'executive_summary', deltaType: 'improved' }),
-          createMockDiff({ id: 'diff-2', sectionType: 'risk_analysis', deltaType: 'declined' }),
-          createMockDiff({ id: 'diff-3', sectionType: 'key_findings', deltaType: 'unchanged' }),
+          createMockDiff({
+            sectionType: 'executive_summary',
+            deltaType: 'improved',
+          }),
+          createMockDiff({
+            id: 'diff-2',
+            sectionType: 'risk_analysis',
+            deltaType: 'declined',
+          }),
+          createMockDiff({
+            id: 'diff-3',
+            sectionType: 'key_findings',
+            deltaType: 'unchanged',
+          }),
         ];
 
         expect(diffs).toHaveLength(3);
@@ -789,7 +869,8 @@ describe('unifiedNarrativeService', () => {
 
       it('should generate narrative summary of changes', () => {
         const diff = createMockDiff({
-          generatedNarrative: 'Sentiment has notably improved compared to the previous quarter.',
+          generatedNarrative:
+            'Sentiment has notably improved compared to the previous quarter.',
         });
 
         expect(diff.generatedNarrative).toBeTruthy();
@@ -820,14 +901,19 @@ describe('unifiedNarrativeService', () => {
       });
 
       it('should allow approval note', () => {
-        const approvalNote = 'Approved with minor suggestions for next iteration.';
+        const approvalNote =
+          'Approved with minor suggestions for next iteration.';
 
         expect(approvalNote.length).toBeGreaterThan(0);
       });
 
       it('should only allow approving narratives in review status', () => {
         const validStatuses: NarrativeStatus[] = ['draft', 'review'];
-        const invalidStatuses: NarrativeStatus[] = ['approved', 'published', 'archived'];
+        const invalidStatuses: NarrativeStatus[] = [
+          'approved',
+          'published',
+          'archived',
+        ];
 
         expect(validStatuses).toContain('review');
         expect(invalidStatuses).not.toContain('review');
@@ -985,7 +1071,10 @@ describe('unifiedNarrativeService', () => {
           },
         };
 
-        const total = Object.values(stats.byStatus).reduce((sum, count) => sum + count, 0);
+        const total = Object.values(stats.byStatus).reduce(
+          (sum, count) => sum + count,
+          0
+        );
         expect(total).toBe(50);
       });
 
@@ -1162,10 +1251,13 @@ describe('unifiedNarrativeService', () => {
       });
 
       // Period should span from Q1 to Q2
-      expect(narrative.periodStart.getTime()).toBeLessThan(narrative.periodEnd.getTime());
+      expect(narrative.periodStart.getTime()).toBeLessThan(
+        narrative.periodEnd.getTime()
+      );
 
       // Calculate approximate months difference (allowing for timezone variations)
-      const msDiff = narrative.periodEnd.getTime() - narrative.periodStart.getTime();
+      const msDiff =
+        narrative.periodEnd.getTime() - narrative.periodStart.getTime();
       const daysDiff = msDiff / (1000 * 60 * 60 * 24);
 
       expect(daysDiff).toBeGreaterThan(140); // ~5 months
@@ -1187,10 +1279,16 @@ describe('unifiedNarrativeService', () => {
     });
 
     it('should handle concurrent narrative updates', () => {
-      const narrative1 = createMockNarrative({ updatedAt: new Date('2024-01-01T10:00:00Z') });
-      const narrative2 = createMockNarrative({ updatedAt: new Date('2024-01-01T10:00:01Z') });
+      const narrative1 = createMockNarrative({
+        updatedAt: new Date('2024-01-01T10:00:00Z'),
+      });
+      const narrative2 = createMockNarrative({
+        updatedAt: new Date('2024-01-01T10:00:01Z'),
+      });
 
-      expect(narrative2.updatedAt.getTime()).toBeGreaterThan(narrative1.updatedAt.getTime());
+      expect(narrative2.updatedAt.getTime()).toBeGreaterThan(
+        narrative1.updatedAt.getTime()
+      );
     });
   });
 });

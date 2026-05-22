@@ -170,8 +170,18 @@ export const sageSignals: SageSignal[] = [
 export const onboardingSteps: OnboardingStep[] = [
   { id: 'ob-1', label: 'Brand profile created', completed: true },
   { id: 'ob-2', label: 'First topic cluster added', completed: true },
-  { id: 'ob-3', label: 'Add your Brand Voice', completed: false, ctaLabel: 'Do this \u2192' },
-  { id: 'ob-4', label: 'Add 3 target journalists', completed: false, ctaLabel: 'Do this \u2192' },
+  {
+    id: 'ob-3',
+    label: 'Add your Brand Voice',
+    completed: false,
+    ctaLabel: 'Do this \u2192',
+  },
+  {
+    id: 'ob-4',
+    label: 'Add 3 target journalists',
+    completed: false,
+    ctaLabel: 'Do this \u2192',
+  },
   {
     id: 'ob-5',
     label: 'Connect your website for CiteMind',

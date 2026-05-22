@@ -74,7 +74,12 @@ export const MOCK_SEO_ASSETS: SEOAsset[] = [
     url: '/blog/marketing-automation-guide',
     title: 'Ultimate Guide to Marketing Automation',
     aeoScore: 82,
-    aeoBreakdown: { entityClarity: 90, schema: 85, semanticDepth: 78, authority: 72 },
+    aeoBreakdown: {
+      entityClarity: 90,
+      schema: 85,
+      semanticDepth: 78,
+      authority: 72,
+    },
     schemaStatus: 'complete',
     entityStatus: 'strong',
     citedBy: ['ChatGPT', 'Perplexity'],
@@ -85,7 +90,12 @@ export const MOCK_SEO_ASSETS: SEOAsset[] = [
     url: '/blog/content-strategy-2026',
     title: 'Content Strategy Best Practices for 2026',
     aeoScore: 56,
-    aeoBreakdown: { entityClarity: 65, schema: 40, semanticDepth: 60, authority: 55 },
+    aeoBreakdown: {
+      entityClarity: 65,
+      schema: 40,
+      semanticDepth: 60,
+      authority: 55,
+    },
     schemaStatus: 'partial',
     entityStatus: 'moderate',
     citedBy: ['Perplexity'],
@@ -96,7 +106,12 @@ export const MOCK_SEO_ASSETS: SEOAsset[] = [
     url: '/blog/lead-gen-case-study',
     title: 'Case Study: How Acme Corp Increased Leads by 300%',
     aeoScore: 71,
-    aeoBreakdown: { entityClarity: 75, schema: 80, semanticDepth: 65, authority: 60 },
+    aeoBreakdown: {
+      entityClarity: 75,
+      schema: 80,
+      semanticDepth: 65,
+      authority: 60,
+    },
     schemaStatus: 'complete',
     entityStatus: 'moderate',
     citedBy: ['Gemini'],
@@ -107,7 +122,12 @@ export const MOCK_SEO_ASSETS: SEOAsset[] = [
     url: '/resources/seo-checklist',
     title: 'SEO Checklist for AI Visibility',
     aeoScore: 38,
-    aeoBreakdown: { entityClarity: 30, schema: 20, semanticDepth: 50, authority: 55 },
+    aeoBreakdown: {
+      entityClarity: 30,
+      schema: 20,
+      semanticDepth: 50,
+      authority: 55,
+    },
     schemaStatus: 'missing',
     entityStatus: 'weak',
     citedBy: [],
@@ -118,7 +138,12 @@ export const MOCK_SEO_ASSETS: SEOAsset[] = [
     url: '/blog/pr-coverage-strategy',
     title: 'Building PR Coverage That AI Models Notice',
     aeoScore: 64,
-    aeoBreakdown: { entityClarity: 70, schema: 55, semanticDepth: 68, authority: 60 },
+    aeoBreakdown: {
+      entityClarity: 70,
+      schema: 55,
+      semanticDepth: 68,
+      authority: 60,
+    },
     schemaStatus: 'partial',
     entityStatus: 'moderate',
     citedBy: ['ChatGPT'],
@@ -129,7 +154,12 @@ export const MOCK_SEO_ASSETS: SEOAsset[] = [
     url: '/about/company',
     title: 'About Our Company',
     aeoScore: 45,
-    aeoBreakdown: { entityClarity: 55, schema: 30, semanticDepth: 40, authority: 55 },
+    aeoBreakdown: {
+      entityClarity: 55,
+      schema: 30,
+      semanticDepth: 40,
+      authority: 55,
+    },
     schemaStatus: 'partial',
     entityStatus: 'moderate',
     citedBy: [],
@@ -147,8 +177,10 @@ export const MOCK_TECHNICAL_FINDINGS: TechnicalFinding[] = [
     category: 'structured-data',
     severity: 'critical',
     title: 'Missing Organization schema on homepage',
-    description: '12 pages lack Organization JSON-LD, reducing entity recognition by AI models.',
-    aeoBridgeImpact: 'Directly limits entity clarity score. AI models cannot confidently attribute content to your brand.',
+    description:
+      '12 pages lack Organization JSON-LD, reducing entity recognition by AI models.',
+    aeoBridgeImpact:
+      'Directly limits entity clarity score. AI models cannot confidently attribute content to your brand.',
     affectedPages: 12,
     fixable: true,
   },
@@ -157,8 +189,10 @@ export const MOCK_TECHNICAL_FINDINGS: TechnicalFinding[] = [
     category: 'performance',
     severity: 'critical',
     title: 'LCP exceeds 4.0s on 8 pages',
-    description: 'Largest Contentful Paint is above Core Web Vitals threshold on key landing pages.',
-    aeoBridgeImpact: 'Poor performance reduces crawl frequency. Less frequent indexing delays AI model updates.',
+    description:
+      'Largest Contentful Paint is above Core Web Vitals threshold on key landing pages.',
+    aeoBridgeImpact:
+      'Poor performance reduces crawl frequency. Less frequent indexing delays AI model updates.',
     affectedPages: 8,
     fixable: true,
   },
@@ -168,7 +202,8 @@ export const MOCK_TECHNICAL_FINDINGS: TechnicalFinding[] = [
     severity: 'warning',
     title: 'Orphaned pages detected',
     description: '5 content pages have no internal links pointing to them.',
-    aeoBridgeImpact: 'Orphaned pages are rarely crawled, preventing AI systems from discovering and citing your content.',
+    aeoBridgeImpact:
+      'Orphaned pages are rarely crawled, preventing AI systems from discovering and citing your content.',
     affectedPages: 5,
     fixable: true,
   },
@@ -178,7 +213,8 @@ export const MOCK_TECHNICAL_FINDINGS: TechnicalFinding[] = [
     severity: 'warning',
     title: 'Incomplete FAQ schema on 3 pages',
     description: 'FAQ pages have partial schema — missing answer fields.',
-    aeoBridgeImpact: 'FAQ schema directly feeds AI answer generation. Incomplete schema reduces citation probability.',
+    aeoBridgeImpact:
+      'FAQ schema directly feeds AI answer generation. Incomplete schema reduces citation probability.',
     affectedPages: 3,
     fixable: true,
   },
@@ -188,7 +224,8 @@ export const MOCK_TECHNICAL_FINDINGS: TechnicalFinding[] = [
     severity: 'warning',
     title: 'Duplicate meta descriptions on blog posts',
     description: '7 blog posts share identical meta descriptions.',
-    aeoBridgeImpact: 'Duplicate metadata confuses AI retrieval systems, diluting topical authority signals.',
+    aeoBridgeImpact:
+      'Duplicate metadata confuses AI retrieval systems, diluting topical authority signals.',
     affectedPages: 7,
     fixable: true,
   },
@@ -198,7 +235,8 @@ export const MOCK_TECHNICAL_FINDINGS: TechnicalFinding[] = [
     severity: 'info',
     title: 'Viewport issues on 2 legacy pages',
     description: 'Two older pages have viewport configuration warnings.',
-    aeoBridgeImpact: 'Minor — mobile usability primarily affects traditional search ranking, limited AEO impact.',
+    aeoBridgeImpact:
+      'Minor — mobile usability primarily affects traditional search ranking, limited AEO impact.',
     affectedPages: 2,
     fixable: true,
   },
@@ -208,7 +246,8 @@ export const MOCK_TECHNICAL_FINDINGS: TechnicalFinding[] = [
     severity: 'info',
     title: 'Mixed content warnings',
     description: '1 page loads HTTP resources over HTTPS.',
-    aeoBridgeImpact: 'Security signals contribute to domain trust. Low individual impact but compounds over time.',
+    aeoBridgeImpact:
+      'Security signals contribute to domain trust. Low individual impact but compounds over time.',
     affectedPages: 1,
     fixable: true,
   },
@@ -222,9 +261,11 @@ export const MOCK_ACTION_QUEUE: ActionQueueItem[] = [
   {
     id: 'aq-1',
     title: 'Add Organization schema to homepage',
-    description: 'Generate and deploy Organization JSON-LD to improve entity recognition.',
+    description:
+      'Generate and deploy Organization JSON-LD to improve entity recognition.',
     severity: 'critical',
-    aeoBridgeImpact: '+8 AEO pts. Entity Clarity score will improve by ~15pts across 12 pages.',
+    aeoBridgeImpact:
+      '+8 AEO pts. Entity Clarity score will improve by ~15pts across 12 pages.',
     estimatedImpact: 8,
     layer: 2,
     status: 'pending',
@@ -232,9 +273,11 @@ export const MOCK_ACTION_QUEUE: ActionQueueItem[] = [
   {
     id: 'aq-2',
     title: 'Fix LCP on top landing pages',
-    description: 'Optimize images and defer non-critical scripts on 8 affected pages.',
+    description:
+      'Optimize images and defer non-critical scripts on 8 affected pages.',
     severity: 'critical',
-    aeoBridgeImpact: '+3 AEO pts. Improved crawl frequency leads to faster AI model updates.',
+    aeoBridgeImpact:
+      '+3 AEO pts. Improved crawl frequency leads to faster AI model updates.',
     estimatedImpact: 3,
     layer: 1,
     status: 'pending',
@@ -244,7 +287,8 @@ export const MOCK_ACTION_QUEUE: ActionQueueItem[] = [
     title: 'Complete FAQ schema on support pages',
     description: 'Add missing answer fields to FAQ schema on 3 pages.',
     severity: 'high',
-    aeoBridgeImpact: '+5 AEO pts. FAQ schema directly feeds AI answer generation.',
+    aeoBridgeImpact:
+      '+5 AEO pts. FAQ schema directly feeds AI answer generation.',
     estimatedImpact: 5,
     layer: 2,
     status: 'pending',
@@ -264,7 +308,8 @@ export const MOCK_ACTION_QUEUE: ActionQueueItem[] = [
     title: 'Deduplicate meta descriptions',
     description: 'Write unique meta descriptions for 7 blog posts.',
     severity: 'medium',
-    aeoBridgeImpact: '+2 AEO pts. Clearer topical signals for AI retrieval systems.',
+    aeoBridgeImpact:
+      '+2 AEO pts. Clearer topical signals for AI retrieval systems.',
     estimatedImpact: 2,
     layer: 1,
     status: 'pending',
@@ -279,7 +324,8 @@ export const MOCK_SAGE_PROPOSALS: SAGEProposal[] = [
   {
     id: 'sp-1',
     title: 'Deploy Organization schema across all pages',
-    reasoning: 'Entity clarity is the highest-weight AEO factor (30%). Your brand entity is under-specified in structured data. Deploying Organization schema will improve AI model recognition of your brand.',
+    reasoning:
+      'Entity clarity is the highest-weight AEO factor (30%). Your brand entity is under-specified in structured data. Deploying Organization schema will improve AI model recognition of your brand.',
     confidence: 92,
     estimatedAEOImpact: 8,
     estimatedEVIImpact: 4.2,
@@ -289,7 +335,8 @@ export const MOCK_SAGE_PROPOSALS: SAGEProposal[] = [
   {
     id: 'sp-2',
     title: 'Generate HowTo schema for tutorial content',
-    reasoning: 'Your tutorial pages have strong semantic depth but zero HowTo markup. Adding schema will make these pages eligible for AI-generated procedure answers.',
+    reasoning:
+      'Your tutorial pages have strong semantic depth but zero HowTo markup. Adding schema will make these pages eligible for AI-generated procedure answers.',
     confidence: 87,
     estimatedAEOImpact: 5,
     estimatedEVIImpact: 2.8,
@@ -299,7 +346,8 @@ export const MOCK_SAGE_PROPOSALS: SAGEProposal[] = [
   {
     id: 'sp-3',
     title: 'Rewrite meta descriptions for top 7 blog posts',
-    reasoning: 'Duplicate meta descriptions are confusing AI retrieval systems. Unique, entity-rich descriptions will strengthen topical authority signals.',
+    reasoning:
+      'Duplicate meta descriptions are confusing AI retrieval systems. Unique, entity-rich descriptions will strengthen topical authority signals.',
     confidence: 78,
     estimatedAEOImpact: 3,
     estimatedEVIImpact: 1.5,
@@ -309,7 +357,8 @@ export const MOCK_SAGE_PROPOSALS: SAGEProposal[] = [
   {
     id: 'sp-4',
     title: 'Create entity bridge content for competitor gap',
-    reasoning: 'A competitor leads on "marketing automation ROI" queries. A focused entity-bridge piece will strengthen your brand entity in this topic cluster.',
+    reasoning:
+      'A competitor leads on "marketing automation ROI" queries. A focused entity-bridge piece will strengthen your brand entity in this topic cluster.',
     confidence: 71,
     estimatedAEOImpact: 4,
     estimatedEVIImpact: 3.1,
@@ -319,7 +368,8 @@ export const MOCK_SAGE_PROPOSALS: SAGEProposal[] = [
   {
     id: 'sp-5',
     title: 'Fix Core Web Vitals on landing pages',
-    reasoning: 'LCP > 4s on 8 pages reduces crawl priority. Faster pages get re-indexed sooner, updating AI model knowledge of your content.',
+    reasoning:
+      'LCP > 4s on 8 pages reduces crawl priority. Faster pages get re-indexed sooner, updating AI model knowledge of your content.',
     confidence: 85,
     estimatedAEOImpact: 3,
     estimatedEVIImpact: 1.8,
@@ -347,7 +397,8 @@ export const MOCK_AUTOPILOT_EXCEPTIONS: AutopilotException[] = [
 export const MOCK_AUTOPILOT_RECENT: AutopilotExecution[] = [
   {
     id: 'ar-0-xpillar',
-    title: 'Content published: "AI Citation Optimization Guide" → AEO score updated to 74',
+    title:
+      'Content published: "AI Citation Optimization Guide" → AEO score updated to 74',
     completedAt: '2026-02-20T09:45:00Z',
     impactDelta: 3.4,
     type: 'content_publish',
@@ -406,7 +457,8 @@ export const MOCK_CITATION_ACTIVITY = [
     query: 'best marketing automation tools',
     timestamp: '2026-02-20T08:30:00Z',
     sentiment: 'positive' as const,
-    context: 'Referenced your guide as a comprehensive resource for evaluating marketing automation platforms.',
+    context:
+      'Referenced your guide as a comprehensive resource for evaluating marketing automation platforms.',
   },
   {
     id: 'ca-2',
@@ -414,7 +466,8 @@ export const MOCK_CITATION_ACTIVITY = [
     query: 'content strategy best practices 2026',
     timestamp: '2026-02-19T15:20:00Z',
     sentiment: 'neutral' as const,
-    context: 'Listed among several sources for content strategy recommendations.',
+    context:
+      'Listed among several sources for content strategy recommendations.',
   },
   {
     id: 'ca-3',
@@ -430,7 +483,8 @@ export const MOCK_CITATION_ACTIVITY = [
     query: 'PR coverage that AI notices',
     timestamp: '2026-02-18T09:10:00Z',
     sentiment: 'positive' as const,
-    context: 'Mentioned strategies from your PR coverage article as innovative approach.',
+    context:
+      'Mentioned strategies from your PR coverage article as innovative approach.',
   },
 ];
 

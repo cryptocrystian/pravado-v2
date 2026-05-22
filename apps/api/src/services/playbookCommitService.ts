@@ -133,7 +133,8 @@ export async function listCommits(
 ): Promise<PlaybookCommitWithBranch[]> {
   const { data: commits, error } = await supabase
     .from('playbook_commits')
-    .select(`
+    .select(
+      `
       *,
       playbook_branches (
         id,
@@ -146,7 +147,8 @@ export async function listCommits(
         created_at,
         updated_at
       )
-    `)
+    `
+    )
     .eq('branch_id', branchId)
     .order('version', { ascending: false })
     .range(offset, offset + limit - 1);
@@ -231,7 +233,8 @@ export async function getCommitDAG(
   // Get all commits for this playbook across all branches
   const { data: commits, error } = await supabase
     .from('playbook_commits')
-    .select(`
+    .select(
+      `
       id,
       message,
       version,
@@ -243,7 +246,8 @@ export async function getCommitDAG(
       playbook_branches (
         name
       )
-    `)
+    `
+    )
     .eq('playbook_id', playbookId)
     .order('created_at', { ascending: true });
 
@@ -298,7 +302,7 @@ export async function getCommitDiff(
     return {
       addedNodes: nodes.map((n: any) => ({
         id: n.id,
-        label: n.data?.label as string || n.id,
+        label: (n.data?.label as string) || n.id,
         type: n.type || 'default',
       })),
       removedNodes: [],
@@ -326,15 +330,19 @@ export async function getCommitDiff(
 
   const parentNodeMap = new Map(parentNodes.map((n: any) => [n.id, n]));
   const currentNodeMap = new Map(currentNodes.map((n: any) => [n.id, n]));
-  const parentEdgeMap = new Map(parentEdges.map((e: any) => [`${e.source}-${e.target}`, e]));
-  const currentEdgeMap = new Map(currentEdges.map((e: any) => [`${e.source}-${e.target}`, e]));
+  const parentEdgeMap = new Map(
+    parentEdges.map((e: any) => [`${e.source}-${e.target}`, e])
+  );
+  const currentEdgeMap = new Map(
+    currentEdges.map((e: any) => [`${e.source}-${e.target}`, e])
+  );
 
   // Find added nodes
   const addedNodes = currentNodes
     .filter((n: any) => !parentNodeMap.has(n.id))
     .map((n: any) => ({
       id: n.id,
-      label: n.data?.label as string || n.id,
+      label: (n.data?.label as string) || n.id,
       type: n.type || 'default',
     }));
 
@@ -343,7 +351,7 @@ export async function getCommitDiff(
     .filter((n: any) => !currentNodeMap.has(n.id))
     .map((n: any) => ({
       id: n.id,
-      label: n.data?.label as string || n.id,
+      label: (n.data?.label as string) || n.id,
       type: n.type || 'default',
     }));
 
@@ -356,7 +364,7 @@ export async function getCommitDiff(
     })
     .map((n: any) => ({
       id: n.id,
-      label: n.data?.label as string || n.id,
+      label: (n.data?.label as string) || n.id,
       changes: ['Modified'], // TODO: detailed diff
     }));
 

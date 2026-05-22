@@ -28,14 +28,17 @@ interface TopicClusterListProps {
   onSelect: (id: string) => void;
 }
 
-export function TopicClusterList({ selectedId, onSelect }: TopicClusterListProps) {
+export function TopicClusterList({
+  selectedId,
+  onSelect,
+}: TopicClusterListProps) {
   const [search, setSearch] = useState('');
   const [managedOpen, setManagedOpen] = useState(true);
   const [suggestedOpen, setSuggestedOpen] = useState(true);
 
   const filtered = search
     ? mockClusters.filter((c) =>
-        c.name.toLowerCase().includes(search.toLowerCase()),
+        c.name.toLowerCase().includes(search.toLowerCase())
       )
     : mockClusters;
 
@@ -156,7 +159,11 @@ function ClusterListItem({
     >
       <div className="flex items-center gap-2 min-w-0">
         {isCritical && (
-          <WarningCircle size={14} className="text-red-500 shrink-0" weight="fill" />
+          <WarningCircle
+            size={14}
+            className="text-red-500 shrink-0"
+            weight="fill"
+          />
         )}
         <span className="text-sm text-white truncate">{cluster.name}</span>
       </div>

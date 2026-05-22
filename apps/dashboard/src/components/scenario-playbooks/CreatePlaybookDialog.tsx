@@ -8,7 +8,10 @@
 import type { ScenarioPlaybook } from '@pravado/types';
 import { useState } from 'react';
 
-import { PlaybookStepEditor, type EditablePlaybookStep } from './PlaybookStepEditor';
+import {
+  PlaybookStepEditor,
+  type EditablePlaybookStep,
+} from './PlaybookStepEditor';
 import { createPlaybook } from '../../lib/scenarioPlaybookApi';
 
 interface CreatePlaybookDialogProps {
@@ -118,7 +121,9 @@ export function CreatePlaybookDialog({
       onCreated?.(playbook);
       handleClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create playbook');
+      setError(
+        err instanceof Error ? err.message : 'Failed to create playbook'
+      );
     } finally {
       setLoading(false);
     }
@@ -139,13 +144,25 @@ export function CreatePlaybookDialog({
         <div className="relative w-full max-w-3xl bg-white rounded-xl shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Create New Playbook</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Create New Playbook
+            </h2>
             <button
               onClick={handleClose}
               className="text-gray-400 hover:text-gray-600"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -193,7 +210,9 @@ export function CreatePlaybookDialog({
                     <input
                       type="text"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       placeholder="e.g., Crisis Response Protocol"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                     />
@@ -205,7 +224,12 @@ export function CreatePlaybookDialog({
                     </label>
                     <textarea
                       value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
                       placeholder="Describe what this playbook does and when it should be used..."
                       rows={3}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
@@ -218,7 +242,12 @@ export function CreatePlaybookDialog({
                     </label>
                     <select
                       value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value as PlaybookCategory })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          category: e.target.value as PlaybookCategory,
+                        })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                     >
                       {CATEGORIES.map((cat) => (
@@ -253,10 +282,7 @@ export function CreatePlaybookDialog({
 
               {/* Steps Tab */}
               {activeTab === 'steps' && (
-                <PlaybookStepEditor
-                  steps={steps}
-                  onChange={setSteps}
-                />
+                <PlaybookStepEditor steps={steps} onChange={setSteps} />
               )}
             </div>
 

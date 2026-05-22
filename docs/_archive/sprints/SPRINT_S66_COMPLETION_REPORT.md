@@ -21,12 +21,14 @@ Sprint S66 successfully delivered the Unified Intelligence Graph, a cross-system
 **File:** `apps/api/supabase/migrations/70_create_unified_intelligence_graph_schema.sql`
 
 Created:
+
 - 6 PostgreSQL tables with RLS policies
 - 6 enums for type safety
 - 3 SQL functions for graph operations
 - Comprehensive indexing strategy
 
 Tables:
+
 - `intelligence_nodes` - Core entities with centrality metrics
 - `intelligence_edges` - Weighted relationships
 - `intelligence_node_embeddings` - Vector embeddings for nodes
@@ -39,6 +41,7 @@ Tables:
 **File:** `packages/types/src/unifiedIntelligenceGraph.ts`
 
 Defined:
+
 - 40+ NodeType enum values covering all integrated systems
 - 37 EdgeType enum values for relationships
 - Supporting enums: EmbeddingProvider, GraphSnapshotStatus, GraphEventType
@@ -51,6 +54,7 @@ Defined:
 **File:** `packages/validators/src/unifiedIntelligenceGraph.ts`
 
 Implemented Zod schemas for:
+
 - Node operations (create, update, list)
 - Edge operations (create, update, list)
 - Graph operations (merge, query, traverse)
@@ -63,6 +67,7 @@ Implemented Zod schemas for:
 **File:** `apps/api/src/services/unifiedIntelligenceGraphService.ts`
 
 Implemented (~2,100 lines):
+
 - Full CRUD for nodes and edges
 - BFS graph traversal algorithm
 - Shortest path finding
@@ -79,6 +84,7 @@ Implemented (~2,100 lines):
 **File:** `apps/api/src/routes/unifiedGraph/index.ts`
 
 Created 25+ endpoints:
+
 - Node CRUD + connections
 - Edge CRUD + with-nodes
 - Merge nodes
@@ -100,8 +106,9 @@ Registered at `/api/v1/unified-graph` in server.ts.
 **File:** `packages/feature-flags/src/flags.ts`
 
 Added:
+
 ```typescript
-ENABLE_UNIFIED_INTELLIGENCE_GRAPH: true
+ENABLE_UNIFIED_INTELLIGENCE_GRAPH: true;
 ```
 
 ### G. Frontend API Helper
@@ -109,6 +116,7 @@ ENABLE_UNIFIED_INTELLIGENCE_GRAPH: true
 **File:** `apps/dashboard/src/lib/unifiedGraphApi.ts`
 
 Implemented (~600 lines):
+
 - Type-safe API client functions
 - All endpoint wrappers
 - Helper utilities for labels, colors, formatting
@@ -118,23 +126,24 @@ Implemented (~600 lines):
 
 **Directory:** `apps/dashboard/src/components/unified-graph/`
 
-| Component | Purpose | Lines |
-|-----------|---------|-------|
-| `GraphNodeCard.tsx` | Node display (compact/full) | ~180 |
-| `GraphEdgeCard.tsx` | Edge display with endpoints | ~150 |
-| `GraphVisualizationPanel.tsx` | Canvas force-directed layout | ~350 |
-| `GraphMetricsPanel.tsx` | Analytics and distributions | ~180 |
-| `NodeInspectorDrawer.tsx` | Node detail/edit sheet | ~280 |
-| `EdgeInspectorDrawer.tsx` | Edge detail/edit sheet | ~260 |
-| `SnapshotPanel.tsx` | Snapshot list and creation | ~220 |
-| `GraphQueryBuilder.tsx` | Multi-mode query builder | ~380 |
-| `index.ts` | Component exports | ~15 |
+| Component                     | Purpose                      | Lines |
+| ----------------------------- | ---------------------------- | ----- |
+| `GraphNodeCard.tsx`           | Node display (compact/full)  | ~180  |
+| `GraphEdgeCard.tsx`           | Edge display with endpoints  | ~150  |
+| `GraphVisualizationPanel.tsx` | Canvas force-directed layout | ~350  |
+| `GraphMetricsPanel.tsx`       | Analytics and distributions  | ~180  |
+| `NodeInspectorDrawer.tsx`     | Node detail/edit sheet       | ~280  |
+| `EdgeInspectorDrawer.tsx`     | Edge detail/edit sheet       | ~260  |
+| `SnapshotPanel.tsx`           | Snapshot list and creation   | ~220  |
+| `GraphQueryBuilder.tsx`       | Multi-mode query builder     | ~380  |
+| `index.ts`                    | Component exports            | ~15   |
 
 ### I. Dashboard Page
 
 **File:** `apps/dashboard/src/app/app/exec/graph/page.tsx`
 
 Implemented:
+
 - 3-panel responsive layout
 - Stats overview cards
 - Node/edge tabbed lists with filters
@@ -150,6 +159,7 @@ Implemented:
 **File:** `apps/api/tests/unifiedGraphService.test.ts`
 
 Coverage (~750 lines):
+
 - Node CRUD operations
 - Edge CRUD operations
 - Merge operations
@@ -167,6 +177,7 @@ Coverage (~750 lines):
 **File:** `apps/dashboard/tests/e2e/unifiedGraph.e2e.test.ts`
 
 Coverage (~550 lines):
+
 - Feature flag verification
 - Node CRUD flow
 - Edge CRUD flow
@@ -183,10 +194,10 @@ Coverage (~550 lines):
 
 ### L. Documentation
 
-| File | Description |
-|------|-------------|
+| File                                            | Description                |
+| ----------------------------------------------- | -------------------------- |
 | `docs/product/unified_intelligence_graph_v1.md` | Full product specification |
-| `docs/SPRINT_S66_COMPLETION_REPORT.md` | This report |
+| `docs/SPRINT_S66_COMPLETION_REPORT.md`          | This report                |
 
 ---
 
@@ -219,6 +230,7 @@ Coverage (~550 lines):
 ### Upstream (Data Sources)
 
 The graph can ingest from all S38-S65 systems:
+
 - Content: S38, S39
 - PR: S43, S44, S45
 - Journalists: S46, S47, S48, S49
@@ -230,6 +242,7 @@ The graph can ingest from all S38-S65 systems:
 ### Downstream (Consumers)
 
 The graph provides intelligence to:
+
 - Strategic dashboards
 - AI agent context assembly
 - Search interfaces
@@ -239,19 +252,19 @@ The graph provides intelligence to:
 
 ## File Summary
 
-| Category | Files | Total Lines |
-|----------|-------|-------------|
-| Migration | 1 | ~350 |
-| Types | 1 | ~900 |
-| Validators | 1 | ~450 |
-| Service | 1 | ~2,100 |
-| Routes | 1 | ~700 |
-| API Helper | 1 | ~600 |
-| Components | 9 | ~2,000 |
-| Dashboard Page | 1 | ~530 |
-| Backend Tests | 1 | ~750 |
-| E2E Tests | 1 | ~550 |
-| Documentation | 2 | ~500 |
+| Category       | Files | Total Lines |
+| -------------- | ----- | ----------- |
+| Migration      | 1     | ~350        |
+| Types          | 1     | ~900        |
+| Validators     | 1     | ~450        |
+| Service        | 1     | ~2,100      |
+| Routes         | 1     | ~700        |
+| API Helper     | 1     | ~600        |
+| Components     | 9     | ~2,000      |
+| Dashboard Page | 1     | ~530        |
+| Backend Tests  | 1     | ~750        |
+| E2E Tests      | 1     | ~550        |
+| Documentation  | 2     | ~500        |
 
 **Total:** ~9,430 lines
 

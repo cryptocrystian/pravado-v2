@@ -14,6 +14,7 @@ The Billing Self-Service UI provides organizations with complete control over th
 ### Frontend Components
 
 #### Core Page Component
+
 - **Location**: `apps/dashboard/src/app/app/billing/page.tsx`
 - **Type**: Next.js Client Component
 - **State Management**: React hooks (useState, useEffect)
@@ -68,14 +69,16 @@ The Billing Self-Service UI provides organizations with complete control over th
 **Location**: `apps/dashboard/src/lib/billingApi.ts`
 
 #### Type Definitions
+
 ```typescript
-BillingPlan
-OrgBillingSummaryEnriched
-BillingAlertRecord
-ApiResponse<T>
+BillingPlan;
+OrgBillingSummaryEnriched;
+BillingAlertRecord;
+ApiResponse<T>;
 ```
 
 #### API Methods
+
 - `getBillingSummaryEnriched()` - Fetches enriched summary with S33 fields
 - `getAvailablePlans()` - Lists all active billing plans
 - `getPlanDetails(slug)` - Gets specific plan details
@@ -88,6 +91,7 @@ ApiResponse<T>
 - `acknowledgeAlert(id)` - Dismisses alert
 
 #### Helper Functions
+
 - `canDowngradeToPlan()` - Client-side guardrail check
 - `calculateUsagePercentage()` - Determines color coding
 - `formatCurrency()` - Formats cents to $X.XX
@@ -96,9 +100,11 @@ ApiResponse<T>
 ## User Flows
 
 ### 1. View Current Plan & Usage
+
 **Entry**: Navigate to `/app/billing`
 
 **Steps**:
+
 1. Page loads billing summary, plans, and alerts in parallel
 2. Displays current plan card with:
    - Plan name and price
@@ -114,14 +120,17 @@ ApiResponse<T>
 5. Shows projected monthly cost including overages
 
 **Error Handling**:
+
 - Loading spinner during data fetch
 - Error banner if API fails
 - Graceful degradation if partial data missing
 
 ### 2. Upgrade Plan
+
 **Entry**: Click "Upgrade" button on higher-tier plan card
 
 **Steps**:
+
 1. User clicks "Upgrade" on Growth or Enterprise plan
 2. For Enterprise: Shows alert "Contact sales at sales@pravado.com"
 3. For other plans:
@@ -133,15 +142,18 @@ ApiResponse<T>
 6. User returns to app, sees new plan active
 
 **Error Handling**:
+
 - Alert if checkout session creation fails
 - Button loading state prevents double-clicks
 
 ### 3. Downgrade Plan (Success)
+
 **Entry**: Click "Downgrade" button on lower-tier plan card
 
 **Pre-condition**: Current usage is within target plan limits
 
 **Steps**:
+
 1. User clicks "Downgrade" on Internal Dev or Starter plan
 2. Client checks `canDowngradeToPlan()` - shows warning if blocked
 3. Calls `switchPlan(targetSlug)`
@@ -152,14 +164,17 @@ ApiResponse<T>
 8. Usage bars update to reflect new limits
 
 **Error Handling**:
+
 - Generic error alert if non-422 error occurs
 
 ### 4. Downgrade Plan (Blocked by Guardrails)
+
 **Entry**: Click "Downgrade" button on lower-tier plan card
 
 **Pre-condition**: Current usage exceeds target plan limits
 
 **Steps**:
+
 1. User clicks "Downgrade"
 2. Client may show yellow warning badge preemptively
 3. Calls `switchPlan(targetSlug)`
@@ -184,15 +199,18 @@ ApiResponse<T>
 6. User must take corrective action before downgrade allowed
 
 **Resolution Paths**:
+
 - Wait for billing period reset (automatic)
 - Remove team members (for seat overages)
 - Process fewer playbook runs (for run overages)
 - Contact support for assistance
 
 ### 5. Cancel Subscription
+
 **Entry**: Click "Cancel Subscription" button on current plan card
 
 **Steps**:
+
 1. User clicks "Cancel Subscription"
 2. CancelSubscriptionModal appears with:
    - Warning banner about losing access
@@ -209,13 +227,16 @@ ApiResponse<T>
 8. "Cancel" button replaced with "Resume Subscription" button
 
 **Error Handling**:
+
 - Alert if cancellation fails
 - Modal stays open on error
 
 ### 6. Resume Subscription
+
 **Entry**: Click "Resume Subscription" button (only visible if cancelled)
 
 **Steps**:
+
 1. User clicks "Resume Subscription"
 2. Calls `resumeSubscription()`
 3. Backend reactivates subscription
@@ -226,9 +247,11 @@ ApiResponse<T>
 **Note**: This is a stub implementation in S33.2. Full Stripe integration for resume coming in future sprint.
 
 ### 7. Manage Payment Method
+
 **Entry**: Click "Manage Payment Method" button
 
 **Steps**:
+
 1. User clicks button
 2. Calls `openPaymentPortal()`
 3. Backend creates Stripe Customer Portal session
@@ -238,13 +261,16 @@ ApiResponse<T>
 7. Returns to app via Stripe return URL
 
 **Error Handling**:
+
 - Alert if portal creation fails
 - Button shows loading state during API call
 
 ### 8. View and Dismiss Usage Alerts
+
 **Entry**: Alerts appear automatically if thresholds crossed (S32)
 
 **Steps**:
+
 1. Page loads and fetches `getUsageAlerts()`
 2. If alerts exist, displays "Usage Alerts" panel above plan card
 3. Each alert shows:
@@ -258,14 +284,17 @@ ApiResponse<T>
 7. Alert removed from UI immediately
 
 **Alert Severity Styling**:
+
 - **High**: `bg-red-50 border-red-200 text-red-800`
 - **Medium**: `bg-yellow-50 border-yellow-200 text-yellow-800`
 - **Low**: `bg-blue-50 border-blue-200 text-blue-800`
 
 ### 9. Trial Experience
+
 **Entry**: User on trial plan (trialDaysRemaining > 0)
 
 **Display Behavior**:
+
 1. Trial banner appears at top of page
 2. Banner styling:
    - **Urgent** (≤3 days): Red background with red button
@@ -276,6 +305,7 @@ ApiResponse<T>
 6. Next billing date shows as trial end date
 
 **After Trial Expires** (handled by backend):
+
 - Status changes to "past_due" or moves to free plan
 - Trial banner disappears
 - User prompted to select paid plan
@@ -285,11 +315,13 @@ ApiResponse<T>
 ### Color Coding for Usage
 
 **Usage Percentage Thresholds**:
+
 - **Green** (<70%): `bg-green-500`, `text-green-700`
 - **Yellow** (70-99%): `bg-yellow-500`, `text-yellow-700`
 - **Red** (≥100% or any overage): `bg-red-500`, `text-red-700`
 
 **Implementation**:
+
 ```typescript
 const percentage = (used / limit) * 100;
 let color = 'green';
@@ -300,10 +332,12 @@ else if (percentage >= 70) color = 'yellow';
 ### Responsive Design
 
 **Grid Layouts**:
+
 - Plan cards: `grid-cols-1 md:grid-cols-2 lg:grid-cols-4`
 - Adapts from vertical stack on mobile to 4-column grid on desktop
 
 **Component Styling**:
+
 - All components use Tailwind CSS utility classes
 - Consistent padding: `p-6` for cards, `p-4` for smaller sections
 - Rounded corners: `rounded-lg` for cards, `rounded-md` for buttons
@@ -311,12 +345,14 @@ else if (percentage >= 70) color = 'yellow';
 ### Loading & Error States
 
 **Loading**:
+
 ```tsx
 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
 <p className="mt-4 text-gray-600">Loading billing information...</p>
 ```
 
 **Error**:
+
 ```tsx
 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
   {error || 'Failed to load billing information'}
@@ -324,6 +360,7 @@ else if (percentage >= 70) color = 'yellow';
 ```
 
 **Empty States**:
+
 - Overage breakdown: "No overages this period" in green badge
 - Alerts: Panel hidden if no alerts exist
 
@@ -332,6 +369,7 @@ else if (percentage >= 70) color = 'yellow';
 ### API Error Responses
 
 **Format**:
+
 ```typescript
 interface ApiResponse<T> {
   success: boolean;
@@ -344,12 +382,14 @@ interface ApiResponse<T> {
 ```
 
 **Error Codes**:
+
 - `422_UPGRADE_REQUIRED`: Downgrade blocked by usage guardrails
 - `403_FORBIDDEN`: User lacks permission
 - `404_NOT_FOUND`: Resource not found
 - `500_INTERNAL_ERROR`: Server error
 
 **Handling Strategy**:
+
 1. Check `result.success` boolean
 2. If false, check `result.error.code`
 3. Handle special cases (e.g., 422 → show dialog)
@@ -360,10 +400,12 @@ interface ApiResponse<T> {
 **Retry Logic**: None (rely on user refresh)
 
 **User Feedback**:
+
 - Show generic error banner at top of page
 - Provide "Reload" suggestion
 
 **Example**:
+
 ```tsx
 if (error) {
   return (
@@ -379,21 +421,25 @@ if (error) {
 ## Security Considerations
 
 ### Authentication
+
 - All billing routes require authentication
 - Enforced by middleware at `/app/*` level
 - Unauthenticated users redirected to `/login`
 
 ### Authorization
+
 - Org-level permissions checked by backend
 - Frontend assumes user has billing access if on page
 - Backend validates org membership on all API calls
 
 ### Data Privacy
+
 - Sensitive data (Stripe customer IDs) never exposed to frontend
 - Only display-safe fields sent to client
 - Payment details managed exclusively in Stripe Customer Portal
 
 ### XSS Prevention
+
 - All user inputs sanitized by React's built-in escaping
 - No `dangerouslySetInnerHTML` used
 - API responses validated before rendering
@@ -401,22 +447,26 @@ if (error) {
 ## Performance Optimizations
 
 ### Parallel Data Loading
+
 ```typescript
 const [summaryData, plansData, alertsData] = await Promise.all([
   getBillingSummaryEnriched(),
   getAvailablePlans(),
-  getUsageAlerts()
+  getUsageAlerts(),
 ]);
 ```
+
 Reduces initial load time by ~66% vs. sequential fetches.
 
 ### Conditional Rendering
+
 - Components render only if data exists
 - Trial banner: `{trialDaysRemaining > 0 && <TrialBanner />}`
 - Overage breakdown: `{overages.estimatedCost > 0 && <OverageBreakdown />}`
 - Alerts panel: `{alerts.length > 0 && <AlertsPanel />}`
 
 ### Lazy Loading
+
 - Not implemented in S33.2
 - Future consideration: Code-split modal components
 
@@ -427,6 +477,7 @@ Reduces initial load time by ~66% vs. sequential fetches.
 **Location**: `apps/dashboard/tests/billing/billing-page.spec.ts`
 
 **Test Scenarios**:
+
 1. ✅ Display billing page with current plan
 2. ✅ Display usage progress bars
 3. ✅ Display available plans grid
@@ -439,11 +490,13 @@ Reduces initial load time by ~66% vs. sequential fetches.
 10. ✅ Display overage breakdown when overages exist
 
 **Mocking Strategy**:
+
 - All API endpoints mocked with `page.route()`
 - Test data matches production schema
 - Different mocks per test scenario (trial, overages, alerts)
 
 **Run Tests**:
+
 ```bash
 pnpm playwright test apps/dashboard/tests/billing/
 ```
@@ -451,11 +504,13 @@ pnpm playwright test apps/dashboard/tests/billing/
 ### Manual Testing Checklist
 
 **Pre-requisites**:
+
 - [ ] Backend S33 APIs deployed
 - [ ] Stripe test mode configured
 - [ ] Test org with various usage levels
 
 **Test Cases**:
+
 1. [ ] View billing page with active subscription
 2. [ ] View billing page during trial period
 3. [ ] View billing page with cancelled subscription
@@ -474,16 +529,19 @@ pnpm playwright test apps/dashboard/tests/billing/
 ## Future Enhancements
 
 ### Sprint S34: Billing History
+
 - Invoice list view
 - PDF invoice downloads
 - Payment history timeline
 
 ### Sprint S35: Advanced Features
+
 - Plan comparison tool
 - Usage forecasting charts
 - Custom plan requests
 
 ### Technical Debt
+
 1. **Resume Subscription**: Currently stub implementation, needs full Stripe integration
 2. **Seat Overage Pricing**: Not defined in current plan schema
 3. **Error Boundary**: Add React error boundary for component failures
@@ -494,20 +552,24 @@ pnpm playwright test apps/dashboard/tests/billing/
 ## Deployment
 
 ### Build Command
+
 ```bash
 pnpm build --filter @pravado/dashboard
 ```
 
 ### Environment Variables
+
 None required (inherits from existing Next.js config).
 
 ### Rollout Strategy
+
 1. Deploy backend S33 APIs first
 2. Deploy frontend with feature flag (optional)
 3. Monitor error rates and user feedback
 4. Full rollout after 48 hours
 
 ### Rollback Plan
+
 - Revert to previous Next.js build
 - No database migrations to rollback
 - User data remains intact
@@ -515,6 +577,7 @@ None required (inherits from existing Next.js config).
 ## Monitoring & Analytics
 
 ### Key Metrics
+
 - **Page Load Time**: Target <2s
 - **API Error Rate**: Target <1%
 - **Upgrade Conversion**: Track clicks on upgrade buttons
@@ -522,11 +585,13 @@ None required (inherits from existing Next.js config).
 - **Cancellation Rate**: Track cancel vs. keep actions
 
 ### Logging
+
 - API errors logged to console (visible in browser DevTools)
 - Downgrade blocks logged for analysis
 - Modal interactions logged for UX insights
 
 ### Alerts
+
 - Frontend: None (client-side only)
 - Backend: Existing S33 monitoring for API health
 
@@ -535,25 +600,31 @@ None required (inherits from existing Next.js config).
 ### Common Issues
 
 **Issue**: "Failed to load billing information"
+
 - **Cause**: Backend API down or authentication expired
 - **Resolution**: Check backend health, re-authenticate user
 
 **Issue**: Downgrade button disabled with warning
+
 - **Cause**: Usage exceeds target plan limits
 - **Resolution**: Expected behavior, user must reduce usage first
 
 **Issue**: Stripe redirect fails
+
 - **Cause**: Stripe checkout session creation failed
 - **Resolution**: Check Stripe API keys, retry after 1 minute
 
 **Issue**: Payment portal button does nothing
+
 - **Cause**: Missing Stripe customer ID
 - **Resolution**: User must complete initial checkout to create Stripe customer
 
 ### Debug Mode
+
 Enable React DevTools in browser to inspect component state and props.
 
 ### Customer Support Runbook
+
 1. Verify user's current plan in database
 2. Check usage thresholds via S33 backend APIs
 3. Review Stripe dashboard for payment issues

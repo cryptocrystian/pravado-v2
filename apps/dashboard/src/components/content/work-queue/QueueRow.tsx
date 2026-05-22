@@ -163,9 +163,10 @@ export function QueueRow({
         group flex flex-col gap-1.5 px-3 py-2.5 rounded-lg cursor-pointer
         transition-all duration-150 ease-out
         focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-iris/50
-        ${isSelected
-          ? 'bg-brand-iris/15 border border-brand-iris/40'
-          : 'bg-slate-2 border border-transparent hover:border-slate-4 hover:bg-slate-3'
+        ${
+          isSelected
+            ? 'bg-brand-iris/15 border border-brand-iris/40'
+            : 'bg-slate-2 border border-transparent hover:border-slate-4 hover:bg-slate-3'
         }
       `}
     >
@@ -175,11 +176,17 @@ export function QueueRow({
         <div className={`w-1 h-4 rounded-full ${priorityColor} shrink-0`} />
 
         {/* Content type with icon */}
-        <span className="text-sm shrink-0" title={contentTypeLabel}>{contentTypeIcon}</span>
-        <span className="text-xs font-medium text-white/60">{contentTypeLabel}</span>
+        <span className="text-sm shrink-0" title={contentTypeLabel}>
+          {contentTypeIcon}
+        </span>
+        <span className="text-xs font-medium text-white/60">
+          {contentTypeLabel}
+        </span>
 
         {/* Status badge */}
-        <span className={`px-1.5 py-0.5 text-xs font-medium rounded bg-white/5 ${statusConfig.color}`}>
+        <span
+          className={`px-1.5 py-0.5 text-xs font-medium rounded bg-white/5 ${statusConfig.color}`}
+        >
           {statusConfig.label}
         </span>
 
@@ -189,7 +196,11 @@ export function QueueRow({
         {/* Pin indicator (Manual mode only) */}
         {mode === 'manual' && isPinned && (
           <span className="text-brand-cyan shrink-0" title="Pinned">
-            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <svg
+              className="w-3.5 h-3.5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
               <path d="M5 15l7-7 7 7" />
             </svg>
           </span>
@@ -203,34 +214,42 @@ export function QueueRow({
 
       {/* SECONDARY ROW: Title (most prominent) */}
       <div className="pl-3">
-        <span className={`
+        <span
+          className={`
           text-sm font-medium leading-snug line-clamp-2
           ${isSelected ? 'text-white' : 'text-white/85 group-hover:text-white'}
-        `}>
+        `}
+        >
           {item.title}
         </span>
       </div>
 
       {/* TERTIARY ROW: Last edited (only on hover/selected) */}
-      <div className={`
+      <div
+        className={`
         pl-3 flex items-center gap-3 text-xs text-white/40
         transition-opacity duration-150
         ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
-      `}>
+      `}
+      >
         {item.lastEditedAt && (
           <span>Last edited {formatRelativeTime(item.lastEditedAt)}</span>
         )}
         {/* System metrics on hover only */}
         {item.confidence !== undefined && (
-          <span className={`
+          <span
+            className={`
             px-1 py-0.5 rounded text-xs
             ${item.confidence >= 80 ? 'text-semantic-success/70' : item.confidence >= 50 ? 'text-semantic-warning/70' : 'text-white/30'}
-          `}>
+          `}
+          >
             {item.confidence}% conf
           </span>
         )}
         {item.impact?.authority !== undefined && (
-          <span className="text-brand-iris/70">+{item.impact.authority} auth</span>
+          <span className="text-brand-iris/70">
+            +{item.impact.authority} auth
+          </span>
         )}
       </div>
     </div>

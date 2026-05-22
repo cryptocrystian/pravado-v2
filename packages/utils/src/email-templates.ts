@@ -8,7 +8,8 @@ import type { InviteEmailContext } from '@pravado/types';
  * Generate HTML email for organization invite
  */
 export function buildInviteEmailHtml(context: InviteEmailContext): string {
-  const roleLabel = context.role.charAt(0).toUpperCase() + context.role.slice(1);
+  const roleLabel =
+    context.role.charAt(0).toUpperCase() + context.role.slice(1);
 
   return `
 <!DOCTYPE html>
@@ -104,7 +105,8 @@ export function buildInviteEmailHtml(context: InviteEmailContext): string {
  * Generate plain text version of invite email
  */
 export function buildInviteEmailText(context: InviteEmailContext): string {
-  const roleLabel = context.role.charAt(0).toUpperCase() + context.role.slice(1);
+  const roleLabel =
+    context.role.charAt(0).toUpperCase() + context.role.slice(1);
 
   return `
 You've been invited to join ${context.orgName}

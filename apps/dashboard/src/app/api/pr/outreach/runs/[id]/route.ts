@@ -21,7 +21,11 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/outreach/runs/[id]] GET Error:', { status, message, code });
+    console.error('[API /api/pr/outreach/runs/[id]] GET Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }
@@ -37,7 +41,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/outreach/runs/[id]] PATCH Error:', { status, message, code });
+    console.error('[API /api/pr/outreach/runs/[id]] PATCH Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

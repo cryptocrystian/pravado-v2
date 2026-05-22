@@ -18,7 +18,7 @@ Analytics is the **observational layer** — it shows trends, correlations, and 
 - A single, scrollable EVI health dashboard
 - Cross-pillar by nature — no pillar accent color, neutral presentation
 - Historical context that the Command Center Strategy Panel lacks
-- The place a user goes to understand *why* EVI moved
+- The place a user goes to understand _why_ EVI moved
 
 ### 1.2 What Analytics Is NOT
 
@@ -33,26 +33,26 @@ Analytics is the **observational layer** — it shows trends, correlations, and 
 
 ### 2.1 Included in V1
 
-| Section | Purpose | Data Source |
-|---------|---------|-------------|
-| **EVI Scorecard** | Current EVI score, 30-day delta, trend sparkline, last updated timestamp | EVI time series |
-| **Driver Breakdown** | Visibility / Authority / Momentum — current score + 30d delta + direction | EVI driver components |
-| **EVI Over Time** | Line chart with 30d / 90d / 12m range toggle | EVI time series |
-| **Share of Model Trend** | Topic cluster comparison, bar or area chart, 30d comparison | Share of Model snapshots |
-| **Coverage Timeline** | PR coverage events plotted against EVI movement, showing correlation | Coverage events + EVI series |
-| **Top Movers** | What drove EVI up or down this period — contributing factors with deltas | Pillar contribution deltas |
+| Section                  | Purpose                                                                   | Data Source                  |
+| ------------------------ | ------------------------------------------------------------------------- | ---------------------------- |
+| **EVI Scorecard**        | Current EVI score, 30-day delta, trend sparkline, last updated timestamp  | EVI time series              |
+| **Driver Breakdown**     | Visibility / Authority / Momentum — current score + 30d delta + direction | EVI driver components        |
+| **EVI Over Time**        | Line chart with 30d / 90d / 12m range toggle                              | EVI time series              |
+| **Share of Model Trend** | Topic cluster comparison, bar or area chart, 30d comparison               | Share of Model snapshots     |
+| **Coverage Timeline**    | PR coverage events plotted against EVI movement, showing correlation      | Coverage events + EVI series |
+| **Top Movers**           | What drove EVI up or down this period — contributing factors with deltas  | Pillar contribution deltas   |
 
 ### 2.2 Excluded from V1 (Logged as Future)
 
-| Feature | Reason for Deferral | V2 Priority |
-|---------|-------------------|-------------|
-| Custom date ranges | Complexity; fixed ranges (30d/90d/12m) sufficient for V1 | Medium |
-| Drill-down sub-pages | Single dashboard sufficient for V1 | Medium |
-| Data export (CSV/PDF) | Not core to the observational question | Low |
-| Pillar-specific analytics tabs | Cross-pillar view is the V1 value; pillar detail lives in each surface | Medium |
-| Anomaly detection / alerts | Requires ML pipeline not yet built | Low |
-| Comparative benchmarking | Requires industry data not yet available | Low |
-| Real-time updates | Mock data for V1; real-time requires API pipeline | Medium |
+| Feature                        | Reason for Deferral                                                    | V2 Priority |
+| ------------------------------ | ---------------------------------------------------------------------- | ----------- |
+| Custom date ranges             | Complexity; fixed ranges (30d/90d/12m) sufficient for V1               | Medium      |
+| Drill-down sub-pages           | Single dashboard sufficient for V1                                     | Medium      |
+| Data export (CSV/PDF)          | Not core to the observational question                                 | Low         |
+| Pillar-specific analytics tabs | Cross-pillar view is the V1 value; pillar detail lives in each surface | Medium      |
+| Anomaly detection / alerts     | Requires ML pipeline not yet built                                     | Low         |
+| Comparative benchmarking       | Requires industry data not yet available                               | Low         |
+| Real-time updates              | Mock data for V1; real-time requires API pipeline                      | Medium      |
 
 ---
 
@@ -90,20 +90,20 @@ Each component is normalized to 0–100 before weighting. The composite EVI scor
 
 ### 4.1 EVI Status Bands
 
-| EVI Range | Status | Color |
-|-----------|--------|-------|
-| 0–40 | At Risk | `semantic-danger` |
-| 41–60 | Emerging | `semantic-warning` |
-| 61–80 | Competitive | `brand-cyan` |
-| 81–100 | Dominant | `semantic-success` |
+| EVI Range | Status      | Color              |
+| --------- | ----------- | ------------------ |
+| 0–40      | At Risk     | `semantic-danger`  |
+| 41–60     | Emerging    | `semantic-warning` |
+| 61–80     | Competitive | `brand-cyan`       |
+| 81–100    | Dominant    | `semantic-success` |
 
 ### 4.2 Driver Definitions
 
-| Driver | Weight | What It Measures |
-|--------|--------|-----------------|
-| **Visibility** | 40% | Where the brand currently appears — AI answers, press coverage, SERP coverage, featured snippets |
-| **Authority** | 35% | Why the brand should be trusted — citation quality, domain authority, structured data, E-E-A-T signals |
-| **Momentum** | 25% | Trajectory and velocity — citation velocity, share of voice change, content velocity, ranking trajectory |
+| Driver         | Weight | What It Measures                                                                                         |
+| -------------- | ------ | -------------------------------------------------------------------------------------------------------- |
+| **Visibility** | 40%    | Where the brand currently appears — AI answers, press coverage, SERP coverage, featured snippets         |
+| **Authority**  | 35%    | Why the brand should be trusted — citation quality, domain authority, structured data, E-E-A-T signals   |
+| **Momentum**   | 25%    | Trajectory and velocity — citation velocity, share of voice change, content velocity, ranking trajectory |
 
 ### 4.3 Share of Model
 
@@ -131,11 +131,11 @@ The hero section at top of page. Displays:
 
 Three equal cards in a horizontal row:
 
-| Card | Label | Displays |
-|------|-------|----------|
+| Card       | Label        | Displays                                                          |
+| ---------- | ------------ | ----------------------------------------------------------------- |
 | Visibility | "Visibility" | Score (0–100), 30d delta with direction arrow, weight label "40%" |
-| Authority | "Authority" | Score (0–100), 30d delta with direction arrow, weight label "35%" |
-| Momentum | "Momentum" | Score (0–100), 30d delta with direction arrow, weight label "25%" |
+| Authority  | "Authority"  | Score (0–100), 30d delta with direction arrow, weight label "35%" |
+| Momentum   | "Momentum"   | Score (0–100), 30d delta with direction arrow, weight label "25%" |
 
 Design intent: Drivers should NOT all move together. Interesting state = divergence (e.g., Visibility up, Authority flat, Momentum down). Mock data must demonstrate this.
 
@@ -193,6 +193,7 @@ Design intent: Drivers should NOT all move together. Interesting state = diverge
 ### 6.3 DS v3.1 Compliance
 
 All standard DS v3.1 rules apply:
+
 - Zero phantom hex values
 - Zero bare `text-white` without opacity
 - Zero sub-13px body text without `uppercase tracking-wider`
@@ -228,20 +229,20 @@ V1 uses mock data for all sections. The mock data interface is designed to match
 ```typescript
 // EVI time series point
 interface EVIDataPoint {
-  date: string;          // ISO date
-  eviScore: number;      // 0-100
-  visibility: number;    // 0-100
-  authority: number;     // 0-100
-  momentum: number;      // 0-100
+  date: string; // ISO date
+  eviScore: number; // 0-100
+  visibility: number; // 0-100
+  authority: number; // 0-100
+  momentum: number; // 0-100
 }
 
 // Share of Model snapshot
 interface SoMCluster {
   topicCluster: string;
-  yourShare: number;     // percentage
+  yourShare: number; // percentage
   topCompetitor: string;
   competitorShare: number;
-  delta30d: number;      // signed change
+  delta30d: number; // signed change
 }
 
 // Coverage event
@@ -250,7 +251,7 @@ interface CoverageEvent {
   date: string;
   title: string;
   tier: 'T1' | 'T2' | 'T3';
-  eviImpact: number;    // signed delta
+  eviImpact: number; // signed delta
 }
 
 // Top mover
@@ -258,8 +259,8 @@ interface TopMover {
   id: string;
   description: string;
   pillar: 'pr' | 'content' | 'seo';
-  delta: number;         // signed EVI points
-  period: string;        // e.g., "Last 30 days"
+  delta: number; // signed EVI points
+  period: string; // e.g., "Last 30 days"
 }
 ```
 
@@ -283,11 +284,11 @@ interface TopMover {
 
 ## 10. Canon Dependencies
 
-| Document | Relationship |
-|----------|-------------|
-| `EARNED_VISIBILITY_INDEX.md` | **Authority** — EVI formula and driver definitions |
-| `EVI_MATHEMATICS.md` | **Authority** — Mathematical model, decay, reinforcement |
-| `SEO_AEO_PILLAR_CANON.md` §4 | **Authority** — Share of Model definition |
+| Document                     | Relationship                                                     |
+| ---------------------------- | ---------------------------------------------------------------- |
+| `EARNED_VISIBILITY_INDEX.md` | **Authority** — EVI formula and driver definitions               |
+| `EVI_MATHEMATICS.md`         | **Authority** — Mathematical model, decay, reinforcement         |
+| `SEO_AEO_PILLAR_CANON.md` §4 | **Authority** — Share of Model definition                        |
 | `COMMAND_CENTER_CONTRACT.md` | **Peer** — Strategy Panel shows EVI; Analytics shows EVI history |
-| `DS_v3_PRINCIPLES.md` | **Authority** — Design system compliance |
-| `DS_v3_1_EXPRESSION.md` | **Authority** — Visual expression rules |
+| `DS_v3_PRINCIPLES.md`        | **Authority** — Design system compliance                         |
+| `DS_v3_1_EXPRESSION.md`      | **Authority** — Visual expression rules                          |

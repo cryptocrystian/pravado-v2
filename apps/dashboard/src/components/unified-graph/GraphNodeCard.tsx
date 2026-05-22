@@ -166,9 +166,7 @@ export function GraphNodeCard({
 
         {(node.sourceSystem || node.createdAt) && (
           <div className="flex items-center justify-between text-xs text-white/50 pt-2 border-t">
-            {node.sourceSystem && (
-              <span>Source: {node.sourceSystem}</span>
-            )}
+            {node.sourceSystem && <span>Source: {node.sourceSystem}</span>}
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>{new Date(node.createdAt).toLocaleDateString()}</span>

@@ -1,12 +1,14 @@
 # PRAVADO — DECISIONS LOG
 
 ## Purpose
+
 Auditable record of decisions to prevent long-term drift.
 Per CHANGE_CONTROL.md: if it is not in canon, it is not a requirement.
 
 ---
 
 ### Decision Entry Template
+
 - **Date:** YYYY-MM-DD
 - **Decision ID:** D###
 - **Area:** (SAGE / CRAFT / UX / DS / Plans / Contracts / Infra)
@@ -302,12 +304,15 @@ Per CHANGE_CONTROL.md: if it is not in canon, it is not a requirement.
 **Classification:** INTERNAL
 
 ### Context
+
 Visual inspection on 2026-04-22 confirmed that the shipped Pravado v2 product — marketing site (pravado.io) and authenticated app (app.pravado.io) — consistently uses "CRAFT" as the execution layer name. Canon documentation retained the earlier "AUTOMATE" terminology in multiple files, creating drift between documented architecture and shipped reality.
 
 ### Decision
+
 The execution layer canonical name is **CRAFT**. "AUTOMATE" is deprecated as a canon term and is replaced throughout canon documentation. The shipped product does not require changes — it is already on CRAFT. Canon is being brought into alignment with shipped reality.
 
 ### Scope of change
+
 - Renamed: `AUTOMATE_v2.md` → `CRAFT_v2.md`
 - Renamed: `AUTOMATE_EXECUTION_MODEL.md` → `CRAFT_EXECUTION_MODEL.md`
 - Replaced: all current-tense AUTOMATE references in canon prose with CRAFT
@@ -315,9 +320,11 @@ The execution layer canonical name is **CRAFT**. "AUTOMATE" is deprecated as a c
 - Updated: canon README index and cross-references
 
 ### Rationale
+
 CRAFT was chosen over AUTOMATE in an earlier product decision (the decision itself predates this decision log entry and is not documented in detail). "AUTOMATE" implies runaway automation with no human governance; "CRAFT" signals deliberate, governed execution with quality as a first-class concern. The shipped product reflects this positioning, and canon now matches.
 
 ### Also captured in this update
+
 Three additional drift items discovered during the same visual inspection are addressed in this commit:
 
 1. **EVI band nomenclature.** Canon specifies bands as At Risk / Emerging / Competitive / Dominant. Shipped homepage shows At Risk / Building / Strong / Elite. This decision DOES NOT reconcile that drift — it is noted here for explicit follow-up. A separate decision (D026 or later) will determine which nomenclature wins.
@@ -327,11 +334,13 @@ Three additional drift items discovered during the same visual inspection are ad
 3. **Pricing display format.** Shipped pricing page defaults the monthly/annual toggle to annual-discounted prices ($159/$479/$959), while memory and canon treat the undiscounted monthly prices ($199/$599/$1199) as source-of-truth. This is a merchandising choice, not a price change. Noted for documentation completeness.
 
 ### References
+
 - Source visual inspection: `docs/audit/VISUAL_INSPECTION_2026-04-22.md`
 - Prior decision introducing CRAFT (if present in DECISIONS_LOG): TBD
 - Canon index version bump: v1.9 → v2.0
 
 ### Follow-up required
+
 - D026 (future): EVI band nomenclature reconciliation decision
 - D027 (future): EVI description scope reconciliation decision
 - Silo Tax sunset completion (navigation badge removal, audit page replacement) — tracked in visual inspection report action items
@@ -366,6 +375,7 @@ experience, intercompany settlement is handled outside canon.
 add scope exclusion rule; `DECISIONS_LOG.md` modified (this extension).
 
 **Future work:**
+
 - When Pravado productizes video as a customer-facing add-on, Pravado will draft
   `VIDEO_ADDON.md` describing the add-on product
 - When a formal Saipien Labs umbrella canon is established, shared-infrastructure
@@ -418,6 +428,7 @@ These routes are Pravado's platform-level API surface for agency consumers, not 
 ### Scope of this extraction (what moved)
 
 From Pravado to Sapient:
+
 - `apps/agency-os/` (entire Next.js app, 81 files, 5,759 LOC)
 - `apps/api/supabase/migrations/90_create_agency_schema.sql`
 - `apps/api/supabase/migrations/91_seed_agency_demo_data.sql`
@@ -427,6 +438,7 @@ From Pravado to Sapient:
 - `E2E_AUDIT_REPORT.md` (root-level)
 
 From Pravado, deleted or edited:
+
 - `apps/api/src/server.ts` — removed two commented-out agencyRoutes references
 - `apps/api/src/routes/agency/` — retained with new README explaining status
 
@@ -470,7 +482,6 @@ Discovery conducted as a read-only inventory identified AgencyOS as "uncommitted
   - `AGENCY_OS_SESSION_2.md`
   - `E2E_AUDIT_REPORT.md`
 
-
 ## D027 — Audit Funnel Repositioning: Silo Tax → Three-Path EVI Scorecard
 
 **Date:** 2026-04-21 (decided); 2026-04-28 (formally captured to canon)
@@ -497,6 +508,7 @@ EVI as the primary anchor — `Earned Visibility Index`, decomposed into three p
 EVI is canonical (At Risk / Emerging / Competitive / Dominant per `EARNED_VISIBILITY_INDEX.md`). The orchestration story is told through the variance across the three pillar scores — high variance is the orchestration opportunity, the explicit Pravado value wedge.
 
 The audit produces:
+
 - Top-line EVI score (canonical bands)
 - Three pillar sub-scores with status
 - Specific gap enumeration per pillar with evidence ("your brand was misattributed to [competitor] in 3 of 5 ChatGPT citation tests")
@@ -504,6 +516,7 @@ The audit produces:
 - Category-relative positioning where calibration data permits ("bottom quartile for B2B SaaS")
 
 **No dollar figures.** No monthly tax, no odometer, no fabricated precision. The CTA is a sales conversation, not a self-serve close. Dollar figures may live later in two specific places:
+
 1. In the sales conversation, where prospect P&L is co-constructed
 2. In a paid Pravado feature where first-party data (revenue, traffic, category) makes the math defensible
 
@@ -511,14 +524,15 @@ Neither belongs in a free top-of-funnel scan with no prospect data.
 
 **Three entry paths, one audit:**
 
-| Path | Buyer | Vocabulary | Competitive frame |
-|------|-------|------------|-------------------|
-| `/audit/pr` | Cision / Muck Rack refugees | Earned media authority, what your PR work is actually worth beyond placement counts | PR-first; AEO/Content as limiting pillars |
-| `/audit/content` | HubSpot / Contently / Marketo refugees | Content authority, why your content isn't compounding | Content-first; PR/AEO as limiting pillars |
-| `/audit/ai` | Semrush / Profound / Search Atlas refugees | AI visibility, where your AEO strategy is blind | AEO-first; PR/Content as limiting pillars |
-| `/audit` | Cold traffic, generic | Three-pillar earned visibility | All three pillars peer-level |
+| Path             | Buyer                                      | Vocabulary                                                                          | Competitive frame                         |
+| ---------------- | ------------------------------------------ | ----------------------------------------------------------------------------------- | ----------------------------------------- |
+| `/audit/pr`      | Cision / Muck Rack refugees                | Earned media authority, what your PR work is actually worth beyond placement counts | PR-first; AEO/Content as limiting pillars |
+| `/audit/content` | HubSpot / Contently / Marketo refugees     | Content authority, why your content isn't compounding                               | Content-first; PR/AEO as limiting pillars |
+| `/audit/ai`      | Semrush / Profound / Search Atlas refugees | AI visibility, where your AEO strategy is blind                                     | AEO-first; PR/Content as limiting pillars |
+| `/audit`         | Cold traffic, generic                      | Three-pillar earned visibility                                                      | All three pillars peer-level              |
 
 All four paths run the same audit at the backend. What differs:
+
 - Headline and hook language
 - Competitive reference points
 - Order in which pillar scores are revealed (entry-pillar first, then the limiting pillars)
@@ -569,7 +583,6 @@ Commit `c8fcaf7` (2026-04-28) shipped the audit funnel restructure (mechanics: e
 The decision was made in conversation on 2026-04-21 and never written to canon. As a result, the strategic context drifted out of the lead architect's working memory. Commit `c8fcaf7` was generated against the wrong assumption ("Silo Tax framing stays") and pushed to main before the drift was caught. This is the precise failure mode that motivated the 2026-04-28 CLAUDE.md Required Boot Sequence amendment (commit `4cb9fdc`). Going forward, every load-bearing strategic decision lands in `DECISIONS_LOG.md` at the moment it's made, not at some imagined "end of session." The boot sequence reads `DECISIONS_LOG.md` so future sessions inherit the decision automatically.
 
 (End)
-
 
 ## 2026-05-14
 

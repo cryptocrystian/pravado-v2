@@ -29,12 +29,7 @@
     "ENABLE_ADVANCED_SEARCH": false
   },
   "pages": {
-    "core": [
-      "/",
-      "/login",
-      "/onboarding",
-      "/callback"
-    ],
+    "core": ["/", "/login", "/onboarding", "/callback"],
     "app": [
       "/app",
       "/app/playbooks",

@@ -71,6 +71,7 @@ Advanced Media Performance Insights V1 provides unified performance analytics ac
 **Time-series rollups** of performance metrics aggregated at configurable intervals (hourly, daily, weekly, monthly).
 
 **Metrics Captured** (30+ per snapshot):
+
 - **Volume**: mention count, article count, journalist count, outlet count
 - **Sentiment**: average sentiment, distribution, stability score
 - **Visibility**: visibility score, estimated reach, share of voice
@@ -84,6 +85,7 @@ Advanced Media Performance Insights V1 provides unified performance analytics ac
 ### 2. Pre-Aggregated Dimensions
 
 **Rollups** by specific dimensions for fast querying:
+
 - **Brand**: Performance by brand/company
 - **Campaign**: Performance by PR campaign
 - **Journalist**: Individual journalist performance
@@ -96,6 +98,7 @@ Advanced Media Performance Insights V1 provides unified performance analytics ac
 ### 3. Computed Scores
 
 **Entity-level scores** calculated and stored for quick retrieval:
+
 - **Visibility Score** (0-100): Overall media exposure quality
 - **Sentiment Stability** (0-100): Consistency of positive sentiment
 - **Momentum Score** (0-100): Growth trajectory
@@ -107,6 +110,7 @@ Advanced Media Performance Insights V1 provides unified performance analytics ac
 ### 4. AI-Powered Insights
 
 **LLM-generated narrative insights** with categorization:
+
 - **Achievement**: Record-breaking performance, milestones reached
 - **Anomaly**: Unusual spikes, drops, or patterns detected
 - **Recommendation**: Actionable next steps based on data
@@ -115,6 +119,7 @@ Advanced Media Performance Insights V1 provides unified performance analytics ac
 - **Opportunity**: Favorable conditions to capitalize on
 
 Each insight includes:
+
 - Title and summary
 - Recommendation text
 - Impact score (0-100)
@@ -125,6 +130,7 @@ Each insight includes:
 ### 5. Anomaly Detection
 
 **Statistical z-score analysis** to identify outliers:
+
 - **Threshold**: 2.0 sigma (configurable)
 - **Types**: Spike, drop, outlier
 - **Context**: Historical average, standard deviation
@@ -141,6 +147,7 @@ Each insight includes:
 Primary time-series table storing performance rollups.
 
 **Columns**:
+
 ```sql
 id                      UUID PRIMARY KEY
 org_id                  UUID NOT NULL (FK to orgs)
@@ -203,6 +210,7 @@ updated_at              TIMESTAMPTZ DEFAULT NOW()
 ```
 
 **Indexes**:
+
 - `(org_id, snapshot_at DESC)` - Fast time-series queries
 - `(org_id, brand_id, snapshot_at DESC)` - Brand filtering
 - `(org_id, campaign_id, snapshot_at DESC)` - Campaign filtering
@@ -219,6 +227,7 @@ updated_at              TIMESTAMPTZ DEFAULT NOW()
 Pre-aggregated rollups by dimension.
 
 **Columns**:
+
 ```sql
 id                  UUID PRIMARY KEY
 org_id              UUID NOT NULL
@@ -239,6 +248,7 @@ updated_at          TIMESTAMPTZ DEFAULT NOW()
 ```
 
 **Indexes**:
+
 - `(org_id, dimension_type, start_date DESC)`
 - `(org_id, dimension_type, dimension_value, start_date DESC)`
 - GIN `(rollup_data)`
@@ -250,6 +260,7 @@ updated_at          TIMESTAMPTZ DEFAULT NOW()
 Computed scores by entity.
 
 **Columns**:
+
 ```sql
 id                  UUID PRIMARY KEY
 org_id              UUID NOT NULL
@@ -269,6 +280,7 @@ UNIQUE(org_id, entity_type, entity_id, score_type)
 ```
 
 **Indexes**:
+
 - `(org_id, entity_type, entity_id, score_type)`
 - `(org_id, score_type, score_value DESC)`
 - `(org_id, calculated_at DESC)`
@@ -280,6 +292,7 @@ UNIQUE(org_id, entity_type, entity_id, score_type)
 AI-generated and rule-based insights.
 
 **Columns**:
+
 ```sql
 id                      UUID PRIMARY KEY
 org_id                  UUID NOT NULL
@@ -304,6 +317,7 @@ updated_at              TIMESTAMPTZ DEFAULT NOW()
 ```
 
 **Indexes**:
+
 - `(org_id, created_at DESC)`
 - `(org_id, category, created_at DESC)`
 - `(org_id, is_read, is_dismissed)`
@@ -318,6 +332,7 @@ updated_at              TIMESTAMPTZ DEFAULT NOW()
 Calculates visibility score (0-100) based on weighted factors.
 
 **Parameters**:
+
 - `p_estimated_reach BIGINT`
 - `p_tier_distribution JSONB`
 - `p_mention_count INTEGER`
@@ -326,6 +341,7 @@ Calculates visibility score (0-100) based on weighted factors.
 **Returns**: `FLOAT`
 
 **Algorithm**:
+
 ```
 reachScore = min(100, log10(reach + 1) * 10)
 tierScore = (tier1 * 1.0 + tier2 * 0.7 + tier3 * 0.4 + tier4 * 0.2) / total * 100
@@ -340,12 +356,14 @@ visibilityScore = reachScore * 0.3 + tierScore * 0.3 + frequencyScore * 0.2 + so
 Analyzes sentiment changes over a time window.
 
 **Parameters**:
+
 - `p_org_id UUID`
 - `p_entity_type TEXT`
 - `p_entity_id TEXT`
 - `p_window_days INTEGER DEFAULT 30`
 
 **Returns**: `JSONB`
+
 ```json
 {
   "change_pct": 15.5,
@@ -361,6 +379,7 @@ Analyzes sentiment changes over a time window.
 Scores journalist value based on frequency, tier, and sentiment.
 
 **Parameters**:
+
 - `p_journalist_id UUID`
 - `p_org_id UUID`
 - `p_window_days INTEGER DEFAULT 90`
@@ -368,6 +387,7 @@ Scores journalist value based on frequency, tier, and sentiment.
 **Returns**: `FLOAT`
 
 **Algorithm**:
+
 ```
 frequencyScore = min(100, mention_count * 2) * 0.3
 tierScore = (tier1_count * 100 + tier2_count * 70 + tier3_count * 40 + tier4_count * 20) / total * 0.4
@@ -381,6 +401,7 @@ impactScore = frequencyScore + tierScore + sentimentBonus
 Calculates Earned Visibility Index (EVI) composite score.
 
 **Parameters**:
+
 - `p_estimated_reach BIGINT`
 - `p_avg_sentiment FLOAT`
 - `p_tier_distribution JSONB`
@@ -389,6 +410,7 @@ Calculates Earned Visibility Index (EVI) composite score.
 **Returns**: `FLOAT`
 
 **Algorithm**:
+
 ```
 reachScore = min(100, log10(reach + 1) * 10) * 0.3
 sentimentScore = ((sentiment + 1) * 50) * 0.25
@@ -403,12 +425,14 @@ eviScore = reachScore + sentimentScore + tierScore + frequencyScore
 Detects statistical anomalies using z-score analysis.
 
 **Parameters**:
+
 - `p_current_value FLOAT`
 - `p_historical_avg FLOAT`
 - `p_historical_stddev FLOAT`
 - `p_threshold_sigma FLOAT DEFAULT 2.0`
 
 **Returns**: `JSONB`
+
 ```json
 {
   "has_anomaly": true,
@@ -419,6 +443,7 @@ Detects statistical anomalies using z-score analysis.
 ```
 
 **Algorithm**:
+
 ```
 zScore = (current - avg) / stddev
 hasAnomaly = |zScore| > threshold
@@ -439,6 +464,7 @@ magnitude = |zScore|
 ### Authentication
 
 All endpoints require:
+
 - `x-org-id` header with organization UUID
 - Valid authentication token (cookie or bearer)
 
@@ -451,6 +477,7 @@ All endpoints require:
 Create a new performance snapshot.
 
 **Request Body**:
+
 ```json
 {
   "snapshotAt": "2024-02-02T12:00:00Z",
@@ -490,6 +517,7 @@ Create a new performance snapshot.
 Retrieve snapshots with filters.
 
 **Query Parameters**:
+
 - `brandId` (optional): Filter by brand UUID
 - `campaignId` (optional): Filter by campaign UUID
 - `journalistId` (optional): Filter by journalist UUID
@@ -502,11 +530,14 @@ Retrieve snapshots with filters.
 - `offset` (optional, default 0): Pagination offset
 
 **Response**:
+
 ```json
 {
   "success": true,
   "data": {
-    "snapshots": [/* array of snapshots */],
+    "snapshots": [
+      /* array of snapshots */
+    ],
     "total": 150
   }
 }
@@ -525,6 +556,7 @@ Retrieve a specific snapshot by ID.
 Create a dimension rollup.
 
 **Request Body**:
+
 ```json
 {
   "dimensionType": "brand",
@@ -548,6 +580,7 @@ Create a dimension rollup.
 Retrieve dimensions with filters.
 
 **Query Parameters**:
+
 - `dimensionType` (optional): Filter by type
 - `dimensionValue` (optional): Filter by value
 - `startDate` (optional): Start of date range
@@ -564,6 +597,7 @@ Retrieve dimensions with filters.
 Upsert a performance score (creates or updates).
 
 **Request Body**:
+
 ```json
 {
   "entityType": "campaign",
@@ -588,6 +622,7 @@ Upsert a performance score (creates or updates).
 Retrieve scores with filters.
 
 **Query Parameters**:
+
 - `entityType` (optional): Filter by entity type
 - `entityId` (optional): Filter by entity ID
 - `scoreType` (optional): Filter by score type
@@ -607,6 +642,7 @@ Retrieve scores with filters.
 Create a manual insight.
 
 **Request Body**:
+
 ```json
 {
   "category": "achievement",
@@ -625,6 +661,7 @@ Create a manual insight.
 Generate an AI insight from a snapshot.
 
 **Request Body**:
+
 ```json
 {
   "category": "trend"
@@ -638,6 +675,7 @@ Generate an AI insight from a snapshot.
 Update insight status.
 
 **Request Body**:
+
 ```json
 {
   "isRead": true,
@@ -652,6 +690,7 @@ Update insight status.
 Retrieve insights with filters.
 
 **Query Parameters**:
+
 - `category` (optional): Filter by category
 - `isRead` (optional): Filter by read status
 - `isDismissed` (optional): Filter by dismissed status
@@ -672,9 +711,11 @@ Retrieve insights with filters.
 Get trend data for a specific metric.
 
 **Path Parameters**:
+
 - `metric`: One of `mention_volume`, `sentiment_score`, `visibility_index`, etc.
 
 **Query Parameters**:
+
 - `brandId` (optional)
 - `campaignId` (optional)
 - `startDate` (optional)
@@ -682,14 +723,15 @@ Get trend data for a specific metric.
 - `limit` (optional, default 100)
 
 **Response**:
+
 ```json
 {
   "success": true,
   "data": {
     "metric": "mention_volume",
     "dataPoints": [
-      {"timestamp": "2024-01-01T00:00:00Z", "value": 50},
-      {"timestamp": "2024-01-02T00:00:00Z", "value": 55}
+      { "timestamp": "2024-01-01T00:00:00Z", "value": 50 },
+      { "timestamp": "2024-01-02T00:00:00Z", "value": 55 }
     ],
     "summary": {
       "currentValue": 55,
@@ -709,6 +751,7 @@ Get trend data for a specific metric.
 Get detected anomalies.
 
 **Query Parameters**:
+
 - `brandId` (optional)
 - `campaignId` (optional)
 - `startDate` (optional)
@@ -716,13 +759,16 @@ Get detected anomalies.
 - `limit` (optional, default 20)
 
 **Response**:
+
 ```json
 {
   "success": true,
   "data": {
     "anomalies": [
       {
-        "snapshot": {/* MediaPerformanceSnapshot */},
+        "snapshot": {
+          /* MediaPerformanceSnapshot */
+        },
         "anomalyDetails": {
           "hasAnomaly": true,
           "anomalyType": "spike",
@@ -746,12 +792,14 @@ Get detected anomalies.
 Get comprehensive performance overview.
 
 **Query Parameters** (all required):
+
 - `startDate`: ISO 8601 date
 - `endDate`: ISO 8601 date
 - `brandId` (optional)
 - `campaignId` (optional)
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -777,11 +825,19 @@ Get comprehensive performance overview.
       "eviTrend": 8.7
     },
     "topPerformers": {
-      "campaigns": [/* TopPerformer[] */],
-      "journalists": [/* TopPerformer[] */],
-      "topics": [/* TopPerformer[] */]
+      "campaigns": [
+        /* TopPerformer[] */
+      ],
+      "journalists": [
+        /* TopPerformer[] */
+      ],
+      "topics": [
+        /* TopPerformer[] */
+      ]
     },
-    "insights": [/* MediaPerformanceInsight[] */]
+    "insights": [
+      /* MediaPerformanceInsight[] */
+    ]
   }
 }
 ```
@@ -795,6 +851,7 @@ Get comprehensive performance overview.
 **Purpose**: Measure overall media exposure quality
 
 **Factors**:
+
 1. **Reach (30%)**: Logarithmic scale of estimated audience
    - `reachScore = min(100, log10(reach + 1) * 10)`
 2. **Tier Quality (30%)**: Weighted outlet tier distribution
@@ -804,11 +861,13 @@ Get comprehensive performance overview.
 4. **Share of Voice (20%)**: Percentage of total market mentions
 
 **Formula**:
+
 ```
 visibilityScore = reachScore * 0.3 + tierScore * 0.3 + frequencyScore * 0.2 + sovScore * 0.2
 ```
 
 **Interpretation**:
+
 - **80-100**: Excellent visibility, broad high-quality coverage
 - **60-79**: Good visibility, solid mainstream coverage
 - **40-59**: Moderate visibility, room for improvement
@@ -819,6 +878,7 @@ visibilityScore = reachScore * 0.3 + tierScore * 0.3 + frequencyScore * 0.2 + so
 **Purpose**: Composite measure of earned media value
 
 **Factors**:
+
 1. **Reach (30%)**: Audience size
 2. **Sentiment (25%)**: Quality of coverage tone
    - Converted from -1 to 1 scale: `(sentiment + 1) * 50`
@@ -826,11 +886,13 @@ visibilityScore = reachScore * 0.3 + tierScore * 0.3 + frequencyScore * 0.2 + so
 4. **Frequency (15%)**: Coverage volume
 
 **Formula**:
+
 ```
 eviScore = reachScore * 0.3 + sentimentScore * 0.25 + tierScore * 0.3 + frequencyScore * 0.15
 ```
 
 **Interpretation**:
+
 - **80-100**: Premium earned media value
 - **60-79**: Strong earned media presence
 - **40-59**: Average earned media impact
@@ -841,6 +903,7 @@ eviScore = reachScore * 0.3 + sentimentScore * 0.25 + tierScore * 0.3 + frequenc
 **Purpose**: Measure individual journalist value to your PR efforts
 
 **Factors**:
+
 1. **Frequency (30%)**: How often they cover you
    - `frequencyScore = min(100, mention_count * 2)`
 2. **Tier (40%)**: Quality of their outlet
@@ -849,11 +912,13 @@ eviScore = reachScore * 0.3 + sentimentScore * 0.25 + tierScore * 0.3 + frequenc
    - `sentimentBonus = ((avg_sentiment + 1) * 50) * 0.3`
 
 **Formula**:
+
 ```
 impactScore = frequencyScore * 0.3 + tierScore * 0.4 + sentimentBonus
 ```
 
 **Interpretation**:
+
 - **80-100**: VIP journalist, prioritize relationship
 - **60-79**: Valuable journalist, maintain contact
 - **40-59**: Emerging relationship, nurture potential
@@ -864,11 +929,13 @@ impactScore = frequencyScore * 0.3 + tierScore * 0.4 + sentimentBonus
 **Purpose**: Measure consistency of positive sentiment
 
 **Algorithm**:
+
 1. Calculate sentiment variance over time window
 2. Compute standard deviation
 3. Convert to stability score: `100 - (stdDev * 100)`
 
 **Interpretation**:
+
 - **80-100**: Very stable sentiment, predictable coverage
 - **60-79**: Moderately stable, some fluctuations
 - **40-59**: Unstable sentiment, significant variations
@@ -879,12 +946,14 @@ impactScore = frequencyScore * 0.3 + tierScore * 0.4 + sentimentBonus
 **Purpose**: Identify unusual performance patterns
 
 **Algorithm**:
+
 1. Calculate historical average and standard deviation (30-day window)
 2. Compute z-score: `(current - avg) / stddev`
 3. Flag if `|z-score| > threshold` (default 2.0 sigma)
 4. Classify as spike (positive) or drop (negative)
 
 **Interpretation**:
+
 - **Z-score > 3**: Extreme anomaly, investigate immediately
 - **Z-score 2-3**: Significant anomaly, monitor closely
 - **Z-score < 2**: Normal variation
@@ -898,6 +967,7 @@ impactScore = frequencyScore * 0.3 + tierScore * 0.4 + sentimentBonus
 **Goal**: Track ongoing campaign metrics
 
 **Steps**:
+
 1. Navigate to `/app/media-performance`
 2. Select date range (last 30 days recommended)
 3. Review summary cards:
@@ -917,6 +987,7 @@ impactScore = frequencyScore * 0.3 + tierScore * 0.4 + sentimentBonus
 **Goal**: Identify top journalist targets
 
 **Steps**:
+
 1. Navigate to dashboard
 2. Scroll to Journalist Impact Table
 3. Sort by Impact Score (descending)
@@ -935,6 +1006,7 @@ impactScore = frequencyScore * 0.3 + tierScore * 0.4 + sentimentBonus
 **Goal**: Quickly identify and address unusual patterns
 
 **Steps**:
+
 1. Enable anomaly notifications (if available)
 2. Review Insight Panel for anomaly category insights
 3. Navigate to Coverage Velocity Chart
@@ -951,6 +1023,7 @@ impactScore = frequencyScore * 0.3 + tierScore * 0.4 + sentimentBonus
 **Goal**: Strategic analysis for leadership
 
 **Steps**:
+
 1. Set date range to last 90 days
 2. Export key metrics:
    - Total mentions, articles, journalists
@@ -969,6 +1042,7 @@ impactScore = frequencyScore * 0.3 + tierScore * 0.4 + sentimentBonus
 **Goal**: Data-driven campaign improvements
 
 **Steps**:
+
 1. Filter dashboard by specific campaign
 2. Review all metrics for that campaign
 3. Compare to organization averages
@@ -993,23 +1067,26 @@ import { createSnapshot } from '@/lib/mediaPerformanceApi';
 
 async function onPressReleasePublished(releaseId: string) {
   // Wait 24 hours for coverage to accumulate
-  setTimeout(async () => {
-    const coverage = await getCoverageMetrics(releaseId);
+  setTimeout(
+    async () => {
+      const coverage = await getCoverageMetrics(releaseId);
 
-    await createSnapshot({
-      snapshotAt: new Date(),
-      aggregationPeriod: 'daily',
-      campaignId: coverage.campaignId,
-      metrics: {
-        mentionCount: coverage.mentions,
-        articleCount: coverage.articles,
-        journalistCount: coverage.journalists.length,
-        outletCount: coverage.outlets.length,
-        estimatedReach: coverage.totalReach,
-        tierDistribution: coverage.tiers,
-      },
-    });
-  }, 24 * 60 * 60 * 1000);
+      await createSnapshot({
+        snapshotAt: new Date(),
+        aggregationPeriod: 'daily',
+        campaignId: coverage.campaignId,
+        metrics: {
+          mentionCount: coverage.mentions,
+          articleCount: coverage.articles,
+          journalistCount: coverage.journalists.length,
+          outletCount: coverage.outlets.length,
+          estimatedReach: coverage.totalReach,
+          tierDistribution: coverage.tiers,
+        },
+      });
+    },
+    24 * 60 * 60 * 1000
+  );
 }
 ```
 
@@ -1040,7 +1117,10 @@ async function onNewMention(mention: MediaMention) {
 Update journalist impact scores based on interactions:
 
 ```typescript
-import { upsertScore, calculateJournalistImpact } from '@/lib/mediaPerformanceApi';
+import {
+  upsertScore,
+  calculateJournalistImpact,
+} from '@/lib/mediaPerformanceApi';
 
 async function updateJournalistScore(journalistId: string) {
   const impactScore = await calculateJournalistImpact(journalistId, orgId, 90);
@@ -1063,7 +1143,10 @@ Link performance to target personas:
 ```typescript
 import { createDimension } from '@/lib/mediaPerformanceApi';
 
-async function trackPersonaPerformance(personaId: string, metrics: PerformanceMetrics) {
+async function trackPersonaPerformance(
+  personaId: string,
+  metrics: PerformanceMetrics
+) {
   await createDimension({
     dimensionType: 'audience_persona',
     dimensionValue: personaId,
@@ -1088,6 +1171,7 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 **Purpose**: Display single metric with trend
 
 **Props**:
+
 - `title`: Metric name
 - `score`: Current value (0-100)
 - `trend`: Direction ('up', 'down', 'stable')
@@ -1096,6 +1180,7 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 - `icon`: Custom icon element
 
 **Usage**:
+
 ```tsx
 <PerformanceScoreCard
   title="Visibility Score"
@@ -1112,6 +1197,7 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 **Purpose**: Line chart of sentiment over time
 
 **Props**:
+
 - `data`: Array of `{timestamp, value}` points
 - `currentSentiment`: Latest sentiment value
 - `trendDirection`: Overall trend
@@ -1119,6 +1205,7 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 - `height`: Chart height in pixels
 
 **Usage**:
+
 ```tsx
 <SentimentTrendChart
   data={sentimentData}
@@ -1134,12 +1221,14 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 **Purpose**: Bar chart of mentions per period
 
 **Props**:
+
 - `data`: Array of `{timestamp, mentionCount}` points
 - `currentVelocity`: Mentions per day
 - `momentumScore`: Growth score (0-100)
 - `height`: Chart height
 
 **Usage**:
+
 ```tsx
 <CoverageVelocityChart
   data={velocityData}
@@ -1154,11 +1243,13 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 **Purpose**: Donut chart of outlet tiers
 
 **Props**:
+
 - `distribution`: Object with tier1-4, unknown counts
 - `totalMentions`: Total mention count
 - `size`: Chart diameter
 
 **Usage**:
+
 ```tsx
 <TierDistributionPie
   distribution={{
@@ -1166,7 +1257,7 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
     tier2: 15,
     tier3: 8,
     tier4: 2,
-    unknown: 0
+    unknown: 0,
   }}
   totalMentions={500}
   size={200}
@@ -1178,11 +1269,13 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 **Purpose**: Sortable table of top journalists
 
 **Props**:
+
 - `journalists`: Array of journalist objects
 - `onJournalistClick`: Click handler
 - `maxRows`: Display limit
 
 **Usage**:
+
 ```tsx
 <JournalistImpactTable
   journalists={topJournalists}
@@ -1196,17 +1289,15 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 **Purpose**: Calendar heatmap of activity
 
 **Props**:
+
 - `data`: Array of `{date, value}` points
 - `metric`: Metric name
 - `weeks`: Number of weeks to display
 
 **Usage**:
+
 ```tsx
-<CampaignHeatmap
-  data={activityData}
-  metric="mentions"
-  weeks={12}
-/>
+<CampaignHeatmap data={activityData} metric="mentions" weeks={12} />
 ```
 
 ### 7. InsightNarrativePanel
@@ -1214,6 +1305,7 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 **Purpose**: Display AI and rule-based insights
 
 **Props**:
+
 - `insights`: Array of insight objects
 - `showDismissed`: Include dismissed insights
 - `onInsightDismissed`: Dismiss handler
@@ -1221,6 +1313,7 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 - `maxInsights`: Display limit
 
 **Usage**:
+
 ```tsx
 <InsightNarrativePanel
   insights={insights}
@@ -1277,11 +1370,13 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 ### Issue: Snapshots not appearing in dashboard
 
 **Possible Causes**:
+
 1. Snapshot is outside selected date range
 2. Org ID mismatch
 3. RLS policy blocking access
 
 **Solutions**:
+
 1. Verify `snapshot_at` is within selected range
 2. Check `x-org-id` header matches snapshot's `org_id`
 3. Verify user has org access via RLS policy
@@ -1289,11 +1384,13 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 ### Issue: Scores showing as 0 or null
 
 **Possible Causes**:
+
 1. Insufficient data for calculation
 2. Missing required fields (reach, tier distribution)
 3. Division by zero in algorithm
 
 **Solutions**:
+
 1. Ensure minimum 3-5 snapshots exist for trending
 2. Include all required metrics in snapshot creation
 3. Check for null/undefined values before calculation
@@ -1301,11 +1398,13 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 ### Issue: Anomalies not detecting spikes
 
 **Possible Causes**:
+
 1. Insufficient historical data (< 30 days)
 2. High natural variance making threshold too strict
 3. Spike is within 2 sigma threshold
 
 **Solutions**:
+
 1. Wait for 30+ days of baseline data
 2. Adjust `threshold_sigma` parameter (lower for sensitivity)
 3. Review z-score values in anomaly details
@@ -1313,11 +1412,13 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 ### Issue: LLM insights failing to generate
 
 **Possible Causes**:
+
 1. LLM API key not configured
 2. Rate limiting from LLM provider
 3. Invalid snapshot data
 
 **Solutions**:
+
 1. Verify `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` env variable
 2. Implement exponential backoff retry logic
 3. Validate snapshot has minimum required fields
@@ -1325,11 +1426,13 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 ### Issue: Dashboard loading slowly
 
 **Possible Causes**:
+
 1. Large date range (>90 days)
 2. No indexes on filter columns
 3. Missing pagination
 
 **Solutions**:
+
 1. Reduce date range or use monthly aggregation
 2. Ensure indexes exist on `org_id`, `snapshot_at`, dimension columns
 3. Implement pagination with limit=100 default
@@ -1337,11 +1440,13 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 ### Issue: Tier distribution not displaying
 
 **Possible Causes**:
+
 1. `tierDistribution` field is null
 2. All tier counts are 0
 3. JSON parsing error
 
 **Solutions**:
+
 1. Ensure `tierDistribution` is included in snapshot creation
 2. Verify at least one tier has mentions
 3. Check JSONB format in database
@@ -1352,28 +1457,30 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 
 ### Metric Definitions
 
-| Metric | Definition | Range | Source |
-|--------|------------|-------|--------|
-| Mention Count | Total number of brand/product mentions | 0-∞ | Media Monitoring (S40) |
-| Article Count | Total number of unique articles | 0-∞ | Media Monitoring (S40) |
-| Journalist Count | Unique journalists who covered | 0-∞ | Journalist Graph (S46) |
-| Outlet Count | Unique media outlets | 0-∞ | Media Monitoring (S40) |
-| Avg Sentiment | Mean sentiment score | -1 to 1 | Media Monitoring (S40) |
-| Estimated Reach | Total potential audience | 0-∞ | Media Monitoring (S40) |
-| Share of Voice | % of market mentions | 0-100% | Calculated |
-| Pitch Success Rate | % of pitches that got coverage | 0-100% | PR Pitch Engine (S39) |
-| Deliverability Rate | % of emails successfully delivered | 0-100% | Outreach Deliverability (S45) |
-| Coverage Velocity | Mentions per day | 0-∞ | Calculated |
+| Metric              | Definition                             | Range   | Source                        |
+| ------------------- | -------------------------------------- | ------- | ----------------------------- |
+| Mention Count       | Total number of brand/product mentions | 0-∞     | Media Monitoring (S40)        |
+| Article Count       | Total number of unique articles        | 0-∞     | Media Monitoring (S40)        |
+| Journalist Count    | Unique journalists who covered         | 0-∞     | Journalist Graph (S46)        |
+| Outlet Count        | Unique media outlets                   | 0-∞     | Media Monitoring (S40)        |
+| Avg Sentiment       | Mean sentiment score                   | -1 to 1 | Media Monitoring (S40)        |
+| Estimated Reach     | Total potential audience               | 0-∞     | Media Monitoring (S40)        |
+| Share of Voice      | % of market mentions                   | 0-100%  | Calculated                    |
+| Pitch Success Rate  | % of pitches that got coverage         | 0-100%  | PR Pitch Engine (S39)         |
+| Deliverability Rate | % of emails successfully delivered     | 0-100%  | Outreach Deliverability (S45) |
+| Coverage Velocity   | Mentions per day                       | 0-∞     | Calculated                    |
 
 ### Enum Values
 
 **AggregationPeriod**:
+
 - `hourly`
 - `daily`
 - `weekly`
 - `monthly`
 
 **DimensionType**:
+
 - `brand`
 - `campaign`
 - `journalist`
@@ -1384,6 +1491,7 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 - `sentiment_category`
 
 **ScoreType**:
+
 - `visibility`
 - `sentiment_stability`
 - `momentum`
@@ -1393,6 +1501,7 @@ async function trackPersonaPerformance(personaId: string, metrics: PerformanceMe
 - `overall_performance`
 
 **InsightCategory**:
+
 - `achievement`
 - `anomaly`
 - `recommendation`

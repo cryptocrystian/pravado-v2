@@ -9,10 +9,25 @@ import type { ContentOverviewData } from './views/ContentOverviewView';
 
 // --- Types ---
 
-export type DocStatus = 'draft' | 'in_progress' | 'review' | 'published' | 'archived';
-export type DocType = 'guide' | 'article' | 'comparison' | 'report' | 'landing_page' | 'newsletter';
+export type DocStatus =
+  | 'draft'
+  | 'in_progress'
+  | 'review'
+  | 'published'
+  | 'archived';
+export type DocType =
+  | 'guide'
+  | 'article'
+  | 'comparison'
+  | 'report'
+  | 'landing_page'
+  | 'newsletter';
 export type BriefPriority = 'critical' | 'high' | 'medium';
-export type TemplateTag = 'High AEO Impact' | 'PR-Ready' | 'SEO-Focused' | 'Quick <500 words';
+export type TemplateTag =
+  | 'High AEO Impact'
+  | 'PR-Ready'
+  | 'SEO-Focused'
+  | 'Quick <500 words';
 
 export interface ContentDocument {
   id: string;
@@ -151,7 +166,8 @@ export const mockTemplates: ContentTemplate[] = [
     name: 'Thought Leadership Article',
     icon: 'microphone',
     tags: ['PR-Ready', 'High AEO Impact'],
-    description: 'Expert perspective piece. Ideal for executive bylines and media pitching.',
+    description:
+      'Expert perspective piece. Ideal for executive bylines and media pitching.',
     citeMindBoost: '+12\u201318 pts',
   },
   {
@@ -159,7 +175,8 @@ export const mockTemplates: ContentTemplate[] = [
     name: 'Expert Q&A / Interview',
     icon: 'chat-circle',
     tags: ['High AEO Impact'],
-    description: 'Q&A format naturally generates citation-ready FAQ-structured content.',
+    description:
+      'Q&A format naturally generates citation-ready FAQ-structured content.',
     citeMindBoost: '+15\u201322 pts',
   },
   {
@@ -167,7 +184,8 @@ export const mockTemplates: ContentTemplate[] = [
     name: 'How-To Guide',
     icon: 'list-numbers',
     tags: ['High AEO Impact', 'SEO-Focused'],
-    description: 'Step-by-step guide format. Highest citation rate on Perplexity and ChatGPT.',
+    description:
+      'Step-by-step guide format. Highest citation rate on Perplexity and ChatGPT.',
     citeMindBoost: '+18\u201325 pts',
   },
   {
@@ -175,7 +193,8 @@ export const mockTemplates: ContentTemplate[] = [
     name: 'Case Study',
     icon: 'chart-bar',
     tags: ['PR-Ready'],
-    description: 'Proof content with metrics. Strong for conversion and media credibility.',
+    description:
+      'Proof content with metrics. Strong for conversion and media credibility.',
     citeMindBoost: '+8\u201314 pts',
   },
   {
@@ -183,7 +202,8 @@ export const mockTemplates: ContentTemplate[] = [
     name: 'Press Release',
     icon: 'newspaper',
     tags: ['PR-Ready'],
-    description: 'Announcement format. Structured for distribution and journalist pickup.',
+    description:
+      'Announcement format. Structured for distribution and journalist pickup.',
     citeMindBoost: '+5\u201310 pts',
   },
   {
@@ -191,7 +211,8 @@ export const mockTemplates: ContentTemplate[] = [
     name: 'Executive Byline',
     icon: 'pen-nib',
     tags: ['PR-Ready', 'High AEO Impact'],
-    description: 'Opinion piece for media placement. Establishes executive authority.',
+    description:
+      'Opinion piece for media placement. Establishes executive authority.',
     citeMindBoost: '+10\u201316 pts',
   },
   {
@@ -199,7 +220,8 @@ export const mockTemplates: ContentTemplate[] = [
     name: 'SEO Landing Page',
     icon: 'magnifying-glass',
     tags: ['SEO-Focused'],
-    description: 'Acquisition page optimized for search intent and AI citation.',
+    description:
+      'Acquisition page optimized for search intent and AI citation.',
     citeMindBoost: '+8\u201312 pts',
   },
   {
@@ -255,7 +277,8 @@ export const thoughtLeadershipFields: IntakeField[] = [
     type: 'multi-text',
     count: 3,
     subLabels: ['Point 1', 'Point 2', 'Point 3'],
-    placeholder: 'e.g. 73% of AI responses cite only 3\u20135 sources per topic cluster',
+    placeholder:
+      'e.g. 73% of AI responses cite only 3\u20135 sources per topic cluster',
   },
   {
     name: 'tone',

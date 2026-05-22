@@ -7,6 +7,7 @@
 ## Overview
 
 Sprint S41 extends S40's Media Monitoring Engine with full automation capabilities:
+
 - RSS feed management and parsing
 - Automatic article discovery and job queue creation
 - Background crawl job processing
@@ -34,11 +35,13 @@ RSS Feed → fetchRSS() → Create Crawl Jobs (queued)
 ### Database Schema (Migration 46)
 
 **media_rss_feeds**
+
 - Tracks RSS feed sources
 - Fetch frequency, last fetched timestamp
 - Article count tracking
 
 **media_crawl_jobs**
+
 - Queue of article URLs to crawl
 - Status: queued → running → success/failed
 - Retry count and error tracking
@@ -76,27 +79,29 @@ MediaCrawlerService
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/media-monitoring/rss-feeds` | Add RSS feed |
-| GET | `/api/v1/media-monitoring/rss-feeds` | List RSS feeds |
-| GET | `/api/v1/media-monitoring/rss-feeds/:id` | Get RSS feed |
-| PUT | `/api/v1/media-monitoring/rss-feeds/:id` | Update RSS feed |
-| DELETE | `/api/v1/media-monitoring/rss-feeds/:id` | Deactivate RSS feed |
-| POST | `/api/v1/media-monitoring/rss/fetch` | Trigger RSS fetch |
-| POST | `/api/v1/media-monitoring/crawl-jobs` | Create crawl job |
-| GET | `/api/v1/media-monitoring/crawl-jobs` | List crawl jobs |
-| POST | `/api/v1/media-monitoring/crawl-jobs/run` | Run pending jobs |
-| GET | `/api/v1/media-monitoring/rss/stats` | Get statistics |
+| Method | Endpoint                                  | Description         |
+| ------ | ----------------------------------------- | ------------------- |
+| POST   | `/api/v1/media-monitoring/rss-feeds`      | Add RSS feed        |
+| GET    | `/api/v1/media-monitoring/rss-feeds`      | List RSS feeds      |
+| GET    | `/api/v1/media-monitoring/rss-feeds/:id`  | Get RSS feed        |
+| PUT    | `/api/v1/media-monitoring/rss-feeds/:id`  | Update RSS feed     |
+| DELETE | `/api/v1/media-monitoring/rss-feeds/:id`  | Deactivate RSS feed |
+| POST   | `/api/v1/media-monitoring/rss/fetch`      | Trigger RSS fetch   |
+| POST   | `/api/v1/media-monitoring/crawl-jobs`     | Create crawl job    |
+| GET    | `/api/v1/media-monitoring/crawl-jobs`     | List crawl jobs     |
+| POST   | `/api/v1/media-monitoring/crawl-jobs/run` | Run pending jobs    |
+| GET    | `/api/v1/media-monitoring/rss/stats`      | Get statistics      |
 
 ## Stub Implementations
 
 ### RSS Fetcher
+
 - Currently generates deterministic mock articles based on URL hash
 - Production would use fast-xml-parser or xml2js
 - Returns array of RSSArticleItem with title, link, publishedAt, etc.
 
 ### HTML Crawler
+
 - Stub content extraction based on URL
 - Production would use Puppeteer, Cheerio, or Readability.js
 - Extracts title, author, content, keywords
@@ -104,11 +109,13 @@ MediaCrawlerService
 ## Job Processing
 
 ### Retry Logic
+
 - Max retries: 3 (configurable)
 - Exponential backoff: 5s delay (configurable)
 - Status tracking: queued → running → success/failed
 
 ### Worker Integration
+
 - Compatible with existing S18/S21 queue system
 - Can register "media:crawl" job type
 - Batch processing: processPendingJobs() handles multiple jobs
@@ -116,12 +123,14 @@ MediaCrawlerService
 ## Dashboard UI
 
 ### RSS Page (`/app/media-monitoring/rss`)
+
 - **Left**: RSS feed list with add/deactivate
 - **Center**: Crawl jobs table with status badges
 - **Right**: Statistics sidebar
 - **Actions**: Fetch All Feeds, Run Jobs buttons
 
 ### Components
+
 - CrawlStatusBadge - Queued/Running/Success/Failed badges
 - Integrated with S40 styling patterns
 

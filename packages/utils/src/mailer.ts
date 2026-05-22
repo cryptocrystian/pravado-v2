@@ -46,7 +46,10 @@ export function createConsoleMailer(): Mailer {
  * Resend mailer - sends real emails via Resend API
  * https://resend.com/docs/api-reference/emails/send-email
  */
-export function createResendMailer(apiKey: string, defaultFrom: string): Mailer {
+export function createResendMailer(
+  apiKey: string,
+  defaultFrom: string
+): Mailer {
   return {
     async sendMail(payload: MailPayload): Promise<void> {
       const to = Array.isArray(payload.to) ? payload.to : [payload.to];
@@ -55,7 +58,7 @@ export function createResendMailer(apiKey: string, defaultFrom: string): Mailer 
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${apiKey}`,
+            Authorization: `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -74,17 +77,22 @@ export function createResendMailer(apiKey: string, defaultFrom: string): Mailer 
             statusText: response.statusText,
             body: errorBody,
           });
-          throw new Error(`Resend API error: ${response.status} ${response.statusText}`);
+          throw new Error(
+            `Resend API error: ${response.status} ${response.statusText}`
+          );
         }
 
-        const result = await response.json() as { id?: string };
+        const result = (await response.json()) as { id?: string };
         logger.info('Email sent successfully via Resend:', {
           to: payload.to,
           subject: payload.subject,
           id: result.id,
         });
       } catch (error) {
-        logger.error('Failed to send email via Resend:', error instanceof Error ? { error: error.message } : { error });
+        logger.error(
+          'Failed to send email via Resend:',
+          error instanceof Error ? { error: error.message } : { error }
+        );
         throw error;
       }
     },
@@ -94,7 +102,11 @@ export function createResendMailer(apiKey: string, defaultFrom: string): Mailer 
 /**
  * Mailgun mailer (legacy) - sends real emails via Mailgun API
  */
-export function createMailgunMailer(config: { mailgunApiKey: string; mailgunDomain: string; mailgunFromEmail: string }): Mailer {
+export function createMailgunMailer(config: {
+  mailgunApiKey: string;
+  mailgunDomain: string;
+  mailgunFromEmail: string;
+}): Mailer {
   const { mailgunApiKey, mailgunDomain, mailgunFromEmail } = config;
 
   return {
@@ -103,7 +115,7 @@ export function createMailgunMailer(config: { mailgunApiKey: string; mailgunDoma
       formData.append('from', payload.from || mailgunFromEmail);
 
       if (Array.isArray(payload.to)) {
-        payload.to.forEach(email => formData.append('to', email));
+        payload.to.forEach((email) => formData.append('to', email));
       } else {
         formData.append('to', payload.to);
       }
@@ -126,14 +138,23 @@ export function createMailgunMailer(config: { mailgunApiKey: string; mailgunDoma
 
         if (!response.ok) {
           const errorText = await response.text();
-          logger.error('Mailgun API error:', { status: response.status, body: errorText });
+          logger.error('Mailgun API error:', {
+            status: response.status,
+            body: errorText,
+          });
           throw new Error(`Mailgun API error: ${response.status}`);
         }
 
-        const result = await response.json() as { id?: string };
-        logger.info('Email sent via Mailgun:', { to: payload.to, id: result.id });
+        const result = (await response.json()) as { id?: string };
+        logger.info('Email sent via Mailgun:', {
+          to: payload.to,
+          id: result.id,
+        });
       } catch (error) {
-        logger.error('Failed to send email via Mailgun:', error instanceof Error ? { error: error.message } : { error });
+        logger.error(
+          'Failed to send email via Mailgun:',
+          error instanceof Error ? { error: error.message } : { error }
+        );
         throw error;
       }
     },
@@ -144,7 +165,11 @@ export function createMailgunMailer(config: { mailgunApiKey: string; mailgunDoma
  * Check if Mailgun configuration is complete (legacy)
  */
 export function hasMailgunConfig(config: MailerConfig): boolean {
-  return !!(config.mailgunApiKey && config.mailgunDomain && config.mailgunFromEmail);
+  return !!(
+    config.mailgunApiKey &&
+    config.mailgunDomain &&
+    config.mailgunFromEmail
+  );
 }
 
 /**
@@ -161,7 +186,9 @@ export function createMailer(config: MailerConfig): Mailer {
 
   // Fall back to Mailgun if configured
   if (config.mailgunApiKey && config.mailgunDomain && config.mailgunFromEmail) {
-    logger.info('Initializing Mailgun mailer (legacy)', { domain: config.mailgunDomain });
+    logger.info('Initializing Mailgun mailer (legacy)', {
+      domain: config.mailgunDomain,
+    });
     return createMailgunMailer({
       mailgunApiKey: config.mailgunApiKey,
       mailgunDomain: config.mailgunDomain,
@@ -169,6 +196,8 @@ export function createMailer(config: MailerConfig): Mailer {
     });
   }
 
-  logger.warn('No email provider configured, using console mailer (emails will be logged only)');
+  logger.warn(
+    'No email provider configured, using console mailer (emails will be logged only)'
+  );
   return createConsoleMailer();
 }

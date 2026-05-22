@@ -39,29 +39,44 @@ export async function getEVIDelta(
 
   if (error) {
     console.error('[EVI Delta] Query failed:', error.message);
-    return { delta: 0, deltaPercent: 0, direction: 'flat', current: 0, prior: null };
+    return {
+      delta: 0,
+      deltaPercent: 0,
+      direction: 'flat',
+      current: 0,
+      prior: null,
+    };
   }
 
   if (!data || data.length === 0) {
-    return { delta: 0, deltaPercent: 0, direction: 'flat', current: 0, prior: null };
+    return {
+      delta: 0,
+      deltaPercent: 0,
+      direction: 'flat',
+      current: 0,
+      prior: null,
+    };
   }
 
   const current = Number(data[0].evi_score);
 
   if (data.length < 2) {
-    return { delta: 0, deltaPercent: 0, direction: 'flat', current, prior: null };
+    return {
+      delta: 0,
+      deltaPercent: 0,
+      direction: 'flat',
+      current,
+      prior: null,
+    };
   }
 
   const prior = Number(data[1].evi_score);
   const delta = Math.round((current - prior) * 100) / 100;
-  const deltaPercent = prior > 0
-    ? Math.round(((current - prior) / prior) * 10000) / 100
-    : 0;
+  const deltaPercent =
+    prior > 0 ? Math.round(((current - prior) / prior) * 10000) / 100 : 0;
 
   const direction: EVIDelta['direction'] =
-    delta > 0.5 ? 'up' :
-    delta < -0.5 ? 'down' :
-    'flat';
+    delta > 0.5 ? 'up' : delta < -0.5 ? 'down' : 'flat';
 
   return { delta, deltaPercent, direction, current, prior };
 }

@@ -16,17 +16,21 @@ import {
   listJournalistsQuerySchema,
   createPRListSchema,
   updatePRListMembersSchema,
- validateEnv, apiEnvSchema } from '@pravado/validators';
+  validateEnv,
+  apiEnvSchema,
+} from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { PRMediaService } from '../../services/prMediaService';
 
-
 export async function prRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   // Service
   const prMediaService = new PRMediaService(supabase);
@@ -59,8 +63,12 @@ export async function prRoutes(server: FastifyInstance) {
     async (request, reply) => {
       // Validate query params
       const validation = listPRSourcesSchema.safeParse({
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
         sourceType: request.query.sourceType,
       });
 
@@ -156,8 +164,12 @@ export async function prRoutes(server: FastifyInstance) {
         outletId: request.query.outletId,
         country: request.query.country,
         tier: request.query.tier,
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
       });
 
       if (!validation.success) {
@@ -171,7 +183,10 @@ export async function prRoutes(server: FastifyInstance) {
       }
 
       try {
-        const result = await prMediaService.searchJournalists(orgId, validation.data);
+        const result = await prMediaService.searchJournalists(
+          orgId,
+          validation.data
+        );
 
         return {
           success: true,

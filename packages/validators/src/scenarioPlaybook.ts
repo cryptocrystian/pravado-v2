@@ -209,10 +209,14 @@ export const listPlaybooksSchema = z.object({
   riskLevel: scenarioRiskLevelEnum.optional(),
   category: z.string().optional(),
   search: z.string().optional(),
-  tags: z.union([z.string(), z.array(z.string())]).transform(v =>
-    Array.isArray(v) ? v : v ? [v] : undefined
-  ).optional(),
-  sortBy: z.enum(['name', 'created_at', 'updated_at', 'risk_level']).optional().default('created_at'),
+  tags: z
+    .union([z.string(), z.array(z.string())])
+    .transform((v) => (Array.isArray(v) ? v : v ? [v] : undefined))
+    .optional(),
+  sortBy: z
+    .enum(['name', 'created_at', 'updated_at', 'risk_level'])
+    .optional()
+    .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -261,11 +265,15 @@ export const listScenariosSchema = z.object({
   scenarioType: scenarioTypeEnum.optional(),
   status: scenarioRunStatusEnum.optional(),
   search: z.string().optional(),
-  tags: z.union([z.string(), z.array(z.string())]).transform(v =>
-    Array.isArray(v) ? v : v ? [v] : undefined
-  ).optional(),
+  tags: z
+    .union([z.string(), z.array(z.string())])
+    .transform((v) => (Array.isArray(v) ? v : v ? [v] : undefined))
+    .optional(),
   playbookId: z.string().uuid().optional(),
-  sortBy: z.enum(['name', 'created_at', 'updated_at', 'horizon_days']).optional().default('created_at'),
+  sortBy: z
+    .enum(['name', 'created_at', 'updated_at', 'horizon_days'])
+    .optional()
+    .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -302,7 +310,10 @@ export const listScenarioRunsSchema = z.object({
   status: scenarioRunStatusEnum.optional(),
   startedAfter: z.string().datetime().optional(),
   startedBefore: z.string().datetime().optional(),
-  sortBy: z.enum(['started_at', 'completed_at', 'risk_score', 'opportunity_score']).optional().default('started_at'),
+  sortBy: z
+    .enum(['started_at', 'completed_at', 'risk_score', 'opportunity_score'])
+    .optional()
+    .default('started_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -357,13 +368,19 @@ export const stepIdParamSchema = z.object({
 // TYPE EXPORTS
 // ============================================================================
 
-export type CreateScenarioPlaybookInput = z.infer<typeof createScenarioPlaybookSchema>;
-export type UpdateScenarioPlaybookInput = z.infer<typeof updateScenarioPlaybookSchema>;
+export type CreateScenarioPlaybookInput = z.infer<
+  typeof createScenarioPlaybookSchema
+>;
+export type UpdateScenarioPlaybookInput = z.infer<
+  typeof updateScenarioPlaybookSchema
+>;
 export type CreatePlaybookStepInput = z.infer<typeof createPlaybookStepSchema>;
 export type UpdatePlaybookStepInput = z.infer<typeof updatePlaybookStepSchema>;
 export type ScenarioListPlaybooksQuery = z.infer<typeof listPlaybooksSchema>;
 export type AddPlaybookStepInput = z.infer<typeof addPlaybookStepSchema>;
-export type ReorderPlaybookStepsInput = z.infer<typeof reorderPlaybookStepsSchema>;
+export type ReorderPlaybookStepsInput = z.infer<
+  typeof reorderPlaybookStepsSchema
+>;
 
 export type CreateScenarioInput = z.infer<typeof createScenarioSchema>;
 export type UpdateScenarioInput = z.infer<typeof updateScenarioSchema>;
@@ -373,10 +390,14 @@ export type SimulateScenarioInput = z.infer<typeof simulateScenarioSchema>;
 
 export type StartScenarioRunInput = z.infer<typeof startScenarioRunSchema>;
 export type ListScenarioRunsQuery = z.infer<typeof listScenarioRunsSchema>;
-export type ApproveScenarioStepInput = z.infer<typeof approveScenarioStepSchema>;
+export type ApproveScenarioStepInput = z.infer<
+  typeof approveScenarioStepSchema
+>;
 export type CancelScenarioRunInput = z.infer<typeof cancelScenarioRunSchema>;
 
-export type ListScenarioAuditLogsQuery = z.infer<typeof listScenarioAuditLogsSchema>;
+export type ListScenarioAuditLogsQuery = z.infer<
+  typeof listScenarioAuditLogsSchema
+>;
 
 export type ScenarioParameters = z.infer<typeof scenarioParametersSchema>;
 export type ScenarioConstraints = z.infer<typeof scenarioConstraintsSchema>;

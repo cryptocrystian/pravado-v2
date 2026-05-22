@@ -29,7 +29,9 @@ import { cn } from '@/lib/utils';
 interface RuleEditorProps {
   rule?: GovernanceRule;
   policyId: string;
-  onSave: (input: CreateGovernanceRuleInput | UpdateGovernanceRuleInput) => Promise<void>;
+  onSave: (
+    input: CreateGovernanceRuleInput | UpdateGovernanceRuleInput
+  ) => Promise<void>;
   onCancel: () => void;
   loading?: boolean;
   className?: string;
@@ -62,9 +64,21 @@ const targetSystems: GovernanceTargetSystem[] = [
   'competitive_intel',
 ];
 
-const evaluationModes: { value: GovernanceEvaluationMode; label: string; description: string }[] = [
-  { value: 'on_event', label: 'On Event', description: 'Evaluate when events occur' },
-  { value: 'scheduled', label: 'Scheduled', description: 'Run on a schedule (cron)' },
+const evaluationModes: {
+  value: GovernanceEvaluationMode;
+  label: string;
+  description: string;
+}[] = [
+  {
+    value: 'on_event',
+    label: 'On Event',
+    description: 'Evaluate when events occur',
+  },
+  {
+    value: 'scheduled',
+    label: 'Scheduled',
+    description: 'Run on a schedule (cron)',
+  },
   { value: 'manual', label: 'Manual', description: 'Manually triggered only' },
 ];
 
@@ -74,7 +88,11 @@ interface ConditionBuilderProps {
   ruleType: GovernanceRuleType;
 }
 
-function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderProps) {
+function ConditionBuilder({
+  condition,
+  onChange,
+  ruleType,
+}: ConditionBuilderProps) {
   const [jsonMode, setJsonMode] = useState(false);
   const [jsonError, setJsonError] = useState<string | null>(null);
 
@@ -99,7 +117,9 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
               <Input
                 id="field"
                 value={(condition.field as string) || ''}
-                onChange={(e) => onChange({ ...condition, field: e.target.value })}
+                onChange={(e) =>
+                  onChange({ ...condition, field: e.target.value })
+                }
                 placeholder="e.g., sentiment_score"
               />
             </div>
@@ -109,7 +129,9 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
                 <select
                   id="operator"
                   value={(condition.operator as string) || 'gt'}
-                  onChange={(e) => onChange({ ...condition, operator: e.target.value })}
+                  onChange={(e) =>
+                    onChange({ ...condition, operator: e.target.value })
+                  }
                   className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white text-sm"
                 >
                   <option value="gt">Greater than</option>
@@ -126,7 +148,12 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
                   id="value"
                   type="number"
                   value={(condition.value as number) || 0}
-                  onChange={(e) => onChange({ ...condition, value: parseFloat(e.target.value) })}
+                  onChange={(e) =>
+                    onChange({
+                      ...condition,
+                      value: parseFloat(e.target.value),
+                    })
+                  }
                 />
               </div>
             </div>
@@ -141,7 +168,9 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
               <Input
                 id="field"
                 value={(condition.field as string) || ''}
-                onChange={(e) => onChange({ ...condition, field: e.target.value })}
+                onChange={(e) =>
+                  onChange({ ...condition, field: e.target.value })
+                }
                 placeholder="e.g., content, title"
               />
             </div>
@@ -150,7 +179,9 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
               <Input
                 id="pattern"
                 value={(condition.pattern as string) || ''}
-                onChange={(e) => onChange({ ...condition, pattern: e.target.value })}
+                onChange={(e) =>
+                  onChange({ ...condition, pattern: e.target.value })
+                }
                 placeholder="e.g., crisis|emergency|urgent"
               />
             </div>
@@ -158,7 +189,9 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
               <Switch
                 id="caseSensitive"
                 checked={(condition.caseSensitive as boolean) || false}
-                onCheckedChange={(checked) => onChange({ ...condition, caseSensitive: checked })}
+                onCheckedChange={(checked) =>
+                  onChange({ ...condition, caseSensitive: checked })
+                }
               />
               <Label htmlFor="caseSensitive">Case Sensitive</Label>
             </div>
@@ -174,7 +207,9 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
               <Input
                 id="field"
                 value={(condition.field as string) || ''}
-                onChange={(e) => onChange({ ...condition, field: e.target.value })}
+                onChange={(e) =>
+                  onChange({ ...condition, field: e.target.value })
+                }
                 placeholder="e.g., journalist_id, outlet_name"
               />
             </div>
@@ -182,11 +217,18 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
               <Label htmlFor="values">Values (comma-separated)</Label>
               <Textarea
                 id="values"
-                value={Array.isArray(condition.values) ? condition.values.join(', ') : ''}
+                value={
+                  Array.isArray(condition.values)
+                    ? condition.values.join(', ')
+                    : ''
+                }
                 onChange={(e) =>
                   onChange({
                     ...condition,
-                    values: e.target.value.split(',').map((v) => v.trim()).filter(Boolean),
+                    values: e.target.value
+                      .split(',')
+                      .map((v) => v.trim())
+                      .filter(Boolean),
                   })
                 }
                 placeholder="value1, value2, value3"
@@ -204,7 +246,9 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
               <Input
                 id="sentimentField"
                 value={(condition.field as string) || 'sentiment'}
-                onChange={(e) => onChange({ ...condition, field: e.target.value })}
+                onChange={(e) =>
+                  onChange({ ...condition, field: e.target.value })
+                }
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -217,7 +261,12 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
                   min="-1"
                   max="1"
                   value={(condition.minScore as number) ?? -1}
-                  onChange={(e) => onChange({ ...condition, minScore: parseFloat(e.target.value) })}
+                  onChange={(e) =>
+                    onChange({
+                      ...condition,
+                      minScore: parseFloat(e.target.value),
+                    })
+                  }
                 />
               </div>
               <div>
@@ -229,7 +278,12 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
                   min="-1"
                   max="1"
                   value={(condition.maxScore as number) ?? 1}
-                  onChange={(e) => onChange({ ...condition, maxScore: parseFloat(e.target.value) })}
+                  onChange={(e) =>
+                    onChange({
+                      ...condition,
+                      maxScore: parseFloat(e.target.value),
+                    })
+                  }
                 />
               </div>
             </div>
@@ -244,7 +298,9 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
               <Input
                 id="event"
                 value={(condition.event as string) || ''}
-                onChange={(e) => onChange({ ...condition, event: e.target.value })}
+                onChange={(e) =>
+                  onChange({ ...condition, event: e.target.value })
+                }
                 placeholder="e.g., mention, outreach_sent"
               />
             </div>
@@ -256,7 +312,9 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
                   type="number"
                   min="1"
                   value={(condition.count as number) || 1}
-                  onChange={(e) => onChange({ ...condition, count: parseInt(e.target.value) })}
+                  onChange={(e) =>
+                    onChange({ ...condition, count: parseInt(e.target.value) })
+                  }
                 />
               </div>
               <div>
@@ -266,7 +324,12 @@ function ConditionBuilder({ condition, onChange, ruleType }: ConditionBuilderPro
                   type="number"
                   min="1"
                   value={(condition.windowMinutes as number) || 60}
-                  onChange={(e) => onChange({ ...condition, windowMinutes: parseInt(e.target.value) })}
+                  onChange={(e) =>
+                    onChange({
+                      ...condition,
+                      windowMinutes: parseInt(e.target.value),
+                    })
+                  }
                 />
               </div>
             </div>
@@ -327,7 +390,9 @@ function ActionBuilder({ action, onChange }: ActionBuilderProps) {
           <Switch
             id="createFinding"
             checked={(action.createFinding as boolean) !== false}
-            onCheckedChange={(checked) => onChange({ ...action, createFinding: checked })}
+            onCheckedChange={(checked) =>
+              onChange({ ...action, createFinding: checked })
+            }
           />
           <Label htmlFor="createFinding">Create Finding</Label>
         </div>
@@ -335,7 +400,9 @@ function ActionBuilder({ action, onChange }: ActionBuilderProps) {
           <Switch
             id="sendNotification"
             checked={(action.sendNotification as boolean) || false}
-            onCheckedChange={(checked) => onChange({ ...action, sendNotification: checked })}
+            onCheckedChange={(checked) =>
+              onChange({ ...action, sendNotification: checked })
+            }
           />
           <Label htmlFor="sendNotification">Send Notification</Label>
         </div>
@@ -343,7 +410,9 @@ function ActionBuilder({ action, onChange }: ActionBuilderProps) {
           <Switch
             id="autoEscalate"
             checked={(action.autoEscalate as boolean) || false}
-            onCheckedChange={(checked) => onChange({ ...action, autoEscalate: checked })}
+            onCheckedChange={(checked) =>
+              onChange({ ...action, autoEscalate: checked })
+            }
           />
           <Label htmlFor="autoEscalate">Auto-Escalate</Label>
         </div>
@@ -353,7 +422,9 @@ function ActionBuilder({ action, onChange }: ActionBuilderProps) {
             <Input
               id="escalateTo"
               value={(action.escalateTo as string) || ''}
-              onChange={(e) => onChange({ ...action, escalateTo: e.target.value })}
+              onChange={(e) =>
+                onChange({ ...action, escalateTo: e.target.value })
+              }
               placeholder="User ID or email"
             />
           </div>
@@ -375,24 +446,29 @@ export function RuleEditor({
 
   const [name, setName] = useState(rule?.name || '');
   const [description, setDescription] = useState(rule?.description || '');
-  const [ruleType, setRuleType] = useState<GovernanceRuleType>(rule?.ruleType || 'threshold');
+  const [ruleType, setRuleType] = useState<GovernanceRuleType>(
+    rule?.ruleType || 'threshold'
+  );
   const [targetSystem, setTargetSystem] = useState<GovernanceTargetSystem>(
     rule?.targetSystem || 'media_monitoring'
   );
-  const [condition, setCondition] = useState<Record<string, unknown>>(rule?.condition || {});
+  const [condition, setCondition] = useState<Record<string, unknown>>(
+    rule?.condition || {}
+  );
   const [action, setAction] = useState<Record<string, unknown>>(
     rule?.action || { createFinding: true }
   );
   const [priority, setPriority] = useState(rule?.priority || 50);
   const [isActive, setIsActive] = useState(rule?.isActive !== false);
-  const [evaluationMode, setEvaluationMode] = useState<GovernanceEvaluationMode>(
-    rule?.evaluationMode || 'on_event'
-  );
+  const [evaluationMode, setEvaluationMode] =
+    useState<GovernanceEvaluationMode>(rule?.evaluationMode || 'on_event');
   const [scheduleCron, setScheduleCron] = useState(rule?.scheduleCron || '');
-  const [cooldownMinutes, setCooldownMinutes] = useState(rule?.cooldownMinutes || 60);
-  const [maxFindingsPerDay, setMaxFindingsPerDay] = useState<number | undefined>(
-    rule?.maxFindingsPerDay
+  const [cooldownMinutes, setCooldownMinutes] = useState(
+    rule?.cooldownMinutes || 60
   );
+  const [maxFindingsPerDay, setMaxFindingsPerDay] = useState<
+    number | undefined
+  >(rule?.maxFindingsPerDay);
   const [tags, setTags] = useState<string[]>(rule?.tags || []);
   const [newTag, setNewTag] = useState('');
 
@@ -511,7 +587,9 @@ export function RuleEditor({
               <select
                 id="targetSystem"
                 value={targetSystem}
-                onChange={(e) => setTargetSystem(e.target.value as GovernanceTargetSystem)}
+                onChange={(e) =>
+                  setTargetSystem(e.target.value as GovernanceTargetSystem)
+                }
                 className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white text-sm"
               >
                 {targetSystems.map((system) => (
@@ -577,7 +655,9 @@ export function RuleEditor({
                   )}
                 >
                   <div className="text-sm font-medium">{mode.label}</div>
-                  <div className="text-xs text-gray-500">{mode.description}</div>
+                  <div className="text-xs text-gray-500">
+                    {mode.description}
+                  </div>
                 </button>
               ))}
             </div>
@@ -614,7 +694,9 @@ export function RuleEditor({
                 min="0"
                 value={maxFindingsPerDay || ''}
                 onChange={(e) =>
-                  setMaxFindingsPerDay(e.target.value ? parseInt(e.target.value) : undefined)
+                  setMaxFindingsPerDay(
+                    e.target.value ? parseInt(e.target.value) : undefined
+                  )
                 }
                 placeholder="Unlimited"
               />
@@ -663,10 +745,7 @@ export function RuleEditor({
               Enable or disable this rule
             </div>
           </div>
-          <Switch
-            checked={isActive}
-            onCheckedChange={setIsActive}
-          />
+          <Switch checked={isActive} onCheckedChange={setIsActive} />
         </div>
 
         {/* Actions */}

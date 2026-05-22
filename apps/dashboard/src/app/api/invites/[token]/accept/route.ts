@@ -17,7 +17,10 @@ export async function POST(
 
   if (!accessToken) {
     return NextResponse.json(
-      { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+      {
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
+      },
       { status: 401 }
     );
   }

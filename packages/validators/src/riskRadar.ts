@@ -89,146 +89,166 @@ export const riskRadarTrendDirectionSchema = z.enum([
 /**
  * Signal source schema
  */
-export const riskRadarSignalSourceSchema = z.object({
-  system: z.string(),
-  metric: z.string(),
-  value: z.number(),
-  normalizedValue: z.number().optional(),
-  timestamp: z.coerce.date(),
-  metadata: z.record(z.any()).optional(),
-}).passthrough();
+export const riskRadarSignalSourceSchema = z
+  .object({
+    system: z.string(),
+    metric: z.string(),
+    value: z.number(),
+    normalizedValue: z.number().optional(),
+    timestamp: z.coerce.date(),
+    metadata: z.record(z.any()).optional(),
+  })
+  .passthrough();
 
 /**
  * Signal matrix schema
  */
-export const riskRadarSignalMatrixSchema = z.object({
-  // Media monitoring (S40-S43)
-  mediaVolume: z.number().optional(),
-  mediaSentiment: z.number().optional(),
-  mediaReach: z.number().optional(),
-  alertCount: z.number().optional(),
-  alertSeverity: z.number().optional(),
+export const riskRadarSignalMatrixSchema = z
+  .object({
+    // Media monitoring (S40-S43)
+    mediaVolume: z.number().optional(),
+    mediaSentiment: z.number().optional(),
+    mediaReach: z.number().optional(),
+    alertCount: z.number().optional(),
+    alertSeverity: z.number().optional(),
 
-  // Crisis (S55)
-  activeCrisisCount: z.number().optional(),
-  crisisSeverity: z.number().optional(),
-  escalationCount: z.number().optional(),
+    // Crisis (S55)
+    activeCrisisCount: z.number().optional(),
+    crisisSeverity: z.number().optional(),
+    escalationCount: z.number().optional(),
 
-  // Brand reputation (S56-S57)
-  reputationScore: z.number().optional(),
-  reputationTrend: z.number().optional(),
-  sentimentShift: z.number().optional(),
+    // Brand reputation (S56-S57)
+    reputationScore: z.number().optional(),
+    reputationTrend: z.number().optional(),
+    sentimentShift: z.number().optional(),
 
-  // Competitive intelligence (S53)
-  competitivePressure: z.number().optional(),
-  marketShareChange: z.number().optional(),
-  competitorMentions: z.number().optional(),
+    // Competitive intelligence (S53)
+    competitivePressure: z.number().optional(),
+    marketShareChange: z.number().optional(),
+    competitorMentions: z.number().optional(),
 
-  // Governance (S59)
-  openFindings: z.number().optional(),
-  findingSeverity: z.number().optional(),
-  complianceScore: z.number().optional(),
+    // Governance (S59)
+    openFindings: z.number().optional(),
+    findingSeverity: z.number().optional(),
+    complianceScore: z.number().optional(),
 
-  // Persona insights (S51)
-  personaSensitivity: z.number().optional(),
-  audienceRisk: z.number().optional(),
+    // Persona insights (S51)
+    personaSensitivity: z.number().optional(),
+    audienceRisk: z.number().optional(),
 
-  // Media performance (S52)
-  performanceScore: z.number().optional(),
-  coverageQuality: z.number().optional(),
+    // Media performance (S52)
+    performanceScore: z.number().optional(),
+    coverageQuality: z.number().optional(),
 
-  // Raw signals
-  rawSignals: z.array(riskRadarSignalSourceSchema).optional(),
-}).passthrough();
+    // Raw signals
+    rawSignals: z.array(riskRadarSignalSourceSchema).optional(),
+  })
+  .passthrough();
 
 /**
  * Key concern schema
  */
-export const riskRadarConcernSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  description: z.string(),
-  severity: riskRadarLevelSchema,
-  source: z.string(),
-  relatedDriverIds: z.array(z.string()).optional(),
-  timestamp: z.coerce.date(),
-}).passthrough();
+export const riskRadarConcernSchema = z
+  .object({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    severity: riskRadarLevelSchema,
+    source: z.string(),
+    relatedDriverIds: z.array(z.string()).optional(),
+    timestamp: z.coerce.date(),
+  })
+  .passthrough();
 
 /**
  * Emerging risk schema
  */
-export const riskRadarEmergingRiskSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  probability: z.number().min(0).max(1),
-  potentialImpact: riskRadarLevelSchema,
-  firstDetected: z.coerce.date(),
-  velocity: z.number(),
-  indicators: z.array(z.string()),
-}).passthrough();
+export const riskRadarEmergingRiskSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    probability: z.number().min(0).max(1),
+    potentialImpact: riskRadarLevelSchema,
+    firstDetected: z.coerce.date(),
+    velocity: z.number(),
+    indicators: z.array(z.string()),
+  })
+  .passthrough();
 
 /**
  * Positive factor schema
  */
-export const riskRadarPositiveFactorSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  impact: z.number(),
-  source: z.string(),
-}).passthrough();
+export const riskRadarPositiveFactorSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    impact: z.number(),
+    source: z.string(),
+  })
+  .passthrough();
 
 /**
  * Projection point schema
  */
-export const riskRadarProjectionPointSchema = z.object({
-  timestamp: z.coerce.date(),
-  value: z.number().min(0).max(100),
-  confidence: z.number().min(0).max(1),
-  lowerBound: z.number().optional(),
-  upperBound: z.number().optional(),
-}).passthrough();
+export const riskRadarProjectionPointSchema = z
+  .object({
+    timestamp: z.coerce.date(),
+    value: z.number().min(0).max(100),
+    confidence: z.number().min(0).max(1),
+    lowerBound: z.number().optional(),
+    upperBound: z.number().optional(),
+  })
+  .passthrough();
 
 /**
  * Forecast assumption schema
  */
-export const riskRadarForecastAssumptionSchema = z.object({
-  assumption: z.string(),
-  confidence: z.number().min(0).max(1),
-  impact: z.enum(['low', 'medium', 'high']),
-}).passthrough();
+export const riskRadarForecastAssumptionSchema = z
+  .object({
+    assumption: z.string(),
+    confidence: z.number().min(0).max(1),
+    impact: z.enum(['low', 'medium', 'high']),
+  })
+  .passthrough();
 
 /**
  * Recommended action schema
  */
-export const riskRadarRecommendedActionSchema = z.object({
-  action: z.string(),
-  priority: z.enum(['immediate', 'high', 'medium', 'low']),
-  owner: z.string().optional(),
-  dueDate: z.coerce.date().optional(),
-  rationale: z.string().optional(),
-}).passthrough();
+export const riskRadarRecommendedActionSchema = z
+  .object({
+    action: z.string(),
+    priority: z.enum(['immediate', 'high', 'medium', 'low']),
+    owner: z.string().optional(),
+    dueDate: z.coerce.date().optional(),
+    rationale: z.string().optional(),
+  })
+  .passthrough();
 
 /**
  * Watch item schema
  */
-export const riskRadarWatchItemSchema = z.object({
-  item: z.string(),
-  reason: z.string(),
-  threshold: z.number().optional(),
-  currentValue: z.number().optional(),
-}).passthrough();
+export const riskRadarWatchItemSchema = z
+  .object({
+    item: z.string(),
+    reason: z.string(),
+    threshold: z.number().optional(),
+    currentValue: z.number().optional(),
+  })
+  .passthrough();
 
 /**
  * Affected entity schema
  */
-export const riskRadarAffectedEntitySchema = z.object({
-  entityType: z.string(),
-  entityId: z.string(),
-  entityName: z.string().optional(),
-  impact: riskRadarLevelSchema,
-}).passthrough();
+export const riskRadarAffectedEntitySchema = z
+  .object({
+    entityType: z.string(),
+    entityId: z.string(),
+    entityName: z.string().optional(),
+    impact: riskRadarLevelSchema,
+  })
+  .passthrough();
 
 // ========================================
 // Entity Schemas
@@ -391,7 +411,11 @@ export const createRiskRadarSnapshotInputSchema = z.object({
   title: z.string().max(255).optional(),
   description: z.string().optional(),
   signalMatrix: riskRadarSignalMatrixSchema.optional(),
-  computationMethod: z.string().max(50).optional().default('weighted_aggregate'),
+  computationMethod: z
+    .string()
+    .max(50)
+    .optional()
+    .default('weighted_aggregate'),
 });
 
 /**
@@ -456,7 +480,10 @@ export const createRiskRadarDriverInputSchema = z.object({
   sourceData: z.record(z.any()).optional().default({}),
   isEmerging: z.boolean().optional().default(false),
   isTurningPoint: z.boolean().optional().default(false),
-  affectedEntities: z.array(riskRadarAffectedEntitySchema).optional().default([]),
+  affectedEntities: z
+    .array(riskRadarAffectedEntitySchema)
+    .optional()
+    .default([]),
   relatedIndicatorIds: z.array(z.string().uuid()).optional().default([]),
   tags: z.array(z.string()).optional().default([]),
 });
@@ -495,14 +522,19 @@ export const updateRiskRadarNoteInputSchema = z.object({
  * Snapshots query schema
  */
 export const riskRadarSnapshotsQuerySchema = z.object({
-  riskLevel: z.union([riskRadarLevelSchema, z.array(riskRadarLevelSchema)]).optional(),
+  riskLevel: z
+    .union([riskRadarLevelSchema, z.array(riskRadarLevelSchema)])
+    .optional(),
   isActive: z.coerce.boolean().optional(),
   isArchived: z.coerce.boolean().optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
   minRiskIndex: z.coerce.number().min(0).max(100).optional(),
   maxRiskIndex: z.coerce.number().min(0).max(100).optional(),
-  sortBy: z.enum(['snapshot_date', 'overall_risk_index', 'created_at']).optional().default('snapshot_date'),
+  sortBy: z
+    .enum(['snapshot_date', 'overall_risk_index', 'created_at'])
+    .optional()
+    .default('snapshot_date'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(20),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -512,12 +544,20 @@ export const riskRadarSnapshotsQuerySchema = z.object({
  * Indicators query schema
  */
 export const riskRadarIndicatorsQuerySchema = z.object({
-  indicatorType: z.union([riskRadarIndicatorTypeSchema, z.array(riskRadarIndicatorTypeSchema)]).optional(),
+  indicatorType: z
+    .union([
+      riskRadarIndicatorTypeSchema,
+      z.array(riskRadarIndicatorTypeSchema),
+    ])
+    .optional(),
   sourceSystem: z.string().optional(),
   minScore: z.coerce.number().min(0).max(100).optional(),
   maxScore: z.coerce.number().min(0).max(100).optional(),
   trendDirection: riskRadarTrendDirectionSchema.optional(),
-  sortBy: z.enum(['score', 'created_at', 'indicator_type']).optional().default('score'),
+  sortBy: z
+    .enum(['score', 'created_at', 'indicator_type'])
+    .optional()
+    .default('score'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(50),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -527,11 +567,19 @@ export const riskRadarIndicatorsQuerySchema = z.object({
  * Forecasts query schema
  */
 export const riskRadarForecastsQuerySchema = z.object({
-  horizon: z.union([riskRadarForecastHorizonSchema, z.array(riskRadarForecastHorizonSchema)]).optional(),
+  horizon: z
+    .union([
+      riskRadarForecastHorizonSchema,
+      z.array(riskRadarForecastHorizonSchema),
+    ])
+    .optional(),
   isCurrent: z.coerce.boolean().optional(),
   minProbability: z.coerce.number().min(0).max(1).optional(),
   maxProbability: z.coerce.number().min(0).max(1).optional(),
-  sortBy: z.enum(['forecast_date', 'predicted_risk_index', 'probability_of_crisis']).optional().default('forecast_date'),
+  sortBy: z
+    .enum(['forecast_date', 'predicted_risk_index', 'probability_of_crisis'])
+    .optional()
+    .default('forecast_date'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(20),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -541,12 +589,22 @@ export const riskRadarForecastsQuerySchema = z.object({
  * Drivers query schema
  */
 export const riskRadarDriversQuerySchema = z.object({
-  category: z.union([riskRadarDriverCategorySchema, z.array(riskRadarDriverCategorySchema)]).optional(),
-  urgency: z.union([riskRadarLevelSchema, z.array(riskRadarLevelSchema)]).optional(),
+  category: z
+    .union([
+      riskRadarDriverCategorySchema,
+      z.array(riskRadarDriverCategorySchema),
+    ])
+    .optional(),
+  urgency: z
+    .union([riskRadarLevelSchema, z.array(riskRadarLevelSchema)])
+    .optional(),
   isEmerging: z.coerce.boolean().optional(),
   isTurningPoint: z.coerce.boolean().optional(),
   minImpactScore: z.coerce.number().min(0).max(100).optional(),
-  sortBy: z.enum(['impact_score', 'contribution_percentage', 'created_at']).optional().default('impact_score'),
+  sortBy: z
+    .enum(['impact_score', 'contribution_percentage', 'created_at'])
+    .optional()
+    .default('impact_score'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(20),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -556,7 +614,9 @@ export const riskRadarDriversQuerySchema = z.object({
  * Notes query schema
  */
 export const riskRadarNotesQuerySchema = z.object({
-  noteType: z.union([riskRadarNoteTypeSchema, z.array(riskRadarNoteTypeSchema)]).optional(),
+  noteType: z
+    .union([riskRadarNoteTypeSchema, z.array(riskRadarNoteTypeSchema)])
+    .optional(),
   isExecutiveVisible: z.coerce.boolean().optional(),
   isPinned: z.coerce.boolean().optional(),
   createdBy: z.string().uuid().optional(),
@@ -570,10 +630,22 @@ export const riskRadarNotesQuerySchema = z.object({
  * Dashboard query schema
  */
 export const riskRadarDashboardQuerySchema = z.object({
-  trendPeriodDays: z.coerce.number().int().min(1).max(365).optional().default(30),
+  trendPeriodDays: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(365)
+    .optional()
+    .default(30),
   includeForecasts: z.coerce.boolean().optional().default(true),
   topDriversLimit: z.coerce.number().int().min(1).max(20).optional().default(5),
-  recentNotesLimit: z.coerce.number().int().min(1).max(20).optional().default(5),
+  recentNotesLimit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(20)
+    .optional()
+    .default(5),
 });
 
 // ========================================
@@ -606,35 +678,75 @@ export const riskRadarNoteIdParamSchema = z.object({
 // ========================================
 
 export type RiskRadarLevelType = z.infer<typeof riskRadarLevelSchema>;
-export type RiskRadarIndicatorTypeType = z.infer<typeof riskRadarIndicatorTypeSchema>;
-export type RiskRadarForecastHorizonType = z.infer<typeof riskRadarForecastHorizonSchema>;
-export type RiskRadarDriverCategoryType = z.infer<typeof riskRadarDriverCategorySchema>;
+export type RiskRadarIndicatorTypeType = z.infer<
+  typeof riskRadarIndicatorTypeSchema
+>;
+export type RiskRadarForecastHorizonType = z.infer<
+  typeof riskRadarForecastHorizonSchema
+>;
+export type RiskRadarDriverCategoryType = z.infer<
+  typeof riskRadarDriverCategorySchema
+>;
 export type RiskRadarNoteTypeType = z.infer<typeof riskRadarNoteTypeSchema>;
-export type RiskRadarTrendDirectionType = z.infer<typeof riskRadarTrendDirectionSchema>;
+export type RiskRadarTrendDirectionType = z.infer<
+  typeof riskRadarTrendDirectionSchema
+>;
 
-export type RiskRadarSignalMatrixType = z.infer<typeof riskRadarSignalMatrixSchema>;
+export type RiskRadarSignalMatrixType = z.infer<
+  typeof riskRadarSignalMatrixSchema
+>;
 export type RiskRadarConcernType = z.infer<typeof riskRadarConcernSchema>;
-export type RiskRadarEmergingRiskType = z.infer<typeof riskRadarEmergingRiskSchema>;
-export type RiskRadarPositiveFactorType = z.infer<typeof riskRadarPositiveFactorSchema>;
+export type RiskRadarEmergingRiskType = z.infer<
+  typeof riskRadarEmergingRiskSchema
+>;
+export type RiskRadarPositiveFactorType = z.infer<
+  typeof riskRadarPositiveFactorSchema
+>;
 
 export type RiskRadarSnapshotType = z.infer<typeof riskRadarSnapshotSchema>;
-export type RiskRadarIndicatorSchemaType = z.infer<typeof riskRadarIndicatorSchema>;
+export type RiskRadarIndicatorSchemaType = z.infer<
+  typeof riskRadarIndicatorSchema
+>;
 export type RiskRadarForecastType = z.infer<typeof riskRadarForecastSchema>;
 export type RiskRadarDriverType = z.infer<typeof riskRadarDriverSchema>;
 export type RiskRadarNoteType = z.infer<typeof riskRadarNoteSchema>;
 
-export type CreateRiskRadarSnapshotInput = z.infer<typeof createRiskRadarSnapshotInputSchema>;
-export type UpdateRiskRadarSnapshotInput = z.infer<typeof updateRiskRadarSnapshotInputSchema>;
-export type CreateRiskRadarIndicatorInput = z.infer<typeof createRiskRadarIndicatorInputSchema>;
-export type CreateRiskRadarForecastInput = z.infer<typeof createRiskRadarForecastInputSchema>;
-export type RegenerateRiskRadarForecastInput = z.infer<typeof regenerateRiskRadarForecastInputSchema>;
-export type CreateRiskRadarDriverInput = z.infer<typeof createRiskRadarDriverInputSchema>;
-export type CreateRiskRadarNoteInput = z.infer<typeof createRiskRadarNoteInputSchema>;
-export type UpdateRiskRadarNoteInput = z.infer<typeof updateRiskRadarNoteInputSchema>;
+export type CreateRiskRadarSnapshotInput = z.infer<
+  typeof createRiskRadarSnapshotInputSchema
+>;
+export type UpdateRiskRadarSnapshotInput = z.infer<
+  typeof updateRiskRadarSnapshotInputSchema
+>;
+export type CreateRiskRadarIndicatorInput = z.infer<
+  typeof createRiskRadarIndicatorInputSchema
+>;
+export type CreateRiskRadarForecastInput = z.infer<
+  typeof createRiskRadarForecastInputSchema
+>;
+export type RegenerateRiskRadarForecastInput = z.infer<
+  typeof regenerateRiskRadarForecastInputSchema
+>;
+export type CreateRiskRadarDriverInput = z.infer<
+  typeof createRiskRadarDriverInputSchema
+>;
+export type CreateRiskRadarNoteInput = z.infer<
+  typeof createRiskRadarNoteInputSchema
+>;
+export type UpdateRiskRadarNoteInput = z.infer<
+  typeof updateRiskRadarNoteInputSchema
+>;
 
-export type RiskRadarSnapshotsQuery = z.infer<typeof riskRadarSnapshotsQuerySchema>;
-export type RiskRadarIndicatorsQuery = z.infer<typeof riskRadarIndicatorsQuerySchema>;
-export type RiskRadarForecastsQuery = z.infer<typeof riskRadarForecastsQuerySchema>;
+export type RiskRadarSnapshotsQuery = z.infer<
+  typeof riskRadarSnapshotsQuerySchema
+>;
+export type RiskRadarIndicatorsQuery = z.infer<
+  typeof riskRadarIndicatorsQuerySchema
+>;
+export type RiskRadarForecastsQuery = z.infer<
+  typeof riskRadarForecastsQuerySchema
+>;
 export type RiskRadarDriversQuery = z.infer<typeof riskRadarDriversQuerySchema>;
 export type RiskRadarNotesQuery = z.infer<typeof riskRadarNotesQuerySchema>;
-export type RiskRadarDashboardQuery = z.infer<typeof riskRadarDashboardQuerySchema>;
+export type RiskRadarDashboardQuery = z.infer<
+  typeof riskRadarDashboardQuerySchema
+>;

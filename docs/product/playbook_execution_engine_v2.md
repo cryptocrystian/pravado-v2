@@ -32,6 +32,7 @@ The Playbook Execution Engine V2 is an asynchronous, queue-based execution syste
 ### New Columns (Migration 30)
 
 #### `playbook_runs` table:
+
 - `state` (text): Current execution state (queued|running|success|failed|waiting_for_dependencies|blocked|canceled)
 - `worker_info` (jsonb): Worker metadata (workerId, timestamps)
 - `webhook_url` (text): Optional webhook URL for completion notifications
@@ -39,6 +40,7 @@ The Playbook Execution Engine V2 is an asynchronous, queue-based execution syste
 - `completed_at` (timestamptz): Actual execution completion time
 
 #### `playbook_step_runs` table:
+
 - `state` (text): Step execution state (same values as run state)
 - `attempt` (integer): Current retry attempt number (0-indexed)
 - `max_attempts` (integer): Maximum retry attempts allowed (default: 3)
@@ -54,6 +56,7 @@ POST /api/v1/playbooks/:id/execute-async
 ```
 
 **Request Body:**
+
 ```json
 {
   "input": { ... },
@@ -63,6 +66,7 @@ POST /api/v1/playbooks/:id/execute-async
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -80,6 +84,7 @@ GET /api/v1/playbooks/runs/:id/state
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -129,6 +134,7 @@ GET /api/v1/playbooks/queue/stats
 Returns queue and worker pool statistics for monitoring.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -165,6 +171,7 @@ Returns queue and worker pool statistics for monitoring.
 ### Step States
 
 Same as run states, plus:
+
 - **skipped**: Step was skipped due to conditional logic
 
 ## Configuration
@@ -216,11 +223,13 @@ Steps with no dependencies or whose dependencies are all satisfied execute in pa
 Steps that fail are automatically retried up to `max_attempts` times with exponential backoff.
 
 **Backoff Formula:**
+
 ```
 delay = min(retryDelayMs * (backoffMultiplier ^ attempt), maxRetryDelayMs)
 ```
 
 **Example:**
+
 - Attempt 1: 1000ms delay
 - Attempt 2: 2000ms delay
 - Attempt 3: 4000ms delay
@@ -385,11 +394,13 @@ pnpm test playbookExecutionEngineV2
 **Symptoms:** Jobs remain in `queued` state indefinitely
 
 **Causes:**
+
 - Worker pool not started
 - All workers busy
 - Dependency deadlock
 
 **Solutions:**
+
 1. Check `GET /queue/stats` for worker status
 2. Verify worker pool is started
 3. Check for circular dependencies in playbook
@@ -399,11 +410,13 @@ pnpm test playbookExecutionEngineV2
 **Symptoms:** Steps marked as `failed` without retries
 
 **Causes:**
+
 - Max attempts reached
 - Retry logic disabled
 - Job cancelled
 
 **Solutions:**
+
 1. Check step run `attempt` and `max_attempts` values
 2. Manually resume via `/resume` endpoint
 3. Check run state for `canceled`
@@ -413,11 +426,13 @@ pnpm test playbookExecutionEngineV2
 **Symptoms:** No webhook calls received
 
 **Causes:**
+
 - Webhook URL not set
 - Webhooks disabled in config
 - Network issues
 
 **Solutions:**
+
 1. Verify `webhook_url` in playbook run
 2. Check engine config `enableWebhooks: true`
 3. Check network connectivity and firewall rules

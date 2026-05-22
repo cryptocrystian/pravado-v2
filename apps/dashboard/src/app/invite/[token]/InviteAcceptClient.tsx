@@ -11,7 +11,13 @@ interface InviteAcceptClientProps {
   token: string;
 }
 
-type InviteStatus = 'loading' | 'accepting' | 'success' | 'error' | 'expired' | 'not_found';
+type InviteStatus =
+  | 'loading'
+  | 'accepting'
+  | 'success'
+  | 'error'
+  | 'expired'
+  | 'not_found';
 
 export function InviteAcceptClient({ token }: InviteAcceptClientProps) {
   const router = useRouter();
@@ -125,7 +131,8 @@ export function InviteAcceptClient({ token }: InviteAcceptClientProps) {
                 Invitation Expired
               </h2>
               <p className="text-gray-600 mb-4">
-                This invitation has expired. Please contact the organization admin to send you a new invitation.
+                This invitation has expired. Please contact the organization
+                admin to send you a new invitation.
               </p>
               <button
                 onClick={() => router.push('/app')}
@@ -184,7 +191,9 @@ export function InviteAcceptClient({ token }: InviteAcceptClientProps) {
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
                 Error
               </h2>
-              <p className="text-gray-600 mb-4">{error || 'An error occurred'}</p>
+              <p className="text-gray-600 mb-4">
+                {error || 'An error occurred'}
+              </p>
               <button
                 onClick={() => acceptInvite()}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mr-2"

@@ -9,7 +9,12 @@ import dynamic from 'next/dynamic';
 import { Suspense, useCallback } from 'react';
 
 import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
-import { mockHeadlineMetrics, mockAttribution, mockTopWins, mockNarratives } from '@/components/analytics/analytics-mock-data';
+import {
+  mockHeadlineMetrics,
+  mockAttribution,
+  mockTopWins,
+  mockNarratives,
+} from '@/components/analytics/analytics-mock-data';
 import { CompetitiveSnapshot } from '@/components/analytics/CompetitiveSnapshot';
 import { HeadlineMetrics } from '@/components/analytics/HeadlineMetrics';
 import { PillarContribution } from '@/components/analytics/PillarContribution';
@@ -19,9 +24,9 @@ import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 const EviGrowthChart = dynamic(
   () =>
     import('@/components/analytics/EviGrowthChart').then(
-      (mod) => mod.EviGrowthChart,
+      (mod) => mod.EviGrowthChart
     ),
-  { ssr: false },
+  { ssr: false }
 );
 
 function ChartSkeleton() {
@@ -38,11 +43,31 @@ export default function AnalyticsOverviewPage() {
     const csv = arrayToCsv(
       ['Metric', 'Value', 'Detail'],
       [
-        ['EVI Change', mockHeadlineMetrics.eviChange.value, `${mockHeadlineMetrics.eviChange.from} → ${mockHeadlineMetrics.eviChange.to}`],
-        ['Content Published', String(mockHeadlineMetrics.contentPublished.value), `Goal: ${mockHeadlineMetrics.contentPublished.goal}`],
-        ['Earned Placements', String(mockHeadlineMetrics.earnedPlacements.value), `Goal: ${mockHeadlineMetrics.earnedPlacements.goal}`],
-        ['AI Citations', String(mockHeadlineMetrics.totalCitations.value), `+${mockHeadlineMetrics.totalCitations.deltaPercent}%`],
-        ...mockAttribution.map(a => ['Attribution: ' + a.label, a.percent + '%', '']),
+        [
+          'EVI Change',
+          mockHeadlineMetrics.eviChange.value,
+          `${mockHeadlineMetrics.eviChange.from} → ${mockHeadlineMetrics.eviChange.to}`,
+        ],
+        [
+          'Content Published',
+          String(mockHeadlineMetrics.contentPublished.value),
+          `Goal: ${mockHeadlineMetrics.contentPublished.goal}`,
+        ],
+        [
+          'Earned Placements',
+          String(mockHeadlineMetrics.earnedPlacements.value),
+          `Goal: ${mockHeadlineMetrics.earnedPlacements.goal}`,
+        ],
+        [
+          'AI Citations',
+          String(mockHeadlineMetrics.totalCitations.value),
+          `+${mockHeadlineMetrics.totalCitations.deltaPercent}%`,
+        ],
+        ...mockAttribution.map((a) => [
+          'Attribution: ' + a.label,
+          a.percent + '%',
+          '',
+        ]),
         ...mockTopWins.map((w, i) => [`Top Win #${i + 1}`, w, '']),
       ]
     );

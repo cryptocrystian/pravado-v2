@@ -144,10 +144,12 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should throw error on database failure', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-                data: null,
-                error: { message: 'Database error' },
-              }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: null,
+            error: { message: 'Database error' },
+          })
+        );
 
         await expect(
           createNode(ctx, {
@@ -160,7 +162,9 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('getNode', () => {
       it('should retrieve a node by ID', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({ data: mockNode, error: null }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({ data: mockNode, error: null })
+        );
 
         const result = await getNode(ctx, 'node-123');
 
@@ -170,10 +174,12 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should return null for non-existent node', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: null,
-              error: { code: 'PGRST116', message: 'Not found' },
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: null,
+            error: { code: 'PGRST116', message: 'Not found' },
+          })
+        );
 
         const result = await getNode(ctx, 'nonexistent');
 
@@ -247,11 +253,13 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('listNodes', () => {
       it('should list nodes with pagination', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockNode],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockNode],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listNodes(ctx, {
           limit: 20,
@@ -264,11 +272,13 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter nodes by type', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockNode],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockNode],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listNodes(ctx, {
           nodeTypes: [NodeType.CONTENT_PIECE],
@@ -279,11 +289,13 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter nodes by search term', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockNode],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockNode],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listNodes(ctx, {
           search: 'test',
@@ -294,11 +306,13 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter by active status', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockNode],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockNode],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listNodes(ctx, {
           isActive: true,
@@ -388,9 +402,9 @@ describe('UnifiedIntelligenceGraphService', () => {
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
             return createMockQuery({
-                  data: [{ id: 'node-1' }, { id: 'node-2' }],
-                  error: null,
-                });
+              data: [{ id: 'node-1' }, { id: 'node-2' }],
+              error: null,
+            });
           }
           if (table === 'intelligence_edges') {
             return createMockQuery({ data: mockEdge, error: null });
@@ -418,9 +432,9 @@ describe('UnifiedIntelligenceGraphService', () => {
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
             return createMockQuery({
-                  data: [{ id: 'node-1' }], // Only one node found
-                  error: null,
-                });
+              data: [{ id: 'node-1' }], // Only one node found
+              error: null,
+            });
           }
           return {};
         });
@@ -440,9 +454,9 @@ describe('UnifiedIntelligenceGraphService', () => {
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
             return createMockQuery({
-                  data: [{ id: 'node-1' }, { id: 'node-2' }],
-                  error: null,
-                });
+              data: [{ id: 'node-1' }, { id: 'node-2' }],
+              error: null,
+            });
           }
           if (table === 'intelligence_edges') {
             return createMockQuery({ data: bidirectionalEdge, error: null });
@@ -463,7 +477,9 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('getEdge', () => {
       it('should retrieve an edge by ID', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({ data: mockEdge, error: null }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({ data: mockEdge, error: null })
+        );
 
         const result = await getEdge(ctx, 'edge-123');
 
@@ -473,10 +489,12 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should return null for non-existent edge', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: null,
-              error: { code: 'PGRST116', message: 'Not found' },
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: null,
+            error: { code: 'PGRST116', message: 'Not found' },
+          })
+        );
 
         const result = await getEdge(ctx, 'nonexistent');
 
@@ -539,11 +557,13 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('listEdges', () => {
       it('should list edges with pagination', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockEdge],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockEdge],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listEdges(ctx, {
           limit: 20,
@@ -555,11 +575,13 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter edges by type', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockEdge],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockEdge],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listEdges(ctx, {
           edgeTypes: [EdgeType.AUTHORED_BY],
@@ -570,11 +592,13 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter edges by weight range', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockEdge],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockEdge],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listEdges(ctx, {
           minWeight: 1.0,
@@ -615,9 +639,9 @@ describe('UnifiedIntelligenceGraphService', () => {
           if (table === 'intelligence_nodes') {
             callCount++;
             return createMockQuery({
-                  data: [sourceNode, targetNode],
-                  error: null,
-                });
+              data: [sourceNode, targetNode],
+              error: null,
+            });
           }
           return {};
         });
@@ -795,7 +819,11 @@ describe('UnifiedIntelligenceGraphService', () => {
     describe('traverseGraph', () => {
       it('should traverse graph from start node', async () => {
         const startNode = { ...mockNode, id: 'start-node' };
-        const neighborNode = { ...mockNode, id: 'neighbor-node', label: 'Neighbor' };
+        const neighborNode = {
+          ...mockNode,
+          id: 'neighbor-node',
+          label: 'Neighbor',
+        };
         const mockEdge = {
           id: 'edge-1',
           org_id: 'org-123',
@@ -856,10 +884,12 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should throw error for non-existent start node', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: null,
-              error: { code: 'PGRST116', message: 'Not found' },
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: null,
+            error: { code: 'PGRST116', message: 'Not found' },
+          })
+        );
 
         await expect(
           traverseGraph(ctx, {
@@ -886,15 +916,15 @@ describe('UnifiedIntelligenceGraphService', () => {
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
             return createMockQuery({
-                  data: [nodeA, nodeB],
-                  error: null,
-                });
+              data: [nodeA, nodeB],
+              error: null,
+            });
           }
           if (table === 'intelligence_edges') {
             return createMockQuery({
-                  data: [edge],
-                  error: null,
-                });
+              data: [edge],
+              error: null,
+            });
           }
           return {};
         });
@@ -915,7 +945,12 @@ describe('UnifiedIntelligenceGraphService', () => {
           return {};
         });
 
-        const result = await findShortestPath(ctx, 'node-a', 'node-disconnected', 3);
+        const result = await findShortestPath(
+          ctx,
+          'node-a',
+          'node-disconnected',
+          3
+        );
 
         expect(result).toBeNull();
       });
@@ -930,8 +965,20 @@ describe('UnifiedIntelligenceGraphService', () => {
     describe('computeMetrics', () => {
       it('should compute graph metrics', async () => {
         const nodes = [
-          { id: 'node-1', org_id: 'org-123', node_type: 'content_piece', label: 'A', is_active: true },
-          { id: 'node-2', org_id: 'org-123', node_type: 'journalist', label: 'B', is_active: true },
+          {
+            id: 'node-1',
+            org_id: 'org-123',
+            node_type: 'content_piece',
+            label: 'A',
+            is_active: true,
+          },
+          {
+            id: 'node-2',
+            org_id: 'org-123',
+            node_type: 'journalist',
+            label: 'B',
+            is_active: true,
+          },
         ];
         const edges = [
           {
@@ -967,13 +1014,41 @@ describe('UnifiedIntelligenceGraphService', () => {
 
       it('should compute density correctly', async () => {
         const nodes = [
-          { id: 'node-1', org_id: 'org-123', node_type: 'a', label: 'A', is_active: true },
-          { id: 'node-2', org_id: 'org-123', node_type: 'b', label: 'B', is_active: true },
-          { id: 'node-3', org_id: 'org-123', node_type: 'c', label: 'C', is_active: true },
+          {
+            id: 'node-1',
+            org_id: 'org-123',
+            node_type: 'a',
+            label: 'A',
+            is_active: true,
+          },
+          {
+            id: 'node-2',
+            org_id: 'org-123',
+            node_type: 'b',
+            label: 'B',
+            is_active: true,
+          },
+          {
+            id: 'node-3',
+            org_id: 'org-123',
+            node_type: 'c',
+            label: 'C',
+            is_active: true,
+          },
         ];
         const edges = [
-          { id: 'edge-1', source_node_id: 'node-1', target_node_id: 'node-2', edge_type: 'x' },
-          { id: 'edge-2', source_node_id: 'node-2', target_node_id: 'node-3', edge_type: 'x' },
+          {
+            id: 'edge-1',
+            source_node_id: 'node-1',
+            target_node_id: 'node-2',
+            edge_type: 'x',
+          },
+          {
+            id: 'edge-2',
+            source_node_id: 'node-2',
+            target_node_id: 'node-3',
+            edge_type: 'x',
+          },
         ];
 
         mockSupabase.from.mockImplementation((table: string) => {
@@ -1000,9 +1075,9 @@ describe('UnifiedIntelligenceGraphService', () => {
       it('should return current graph metrics', async () => {
         mockSupabase.from.mockImplementation((table: string) => {
           return createMockQuery({
-                data: [{ id: 'node-1', label: 'A', degree_centrality: 0.5 }],
-                error: null,
-              });
+            data: [{ id: 'node-1', label: 'A', degree_centrality: 0.5 }],
+            error: null,
+          });
         });
 
         const result = await getMetrics(ctx);
@@ -1072,9 +1147,15 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('getSnapshot', () => {
       it('should retrieve a snapshot by ID', async () => {
-        const completeSnapshot = { ...mockSnapshot, status: 'complete', node_count: 100 };
+        const completeSnapshot = {
+          ...mockSnapshot,
+          status: 'complete',
+          node_count: 100,
+        };
 
-        mockSupabase.from.mockReturnValue(createMockQuery({ data: completeSnapshot, error: null }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({ data: completeSnapshot, error: null })
+        );
 
         const result = await getSnapshot(ctx, 'snapshot-123');
 
@@ -1084,10 +1165,12 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should return null for non-existent snapshot', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: null,
-              error: { code: 'PGRST116', message: 'Not found' },
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: null,
+            error: { code: 'PGRST116', message: 'Not found' },
+          })
+        );
 
         const result = await getSnapshot(ctx, 'nonexistent');
 
@@ -1097,11 +1180,13 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('listSnapshots', () => {
       it('should list snapshots with pagination', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockSnapshot],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockSnapshot],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listSnapshots(ctx, {
           limit: 20,
@@ -1115,11 +1200,13 @@ describe('UnifiedIntelligenceGraphService', () => {
       it('should filter snapshots by status', async () => {
         const completeSnapshot = { ...mockSnapshot, status: 'complete' };
 
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [completeSnapshot],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [completeSnapshot],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listSnapshots(ctx, {
           status: GraphSnapshotStatus.COMPLETE,
@@ -1153,10 +1240,12 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should throw error for non-existent snapshot', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: null,
-              error: { code: 'PGRST116', message: 'Not found' },
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: null,
+            error: { code: 'PGRST116', message: 'Not found' },
+          })
+        );
 
         await expect(regenerateSnapshot(ctx, 'nonexistent')).rejects.toThrow(
           'Snapshot not found'
@@ -1191,11 +1280,13 @@ describe('UnifiedIntelligenceGraphService', () => {
 
     describe('listAuditLogs', () => {
       it('should list audit logs with pagination', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockAuditLog],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockAuditLog],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listAuditLogs(ctx, {
           limit: 50,
@@ -1208,11 +1299,13 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter by event type', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockAuditLog],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockAuditLog],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listAuditLogs(ctx, {
           eventType: GraphEventType.NODE_CREATED,
@@ -1222,11 +1315,13 @@ describe('UnifiedIntelligenceGraphService', () => {
       });
 
       it('should filter by node ID', async () => {
-        mockSupabase.from.mockReturnValue(createMockQuery({
-              data: [mockAuditLog],
-              count: 1,
-              error: null,
-            }));
+        mockSupabase.from.mockReturnValue(
+          createMockQuery({
+            data: [mockAuditLog],
+            count: 1,
+            error: null,
+          })
+        );
 
         const result = await listAuditLogs(ctx, {
           nodeId: 'node-123',
@@ -1256,7 +1351,11 @@ describe('UnifiedIntelligenceGraphService', () => {
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
-            return createMockQuery({ data: [mockNode], count: 10, error: null });
+            return createMockQuery({
+              data: [mockNode],
+              count: 10,
+              error: null,
+            });
           }
           if (table === 'intelligence_edges') {
             return createMockQuery({ data: [], count: 5, error: null });
@@ -1278,17 +1377,27 @@ describe('UnifiedIntelligenceGraphService', () => {
 
       it('should include recent nodes in stats', async () => {
         const recentNodes = [
-          { id: 'node-1', node_type: 'a', label: 'A', created_at: '2024-01-02T00:00:00Z' },
-          { id: 'node-2', node_type: 'b', label: 'B', created_at: '2024-01-01T00:00:00Z' },
+          {
+            id: 'node-1',
+            node_type: 'a',
+            label: 'A',
+            created_at: '2024-01-02T00:00:00Z',
+          },
+          {
+            id: 'node-2',
+            node_type: 'b',
+            label: 'B',
+            created_at: '2024-01-01T00:00:00Z',
+          },
         ];
 
         mockSupabase.from.mockImplementation((table: string) => {
           if (table === 'intelligence_nodes') {
             return createMockQuery({
-                  data: recentNodes,
-                  count: 2,
-                  error: null,
-                });
+              data: recentNodes,
+              count: 2,
+              error: null,
+            });
           }
           if (table === 'intelligence_edges') {
             return createMockQuery({ data: [], count: 0, error: null });
@@ -1313,11 +1422,13 @@ describe('UnifiedIntelligenceGraphService', () => {
 
   describe('Edge Cases & Error Handling', () => {
     it('should handle empty results gracefully', async () => {
-      mockSupabase.from.mockReturnValue(createMockQuery({
-            data: [],
-            count: 0,
-            error: null,
-          }));
+      mockSupabase.from.mockReturnValue(
+        createMockQuery({
+          data: [],
+          count: 0,
+          error: null,
+        })
+      );
 
       const result = await listNodes(ctx, { limit: 20 });
 
@@ -1326,10 +1437,12 @@ describe('UnifiedIntelligenceGraphService', () => {
     });
 
     it('should handle database errors', async () => {
-      mockSupabase.from.mockReturnValue(createMockQuery({
-            data: null,
-            error: { message: 'Connection timeout' },
-          }));
+      mockSupabase.from.mockReturnValue(
+        createMockQuery({
+          data: null,
+          error: { message: 'Connection timeout' },
+        })
+      );
 
       await expect(listNodes(ctx, { limit: 20 })).rejects.toThrow(
         'Failed to list nodes: Connection timeout'
@@ -1365,7 +1478,9 @@ describe('UnifiedIntelligenceGraphService', () => {
         updated_by: null,
       };
 
-      mockSupabase.from.mockReturnValue(createMockQuery({ data: nodeWithNulls, error: null }));
+      mockSupabase.from.mockReturnValue(
+        createMockQuery({ data: nodeWithNulls, error: null })
+      );
 
       const result = await getNode(ctx, 'node-123');
 
@@ -1388,11 +1503,13 @@ describe('UnifiedIntelligenceGraphService', () => {
           updated_at: '2024-01-01T00:00:00Z',
         }));
 
-      mockSupabase.from.mockReturnValue(createMockQuery({
-            data: manyNodes,
-            count: 100,
-            error: null,
-          }));
+      mockSupabase.from.mockReturnValue(
+        createMockQuery({
+          data: manyNodes,
+          count: 100,
+          error: null,
+        })
+      );
 
       const result = await listNodes(ctx, { limit: 100 });
 

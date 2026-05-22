@@ -105,8 +105,20 @@ export function ExecDigestStatsCard({
             label="Delivery Rate"
             value={`${deliveryRate}%`}
             subValue="success rate"
-            iconColor={deliveryRate >= 90 ? 'text-green-600' : deliveryRate >= 70 ? 'text-yellow-600' : 'text-red-600'}
-            bgColor={deliveryRate >= 90 ? 'bg-green-50' : deliveryRate >= 70 ? 'bg-yellow-50' : 'bg-red-50'}
+            iconColor={
+              deliveryRate >= 90
+                ? 'text-green-600'
+                : deliveryRate >= 70
+                  ? 'text-yellow-600'
+                  : 'text-red-600'
+            }
+            bgColor={
+              deliveryRate >= 90
+                ? 'bg-green-50'
+                : deliveryRate >= 70
+                  ? 'bg-yellow-50'
+                  : 'bg-red-50'
+            }
             isLoading={isLoading}
           />
         </div>
@@ -148,9 +160,7 @@ function StatItem({
             value
           )}
         </div>
-        {subValue && (
-          <div className="text-xs text-gray-400">{subValue}</div>
-        )}
+        {subValue && <div className="text-xs text-gray-400">{subValue}</div>}
       </div>
     </div>
   );

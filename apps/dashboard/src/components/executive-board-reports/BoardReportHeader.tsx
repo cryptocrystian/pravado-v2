@@ -39,7 +39,6 @@ import {
 } from '@/lib/executiveBoardReportApi';
 import { cn } from '@/lib/utils';
 
-
 interface BoardReportHeaderProps {
   report: ExecBoardReport;
   isGenerating?: boolean;
@@ -86,11 +85,15 @@ export function BoardReportHeader({
           <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
             <span>{getFormatLabel(report.format)}</span>
             <span>|</span>
-            <span>{formatPeriodRange(report.periodStart, report.periodEnd)}</span>
+            <span>
+              {formatPeriodRange(report.periodStart, report.periodEnd)}
+            </span>
             {report.fiscalQuarter && (
               <>
                 <span>|</span>
-                <span>{formatFiscalQuarter(report.fiscalQuarter, report.fiscalYear)}</span>
+                <span>
+                  {formatFiscalQuarter(report.fiscalQuarter, report.fiscalYear)}
+                </span>
               </>
             )}
           </div>
@@ -127,11 +130,7 @@ export function BoardReportHeader({
           )}
 
           {canPublish && (
-            <Button
-              size="sm"
-              onClick={onPublish}
-              disabled={isPublishing}
-            >
+            <Button size="sm" onClick={onPublish} disabled={isPublishing}>
               {isPublishing ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (

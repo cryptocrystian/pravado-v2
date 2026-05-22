@@ -45,8 +45,12 @@ export class ContextAssembler {
 
   constructor(supabase: SupabaseClient, options: ContextAssemblerOptions = {}) {
     this.supabase = supabase;
-    this.memoryRetrieval = new MemoryRetrievalService(supabase, { debugMode: options.debugMode });
-    this.memoryStore = new MemoryStore(supabase, { debugMode: options.debugMode });
+    this.memoryRetrieval = new MemoryRetrievalService(supabase, {
+      debugMode: options.debugMode,
+    });
+    this.memoryStore = new MemoryStore(supabase, {
+      debugMode: options.debugMode,
+    });
     this.debugMode = options.debugMode || false;
     this.defaultTokenBudget = options.defaultTokenBudget || 8000; // Default token budget
   }
@@ -54,8 +58,18 @@ export class ContextAssembler {
   /**
    * Assemble comprehensive context for a step execution
    */
-  async assembleContextForStep(input: AssembleContextInput): Promise<AssembledContext> {
-    const { orgId, playbook, step, run, sharedState, collaborationContext, stepInput } = input;
+  async assembleContextForStep(
+    input: AssembleContextInput
+  ): Promise<AssembledContext> {
+    const {
+      orgId,
+      playbook,
+      step,
+      run,
+      sharedState,
+      collaborationContext,
+      stepInput,
+    } = input;
 
     if (this.debugMode) {
       console.log('[ContextAssembler] Assembling context for step', {
@@ -70,17 +84,26 @@ export class ContextAssembler {
     const embedding = await this.generateEmbedding(stepInput);
 
     // 2. Retrieve relevant semantic memories
-    const semanticMemories = await this.memoryRetrieval.retrieveSemanticMemory(orgId, embedding, {
-      limit: 10,
-      minRelevance: 0.5,
-      memoryType: 'semantic',
-    });
+    const semanticMemories = await this.memoryRetrieval.retrieveSemanticMemory(
+      orgId,
+      embedding,
+      {
+        limit: 10,
+        minRelevance: 0.5,
+        memoryType: 'semantic',
+      }
+    );
 
     // 3. Retrieve episodic traces from current run
-    const episodicTraces = await this.memoryRetrieval.retrieveEpisodicContext(run.id, orgId);
+    const episodicTraces = await this.memoryRetrieval.retrieveEpisodicContext(
+      run.id,
+      orgId
+    );
 
     // 4. Fetch linked entities (if any memories have links)
-    const linkedEntities = await this.fetchLinkedEntities(semanticMemories.items);
+    const linkedEntities = await this.fetchLinkedEntities(
+      semanticMemories.items
+    );
 
     // 5. Calculate token budget usage
     const tokenBudget = this.calculateTokenBudget(
@@ -121,7 +144,9 @@ export class ContextAssembler {
     const embedding = new Array(1536).fill(0).map(() => Math.random());
 
     if (this.debugMode) {
-      console.log('[ContextAssembler] Generated embedding (stub)', { length: embedding.length });
+      console.log('[ContextAssembler] Generated embedding (stub)', {
+        length: embedding.length,
+      });
     }
 
     return embedding;
@@ -144,7 +169,10 @@ export class ContextAssembler {
         }
 
         // Fetch entity data based on type
-        const entity = await this.fetchEntityById(link.entityType, link.entityId);
+        const entity = await this.fetchEntityById(
+          link.entityType,
+          link.entityId
+        );
         if (entity) {
           linkedEntities[link.entityType].push(entity);
         }
@@ -157,7 +185,10 @@ export class ContextAssembler {
   /**
    * Fetch entity by type and ID
    */
-  private async fetchEntityById(entityType: string, entityId: string): Promise<unknown | null> {
+  private async fetchEntityById(
+    entityType: string,
+    entityId: string
+  ): Promise<unknown | null> {
     // Map entity types to table names
     const tableMap: Record<string, string> = {
       keyword: 'seo_keywords',
@@ -171,11 +202,18 @@ export class ContextAssembler {
       return null;
     }
 
-    const { data, error } = await this.supabase.from(tableName).select('*').eq('id', entityId).single();
+    const { data, error } = await this.supabase
+      .from(tableName)
+      .select('*')
+      .eq('id', entityId)
+      .single();
 
     if (error) {
       if (this.debugMode) {
-        console.warn(`[ContextAssembler] Failed to fetch entity ${entityType}:${entityId}`, error);
+        console.warn(
+          `[ContextAssembler] Failed to fetch entity ${entityType}:${entityId}`,
+          error
+        );
       }
       return null;
     }
@@ -226,11 +264,17 @@ export class ContextAssembler {
   /**
    * Trim context to fit within token budget
    */
-  trimContextToFit(context: AssembledContext, maxTokens: number): AssembledContext {
+  trimContextToFit(
+    context: AssembledContext,
+    maxTokens: number
+  ): AssembledContext {
     // Simple trimming strategy: reduce memories first, then episodic traces
     const trimmedContext = { ...context };
 
-    while (trimmedContext.tokenBudget.used > maxTokens && trimmedContext.memories.length > 0) {
+    while (
+      trimmedContext.tokenBudget.used > maxTokens &&
+      trimmedContext.memories.length > 0
+    ) {
       trimmedContext.memories.pop();
       trimmedContext.tokenBudget = this.calculateTokenBudget(
         trimmedContext.memories,
@@ -240,7 +284,10 @@ export class ContextAssembler {
       );
     }
 
-    while (trimmedContext.tokenBudget.used > maxTokens && trimmedContext.episodicTraces.length > 0) {
+    while (
+      trimmedContext.tokenBudget.used > maxTokens &&
+      trimmedContext.episodicTraces.length > 0
+    ) {
       trimmedContext.episodicTraces.pop();
       trimmedContext.tokenBudget = this.calculateTokenBudget(
         trimmedContext.memories,

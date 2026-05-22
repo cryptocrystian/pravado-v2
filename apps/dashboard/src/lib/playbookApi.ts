@@ -113,7 +113,8 @@ export async function fetchVersionHistory(
     }
   );
 
-  const result: ApiResponse<{ versions: PlaybookVersionRecord[] }> = await response.json();
+  const result: ApiResponse<{ versions: PlaybookVersionRecord[] }> =
+    await response.json();
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to fetch version history');
@@ -216,7 +217,8 @@ export async function listBranches(
     }
   );
 
-  const result: ApiResponse<{ branches: PlaybookBranchWithCommit[] }> = await response.json();
+  const result: ApiResponse<{ branches: PlaybookBranchWithCommit[] }> =
+    await response.json();
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to list branches');
@@ -245,7 +247,8 @@ export async function createBranch(
     }
   );
 
-  const result: ApiResponse<{ branch: PlaybookBranchWithCommit }> = await response.json();
+  const result: ApiResponse<{ branch: PlaybookBranchWithCommit }> =
+    await response.json();
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to create branch');
@@ -326,7 +329,8 @@ export async function createCommit(
     }
   );
 
-  const result: ApiResponse<{ commit: PlaybookCommitWithBranch }> = await response.json();
+  const result: ApiResponse<{ commit: PlaybookCommitWithBranch }> =
+    await response.json();
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to create commit');
@@ -355,7 +359,8 @@ export async function listCommits(
     }
   );
 
-  const result: ApiResponse<{ commits: PlaybookCommitWithBranch[] }> = await response.json();
+  const result: ApiResponse<{ commits: PlaybookCommitWithBranch[] }> =
+    await response.json();
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to list commits');
@@ -425,7 +430,11 @@ export async function mergeBranches(
   sourceBranchId: string,
   targetBranchId: string,
   message?: string,
-  resolveConflicts?: Array<{ nodeId?: string; edgeId?: string; resolution: 'ours' | 'theirs' }>
+  resolveConflicts?: Array<{
+    nodeId?: string;
+    edgeId?: string;
+    resolution: 'ours' | 'theirs';
+  }>
 ): Promise<MergeResult> {
   const response = await fetch(
     `${API_BASE_URL}/api/v1/playbooks/${playbookId}/merge`,
@@ -444,7 +453,8 @@ export async function mergeBranches(
     }
   );
 
-  const result: ApiResponse<MergeResult | { conflicts: MergeConflict[] }> = await response.json();
+  const result: ApiResponse<MergeResult | { conflicts: MergeConflict[] }> =
+    await response.json();
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to merge branches');

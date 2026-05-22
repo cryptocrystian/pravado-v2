@@ -148,11 +148,19 @@ export function SnapshotPanel({ onSelect }: SnapshotPanelProps) {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCreateDialog(false)}
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleCreate} disabled={isCreating || !newSnapshotName.trim()}>
-                  {isCreating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                <Button
+                  onClick={handleCreate}
+                  disabled={isCreating || !newSnapshotName.trim()}
+                >
+                  {isCreating && (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  )}
                   Create Snapshot
                 </Button>
               </DialogFooter>
@@ -182,7 +190,9 @@ export function SnapshotPanel({ onSelect }: SnapshotPanelProps) {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium truncate">{snapshot.name}</span>
+                    <span className="font-medium truncate">
+                      {snapshot.name}
+                    </span>
                     <Badge className={getSnapshotStatusColor(snapshot.status)}>
                       {snapshot.status === GraphSnapshotStatus.GENERATING && (
                         <Loader2 className="h-3 w-3 mr-1 animate-spin" />
@@ -216,22 +226,34 @@ export function SnapshotPanel({ onSelect }: SnapshotPanelProps) {
                   {snapshot.diffJson && (
                     <div className="flex items-center gap-2 mt-2">
                       {snapshot.diffJson.nodesAdded > 0 && (
-                        <Badge variant="outline" className="text-xs text-green-600">
+                        <Badge
+                          variant="outline"
+                          className="text-xs text-green-600"
+                        >
                           +{snapshot.diffJson.nodesAdded} nodes
                         </Badge>
                       )}
                       {snapshot.diffJson.nodesRemoved > 0 && (
-                        <Badge variant="outline" className="text-xs text-red-600">
+                        <Badge
+                          variant="outline"
+                          className="text-xs text-red-600"
+                        >
                           -{snapshot.diffJson.nodesRemoved} nodes
                         </Badge>
                       )}
                       {snapshot.diffJson.edgesAdded > 0 && (
-                        <Badge variant="outline" className="text-xs text-green-600">
+                        <Badge
+                          variant="outline"
+                          className="text-xs text-green-600"
+                        >
                           +{snapshot.diffJson.edgesAdded} edges
                         </Badge>
                       )}
                       {snapshot.diffJson.edgesRemoved > 0 && (
-                        <Badge variant="outline" className="text-xs text-red-600">
+                        <Badge
+                          variant="outline"
+                          className="text-xs text-red-600"
+                        >
                           -{snapshot.diffJson.edgesRemoved} edges
                         </Badge>
                       )}
@@ -250,7 +272,9 @@ export function SnapshotPanel({ onSelect }: SnapshotPanelProps) {
                       View Details
                     </DropdownMenuItem>
                     {snapshot.status !== GraphSnapshotStatus.GENERATING && (
-                      <DropdownMenuItem onClick={() => handleRegenerate(snapshot.id)}>
+                      <DropdownMenuItem
+                        onClick={() => handleRegenerate(snapshot.id)}
+                      >
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Regenerate
                       </DropdownMenuItem>

@@ -193,9 +193,11 @@ function mapReportFromDb(row: DatabaseReport): StrategicIntelligenceReport {
     totalTokensUsed: row.total_tokens_used,
     generationDurationMs: row.generation_duration_ms,
     llmModel: row.llm_model,
-    llmFallbackJson: row.llm_fallback_json as StrategicIntelligenceReport['llmFallbackJson'],
+    llmFallbackJson:
+      row.llm_fallback_json as StrategicIntelligenceReport['llmFallbackJson'],
     tone: row.tone as StrategicIntelligenceReport['tone'],
-    targetLength: row.target_length as StrategicIntelligenceReport['targetLength'],
+    targetLength:
+      row.target_length as StrategicIntelligenceReport['targetLength'],
     includeCharts: row.include_charts,
     includeRecommendations: row.include_recommendations,
     publishedAt: row.published_at,
@@ -276,7 +278,10 @@ function mapAuditLogFromDb(row: DatabaseAuditLog): StrategicAuditLogEntry {
   };
 }
 
-function mapReportToListItem(report: StrategicIntelligenceReport, sectionCount: number): StrategicReportListItem {
+function mapReportToListItem(
+  report: StrategicIntelligenceReport,
+  sectionCount: number
+): StrategicReportListItem {
   return {
     id: report.id,
     title: report.title,
@@ -416,12 +421,16 @@ export async function listReports(
   if (query.status) builder = builder.eq('status', query.status);
   if (query.format) builder = builder.eq('format', query.format);
   if (query.audience) builder = builder.eq('audience', query.audience);
-  if (query.fiscalQuarter) builder = builder.eq('fiscal_quarter', query.fiscalQuarter);
+  if (query.fiscalQuarter)
+    builder = builder.eq('fiscal_quarter', query.fiscalQuarter);
   if (query.fiscalYear) builder = builder.eq('fiscal_year', query.fiscalYear);
-  if (query.periodStart) builder = builder.gte('period_start', query.periodStart);
+  if (query.periodStart)
+    builder = builder.gte('period_start', query.periodStart);
   if (query.periodEnd) builder = builder.lte('period_end', query.periodEnd);
   if (query.search) {
-    builder = builder.or(`title.ilike.%${query.search}%,description.ilike.%${query.search}%`);
+    builder = builder.or(
+      `title.ilike.%${query.search}%,description.ilike.%${query.search}%`
+    );
   }
 
   const sortColumn = query.sortBy.replace(/([A-Z])/g, '_$1').toLowerCase();
@@ -434,23 +443,25 @@ export async function listReports(
   const reports = (data || []).map(mapReportFromDb);
 
   // Get section counts for each report
-  const reportIds = reports.map(r => r.id);
+  const reportIds = reports.map((r) => r.id);
   const { data: sectionCounts } = await ctx.supabase
     .from('strategic_intelligence_sections')
     .select('report_id')
     .in('report_id', reportIds);
 
   const countMap = new Map<string, number>();
-  (sectionCounts || []).forEach(s => {
+  (sectionCounts || []).forEach((s) => {
     countMap.set(s.report_id, (countMap.get(s.report_id) || 0) + 1);
   });
 
   return {
-    reports: reports.map(r => mapReportToListItem(r, countMap.get(r.id) || 0)),
+    reports: reports.map((r) =>
+      mapReportToListItem(r, countMap.get(r.id) || 0)
+    ),
     total: count || 0,
     limit: query.limit,
     offset: query.offset,
-    hasMore: (query.offset + query.limit) < (count || 0),
+    hasMore: query.offset + query.limit < (count || 0),
   };
 }
 
@@ -461,18 +472,25 @@ export async function updateReport(
 ): Promise<StrategicIntelligenceReport> {
   const updateData: Record<string, unknown> = {};
   if (input.title !== undefined) updateData.title = input.title;
-  if (input.description !== undefined) updateData.description = input.description;
+  if (input.description !== undefined)
+    updateData.description = input.description;
   if (input.format !== undefined) updateData.format = input.format;
   if (input.audience !== undefined) updateData.audience = input.audience;
-  if (input.periodStart !== undefined) updateData.period_start = input.periodStart;
+  if (input.periodStart !== undefined)
+    updateData.period_start = input.periodStart;
   if (input.periodEnd !== undefined) updateData.period_end = input.periodEnd;
-  if (input.fiscalQuarter !== undefined) updateData.fiscal_quarter = input.fiscalQuarter;
+  if (input.fiscalQuarter !== undefined)
+    updateData.fiscal_quarter = input.fiscalQuarter;
   if (input.fiscalYear !== undefined) updateData.fiscal_year = input.fiscalYear;
-  if (input.sectionTypes !== undefined) updateData.section_types = input.sectionTypes;
+  if (input.sectionTypes !== undefined)
+    updateData.section_types = input.sectionTypes;
   if (input.tone !== undefined) updateData.tone = input.tone;
-  if (input.targetLength !== undefined) updateData.target_length = input.targetLength;
-  if (input.includeCharts !== undefined) updateData.include_charts = input.includeCharts;
-  if (input.includeRecommendations !== undefined) updateData.include_recommendations = input.includeRecommendations;
+  if (input.targetLength !== undefined)
+    updateData.target_length = input.targetLength;
+  if (input.includeCharts !== undefined)
+    updateData.include_charts = input.includeCharts;
+  if (input.includeRecommendations !== undefined)
+    updateData.include_recommendations = input.includeRecommendations;
 
   const { data, error } = await ctx.supabase
     .from('strategic_intelligence_reports')
@@ -506,7 +524,9 @@ export async function deleteReport(
 // STATISTICS
 // ============================================================================
 
-export async function getStats(ctx: ServiceContext): Promise<StrategicReportStats> {
+export async function getStats(
+  ctx: ServiceContext
+): Promise<StrategicReportStats> {
   const { data: reports, error } = await ctx.supabase
     .from('strategic_intelligence_reports')
     .select('*')
@@ -583,18 +603,27 @@ export async function getStats(ctx: ServiceContext): Promise<StrategicReportStat
   // Get recent reports
   const mappedReports = (reports || []).map(mapReportFromDb);
   const recentReports = mappedReports
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
     .slice(0, 5)
-    .map(r => mapReportToListItem(r, 0));
+    .map((r) => mapReportToListItem(r, 0));
 
   return {
     totalReports: reports?.length || 0,
     byStatus,
     byFormat,
     byAudience,
-    avgStrategicScore: strategicScoreCount > 0 ? totalStrategicScore / strategicScoreCount : null,
+    avgStrategicScore:
+      strategicScoreCount > 0
+        ? totalStrategicScore / strategicScoreCount
+        : null,
     avgRiskScore: riskScoreCount > 0 ? totalRiskScore / riskScoreCount : null,
-    avgOpportunityScore: opportunityScoreCount > 0 ? totalOpportunityScore / opportunityScoreCount : null,
+    avgOpportunityScore:
+      opportunityScoreCount > 0
+        ? totalOpportunityScore / opportunityScoreCount
+        : null,
     recentReports,
     totalSections: sectionCount || 0,
     totalSources: sourceCount || 0,
@@ -625,7 +654,7 @@ async function aggregateInsightsFromSources(
   ];
 
   const sourcesToQuery = (includeSources || allSources).filter(
-    s => !excludeSources?.includes(s)
+    (s) => !excludeSources?.includes(s)
   );
 
   // Aggregate from Media Performance (if available)
@@ -712,11 +741,13 @@ async function aggregateInsightsFromSources(
         .limit(5);
 
       if (crisisData && crisisData.length > 0) {
-        const activeCrises = crisisData.filter(c => c.status === 'active').length;
+        const activeCrises = crisisData.filter(
+          (c) => c.status === 'active'
+        ).length;
         insights.crisisStatus = {
           readinessScore: crisisData[0].readiness_score || 75,
           activeCrises,
-          recentCrises: crisisData.slice(0, 3).map(c => ({
+          recentCrises: crisisData.slice(0, 3).map((c) => ({
             title: c.title,
             severity: c.severity,
             resolvedAt: c.resolved_at,
@@ -887,7 +918,9 @@ async function aggregateInsightsFromSources(
   return insights;
 }
 
-function computeKPIsSnapshot(insights: AggregatedStrategicInsights): StrategicKPIsSnapshot {
+function computeKPIsSnapshot(
+  insights: AggregatedStrategicInsights
+): StrategicKPIsSnapshot {
   return {
     mediaReach: insights.mediaPerformance?.reach,
     mediaMentions: insights.mediaPerformance?.impressions,
@@ -906,9 +939,7 @@ function computeKPIsSnapshot(insights: AggregatedStrategicInsights): StrategicKP
   };
 }
 
-function computeStrategicScores(
-  insights: AggregatedStrategicInsights
-): {
+function computeStrategicScores(insights: AggregatedStrategicInsights): {
   overall: number | null;
   risk: number | null;
   opportunity: number | null;
@@ -918,14 +949,19 @@ function computeStrategicScores(
 } {
   const scores: number[] = [];
 
-  if (insights.mediaPerformance?.overallScore) scores.push(insights.mediaPerformance.overallScore);
-  if (insights.competitiveIntel?.positionIndex) scores.push(insights.competitiveIntel.positionIndex);
-  if (insights.brandHealth?.overallScore) scores.push(insights.brandHealth.overallScore);
-  if (insights.governance?.complianceScore) scores.push(insights.governance.complianceScore);
+  if (insights.mediaPerformance?.overallScore)
+    scores.push(insights.mediaPerformance.overallScore);
+  if (insights.competitiveIntel?.positionIndex)
+    scores.push(insights.competitiveIntel.positionIndex);
+  if (insights.brandHealth?.overallScore)
+    scores.push(insights.brandHealth.overallScore);
+  if (insights.governance?.complianceScore)
+    scores.push(insights.governance.complianceScore);
 
-  const overall = scores.length > 0
-    ? scores.reduce((a, b) => a + b, 0) / scores.length
-    : null;
+  const overall =
+    scores.length > 0
+      ? scores.reduce((a, b) => a + b, 0) / scores.length
+      : null;
 
   return {
     overall,
@@ -977,7 +1013,8 @@ export async function generateReport(
   const scores = computeStrategicScores(insights);
 
   // Generate sections
-  const sectionsToGenerate = input.regenerateSections || reportData.section_types;
+  const sectionsToGenerate =
+    input.regenerateSections || reportData.section_types;
   const generatedSections: StrategicSection[] = [];
   let totalTokens = 0;
 
@@ -1001,7 +1038,10 @@ export async function generateReport(
 
     try {
       const llmResponse = await routeLLM({
-        systemPrompt: getSystemPromptForSection(sectionType, reportData.audience),
+        systemPrompt: getSystemPromptForSection(
+          sectionType,
+          reportData.audience
+        ),
         userPrompt: sectionPrompt,
         model: 'gpt-4o',
         temperature: 0.7,
@@ -1037,14 +1077,20 @@ export async function generateReport(
         if (updateError) throw updateError;
         generatedSections.push(mapSectionFromDb(updatedSection));
 
-        await logAuditEvent(ctx, reportId, 'section_regenerated', {
-          sectionType,
-          tokensUsed,
-        }, {
-          sectionId: existingSection.id,
-          sectionType,
-          tokensUsed,
-        });
+        await logAuditEvent(
+          ctx,
+          reportId,
+          'section_regenerated',
+          {
+            sectionType,
+            tokensUsed,
+          },
+          {
+            sectionId: existingSection.id,
+            sectionType,
+            tokensUsed,
+          }
+        );
       } else {
         // Create new section
         const { data: newSection, error: insertError } = await ctx.supabase
@@ -1070,14 +1116,20 @@ export async function generateReport(
         if (insertError) throw insertError;
         generatedSections.push(mapSectionFromDb(newSection));
 
-        await logAuditEvent(ctx, reportId, 'section_generated', {
-          sectionType,
-          tokensUsed,
-        }, {
-          sectionId: newSection.id,
-          sectionType,
-          tokensUsed,
-        });
+        await logAuditEvent(
+          ctx,
+          reportId,
+          'section_generated',
+          {
+            sectionType,
+            tokensUsed,
+          },
+          {
+            sectionId: newSection.id,
+            sectionType,
+            tokensUsed,
+          }
+        );
       }
     } catch (llmError) {
       console.error(`Failed to generate section ${sectionType}:`, llmError);
@@ -1086,7 +1138,12 @@ export async function generateReport(
   }
 
   // Generate summary
-  const summaryJson = await generateSummary(ctx, reportId, insights, generatedSections);
+  const summaryJson = await generateSummary(
+    ctx,
+    reportId,
+    insights,
+    generatedSections
+  );
 
   // Update report with generated data
   const { data: updatedReport, error: updateError } = await ctx.supabase
@@ -1111,15 +1168,21 @@ export async function generateReport(
 
   if (updateError) throw updateError;
 
-  await logAuditEvent(ctx, reportId, 'status_changed', {
-    tokensUsed: totalTokens,
-    durationMs: Date.now() - startTime,
-  }, {
-    previousStatus: 'generating',
-    newStatus: 'review',
-    tokensUsed: totalTokens,
-    durationMs: Date.now() - startTime,
-  });
+  await logAuditEvent(
+    ctx,
+    reportId,
+    'status_changed',
+    {
+      tokensUsed: totalTokens,
+      durationMs: Date.now() - startTime,
+    },
+    {
+      previousStatus: 'generating',
+      newStatus: 'review',
+      tokensUsed: totalTokens,
+      durationMs: Date.now() - startTime,
+    }
+  );
 
   // Get all sources
   const { data: sources } = await ctx.supabase
@@ -1143,11 +1206,14 @@ function buildSectionPrompt(
   insights: AggregatedStrategicInsights,
   customInstructions?: string
 ): string {
-  const periodStart = new Date(report.period_start).toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  const periodStart = new Date(report.period_start).toLocaleDateString(
+    'en-US',
+    {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }
+  );
   const periodEnd = new Date(report.period_end).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -1186,11 +1252,16 @@ function getSystemPromptForSection(
 ): string {
   const audienceDescription = {
     ceo: 'the CEO, focusing on high-level strategic implications and key decisions',
-    c_suite: 'C-suite executives, emphasizing cross-functional impact and strategic priorities',
-    board: 'the Board of Directors, highlighting governance, risk, and long-term strategy',
-    investors: 'investors and analysts, focusing on growth, returns, and market position',
-    senior_leadership: 'senior leadership, balancing strategic vision with operational insights',
-    all_executives: 'all executives, providing comprehensive strategic intelligence',
+    c_suite:
+      'C-suite executives, emphasizing cross-functional impact and strategic priorities',
+    board:
+      'the Board of Directors, highlighting governance, risk, and long-term strategy',
+    investors:
+      'investors and analysts, focusing on growth, returns, and market position',
+    senior_leadership:
+      'senior leadership, balancing strategic vision with operational insights',
+    all_executives:
+      'all executives, providing comprehensive strategic intelligence',
   };
 
   return `You are an expert strategic analyst creating a ${sectionType.replace(/_/g, ' ')} section for ${audienceDescription[audience]}.
@@ -1273,20 +1344,28 @@ async function generateSummary(
 
   // Extract insights from aggregated data
   if (insights.mediaPerformance) {
-    keyInsights.push(`Media reach: ${insights.mediaPerformance.reach.toLocaleString()}`);
+    keyInsights.push(
+      `Media reach: ${insights.mediaPerformance.reach.toLocaleString()}`
+    );
     if (insights.mediaPerformance.sentiment > 70) {
       keyInsights.push('Positive media sentiment trending upward');
     }
   }
 
   if (insights.competitiveIntel) {
-    keyInsights.push(`Competitive position index: ${insights.competitiveIntel.positionIndex}`);
-    insights.competitiveIntel.strengthsVsCompetitors.slice(0, 2).forEach(s => {
-      topOpportunities.push({ opportunity: s, impact: 'high' });
-    });
-    insights.competitiveIntel.weaknessesVsCompetitors.slice(0, 2).forEach(w => {
-      topRisks.push({ risk: w, severity: 'medium' });
-    });
+    keyInsights.push(
+      `Competitive position index: ${insights.competitiveIntel.positionIndex}`
+    );
+    insights.competitiveIntel.strengthsVsCompetitors
+      .slice(0, 2)
+      .forEach((s) => {
+        topOpportunities.push({ opportunity: s, impact: 'high' });
+      });
+    insights.competitiveIntel.weaknessesVsCompetitors
+      .slice(0, 2)
+      .forEach((w) => {
+        topRisks.push({ risk: w, severity: 'medium' });
+      });
   }
 
   if (insights.crisisStatus) {
@@ -1296,19 +1375,26 @@ async function generateSummary(
         severity: 'high',
       });
     }
-    keyInsights.push(`Crisis readiness score: ${insights.crisisStatus.readinessScore}`);
+    keyInsights.push(
+      `Crisis readiness score: ${insights.crisisStatus.readinessScore}`
+    );
   }
 
   if (insights.brandHealth) {
-    keyInsights.push(`Brand health score: ${insights.brandHealth.overallScore}`);
-    insights.brandHealth.reputationRisks.slice(0, 2).forEach(r => {
+    keyInsights.push(
+      `Brand health score: ${insights.brandHealth.overallScore}`
+    );
+    insights.brandHealth.reputationRisks.slice(0, 2).forEach((r) => {
       topRisks.push({ risk: r, severity: 'medium' });
     });
   }
 
   // Extract executive summary text from generated sections
-  const execSummarySection = sections.find(s => s.sectionType === 'executive_summary');
-  const executiveSummaryText = execSummarySection?.contentMd?.substring(0, 500) || '';
+  const execSummarySection = sections.find(
+    (s) => s.sectionType === 'executive_summary'
+  );
+  const executiveSummaryText =
+    execSummarySection?.contentMd?.substring(0, 500) || '';
 
   return {
     keyInsights,
@@ -1340,11 +1426,14 @@ export async function updateSection(
     updateData.edited_at = new Date().toISOString();
     updateData.edited_by = ctx.userId;
   }
-  if (input.contentHtml !== undefined) updateData.content_html = input.contentHtml;
+  if (input.contentHtml !== undefined)
+    updateData.content_html = input.contentHtml;
   if (input.isVisible !== undefined) updateData.is_visible = input.isVisible;
-  if (input.chartsConfig !== undefined) updateData.charts_config = input.chartsConfig;
+  if (input.chartsConfig !== undefined)
+    updateData.charts_config = input.chartsConfig;
   if (input.dataTables !== undefined) updateData.data_tables = input.dataTables;
-  if (input.sectionMetrics !== undefined) updateData.section_metrics = input.sectionMetrics;
+  if (input.sectionMetrics !== undefined)
+    updateData.section_metrics = input.sectionMetrics;
 
   const { data, error } = await ctx.supabase
     .from('strategic_intelligence_sections')
@@ -1357,10 +1446,16 @@ export async function updateSection(
 
   if (error) throw error;
 
-  await logAuditEvent(ctx, reportId, 'section_edited', { changes: input }, {
-    sectionId,
-    sectionType: data.section_type,
-  });
+  await logAuditEvent(
+    ctx,
+    reportId,
+    'section_edited',
+    { changes: input },
+    {
+      sectionId,
+      sectionType: data.section_type,
+    }
+  );
 
   return mapSectionFromDb(data);
 }
@@ -1393,17 +1488,22 @@ export async function regenerateSection(
   if (reportError) throw reportError;
 
   // Get insights
-  const insights = await aggregateInsightsFromSources(ctx, reportId, input.dataSources);
-
-  // Generate new content
-  const prompt = input.customPrompt || buildSectionPrompt(
-    section.section_type,
-    report,
-    insights
+  const insights = await aggregateInsightsFromSources(
+    ctx,
+    reportId,
+    input.dataSources
   );
 
+  // Generate new content
+  const prompt =
+    input.customPrompt ||
+    buildSectionPrompt(section.section_type, report, insights);
+
   const llmResponse = await routeLLM({
-    systemPrompt: getSystemPromptForSection(section.section_type, report.audience),
+    systemPrompt: getSystemPromptForSection(
+      section.section_type,
+      report.audience
+    ),
     userPrompt: prompt,
     model: 'gpt-4o',
     temperature: 0.7,
@@ -1435,15 +1535,21 @@ export async function regenerateSection(
 
   if (updateError) throw updateError;
 
-  await logAuditEvent(ctx, reportId, 'section_regenerated', {
-    tokensUsed,
-    durationMs: Date.now() - startTime,
-  }, {
-    sectionId,
-    sectionType: section.section_type,
-    tokensUsed,
-    durationMs: Date.now() - startTime,
-  });
+  await logAuditEvent(
+    ctx,
+    reportId,
+    'section_regenerated',
+    {
+      tokensUsed,
+      durationMs: Date.now() - startTime,
+    },
+    {
+      sectionId,
+      sectionType: section.section_type,
+      tokensUsed,
+      durationMs: Date.now() - startTime,
+    }
+  );
 
   return mapSectionFromDb(updatedSection);
 }
@@ -1538,13 +1644,19 @@ export async function updateSource(
   input: UpdateStrategicSource
 ): Promise<StrategicSource> {
   const updateData: Record<string, unknown> = {};
-  if (input.sourceTitle !== undefined) updateData.source_title = input.sourceTitle;
+  if (input.sourceTitle !== undefined)
+    updateData.source_title = input.sourceTitle;
   if (input.sourceUrl !== undefined) updateData.source_url = input.sourceUrl;
-  if (input.extractedData !== undefined) updateData.extracted_data = input.extractedData;
-  if (input.relevanceScore !== undefined) updateData.relevance_score = input.relevanceScore;
-  if (input.dataQualityScore !== undefined) updateData.data_quality_score = input.dataQualityScore;
-  if (input.isPrimarySource !== undefined) updateData.is_primary_source = input.isPrimarySource;
-  if (input.sectionsUsing !== undefined) updateData.sections_using = input.sectionsUsing;
+  if (input.extractedData !== undefined)
+    updateData.extracted_data = input.extractedData;
+  if (input.relevanceScore !== undefined)
+    updateData.relevance_score = input.relevanceScore;
+  if (input.dataQualityScore !== undefined)
+    updateData.data_quality_score = input.dataQualityScore;
+  if (input.isPrimarySource !== undefined)
+    updateData.is_primary_source = input.isPrimarySource;
+  if (input.sectionsUsing !== undefined)
+    updateData.sections_using = input.sectionsUsing;
 
   const { data, error } = await ctx.supabase
     .from('strategic_intelligence_sources')
@@ -1587,9 +1699,12 @@ export async function listSources(
     .eq('org_id', ctx.orgId);
 
   if (query.reportId) builder = builder.eq('report_id', query.reportId);
-  if (query.sourceSystem) builder = builder.eq('source_system', query.sourceSystem);
-  if (query.isPrimarySource !== undefined) builder = builder.eq('is_primary_source', query.isPrimarySource);
-  if (query.minRelevanceScore) builder = builder.gte('relevance_score', query.minRelevanceScore);
+  if (query.sourceSystem)
+    builder = builder.eq('source_system', query.sourceSystem);
+  if (query.isPrimarySource !== undefined)
+    builder = builder.eq('is_primary_source', query.isPrimarySource);
+  if (query.minRelevanceScore)
+    builder = builder.gte('relevance_score', query.minRelevanceScore);
 
   builder = builder.order('relevance_score', { ascending: false });
   builder = builder.range(query.offset, query.offset + query.limit - 1);
@@ -1622,7 +1737,11 @@ export async function refreshInsights(
   }
 
   // Aggregate fresh insights
-  const insights = await aggregateInsightsFromSources(ctx, reportId, input.sourceSystems);
+  const insights = await aggregateInsightsFromSources(
+    ctx,
+    reportId,
+    input.sourceSystems
+  );
 
   // Update KPIs if requested
   const updateData: Record<string, unknown> = {};
@@ -1690,12 +1809,18 @@ export async function approveReport(
 
   if (error) throw error;
 
-  await logAuditEvent(ctx, reportId, 'approved', {
-    approvalNote: input.approvalNote,
-  }, {
-    previousStatus: current?.status,
-    newStatus: 'approved',
-  });
+  await logAuditEvent(
+    ctx,
+    reportId,
+    'approved',
+    {
+      approvalNote: input.approvalNote,
+    },
+    {
+      previousStatus: current?.status,
+      newStatus: 'approved',
+    }
+  );
 
   return mapReportFromDb(data);
 }
@@ -1738,14 +1863,20 @@ export async function publishReport(
 
   if (error) throw error;
 
-  await logAuditEvent(ctx, reportId, 'published', {
-    publishNote: input.publishNote,
-    generatePdf: input.generatePdf,
-    generatePptx: input.generatePptx,
-  }, {
-    previousStatus: current?.status,
-    newStatus: 'published',
-  });
+  await logAuditEvent(
+    ctx,
+    reportId,
+    'published',
+    {
+      publishNote: input.publishNote,
+      generatePdf: input.generatePdf,
+      generatePptx: input.generatePptx,
+    },
+    {
+      previousStatus: current?.status,
+      newStatus: 'published',
+    }
+  );
 
   return {
     report: mapReportFromDb(data),
@@ -1775,12 +1906,18 @@ export async function archiveReport(
 
   if (error) throw error;
 
-  await logAuditEvent(ctx, reportId, 'archived', {
-    archiveReason: input.archiveReason,
-  }, {
-    previousStatus: current?.status,
-    newStatus: 'archived',
-  });
+  await logAuditEvent(
+    ctx,
+    reportId,
+    'archived',
+    {
+      archiveReason: input.archiveReason,
+    },
+    {
+      previousStatus: current?.status,
+      newStatus: 'archived',
+    }
+  );
 
   return mapReportFromDb(data);
 }
@@ -1802,7 +1939,8 @@ export async function listAuditLogs(
   if (query.eventType) builder = builder.eq('event_type', query.eventType);
   if (query.userId) builder = builder.eq('user_id', query.userId);
   if (query.sectionId) builder = builder.eq('section_id', query.sectionId);
-  if (query.sectionType) builder = builder.eq('section_type', query.sectionType);
+  if (query.sectionType)
+    builder = builder.eq('section_type', query.sectionType);
   if (query.startDate) builder = builder.gte('created_at', query.startDate);
   if (query.endDate) builder = builder.lte('created_at', query.endDate);
 
@@ -1817,7 +1955,7 @@ export async function listAuditLogs(
     total: count || 0,
     limit: query.limit,
     offset: query.offset,
-    hasMore: (query.offset + query.limit) < (count || 0),
+    hasMore: query.offset + query.limit < (count || 0),
   };
 }
 
@@ -1869,18 +2007,43 @@ export async function comparePeriods(
   if (previousReport) {
     // Compare strategic scores
     const metricsToCompare = [
-      { name: 'Overall Strategic Score', current: currentReport.overall_strategic_score, previous: previousReport.overall_strategic_score },
-      { name: 'Risk Posture Score', current: currentReport.risk_posture_score, previous: previousReport.risk_posture_score },
-      { name: 'Opportunity Score', current: currentReport.opportunity_score, previous: previousReport.opportunity_score },
-      { name: 'Messaging Alignment', current: currentReport.messaging_alignment_score, previous: previousReport.messaging_alignment_score },
-      { name: 'Competitive Position', current: currentReport.competitive_position_score, previous: previousReport.competitive_position_score },
-      { name: 'Brand Health', current: currentReport.brand_health_score, previous: previousReport.brand_health_score },
+      {
+        name: 'Overall Strategic Score',
+        current: currentReport.overall_strategic_score,
+        previous: previousReport.overall_strategic_score,
+      },
+      {
+        name: 'Risk Posture Score',
+        current: currentReport.risk_posture_score,
+        previous: previousReport.risk_posture_score,
+      },
+      {
+        name: 'Opportunity Score',
+        current: currentReport.opportunity_score,
+        previous: previousReport.opportunity_score,
+      },
+      {
+        name: 'Messaging Alignment',
+        current: currentReport.messaging_alignment_score,
+        previous: previousReport.messaging_alignment_score,
+      },
+      {
+        name: 'Competitive Position',
+        current: currentReport.competitive_position_score,
+        previous: previousReport.competitive_position_score,
+      },
+      {
+        name: 'Brand Health',
+        current: currentReport.brand_health_score,
+        previous: previousReport.brand_health_score,
+      },
     ];
 
-    metricsToCompare.forEach(m => {
+    metricsToCompare.forEach((m) => {
       if (m.current !== null && m.previous !== null) {
         const change = m.current - m.previous;
-        const changePercent = m.previous !== 0 ? (change / m.previous) * 100 : 0;
+        const changePercent =
+          m.previous !== 0 ? (change / m.previous) * 100 : 0;
         metrics.push({
           name: m.name,
           current: m.current,
@@ -1900,15 +2063,17 @@ export async function comparePeriods(
       fiscalQuarter: currentReport.fiscal_quarter || undefined,
       fiscalYear: currentReport.fiscal_year || undefined,
     },
-    previousPeriod: previousReport ? {
-      start: previousReport.period_start,
-      end: previousReport.period_end,
-      fiscalQuarter: previousReport.fiscal_quarter || undefined,
-      fiscalYear: previousReport.fiscal_year || undefined,
-    } : {
-      start: '',
-      end: '',
-    },
+    previousPeriod: previousReport
+      ? {
+          start: previousReport.period_start,
+          end: previousReport.period_end,
+          fiscalQuarter: previousReport.fiscal_quarter || undefined,
+          fiscalYear: previousReport.fiscal_year || undefined,
+        }
+      : {
+          start: '',
+          end: '',
+        },
     metrics,
   };
 }

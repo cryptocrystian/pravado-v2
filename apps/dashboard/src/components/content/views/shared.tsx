@@ -93,14 +93,23 @@ export function computeActionScore(action: ContentAction): number {
     medium: 10,
     low: 5,
   };
-  return (typeScores[action.type] || 50) + (priorityBonus[action.priority] || 0);
+  return (
+    (typeScores[action.type] || 50) + (priorityBonus[action.priority] || 0)
+  );
 }
 
-export function selectPrioritizedActions(actions: ContentAction[]): ContentAction[] {
-  return [...actions].sort((a, b) => computeActionScore(b) - computeActionScore(a));
+export function selectPrioritizedActions(
+  actions: ContentAction[]
+): ContentAction[] {
+  return [...actions].sort(
+    (a, b) => computeActionScore(b) - computeActionScore(a)
+  );
 }
 
-export function filterActionsByMode(actions: ContentAction[], mode: AutomationMode): ContentAction[] {
+export function filterActionsByMode(
+  actions: ContentAction[],
+  mode: AutomationMode
+): ContentAction[] {
   if (mode === 'autopilot') {
     return actions.filter(
       (action) =>
@@ -126,78 +135,95 @@ export function generateContentActions(params: {
   onGenerateBrief?: () => void;
   onFixIssues?: () => void;
 }): ContentAction[] {
-  const { briefs, gaps, mode, citeMindIssueCount, onViewBrief, onGenerateBrief, onFixIssues } = params;
+  const {
+    briefs,
+    gaps,
+    mode,
+    citeMindIssueCount,
+    onViewBrief,
+    onGenerateBrief,
+    onFixIssues,
+  } = params;
 
   return [
     // Execution-ready content
     ...briefs
       .filter((b) => b.status === 'ready' || b.status === 'needs_review')
       .slice(0, 2)
-      .map((item, i): ContentAction => ({
-        id: `exec-${item.id}`,
-        title: item.title,
-        summary: `Ready to publish · Target: ${item.targetKeyword || 'Multiple keywords'}`,
-        priority: 'high',
-        type: 'execution',
-        relatedEntityId: item.id,
-        relatedEntityType: 'content',
-        cta: { label: 'Publish', action: () => onViewBrief?.(item.id) },
-        mode,
-        createdAt: item.createdAt,
-        orchestrateActionId: `action-${(i % 3) + 1}`,
-        confidence: 75 + (i * 5),
-        impact: { authority: 12 + i * 3, crossPillar: 2 },
-        risk: 'low',
-      })),
+      .map(
+        (item, i): ContentAction => ({
+          id: `exec-${item.id}`,
+          title: item.title,
+          summary: `Ready to publish · Target: ${item.targetKeyword || 'Multiple keywords'}`,
+          priority: 'high',
+          type: 'execution',
+          relatedEntityId: item.id,
+          relatedEntityType: 'content',
+          cta: { label: 'Publish', action: () => onViewBrief?.(item.id) },
+          mode,
+          createdAt: item.createdAt,
+          orchestrateActionId: `action-${(i % 3) + 1}`,
+          confidence: 75 + i * 5,
+          impact: { authority: 12 + i * 3, crossPillar: 2 },
+          risk: 'low',
+        })
+      ),
     // High-opportunity gaps
     ...gaps
       .filter((g) => g.seoOpportunityScore >= 60)
       .slice(0, 3)
-      .map((gap, i): ContentAction => ({
-        id: `gap-${i}`,
-        title: `Create content for "${gap.keyword}"`,
-        summary: `${gap.seoOpportunityScore} opportunity score · ${gap.existingContentCount} existing pieces`,
-        priority: gap.seoOpportunityScore >= 80 ? 'high' : 'medium',
-        type: 'opportunity',
-        relatedEntityId: gap.keyword,
-        relatedEntityType: 'gap',
-        cta: { label: 'Start Writing', action: () => onGenerateBrief?.() },
-        mode,
-        createdAt: '2025-01-15T09:00:00Z',
-        confidence: 65 + (i * 5),
-        impact: { authority: gap.seoOpportunityScore / 10 },
-      })),
+      .map(
+        (gap, i): ContentAction => ({
+          id: `gap-${i}`,
+          title: `Create content for "${gap.keyword}"`,
+          summary: `${gap.seoOpportunityScore} opportunity score · ${gap.existingContentCount} existing pieces`,
+          priority: gap.seoOpportunityScore >= 80 ? 'high' : 'medium',
+          type: 'opportunity',
+          relatedEntityId: gap.keyword,
+          relatedEntityType: 'gap',
+          cta: { label: 'Start Writing', action: () => onGenerateBrief?.() },
+          mode,
+          createdAt: '2025-01-15T09:00:00Z',
+          confidence: 65 + i * 5,
+          impact: { authority: gap.seoOpportunityScore / 10 },
+        })
+      ),
     // Draft content needing attention
     ...briefs
       .filter((b) => b.status === 'draft')
       .slice(0, 2)
-      .map((item): ContentAction => ({
-        id: `content-${item.id}`,
-        title: item.title,
-        summary: `Status: ${item.status} · Target: ${item.targetKeyword || 'Not set'}`,
-        priority: 'medium',
-        type: 'scheduled',
-        relatedEntityId: item.id,
-        relatedEntityType: 'content',
-        cta: { label: 'Review', action: () => onViewBrief?.(item.id) },
-        mode,
-        createdAt: item.createdAt,
-        confidence: 70,
-      })),
+      .map(
+        (item): ContentAction => ({
+          id: `content-${item.id}`,
+          title: item.title,
+          summary: `Status: ${item.status} · Target: ${item.targetKeyword || 'Not set'}`,
+          priority: 'medium',
+          type: 'scheduled',
+          relatedEntityId: item.id,
+          relatedEntityType: 'content',
+          cta: { label: 'Review', action: () => onViewBrief?.(item.id) },
+          mode,
+          createdAt: item.createdAt,
+          confidence: 70,
+        })
+      ),
     // CiteMind issues
     ...(citeMindIssueCount > 0
-      ? [{
-          id: 'citemind-issues',
-          title: `${citeMindIssueCount} content pieces need attention`,
-          summary: 'CiteMind detected issues that may affect citation eligibility',
-          priority: 'high' as const,
-          type: 'issue' as const,
-          cta: { label: 'Fix Issues', action: () => onFixIssues?.() },
-          mode,
-          createdAt: '2025-01-15T08:00:00Z',
-          confidence: 95,
-          risk: 'medium' as const,
-        }]
+      ? [
+          {
+            id: 'citemind-issues',
+            title: `${citeMindIssueCount} content pieces need attention`,
+            summary:
+              'CiteMind detected issues that may affect citation eligibility',
+            priority: 'high' as const,
+            type: 'issue' as const,
+            cta: { label: 'Fix Issues', action: () => onFixIssues?.() },
+            mode,
+            createdAt: '2025-01-15T08:00:00Z',
+            confidence: 95,
+            risk: 'medium' as const,
+          },
+        ]
       : []),
   ];
 }
@@ -207,30 +233,42 @@ export function generateContentActions(params: {
 // ============================================
 
 export function convertToQueueItems(actions: ContentAction[]): QueueItem[] {
-  return actions.map((action): QueueItem => ({
-    id: action.id,
-    title: action.title,
-    summary: action.summary,
-    priority: action.priority,
-    type: action.type,
-    relatedEntityId: action.relatedEntityId,
-    relatedEntityType: action.relatedEntityType,
-    mode: action.mode,
-    createdAt: action.createdAt,
-    orchestrateActionId: action.orchestrateActionId,
-    confidence: action.confidence,
-    modeCeiling: action.modeCeiling,
-    risk: action.risk,
-    impact: action.impact,
-  }));
+  return actions.map(
+    (action): QueueItem => ({
+      id: action.id,
+      title: action.title,
+      summary: action.summary,
+      priority: action.priority,
+      type: action.type,
+      relatedEntityId: action.relatedEntityId,
+      relatedEntityType: action.relatedEntityType,
+      mode: action.mode,
+      createdAt: action.createdAt,
+      orchestrateActionId: action.orchestrateActionId,
+      confidence: action.confidence,
+      modeCeiling: action.modeCeiling,
+      risk: action.risk,
+      impact: action.impact,
+    })
+  );
 }
 
 export function toTriggerAction(action: ContentAction): TriggerAction {
   return {
     id: action.id,
-    type: action.type === 'execution' ? 'content_execution' : action.type === 'opportunity' ? 'derivative_generation' : 'authority_optimization',
+    type:
+      action.type === 'execution'
+        ? 'content_execution'
+        : action.type === 'opportunity'
+          ? 'derivative_generation'
+          : 'authority_optimization',
     title: action.title,
-    priority: action.priority === 'critical' ? 'urgent' : action.priority === 'high' ? 'high' : 'normal',
+    priority:
+      action.priority === 'critical'
+        ? 'urgent'
+        : action.priority === 'high'
+          ? 'high'
+          : 'normal',
     modeCeiling: action.modeCeiling || 'copilot',
     citeMindStatus: action.type === 'issue' ? 'warning' : 'passed',
     pillar: 'content',
@@ -268,11 +306,46 @@ export function computeCiteMindIssueCount(assets: ContentAsset[]) {
 // ============================================
 
 export const MOCK_AUDIT_LEDGER: AuditLedgerEntry[] = [
-  { id: 'audit-1', timestamp: '2025-01-15T10:30:00Z', actor: 'system', actionType: 'scheduling', summary: 'Auto-scheduled blog post', outcome: 'completed' },
-  { id: 'audit-2', timestamp: '2025-01-15T10:25:00Z', actor: 'system', actionType: 'derivative_generation', summary: 'Generated AEO snippet', outcome: 'completed' },
-  { id: 'audit-3', timestamp: '2025-01-15T10:15:00Z', actor: 'system', actionType: 'citemind_check', summary: 'CiteMind check passed', outcome: 'passed' },
-  { id: 'audit-4', timestamp: '2025-01-15T10:05:00Z', actor: 'system', actionType: 'cross_pillar_sync', summary: 'Cross-pillar sync to PR', outcome: 'completed' },
-  { id: 'audit-5', timestamp: '2025-01-15T09:50:00Z', actor: 'system', actionType: 'brief_execution', summary: 'Content published successfully', outcome: 'completed' },
+  {
+    id: 'audit-1',
+    timestamp: '2025-01-15T10:30:00Z',
+    actor: 'system',
+    actionType: 'scheduling',
+    summary: 'Auto-scheduled blog post',
+    outcome: 'completed',
+  },
+  {
+    id: 'audit-2',
+    timestamp: '2025-01-15T10:25:00Z',
+    actor: 'system',
+    actionType: 'derivative_generation',
+    summary: 'Generated AEO snippet',
+    outcome: 'completed',
+  },
+  {
+    id: 'audit-3',
+    timestamp: '2025-01-15T10:15:00Z',
+    actor: 'system',
+    actionType: 'citemind_check',
+    summary: 'CiteMind check passed',
+    outcome: 'passed',
+  },
+  {
+    id: 'audit-4',
+    timestamp: '2025-01-15T10:05:00Z',
+    actor: 'system',
+    actionType: 'cross_pillar_sync',
+    summary: 'Cross-pillar sync to PR',
+    outcome: 'completed',
+  },
+  {
+    id: 'audit-5',
+    timestamp: '2025-01-15T09:50:00Z',
+    actor: 'system',
+    actionType: 'brief_execution',
+    summary: 'Content published successfully',
+    outcome: 'completed',
+  },
 ];
 
 // ============================================
@@ -323,7 +396,10 @@ export function HealthStrip({
       label: 'CiteMind Issues',
       value: citeMindIssueCount,
       suffix: '',
-      color: citeMindIssueCount > 0 ? 'text-semantic-warning' : 'text-semantic-success',
+      color:
+        citeMindIssueCount > 0
+          ? 'text-semantic-warning'
+          : 'text-semantic-success',
     },
   ];
 
@@ -341,13 +417,24 @@ export function HealthStrip({
               {metric.label}
             </span>
             <span className={`text-lg font-bold ${metric.color}`}>
-              {metric.value}{metric.suffix}
+              {metric.value}
+              {metric.suffix}
             </span>
           </div>
           {metric.isPrimary && (
             <div className="w-8 h-8 rounded-full bg-brand-iris/20 flex items-center justify-center">
-              <svg className="w-4 h-4 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <svg
+                className="w-4 h-4 text-brand-iris"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
             </div>
           )}
@@ -379,14 +466,30 @@ export function CTACluster({
   const ctaConfig = {
     manual: {
       primary: { label: '+ Create', action: onGenerateBrief, enabled: true },
-      secondary: { label: 'Import Content', action: onImportContent, enabled: true },
+      secondary: {
+        label: 'Import Content',
+        action: onImportContent,
+        enabled: true,
+      },
     },
     copilot: {
-      primary: { label: 'Generate Draft', action: onGenerateDraft, enabled: true },
-      secondary: { label: 'Create with AI', action: onGenerateBrief, enabled: true },
+      primary: {
+        label: 'Generate Draft',
+        action: onGenerateDraft,
+        enabled: true,
+      },
+      secondary: {
+        label: 'Create with AI',
+        action: onGenerateBrief,
+        enabled: true,
+      },
     },
     autopilot: {
-      primary: { label: 'Review Exceptions', action: onFixIssues, enabled: hasIssues },
+      primary: {
+        label: 'Review Exceptions',
+        action: onFixIssues,
+        enabled: hasIssues,
+      },
       secondary: { label: 'Approve Queue', action: undefined, enabled: false },
     },
   };
@@ -401,12 +504,17 @@ export function CTACluster({
         className={`
           px-4 py-2 text-sm font-semibold rounded-lg
           transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]
-          ${config.primary.enabled
-            ? 'text-white bg-brand-iris hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.25)]'
-            : 'text-white/40 bg-slate-4 cursor-not-allowed'
+          ${
+            config.primary.enabled
+              ? 'text-white bg-brand-iris hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.25)]'
+              : 'text-white/40 bg-slate-4 cursor-not-allowed'
           }
         `}
-        title={!config.primary.enabled && mode === 'autopilot' ? 'No exceptions to review' : undefined}
+        title={
+          !config.primary.enabled && mode === 'autopilot'
+            ? 'No exceptions to review'
+            : undefined
+        }
       >
         {config.primary.label}
       </button>
@@ -447,7 +555,9 @@ export function SupervisedItemsCount({
       <span className="text-white/40">Running:</span>
       <span className="text-white/60 font-medium">{routineCount} routine</span>
       <span className="text-white/30">&middot;</span>
-      <span className={`font-medium ${exceptionCount > 0 ? 'text-semantic-warning' : 'text-white/40'}`}>
+      <span
+        className={`font-medium ${exceptionCount > 0 ? 'text-semantic-warning' : 'text-white/40'}`}
+      >
         {exceptionCount} {exceptionCount === 1 ? 'exception' : 'exceptions'}
       </span>
     </div>

@@ -67,7 +67,11 @@ function buildBestOfQuery(topic: string, industry: string): string {
   return templates[Math.floor(Math.random() * templates.length)];
 }
 
-function buildBrandedQuery(orgName: string, topic: string, industry: string): string {
+function buildBrandedQuery(
+  orgName: string,
+  topic: string,
+  industry: string
+): string {
   const templates = [
     `What do platforms like ${orgName} do for ${topic}?`,
     `How does ${orgName} compare to other ${industry} solutions for ${topic}?`,
@@ -91,8 +95,11 @@ async function loadOrgContext(
     .eq('id', orgId)
     .single();
 
-  const orgName = (org as { name: string; industry?: string } | null)?.name || 'Brand';
-  const industry = (org as { name: string; industry?: string } | null)?.industry || 'marketing';
+  const orgName =
+    (org as { name: string; industry?: string } | null)?.name || 'Brand';
+  const industry =
+    (org as { name: string; industry?: string } | null)?.industry ||
+    'marketing';
 
   // Get topic cluster names
   const { data: topicClusters } = await supabase
@@ -111,7 +118,7 @@ async function loadOrgContext(
       .eq('org_id', orgId)
       .limit(10);
 
-    for (const t of (contentTopics ?? [])) {
+    for (const t of contentTopics ?? []) {
       const name = (t as { topic_name: string }).topic_name;
       if (name && !topics.includes(name)) topics.push(name);
     }
@@ -125,7 +132,9 @@ async function loadOrgContext(
     .order('search_volume', { ascending: false })
     .limit(10);
 
-  const keywordList = (keywords ?? []).map((k: { keyword: string }) => k.keyword);
+  const keywordList = (keywords ?? []).map(
+    (k: { keyword: string }) => k.keyword
+  );
 
   return { orgName, industry, topics, keywords: keywordList };
 }
@@ -149,7 +158,9 @@ export async function generateQueriesForOrg(
   const allTopics = [...new Set([...ctx.topics, ...ctx.keywords])];
 
   if (allTopics.length === 0) {
-    logger.warn(`No topics or keywords found for org ${orgId}, using org name as fallback`);
+    logger.warn(
+      `No topics or keywords found for org ${orgId}, using org name as fallback`
+    );
     allTopics.push(ctx.orgName);
   }
 
@@ -188,16 +199,26 @@ export async function generateQueriesForOrg(
   const brandedCount = Math.max(1, Math.floor(queries.length * 0.3));
   const indices = Array.from({ length: queries.length }, (_, i) => i);
   // Fisher-Yates partial shuffle for random selection
-  for (let i = indices.length - 1; i > 0 && indices.length - i <= brandedCount; i--) {
+  for (
+    let i = indices.length - 1;
+    i > 0 && indices.length - i <= brandedCount;
+    i--
+  ) {
     const j = Math.floor(Math.random() * (i + 1));
     [indices[i], indices[j]] = [indices[j], indices[i]];
   }
   const brandedIndices = new Set(indices.slice(-brandedCount));
 
   for (const idx of brandedIndices) {
-    queries[idx].prompt = buildBrandedQuery(ctx.orgName, queries[idx].topic, industry);
+    queries[idx].prompt = buildBrandedQuery(
+      ctx.orgName,
+      queries[idx].topic,
+      industry
+    );
   }
 
-  logger.info(`Generated ${queries.length} citation queries for org ${orgId} (${allTopics.length} topics)`);
+  logger.info(
+    `Generated ${queries.length} citation queries for org ${orgId} (${allTopics.length} topics)`
+  );
   return queries.slice(0, MAX_QUERIES_PER_ORG);
 }

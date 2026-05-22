@@ -76,45 +76,46 @@ simulations 1:N audit_log
 
 ### Simulation Management
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/ai-scenario-simulations` | Create simulation |
-| GET | `/api/v1/ai-scenario-simulations` | List simulations |
-| GET | `/api/v1/ai-scenario-simulations/:id` | Get simulation |
-| PUT | `/api/v1/ai-scenario-simulations/:id` | Update simulation |
-| POST | `/api/v1/ai-scenario-simulations/:id/archive` | Archive simulation |
+| Method | Endpoint                                      | Description        |
+| ------ | --------------------------------------------- | ------------------ |
+| POST   | `/api/v1/ai-scenario-simulations`             | Create simulation  |
+| GET    | `/api/v1/ai-scenario-simulations`             | List simulations   |
+| GET    | `/api/v1/ai-scenario-simulations/:id`         | Get simulation     |
+| PUT    | `/api/v1/ai-scenario-simulations/:id`         | Update simulation  |
+| POST   | `/api/v1/ai-scenario-simulations/:id/archive` | Archive simulation |
 
 ### Run Lifecycle
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/ai-scenario-simulations/:id/runs` | Start new run |
-| GET | `/api/v1/ai-scenario-simulations/:id/runs` | List runs |
-| GET | `/api/v1/ai-scenario-simulations/runs/:runId` | Get run detail |
-| POST | `/api/v1/ai-scenario-simulations/runs/:runId/step` | Advance one step |
-| POST | `/api/v1/ai-scenario-simulations/runs/:runId/run-to-completion` | Run until done |
-| POST | `/api/v1/ai-scenario-simulations/runs/:runId/abort` | Abort run |
+| Method | Endpoint                                                        | Description      |
+| ------ | --------------------------------------------------------------- | ---------------- |
+| POST   | `/api/v1/ai-scenario-simulations/:id/runs`                      | Start new run    |
+| GET    | `/api/v1/ai-scenario-simulations/:id/runs`                      | List runs        |
+| GET    | `/api/v1/ai-scenario-simulations/runs/:runId`                   | Get run detail   |
+| POST   | `/api/v1/ai-scenario-simulations/runs/:runId/step`              | Advance one step |
+| POST   | `/api/v1/ai-scenario-simulations/runs/:runId/run-to-completion` | Run until done   |
+| POST   | `/api/v1/ai-scenario-simulations/runs/:runId/abort`             | Abort run        |
 
 ### Turns & Agents
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/ai-scenario-simulations/runs/:runId/turns` | List turns |
-| GET | `/api/v1/ai-scenario-simulations/agents/presets` | Get agent presets |
+| Method | Endpoint                                            | Description       |
+| ------ | --------------------------------------------------- | ----------------- |
+| GET    | `/api/v1/ai-scenario-simulations/runs/:runId/turns` | List turns        |
+| GET    | `/api/v1/ai-scenario-simulations/agents/presets`    | Get agent presets |
 
 ### Observability
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/ai-scenario-simulations/stats` | Get statistics |
-| GET | `/api/v1/ai-scenario-simulations/runs/:runId/metrics` | Get run metrics |
-| GET | `/api/v1/ai-scenario-simulations/:id/audit-log` | Get audit log |
+| Method | Endpoint                                              | Description     |
+| ------ | ----------------------------------------------------- | --------------- |
+| GET    | `/api/v1/ai-scenario-simulations/stats`               | Get statistics  |
+| GET    | `/api/v1/ai-scenario-simulations/runs/:runId/metrics` | Get run metrics |
+| GET    | `/api/v1/ai-scenario-simulations/:id/audit-log`       | Get audit log   |
 
 ## Frontend Components
 
 ### SimulationList
 
 Displays paginated list of simulations with:
+
 - Search by name
 - Filter by status and objective type
 - Quick actions (view, edit, start run, archive)
@@ -122,6 +123,7 @@ Displays paginated list of simulations with:
 ### CreateSimulationModal
 
 Form for creating new simulations with:
+
 - Name and description inputs
 - Objective type selection (10 options)
 - Simulation mode selection
@@ -129,6 +131,7 @@ Form for creating new simulations with:
 ### RunViewer
 
 Real-time viewer for simulation runs:
+
 - Agent roster with role colors
 - Step-by-step dialogue display
 - Manual step/auto-run controls
@@ -138,6 +141,7 @@ Real-time viewer for simulation runs:
 ### SimulationCard
 
 Card component for individual simulation display with:
+
 - Status badge
 - Objective and mode indicators
 - Linked playbook info
@@ -186,23 +190,23 @@ await runToCompletion(run.id, { maxSteps: 20 });
 
 ### Simulation Config
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `maxStepsPerRun` | number | 20 | Maximum dialogue turns |
-| `temperature` | number | 0.7 | LLM creativity (0-1) |
-| `agentTemperatures` | Record | - | Per-agent temperature |
-| `scenarioPrompt` | string | - | Custom scenario description |
-| `moderatorEnabled` | boolean | true | Enable system narrator |
+| Field               | Type    | Default | Description                 |
+| ------------------- | ------- | ------- | --------------------------- |
+| `maxStepsPerRun`    | number  | 20      | Maximum dialogue turns      |
+| `temperature`       | number  | 0.7     | LLM creativity (0-1)        |
+| `agentTemperatures` | Record  | -       | Per-agent temperature       |
+| `scenarioPrompt`    | string  | -       | Custom scenario description |
+| `moderatorEnabled`  | boolean | true    | Enable system narrator      |
 
 ### Agent Config
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `roleType` | enum | Agent persona type |
-| `displayName` | string | Human-readable name |
-| `systemPrompt` | string | Agent behavior prompt |
-| `behaviorTraits` | object | Personality settings |
-| `temperature` | number | Agent-specific LLM temperature |
+| Field            | Type   | Description                    |
+| ---------------- | ------ | ------------------------------ |
+| `roleType`       | enum   | Agent persona type             |
+| `displayName`    | string | Human-readable name            |
+| `systemPrompt`   | string | Agent behavior prompt          |
+| `behaviorTraits` | object | Personality settings           |
+| `temperature`    | number | Agent-specific LLM temperature |
 
 ## Security & Access Control
 

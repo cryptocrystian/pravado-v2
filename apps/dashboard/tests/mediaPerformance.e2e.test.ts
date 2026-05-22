@@ -28,7 +28,9 @@ test.describe('Media Performance Dashboard', () => {
 
     test('should display dashboard subtitle', async () => {
       await page.goto('/app/media-performance');
-      await expect(page.locator('text=Unified analytics across all PR campaigns')).toBeVisible();
+      await expect(
+        page.locator('text=Unified analytics across all PR campaigns')
+      ).toBeVisible();
     });
   });
 
@@ -42,13 +44,15 @@ test.describe('Media Performance Dashboard', () => {
 
       // If loading is too fast, verify data loads successfully instead
       if (!isVisible) {
-        await expect(page.locator('[data-testid="performance-score-card"]').first()).toBeVisible({ timeout: 5000 });
+        await expect(
+          page.locator('[data-testid="performance-score-card"]').first()
+        ).toBeVisible({ timeout: 5000 });
       }
     });
 
     test('should handle API errors gracefully', async () => {
       // Mock API failure
-      await page.route('**/api/v1/media-performance/overview*', route => {
+      await page.route('**/api/v1/media-performance/overview*', (route) => {
         route.fulfill({
           status: 500,
           body: JSON.stringify({ error: 'Internal server error' }),
@@ -57,13 +61,15 @@ test.describe('Media Performance Dashboard', () => {
 
       await page.goto('/app/media-performance');
 
-      await expect(page.locator('text=Error Loading Data')).toBeVisible({ timeout: 3000 });
+      await expect(page.locator('text=Error Loading Data')).toBeVisible({
+        timeout: 3000,
+      });
       await expect(page.locator('button:has-text("Retry")')).toBeVisible();
     });
 
     test('should retry on error', async () => {
       let callCount = 0;
-      await page.route('**/api/v1/media-performance/overview*', route => {
+      await page.route('**/api/v1/media-performance/overview*', (route) => {
         callCount++;
         if (callCount === 1) {
           route.fulfill({
@@ -90,9 +96,10 @@ test.describe('Media Performance Dashboard', () => {
       await page.click('text=Last 7 days');
 
       // Verify API is called with correct date range
-      const request = await page.waitForRequest(req =>
-        req.url().includes('/api/v1/media-performance/overview') &&
-        req.url().includes('startDate')
+      const request = await page.waitForRequest(
+        (req) =>
+          req.url().includes('/api/v1/media-performance/overview') &&
+          req.url().includes('startDate')
       );
       expect(request.url()).toContain('startDate');
     });
@@ -104,7 +111,9 @@ test.describe('Media Performance Dashboard', () => {
 
       await page.waitForLoadState('networkidle');
       // Data should reload
-      await expect(page.locator('[data-testid="performance-score-card"]').first()).toBeVisible();
+      await expect(
+        page.locator('[data-testid="performance-score-card"]').first()
+      ).toBeVisible();
     });
 
     test('should change date range to 90 days', async () => {
@@ -113,7 +122,9 @@ test.describe('Media Performance Dashboard', () => {
       await page.click('text=Last 90 days');
 
       await page.waitForLoadState('networkidle');
-      await expect(page.locator('[data-testid="performance-score-card"]').first()).toBeVisible();
+      await expect(
+        page.locator('[data-testid="performance-score-card"]').first()
+      ).toBeVisible();
     });
   });
 
@@ -130,7 +141,9 @@ test.describe('Media Performance Dashboard', () => {
     test('should display score values', async () => {
       await page.goto('/app/media-performance');
 
-      const visibilityCard = page.locator('text=Visibility Score').locator('..');
+      const visibilityCard = page
+        .locator('text=Visibility Score')
+        .locator('..');
       await expect(visibilityCard.locator('.text-3xl')).toBeVisible();
     });
 
@@ -154,7 +167,9 @@ test.describe('Media Performance Dashboard', () => {
     test('should display current sentiment badge', async () => {
       await page.goto('/app/media-performance');
 
-      const sentimentSection = page.locator('text=Sentiment Trend').locator('..');
+      const sentimentSection = page
+        .locator('text=Sentiment Trend')
+        .locator('..');
       const badge = sentimentSection.locator('[data-testid="sentiment-badge"]');
 
       // Badge should be visible if data is available
@@ -167,10 +182,13 @@ test.describe('Media Performance Dashboard', () => {
     test('should show hover tooltips on data points', async () => {
       await page.goto('/app/media-performance');
 
-      const chart = page.locator('text=Sentiment Trend').locator('..').locator('svg');
+      const chart = page
+        .locator('text=Sentiment Trend')
+        .locator('..')
+        .locator('svg');
       const dataPoint = chart.locator('circle').first();
 
-      if (await dataPoint.count() > 0) {
+      if ((await dataPoint.count()) > 0) {
         await dataPoint.hover();
         // Tooltip should appear (implementation dependent)
       }
@@ -187,7 +205,9 @@ test.describe('Media Performance Dashboard', () => {
     test('should display mentions per day metric', async () => {
       await page.goto('/app/media-performance');
 
-      const velocitySection = page.locator('text=Coverage Velocity').locator('..');
+      const velocitySection = page
+        .locator('text=Coverage Velocity')
+        .locator('..');
       const badge = velocitySection.locator('text=/mentions\\/day/');
 
       const badgeCount = await badge.count();
@@ -207,7 +227,9 @@ test.describe('Media Performance Dashboard', () => {
     test('should display quality score badge', async () => {
       await page.goto('/app/media-performance');
 
-      const tierSection = page.locator('text=Outlet Tier Distribution').locator('..');
+      const tierSection = page
+        .locator('text=Outlet Tier Distribution')
+        .locator('..');
       const qualityBadge = tierSection.locator('text=/Quality:/');
 
       const badgeCount = await qualityBadge.count();
@@ -219,11 +241,13 @@ test.describe('Media Performance Dashboard', () => {
     test('should show tier legend', async () => {
       await page.goto('/app/media-performance');
 
-      const tierSection = page.locator('text=Outlet Tier Distribution').locator('..');
+      const tierSection = page
+        .locator('text=Outlet Tier Distribution')
+        .locator('..');
 
       // Check for tier labels
-      const hasTier1 = await tierSection.locator('text=Tier 1').count() > 0;
-      const hasTier2 = await tierSection.locator('text=Tier 2').count() > 0;
+      const hasTier1 = (await tierSection.locator('text=Tier 1').count()) > 0;
+      const hasTier2 = (await tierSection.locator('text=Tier 2').count()) > 0;
 
       // At least one tier should be visible if data exists
       expect(hasTier1 || hasTier2).toBeTruthy();
@@ -240,9 +264,12 @@ test.describe('Media Performance Dashboard', () => {
     test('should display table headers', async () => {
       await page.goto('/app/media-performance');
 
-      const table = page.locator('text=Top Journalists').locator('..').locator('table');
+      const table = page
+        .locator('text=Top Journalists')
+        .locator('..')
+        .locator('table');
 
-      if (await table.count() > 0) {
+      if ((await table.count()) > 0) {
         await expect(table.locator('th:has-text("Rank")')).toBeVisible();
         await expect(table.locator('th:has-text("Journalist")')).toBeVisible();
         await expect(table.locator('th:has-text("Impact")')).toBeVisible();
@@ -254,7 +281,7 @@ test.describe('Media Performance Dashboard', () => {
 
       const impactHeader = page.locator('th:has-text("Impact")');
 
-      if (await impactHeader.count() > 0) {
+      if ((await impactHeader.count()) > 0) {
         await impactHeader.click();
 
         // Wait for sort animation
@@ -280,17 +307,20 @@ test.describe('Media Performance Dashboard', () => {
       const cells = heatmap.locator('[data-testid="heatmap-cell"]');
 
       // Cells may not have test IDs, check for visual elements instead
-      const hasSvg = await heatmap.locator('svg').count() > 0;
+      const hasSvg = (await heatmap.locator('svg').count()) > 0;
       expect(hasSvg).toBeTruthy();
     });
 
     test('should show hover tooltips on cells', async () => {
       await page.goto('/app/media-performance');
 
-      const heatmap = page.locator('text=Campaign Activity').locator('..').locator('svg');
+      const heatmap = page
+        .locator('text=Campaign Activity')
+        .locator('..')
+        .locator('svg');
       const cell = heatmap.locator('rect').first();
 
-      if (await cell.count() > 0) {
+      if ((await cell.count()) > 0) {
         await cell.hover();
         // Tooltip implementation dependent
       }
@@ -307,7 +337,9 @@ test.describe('Media Performance Dashboard', () => {
     test('should display unread count badge', async () => {
       await page.goto('/app/media-performance');
 
-      const insightSection = page.locator('text=Performance Insights').locator('..');
+      const insightSection = page
+        .locator('text=Performance Insights')
+        .locator('..');
       const unreadBadge = insightSection.locator('text=/new/');
 
       // Badge may not be visible if no unread insights
@@ -320,13 +352,19 @@ test.describe('Media Performance Dashboard', () => {
     test('should dismiss insight when X clicked', async () => {
       await page.goto('/app/media-performance');
 
-      const dismissButton = page.locator('[data-testid="dismiss-insight"]').first();
+      const dismissButton = page
+        .locator('[data-testid="dismiss-insight"]')
+        .first();
 
-      if (await dismissButton.count() > 0) {
-        const initialCount = await page.locator('[data-testid="insight-card"]').count();
+      if ((await dismissButton.count()) > 0) {
+        const initialCount = await page
+          .locator('[data-testid="insight-card"]')
+          .count();
         await dismissButton.click();
         await page.waitForTimeout(500);
-        const finalCount = await page.locator('[data-testid="insight-card"]').count();
+        const finalCount = await page
+          .locator('[data-testid="insight-card"]')
+          .count();
 
         expect(finalCount).toBeLessThanOrEqual(initialCount);
       }
@@ -337,9 +375,9 @@ test.describe('Media Performance Dashboard', () => {
 
       const insightCard = page.locator('[data-testid="insight-card"]').first();
 
-      if (await insightCard.count() > 0) {
+      if ((await insightCard.count()) > 0) {
         // Check if unread styling exists
-        const hasUnreadClass = await insightCard.evaluate(el =>
+        const hasUnreadClass = await insightCard.evaluate((el) =>
           el.className.includes('bg-blue-50')
         );
 
@@ -348,7 +386,7 @@ test.describe('Media Performance Dashboard', () => {
           await page.waitForTimeout(500);
 
           // Should no longer have unread styling
-          const stillUnread = await insightCard.evaluate(el =>
+          const stillUnread = await insightCard.evaluate((el) =>
             el.className.includes('bg-blue-50')
           );
           expect(stillUnread).toBeFalsy();
@@ -365,7 +403,7 @@ test.describe('Media Performance Dashboard', () => {
       await expect(refreshButton).toBeVisible();
 
       // Track API call
-      const apiCallPromise = page.waitForRequest(req =>
+      const apiCallPromise = page.waitForRequest((req) =>
         req.url().includes('/api/v1/media-performance/overview')
       );
 
@@ -373,7 +411,7 @@ test.describe('Media Performance Dashboard', () => {
       await apiCallPromise;
 
       // Should show refreshing state briefly
-      const hasSpinner = await page.locator('.animate-spin').count() > 0;
+      const hasSpinner = (await page.locator('.animate-spin').count()) > 0;
       // Spinner may be too brief to catch
     });
 
@@ -431,12 +469,14 @@ test.describe('Media Performance Dashboard', () => {
       await page.click('text=Last 7 days');
 
       // Wait for API call
-      await page.waitForRequest(req =>
+      await page.waitForRequest((req) =>
         req.url().includes('/api/v1/media-performance/overview')
       );
 
       // Data should update
-      await expect(page.locator('[data-testid="performance-score-card"]').first()).toBeVisible();
+      await expect(
+        page.locator('[data-testid="performance-score-card"]').first()
+      ).toBeVisible();
     });
   });
 
@@ -467,7 +507,9 @@ test.describe('Media Performance Dashboard', () => {
       await page.keyboard.press('Tab');
 
       // Focused element should be visible
-      const focusedElement = await page.evaluate(() => document.activeElement?.tagName);
+      const focusedElement = await page.evaluate(
+        () => document.activeElement?.tagName
+      );
       expect(focusedElement).toBeDefined();
     });
   });

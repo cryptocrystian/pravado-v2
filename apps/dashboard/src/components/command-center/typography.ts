@@ -32,7 +32,8 @@
 export const headingPage = 'text-2xl font-bold text-white/95 tracking-tight';
 
 /** Section Heading — major content sections within a surface */
-export const headingSection = 'text-xl font-semibold text-white/95 tracking-tight';
+export const headingSection =
+  'text-xl font-semibold text-white/95 tracking-tight';
 
 /** Pane Title — tri-pane shell, modal headers, drawer titles */
 export const headingPane = 'text-lg font-semibold text-white/90 tracking-tight';
@@ -41,7 +42,8 @@ export const headingPane = 'text-lg font-semibold text-white/90 tracking-tight';
 export const headingSubsection = 'text-base font-semibold text-white/90';
 
 /** Card Title — individual card headings */
-export const headingCard = 'text-[15px] font-semibold text-white/90 leading-snug';
+export const headingCard =
+  'text-[15px] font-semibold text-white/90 leading-snug';
 
 // Legacy aliases — kept for backward compatibility but DEPRECATED
 // Use the new heading* tokens above instead
@@ -72,10 +74,12 @@ export const textMeta = 'text-xs text-white/55'; // typography-allow: meta — u
 export const label = 'text-xs font-medium text-white/70';
 
 /** Uppercase label — section headers, status labels */
-export const labelUppercase = 'text-xs font-semibold text-white/55 uppercase tracking-wide';
+export const labelUppercase =
+  'text-xs font-semibold text-white/55 uppercase tracking-wide';
 
 /** Small uppercase label — tight spaces, filter chips */
-export const labelSmUppercase = 'text-[11px] font-semibold text-white/50 uppercase tracking-wider'; // typography-allow: meta
+export const labelSmUppercase =
+  'text-[11px] font-semibold text-white/50 uppercase tracking-wider'; // typography-allow: meta
 
 // === BADGE STYLES ===
 
@@ -94,7 +98,8 @@ export const buttonText = 'text-sm font-semibold';
 export const buttonTextSm = 'text-sm font-medium';
 
 /** Link text — inline links, navigation */
-export const linkText = 'text-sm font-medium text-brand-cyan hover:text-brand-cyan/80 transition-colors';
+export const linkText =
+  'text-sm font-medium text-brand-cyan hover:text-brand-cyan/80 transition-colors';
 
 // === METRIC STYLES ===
 
@@ -105,7 +110,8 @@ export const metricValueHero = 'text-2xl font-bold text-white/95 tabular-nums';
 export const metricValue = 'text-lg font-bold text-white/90 tabular-nums';
 
 /** Metric value compact — inline metrics */
-export const metricValueCompact = 'text-base font-bold text-white/90 tabular-nums';
+export const metricValueCompact =
+  'text-base font-bold text-white/90 tabular-nums';
 
 /** Metric label — labels under/beside metric values */
 export const metricLabel = 'text-xs text-white/55 uppercase tracking-wide'; // typography-allow: meta
@@ -139,16 +145,20 @@ export const cardSubtitle = 'text-[13px] text-white/60';
 export const cardBody = 'text-sm text-white/70 leading-relaxed';
 
 /** Tab text — navigation tabs, filter tabs (12px with uppercase) */
-export const tabText = 'text-xs font-semibold uppercase tracking-wide text-white/55';
+export const tabText =
+  'text-xs font-semibold uppercase tracking-wide text-white/55';
 
 /** Tab text active */
-export const tabTextActive = 'text-xs font-semibold uppercase tracking-wide text-brand-cyan';
+export const tabTextActive =
+  'text-xs font-semibold uppercase tracking-wide text-brand-cyan';
 
 // === UTILITY FUNCTION ===
 
 /**
  * Combines multiple typography classes safely
  */
-export function combineTypography(...classes: (string | undefined | false)[]): string {
+export function combineTypography(
+  ...classes: (string | undefined | false)[]
+): string {
   return classes.filter(Boolean).join(' ');
 }

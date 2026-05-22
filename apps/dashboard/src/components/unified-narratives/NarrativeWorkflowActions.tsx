@@ -50,7 +50,9 @@ interface NarrativeWorkflowActionsProps {
   onPublish?: (channels?: string[]) => Promise<void>;
   onArchive?: (reason?: string) => Promise<void>;
   onRegenerate?: () => Promise<void>;
-  onExport?: (format: 'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json') => Promise<void>;
+  onExport?: (
+    format: 'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json'
+  ) => Promise<void>;
   className?: string;
 }
 
@@ -69,7 +71,9 @@ export default function NarrativeWorkflowActions({
   const [isLoading, setIsLoading] = useState(false);
   const [comments, setComments] = useState('');
   const [archiveReason, setArchiveReason] = useState('');
-  const [exportFormat, setExportFormat] = useState<'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json'>('pdf');
+  const [exportFormat, setExportFormat] = useState<
+    'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json'
+  >('pdf');
 
   const handleAction = async (action: () => Promise<void>) => {
     setIsLoading(true);
@@ -251,8 +255,8 @@ export default function NarrativeWorkflowActions({
           <DialogHeader>
             <DialogTitle>Archive Narrative</DialogTitle>
             <DialogDescription>
-              Archiving will remove this narrative from active views. This action
-              can be undone.
+              Archiving will remove this narrative from active views. This
+              action can be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">

@@ -16,7 +16,10 @@ export async function GET() {
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
     console.error('[API /api/orgs] GET Error:', { status, message, code });
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }
 
@@ -31,6 +34,9 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
     console.error('[API /api/orgs] POST Error:', { status, message, code });
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

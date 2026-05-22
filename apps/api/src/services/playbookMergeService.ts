@@ -82,7 +82,11 @@ export async function mergeBranches(
   targetBranchId: string,
   userId: string,
   message?: string,
-  conflictResolutions?: Array<{ nodeId?: string; edgeId?: string; resolution: 'ours' | 'theirs' }>
+  conflictResolutions?: Array<{
+    nodeId?: string;
+    edgeId?: string;
+    resolution: 'ours' | 'theirs';
+  }>
 ): Promise<MergeResult> {
   // Get latest commits from both branches
   const sourceCommit = await getLatestCommit(supabase, sourceBranchId);
@@ -93,7 +97,11 @@ export async function mergeBranches(
   }
 
   // Find common ancestor
-  const ancestorId = await findCommonAncestor(supabase, sourceCommit.id, targetCommit.id);
+  const ancestorId = await findCommonAncestor(
+    supabase,
+    sourceCommit.id,
+    targetCommit.id
+  );
 
   if (!ancestorId) {
     // No common ancestor - branches are unrelated
@@ -218,7 +226,11 @@ function runThreeWayMerge(
   base: PlaybookGraph,
   ours: PlaybookGraph,
   theirs: PlaybookGraph,
-  resolutions?: Array<{ nodeId?: string; edgeId?: string; resolution: 'ours' | 'theirs' }>
+  resolutions?: Array<{
+    nodeId?: string;
+    edgeId?: string;
+    resolution: 'ours' | 'theirs';
+  }>
 ): MergeResult {
   const conflicts: MergeConflict[] = [];
 
@@ -236,7 +248,11 @@ function runThreeWayMerge(
   const mergedEdges: GraphEdge[] = [];
 
   // Process nodes
-  const allNodeIds = new Set([...baseNodes.keys(), ...ourNodes.keys(), ...theirNodes.keys()]);
+  const allNodeIds = new Set([
+    ...baseNodes.keys(),
+    ...ourNodes.keys(),
+    ...theirNodes.keys(),
+  ]);
 
   for (const nodeId of allNodeIds) {
     const baseNode = baseNodes.get(nodeId);
@@ -252,7 +268,9 @@ function runThreeWayMerge(
         // Different additions - conflict
         const resolution = resolutions?.find((r) => r.nodeId === nodeId);
         if (resolution) {
-          mergedNodes.push(resolution.resolution === 'ours' ? ourNode : theirNode);
+          mergedNodes.push(
+            resolution.resolution === 'ours' ? ourNode : theirNode
+          );
         } else {
           conflicts.push({
             nodeId,
@@ -266,7 +284,8 @@ function runThreeWayMerge(
     // Case 2: Node modified in both branches
     else if (baseNode && ourNode && theirNode) {
       const ourModified = JSON.stringify(baseNode) !== JSON.stringify(ourNode);
-      const theirModified = JSON.stringify(baseNode) !== JSON.stringify(theirNode);
+      const theirModified =
+        JSON.stringify(baseNode) !== JSON.stringify(theirNode);
 
       if (ourModified && theirModified) {
         // Both modified - check if changes are identical
@@ -277,7 +296,9 @@ function runThreeWayMerge(
           // Different modifications - conflict
           const resolution = resolutions?.find((r) => r.nodeId === nodeId);
           if (resolution) {
-            mergedNodes.push(resolution.resolution === 'ours' ? ourNode : theirNode);
+            mergedNodes.push(
+              resolution.resolution === 'ours' ? ourNode : theirNode
+            );
           } else {
             conflicts.push({
               nodeId,
@@ -349,7 +370,11 @@ function runThreeWayMerge(
   }
 
   // Process edges (similar logic)
-  const allEdgeIds = new Set([...baseEdges.keys(), ...ourEdges.keys(), ...theirEdges.keys()]);
+  const allEdgeIds = new Set([
+    ...baseEdges.keys(),
+    ...ourEdges.keys(),
+    ...theirEdges.keys(),
+  ]);
 
   for (const edgeId of allEdgeIds) {
     const baseEdge = baseEdges.get(edgeId);
@@ -363,7 +388,9 @@ function runThreeWayMerge(
       } else {
         const resolution = resolutions?.find((r) => r.edgeId === edgeId);
         if (resolution) {
-          mergedEdges.push(resolution.resolution === 'ours' ? ourEdge : theirEdge);
+          mergedEdges.push(
+            resolution.resolution === 'ours' ? ourEdge : theirEdge
+          );
         } else {
           conflicts.push({
             edgeId,
@@ -375,7 +402,8 @@ function runThreeWayMerge(
       }
     } else if (baseEdge && ourEdge && theirEdge) {
       const ourModified = JSON.stringify(baseEdge) !== JSON.stringify(ourEdge);
-      const theirModified = JSON.stringify(baseEdge) !== JSON.stringify(theirEdge);
+      const theirModified =
+        JSON.stringify(baseEdge) !== JSON.stringify(theirEdge);
 
       if (ourModified && theirModified) {
         if (JSON.stringify(ourEdge) === JSON.stringify(theirEdge)) {
@@ -383,7 +411,9 @@ function runThreeWayMerge(
         } else {
           const resolution = resolutions?.find((r) => r.edgeId === edgeId);
           if (resolution) {
-            mergedEdges.push(resolution.resolution === 'ours' ? ourEdge : theirEdge);
+            mergedEdges.push(
+              resolution.resolution === 'ours' ? ourEdge : theirEdge
+            );
           } else {
             conflicts.push({
               edgeId,

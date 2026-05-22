@@ -139,15 +139,15 @@ ORDER BY created_at ASC
 interface ReplaySnapshotRecord {
   id: uuid;
   replay_run_id: uuid;
-  snapshot_index: integer;    // 0-based index
-  event_id: uuid | null;      // Reference to source event
+  snapshot_index: integer; // 0-based index
+  event_id: uuid | null; // Reference to source event
   event_type: string;
   timestamp: timestamptz;
-  state_before: jsonb;        // Entity state before event
-  state_after: jsonb;         // Entity state after event
-  diff_json: jsonb;           // Array of StateDiff
-  entity_type: string;        // content, playbook, billing, etc.
-  entity_id: string;          // Entity identifier
+  state_before: jsonb; // Entity state before event
+  state_after: jsonb; // Entity state after event
+  diff_json: jsonb; // Array of StateDiff
+  entity_type: string; // content, playbook, billing, etc.
+  entity_id: string; // Entity identifier
   created_at: timestamptz;
 }
 ```
@@ -156,9 +156,9 @@ interface ReplaySnapshotRecord {
 
 ```typescript
 interface StateDiff {
-  field: string;              // Field name that changed
-  before: unknown;            // Value before (undefined if added)
-  after: unknown;             // Value after (undefined if removed)
+  field: string; // Field name that changed
+  before: unknown; // Value before (undefined if added)
+  after: unknown; // Value after (undefined if removed)
   operation: 'added' | 'removed' | 'modified';
 }
 ```
@@ -186,9 +186,24 @@ interface StateDiff {
     "wordCount": 1200
   },
   "diff": [
-    { "field": "title", "before": "Draft Article", "after": "Published Article", "operation": "modified" },
-    { "field": "status", "before": "draft", "after": "published", "operation": "modified" },
-    { "field": "wordCount", "before": 500, "after": 1200, "operation": "modified" }
+    {
+      "field": "title",
+      "before": "Draft Article",
+      "after": "Published Article",
+      "operation": "modified"
+    },
+    {
+      "field": "status",
+      "before": "draft",
+      "after": "published",
+      "operation": "modified"
+    },
+    {
+      "field": "wordCount",
+      "before": 500,
+      "after": 1200,
+      "operation": "modified"
+    }
   ],
   "entityType": "content",
   "entityId": "content-789"
@@ -199,21 +214,21 @@ interface StateDiff {
 
 ### Supported Entity Types
 
-| Entity Type | Tracked Fields | Source Events |
-|-------------|----------------|---------------|
-| content | id, title, status, wordCount, qualityScore | content.* |
-| playbook | id, name, status, version, runCount | playbook.* |
-| billing | plan, status, tokensUsed, lastPayment | billing.* |
-| agent | id, name, status, executionCount | llm.* |
-| execution | runId, status, currentStep, totalSteps | playbook.execution_* |
+| Entity Type | Tracked Fields                             | Source Events          |
+| ----------- | ------------------------------------------ | ---------------------- |
+| content     | id, title, status, wordCount, qualityScore | content.\*             |
+| playbook    | id, name, status, version, runCount        | playbook.\*            |
+| billing     | plan, status, tokensUsed, lastPayment      | billing.\*             |
+| agent       | id, name, status, executionCount           | llm.\*                 |
+| execution   | runId, status, currentStep, totalSteps     | playbook.execution\_\* |
 
 ### Diff Operations
 
-| Operation | Condition | UI Color |
-|-----------|-----------|----------|
-| added | Field exists in `after` but not in `before` | Green |
-| removed | Field exists in `before` but not in `after` | Red |
-| modified | Field exists in both but values differ | Yellow |
+| Operation | Condition                                   | UI Color |
+| --------- | ------------------------------------------- | -------- |
+| added     | Field exists in `after` but not in `before` | Green    |
+| removed   | Field exists in `before` but not in `after` | Red      |
+| modified  | Field exists in both but values differ      | Yellow   |
 
 ### Comparison Rules
 
@@ -228,11 +243,11 @@ interface StateDiff {
 
 ```typescript
 type ReplaySSEEventType =
-  | 'replay.started'    // Job started processing
-  | 'replay.progress'   // Progress update
-  | 'replay.snapshot'   // New snapshot created
-  | 'replay.completed'  // Job finished successfully
-  | 'replay.failed';    // Job failed
+  | 'replay.started' // Job started processing
+  | 'replay.progress' // Progress update
+  | 'replay.snapshot' // New snapshot created
+  | 'replay.completed' // Job finished successfully
+  | 'replay.failed'; // Job failed
 ```
 
 ### Event Payloads
@@ -275,6 +290,7 @@ type ReplaySSEEventType =
 Create a new replay job.
 
 **Request:**
+
 ```json
 {
   "filters": {
@@ -287,6 +303,7 @@ Create a new replay job.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -302,6 +319,7 @@ Create a new replay job.
 Get replay job status and timeline.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -326,6 +344,7 @@ Get replay job status and timeline.
 Get a specific snapshot.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -342,13 +361,13 @@ Get a specific snapshot.
 
 ## RBAC Rules
 
-| Action | Owner | Admin | Member | Viewer |
-|--------|-------|-------|--------|--------|
-| Create replay job | Yes | Yes | No | No |
-| View replay status | Yes | Yes | Yes | Yes |
-| View timeline | Yes | Yes | Yes | Yes |
-| View snapshots | Yes | Yes | Yes | Yes |
-| List replay jobs | Yes | Yes | Yes | Yes |
+| Action             | Owner | Admin | Member | Viewer |
+| ------------------ | ----- | ----- | ------ | ------ |
+| Create replay job  | Yes   | Yes   | No     | No     |
+| View replay status | Yes   | Yes   | Yes    | Yes    |
+| View timeline      | Yes   | Yes   | Yes    | Yes    |
+| View snapshots     | Yes   | Yes   | Yes    | Yes    |
+| List replay jobs   | Yes   | Yes   | Yes    | Yes    |
 
 ## Configuration
 
@@ -356,7 +375,7 @@ Get a specific snapshot.
 
 ```typescript
 // packages/feature-flags/src/flags.ts
-ENABLE_AUDIT_REPLAY: true
+ENABLE_AUDIT_REPLAY: true;
 ```
 
 ## Limitations

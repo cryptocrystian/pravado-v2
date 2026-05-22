@@ -12,22 +12,22 @@ The Autonomous Insight Conflict Resolution Engine is a critical intelligence lay
 
 ### Conflict Types
 
-| Type | Description | Example |
-|------|-------------|---------|
-| **Contradiction** | Directly opposing statements or data | Revenue projections of $5M vs $4M from different sources |
-| **Divergence** | Same metric with significant variance | Market share reported as 15% vs 22% |
-| **Ambiguity** | Unclear or multiple interpretations | Sentiment scores that could be positive or neutral |
-| **Missing Data** | Required data absent from sources | Trend analysis missing Q4 data points |
-| **Inconsistency** | Related data that doesn't align | Product terminology differs across documents |
+| Type              | Description                           | Example                                                  |
+| ----------------- | ------------------------------------- | -------------------------------------------------------- |
+| **Contradiction** | Directly opposing statements or data  | Revenue projections of $5M vs $4M from different sources |
+| **Divergence**    | Same metric with significant variance | Market share reported as 15% vs 22%                      |
+| **Ambiguity**     | Unclear or multiple interpretations   | Sentiment scores that could be positive or neutral       |
+| **Missing Data**  | Required data absent from sources     | Trend analysis missing Q4 data points                    |
+| **Inconsistency** | Related data that doesn't align       | Product terminology differs across documents             |
 
 ### Conflict Severity
 
-| Level | Impact | Response Time |
-|-------|--------|---------------|
-| **Critical** | Financial/reputational risk | Immediate attention required |
-| **High** | Strategic decision impact | Same-day resolution recommended |
-| **Medium** | Operational efficiency | Within 48 hours |
-| **Low** | Minor inconsistency | Weekly review cycle |
+| Level        | Impact                      | Response Time                   |
+| ------------ | --------------------------- | ------------------------------- |
+| **Critical** | Financial/reputational risk | Immediate attention required    |
+| **High**     | Strategic decision impact   | Same-day resolution recommended |
+| **Medium**   | Operational efficiency      | Within 48 hours                 |
+| **Low**      | Minor inconsistency         | Weekly review cycle             |
 
 ### Conflict Lifecycle
 
@@ -41,12 +41,12 @@ Detected → Analyzing → Resolved/Dismissed
 
 ### Resolution Strategies
 
-| Strategy | Description | Use Case |
-|----------|-------------|----------|
-| **AI Consensus** | Weighted average with AI reasoning | Numerical data conflicts |
-| **Source Priority** | Prefer authoritative source | Known source reliability hierarchy |
-| **Weighted Truth** | Confidence-based weighting | Multiple sources with varying reliability |
-| **Hybrid** | Combination of strategies | Complex multi-factor conflicts |
+| Strategy            | Description                        | Use Case                                  |
+| ------------------- | ---------------------------------- | ----------------------------------------- |
+| **AI Consensus**    | Weighted average with AI reasoning | Numerical data conflicts                  |
+| **Source Priority** | Prefer authoritative source        | Known source reliability hierarchy        |
+| **Weighted Truth**  | Confidence-based weighting         | Multiple sources with varying reliability |
+| **Hybrid**          | Combination of strategies          | Complex multi-factor conflicts            |
 
 ## Architecture
 
@@ -95,28 +95,28 @@ S66 Unified Graph    S70 Unified Narrative    S73 Reality Maps
 
 ### Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/v1/insight-conflicts` | List conflicts |
-| POST | `/api/v1/insight-conflicts` | Create conflict |
-| GET | `/api/v1/insight-conflicts/:id` | Get conflict details |
-| PATCH | `/api/v1/insight-conflicts/:id` | Update conflict |
-| DELETE | `/api/v1/insight-conflicts/:id` | Delete conflict |
-| POST | `/api/v1/insight-conflicts/:id/analyze` | Trigger analysis |
-| POST | `/api/v1/insight-conflicts/:id/resolve` | Generate resolution |
-| POST | `/api/v1/insight-conflicts/:id/dismiss` | Dismiss conflict |
-| POST | `/api/v1/insight-conflicts/:id/review` | Review resolution |
-| GET | `/api/v1/insight-conflicts/:id/items` | Get conflict items |
-| GET | `/api/v1/insight-conflicts/:id/graph` | Get conflict graph |
-| GET | `/api/v1/insight-conflicts/:id/audit-log` | Get audit events |
-| GET | `/api/v1/insight-conflicts/stats` | Get statistics |
-| POST | `/api/v1/insight-conflicts/detect` | Run detection |
-| POST | `/api/v1/insight-conflicts/batch/analyze` | Batch analyze |
-| POST | `/api/v1/insight-conflicts/batch/resolve` | Batch resolve |
-| POST | `/api/v1/insight-conflicts/batch/dismiss` | Batch dismiss |
-| GET | `/api/v1/insight-conflicts/clusters` | List clusters |
-| POST | `/api/v1/insight-conflicts/clusters` | Create cluster |
-| POST | `/api/v1/insight-conflicts/graph/edges` | Create graph edge |
+| Method | Path                                      | Description          |
+| ------ | ----------------------------------------- | -------------------- |
+| GET    | `/api/v1/insight-conflicts`               | List conflicts       |
+| POST   | `/api/v1/insight-conflicts`               | Create conflict      |
+| GET    | `/api/v1/insight-conflicts/:id`           | Get conflict details |
+| PATCH  | `/api/v1/insight-conflicts/:id`           | Update conflict      |
+| DELETE | `/api/v1/insight-conflicts/:id`           | Delete conflict      |
+| POST   | `/api/v1/insight-conflicts/:id/analyze`   | Trigger analysis     |
+| POST   | `/api/v1/insight-conflicts/:id/resolve`   | Generate resolution  |
+| POST   | `/api/v1/insight-conflicts/:id/dismiss`   | Dismiss conflict     |
+| POST   | `/api/v1/insight-conflicts/:id/review`    | Review resolution    |
+| GET    | `/api/v1/insight-conflicts/:id/items`     | Get conflict items   |
+| GET    | `/api/v1/insight-conflicts/:id/graph`     | Get conflict graph   |
+| GET    | `/api/v1/insight-conflicts/:id/audit-log` | Get audit events     |
+| GET    | `/api/v1/insight-conflicts/stats`         | Get statistics       |
+| POST   | `/api/v1/insight-conflicts/detect`        | Run detection        |
+| POST   | `/api/v1/insight-conflicts/batch/analyze` | Batch analyze        |
+| POST   | `/api/v1/insight-conflicts/batch/resolve` | Batch resolve        |
+| POST   | `/api/v1/insight-conflicts/batch/dismiss` | Batch dismiss        |
+| GET    | `/api/v1/insight-conflicts/clusters`      | List clusters        |
+| POST   | `/api/v1/insight-conflicts/clusters`      | Create cluster       |
+| POST   | `/api/v1/insight-conflicts/graph/edges`   | Create graph edge    |
 
 ### Create Conflict
 
@@ -255,12 +255,22 @@ interface InsightConflict {
   orgId: string;
   title: string;
   description?: string;
-  conflictType: 'contradiction' | 'divergence' | 'ambiguity' | 'missing_data' | 'inconsistency';
+  conflictType:
+    | 'contradiction'
+    | 'divergence'
+    | 'ambiguity'
+    | 'missing_data'
+    | 'inconsistency';
   severity: 'low' | 'medium' | 'high' | 'critical';
   status: 'detected' | 'analyzing' | 'resolved' | 'dismissed';
   detectedAt: string;
-  sourceSystem: 'unified_graph' | 'unified_narrative' | 'reality_maps' |
-                'competitive_intelligence' | 'content_intelligence' | 'media_monitoring';
+  sourceSystem:
+    | 'unified_graph'
+    | 'unified_narrative'
+    | 'reality_maps'
+    | 'competitive_intelligence'
+    | 'content_intelligence'
+    | 'media_monitoring';
   sourceIds: string[];
   affectedEntities: string[];
   confidenceScore: number;
@@ -284,7 +294,12 @@ interface InsightConflict {
 interface ConflictResolution {
   id: string;
   conflictId: string;
-  resolutionType: 'ai_consensus' | 'source_priority' | 'weighted_truth' | 'hybrid' | 'manual';
+  resolutionType:
+    | 'ai_consensus'
+    | 'source_priority'
+    | 'weighted_truth'
+    | 'hybrid'
+    | 'manual';
   status: 'pending_review' | 'accepted' | 'rejected';
   summary: string;
   details?: Record<string, unknown>;
@@ -340,17 +355,17 @@ The Insight Conflicts dashboard (`/app/insight-conflicts`) provides:
 
 ### Component Library
 
-| Component | Purpose |
-|-----------|---------|
-| `ConflictCard` | Individual conflict summary card |
-| `ConflictList` | List with selection and pagination |
-| `ConflictFilterBar` | Search and filter controls |
-| `ConflictStatsCard` | Statistics dashboard widget |
-| `ConflictDetail` | Detailed conflict view |
-| `ConflictAnalysisPanel` | Analysis results display |
-| `ConflictResolutionPanel` | Resolution workflow controls |
-| `ConflictGraph` | SVG-based relationship visualization |
-| `ConflictAuditLog` | Timeline audit event display |
+| Component                 | Purpose                              |
+| ------------------------- | ------------------------------------ |
+| `ConflictCard`            | Individual conflict summary card     |
+| `ConflictList`            | List with selection and pagination   |
+| `ConflictFilterBar`       | Search and filter controls           |
+| `ConflictStatsCard`       | Statistics dashboard widget          |
+| `ConflictDetail`          | Detailed conflict view               |
+| `ConflictAnalysisPanel`   | Analysis results display             |
+| `ConflictResolutionPanel` | Resolution workflow controls         |
+| `ConflictGraph`           | SVG-based relationship visualization |
+| `ConflictAuditLog`        | Timeline audit event display         |
 
 ## Audit Logging
 
@@ -358,18 +373,18 @@ All operations are logged for compliance:
 
 ### Event Types
 
-| Event | Actor | Logged Data |
-|-------|-------|-------------|
-| `created` | system | Detection method, threshold |
-| `updated` | user/system | Previous/new state |
-| `analyzed` | ai | Analysis type, duration |
-| `resolved` | ai | Resolution type, confidence |
-| `dismissed` | user | Dismissal reason |
-| `reviewed` | user | Accept/reject, feedback |
-| `resolution_accepted` | user | Acceptance details |
-| `resolution_rejected` | user | Rejection reason |
-| `clustered` | system | Cluster assignment |
-| `graph_edge_created` | system | Edge details |
+| Event                 | Actor       | Logged Data                 |
+| --------------------- | ----------- | --------------------------- |
+| `created`             | system      | Detection method, threshold |
+| `updated`             | user/system | Previous/new state          |
+| `analyzed`            | ai          | Analysis type, duration     |
+| `resolved`            | ai          | Resolution type, confidence |
+| `dismissed`           | user        | Dismissal reason            |
+| `reviewed`            | user        | Accept/reject, feedback     |
+| `resolution_accepted` | user        | Acceptance details          |
+| `resolution_rejected` | user        | Rejection reason            |
+| `clustered`           | system      | Cluster assignment          |
+| `graph_edge_created`  | system      | Edge details                |
 
 ### Actor Types
 
@@ -383,18 +398,18 @@ All operations are logged for compliance:
 
 ```typescript
 // packages/feature-flags/src/flags.ts
-ENABLE_INSIGHT_CONFLICTS: true
+ENABLE_INSIGHT_CONFLICTS: true;
 ```
 
 ### Detection Thresholds
 
 ```typescript
 const defaultThresholds = {
-  similarityThreshold: 0.85,    // Semantic similarity for contradiction detection
-  divergenceThreshold: 0.15,    // Variance threshold for divergence detection
-  confidenceMinimum: 0.5,       // Minimum confidence to create conflict
-  autoAnalyzeAbove: 'high',     // Auto-trigger analysis for high+ severity
-  autoClusterThreshold: 0.7,    // Similarity for auto-clustering
+  similarityThreshold: 0.85, // Semantic similarity for contradiction detection
+  divergenceThreshold: 0.15, // Variance threshold for divergence detection
+  confidenceMinimum: 0.5, // Minimum confidence to create conflict
+  autoAnalyzeAbove: 'high', // Auto-trigger analysis for high+ severity
+  autoClusterThreshold: 0.7, // Similarity for auto-clustering
 };
 ```
 

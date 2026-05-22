@@ -64,9 +64,13 @@ export function GraphEdgeCard({
         onClick={() => onView?.(edge)}
       >
         <div className="flex items-center gap-2 flex-1 min-w-0 text-sm">
-          <span className="truncate font-medium">{sourceLabel || 'Source'}</span>
+          <span className="truncate font-medium">
+            {sourceLabel || 'Source'}
+          </span>
           <DirectionIcon className={`h-4 w-4 flex-shrink-0 ${typeColor}`} />
-          <span className="truncate font-medium">{targetLabel || 'Target'}</span>
+          <span className="truncate font-medium">
+            {targetLabel || 'Target'}
+          </span>
         </div>
         <Badge variant="outline" className="text-xs">
           {getEdgeTypeLabel(edge.edgeType)}
@@ -81,7 +85,11 @@ export function GraphEdgeCard({
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <Badge className={typeColor.replace('text-', 'bg-').replace('-600', '-100')}>
+              <Badge
+                className={typeColor
+                  .replace('text-', 'bg-')
+                  .replace('-600', '-100')}
+              >
                 {getEdgeTypeLabel(edge.edgeType)}
               </Badge>
               {edge.isBidirectional && (
@@ -130,14 +138,18 @@ export function GraphEdgeCard({
       <CardContent className="space-y-3">
         <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
           <div className="flex-1 text-center">
-            <p className="font-medium truncate">{sourceLabel || 'Source Node'}</p>
+            <p className="font-medium truncate">
+              {sourceLabel || 'Source Node'}
+            </p>
             <p className="text-xs text-white/50 truncate">
               {edge.sourceNodeId.slice(0, 8)}...
             </p>
           </div>
           <DirectionIcon className={`h-5 w-5 flex-shrink-0 ${typeColor}`} />
           <div className="flex-1 text-center">
-            <p className="font-medium truncate">{targetLabel || 'Target Node'}</p>
+            <p className="font-medium truncate">
+              {targetLabel || 'Target Node'}
+            </p>
             <p className="text-xs text-white/50 truncate">
               {edge.targetNodeId.slice(0, 8)}...
             </p>

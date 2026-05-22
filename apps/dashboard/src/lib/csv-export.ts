@@ -21,7 +21,7 @@ export function arrayToCsv(
   };
 
   const headerLine = headers.map(escape).join(',');
-  const dataLines = rows.map(row => row.map(escape).join(','));
+  const dataLines = rows.map((row) => row.map(escape).join(','));
   return [headerLine, ...dataLines].join('\n');
 }
 

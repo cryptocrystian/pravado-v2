@@ -23,11 +23,7 @@
 import { ArrowRight } from '@phosphor-icons/react';
 import { useState, useCallback } from 'react';
 
-import {
-  EMAIL_REGEX,
-  type EntryPath,
-  type ScanResponse,
-} from './audit-types';
+import { EMAIL_REGEX, type EntryPath, type ScanResponse } from './audit-types';
 
 const SCAN_LOGS = [
   'Resolving DNS and SSL chain...',
@@ -81,105 +77,120 @@ export function AuditForm({
     });
   }, []);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setScanError(null);
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setScanError(null);
 
-    if (!brandUrl || !email || !name || !company) {
-      setScanError('Please fill in all required fields.');
-      return;
-    }
-    if (!EMAIL_REGEX.test(email.trim())) {
-      setScanError('Please enter a valid email address.');
-      return;
-    }
+      if (!brandUrl || !email || !name || !company) {
+        setScanError('Please fill in all required fields.');
+        return;
+      }
+      if (!EMAIL_REGEX.test(email.trim())) {
+        setScanError('Please enter a valid email address.');
+        return;
+      }
 
-    setStep('scanning');
-    setScanProgress(0);
-    setActiveLog(0);
+      setStep('scanning');
+      setScanProgress(0);
+      setActiveLog(0);
 
-    // Progress animation in parallel with the API call. The scan
-    // typically completes well after the 5s animation; the animation
-    // freezes at 100% until the response lands.
-    const progressPromise = new Promise<void>((resolve) => {
-      const totalMs = 5000;
-      const interval = 50;
-      let elapsed = 0;
-      const timer = setInterval(() => {
-        elapsed += interval;
-        const progress = Math.min((elapsed / totalMs) * 100, 100);
-        setScanProgress(progress);
-        setActiveLog(Math.min(Math.floor((elapsed / totalMs) * SCAN_LOGS.length), SCAN_LOGS.length - 1));
-        if (elapsed >= totalMs) {
-          clearInterval(timer);
-          resolve();
-        }
-      }, interval);
-    });
+      // Progress animation in parallel with the API call. The scan
+      // typically completes well after the 5s animation; the animation
+      // freezes at 100% until the response lands.
+      const progressPromise = new Promise<void>((resolve) => {
+        const totalMs = 5000;
+        const interval = 50;
+        let elapsed = 0;
+        const timer = setInterval(() => {
+          elapsed += interval;
+          const progress = Math.min((elapsed / totalMs) * 100, 100);
+          setScanProgress(progress);
+          setActiveLog(
+            Math.min(
+              Math.floor((elapsed / totalMs) * SCAN_LOGS.length),
+              SCAN_LOGS.length - 1
+            )
+          );
+          if (elapsed >= totalMs) {
+            clearInterval(timer);
+            resolve();
+          }
+        }, interval);
+      });
 
-    type ScanOutcome =
-      | { kind: 'success'; data: ScanResponse }
-      | { kind: 'rate_limit'; message: string }
-      | { kind: 'validation'; message: string }
-      | { kind: 'error'; message: string };
+      type ScanOutcome =
+        | { kind: 'success'; data: ScanResponse }
+        | { kind: 'rate_limit'; message: string }
+        | { kind: 'validation'; message: string }
+        | { kind: 'error'; message: string };
 
-    const fetchPromise: Promise<ScanOutcome> = fetch('/api/audit/scan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        brandUrl,
-        email: email.trim(),
-        name: name.trim(),
-        company: company.trim(),
-        competitorUrls: competitors.filter(Boolean),
-        entry_path: entryPath,
-      }),
-    })
-      .then<ScanOutcome>(async (res) => {
-        const raw: unknown = await res.json().catch(() => ({}));
-        const data = (raw ?? {}) as Record<string, unknown>;
-        if (res.status === 429) {
-          const message = typeof data.message === 'string'
-            ? data.message
-            : 'You already ran an audit for this email. Try again later.';
-          return { kind: 'rate_limit', message };
-        }
-        if (res.status === 400) {
-          const message = typeof data.error === 'string' ? data.error : 'Invalid input.';
-          return { kind: 'validation', message };
-        }
-        if (res.status === 404) {
-          return {
-            kind: 'error',
-            message: 'The scan service is temporarily unreachable. Please try again in a moment, or book a call directly.',
-          };
-        }
-        if (res.status >= 500) {
-          return {
-            kind: 'error',
-            message: 'Our scan service hit an error. Please try again in a moment, or book a call directly.',
-          };
-        }
-        if (!res.ok || typeof data.evi_score !== 'number' || !data.pillars) {
-          throw new Error(typeof data.error === 'string' ? data.error : 'Invalid response');
-        }
-        return { kind: 'success', data: data as unknown as ScanResponse };
+      const fetchPromise: Promise<ScanOutcome> = fetch('/api/audit/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brandUrl,
+          email: email.trim(),
+          name: name.trim(),
+          company: company.trim(),
+          competitorUrls: competitors.filter(Boolean),
+          entry_path: entryPath,
+        }),
       })
-      .catch<ScanOutcome>(() => ({
-        kind: 'error',
-        message: 'Something went wrong running your scan. Please try again in a moment, or book a call directly.',
-      }));
+        .then<ScanOutcome>(async (res) => {
+          const raw: unknown = await res.json().catch(() => ({}));
+          const data = (raw ?? {}) as Record<string, unknown>;
+          if (res.status === 429) {
+            const message =
+              typeof data.message === 'string'
+                ? data.message
+                : 'You already ran an audit for this email. Try again later.';
+            return { kind: 'rate_limit', message };
+          }
+          if (res.status === 400) {
+            const message =
+              typeof data.error === 'string' ? data.error : 'Invalid input.';
+            return { kind: 'validation', message };
+          }
+          if (res.status === 404) {
+            return {
+              kind: 'error',
+              message:
+                'The scan service is temporarily unreachable. Please try again in a moment, or book a call directly.',
+            };
+          }
+          if (res.status >= 500) {
+            return {
+              kind: 'error',
+              message:
+                'Our scan service hit an error. Please try again in a moment, or book a call directly.',
+            };
+          }
+          if (!res.ok || typeof data.evi_score !== 'number' || !data.pillars) {
+            throw new Error(
+              typeof data.error === 'string' ? data.error : 'Invalid response'
+            );
+          }
+          return { kind: 'success', data: data as unknown as ScanResponse };
+        })
+        .catch<ScanOutcome>(() => ({
+          kind: 'error',
+          message:
+            'Something went wrong running your scan. Please try again in a moment, or book a call directly.',
+        }));
 
-    const [, outcome] = await Promise.all([progressPromise, fetchPromise]);
+      const [, outcome] = await Promise.all([progressPromise, fetchPromise]);
 
-    if (outcome.kind !== 'success') {
-      setScanError(outcome.message);
-      setStep('idle');
-      return;
-    }
+      if (outcome.kind !== 'success') {
+        setScanError(outcome.message);
+        setStep('idle');
+        return;
+      }
 
-    onResult(outcome.data);
-  }, [brandUrl, email, name, company, competitors, entryPath, onResult]);
+      onResult(outcome.data);
+    },
+    [brandUrl, email, name, company, competitors, entryPath, onResult]
+  );
 
   // ── Scanning view ────────────────────────────────────────────
   if (step === 'scanning') {
@@ -194,21 +205,87 @@ export function AuditForm({
         }}
       >
         {/* Radar */}
-        <div style={{ width: 80, height: 80, margin: '0 auto 24px', position: 'relative' }}>
-          <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '2px solid rgba(0,217,255,0.15)' }} />
-          <div style={{ position: 'absolute', inset: 8, borderRadius: '50%', border: '2px solid rgba(168,85,247,0.2)' }} />
-          <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '2px solid transparent', borderTopColor: '#00D9FF', animation: 'spin 1s linear infinite' }} />
-          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 6, height: 6, borderRadius: '50%', background: '#00D9FF', animation: 'pulse 1.5s ease-in-out infinite' }} />
+        <div
+          style={{
+            width: 80,
+            height: 80,
+            margin: '0 auto 24px',
+            position: 'relative',
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              border: '2px solid rgba(0,217,255,0.15)',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              inset: 8,
+              borderRadius: '50%',
+              border: '2px solid rgba(168,85,247,0.2)',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              border: '2px solid transparent',
+              borderTopColor: '#00D9FF',
+              animation: 'spin 1s linear infinite',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              background: '#00D9FF',
+              animation: 'pulse 1.5s ease-in-out infinite',
+            }}
+          />
         </div>
 
-        <h3 style={{ fontSize: 18, fontWeight: 700, color: '#ffffff', marginBottom: 6, marginTop: 0 }}>
+        <h3
+          style={{
+            fontSize: 18,
+            fontWeight: 700,
+            color: '#ffffff',
+            marginBottom: 6,
+            marginTop: 0,
+          }}
+        >
           Scanning your visibility footprint…
         </h3>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 24, marginTop: 0 }}>
+        <p
+          style={{
+            fontSize: 13,
+            color: 'rgba(255,255,255,0.45)',
+            marginBottom: 24,
+            marginTop: 0,
+          }}
+        >
           {SCAN_LOGS[activeLog]}
         </p>
 
-        <div style={{ width: '100%', height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', marginBottom: 16 }}>
+        <div
+          style={{
+            width: '100%',
+            height: 4,
+            borderRadius: 2,
+            background: 'rgba(255,255,255,0.06)',
+            overflow: 'hidden',
+            marginBottom: 16,
+          }}
+        >
           <div
             style={{
               width: `${scanProgress}%`,
@@ -221,8 +298,9 @@ export function AuditForm({
         </div>
 
         <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: 0 }}>
-          Three-pillar analysis takes 20–30 seconds. We&apos;re evaluating PR Authority,
-          Content Authority, and AI Citation Authority across five engines.
+          Three-pillar analysis takes 20–30 seconds. We&apos;re evaluating PR
+          Authority, Content Authority, and AI Citation Authority across five
+          engines.
         </p>
       </div>
     );
@@ -251,7 +329,11 @@ export function AuditForm({
   return (
     <form
       onSubmit={handleSubmit}
-      style={{ display: 'flex', flexDirection: 'column', gap: compact ? 12 : 16 }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: compact ? 12 : 16,
+      }}
     >
       <div>
         <label style={labelStyle}>Your website URL *</label>
@@ -260,7 +342,10 @@ export function AuditForm({
           required
           placeholder="https://yourcompany.com"
           value={brandUrl}
-          onChange={(e) => { setBrandUrl(e.target.value); setScanError(null); }}
+          onChange={(e) => {
+            setBrandUrl(e.target.value);
+            setScanError(null);
+          }}
           style={inputStyle}
         />
       </div>
@@ -272,12 +357,18 @@ export function AuditForm({
           required
           placeholder="you@yourcompany.com"
           value={email}
-          onChange={(e) => { setEmail(e.target.value); setScanError(null); }}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setScanError(null);
+          }}
           style={inputStyle}
         />
       </div>
 
-      <div className="audit-form-name-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div
+        className="audit-form-name-row"
+        style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}
+      >
         <div>
           <label style={labelStyle}>Full name *</label>
           <input
@@ -285,7 +376,10 @@ export function AuditForm({
             required
             placeholder="Jane Smith"
             value={name}
-            onChange={(e) => { setName(e.target.value); setScanError(null); }}
+            onChange={(e) => {
+              setName(e.target.value);
+              setScanError(null);
+            }}
             style={inputStyle}
           />
         </div>
@@ -296,7 +390,10 @@ export function AuditForm({
             required
             placeholder="Acme Inc"
             value={company}
-            onChange={(e) => { setCompany(e.target.value); setScanError(null); }}
+            onChange={(e) => {
+              setCompany(e.target.value);
+              setScanError(null);
+            }}
             style={inputStyle}
           />
         </div>
@@ -366,8 +463,16 @@ export function AuditForm({
         <ArrowRight size={compact ? 16 : 18} weight="bold" />
       </button>
 
-      <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: 0 }}>
-        No credit card required &middot; Results in under 30 seconds &middot; SOC 2 compliant
+      <p
+        style={{
+          textAlign: 'center',
+          fontSize: 12,
+          color: 'rgba(255,255,255,0.35)',
+          margin: 0,
+        }}
+      >
+        No credit card required &middot; Results in under 30 seconds &middot;
+        SOC 2 compliant
       </p>
 
       {/* Mobile reflow — name + company stack at narrow viewports.   */}

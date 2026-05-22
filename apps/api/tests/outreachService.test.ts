@@ -13,7 +13,8 @@ const createMockSupabase = () => {
   let mockData: any = { data: null, error: null };
 
   const chainMethods: any = {
-    then: (resolve: (value: any) => void) => Promise.resolve(mockData).then(resolve),
+    then: (resolve: (value: any) => void) =>
+      Promise.resolve(mockData).then(resolve),
   };
 
   const mockSelect = vi.fn(() => chainMethods);
@@ -263,9 +264,7 @@ describe('OutreachService', () => {
     it('should delete a step', async () => {
       mockSupabase._mocks.setMockData({ data: null, error: null });
 
-      await expect(
-        service.deleteStep('step-1')
-      ).resolves.not.toThrow();
+      await expect(service.deleteStep('step-1')).resolves.not.toThrow();
 
       expect(mockSupabase._mocks.delete).toHaveBeenCalled();
     });

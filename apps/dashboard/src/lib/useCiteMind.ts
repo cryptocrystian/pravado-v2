@@ -70,24 +70,29 @@ export function useCiteMindScore(contentItemId: string | null | undefined) {
 export function useCiteMindTrigger() {
   const [isScoring, setIsScoring] = useState(false);
 
-  const triggerScore = useCallback(async (contentItemId: string): Promise<CiteMindScoreData | null> => {
-    setIsScoring(true);
-    try {
-      const res = await fetch(`/api/citemind/score/${contentItemId}`, { method: 'POST' });
-      if (!res.ok) throw new Error(`Scoring failed: ${res.status}`);
-      const json = await res.json();
-      const result = json.data || json;
+  const triggerScore = useCallback(
+    async (contentItemId: string): Promise<CiteMindScoreData | null> => {
+      setIsScoring(true);
+      try {
+        const res = await fetch(`/api/citemind/score/${contentItemId}`, {
+          method: 'POST',
+        });
+        if (!res.ok) throw new Error(`Scoring failed: ${res.status}`);
+        const json = await res.json();
+        const result = json.data || json;
 
-      // Revalidate the SWR cache for this item
-      await mutate(`/api/citemind/score/${contentItemId}`);
+        // Revalidate the SWR cache for this item
+        await mutate(`/api/citemind/score/${contentItemId}`);
 
-      return result as CiteMindScoreData;
-    } catch {
-      return null;
-    } finally {
-      setIsScoring(false);
-    }
-  }, []);
+        return result as CiteMindScoreData;
+      } catch {
+        return null;
+      } finally {
+        setIsScoring(false);
+      }
+    },
+    []
+  );
 
   return { triggerScore, isScoring };
 }
@@ -115,15 +120,26 @@ export interface CitationSummary {
   total_queries: number;
   total_mentions: number;
   mention_rate: number;
-  by_engine: Record<string, { queries: number; mentions: number; rate: number }>;
-  top_cited_topics: Array<{ topic: string; mentions: number; engines: string[] }>;
+  by_engine: Record<
+    string,
+    { queries: number; mentions: number; rate: number }
+  >;
+  top_cited_topics: Array<{
+    topic: string;
+    mentions: number;
+    engines: string[];
+  }>;
   updated_at: string;
 }
 
 /**
  * Fetch citation monitoring results (brand mentions from AI engines).
  */
-export function useCitationResults(options?: { mentionedOnly?: boolean; days?: number; limit?: number }) {
+export function useCitationResults(options?: {
+  mentionedOnly?: boolean;
+  days?: number;
+  limit?: number;
+}) {
   const params = new URLSearchParams();
   if (options?.mentionedOnly) params.set('mentioned_only', 'true');
   if (options?.days) params.set('days', String(options.days));
@@ -165,17 +181,23 @@ export function useCitationSummary() {
 export function useCiteMindGateAcknowledge() {
   const [isAcknowledging, setIsAcknowledging] = useState(false);
 
-  const acknowledge = useCallback(async (contentItemId: string): Promise<boolean> => {
-    setIsAcknowledging(true);
-    try {
-      const res = await fetch(`/api/citemind/gate/${contentItemId}/acknowledge`, { method: 'POST' });
-      return res.ok;
-    } catch {
-      return false;
-    } finally {
-      setIsAcknowledging(false);
-    }
-  }, []);
+  const acknowledge = useCallback(
+    async (contentItemId: string): Promise<boolean> => {
+      setIsAcknowledging(true);
+      try {
+        const res = await fetch(
+          `/api/citemind/gate/${contentItemId}/acknowledge`,
+          { method: 'POST' }
+        );
+        return res.ok;
+      } catch {
+        return false;
+      } finally {
+        setIsAcknowledging(false);
+      }
+    },
+    []
+  );
 
   return { acknowledge, isAcknowledging };
 }

@@ -27,7 +27,6 @@ import { DEFAULT_QUEUE_CONFIG } from '../queue/jobs';
 import { JobQueue } from '../queue/queue';
 import { WorkerPool } from '../queue/worker';
 
-
 /**
  * Execution engine configuration
  */
@@ -87,7 +86,10 @@ export class PlaybookExecutionEngineV2 {
     this.dispatcher = new ExecutionDispatcher(this.queue, this.supabase);
 
     // Register job handler
-    this.queue.registerHandler('playbook_step', this.handleStepExecution.bind(this));
+    this.queue.registerHandler(
+      'playbook_step',
+      this.handleStepExecution.bind(this)
+    );
   }
 
   /**
@@ -211,7 +213,10 @@ export class PlaybookExecutionEngineV2 {
 
     // Update billing usage counters (S28 - best effort, non-blocking)
     this.updateBillingUsage(orgId).catch((error) => {
-      console.warn('[ExecutionEngineV2] Failed to update billing usage', { error, orgId });
+      console.warn('[ExecutionEngineV2] Failed to update billing usage', {
+        error,
+        orgId,
+      });
     });
 
     return run.id;
@@ -412,7 +417,10 @@ export class PlaybookExecutionEngineV2 {
       const output = await handler.execute({
         orgId,
         runId,
-        stepRun: { id: stepRunId, step_key: stepKey } as unknown as PlaybookStepRun,
+        stepRun: {
+          id: stepRunId,
+          step_key: stepKey,
+        } as unknown as PlaybookStepRun,
         step: step as unknown as PlaybookStep,
         input,
         previousOutputs,
@@ -582,7 +590,9 @@ export class PlaybookExecutionEngineV2 {
           .eq('id', runId);
 
         // Publish run.completed event (S21)
-        const successCount = stepRuns.filter((sr) => sr.state === 'success').length;
+        const successCount = stepRuns.filter(
+          (sr) => sr.state === 'success'
+        ).length;
         executionEventBus.publish({
           type: 'run.completed',
           runId,
@@ -634,7 +644,9 @@ export class PlaybookExecutionEngineV2 {
     if (criticalFailures > 0) {
       // Check if there are any pending steps
       const hasPendingSteps = stepRuns.some((sr) =>
-        ['queued', 'running', 'waiting_for_dependencies'].includes(sr.state || '')
+        ['queued', 'running', 'waiting_for_dependencies'].includes(
+          sr.state || ''
+        )
       );
 
       if (!hasPendingSteps) {
@@ -717,8 +729,12 @@ export class PlaybookExecutionEngineV2 {
     try {
       // Calculate current billing period (first day of month to first day of next month)
       const now = new Date();
-      const periodStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-      const periodEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+      const periodStart = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)
+      );
+      const periodEnd = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)
+      );
 
       // Fetch existing usage record for current period
       const { data: existingUsage } = await this.supabase
@@ -752,7 +768,10 @@ export class PlaybookExecutionEngineV2 {
       }
     } catch (error) {
       // Best effort - don't fail the execution if billing update fails
-      console.warn('[ExecutionEngineV2] Failed to update billing usage', { error, orgId });
+      console.warn('[ExecutionEngineV2] Failed to update billing usage', {
+        error,
+        orgId,
+      });
     }
   }
 }

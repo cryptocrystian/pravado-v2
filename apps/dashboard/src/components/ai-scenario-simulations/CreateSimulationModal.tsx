@@ -5,7 +5,10 @@
  * Modal for creating a new AI scenario simulation
  */
 
-import type { CreateAISimulationInput, AIScenarioSimulation } from '@pravado/types';
+import type {
+  CreateAISimulationInput,
+  AIScenarioSimulation,
+} from '@pravado/types';
 import { useState } from 'react';
 
 import { createSimulation } from '../../lib/aiScenarioSimulationApi';
@@ -17,22 +20,74 @@ interface CreateSimulationModalProps {
 }
 
 const OBJECTIVE_OPTIONS = [
-  { value: 'crisis_comms', label: 'Crisis Communications', description: 'Simulate crisis response scenarios' },
-  { value: 'investor_relations', label: 'Investor Relations', description: 'Practice investor Q&A and earnings calls' },
-  { value: 'reputation', label: 'Reputation Management', description: 'Test reputation protection strategies' },
-  { value: 'go_to_market', label: 'Go-to-Market', description: 'Simulate product launch scenarios' },
-  { value: 'regulatory', label: 'Regulatory', description: 'Practice regulatory response scenarios' },
-  { value: 'competitive', label: 'Competitive', description: 'Simulate competitive intelligence scenarios' },
-  { value: 'earnings', label: 'Earnings', description: 'Prepare for earnings announcements' },
-  { value: 'leadership_change', label: 'Leadership Change', description: 'Plan leadership transition communications' },
-  { value: 'm_and_a', label: 'M&A', description: 'Simulate merger/acquisition scenarios' },
-  { value: 'custom', label: 'Custom', description: 'Define your own scenario type' },
+  {
+    value: 'crisis_comms',
+    label: 'Crisis Communications',
+    description: 'Simulate crisis response scenarios',
+  },
+  {
+    value: 'investor_relations',
+    label: 'Investor Relations',
+    description: 'Practice investor Q&A and earnings calls',
+  },
+  {
+    value: 'reputation',
+    label: 'Reputation Management',
+    description: 'Test reputation protection strategies',
+  },
+  {
+    value: 'go_to_market',
+    label: 'Go-to-Market',
+    description: 'Simulate product launch scenarios',
+  },
+  {
+    value: 'regulatory',
+    label: 'Regulatory',
+    description: 'Practice regulatory response scenarios',
+  },
+  {
+    value: 'competitive',
+    label: 'Competitive',
+    description: 'Simulate competitive intelligence scenarios',
+  },
+  {
+    value: 'earnings',
+    label: 'Earnings',
+    description: 'Prepare for earnings announcements',
+  },
+  {
+    value: 'leadership_change',
+    label: 'Leadership Change',
+    description: 'Plan leadership transition communications',
+  },
+  {
+    value: 'm_and_a',
+    label: 'M&A',
+    description: 'Simulate merger/acquisition scenarios',
+  },
+  {
+    value: 'custom',
+    label: 'Custom',
+    description: 'Define your own scenario type',
+  },
 ];
 
 const MODE_OPTIONS = [
-  { value: 'single_run', label: 'Single Run', description: 'One complete simulation run' },
-  { value: 'multi_run', label: 'Multi-Run', description: 'Multiple runs with variations' },
-  { value: 'what_if', label: 'What-If Analysis', description: 'Explore alternative outcomes' },
+  {
+    value: 'single_run',
+    label: 'Single Run',
+    description: 'One complete simulation run',
+  },
+  {
+    value: 'multi_run',
+    label: 'Multi-Run',
+    description: 'Multiple runs with variations',
+  },
+  {
+    value: 'what_if',
+    label: 'What-If Analysis',
+    description: 'Explore alternative outcomes',
+  },
 ];
 
 export function CreateSimulationModal({
@@ -56,15 +111,19 @@ export function CreateSimulationModal({
       const input: CreateAISimulationInput = {
         name: name.trim(),
         description: description.trim() || undefined,
-        objectiveType: objectiveType as CreateAISimulationInput['objectiveType'],
-        simulationMode: simulationMode as CreateAISimulationInput['simulationMode'],
+        objectiveType:
+          objectiveType as CreateAISimulationInput['objectiveType'],
+        simulationMode:
+          simulationMode as CreateAISimulationInput['simulationMode'],
       };
 
       const result = await createSimulation(input);
       onCreated(result.simulation);
       handleClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create simulation');
+      setError(
+        err instanceof Error ? err.message : 'Failed to create simulation'
+      );
     } finally {
       setLoading(false);
     }
@@ -113,7 +172,10 @@ export function CreateSimulationModal({
 
               {/* Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Simulation Name *
                 </label>
                 <input
@@ -130,7 +192,10 @@ export function CreateSimulationModal({
 
               {/* Description */}
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Description
                 </label>
                 <textarea
@@ -168,8 +233,12 @@ export function CreateSimulationModal({
                         className="sr-only"
                       />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{opt.label}</p>
-                        <p className="text-xs text-gray-500">{opt.description}</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {opt.label}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {opt.description}
+                        </p>
                       </div>
                     </label>
                   ))}
@@ -200,8 +269,12 @@ export function CreateSimulationModal({
                         className="mr-3"
                       />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{opt.label}</p>
-                        <p className="text-xs text-gray-500">{opt.description}</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {opt.label}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {opt.description}
+                        </p>
                       </div>
                     </label>
                   ))}

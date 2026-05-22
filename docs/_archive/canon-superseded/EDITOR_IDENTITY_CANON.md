@@ -37,13 +37,13 @@ When editing affordances appear everywhere:
 
 An **editor** is a surface where the user's primary intent is to modify content.
 
-| Characteristic | Editor | Non-Editor |
-|----------------|--------|------------|
-| **Primary Intent** | Modify content | View, triage, or approve |
-| **Commit Semantics** | Has explicit save/publish | Changes may be immediate or not applicable |
-| **Undo Expectation** | Undo/redo available | Undo may be limited or undefined |
-| **Focus Model** | Deep focus on single item | Broad view of multiple items |
-| **Interruption Cost** | High (unsaved work at risk) | Low (no draft state) |
+| Characteristic        | Editor                      | Non-Editor                                 |
+| --------------------- | --------------------------- | ------------------------------------------ |
+| **Primary Intent**    | Modify content              | View, triage, or approve                   |
+| **Commit Semantics**  | Has explicit save/publish   | Changes may be immediate or not applicable |
+| **Undo Expectation**  | Undo/redo available         | Undo may be limited or undefined           |
+| **Focus Model**       | Deep focus on single item   | Broad view of multiple items               |
+| **Interruption Cost** | High (unsaved work at risk) | Low (no draft state)                       |
 
 ### What an Editor Requires
 
@@ -69,13 +69,13 @@ For a surface to qualify as an editor:
 
 Non-editor surfaces are contexts where the user's primary intent is NOT content modification:
 
-| Surface Type | Primary Intent | Example |
-|--------------|----------------|---------|
-| **Triage** | Review and prioritize items | Work Queue list view |
-| **Approval** | Approve or reject proposals | Copilot plan review |
-| **Dashboard** | Monitor status | Autopilot exception console |
-| **Library** | Browse and select | Content library grid |
-| **Calendar** | Schedule and plan | Editorial calendar |
+| Surface Type  | Primary Intent              | Example                     |
+| ------------- | --------------------------- | --------------------------- |
+| **Triage**    | Review and prioritize items | Work Queue list view        |
+| **Approval**  | Approve or reject proposals | Copilot plan review         |
+| **Dashboard** | Monitor status              | Autopilot exception console |
+| **Library**   | Browse and select           | Content library grid        |
+| **Calendar**  | Schedule and plan           | Editorial calendar          |
 
 ### What Non-Editor Surfaces May Include
 
@@ -144,11 +144,11 @@ In Manual mode, the Content Work Queue may include a "workbench" panel that show
 
 **Workbench Identity:**
 
-| Scenario | Workbench Role |
-|----------|----------------|
-| User selected an item to preview | Read-only preview |
-| User clicked "Edit" on the item | Editor context (explicit entry) |
-| Copilot mode shows AI plan | Approval context (not editor) |
+| Scenario                         | Workbench Role                  |
+| -------------------------------- | ------------------------------- |
+| User selected an item to preview | Read-only preview               |
+| User clicked "Edit" on the item  | Editor context (explicit entry) |
+| Copilot mode shows AI plan       | Approval context (not editor)   |
 
 **Rule:** The workbench MUST clearly communicate its current role. If editing is not active, editing affordances should be absent or inactive.
 
@@ -170,21 +170,21 @@ Inline editing (editing directly in a list or grid) is highly restricted:
 
 ### Allowed Inline Edits
 
-| Edit Type | Example | Why Allowed |
-|-----------|---------|-------------|
-| **Status Toggle** | Draft → Review | Single-value, immediate, reversible |
-| **Quick Tag** | Add/remove tag | Metadata, not content |
-| **Date Picker** | Set deadline | Single-value, clear affordance |
-| **Checkbox** | Select for bulk action | Not a content edit |
+| Edit Type         | Example                | Why Allowed                         |
+| ----------------- | ---------------------- | ----------------------------------- |
+| **Status Toggle** | Draft → Review         | Single-value, immediate, reversible |
+| **Quick Tag**     | Add/remove tag         | Metadata, not content               |
+| **Date Picker**   | Set deadline           | Single-value, clear affordance      |
+| **Checkbox**      | Select for bulk action | Not a content edit                  |
 
 ### Forbidden Inline Edits
 
-| Edit Type | Example | Why Forbidden |
-|-----------|---------|---------------|
-| **Title Edit** | Rename in list | Creates ambiguous save semantics |
-| **Body Edit** | Edit description in card | Blurs editor identity |
-| **Rich Text** | Format text in list | Full editor required |
-| **Structural** | Reorder sections inline | Full editor required |
+| Edit Type      | Example                  | Why Forbidden                    |
+| -------------- | ------------------------ | -------------------------------- |
+| **Title Edit** | Rename in list           | Creates ambiguous save semantics |
+| **Body Edit**  | Edit description in card | Blurs editor identity            |
+| **Rich Text**  | Format text in list      | Full editor required             |
+| **Structural** | Reorder sections inline  | Full editor required             |
 
 ### The Test
 
@@ -265,6 +265,6 @@ For any Content surface, verify:
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-02-02 | Initial canonical version |
+| Version | Date       | Changes                   |
+| ------- | ---------- | ------------------------- |
+| 1.0     | 2026-02-02 | Initial canonical version |

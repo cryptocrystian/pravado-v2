@@ -1,4 +1,5 @@
 # PRAVADO v2 — DS v3 PRINCIPLES
+
 Version: v2.0 (Canon — expanded from stub)
 Last Updated: 2026-02-24
 
@@ -67,6 +68,7 @@ The Command Center is the canonical surface: Action Stream (left) + Intelligence
 ### Surface Shell Pattern
 
 Every work surface follows this structure:
+
 1. `CommandCenterTopbar` (global, sticky, h-16)
 2. Surface shell header (h1 + pillar icon + quick actions)
 3. `ImpactStrip` (SAGE tag + EVI + mode badge)

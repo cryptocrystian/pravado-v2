@@ -255,7 +255,9 @@ function mapNarrativeFromDb(row: DatabaseNarrative): UnifiedNarrative {
     publishedAt: row.published_at ? new Date(row.published_at) : undefined,
     publishedBy: row.published_by ?? undefined,
     exportFormats: row.export_formats as UnifiedNarrative['exportFormats'],
-    lastExportedAt: row.last_exported_at ? new Date(row.last_exported_at) : undefined,
+    lastExportedAt: row.last_exported_at
+      ? new Date(row.last_exported_at)
+      : undefined,
     tags: row.tags || [],
     metadata: row.metadata || {},
     createdAt: new Date(row.created_at),
@@ -277,9 +279,11 @@ function mapSectionFromDb(row: DatabaseSection): UnifiedNarrativeSection {
     contentPlain: row.content_plain ?? undefined,
     keyPoints: row.key_points || [],
     supportingData: row.supporting_data || {},
-    visualizations: row.visualizations as UnifiedNarrativeSection['visualizations'],
+    visualizations:
+      row.visualizations as UnifiedNarrativeSection['visualizations'],
     sourceSystems: row.source_systems || [],
-    sourceReferences: row.source_references as UnifiedNarrativeSection['sourceReferences'],
+    sourceReferences:
+      row.source_references as UnifiedNarrativeSection['sourceReferences'],
     sectionInsights: row.section_insights || [],
     insightStrength: row.insight_strength ?? undefined,
     isGenerated: row.is_generated,
@@ -330,13 +334,17 @@ function mapDiffFromDb(row: DatabaseDiff): UnifiedNarrativeDiff {
     sentimentDelta: row.sentiment_delta ?? undefined,
     confidenceDelta: row.confidence_delta ?? undefined,
     sectionsAdded: row.sections_added as UnifiedNarrativeDiff['sectionsAdded'],
-    sectionsRemoved: row.sections_removed as UnifiedNarrativeDiff['sectionsRemoved'],
-    sectionsModified: row.sections_modified as UnifiedNarrativeDiff['sectionsModified'],
+    sectionsRemoved:
+      row.sections_removed as UnifiedNarrativeDiff['sectionsRemoved'],
+    sectionsModified:
+      row.sections_modified as UnifiedNarrativeDiff['sectionsModified'],
     newInsights: row.new_insights || [],
     removedInsights: row.removed_insights || [],
-    changedInsights: row.changed_insights as UnifiedNarrativeDiff['changedInsights'],
+    changedInsights:
+      row.changed_insights as UnifiedNarrativeDiff['changedInsights'],
     riskChanges: row.risk_changes as UnifiedNarrativeDiff['riskChanges'],
-    patternChanges: row.pattern_changes as UnifiedNarrativeDiff['patternChanges'],
+    patternChanges:
+      row.pattern_changes as UnifiedNarrativeDiff['patternChanges'],
     contextShiftSummary: row.context_shift_summary ?? undefined,
     contextShiftFactors: row.context_shift_factors || [],
     llmModel: row.llm_model ?? undefined,
@@ -420,7 +428,8 @@ export async function createNarrative(
       target_audience: input.targetAudience,
       audience_context: input.audienceContext || {},
       generation_config: input.generationConfig || {},
-      source_systems: input.sourceSystems || getDefaultSourceSystems(input.narrativeType),
+      source_systems:
+        input.sourceSystems || getDefaultSourceSystems(input.narrativeType),
       excluded_systems: input.excludedSystems || [],
       tags: input.tags || [],
       metadata: input.metadata || {},
@@ -431,7 +440,9 @@ export async function createNarrative(
   if (error) throw error;
 
   const narrative = mapNarrativeFromDb(data);
-  await logAuditEvent(ctx, narrative.id, 'created', { newState: input as Record<string, unknown> });
+  await logAuditEvent(ctx, narrative.id, 'created', {
+    newState: input as Record<string, unknown>,
+  });
 
   return narrative;
 }
@@ -481,15 +492,20 @@ export async function listNarratives(
     .select('*', { count: 'exact' })
     .eq('org_id', ctx.orgId);
 
-  if (query.narrativeType) builder = builder.eq('narrative_type', query.narrativeType);
+  if (query.narrativeType)
+    builder = builder.eq('narrative_type', query.narrativeType);
   if (query.status) builder = builder.eq('status', query.status);
   if (query.format) builder = builder.eq('format', query.format);
   if (query.fiscalYear) builder = builder.eq('fiscal_year', query.fiscalYear);
-  if (query.fiscalQuarter) builder = builder.eq('fiscal_quarter', query.fiscalQuarter);
-  if (query.periodStart) builder = builder.gte('period_start', query.periodStart);
+  if (query.fiscalQuarter)
+    builder = builder.eq('fiscal_quarter', query.fiscalQuarter);
+  if (query.periodStart)
+    builder = builder.gte('period_start', query.periodStart);
   if (query.periodEnd) builder = builder.lte('period_end', query.periodEnd);
   if (query.search) {
-    builder = builder.or(`title.ilike.%${query.search}%,subtitle.ilike.%${query.search}%`);
+    builder = builder.or(
+      `title.ilike.%${query.search}%,subtitle.ilike.%${query.search}%`
+    );
   }
   if (query.tags && query.tags.length > 0) {
     builder = builder.overlaps('tags', query.tags);
@@ -527,14 +543,22 @@ export async function updateNarrative(
   if (input.subtitle !== undefined) updateData.subtitle = input.subtitle;
   if (input.format !== undefined) updateData.format = input.format;
   if (input.status !== undefined) updateData.status = input.status;
-  if (input.targetAudience !== undefined) updateData.target_audience = input.targetAudience;
-  if (input.audienceContext !== undefined) updateData.audience_context = input.audienceContext;
-  if (input.generationConfig !== undefined) updateData.generation_config = input.generationConfig;
-  if (input.sourceSystems !== undefined) updateData.source_systems = input.sourceSystems;
-  if (input.excludedSystems !== undefined) updateData.excluded_systems = input.excludedSystems;
-  if (input.executiveSummary !== undefined) updateData.executive_summary = input.executiveSummary;
-  if (input.tldrSynthesis !== undefined) updateData.tldr_synthesis = input.tldrSynthesis;
-  if (input.threeSentenceSummary !== undefined) updateData.three_sentence_summary = input.threeSentenceSummary;
+  if (input.targetAudience !== undefined)
+    updateData.target_audience = input.targetAudience;
+  if (input.audienceContext !== undefined)
+    updateData.audience_context = input.audienceContext;
+  if (input.generationConfig !== undefined)
+    updateData.generation_config = input.generationConfig;
+  if (input.sourceSystems !== undefined)
+    updateData.source_systems = input.sourceSystems;
+  if (input.excludedSystems !== undefined)
+    updateData.excluded_systems = input.excludedSystems;
+  if (input.executiveSummary !== undefined)
+    updateData.executive_summary = input.executiveSummary;
+  if (input.tldrSynthesis !== undefined)
+    updateData.tldr_synthesis = input.tldrSynthesis;
+  if (input.threeSentenceSummary !== undefined)
+    updateData.three_sentence_summary = input.threeSentenceSummary;
   if (input.tags !== undefined) updateData.tags = input.tags;
   if (input.metadata !== undefined) updateData.metadata = input.metadata;
 
@@ -548,7 +572,9 @@ export async function updateNarrative(
 
   if (error) throw error;
 
-  await logAuditEvent(ctx, narrativeId, 'updated', { changes: input as Record<string, unknown> });
+  await logAuditEvent(ctx, narrativeId, 'updated', {
+    changes: input as Record<string, unknown>,
+  });
 
   return mapNarrativeFromDb(data);
 }
@@ -570,7 +596,9 @@ export async function deleteNarrative(
 // SOURCE SYSTEM AGGREGATION
 // ============================================================================
 
-function getDefaultSourceSystems(narrativeType: NarrativeType): NarrativeSourceSystem[] {
+function getDefaultSourceSystems(
+  narrativeType: NarrativeType
+): NarrativeSourceSystem[] {
   const baseSystem: NarrativeSourceSystem[] = [
     'media_monitoring',
     'media_performance',
@@ -579,16 +607,45 @@ function getDefaultSourceSystems(narrativeType: NarrativeType): NarrativeSourceS
   ];
 
   const typeSpecific: Record<NarrativeType, NarrativeSourceSystem[]> = {
-    executive: [...baseSystem, 'exec_command_center', 'exec_digest', 'risk_radar', 'strategic_intelligence'],
-    strategy: [...baseSystem, 'strategic_intelligence', 'scenario_playbooks', 'unified_graph'],
-    investor: [...baseSystem, 'investor_relations', 'board_reports', 'governance'],
+    executive: [
+      ...baseSystem,
+      'exec_command_center',
+      'exec_digest',
+      'risk_radar',
+      'strategic_intelligence',
+    ],
+    strategy: [
+      ...baseSystem,
+      'strategic_intelligence',
+      'scenario_playbooks',
+      'unified_graph',
+    ],
+    investor: [
+      ...baseSystem,
+      'investor_relations',
+      'board_reports',
+      'governance',
+    ],
     crisis: [...baseSystem, 'crisis_engine', 'brand_alerts', 'risk_radar'],
-    competitive_intelligence: [...baseSystem, 'unified_graph', 'audience_personas'],
-    reputation: [...baseSystem, 'brand_alerts', 'media_briefing', 'journalist_graph'],
+    competitive_intelligence: [
+      ...baseSystem,
+      'unified_graph',
+      'audience_personas',
+    ],
+    reputation: [
+      ...baseSystem,
+      'brand_alerts',
+      'media_briefing',
+      'journalist_graph',
+    ],
     quarterly_context: [...baseSystem, 'exec_digest', 'board_reports'],
     talking_points: [...baseSystem, 'media_briefing', 'strategic_intelligence'],
     analyst_brief: [...baseSystem, 'investor_relations', 'competitive_intel'],
-    internal_alignment_memo: [...baseSystem, 'strategic_intelligence', 'exec_command_center'],
+    internal_alignment_memo: [
+      ...baseSystem,
+      'strategic_intelligence',
+      'exec_command_center',
+    ],
     tldr_synthesis: baseSystem,
     custom: baseSystem,
   };
@@ -610,7 +667,13 @@ async function aggregateSourceContext(
 
   for (const system of sourceSystems) {
     try {
-      const context = await fetchSystemContext(ctx, system, narrativeId, periodStart, periodEnd);
+      const context = await fetchSystemContext(
+        ctx,
+        system,
+        narrativeId,
+        periodStart,
+        periodEnd
+      );
       if (context) {
         systemContexts.push(context);
         totalRecords += context.recordCount;
@@ -632,19 +695,21 @@ async function aggregateSourceContext(
   const correlations = findCorrelations(systemContexts);
 
   // Calculate overall data quality
-  const qualityScores: number[] = systemContexts.map(c =>
+  const qualityScores: number[] = systemContexts.map((c) =>
     c.dataQuality === 'high' ? 1 : c.dataQuality === 'medium' ? 0.5 : 0
   );
-  const avgQuality = qualityScores.reduce((a, b) => a + b, 0) / qualityScores.length;
+  const avgQuality =
+    qualityScores.reduce((a, b) => a + b, 0) / qualityScores.length;
 
   return {
     periodStart: new Date(periodStart),
     periodEnd: new Date(periodEnd),
     systemContexts,
-    availableSystems: systemContexts.map(c => c.system),
+    availableSystems: systemContexts.map((c) => c.system),
     unavailableSystems,
     totalRecords,
-    overallDataQuality: avgQuality > 0.7 ? 'high' : avgQuality > 0.4 ? 'medium' : 'low',
+    overallDataQuality:
+      avgQuality > 0.7 ? 'high' : avgQuality > 0.4 ? 'medium' : 'low',
     crossSystemInsights: allInsights,
     crossSystemPatterns,
     contradictions,
@@ -661,26 +726,56 @@ async function fetchSystemContext(
   periodEnd: string
 ): Promise<SourceSystemContext | null> {
   // Map system to database tables and queries
-  const systemTableMap: Record<NarrativeSourceSystem, { table: string; dateField: string }> = {
+  const systemTableMap: Record<
+    NarrativeSourceSystem,
+    { table: string; dateField: string }
+  > = {
     media_briefing: { table: 'media_briefings', dateField: 'created_at' },
     crisis_engine: { table: 'crisis_assessments', dateField: 'created_at' },
-    brand_reputation: { table: 'brand_reputation_reports', dateField: 'created_at' },
+    brand_reputation: {
+      table: 'brand_reputation_reports',
+      dateField: 'created_at',
+    },
     brand_alerts: { table: 'brand_reputation_alerts', dateField: 'created_at' },
     governance: { table: 'governance_reports', dateField: 'created_at' },
     risk_radar: { table: 'risk_radar_assessments', dateField: 'created_at' },
-    exec_command_center: { table: 'executive_command_center_snapshots', dateField: 'created_at' },
+    exec_command_center: {
+      table: 'executive_command_center_snapshots',
+      dateField: 'created_at',
+    },
     exec_digest: { table: 'executive_digests', dateField: 'created_at' },
     board_reports: { table: 'board_reports', dateField: 'created_at' },
     investor_relations: { table: 'investor_packs', dateField: 'created_at' },
-    strategic_intelligence: { table: 'strategic_intelligence_reports', dateField: 'created_at' },
-    unified_graph: { table: 'intelligence_graph_snapshots', dateField: 'created_at' },
-    scenario_playbooks: { table: 'scenario_simulations', dateField: 'created_at' },
+    strategic_intelligence: {
+      table: 'strategic_intelligence_reports',
+      dateField: 'created_at',
+    },
+    unified_graph: {
+      table: 'intelligence_graph_snapshots',
+      dateField: 'created_at',
+    },
+    scenario_playbooks: {
+      table: 'scenario_simulations',
+      dateField: 'created_at',
+    },
     media_monitoring: { table: 'media_mentions', dateField: 'created_at' },
-    media_performance: { table: 'media_performance_reports', dateField: 'created_at' },
-    journalist_graph: { table: 'journalist_identity_nodes', dateField: 'created_at' },
+    media_performance: {
+      table: 'media_performance_reports',
+      dateField: 'created_at',
+    },
+    journalist_graph: {
+      table: 'journalist_identity_nodes',
+      dateField: 'created_at',
+    },
     audience_personas: { table: 'audience_personas', dateField: 'created_at' },
-    competitive_intel: { table: 'competitive_intelligence_reports', dateField: 'created_at' },
-    content_quality: { table: 'content_quality_analyses', dateField: 'created_at' },
+    competitive_intel: {
+      table: 'competitive_intelligence_reports',
+      dateField: 'created_at',
+    },
+    content_quality: {
+      table: 'content_quality_analyses',
+      dateField: 'created_at',
+    },
     pr_outreach: { table: 'pr_outreach_campaigns', dateField: 'created_at' },
     custom: { table: '', dateField: '' },
   };
@@ -723,8 +818,11 @@ async function fetchSystemContext(
 
     return {
       system,
-      lastUpdated: data?.[0]?.[config.dateField] ? new Date(data[0][config.dateField]) : undefined,
-      dataQuality: (count ?? 0) > 5 ? 'high' : (count ?? 0) > 0 ? 'medium' : 'low',
+      lastUpdated: data?.[0]?.[config.dateField]
+        ? new Date(data[0][config.dateField])
+        : undefined,
+      dataQuality:
+        (count ?? 0) > 5 ? 'high' : (count ?? 0) > 0 ? 'medium' : 'low',
       recordCount: count ?? 0,
       keyMetrics: extractKeyMetrics(system, data || []),
       topInsights,
@@ -746,7 +844,8 @@ function extractInsightsFromRecords(
 
     // Extract insights based on record content
     const title = record.title || record.name || `Insight from ${system}`;
-    const description = record.summary || record.description || record.content || '';
+    const description =
+      record.summary || record.description || record.content || '';
 
     if (title && typeof title === 'string') {
       insights.push({
@@ -759,7 +858,9 @@ function extractInsightsFromRecords(
         strength: 'medium',
         confidenceScore: 0.75,
         supportingData: { recordId: record.id },
-        timestamp: record.created_at ? new Date(String(record.created_at)) : undefined,
+        timestamp: record.created_at
+          ? new Date(String(record.created_at))
+          : undefined,
       });
     }
   }
@@ -797,20 +898,31 @@ function generateSystemSummary(
   return `Found ${records.length} relevant records for analysis.`;
 }
 
-function detectCrossSystemPatterns(contexts: SourceSystemContext[]): CrossSystemPattern[] {
+function detectCrossSystemPatterns(
+  contexts: SourceSystemContext[]
+): CrossSystemPattern[] {
   const patterns: CrossSystemPattern[] = [];
 
   // Pattern detection: Sentiment alignment across systems
-  const sentimentSystems = contexts.filter(c =>
-    c.keyMetrics && (c.keyMetrics.avg_sentiment_score !== undefined || c.keyMetrics.avg_sentiment !== undefined)
+  const sentimentSystems = contexts.filter(
+    (c) =>
+      c.keyMetrics &&
+      (c.keyMetrics.avg_sentiment_score !== undefined ||
+        c.keyMetrics.avg_sentiment !== undefined)
   );
 
   if (sentimentSystems.length >= 2) {
-    const sentimentValues = sentimentSystems.map(c =>
-      c.keyMetrics?.avg_sentiment_score || c.keyMetrics?.avg_sentiment || 0
+    const sentimentValues = sentimentSystems.map(
+      (c) =>
+        c.keyMetrics?.avg_sentiment_score || c.keyMetrics?.avg_sentiment || 0
     );
-    const avgSentiment = sentimentValues.reduce((a, b) => a + b, 0) / sentimentValues.length;
-    const variance = sentimentValues.reduce((sum, val) => sum + Math.pow(val - avgSentiment, 2), 0) / sentimentValues.length;
+    const avgSentiment =
+      sentimentValues.reduce((a, b) => a + b, 0) / sentimentValues.length;
+    const variance =
+      sentimentValues.reduce(
+        (sum, val) => sum + Math.pow(val - avgSentiment, 2),
+        0
+      ) / sentimentValues.length;
 
     if (variance < 0.1) {
       patterns.push({
@@ -818,25 +930,28 @@ function detectCrossSystemPatterns(contexts: SourceSystemContext[]): CrossSystem
         patternType: 'sentiment_alignment',
         title: 'Cross-System Sentiment Alignment',
         description: `Sentiment is consistently ${avgSentiment > 0.5 ? 'positive' : avgSentiment < -0.5 ? 'negative' : 'neutral'} across ${sentimentSystems.length} systems.`,
-        involvedSystems: sentimentSystems.map(c => c.system),
+        involvedSystems: sentimentSystems.map((c) => c.system),
         correlationStrength: 1 - variance,
         confidenceScore: 0.8,
         supportingInsights: [],
         implications: ['Consistent brand perception across channels'],
-        recommendations: avgSentiment < 0 ? ['Investigate root cause of negative sentiment'] : [],
+        recommendations:
+          avgSentiment < 0
+            ? ['Investigate root cause of negative sentiment']
+            : [],
       });
     }
   }
 
   // Pattern detection: Activity spikes across systems
-  const highActivitySystems = contexts.filter(c => c.recordCount > 10);
+  const highActivitySystems = contexts.filter((c) => c.recordCount > 10);
   if (highActivitySystems.length >= 3) {
     patterns.push({
       id: `pattern-activity-spike-${Date.now()}`,
       patternType: 'activity_spike',
       title: 'Cross-System Activity Increase',
       description: `High activity detected across ${highActivitySystems.length} systems.`,
-      involvedSystems: highActivitySystems.map(c => c.system),
+      involvedSystems: highActivitySystems.map((c) => c.system),
       correlationStrength: 0.7,
       confidenceScore: 0.75,
       supportingInsights: [],
@@ -847,12 +962,14 @@ function detectCrossSystemPatterns(contexts: SourceSystemContext[]): CrossSystem
   return patterns;
 }
 
-function detectContradictions(contexts: SourceSystemContext[]): ContradictionDetected[] {
+function detectContradictions(
+  contexts: SourceSystemContext[]
+): ContradictionDetected[] {
   const contradictions: ContradictionDetected[] = [];
 
   // Check for sentiment contradictions
-  const sentimentContexts = contexts.filter(c =>
-    c.keyMetrics && c.keyMetrics.avg_sentiment_score !== undefined
+  const sentimentContexts = contexts.filter(
+    (c) => c.keyMetrics && c.keyMetrics.avg_sentiment_score !== undefined
   );
 
   for (let i = 0; i < sentimentContexts.length; i++) {
@@ -866,11 +983,18 @@ function detectContradictions(contexts: SourceSystemContext[]): ContradictionDet
           title: 'Sentiment Discrepancy Detected',
           description: `Significant sentiment difference between ${sentimentContexts[i].system} and ${sentimentContexts[j].system}`,
           systems: [
-            { system: sentimentContexts[i].system, assertion: `Sentiment score: ${s1.toFixed(2)}` },
-            { system: sentimentContexts[j].system, assertion: `Sentiment score: ${s2.toFixed(2)}` },
+            {
+              system: sentimentContexts[i].system,
+              assertion: `Sentiment score: ${s1.toFixed(2)}`,
+            },
+            {
+              system: sentimentContexts[j].system,
+              assertion: `Sentiment score: ${s2.toFixed(2)}`,
+            },
           ],
           severity: Math.abs(s1 - s2) > 0.8 ? 'high' : 'medium',
-          resolutionSuggestion: 'Investigate the source of sentiment divergence across these channels.',
+          resolutionSuggestion:
+            'Investigate the source of sentiment divergence across these channels.',
           needsHumanReview: true,
         });
       }
@@ -905,14 +1029,16 @@ function clusterRisks(contexts: SourceSystemContext[]): RiskCluster[] {
 
   // Group risks by type
   if (riskInsights.length > 0) {
-    const systems = [...new Set(riskInsights.map(r => r.sourceSystem))];
+    const systems = [...new Set(riskInsights.map((r) => r.sourceSystem))];
     clusters.push({
       id: `cluster-active-risks-${Date.now()}`,
       clusterName: 'Active Risk Signals',
       description: `${riskInsights.length} active risk signals detected across ${systems.length} systems.`,
-      riskLevel: riskInsights.some(r => r.strength === 'critical') ? 'critical' : 'high',
+      riskLevel: riskInsights.some((r) => r.strength === 'critical')
+        ? 'critical'
+        : 'high',
       involvedSystems: systems,
-      risks: riskInsights.map(r => ({
+      risks: riskInsights.map((r) => ({
         riskId: r.id,
         title: r.title,
         sourceSystem: r.sourceSystem,
@@ -930,23 +1056,26 @@ function findCorrelations(contexts: SourceSystemContext[]): DataCorrelation[] {
   const correlations: DataCorrelation[] = [];
 
   // Find metric correlations between systems
-  const metricsData: Array<{ system: NarrativeSourceSystem; metrics: Record<string, number> }> =
-    contexts.filter(c => c.keyMetrics && Object.keys(c.keyMetrics).length > 1)
-      .map(c => ({ system: c.system, metrics: c.keyMetrics! }));
+  const metricsData: Array<{
+    system: NarrativeSourceSystem;
+    metrics: Record<string, number>;
+  }> = contexts
+    .filter((c) => c.keyMetrics && Object.keys(c.keyMetrics).length > 1)
+    .map((c) => ({ system: c.system, metrics: c.keyMetrics! }));
 
   if (metricsData.length >= 2) {
     // Check for correlated metrics
     const commonMetrics = new Set<string>();
     for (const { metrics } of metricsData) {
-      Object.keys(metrics).forEach(k => commonMetrics.add(k));
+      Object.keys(metrics).forEach((k) => commonMetrics.add(k));
     }
 
     for (const metricName of commonMetrics) {
       if (metricName === 'recordCount') continue;
 
       const values = metricsData
-        .filter(d => d.metrics[metricName] !== undefined)
-        .map(d => ({
+        .filter((d) => d.metrics[metricName] !== undefined)
+        .map((d) => ({
           system: d.system,
           value: d.metrics[metricName],
         }));
@@ -956,7 +1085,7 @@ function findCorrelations(contexts: SourceSystemContext[]): DataCorrelation[] {
           id: `correlation-${metricName}-${Date.now()}`,
           title: `${metricName} Cross-System Comparison`,
           description: `${metricName} measured across ${values.length} systems.`,
-          metrics: values.map(v => ({
+          metrics: values.map((v) => ({
             metricName,
             sourceSystem: v.system,
             value: v.value,
@@ -1047,7 +1176,8 @@ export async function generateNarrative(
   );
 
   // Generate sections
-  const sectionsToGenerate = input.specificSections || getSectionsForType(narrativeData.narrative_type);
+  const sectionsToGenerate =
+    input.specificSections || getSectionsForType(narrativeData.narrative_type);
   const generatedSections: UnifiedNarrativeSection[] = [];
   let totalTokens = 0;
 
@@ -1076,7 +1206,10 @@ export async function generateNarrative(
 
     try {
       const llmResponse = await routeLLM({
-        systemPrompt: getSystemPromptForNarrativeSection(sectionType, narrativeData),
+        systemPrompt: getSystemPromptForNarrativeSection(
+          sectionType,
+          narrativeData
+        ),
         userPrompt: sectionPrompt,
         model: 'gpt-4o',
         temperature: 0.7,
@@ -1140,17 +1273,27 @@ export async function generateNarrative(
         generatedSections.push(mapSectionFromDb(newSection));
       }
 
-      await logAuditEvent(ctx, narrativeId, existingSection ? 'section_regenerated' : 'section_generated', {
-        sectionId: existingSection?.id,
-        description: `Generated ${sectionType} section`,
-      });
+      await logAuditEvent(
+        ctx,
+        narrativeId,
+        existingSection ? 'section_regenerated' : 'section_generated',
+        {
+          sectionId: existingSection?.id,
+          description: `Generated ${sectionType} section`,
+        }
+      );
     } catch (llmError) {
       console.error(`Failed to generate section ${sectionType}:`, llmError);
     }
   }
 
   // Generate summaries
-  const summaries = await generateSummaries(ctx, narrativeData, sourceContext, generatedSections);
+  const summaries = await generateSummaries(
+    ctx,
+    narrativeData,
+    sourceContext,
+    generatedSections
+  );
 
   // Calculate scores
   const scores = calculateNarrativeScores(sourceContext, generatedSections);
@@ -1204,7 +1347,9 @@ export async function generateNarrative(
   };
 }
 
-function getSectionsForType(narrativeType: NarrativeType): NarrativeSectionType[] {
+function getSectionsForType(
+  narrativeType: NarrativeType
+): NarrativeSectionType[] {
   const sectionMap: Record<NarrativeType, NarrativeSectionType[]> = {
     executive: [
       'executive_summary',
@@ -1268,9 +1413,22 @@ function getSectionsForType(narrativeType: NarrativeType): NarrativeSectionType[
       'variance_explanation',
       'next_quarter_outlook',
     ],
-    talking_points: ['executive_summary', 'key_achievements', 'forward_outlook'],
-    analyst_brief: ['executive_summary', 'financial_performance', 'guidance_outlook', 'competitive_moat'],
-    internal_alignment_memo: ['executive_summary', 'strategic_context', 'initiative_priorities'],
+    talking_points: [
+      'executive_summary',
+      'key_achievements',
+      'forward_outlook',
+    ],
+    analyst_brief: [
+      'executive_summary',
+      'financial_performance',
+      'guidance_outlook',
+      'competitive_moat',
+    ],
+    internal_alignment_memo: [
+      'executive_summary',
+      'strategic_context',
+      'initiative_priorities',
+    ],
     tldr_synthesis: ['executive_summary'],
     custom: ['executive_summary', 'custom'],
   };
@@ -1339,11 +1497,14 @@ function buildSectionPrompt(
   context: AggregatedSourceContext,
   customPrompt?: string
 ): string {
-  const periodStart = new Date(narrative.period_start).toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  const periodStart = new Date(narrative.period_start).toLocaleDateString(
+    'en-US',
+    {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }
+  );
   const periodEnd = new Date(narrative.period_end).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -1397,7 +1558,8 @@ function getSystemPromptForNarrativeSection(
     strategy: 'strategy teams needing actionable direction',
     investor: 'investors seeking growth potential and risk assessment',
     crisis: 'crisis response teams requiring immediate situational awareness',
-    competitive_intelligence: 'competitive analysts needing market intelligence',
+    competitive_intelligence:
+      'competitive analysts needing market intelligence',
     reputation: 'communications teams managing brand perception',
     quarterly_context: 'leadership teams reviewing quarterly performance',
     talking_points: 'executives preparing for external communications',
@@ -1407,7 +1569,8 @@ function getSystemPromptForNarrativeSection(
     custom: 'specified audience',
   };
 
-  const audience = audienceMap[narrative.narrative_type] || 'executive leadership';
+  const audience =
+    audienceMap[narrative.narrative_type] || 'executive leadership';
 
   return `You are an expert strategic analyst creating a ${getSectionTitle(sectionType)} section for ${audience}.
 
@@ -1449,7 +1612,7 @@ function parseGeneratedContent(content: string): {
 
   // Extract key points (bullet items starting with -)
   const keyPoints = (content.match(/^- .+$/gm) || [])
-    .map(p => p.replace(/^- /, ''))
+    .map((p) => p.replace(/^- /, ''))
     .slice(0, 10);
 
   // Extract simple insights from headers
@@ -1485,12 +1648,18 @@ async function generateSummaries(
   threeSentenceSummary: string;
 }> {
   // Build executive summary from sections
-  const execSection = sections.find(s => s.sectionType === 'executive_summary');
-  const executiveSummary = execSection?.contentMd ||
+  const execSection = sections.find(
+    (s) => s.sectionType === 'executive_summary'
+  );
+  const executiveSummary =
+    execSection?.contentMd ||
     `Narrative covering ${context.availableSystems.length} intelligence systems with ${context.crossSystemInsights.length} key insights.`;
 
   // Generate TL;DR
-  const topInsights = context.crossSystemInsights.slice(0, 3).map(i => i.title).join('; ');
+  const topInsights = context.crossSystemInsights
+    .slice(0, 3)
+    .map((i) => i.title)
+    .join('; ');
   const tldrSynthesis = `${narrative.narrative_type} narrative for ${narrative.title}. Key findings: ${topInsights || 'Analysis in progress.'} ${context.riskClusters.length > 0 ? `Watch ${context.riskClusters.length} risk cluster(s).` : ''}`;
 
   // Three sentence summary
@@ -1514,27 +1683,36 @@ function calculateNarrativeScores(
 } {
   // Calculate sentiment from insights
   const sentimentScores = context.crossSystemInsights
-    .filter(i => i.confidenceScore !== undefined)
-    .map(i => i.confidenceScore);
-  const sentiment = sentimentScores.length > 0
-    ? sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length
-    : 0.5;
+    .filter((i) => i.confidenceScore !== undefined)
+    .map((i) => i.confidenceScore);
+  const sentiment =
+    sentimentScores.length > 0
+      ? sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length
+      : 0.5;
 
   // Calculate confidence based on data quality
-  const confidence = context.overallDataQuality === 'high' ? 0.9
-    : context.overallDataQuality === 'medium' ? 0.7
-    : 0.5;
+  const confidence =
+    context.overallDataQuality === 'high'
+      ? 0.9
+      : context.overallDataQuality === 'medium'
+        ? 0.7
+        : 0.5;
 
   // Calculate coverage
   const allSystems: NarrativeSourceSystem[] = [
-    'media_monitoring', 'media_performance', 'brand_reputation',
-    'competitive_intel', 'crisis_engine', 'strategic_intelligence',
+    'media_monitoring',
+    'media_performance',
+    'brand_reputation',
+    'competitive_intel',
+    'crisis_engine',
+    'strategic_intelligence',
   ];
   const coverage = context.availableSystems.length / allSystems.length;
 
   // Calculate insight density
-  const insightDensity = sections.reduce((sum, s) =>
-    sum + (s.sectionInsights?.length || 0), 0
+  const insightDensity = sections.reduce(
+    (sum, s) => sum + (s.sectionInsights?.length || 0),
+    0
   );
 
   return { sentiment, confidence, coverage, insightDensity };
@@ -1564,7 +1742,8 @@ export async function updateSection(
     updateData.content_plain = parsed.contentPlain;
   }
   if (input.keyPoints !== undefined) updateData.key_points = input.keyPoints;
-  if (input.supportingData !== undefined) updateData.supporting_data = input.supportingData;
+  if (input.supportingData !== undefined)
+    updateData.supporting_data = input.supportingData;
   if (input.sortOrder !== undefined) updateData.sort_order = input.sortOrder;
 
   const { data, error } = await ctx.supabase
@@ -1620,13 +1799,21 @@ export async function regenerateSection(
   );
 
   // Build prompt with additional context
-  let prompt = buildSectionPrompt(section.section_type, narrative, context, input.customPrompt);
+  let prompt = buildSectionPrompt(
+    section.section_type,
+    narrative,
+    context,
+    input.customPrompt
+  );
   if (input.additionalContext) {
     prompt += `\n\nAdditional Context: ${input.additionalContext}`;
   }
 
   const llmResponse = await routeLLM({
-    systemPrompt: getSystemPromptForNarrativeSection(section.section_type, narrative),
+    systemPrompt: getSystemPromptForNarrativeSection(
+      section.section_type,
+      narrative
+    ),
     userPrompt: prompt,
     model: 'gpt-4o',
     temperature: 0.7,
@@ -1715,32 +1902,55 @@ export async function computeDelta(
   const currentInsights = current.key_insights || [];
   const previousInsights = previous.key_insights || [];
 
-  const currentInsightIds = new Set(currentInsights.map((i: NarrativeInsight) => i.id));
-  const previousInsightIds = new Set(previousInsights.map((i: NarrativeInsight) => i.id));
+  const currentInsightIds = new Set(
+    currentInsights.map((i: NarrativeInsight) => i.id)
+  );
+  const previousInsightIds = new Set(
+    previousInsights.map((i: NarrativeInsight) => i.id)
+  );
 
-  const newInsights = currentInsights.filter((i: NarrativeInsight) => !previousInsightIds.has(i.id));
-  const removedInsights = previousInsights.filter((i: NarrativeInsight) => !currentInsightIds.has(i.id));
+  const newInsights = currentInsights.filter(
+    (i: NarrativeInsight) => !previousInsightIds.has(i.id)
+  );
+  const removedInsights = previousInsights.filter(
+    (i: NarrativeInsight) => !currentInsightIds.has(i.id)
+  );
 
-  const currentSectionTypes = new Set((currentSections || []).map(s => s.section_type));
-  const previousSectionTypes = new Set((previousSections || []).map(s => s.section_type));
+  const currentSectionTypes = new Set(
+    (currentSections || []).map((s) => s.section_type)
+  );
+  const previousSectionTypes = new Set(
+    (previousSections || []).map((s) => s.section_type)
+  );
 
   const sectionsAdded = (currentSections || [])
-    .filter(s => !previousSectionTypes.has(s.section_type))
-    .map(s => ({ sectionType: s.section_type, title: s.title }));
+    .filter((s) => !previousSectionTypes.has(s.section_type))
+    .map((s) => ({ sectionType: s.section_type, title: s.title }));
 
   const sectionsRemoved = (previousSections || [])
-    .filter(s => !currentSectionTypes.has(s.section_type))
-    .map(s => ({ sectionType: s.section_type, title: s.title }));
+    .filter((s) => !currentSectionTypes.has(s.section_type))
+    .map((s) => ({ sectionType: s.section_type, title: s.title }));
 
   // Compute score deltas
-  const sentimentDelta = (current.overall_sentiment_score || 0) - (previous.overall_sentiment_score || 0);
-  const confidenceDelta = (current.confidence_score || 0) - (previous.confidence_score || 0);
+  const sentimentDelta =
+    (current.overall_sentiment_score || 0) -
+    (previous.overall_sentiment_score || 0);
+  const confidenceDelta =
+    (current.confidence_score || 0) - (previous.confidence_score || 0);
 
   // Determine overall delta type
   let diffType: DeltaType = 'unchanged';
-  if (sentimentDelta > 0.1 || confidenceDelta > 0.1 || newInsights.length > removedInsights.length) {
+  if (
+    sentimentDelta > 0.1 ||
+    confidenceDelta > 0.1 ||
+    newInsights.length > removedInsights.length
+  ) {
     diffType = 'improved';
-  } else if (sentimentDelta < -0.1 || confidenceDelta < -0.1 || newInsights.length < removedInsights.length) {
+  } else if (
+    sentimentDelta < -0.1 ||
+    confidenceDelta < -0.1 ||
+    newInsights.length < removedInsights.length
+  ) {
     diffType = 'declined';
   } else if (newInsights.length > 0) {
     diffType = 'new_insight';
@@ -1753,7 +1963,8 @@ export async function computeDelta(
   if (input.includeDetailedAnalysis) {
     try {
       const llmResponse = await routeLLM({
-        systemPrompt: 'You are a strategic analyst comparing two narrative reports. Provide a concise summary of key differences and their implications.',
+        systemPrompt:
+          'You are a strategic analyst comparing two narrative reports. Provide a concise summary of key differences and their implications.',
         userPrompt: `Compare these two narratives:
 
 Current Narrative (${current.title}):
@@ -1861,15 +2072,21 @@ export async function getInsights(
 
   // Apply filters
   if (query.sourceSystem) {
-    insights = insights.filter(i => i.sourceSystem === query.sourceSystem);
+    insights = insights.filter((i) => i.sourceSystem === query.sourceSystem);
   }
   if (query.strength) {
-    insights = insights.filter(i => i.strength === query.strength);
+    insights = insights.filter((i) => i.strength === query.strength);
   }
 
   // Group by system and strength
-  const bySystem: Record<NarrativeSourceSystem, number> = {} as Record<NarrativeSourceSystem, number>;
-  const byStrength: Record<NarrativeInsightStrength, number> = {} as Record<NarrativeInsightStrength, number>;
+  const bySystem: Record<NarrativeSourceSystem, number> = {} as Record<
+    NarrativeSourceSystem,
+    number
+  >;
+  const byStrength: Record<NarrativeInsightStrength, number> = {} as Record<
+    NarrativeInsightStrength,
+    number
+  >;
 
   for (const insight of insights) {
     bySystem[insight.sourceSystem] = (bySystem[insight.sourceSystem] || 0) + 1;
@@ -2025,7 +2242,10 @@ export async function getStats(ctx: ServiceContext): Promise<NarrativeStats> {
 
   if (error) throw error;
 
-  const byType: Record<NarrativeType, number> = {} as Record<NarrativeType, number>;
+  const byType: Record<NarrativeType, number> = {} as Record<
+    NarrativeType,
+    number
+  >;
   const byStatus: Record<NarrativeStatus, number> = {
     draft: 0,
     generating: 0,
@@ -2034,7 +2254,10 @@ export async function getStats(ctx: ServiceContext): Promise<NarrativeStats> {
     published: 0,
     archived: 0,
   };
-  const byFormat: Record<NarrativeFormatType, number> = {} as Record<NarrativeFormatType, number>;
+  const byFormat: Record<NarrativeFormatType, number> = {} as Record<
+    NarrativeFormatType,
+    number
+  >;
 
   let totalTokens = 0;
   let totalTime = 0;
@@ -2057,13 +2280,17 @@ export async function getStats(ctx: ServiceContext): Promise<NarrativeStats> {
 
     for (const insight of n.key_insights || []) {
       totalInsights++;
-      insightsByStrength[insight.strength] = (insightsByStrength[insight.strength] || 0) + 1;
+      insightsByStrength[insight.strength] =
+        (insightsByStrength[insight.strength] || 0) + 1;
     }
   }
 
   const count = narratives?.length || 1;
   const recentNarratives = (narratives || [])
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
     .slice(0, 5)
     .map(mapNarrativeFromDb);
 
@@ -2104,7 +2331,8 @@ export async function listAuditLogs(
     .select('*', { count: 'exact' })
     .eq('org_id', ctx.orgId);
 
-  if (query.narrativeId) builder = builder.eq('narrative_id', query.narrativeId);
+  if (query.narrativeId)
+    builder = builder.eq('narrative_id', query.narrativeId);
   if (query.eventType) builder = builder.eq('event_type', query.eventType);
   if (query.userId) builder = builder.eq('user_id', query.userId);
   if (query.startDate) builder = builder.gte('created_at', query.startDate);

@@ -6,7 +6,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getPRConfig } from '@/lib/env/pr-config';
-import { authenticatePRRequest, createAuthErrorResponse, addPRAuthHeader } from '@/server/pr/prAuth';
+import {
+  authenticatePRRequest,
+  createAuthErrorResponse,
+  addPRAuthHeader,
+} from '@/server/pr/prAuth';
 import { createPRService } from '@/server/pr/prService';
 
 export const dynamic = 'force-dynamic';
@@ -20,7 +24,9 @@ export async function GET(request: NextRequest) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/sequences] Auth failed: ${auth.status} - ${auth.error}`);
+      console.log(
+        `[API /api/pr/pitches/sequences] Auth failed: ${auth.status} - ${auth.error}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -34,7 +40,10 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit');
     const offset = searchParams.get('offset');
     const sortBy = searchParams.get('sortBy') || undefined;
-    const sortOrder = searchParams.get('sortOrder') as 'asc' | 'desc' | undefined;
+    const sortOrder = searchParams.get('sortOrder') as
+      | 'asc'
+      | 'desc'
+      | undefined;
 
     const result = await prService.listPitchSequences({
       status: status.length > 0 ? status : undefined,
@@ -46,7 +55,9 @@ export async function GET(request: NextRequest) {
     });
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/sequences] GET: ${result.sequences.length}/${result.total} sequences`);
+      console.log(
+        `[API /api/pr/pitches/sequences] GET: ${result.sequences.length}/${result.total} sequences`
+      );
     }
 
     const response = NextResponse.json({
@@ -75,7 +86,9 @@ export async function POST(request: NextRequest) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId || !auth.userId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/sequences] POST Auth failed: ${auth.status} - ${auth.error}`);
+      console.log(
+        `[API /api/pr/pitches/sequences] POST Auth failed: ${auth.status} - ${auth.error}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -92,7 +105,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/sequences] POST: Created sequence ${sequence.id}`);
+      console.log(
+        `[API /api/pr/pitches/sequences] POST: Created sequence ${sequence.id}`
+      );
     }
 
     const response = NextResponse.json(sequence, { status: 201 });

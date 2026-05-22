@@ -84,12 +84,17 @@ export async function checkGate(
       allowed: true, // Don't block if never scored
       score: null,
       gate_status: 'pending',
-      recommendations: ['Run CiteMind analysis before publishing for best AI citation results.'],
+      recommendations: [
+        'Run CiteMind analysis before publishing for best AI citation results.',
+      ],
     };
   }
 
   const latestScore = scores[0];
-  const gateStatus = latestScore.gate_status as 'passed' | 'warning' | 'blocked';
+  const gateStatus = latestScore.gate_status as
+    | 'passed'
+    | 'warning'
+    | 'blocked';
 
   return {
     allowed: gateStatus !== 'blocked',
@@ -130,10 +135,14 @@ export async function acknowledgeGate(
     });
   } catch {
     // audit_logs table may not exist yet — non-critical
-    logger.warn(`Could not log gate override to audit_logs for content ${contentItemId}`);
+    logger.warn(
+      `Could not log gate override to audit_logs for content ${contentItemId}`
+    );
   }
 
-  logger.info(`Gate acknowledged for content ${contentItemId} by user ${userId || 'unknown'}`);
+  logger.info(
+    `Gate acknowledged for content ${contentItemId} by user ${userId || 'unknown'}`
+  );
 
   return {
     acknowledged: true,

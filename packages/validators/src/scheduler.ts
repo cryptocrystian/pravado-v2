@@ -27,7 +27,9 @@ export const listSchedulerTasksSchema = z.object({
   enabled: z
     .string()
     .optional()
-    .transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
+    .transform((val) =>
+      val === 'true' ? true : val === 'false' ? false : undefined
+    ),
   limit: z
     .string()
     .optional()

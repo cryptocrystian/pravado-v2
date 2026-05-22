@@ -12,7 +12,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-
 interface VelocityDataPoint {
   timestamp: Date;
   mentionCount: number;
@@ -71,10 +70,16 @@ export function CoverageVelocityChart({
     // X-axis labels (show every nth bar to avoid crowding)
     const labelInterval = Math.max(1, Math.floor(data.length / 6));
     const labels = data
-      .filter((_, filterIdx) => filterIdx % labelInterval === 0 || filterIdx === data.length - 1)
+      .filter(
+        (_, filterIdx) =>
+          filterIdx % labelInterval === 0 || filterIdx === data.length - 1
+      )
       .map((point) => ({
         timestamp: point.timestamp,
-        x: padding.left + data.indexOf(point) * (barWidth + barGap) + barWidth / 2,
+        x:
+          padding.left +
+          data.indexOf(point) * (barWidth + barGap) +
+          barWidth / 2,
       }));
 
     return {
@@ -90,10 +95,10 @@ export function CoverageVelocityChart({
       ? momentumScore >= 70
         ? 'green'
         : momentumScore >= 40
-        ? 'blue'
-        : momentumScore >= 20
-        ? 'yellow'
-        : 'red'
+          ? 'blue'
+          : momentumScore >= 20
+            ? 'yellow'
+            : 'red'
       : 'gray';
 
   return (
@@ -112,11 +117,16 @@ export function CoverageVelocityChart({
                 variant="outline"
                 className={cn(
                   'text-xs flex items-center gap-1',
-                  momentumColor === 'green' && 'bg-green-100 text-green-800 border-green-200',
-                  momentumColor === 'blue' && 'bg-blue-100 text-blue-800 border-blue-200',
-                  momentumColor === 'yellow' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                  momentumColor === 'red' && 'bg-red-100 text-red-800 border-red-200',
-                  momentumColor === 'gray' && 'bg-gray-100 text-gray-800 border-gray-200'
+                  momentumColor === 'green' &&
+                    'bg-green-100 text-green-800 border-green-200',
+                  momentumColor === 'blue' &&
+                    'bg-blue-100 text-blue-800 border-blue-200',
+                  momentumColor === 'yellow' &&
+                    'bg-yellow-100 text-yellow-800 border-yellow-200',
+                  momentumColor === 'red' &&
+                    'bg-red-100 text-red-800 border-red-200',
+                  momentumColor === 'gray' &&
+                    'bg-gray-100 text-gray-800 border-gray-200'
                 )}
               >
                 {momentumScore >= 50 ? (
@@ -148,16 +158,29 @@ export function CoverageVelocityChart({
               <>
                 <line
                   x1="40"
-                  y1={20 + (height - 60) - (avgMentions / maxMentions) * (height - 60)}
+                  y1={
+                    20 +
+                    (height - 60) -
+                    (avgMentions / maxMentions) * (height - 60)
+                  }
                   x2="580"
-                  y2={20 + (height - 60) - (avgMentions / maxMentions) * (height - 60)}
+                  y2={
+                    20 +
+                    (height - 60) -
+                    (avgMentions / maxMentions) * (height - 60)
+                  }
                   stroke="#94a3b8"
                   strokeWidth="1"
                   strokeDasharray="4 2"
                 />
                 <text
                   x="585"
-                  y={20 + (height - 60) - (avgMentions / maxMentions) * (height - 60) + 4}
+                  y={
+                    20 +
+                    (height - 60) -
+                    (avgMentions / maxMentions) * (height - 60) +
+                    4
+                  }
                   fontSize="10"
                   fill="#64748b"
                   textAnchor="start"
@@ -202,7 +225,13 @@ export function CoverageVelocityChart({
             <text x="35" y="25" textAnchor="end" fontSize="10" fill="#6b7280">
               {maxMentions}
             </text>
-            <text x="35" y={height - 35} textAnchor="end" fontSize="10" fill="#6b7280">
+            <text
+              x="35"
+              y={height - 35}
+              textAnchor="end"
+              fontSize="10"
+              fill="#6b7280"
+            >
               0
             </text>
 

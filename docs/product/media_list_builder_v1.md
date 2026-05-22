@@ -22,28 +22,33 @@ The system automatically generates targeted media lists based on:
 Each journalist receives a comprehensive fit score (0-1) based on five weighted dimensions:
 
 #### Topic Relevance (40% weight)
+
 - String similarity between topic and journalist beat/bio
 - Keyword matching in beat and bio
 - Fuzzy matching using Levenshtein distance
 - Containment bonuses for exact matches
 
 #### Past Coverage (25% weight)
+
 - Historical coverage of related topics
 - Recency of relevant articles (last 3 months weighted higher)
 - Volume of coverage normalized to baseline
 - Coverage quality based on sentiment
 
 #### Engagement Score (15% weight)
+
 - Historical engagement metrics from S46
 - Email open rates, link clicks, responses
 - Relationship strength indicators
 
 #### Responsiveness Score (10% weight)
+
 - Reply rates from S45 deliverability data
 - Response time patterns
 - Communication history quality
 
 #### Outlet Tier (10% weight)
+
 - **Tier 1**: WSJ, NYT, Bloomberg, Reuters, TechCrunch, Wired, Forbes, etc. (score: 1.0)
 - **Tier 2**: VentureBeat, Mashable, Fast Company, Inc, ZDNet, CNET (score: 0.6)
 - **Tier 3**: All other outlets (score: 0.3)
@@ -129,6 +134,7 @@ CREATE TABLE media_list_entries (
 ### RLS Policies
 
 All tables implement org-level Row Level Security:
+
 - SELECT: Users can only view lists from their organization
 - INSERT: Authenticated users can create lists in their organization
 - UPDATE: Users can update their organization's lists
@@ -191,9 +197,11 @@ else tier = 'D';
 ## API Endpoints
 
 ### POST /api/v1/media-lists/generate
+
 Generate AI-powered media list
 
 **Request:**
+
 ```json
 {
   "topic": "AI in healthcare",
@@ -208,6 +216,7 @@ Generate AI-powered media list
 ```
 
 **Response:**
+
 ```json
 {
   "matches": [
@@ -220,8 +229,8 @@ Generate AI-powered media list
         "primaryOutlet": "TechCrunch",
         "beat": "Healthcare Technology",
         "engagementScore": 0.85,
-        "responsivenessScore": 0.70,
-        "relevanceScore": 0.90,
+        "responsivenessScore": 0.7,
+        "relevanceScore": 0.9,
         "tier": "tier1"
       },
       "fitScore": 0.87,
@@ -231,7 +240,7 @@ Generate AI-powered media list
         "topicRelevance": 0.92,
         "pastCoverage": 0.85,
         "engagement": 0.85,
-        "responsiveness": 0.70,
+        "responsiveness": 0.7,
         "outletTier": 1.0,
         "totalScore": 0.87
       }
@@ -253,9 +262,11 @@ Generate AI-powered media list
 ```
 
 ### POST /api/v1/media-lists
+
 Create and save media list
 
 **Request:**
+
 ```json
 {
   "name": "Healthcare AI Campaign Q1 2024",
@@ -278,9 +289,11 @@ Create and save media list
 ```
 
 ### GET /api/v1/media-lists
+
 List all media lists (paginated)
 
 **Query Parameters:**
+
 - `q` - Full-text search
 - `topic` - Filter by topic
 - `market` - Filter by market
@@ -291,18 +304,23 @@ List all media lists (paginated)
 - `offset` - Pagination offset
 
 ### GET /api/v1/media-lists/:id
+
 Get single media list with entries
 
 ### PUT /api/v1/media-lists/:id
+
 Update media list metadata
 
 ### DELETE /api/v1/media-lists/:id
+
 Delete media list (cascades to entries)
 
 ### GET /api/v1/media-lists/:id/entries
+
 Get media list entries with filtering
 
 **Query Parameters:**
+
 - `tier` - Filter by tier (A, B, C, D) - can be array
 - `minFitScore` - Minimum fit score threshold
 - `sortBy` - fit_score | position
@@ -313,6 +331,7 @@ Get media list entries with filtering
 ## Frontend Components
 
 ### Media List Generator Form
+
 - Topic input (required)
 - Keywords input (comma-separated)
 - Market, geography, product inputs
@@ -322,6 +341,7 @@ Get media list entries with filtering
 - Generate button with loading state
 
 ### Media List Result Preview
+
 - Summary stats (total matches, tier distribution, avg fit score)
 - Results table with journalist details
 - Fit score badges with color coding
@@ -330,6 +350,7 @@ Get media list entries with filtering
 - Save and Cancel actions
 
 ### Media List Card
+
 - List name and description
 - Topic, keywords, market, geography tags
 - Tier distribution stats
@@ -337,6 +358,7 @@ Get media list entries with filtering
 - View and Delete actions
 
 ### Media List Entry Table
+
 - Sortable columns
 - Journalist name and email
 - Outlet and beat
@@ -346,6 +368,7 @@ Get media list entries with filtering
 - Click to view journalist profile
 
 ### Supporting Components
+
 - **TierBadge** - Colored badges for A/B/C/D tiers
 - **FitScoreBadge** - Color-coded percentage badges
 - **KeywordChips** - Rounded chips for keyword display
@@ -353,10 +376,12 @@ Get media list entries with filtering
 ## Integration Points
 
 ### S12: Topic Clustering
+
 - Uses topic analysis for keyword extraction
 - Semantic similarity for topic matching
 
 ### S38-S43: PR Intelligence
+
 - **S38**: Press release content for topic context
 - **S39**: Pitch targeting insights
 - **S40**: Media monitoring coverage data
@@ -365,16 +390,19 @@ Get media list entries with filtering
 - **S43**: Media alerts for journalist activity
 
 ### S44: Journalist Outreach
+
 - Outreach sequence targeting from media lists
 - Batch outreach to list entries
 - Performance tracking per list
 
 ### S45: Deliverability Analytics
+
 - Responsiveness scores from email engagement
 - Reply rate calculation
 - Optimal send times per journalist
 
 ### S46: Journalist Identity Graph
+
 - **Primary Integration** - Unified journalist profiles
 - Engagement and relevance scores
 - Activity log for coverage analysis
@@ -383,17 +411,18 @@ Get media list entries with filtering
 ## Use Cases
 
 ### 1. Product Launch Campaign
+
 ```typescript
 // Generate list for new AI healthcare product launch
 const input = {
-  topic: "AI-powered medical diagnosis",
-  keywords: ["machine learning", "radiology", "diagnosis"],
-  market: "HealthTech",
-  geography: "North America",
-  product: "DiagnosisAI Platform",
+  topic: 'AI-powered medical diagnosis',
+  keywords: ['machine learning', 'radiology', 'diagnosis'],
+  market: 'HealthTech',
+  geography: 'North America',
+  product: 'DiagnosisAI Platform',
   targetCount: 30,
   minFitScore: 0.6,
-  includeTiers: ['A', 'B']  // Only top-tier journalists
+  includeTiers: ['A', 'B'], // Only top-tier journalists
 };
 
 const result = await generateMediaList(orgId, input);
@@ -401,58 +430,64 @@ const result = await generateMediaList(orgId, input);
 ```
 
 ### 2. Thought Leadership Campaign
+
 ```typescript
 // Broader list for thought leadership content
 const input = {
-  topic: "Future of AI in healthcare",
-  keywords: ["AI ethics", "healthcare innovation", "patient care"],
+  topic: 'Future of AI in healthcare',
+  keywords: ['AI ethics', 'healthcare innovation', 'patient care'],
   targetCount: 100,
-  minFitScore: 0.3,  // Lower threshold for broader reach
-  includeTiers: ['A', 'B', 'C']
+  minFitScore: 0.3, // Lower threshold for broader reach
+  includeTiers: ['A', 'B', 'C'],
 };
 ```
 
 ### 3. Industry-Specific Targeting
+
 ```typescript
 // Target specific market segment
 const input = {
-  topic: "Enterprise SaaS security",
-  keywords: ["cybersecurity", "compliance", "data protection"],
-  market: "B2B SaaS",
-  geography: "Global",
+  topic: 'Enterprise SaaS security',
+  keywords: ['cybersecurity', 'compliance', 'data protection'],
+  market: 'B2B SaaS',
+  geography: 'Global',
   targetCount: 50,
   minFitScore: 0.5,
-  includeTiers: ['A', 'B', 'C']
+  includeTiers: ['A', 'B', 'C'],
 };
 ```
 
 ### 4. Competitive Analysis
+
 ```typescript
 // Find journalists covering competitors
 const input = {
-  topic: "CRM software",
-  keywords: ["Salesforce", "HubSpot", "customer relationship"],
-  market: "B2B SaaS",
+  topic: 'CRM software',
+  keywords: ['Salesforce', 'HubSpot', 'customer relationship'],
+  market: 'B2B SaaS',
   targetCount: 75,
-  minFitScore: 0.4
+  minFitScore: 0.4,
 };
 ```
 
 ## Performance Considerations
 
 ### Query Optimization
+
 - Indexes on org_id, topic, tier, fit_score
 - Pagination to limit result sets
 - JSONB indexes for fit_breakdown queries
 - Materialized view for list summaries (future optimization)
 
 ### Scoring Performance
+
 - Batch processing for large candidate pools
 - Async activity log queries
 - Caching of journalist profiles
 - String similarity memoization
 
 ### Scalability
+
 - Horizontal scaling via org-level sharding
 - Background jobs for large list generation (future)
 - Rate limiting on generation endpoint
@@ -465,6 +500,7 @@ const input = {
 ## Testing
 
 ### Backend Tests
+
 - `tests/mediaListService.test.ts` - 14 comprehensive unit tests
   - Generate media list with fit scoring
   - Save media list with entries
@@ -475,6 +511,7 @@ const input = {
   - Error handling
 
 ### E2E Tests
+
 - `tests/media-lists.spec.ts` - 25 Playwright tests
   - Authentication flow
   - List generation UI
@@ -488,6 +525,7 @@ const input = {
 ## Future Enhancements
 
 ### Planned for S48+
+
 - **AI Reasoning Engine** - GPT-4 powered fit explanations
 - **Auto-Refresh Lists** - Periodic list regeneration
 - **Export Capabilities** - CSV/Excel export with all details
@@ -504,6 +542,7 @@ const input = {
 ## Monitoring & Observability
 
 ### Key Metrics
+
 - List generation duration
 - Average fit scores per list
 - Tier distribution patterns
@@ -513,6 +552,7 @@ const input = {
 - Cache hit rates
 
 ### Audit Events
+
 - `media_list.generated` - List generation completed
 - `media_list.created` - List saved
 - `media_list.viewed` - List viewed
@@ -523,12 +563,14 @@ const input = {
 ## Security Considerations
 
 ### Data Access
+
 - RLS policies enforce org-level isolation
 - No cross-org data leakage
 - Journalist profiles protected by S46 RLS
 - API endpoints require authentication
 
 ### Input Validation
+
 - Topic length limits (500 chars)
 - Keyword count limits (100 keywords max)
 - Target count limits (1-200)
@@ -536,6 +578,7 @@ const input = {
 - SQL injection prevention via parameterized queries
 
 ### Rate Limiting
+
 - Generation endpoint rate-limited per org
 - Prevents abuse and resource exhaustion
 - Quota tracking for billing (future)
@@ -552,6 +595,7 @@ const input = {
 ## Migration Path
 
 ### From Manual Lists (S1-S46)
+
 1. Export existing manual journalist lists
 2. Recreate using media list generator
 3. Compare fit scores with manual selections
@@ -559,6 +603,7 @@ const input = {
 5. Replace manual lists with AI-generated lists
 
 ### Integration with Existing Workflows
+
 - Media lists integrate seamlessly with S44 outreach sequences
 - Lists can be used as targeting input for S39 pitch campaigns
 - S40 monitoring alerts can trigger list regeneration
@@ -566,18 +611,21 @@ const input = {
 ## Success Metrics
 
 ### User Adoption
+
 - Number of lists generated per org
 - Average list size
 - Regeneration frequency
 - Save rate (preview → save conversion)
 
 ### Quality Metrics
+
 - Average fit scores of saved lists
 - A/B tier percentage in saved lists
 - User feedback on journalist relevance
 - Outreach success rate from generated lists
 
 ### Performance Metrics
+
 - Generation time < 5 seconds for 50 journalists
 - API p95 latency < 1 second
 - Zero RLS policy violations

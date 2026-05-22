@@ -5,13 +5,7 @@
 
 'use client';
 
-import {
-  Network,
-  ZoomIn,
-  ZoomOut,
-  Maximize2,
-  RefreshCw,
-} from 'lucide-react';
+import { Network, ZoomIn, ZoomOut, Maximize2, RefreshCw } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -49,7 +43,9 @@ export function GraphVisualizationPanel({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
-  const [nodePositions, setNodePositions] = useState<Map<string, Position>>(new Map());
+  const [nodePositions, setNodePositions] = useState<Map<string, Position>>(
+    new Map()
+  );
   const [, _setIsDragging] = useState(false);
   const [, _setDragOffset] = useState<Position>({ x: 0, y: 0 });
   const [panOffset, setPanOffset] = useState<Position>({ x: 0, y: 0 });
@@ -193,7 +189,10 @@ export function GraphVisualizationPanel({
 
       // Draw arrow for directed edges
       if (!edge.isBidirectional) {
-        const angle = Math.atan2(targetPos.y - sourcePos.y, targetPos.x - sourcePos.x);
+        const angle = Math.atan2(
+          targetPos.y - sourcePos.y,
+          targetPos.x - sourcePos.x
+        );
         const arrowLen = 10;
         const arrowX = targetPos.x - 20 * Math.cos(angle);
         const arrowY = targetPos.y - 20 * Math.sin(angle);
@@ -256,9 +255,10 @@ export function GraphVisualizationPanel({
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
 
-      const label = node.label.length > 15
-        ? node.label.substring(0, 12) + '...'
-        : node.label;
+      const label =
+        node.label.length > 15
+          ? node.label.substring(0, 12) + '...'
+          : node.label;
       ctx.fillText(label, pos.x, pos.y + radius + 4);
     });
 

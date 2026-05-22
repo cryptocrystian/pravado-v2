@@ -15,7 +15,11 @@ interface ArticleTableProps {
   isLoading?: boolean;
 }
 
-export function ArticleTable({ articles, onSelectArticle, isLoading }: ArticleTableProps) {
+export function ArticleTable({
+  articles,
+  onSelectArticle,
+  isLoading,
+}: ArticleTableProps) {
   const formatDate = (date: Date | null) => {
     if (!date) return 'Unknown';
     return new Intl.DateTimeFormat('en-US', {
@@ -36,8 +40,18 @@ export function ArticleTable({ articles, onSelectArticle, isLoading }: ArticleTa
   if (articles.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
-        <svg className="mb-4 h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+        <svg
+          className="mb-4 h-12 w-12 text-gray-300"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+          />
         </svg>
         <h3 className="text-lg font-medium text-gray-900">No articles found</h3>
         <p className="mt-1 text-sm text-gray-500">
@@ -118,7 +132,9 @@ export function ArticleTable({ articles, onSelectArticle, isLoading }: ArticleTa
                 )}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                {article.author || <span className="text-gray-400">Unknown</span>}
+                {article.author || (
+                  <span className="text-gray-400">Unknown</span>
+                )}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                 {formatDate(article.publishedAt)}

@@ -3,7 +3,6 @@
  * Handles Stripe customer management, subscriptions, and webhook processing
  */
 
-
 import { FLAGS } from '@pravado/feature-flags';
 import type {
   StripeCheckoutSessionParams,
@@ -60,7 +59,10 @@ export class StripeService {
   /**
    * Create a Stripe customer for an org
    */
-  async createStripeCustomerForOrg(orgId: string, email?: string): Promise<string> {
+  async createStripeCustomerForOrg(
+    orgId: string,
+    email?: string
+  ): Promise<string> {
     this.ensureStripeEnabled();
 
     logger.info('Creating Stripe customer for org', { orgId, email });
@@ -73,7 +75,10 @@ export class StripeService {
         },
       });
 
-      logger.info('Created Stripe customer', { orgId, customerId: customer.id });
+      logger.info('Created Stripe customer', {
+        orgId,
+        customerId: customer.id,
+      });
       return customer.id;
     } catch (error) {
       logger.error('Failed to create Stripe customer', { error, orgId });
@@ -85,7 +90,10 @@ export class StripeService {
    * Get or create Stripe customer for an org
    * Checks org_billing_state first, creates if not exists
    */
-  async getOrCreateStripeCustomer(orgId: string, email?: string): Promise<string> {
+  async getOrCreateStripeCustomer(
+    orgId: string,
+    email?: string
+  ): Promise<string> {
     this.ensureStripeEnabled();
 
     // Check if org already has a Stripe customer
@@ -138,11 +146,17 @@ export class StripeService {
   ): Promise<StripeCheckoutSessionResponse> {
     this.ensureStripeEnabled();
 
-    logger.info('Creating Stripe checkout session', { orgId: params.orgId, planSlug: params.planSlug });
+    logger.info('Creating Stripe checkout session', {
+      orgId: params.orgId,
+      planSlug: params.planSlug,
+    });
 
     try {
       // Get or create customer
-      const customerId = await this.getOrCreateStripeCustomer(params.orgId, params.customerEmail);
+      const customerId = await this.getOrCreateStripeCustomer(
+        params.orgId,
+        params.customerEmail
+      );
 
       // Create checkout session
       const session = await this.stripe!.checkout.sessions.create({
@@ -215,7 +229,10 @@ export class StripeService {
         },
       });
 
-      logger.info('Created subscription', { orgId, subscriptionId: subscription.id });
+      logger.info('Created subscription', {
+        orgId,
+        subscriptionId: subscription.id,
+      });
       return subscription.id;
     } catch (error) {
       logger.error('Failed to create subscription', { error, orgId });
@@ -226,7 +243,10 @@ export class StripeService {
   /**
    * Cancel a subscription at period end
    */
-  async cancelSubscription(orgId: string, atPeriodEnd: boolean = true): Promise<void> {
+  async cancelSubscription(
+    orgId: string,
+    atPeriodEnd: boolean = true
+  ): Promise<void> {
     this.ensureStripeEnabled();
 
     logger.info('Canceling subscription', { orgId, atPeriodEnd });
@@ -245,9 +265,12 @@ export class StripeService {
 
       if (atPeriodEnd) {
         // Cancel at period end
-        await this.stripe!.subscriptions.update(billingState.stripe_subscription_id, {
-          cancel_at_period_end: true,
-        });
+        await this.stripe!.subscriptions.update(
+          billingState.stripe_subscription_id,
+          {
+            cancel_at_period_end: true,
+          }
+        );
 
         // Update local state
         await this.supabase
@@ -259,7 +282,9 @@ export class StripeService {
           .eq('org_id', orgId);
       } else {
         // Cancel immediately
-        await this.stripe!.subscriptions.cancel(billingState.stripe_subscription_id);
+        await this.stripe!.subscriptions.cancel(
+          billingState.stripe_subscription_id
+        );
 
         // Update local state (webhook will handle status change)
         await this.supabase
@@ -304,9 +329,12 @@ export class StripeService {
       }
 
       // Resume subscription
-      await this.stripe!.subscriptions.update(billingState.stripe_subscription_id, {
-        cancel_at_period_end: false,
-      });
+      await this.stripe!.subscriptions.update(
+        billingState.stripe_subscription_id,
+        {
+          cancel_at_period_end: false,
+        }
+      );
 
       // Update local state
       await this.supabase
@@ -335,7 +363,10 @@ export class StripeService {
    * @param orgId - Organization ID
    * @param targetPlanSlug - Target plan slug to switch to
    */
-  async switchSubscriptionPlan(orgId: string, targetPlanSlug: string): Promise<void> {
+  async switchSubscriptionPlan(
+    orgId: string,
+    targetPlanSlug: string
+  ): Promise<void> {
     this.ensureStripeEnabled();
 
     logger.info('Switching subscription plan', { orgId, targetPlanSlug });
@@ -344,7 +375,9 @@ export class StripeService {
       // Get current subscription from billing state
       const { data: billingState } = await this.supabase
         .from('org_billing_state')
-        .select('stripe_subscription_id, stripe_customer_id, plan_id, trial_ends_at')
+        .select(
+          'stripe_subscription_id, stripe_customer_id, plan_id, trial_ends_at'
+        )
         .eq('org_id', orgId)
         .single();
 
@@ -368,7 +401,9 @@ export class StripeService {
       if (!stripePriceId) {
         // If no stripe_price_id in database, construct from convention
         // This assumes Stripe price IDs follow pattern like: price_starter_monthly
-        throw new Error(`No Stripe price ID configured for plan '${targetPlanSlug}'`);
+        throw new Error(
+          `No Stripe price ID configured for plan '${targetPlanSlug}'`
+        );
       }
 
       // Retrieve current subscription from Stripe
@@ -416,13 +451,15 @@ export class StripeService {
         .from('org_billing_state')
         .update({
           plan_id: targetPlanData.id,
-          subscription_status: updatedSubscription.status as StripeSubscriptionStatus,
+          subscription_status:
+            updatedSubscription.status as StripeSubscriptionStatus,
           billing_status: this.mapStripeStatusToBillingStatus(
             updatedSubscription.status as StripeSubscriptionStatus
           ),
           // If trial was active and ended, clear trial_ends_at
           trial_ends_at:
-            subscription.status === 'trialing' && updatedSubscription.status !== 'trialing'
+            subscription.status === 'trialing' &&
+            updatedSubscription.status !== 'trialing'
               ? null
               : billingState.trial_ends_at,
           updated_at: new Date().toISOString(),
@@ -437,9 +474,16 @@ export class StripeService {
         // Don't throw - Stripe subscription was updated successfully, webhook will sync state
       }
 
-      logger.info('Successfully switched subscription plan', { orgId, targetPlanSlug });
+      logger.info('Successfully switched subscription plan', {
+        orgId,
+        targetPlanSlug,
+      });
     } catch (error) {
-      logger.error('Failed to switch subscription plan', { error, orgId, targetPlanSlug });
+      logger.error('Failed to switch subscription plan', {
+        error,
+        orgId,
+        targetPlanSlug,
+      });
       throw error;
     }
   }
@@ -474,9 +518,10 @@ export class StripeService {
       }
 
       // Retrieve subscription from Stripe
-      const subscription: Stripe.Subscription = await this.stripe!.subscriptions.retrieve(
-        billingState.stripe_subscription_id
-      );
+      const subscription: Stripe.Subscription =
+        await this.stripe!.subscriptions.retrieve(
+          billingState.stripe_subscription_id
+        );
 
       // Type assertion for Stripe subscription fields (types may be incomplete in SDK)
       const sub = subscription as Stripe.Subscription & {
@@ -487,7 +532,9 @@ export class StripeService {
       };
 
       // Access fields with type assertion
-      const currentPeriodEnd = new Date(sub.current_period_end * 1000).toISOString();
+      const currentPeriodEnd = new Date(
+        sub.current_period_end * 1000
+      ).toISOString();
       const nextBillingDate = sub.cancel_at_period_end
         ? new Date(sub.current_period_end * 1000).toISOString() // Last billing date if canceling
         : new Date(sub.current_period_end * 1000).toISOString(); // Next renewal date
@@ -524,7 +571,11 @@ export class StripeService {
     }
 
     try {
-      return this.stripe!.webhooks.constructEvent(payload, signature, this.webhookSecret);
+      return this.stripe!.webhooks.constructEvent(
+        payload,
+        signature,
+        this.webhookSecret
+      );
     } catch (error) {
       logger.error('Webhook signature verification failed', { error });
       throw error;
@@ -537,34 +588,54 @@ export class StripeService {
   async processWebhookEvent(event: Stripe.Event): Promise<void> {
     this.ensureStripeEnabled();
 
-    logger.info('Processing Stripe webhook', { eventType: event.type, eventId: event.id });
+    logger.info('Processing Stripe webhook', {
+      eventType: event.type,
+      eventId: event.id,
+    });
 
     try {
       switch (event.type) {
         case 'customer.subscription.created':
         case 'customer.subscription.updated':
-          await this.handleSubscriptionChange(event.data.object as Stripe.Subscription);
+          await this.handleSubscriptionChange(
+            event.data.object as Stripe.Subscription
+          );
           break;
 
         case 'customer.subscription.deleted':
-          await this.handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+          await this.handleSubscriptionDeleted(
+            event.data.object as Stripe.Subscription
+          );
           break;
 
         case 'invoice.payment_succeeded':
-          await this.handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice);
+          await this.handleInvoicePaymentSucceeded(
+            event.data.object as Stripe.Invoice
+          );
           break;
 
         case 'invoice.payment_failed':
-          await this.handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
+          await this.handleInvoicePaymentFailed(
+            event.data.object as Stripe.Invoice
+          );
           break;
 
         default:
-          logger.debug('Unhandled webhook event type', { eventType: event.type });
+          logger.debug('Unhandled webhook event type', {
+            eventType: event.type,
+          });
       }
 
-      logger.info('Processed Stripe webhook', { eventType: event.type, eventId: event.id });
+      logger.info('Processed Stripe webhook', {
+        eventType: event.type,
+        eventId: event.id,
+      });
     } catch (error) {
-      logger.error('Failed to process webhook event', { error, eventType: event.type, eventId: event.id });
+      logger.error('Failed to process webhook event', {
+        error,
+        eventType: event.type,
+        eventId: event.id,
+      });
       // Note: We don't throw here - webhook failures shouldn't break API flow
     }
   }
@@ -572,15 +643,23 @@ export class StripeService {
   /**
    * Handle subscription created/updated
    */
-  private async handleSubscriptionChange(subscription: Stripe.Subscription): Promise<void> {
+  private async handleSubscriptionChange(
+    subscription: Stripe.Subscription
+  ): Promise<void> {
     const orgId = subscription.metadata.orgId;
 
     if (!orgId) {
-      logger.warn('Subscription missing orgId in metadata', { subscriptionId: subscription.id });
+      logger.warn('Subscription missing orgId in metadata', {
+        subscriptionId: subscription.id,
+      });
       return;
     }
 
-    logger.info('Handling subscription change', { orgId, subscriptionId: subscription.id, status: subscription.status });
+    logger.info('Handling subscription change', {
+      orgId,
+      subscriptionId: subscription.id,
+      status: subscription.status,
+    });
 
     // Map Stripe status to our status
     const subscriptionStatus = subscription.status as StripeSubscriptionStatus;
@@ -599,8 +678,12 @@ export class StripeService {
       : null;
 
     // Calculate current period
-    const currentPeriodStart = new Date(sub.current_period_start * 1000).toISOString();
-    const currentPeriodEnd = new Date(sub.current_period_end * 1000).toISOString();
+    const currentPeriodStart = new Date(
+      sub.current_period_start * 1000
+    ).toISOString();
+    const currentPeriodEnd = new Date(
+      sub.current_period_end * 1000
+    ).toISOString();
 
     // Update org_billing_state
     const { error } = await this.supabase
@@ -618,22 +701,32 @@ export class StripeService {
       .eq('org_id', orgId);
 
     if (error) {
-      logger.error('Failed to update org billing state from webhook', { error, orgId });
+      logger.error('Failed to update org billing state from webhook', {
+        error,
+        orgId,
+      });
     }
   }
 
   /**
    * Handle subscription deleted
    */
-  private async handleSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
+  private async handleSubscriptionDeleted(
+    subscription: Stripe.Subscription
+  ): Promise<void> {
     const orgId = subscription.metadata.orgId;
 
     if (!orgId) {
-      logger.warn('Subscription missing orgId in metadata', { subscriptionId: subscription.id });
+      logger.warn('Subscription missing orgId in metadata', {
+        subscriptionId: subscription.id,
+      });
       return;
     }
 
-    logger.info('Handling subscription deleted', { orgId, subscriptionId: subscription.id });
+    logger.info('Handling subscription deleted', {
+      orgId,
+      subscriptionId: subscription.id,
+    });
 
     // Update org_billing_state
     const { error } = await this.supabase
@@ -647,25 +740,37 @@ export class StripeService {
       .eq('org_id', orgId);
 
     if (error) {
-      logger.error('Failed to update org billing state for deleted subscription', { error, orgId });
+      logger.error(
+        'Failed to update org billing state for deleted subscription',
+        { error, orgId }
+      );
     }
   }
 
   /**
    * Handle invoice payment succeeded
    */
-  private async handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
-    logger.info('Invoice payment succeeded', { invoiceId: invoice.id, customerId: invoice.customer });
+  private async handleInvoicePaymentSucceeded(
+    invoice: Stripe.Invoice
+  ): Promise<void> {
+    logger.info('Invoice payment succeeded', {
+      invoiceId: invoice.id,
+      customerId: invoice.customer,
+    });
 
     // Fetch subscription to get orgId
     // Note: subscription field exists at runtime but may not be in types
-    const invoiceWithSub = invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription };
-    const subscriptionId = typeof invoiceWithSub.subscription === 'string'
-      ? invoiceWithSub.subscription
-      : invoiceWithSub.subscription?.id;
+    const invoiceWithSub = invoice as Stripe.Invoice & {
+      subscription?: string | Stripe.Subscription;
+    };
+    const subscriptionId =
+      typeof invoiceWithSub.subscription === 'string'
+        ? invoiceWithSub.subscription
+        : invoiceWithSub.subscription?.id;
 
     if (subscriptionId) {
-      const subscription = await this.stripe!.subscriptions.retrieve(subscriptionId);
+      const subscription =
+        await this.stripe!.subscriptions.retrieve(subscriptionId);
       const orgId = subscription.metadata.orgId;
 
       if (orgId) {
@@ -687,18 +792,27 @@ export class StripeService {
   /**
    * Handle invoice payment failed
    */
-  private async handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
-    logger.error('Invoice payment failed', { invoiceId: invoice.id, customerId: invoice.customer });
+  private async handleInvoicePaymentFailed(
+    invoice: Stripe.Invoice
+  ): Promise<void> {
+    logger.error('Invoice payment failed', {
+      invoiceId: invoice.id,
+      customerId: invoice.customer,
+    });
 
     // Fetch subscription to get orgId
     // Note: subscription field exists at runtime but may not be in types
-    const invoiceWithSub = invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription };
-    const subscriptionId = typeof invoiceWithSub.subscription === 'string'
-      ? invoiceWithSub.subscription
-      : invoiceWithSub.subscription?.id;
+    const invoiceWithSub = invoice as Stripe.Invoice & {
+      subscription?: string | Stripe.Subscription;
+    };
+    const subscriptionId =
+      typeof invoiceWithSub.subscription === 'string'
+        ? invoiceWithSub.subscription
+        : invoiceWithSub.subscription?.id;
 
     if (subscriptionId) {
-      const subscription = await this.stripe!.subscriptions.retrieve(subscriptionId);
+      const subscription =
+        await this.stripe!.subscriptions.retrieve(subscriptionId);
       const orgId = subscription.metadata.orgId;
 
       if (orgId) {
@@ -828,7 +942,10 @@ export class StripeService {
    * @param limit - Maximum number of invoices to retrieve (default: 12)
    * @returns Array of Stripe invoices
    */
-  async listInvoicesForOrg(orgId: string, limit: number = 12): Promise<Stripe.Invoice[]> {
+  async listInvoicesForOrg(
+    orgId: string,
+    limit: number = 12
+  ): Promise<Stripe.Invoice[]> {
     this.ensureStripeEnabled();
 
     logger.info('Listing invoices for org', { orgId, limit });
@@ -873,7 +990,10 @@ export class StripeService {
    * @param stripeInvoice - Stripe invoice object
    * @param orgId - Organization ID (must be provided if not in invoice metadata)
    */
-  async syncInvoiceToCache(stripeInvoice: Stripe.Invoice, orgId?: string): Promise<void> {
+  async syncInvoiceToCache(
+    stripeInvoice: Stripe.Invoice,
+    orgId?: string
+  ): Promise<void> {
     logger.info('Syncing invoice to cache', {
       invoiceId: stripeInvoice.id,
       orgId,
@@ -884,12 +1004,12 @@ export class StripeService {
       let resolvedOrgId = orgId;
       const subscription = (stripeInvoice as any).subscription;
       if (!resolvedOrgId && subscription) {
-        const subscriptionId = typeof subscription === 'string'
-          ? subscription
-          : subscription.id;
+        const subscriptionId =
+          typeof subscription === 'string' ? subscription : subscription.id;
 
         if (subscriptionId && this.stripe) {
-          const subscriptionData = await this.stripe.subscriptions.retrieve(subscriptionId);
+          const subscriptionData =
+            await this.stripe.subscriptions.retrieve(subscriptionId);
           resolvedOrgId = subscriptionData.metadata.orgId;
         }
       }
@@ -919,8 +1039,16 @@ export class StripeService {
           lines: stripeInvoice.lines?.data || [],
           total: stripeInvoice.total,
           subtotal: stripeInvoice.subtotal,
-          tax: (stripeInvoice as any).total_tax_amounts?.reduce((sum: number, t: any) => sum + t.amount, 0) || 0,
-          discount: (stripeInvoice as any).total_discount_amounts?.reduce((sum: number, d: any) => sum + d.amount, 0) || null,
+          tax:
+            (stripeInvoice as any).total_tax_amounts?.reduce(
+              (sum: number, t: any) => sum + t.amount,
+              0
+            ) || 0,
+          discount:
+            (stripeInvoice as any).total_discount_amounts?.reduce(
+              (sum: number, d: any) => sum + d.amount,
+              0
+            ) || null,
         },
         updated_at: new Date().toISOString(),
       };
@@ -1001,7 +1129,10 @@ export class StripeService {
    * @param orgId - Organization ID
    * @param limit - Maximum number of invoices to sync (default: 12)
    */
-  async syncAllInvoicesForOrg(orgId: string, limit: number = 12): Promise<number> {
+  async syncAllInvoicesForOrg(
+    orgId: string,
+    limit: number = 12
+  ): Promise<number> {
     this.ensureStripeEnabled();
 
     logger.info('Syncing all invoices for org', { orgId, limit });

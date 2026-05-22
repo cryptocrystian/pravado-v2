@@ -14,14 +14,20 @@ export const DEMO_ORG_SLUG = 'demo';
  * Check if an organization is a demo org
  * Checks both name and slug for robustness
  */
-export function isDemoOrg(orgName: string | null | undefined, orgSlug?: string | null): boolean {
+export function isDemoOrg(
+  orgName: string | null | undefined,
+  orgSlug?: string | null
+): boolean {
   return orgName === DEMO_ORG_NAME || orgSlug === DEMO_ORG_SLUG;
 }
 
 /**
  * Check if organization should show demo badge
  */
-export function shouldShowDemoBadge(orgName: string | null | undefined, orgSlug?: string | null): boolean {
+export function shouldShowDemoBadge(
+  orgName: string | null | undefined,
+  orgSlug?: string | null
+): boolean {
   return isDemoOrg(orgName, orgSlug);
 }
 
@@ -51,17 +57,23 @@ export function getEmptyStateMessage(
 /**
  * Get feature-specific guidance for production orgs
  */
-export function getGuidedEmptyState(feature: 'journalists' | 'coverage' | 'pitches' | 'outreach' | 'media') {
-  const guidance: Record<string, {
-    title: string;
-    description: string;
-    steps: string[];
-    ctaLabel: string;
-    ctaHref: string;
-  }> = {
+export function getGuidedEmptyState(
+  feature: 'journalists' | 'coverage' | 'pitches' | 'outreach' | 'media'
+) {
+  const guidance: Record<
+    string,
+    {
+      title: string;
+      description: string;
+      steps: string[];
+      ctaLabel: string;
+      ctaHref: string;
+    }
+  > = {
     journalists: {
       title: 'Build Your Media Network',
-      description: 'Start by adding journalists and media contacts to your network.',
+      description:
+        'Start by adding journalists and media contacts to your network.',
       steps: [
         'Add journalists from your target publications',
         'Import contacts from your existing database',
@@ -94,7 +106,8 @@ export function getGuidedEmptyState(feature: 'journalists' | 'coverage' | 'pitch
     },
     outreach: {
       title: 'Automate Outreach',
-      description: 'Set up automated outreach sequences for efficient journalist engagement.',
+      description:
+        'Set up automated outreach sequences for efficient journalist engagement.',
       steps: [
         'Create outreach sequences with multiple touchpoints',
         'Set timing and personalization rules',
@@ -105,7 +118,8 @@ export function getGuidedEmptyState(feature: 'journalists' | 'coverage' | 'pitch
     },
     media: {
       title: 'Monitor Media',
-      description: 'Stay on top of relevant news and coverage in your industry.',
+      description:
+        'Stay on top of relevant news and coverage in your industry.',
       steps: [
         'Add RSS feeds from key publications',
         'Set up keyword alerts',

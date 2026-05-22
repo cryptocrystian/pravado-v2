@@ -21,10 +21,24 @@ const MOCK_ASSET = {
   wordCount: 4500,
   citeMindStatus: 'warning',
   citeMindIssues: [
-    { type: 'unverified_claim', severity: 'warning', message: 'Statistics need source attribution', section: 'Introduction' },
-    { type: 'missing_citation', severity: 'warning', message: 'Industry benchmark claim requires citation', section: 'Benefits' },
+    {
+      type: 'unverified_claim',
+      severity: 'warning',
+      message: 'Statistics need source attribution',
+      section: 'Introduction',
+    },
+    {
+      type: 'missing_citation',
+      severity: 'warning',
+      message: 'Industry benchmark claim requires citation',
+      section: 'Benefits',
+    },
   ],
-  entityAssociations: ['Marketing Automation', 'B2B Marketing', 'Lead Generation'],
+  entityAssociations: [
+    'Marketing Automation',
+    'B2B Marketing',
+    'Lead Generation',
+  ],
   authoritySignals: {
     authorityContributionScore: 72,
     citationEligibilityScore: 65,

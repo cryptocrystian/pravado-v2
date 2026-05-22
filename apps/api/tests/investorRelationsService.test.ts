@@ -8,7 +8,9 @@ import { createMockSupabaseClient } from './helpers/supabaseMock';
 
 // Mock dependencies
 vi.mock('../src/services/investorRelationsService', async () => {
-  const actual = await vi.importActual('../src/services/investorRelationsService');
+  const actual = await vi.importActual(
+    '../src/services/investorRelationsService'
+  );
   return {
     ...actual,
   };
@@ -34,11 +36,13 @@ vi.mock('openai', () => ({
                   sections: [
                     {
                       sectionType: 'executive_summary',
-                      contentMd: '# Executive Summary\n\nStrong quarter with growth across all metrics.',
+                      contentMd:
+                        '# Executive Summary\n\nStrong quarter with growth across all metrics.',
                     },
                     {
                       sectionType: 'highlights',
-                      contentMd: '# Highlights\n\n- Revenue up 25%\n- New customer acquisition increased',
+                      contentMd:
+                        '# Highlights\n\n- Revenue up 25%\n- New customer acquisition increased',
                     },
                   ],
                 }),
@@ -93,7 +97,9 @@ describe('InvestorRelationsService', () => {
       mockSupabase.from.mockReturnValue({
         insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: expectedPack, error: null }),
+            single: vi
+              .fn()
+              .mockResolvedValue({ data: expectedPack, error: null }),
           }),
         }),
       });
@@ -174,9 +180,15 @@ describe('InvestorRelationsService', () => {
       };
 
       // Verify quarterly_earnings defaults
-      expect(defaultSectionsByFormat['quarterly_earnings']).toContain('executive_summary');
-      expect(defaultSectionsByFormat['quarterly_earnings']).toContain('highlights');
-      expect(defaultSectionsByFormat['quarterly_earnings']).toContain('forward_guidance');
+      expect(defaultSectionsByFormat['quarterly_earnings']).toContain(
+        'executive_summary'
+      );
+      expect(defaultSectionsByFormat['quarterly_earnings']).toContain(
+        'highlights'
+      );
+      expect(defaultSectionsByFormat['quarterly_earnings']).toContain(
+        'forward_guidance'
+      );
 
       // Verify board_update includes risk_factors
       expect(defaultSectionsByFormat['board_update']).toContain('risk_factors');
@@ -225,7 +237,10 @@ describe('InvestorRelationsService', () => {
       mockSupabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: null, error: { message: 'Not found' } }),
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Not found' },
+            }),
           }),
         }),
       });
@@ -270,7 +285,9 @@ describe('InvestorRelationsService', () => {
         { id: 'pack-3', format: 'quarterly_earnings' },
       ];
 
-      const quarterlyPacks = allPacks.filter((p) => p.format === 'quarterly_earnings');
+      const quarterlyPacks = allPacks.filter(
+        (p) => p.format === 'quarterly_earnings'
+      );
       expect(quarterlyPacks).toHaveLength(2);
     });
   });
@@ -387,7 +404,8 @@ describe('InvestorRelationsService', () => {
       it('should create a new Q&A entry', async () => {
         const qnaData = {
           question: 'What is driving customer acquisition?',
-          answerMd: 'Customer acquisition is being driven by our enhanced marketing campaigns...',
+          answerMd:
+            'Customer acquisition is being driven by our enhanced marketing campaigns...',
           category: 'strategic',
         };
 
@@ -408,7 +426,13 @@ describe('InvestorRelationsService', () => {
     describe('generateQnAs', () => {
       it('should generate multiple Q&As', async () => {
         const count = 5;
-        const categories = ['financial', 'strategic', 'operational', 'market', 'risk'];
+        const categories = [
+          'financial',
+          'strategic',
+          'operational',
+          'market',
+          'risk',
+        ];
 
         expect(count).toBe(5);
         expect(categories).toHaveLength(5);
@@ -639,7 +663,10 @@ describe('InvestorRelationsService', () => {
     it('should handle database errors gracefully', async () => {
       mockSupabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'Database error' } }),
+          eq: vi.fn().mockResolvedValue({
+            data: null,
+            error: { message: 'Database error' },
+          }),
         }),
       });
 
@@ -664,7 +691,9 @@ describe('InvestorRelationsService', () => {
 
       const requiredFields = ['title', 'format', 'periodStart', 'periodEnd'];
       const missingFields = requiredFields.filter(
-        (field) => !(field in incompleteData) || !incompleteData[field as keyof typeof incompleteData]
+        (field) =>
+          !(field in incompleteData) ||
+          !incompleteData[field as keyof typeof incompleteData]
       );
 
       expect(missingFields).toContain('format');

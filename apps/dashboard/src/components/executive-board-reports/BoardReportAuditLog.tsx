@@ -27,7 +27,6 @@ import {
 } from '@/lib/executiveBoardReportApi';
 import { cn } from '@/lib/utils';
 
-
 interface BoardReportAuditLogProps {
   auditLogs: ExecBoardReportAuditLog[];
   className?: string;
@@ -35,7 +34,11 @@ interface BoardReportAuditLogProps {
 
 const ACTION_CONFIG: Record<
   string,
-  { icon: React.ComponentType<{ className?: string }>; color: string; label: string }
+  {
+    icon: React.ComponentType<{ className?: string }>;
+    color: string;
+    label: string;
+  }
 > = {
   created: { icon: Plus, color: 'green', label: 'Created' },
   updated: { icon: Edit, color: 'blue', label: 'Updated' },
@@ -44,14 +47,25 @@ const ACTION_CONFIG: Record<
   published: { icon: Send, color: 'indigo', label: 'Published' },
   archived: { icon: Archive, color: 'gray', label: 'Archived' },
   deleted: { icon: Trash2, color: 'red', label: 'Deleted' },
-  section_updated: { icon: FileText, color: 'yellow', label: 'Section Updated' },
-  sections_reordered: { icon: Settings, color: 'blue', label: 'Sections Reordered' },
+  section_updated: {
+    icon: FileText,
+    color: 'yellow',
+    label: 'Section Updated',
+  },
+  sections_reordered: {
+    icon: Settings,
+    color: 'blue',
+    label: 'Sections Reordered',
+  },
   audience_added: { icon: Users, color: 'green', label: 'Audience Added' },
   audience_updated: { icon: Users, color: 'blue', label: 'Audience Updated' },
   audience_removed: { icon: Users, color: 'red', label: 'Audience Removed' },
 };
 
-export function BoardReportAuditLog({ auditLogs, className }: BoardReportAuditLogProps) {
+export function BoardReportAuditLog({
+  auditLogs,
+  className,
+}: BoardReportAuditLogProps) {
   if (auditLogs.length === 0) {
     return (
       <Card className={className}>
@@ -130,7 +144,9 @@ export function BoardReportAuditLog({ auditLogs, className }: BoardReportAuditLo
                         <span className="text-gray-400">System</span>
                       )}
                       {' performed '}
-                      <span className="font-medium">{log.action.replace(/_/g, ' ')}</span>
+                      <span className="font-medium">
+                        {log.action.replace(/_/g, ' ')}
+                      </span>
                     </div>
 
                     {/* Show relevant changes */}

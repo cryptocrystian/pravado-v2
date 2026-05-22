@@ -13,7 +13,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getPRConfig } from '@/lib/env/pr-config';
-import { authenticatePRRequest, createAuthErrorResponse, addPRAuthHeader } from '@/server/pr/prAuth';
+import {
+  authenticatePRRequest,
+  createAuthErrorResponse,
+  addPRAuthHeader,
+} from '@/server/pr/prAuth';
 import { createPRService } from '@/server/pr/prService';
 
 export const dynamic = 'force-dynamic';
@@ -27,7 +31,9 @@ export async function POST(request: NextRequest) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/manual-send] Auth failed: ${auth.status} - ${auth.error}`);
+      console.log(
+        `[API /api/pr/pitches/manual-send] Auth failed: ${auth.status} - ${auth.error}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -59,29 +65,40 @@ export async function POST(request: NextRequest) {
     });
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/manual-send] POST: Sent pitch, event ${result.eventId}, status -> ${result.newStatus}`);
-      console.log(`[API /api/pr/pitches/manual-send] EVI Attribution: ${result.eviAttribution.driver} +${result.eviAttribution.delta}`);
+      console.log(
+        `[API /api/pr/pitches/manual-send] POST: Sent pitch, event ${result.eventId}, status -> ${result.newStatus}`
+      );
+      console.log(
+        `[API /api/pr/pitches/manual-send] EVI Attribution: ${result.eviAttribution.driver} +${result.eviAttribution.delta}`
+      );
     }
 
-    const response = NextResponse.json({
-      success: true,
-      eventId: result.eventId,
-      newStatus: result.newStatus,
-      sequenceId: body.sequenceId,
-      contactId: body.contactId,
-      message: 'Pitch manually sent. Contact status updated to "sent".',
-      // EVI attribution for Command Center integration
-      eviAttribution: result.eviAttribution,
-    }, { status: 200 });
+    const response = NextResponse.json(
+      {
+        success: true,
+        eventId: result.eventId,
+        newStatus: result.newStatus,
+        sequenceId: body.sequenceId,
+        contactId: body.contactId,
+        message: 'Pitch manually sent. Contact status updated to "sent".',
+        // EVI attribution for Command Center integration
+        eviAttribution: result.eviAttribution,
+      },
+      { status: 200 }
+    );
     return addPRAuthHeader(response, 'ok');
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('[API /api/pr/pitches/manual-send] POST Error:', message);
 
     // Return appropriate error status based on error type
-    const isValidationError = message.includes('not found') || message.includes('Cannot send');
+    const isValidationError =
+      message.includes('not found') || message.includes('Cannot send');
     const response = NextResponse.json(
-      { error: message, code: isValidationError ? 'VALIDATION_ERROR' : 'SEND_ERROR' },
+      {
+        error: message,
+        code: isValidationError ? 'VALIDATION_ERROR' : 'SEND_ERROR',
+      },
       { status: isValidationError ? 400 : 500 }
     );
     return addPRAuthHeader(response, 'ok');

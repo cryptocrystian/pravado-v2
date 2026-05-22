@@ -78,7 +78,9 @@ async function findPositionDrops(
         evi_impact_estimate: 3.5,
         confidence: 0.75,
         priority: drop > 20 ? 'critical' : 'high',
-        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        expires_at: new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000
+        ).toISOString(),
       });
     }
   }
@@ -131,7 +133,9 @@ async function findOpportunityKeywords(
       },
       evi_impact_estimate: 4.5,
       confidence: 0.6,
-      priority: (m.search_volume > 5000 ? 'high' : 'medium') as 'high' | 'medium',
+      priority: (m.search_volume > 5000 ? 'high' : 'medium') as
+        | 'high'
+        | 'medium',
       expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
     };
   });
@@ -160,10 +164,12 @@ async function findKeywordContentGaps(
   // Get all content topic names for this org
   const { data: topics } = await supabase
     .from('content_topics')
-    .select(`
+    .select(
+      `
       name,
       content_items!inner (org_id)
-    `)
+    `
+    )
     .eq('content_items.org_id', orgId);
 
   const topicNames = new Set(

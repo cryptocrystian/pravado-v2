@@ -18,7 +18,11 @@
 import { useState, useCallback } from 'react';
 
 import { text, label, modeTokens } from '../tokens';
-import type { CiteMindStatus, DerivativeSurface, AutomationMode } from '../types';
+import type {
+  CiteMindStatus,
+  DerivativeSurface,
+  AutomationMode,
+} from '../types';
 
 // ============================================
 // TYPES
@@ -151,8 +155,18 @@ const HOOK_ACTIONS: HookAction[] = [
     riskClass: 'medium',
     reversibility: 'fully_reversible',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+        />
       </svg>
     ),
   },
@@ -167,8 +181,18 @@ const HOOK_ACTIONS: HookAction[] = [
     riskClass: 'low',
     reversibility: 'fully_reversible',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+        />
       </svg>
     ),
   },
@@ -182,8 +206,18 @@ const HOOK_ACTIONS: HookAction[] = [
     riskClass: 'low',
     reversibility: 'fully_reversible',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+        />
       </svg>
     ),
   },
@@ -317,7 +351,13 @@ const PILLAR_COLORS = {
 // MODE BADGE COMPONENT
 // ============================================
 
-function ModeBadge({ mode, compact = false }: { mode: AutomationMode; compact?: boolean }) {
+function ModeBadge({
+  mode,
+  compact = false,
+}: {
+  mode: AutomationMode;
+  compact?: boolean;
+}) {
   const config = modeTokens[mode];
   return (
     <span
@@ -334,7 +374,10 @@ function ModeBadge({ mode, compact = false }: { mode: AutomationMode; compact?: 
 // ============================================
 
 function RiskIndicator({ riskClass }: { riskClass: HookAction['riskClass'] }) {
-  const config: Record<HookAction['riskClass'], { color: string; label: string }> = {
+  const config: Record<
+    HookAction['riskClass'],
+    { color: string; label: string }
+  > = {
     low: { color: 'text-semantic-success', label: 'Low Risk' },
     medium: { color: 'text-semantic-warning', label: 'Medium Risk' },
     high: { color: 'text-semantic-danger', label: 'High Risk' },
@@ -342,7 +385,10 @@ function RiskIndicator({ riskClass }: { riskClass: HookAction['riskClass'] }) {
   };
 
   return (
-    <span className={`text-xs ${config[riskClass].color}`} title={config[riskClass].label}>
+    <span
+      className={`text-xs ${config[riskClass].color}`}
+      title={config[riskClass].label}
+    >
       {riskClass === 'low' && '●'}
       {riskClass === 'medium' && '●●'}
       {riskClass === 'high' && '●●●'}
@@ -370,7 +416,9 @@ export function CrossPillarHooksPanel({
   defaultCollapsed,
 }: CrossPillarHooksPanelProps) {
   const [loadingActions, setLoadingActions] = useState<Set<string>>(new Set());
-  const [completedActions, setCompletedActions] = useState<Set<string>>(new Set());
+  const [completedActions, setCompletedActions] = useState<Set<string>>(
+    new Set()
+  );
   const [lastAction, setLastAction] = useState<ExplainableAction | null>(null);
   const [isCausalChainExpanded, setIsCausalChainExpanded] = useState(false);
 
@@ -384,7 +432,9 @@ export function CrossPillarHooksPanel({
   const isAutopilotMode = automationMode === 'autopilot';
   const isReadOnly = isAutopilotMode;
   // Default to collapsed in Autopilot, or use explicit defaultCollapsed prop
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed ?? isAutopilotMode);
+  const [isCollapsed, setIsCollapsed] = useState(
+    defaultCollapsed ?? isAutopilotMode
+  );
 
   const isBlocked = citeMindStatus === 'blocked';
 
@@ -403,7 +453,9 @@ export function CrossPillarHooksPanel({
       const modeOrder: AutomationMode[] = ['manual', 'copilot', 'autopilot'];
       const currentModeIndex = modeOrder.indexOf(automationMode);
       const ceilingIndex = modeOrder.indexOf(actionConfig.modeCeiling);
-      return currentModeIndex > ceilingIndex ? actionConfig.modeCeiling : automationMode;
+      return currentModeIndex > ceilingIndex
+        ? actionConfig.modeCeiling
+        : automationMode;
     },
     [automationMode]
   );
@@ -436,12 +488,14 @@ export function CrossPillarHooksPanel({
         }
 
         // If callback didn't return an action, create one
-        const explainableAction = result || createExplainableAction(
-          actionConfig,
-          assetId,
-          assetTitle,
-          effectiveMode
-        );
+        const explainableAction =
+          result ||
+          createExplainableAction(
+            actionConfig,
+            assetId,
+            assetTitle,
+            effectiveMode
+          );
 
         setLastAction(explainableAction);
         setCompletedActions((prev) => new Set(prev).add(actionId));
@@ -456,7 +510,17 @@ export function CrossPillarHooksPanel({
         });
       }
     },
-    [isBlocked, loadingActions, onGeneratePRHooks, onSendAEOBundle, onAddToCommandCenter, onActionComplete, assetId, assetTitle, getEffectiveMode]
+    [
+      isBlocked,
+      loadingActions,
+      onGeneratePRHooks,
+      onSendAEOBundle,
+      onAddToCommandCenter,
+      onActionComplete,
+      assetId,
+      assetTitle,
+      getEffectiveMode,
+    ]
   );
 
   return (
@@ -476,14 +540,20 @@ export function CrossPillarHooksPanel({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           )}
           <h3 className={label}>Cross-Pillar Hooks</h3>
           {/* P1.4: Compact summary count when collapsed in Autopilot */}
           {isAutopilotMode && isCollapsed && (
             <span className="text-xs text-white/40">
-              ({HOOK_ACTIONS.length} {HOOK_ACTIONS.length === 1 ? 'hook' : 'hooks'} available)
+              ({HOOK_ACTIONS.length}{' '}
+              {HOOK_ACTIONS.length === 1 ? 'hook' : 'hooks'} available)
             </span>
           )}
         </div>
@@ -492,8 +562,18 @@ export function CrossPillarHooksPanel({
           {/* P1.4: READ-ONLY badge in Autopilot mode */}
           {isReadOnly && (
             <span className="px-2 py-0.5 text-xs font-medium text-white/50 bg-white/5 border border-white/10 rounded-full flex items-center gap-1">
-              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <svg
+                className="w-2.5 h-2.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
               </svg>
               Read-Only
             </span>
@@ -516,149 +596,205 @@ export function CrossPillarHooksPanel({
               : 'Connect this content to other pillars for orchestrated marketing.'}
           </p>
 
-      {/* Actions */}
-      <div className="space-y-2">
-        {HOOK_ACTIONS.map((action) => {
-          const colors = PILLAR_COLORS[action.pillar];
-          const isLoading = loadingActions.has(action.id);
-          const isCompleted = completedActions.has(action.id);
-          const hasRequiredDerivative = hasDerivative(action.requiresDerivative);
-          // P1.4: Add isReadOnly to disable all actions in Autopilot mode
-          const isDisabled = isBlocked || isLoading || !hasRequiredDerivative || isReadOnly;
-          const effectiveMode = getEffectiveMode(action);
+          {/* Actions */}
+          <div className="space-y-2">
+            {HOOK_ACTIONS.map((action) => {
+              const colors = PILLAR_COLORS[action.pillar];
+              const isLoading = loadingActions.has(action.id);
+              const isCompleted = completedActions.has(action.id);
+              const hasRequiredDerivative = hasDerivative(
+                action.requiresDerivative
+              );
+              // P1.4: Add isReadOnly to disable all actions in Autopilot mode
+              const isDisabled =
+                isBlocked || isLoading || !hasRequiredDerivative || isReadOnly;
+              const effectiveMode = getEffectiveMode(action);
 
-          return (
-            <button
-              key={action.id}
-              onClick={() => handleAction(action.id)}
-              disabled={isDisabled}
-              className={`
+              return (
+                <button
+                  key={action.id}
+                  onClick={() => handleAction(action.id)}
+                  disabled={isDisabled}
+                  className={`
                 w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left
                 ${isCompleted ? 'bg-semantic-success/10 border-semantic-success/20' : `${colors.bg} ${colors.border}`}
                 ${isDisabled ? 'opacity-50 cursor-not-allowed' : colors.hover}
               `}
-            >
-              {/* Icon */}
-              <div className={`p-2 rounded-lg ${isCompleted ? 'bg-semantic-success/20 text-semantic-success' : `${colors.bg} ${colors.text}`}`}>
-                {isLoading ? (
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                ) : isCompleted ? (
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                ) : (
-                  action.icon
-                )}
-              </div>
+                >
+                  {/* Icon */}
+                  <div
+                    className={`p-2 rounded-lg ${isCompleted ? 'bg-semantic-success/20 text-semantic-success' : `${colors.bg} ${colors.text}`}`}
+                  >
+                    {isLoading ? (
+                      <svg
+                        className="w-4 h-4 animate-spin"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                      </svg>
+                    ) : isCompleted ? (
+                      <svg
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ) : (
+                      action.icon
+                    )}
+                  </div>
 
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className={`text-sm font-medium ${isCompleted ? 'text-semantic-success' : text.primary}`}>
-                    {isCompleted ? `${action.label} ✓` : action.label}
-                  </p>
-                  <RiskIndicator riskClass={action.riskClass} />
-                </div>
-                <p className={`text-xs ${text.hint} truncate`}>
-                  {isReadOnly
-                    ? 'Read-only in Autopilot'
-                    : !hasRequiredDerivative
-                    ? 'Generate derivative first'
-                    : action.description}
-                </p>
-              </div>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p
+                        className={`text-sm font-medium ${isCompleted ? 'text-semantic-success' : text.primary}`}
+                      >
+                        {isCompleted ? `${action.label} ✓` : action.label}
+                      </p>
+                      <RiskIndicator riskClass={action.riskClass} />
+                    </div>
+                    <p className={`text-xs ${text.hint} truncate`}>
+                      {isReadOnly
+                        ? 'Read-only in Autopilot'
+                        : !hasRequiredDerivative
+                          ? 'Generate derivative first'
+                          : action.description}
+                    </p>
+                  </div>
 
-              {/* Mode + Pillar badges */}
-              <div className="flex flex-col items-end gap-1 shrink-0">
-                <span className={`px-2 py-0.5 text-[11px] font-medium uppercase rounded-full ${colors.bg} ${colors.text}`}>
-                  {action.pillar === 'command' ? 'CMD' : action.pillar.toUpperCase()}
-                </span>
-                <ModeBadge mode={effectiveMode} compact />
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Last Action Explanation (per AUTOMATE Section 7.2) */}
-      {lastAction && !compact && (
-        <div className="mt-3 p-2 bg-slate-3 rounded-lg">
-          {/* Level 1: User Summary */}
-          <div className="flex items-center gap-2 mb-1">
-            <svg className="w-3 h-3 text-brand-cyan" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-            </svg>
-            <span className="text-xs font-medium text-white/70">Last Action</span>
+                  {/* Mode + Pillar badges */}
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <span
+                      className={`px-2 py-0.5 text-[11px] font-medium uppercase rounded-full ${colors.bg} ${colors.text}`}
+                    >
+                      {action.pillar === 'command'
+                        ? 'CMD'
+                        : action.pillar.toUpperCase()}
+                    </span>
+                    <ModeBadge mode={effectiveMode} compact />
+                  </div>
+                </button>
+              );
+            })}
           </div>
-          <p className="text-xs text-white/50">{lastAction.userSummary}</p>
-          <div className="flex items-center gap-3 mt-1">
-            <span className="text-xs text-white/30">
-              Confidence: {(lastAction.confidence * 100).toFixed(0)}%
-            </span>
-            <span className="text-xs text-white/30">
-              Risk: {lastAction.riskClass}
-            </span>
-          </div>
 
-          {/* Level 3: Causal Chain (collapsible) per AUTOMATE Section 7.2 */}
-          {lastAction.causalChain && lastAction.causalChain.length > 0 && (
-            <div className="mt-2 pt-2 border-t border-slate-4">
-              <button
-                onClick={() => setIsCausalChainExpanded(!isCausalChainExpanded)}
-                className="flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
-              >
+          {/* Last Action Explanation (per AUTOMATE Section 7.2) */}
+          {lastAction && !compact && (
+            <div className="mt-3 p-2 bg-slate-3 rounded-lg">
+              {/* Level 1: User Summary */}
+              <div className="flex items-center gap-2 mb-1">
                 <svg
-                  className={`w-3 h-3 transition-transform ${isCausalChainExpanded ? 'rotate-90' : ''}`}
+                  className="w-3 h-3 text-brand-cyan"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
-                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
                 </svg>
-                Causal Chain ({lastAction.causalChain.length} steps)
-              </button>
+                <span className="text-xs font-medium text-white/70">
+                  Last Action
+                </span>
+              </div>
+              <p className="text-xs text-white/50">{lastAction.userSummary}</p>
+              <div className="flex items-center gap-3 mt-1">
+                <span className="text-xs text-white/30">
+                  Confidence: {(lastAction.confidence * 100).toFixed(0)}%
+                </span>
+                <span className="text-xs text-white/30">
+                  Risk: {lastAction.riskClass}
+                </span>
+              </div>
 
-              {isCausalChainExpanded && (
-                <div className="mt-2 pl-2 border-l border-slate-4 space-y-2">
-                  {lastAction.causalChain.map((step, index) => (
-                    <div key={index} className="relative">
-                      {/* Timeline dot */}
-                      <div
-                        className={`absolute -left-[5px] top-1 w-2 h-2 rounded-full ${
-                          step.actor === 'user' ? 'bg-brand-iris' : 'bg-brand-cyan'
-                        }`}
+              {/* Level 3: Causal Chain (collapsible) per AUTOMATE Section 7.2 */}
+              {lastAction.causalChain && lastAction.causalChain.length > 0 && (
+                <div className="mt-2 pt-2 border-t border-slate-4">
+                  <button
+                    onClick={() =>
+                      setIsCausalChainExpanded(!isCausalChainExpanded)
+                    }
+                    className="flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
+                  >
+                    <svg
+                      className={`w-3 h-3 transition-transform ${isCausalChainExpanded ? 'rotate-90' : ''}`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clipRule="evenodd"
                       />
-                      <div className="pl-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-white/60">{step.step}</span>
-                          <span className="text-xs text-white/30">
-                            {step.actor === 'user' ? '👤' : '🤖'}
-                          </span>
+                    </svg>
+                    Causal Chain ({lastAction.causalChain.length} steps)
+                  </button>
+
+                  {isCausalChainExpanded && (
+                    <div className="mt-2 pl-2 border-l border-slate-4 space-y-2">
+                      {lastAction.causalChain.map((step, index) => (
+                        <div key={index} className="relative">
+                          {/* Timeline dot */}
+                          <div
+                            className={`absolute -left-[5px] top-1 w-2 h-2 rounded-full ${
+                              step.actor === 'user'
+                                ? 'bg-brand-iris'
+                                : 'bg-brand-cyan'
+                            }`}
+                          />
+                          <div className="pl-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-medium text-white/60">
+                                {step.step}
+                              </span>
+                              <span className="text-xs text-white/30">
+                                {step.actor === 'user' ? '👤' : '🤖'}
+                              </span>
+                            </div>
+                            {step.detail && (
+                              <p className="text-xs text-white/40">
+                                {step.detail}
+                              </p>
+                            )}
+                            <p className="text-xs text-white/20">
+                              {new Date(step.timestamp).toLocaleString()}
+                            </p>
+                          </div>
                         </div>
-                        {step.detail && (
-                          <p className="text-xs text-white/40">{step.detail}</p>
-                        )}
-                        <p className="text-xs text-white/20">
-                          {new Date(step.timestamp).toLocaleString()}
-                        </p>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
             </div>
           )}
-        </div>
-      )}
 
-      {/* Blocked warning */}
-      {isBlocked && (
-        <p className={`text-xs text-semantic-danger text-center mt-3`}>
-          Resolve CiteMind issues to enable cross-pillar hooks
-        </p>
-      )}
+          {/* Blocked warning */}
+          {isBlocked && (
+            <p className={`text-xs text-semantic-danger text-center mt-3`}>
+              Resolve CiteMind issues to enable cross-pillar hooks
+            </p>
+          )}
         </>
       )}
     </div>

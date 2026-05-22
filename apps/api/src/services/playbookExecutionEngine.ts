@@ -40,7 +40,9 @@ export class PlaybookExecutionEngine {
     this.playbookService = new PlaybookService(supabase);
     // this.contextAssembler = new ContextAssembler(supabase, { debugMode: false }); // S10
     this.memoryStore = new MemoryStore(supabase, { debugMode: false }); // S10
-    this.personalityStore = new PersonalityStore(supabase, { debugMode: false }); // S11
+    this.personalityStore = new PersonalityStore(supabase, {
+      debugMode: false,
+    }); // S11
     this.llmRouter = llmRouter || null; // S16
   }
 
@@ -57,7 +59,10 @@ export class PlaybookExecutionEngine {
     options?: { isSimulation?: boolean }
   ): Promise<PlaybookRunWithStepsDTO> {
     // Load playbook definition
-    const definition = await this.playbookService.getPlaybookById(orgId, playbookId);
+    const definition = await this.playbookService.getPlaybookById(
+      orgId,
+      playbookId
+    );
     if (!definition) {
       throw new Error('Playbook not found');
     }
@@ -88,7 +93,10 @@ export class PlaybookExecutionEngine {
    * Execute a playbook run
    * Main execution loop - runs steps in sequence
    */
-  async runPlaybook(orgId: string, runId: string): Promise<PlaybookRunWithStepsDTO> {
+  async runPlaybook(
+    orgId: string,
+    runId: string
+  ): Promise<PlaybookRunWithStepsDTO> {
     // Load run
     const { data: run, error: runError } = await this.supabase
       .from('playbook_runs')
@@ -102,17 +110,27 @@ export class PlaybookExecutionEngine {
     }
 
     // Load playbook definition
-    const definition = await this.playbookService.getPlaybookById(orgId, run.playbook_id);
+    const definition = await this.playbookService.getPlaybookById(
+      orgId,
+      run.playbook_id
+    );
     if (!definition) {
       throw new Error('Playbook not found');
     }
 
     // Update run to RUNNING
-    await this.updateRunStatus(runId, 'RUNNING', { started_at: new Date().toISOString() });
+    await this.updateRunStatus(runId, 'RUNNING', {
+      started_at: new Date().toISOString(),
+    });
 
     try {
       // Execute steps
-      const stepRuns = await this.executeSteps(orgId, runId, definition, run.input);
+      const stepRuns = await this.executeSteps(
+        orgId,
+        runId,
+        definition,
+        run.input
+      );
 
       // Mark run as SUCCEEDED
       await this.updateRunStatus(runId, 'SUCCEEDED', {
@@ -193,7 +211,10 @@ export class PlaybookExecutionEngine {
       stepRuns.push(stepRun);
 
       // S9: Persist collaboration context to step run
-      await this.persistCollaborationContext(stepRun.id, coordinator.getCollaborationContext());
+      await this.persistCollaborationContext(
+        stepRun.id,
+        coordinator.getCollaborationContext()
+      );
 
       // Check step status
       if (stepRun.status === 'FAILED') {
@@ -203,7 +224,9 @@ export class PlaybookExecutionEngine {
             `Step "${currentStep.key}" requires human intervention: ${JSON.stringify(stepRun.error)}`
           );
         }
-        throw new Error(`Step "${currentStep.key}" failed: ${JSON.stringify(stepRun.error)}`);
+        throw new Error(
+          `Step "${currentStep.key}" failed: ${JSON.stringify(stepRun.error)}`
+        );
       }
 
       if (stepRun.status === 'SKIPPED') {
@@ -216,14 +239,19 @@ export class PlaybookExecutionEngine {
 
       // S9: Update shared state from step output if provided
       if (stepRun.output && typeof stepRun.output === 'object') {
-        const output = stepRun.output as { sharedState?: Record<string, unknown> };
+        const output = stepRun.output as {
+          sharedState?: Record<string, unknown>;
+        };
         if (output.sharedState) {
           coordinator.updateSharedState(output.sharedState);
         }
       }
 
       // S9: Determine next step using coordinator (handles delegation/escalation)
-      const nextStepKey = coordinator.determineNextStep(currentStep, stepRun.output);
+      const nextStepKey = coordinator.determineNextStep(
+        currentStep,
+        stepRun.output
+      );
 
       if (!nextStepKey) {
         // No more steps
@@ -308,17 +336,26 @@ export class PlaybookExecutionEngine {
 
       // S10: Save episodic trace after successful execution
       const embedding = await this.generateEmbedding(output);
-      await this.memoryStore.saveEpisodicTrace(orgId, runId, step.key, {
-        input,
-        output,
-        stepType: step.type,
-        timestamp: new Date().toISOString(),
-      }, embedding);
+      await this.memoryStore.saveEpisodicTrace(
+        orgId,
+        runId,
+        step.key,
+        {
+          input,
+          output,
+          stepType: step.type,
+          timestamp: new Date().toISOString(),
+        },
+        embedding
+      );
 
       // S10: Save semantic memory if output indicates it should be captured
       if (output && typeof output === 'object') {
         const outputData = output as any;
-        if (outputData.memoryWorthy === true || (step.config as any)?.captureMemory === true) {
+        if (
+          outputData.memoryWorthy === true ||
+          (step.config as any)?.captureMemory === true
+        ) {
           const importance = (outputData.importance as number) || 0.5;
           await this.memoryStore.saveSemanticMemory(
             orgId,
@@ -369,7 +406,9 @@ export class PlaybookExecutionEngine {
   /**
    * Execute step based on type
    */
-  private async executeStepByType(context: StepExecutionContext): Promise<unknown> {
+  private async executeStepByType(
+    context: StepExecutionContext
+  ): Promise<unknown> {
     const { step } = context;
 
     switch (step.type) {
@@ -391,7 +430,9 @@ export class PlaybookExecutionEngine {
    * S11: Added personality loading
    * S16: Added LLM router integration
    */
-  private async executeAgentStep(context: StepExecutionContext): Promise<unknown> {
+  private async executeAgentStep(
+    context: StepExecutionContext
+  ): Promise<unknown> {
     const { step, input, orgId } = context;
     const config = step.config as {
       agentId: string;
@@ -403,18 +444,26 @@ export class PlaybookExecutionEngine {
     };
 
     // S11: Load personality for this agent
-    const personality = await this.personalityStore.getPersonalityForAgent(orgId, config.agentId);
+    const personality = await this.personalityStore.getPersonalityForAgent(
+      orgId,
+      config.agentId
+    );
 
     // S16: Try to use LLM router if available
     if (this.llmRouter) {
-      const llmOutput = await this.executeAgentStepWithLLM(context, personality);
+      const llmOutput = await this.executeAgentStepWithLLM(
+        context,
+        personality
+      );
       if (llmOutput) {
         return llmOutput;
       }
     }
 
     // Fallback to stub response
-    logger.debug('Using stub agent response as fallback', { agentId: config.agentId });
+    logger.debug('Using stub agent response as fallback', {
+      agentId: config.agentId,
+    });
 
     const prompt = config.prompt || JSON.stringify(input);
     const model = config.model || 'gpt-4';
@@ -429,13 +478,15 @@ export class PlaybookExecutionEngine {
       metadata: {
         executedAt: new Date().toISOString(),
         stubbed: true,
-        personality: personality ? {
-          id: personality.id,
-          slug: personality.slug,
-          name: personality.name,
-          tone: personality.configuration.tone,
-          style: personality.configuration.style,
-        } : null,
+        personality: personality
+          ? {
+              id: personality.id,
+              slug: personality.slug,
+              name: personality.name,
+              tone: personality.configuration.tone,
+              style: personality.configuration.style,
+            }
+          : null,
       },
     };
 
@@ -491,13 +542,15 @@ export class PlaybookExecutionEngine {
         metadata: {
           executedAt: new Date().toISOString(),
           stubbed: false,
-          personality: personality ? {
-            id: personality.id,
-            slug: personality.slug,
-            name: personality.name,
-            tone: personality.configuration.tone,
-            style: personality.configuration.style,
-          } : null,
+          personality: personality
+            ? {
+                id: personality.id,
+                slug: personality.slug,
+                name: personality.name,
+                tone: personality.configuration.tone,
+                style: personality.configuration.style,
+              }
+            : null,
           usage: response.usage,
         },
       };
@@ -514,7 +567,8 @@ export class PlaybookExecutionEngine {
    * Build system prompt for agent step (S16)
    */
   private buildAgentSystemPrompt(config: any, personality: any): string {
-    const baseSystem = config.systemMessage || 'You are a helpful AI assistant.';
+    const baseSystem =
+      config.systemMessage || 'You are a helpful AI assistant.';
 
     if (!personality) {
       return baseSystem;
@@ -546,7 +600,9 @@ export class PlaybookExecutionEngine {
   /**
    * Execute DATA step (transformations)
    */
-  private async executeDataStep(context: StepExecutionContext): Promise<unknown> {
+  private async executeDataStep(
+    context: StepExecutionContext
+  ): Promise<unknown> {
     const { step, input, previousOutputs } = context;
     const config = step.config as {
       operation: 'pluck' | 'map' | 'merge' | 'filter' | 'transform';
@@ -556,12 +612,16 @@ export class PlaybookExecutionEngine {
     };
 
     // Get source data
-    const sourceData = config.sourceKey ? previousOutputs[config.sourceKey] : input;
+    const sourceData = config.sourceKey
+      ? previousOutputs[config.sourceKey]
+      : input;
 
     switch (config.operation) {
       case 'pluck':
         if (!config.fields || config.fields.length === 0) {
-          throw new Error('DATA step with operation "pluck" requires "fields" in config');
+          throw new Error(
+            'DATA step with operation "pluck" requires "fields" in config'
+          );
         }
         if (typeof sourceData === 'object' && sourceData !== null) {
           const result: Record<string, unknown> = {};
@@ -574,7 +634,9 @@ export class PlaybookExecutionEngine {
 
       case 'map':
         if (!config.mapping) {
-          throw new Error('DATA step with operation "map" requires "mapping" in config');
+          throw new Error(
+            'DATA step with operation "map" requires "mapping" in config'
+          );
         }
         // Simple mapping: replace keys
         if (typeof sourceData === 'object' && sourceData !== null) {
@@ -613,12 +675,20 @@ export class PlaybookExecutionEngine {
   /**
    * Execute BRANCH step (conditional logic)
    */
-  private async executeBranchStep(context: StepExecutionContext): Promise<unknown> {
+  private async executeBranchStep(
+    context: StepExecutionContext
+  ): Promise<unknown> {
     const { step, previousOutputs } = context;
     const config = step.config as {
       sourceKey: string;
       conditions: Array<{
-        operator: 'equals' | 'notEquals' | 'contains' | 'greaterThan' | 'lessThan' | 'exists';
+        operator:
+          | 'equals'
+          | 'notEquals'
+          | 'contains'
+          | 'greaterThan'
+          | 'lessThan'
+          | 'exists';
         value?: unknown;
         nextStepKey: string;
       }>;
@@ -679,7 +749,9 @@ export class PlaybookExecutionEngine {
   /**
    * Execute API step (external API call)
    */
-  private async executeApiStep(context: StepExecutionContext): Promise<unknown> {
+  private async executeApiStep(
+    context: StepExecutionContext
+  ): Promise<unknown> {
     const { step, input } = context;
     const config = step.config as {
       method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -723,7 +795,10 @@ export class PlaybookExecutionEngine {
   /**
    * Get run with all step runs
    */
-  private async getRunWithSteps(orgId: string, runId: string): Promise<PlaybookRunWithStepsDTO> {
+  private async getRunWithSteps(
+    orgId: string,
+    runId: string
+  ): Promise<PlaybookRunWithStepsDTO> {
     const { data: run, error: runError } = await this.supabase
       .from('playbook_runs')
       .select('*')

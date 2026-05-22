@@ -41,7 +41,10 @@ import { RiskRadarService } from '../../services/riskRadarService';
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: SupabaseClient
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -55,11 +58,16 @@ async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<s
 /**
  * Helper to convert null values to undefined for type compatibility
  */
-function stripNulls<T extends Record<string, unknown>>(obj: T): { [K in keyof T]: Exclude<T[K], null> } {
+function stripNulls<T extends Record<string, unknown>>(
+  obj: T
+): { [K in keyof T]: Exclude<T[K], null> } {
   const result = {} as { [K in keyof T]: Exclude<T[K], null> };
   for (const key in obj) {
     const value = obj[key];
-    result[key] = (value === null ? undefined : value) as Exclude<T[typeof key], null>;
+    result[key] = (value === null ? undefined : value) as Exclude<
+      T[typeof key],
+      null
+    >;
   }
   return result;
 }
@@ -83,7 +91,10 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
   }
 
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const riskRadarService = new RiskRadarService(supabase);
 
   // ========================================
@@ -109,15 +120,24 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = riskRadarDashboardQuerySchema.safeParse(request.query);
+        const parseResult = riskRadarDashboardQuerySchema.safeParse(
+          request.query
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid query parameters',
+              details: parseResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.getDashboard(orgId, parseResult.data);
+        const result = await riskRadarService.getDashboard(
+          orgId,
+          parseResult.data
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -153,15 +173,24 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = riskRadarSnapshotsQuerySchema.safeParse(request.query);
+        const parseResult = riskRadarSnapshotsQuerySchema.safeParse(
+          request.query
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid query parameters',
+              details: parseResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.listSnapshots(orgId, parseResult.data);
+        const result = await riskRadarService.listSnapshots(
+          orgId,
+          parseResult.data
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -193,15 +222,25 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = createRiskRadarSnapshotInputSchema.safeParse(request.body);
+        const parseResult = createRiskRadarSnapshotInputSchema.safeParse(
+          request.body
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: parseResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.createSnapshot(orgId, stripNulls(parseResult.data), userId);
+        const result = await riskRadarService.createSnapshot(
+          orgId,
+          stripNulls(parseResult.data),
+          userId
+        );
         return reply.code(201).send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -237,7 +276,10 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         if (!result) {
           return reply.code(404).send({
             success: false,
-            error: { code: 'SNAPSHOT_NOT_FOUND', message: 'No active snapshot found' },
+            error: {
+              code: 'SNAPSHOT_NOT_FOUND',
+              message: 'No active snapshot found',
+            },
           });
         }
 
@@ -272,19 +314,31 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.getSnapshot(orgId, paramResult.data.id);
+        const result = await riskRadarService.getSnapshot(
+          orgId,
+          paramResult.data.id
+        );
         if (!result) {
           return reply.code(404).send({
             success: false,
-            error: { code: 'SNAPSHOT_NOT_FOUND', message: 'Snapshot not found' },
+            error: {
+              code: 'SNAPSHOT_NOT_FOUND',
+              message: 'Snapshot not found',
+            },
           });
         }
 
@@ -319,19 +373,31 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.getSnapshotDetail(orgId, paramResult.data.id);
+        const result = await riskRadarService.getSnapshotDetail(
+          orgId,
+          paramResult.data.id
+        );
         if (!result) {
           return reply.code(404).send({
             success: false,
-            error: { code: 'SNAPSHOT_NOT_FOUND', message: 'Snapshot not found' },
+            error: {
+              code: 'SNAPSHOT_NOT_FOUND',
+              message: 'Snapshot not found',
+            },
           });
         }
 
@@ -366,19 +432,31 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const bodyResult = updateRiskRadarSnapshotInputSchema.safeParse(request.body);
+        const bodyResult = updateRiskRadarSnapshotInputSchema.safeParse(
+          request.body
+        );
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: bodyResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: bodyResult.error.errors,
+            },
           });
         }
 
@@ -419,15 +497,25 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        await riskRadarService.archiveSnapshot(orgId, paramResult.data.id, userId);
+        await riskRadarService.archiveSnapshot(
+          orgId,
+          paramResult.data.id,
+          userId
+        );
         return reply.send({ success: true, message: 'Snapshot archived' });
       } catch (err) {
         const error = err as Error;
@@ -463,23 +551,39 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const queryResult = riskRadarIndicatorsQuerySchema.safeParse(request.query);
+        const queryResult = riskRadarIndicatorsQuerySchema.safeParse(
+          request.query
+        );
         if (!queryResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: queryResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid query parameters',
+              details: queryResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.listIndicators(orgId, paramResult.data.id, queryResult.data);
+        const result = await riskRadarService.listIndicators(
+          orgId,
+          paramResult.data.id,
+          queryResult.data
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -511,15 +615,25 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.rebuildIndicators(orgId, paramResult.data.id, userId);
+        const result = await riskRadarService.rebuildIndicators(
+          orgId,
+          paramResult.data.id,
+          userId
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -555,23 +669,39 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const queryResult = riskRadarForecastsQuerySchema.safeParse(request.query);
+        const queryResult = riskRadarForecastsQuerySchema.safeParse(
+          request.query
+        );
         if (!queryResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: queryResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid query parameters',
+              details: queryResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.listForecasts(orgId, paramResult.data.id, queryResult.data);
+        const result = await riskRadarService.listForecasts(
+          orgId,
+          paramResult.data.id,
+          queryResult.data
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -603,19 +733,31 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const bodyResult = createRiskRadarForecastInputSchema.safeParse(request.body);
+        const bodyResult = createRiskRadarForecastInputSchema.safeParse(
+          request.body
+        );
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: bodyResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: bodyResult.error.errors,
+            },
           });
         }
 
@@ -656,19 +798,31 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarForecastIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarForecastIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid forecast ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid forecast ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.getForecast(orgId, paramResult.data.forecastId);
+        const result = await riskRadarService.getForecast(
+          orgId,
+          paramResult.data.forecastId
+        );
         if (!result) {
           return reply.code(404).send({
             success: false,
-            error: { code: 'FORECAST_NOT_FOUND', message: 'Forecast not found' },
+            error: {
+              code: 'FORECAST_NOT_FOUND',
+              message: 'Forecast not found',
+            },
           });
         }
 
@@ -703,19 +857,31 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarForecastIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarForecastIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid forecast ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid forecast ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const bodyResult = regenerateRiskRadarForecastInputSchema.safeParse(request.body || {});
+        const bodyResult = regenerateRiskRadarForecastInputSchema.safeParse(
+          request.body || {}
+        );
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: bodyResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: bodyResult.error.errors,
+            },
           });
         }
 
@@ -760,23 +926,39 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const queryResult = riskRadarDriversQuerySchema.safeParse(request.query);
+        const queryResult = riskRadarDriversQuerySchema.safeParse(
+          request.query
+        );
         if (!queryResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: queryResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid query parameters',
+              details: queryResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.listDrivers(orgId, paramResult.data.id, queryResult.data);
+        const result = await riskRadarService.listDrivers(
+          orgId,
+          paramResult.data.id,
+          queryResult.data
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -808,16 +990,28 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.identifyDriversFromIndicators(orgId, paramResult.data.id);
-        return reply.send({ success: true, data: { drivers: result, count: result.length } });
+        const result = await riskRadarService.identifyDriversFromIndicators(
+          orgId,
+          paramResult.data.id
+        );
+        return reply.send({
+          success: true,
+          data: { drivers: result, count: result.length },
+        });
       } catch (err) {
         const error = err as Error;
         console.error('[RiskRadar] Failed to identify drivers', { error });
@@ -852,11 +1046,17 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
@@ -864,11 +1064,19 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         if (!queryResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: queryResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid query parameters',
+              details: queryResult.error.errors,
+            },
           });
         }
 
-        const result = await riskRadarService.listNotes(orgId, paramResult.data.id, queryResult.data);
+        const result = await riskRadarService.listNotes(
+          orgId,
+          paramResult.data.id,
+          queryResult.data
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -900,19 +1108,31 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarSnapshotIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid snapshot ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid snapshot ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const bodyResult = createRiskRadarNoteInputSchema.safeParse(request.body);
+        const bodyResult = createRiskRadarNoteInputSchema.safeParse(
+          request.body
+        );
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: bodyResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: bodyResult.error.errors,
+            },
           });
         }
 
@@ -953,19 +1173,31 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarNoteIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarNoteIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid note ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid note ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 
-        const bodyResult = updateRiskRadarNoteInputSchema.safeParse(request.body);
+        const bodyResult = updateRiskRadarNoteInputSchema.safeParse(
+          request.body
+        );
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: bodyResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: bodyResult.error.errors,
+            },
           });
         }
 
@@ -1006,11 +1238,17 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramResult = riskRadarNoteIdParamSchema.safeParse(request.params);
+        const paramResult = riskRadarNoteIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid note ID', details: paramResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid note ID',
+              details: paramResult.error.errors,
+            },
           });
         }
 

@@ -47,9 +47,14 @@ interface GraphQueryBuilderProps {
   onSelectNode?: (nodeId: string) => void;
 }
 
-export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: GraphQueryBuilderProps) {
+export function GraphQueryBuilder({
+  onResults,
+  onSelectNode: _onSelectNode,
+}: GraphQueryBuilderProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [queryType, setQueryType] = useState<'filter' | 'traverse' | 'semantic' | 'path'>('filter');
+  const [queryType, setQueryType] = useState<
+    'filter' | 'traverse' | 'semantic' | 'path'
+  >('filter');
 
   // Filter query state
   const [selectedNodeTypes, setSelectedNodeTypes] = useState<NodeType[]>([]);
@@ -58,7 +63,9 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
 
   // Traversal query state
   const [startNodeId, setStartNodeId] = useState('');
-  const [traversalDirection, setTraversalDirection] = useState<'outgoing' | 'incoming' | 'both'>('both');
+  const [traversalDirection, setTraversalDirection] = useState<
+    'outgoing' | 'incoming' | 'both'
+  >('both');
   const [maxDepth, setMaxDepth] = useState(3);
 
   // Semantic query state
@@ -83,8 +90,10 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
       switch (queryType) {
         case 'filter': {
           const result = await queryGraph({
-            nodeTypes: selectedNodeTypes.length > 0 ? selectedNodeTypes : undefined,
-            edgeTypes: selectedEdgeTypes.length > 0 ? selectedEdgeTypes : undefined,
+            nodeTypes:
+              selectedNodeTypes.length > 0 ? selectedNodeTypes : undefined,
+            edgeTypes:
+              selectedEdgeTypes.length > 0 ? selectedEdgeTypes : undefined,
             semanticQuery: searchText || undefined,
             limit: 100,
           });
@@ -101,8 +110,10 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
             startNodeId,
             direction: traversalDirection,
             maxDepth,
-            nodeTypes: selectedNodeTypes.length > 0 ? selectedNodeTypes : undefined,
-            edgeTypes: selectedEdgeTypes.length > 0 ? selectedEdgeTypes : undefined,
+            nodeTypes:
+              selectedNodeTypes.length > 0 ? selectedNodeTypes : undefined,
+            edgeTypes:
+              selectedEdgeTypes.length > 0 ? selectedEdgeTypes : undefined,
             limit: 100,
           });
           const queryResult: GraphQueryResponse = {
@@ -123,7 +134,8 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
           }
           const searchResults = await semanticSearch({
             query: semanticQuery,
-            nodeTypes: selectedNodeTypes.length > 0 ? selectedNodeTypes : undefined,
+            nodeTypes:
+              selectedNodeTypes.length > 0 ? selectedNodeTypes : undefined,
             threshold: semanticThreshold,
             limit: 50,
           });
@@ -187,7 +199,10 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Tabs value={queryType} onValueChange={(v) => setQueryType(v as typeof queryType)}>
+        <Tabs
+          value={queryType}
+          onValueChange={(v) => setQueryType(v as typeof queryType)}
+        >
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="filter" className="flex items-center gap-1">
               <Search className="h-3 w-3" />
@@ -231,7 +246,12 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
             </div>
             <div>
               <Label className="text-sm">Direction</Label>
-              <Select value={traversalDirection} onValueChange={(v) => setTraversalDirection(v as typeof traversalDirection)}>
+              <Select
+                value={traversalDirection}
+                onValueChange={(v) =>
+                  setTraversalDirection(v as typeof traversalDirection)
+                }
+              >
                 <SelectTrigger className="mt-1">
                   <SelectValue />
                 </SelectTrigger>
@@ -270,7 +290,9 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label className="text-sm">Similarity Threshold</Label>
-                <span className="text-sm font-medium">{(semanticThreshold * 100).toFixed(0)}%</span>
+                <span className="text-sm font-medium">
+                  {(semanticThreshold * 100).toFixed(0)}%
+                </span>
               </div>
               <Slider
                 value={[semanticThreshold * 100]}
@@ -321,7 +343,11 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(NODE_TYPE_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value} disabled={selectedNodeTypes.includes(value as NodeType)}>
+                  <SelectItem
+                    key={value}
+                    value={value}
+                    disabled={selectedNodeTypes.includes(value as NodeType)}
+                  >
                     {label}
                   </SelectItem>
                 ))}
@@ -330,7 +356,12 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
             {selectedNodeTypes.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {selectedNodeTypes.map((type) => (
-                  <Badge key={type} variant="secondary" className="cursor-pointer" onClick={() => handleRemoveNodeType(type)}>
+                  <Badge
+                    key={type}
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={() => handleRemoveNodeType(type)}
+                  >
                     {NODE_TYPE_LABELS[type]}
                     <X className="h-3 w-3 ml-1" />
                   </Badge>
@@ -354,7 +385,11 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(EDGE_TYPE_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value} disabled={selectedEdgeTypes.includes(value as EdgeType)}>
+                  <SelectItem
+                    key={value}
+                    value={value}
+                    disabled={selectedEdgeTypes.includes(value as EdgeType)}
+                  >
                     {label}
                   </SelectItem>
                 ))}
@@ -363,7 +398,12 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
             {selectedEdgeTypes.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {selectedEdgeTypes.map((type) => (
-                  <Badge key={type} variant="secondary" className="cursor-pointer" onClick={() => handleRemoveEdgeType(type)}>
+                  <Badge
+                    key={type}
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={() => handleRemoveEdgeType(type)}
+                  >
                     {EDGE_TYPE_LABELS[type]}
                     <X className="h-3 w-3 ml-1" />
                   </Badge>
@@ -374,7 +414,11 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
         </div>
 
         {/* Execute Button */}
-        <Button className="w-full" onClick={handleExecuteQuery} disabled={isLoading}>
+        <Button
+          className="w-full"
+          onClick={handleExecuteQuery}
+          disabled={isLoading}
+        >
           {isLoading ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
           ) : (
@@ -393,7 +437,9 @@ export function GraphQueryBuilder({ onResults, onSelectNode: _onSelectNode }: Gr
             {results.paths && results.paths.length > 0 && (
               <div className="flex items-center justify-between text-sm mt-1">
                 <span className="text-white/50">Paths</span>
-                <span className="font-medium">{results.paths.length} paths</span>
+                <span className="font-medium">
+                  {results.paths.length} paths
+                </span>
               </div>
             )}
             {pathExplanation && (

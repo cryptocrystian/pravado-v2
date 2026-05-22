@@ -84,26 +84,29 @@ export function QueueList({
   const displayLabel = headerLabel || headerConfig.label;
 
   // Keyboard navigation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (items.length === 0) return;
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (items.length === 0) return;
 
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const nextIndex = Math.min(focusedIndex + 1, items.length - 1);
-      setFocusedIndex(nextIndex);
-      onSelect(items[nextIndex].id);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      const prevIndex = Math.max(focusedIndex - 1, 0);
-      setFocusedIndex(prevIndex);
-      onSelect(items[prevIndex].id);
-    }
-  }, [focusedIndex, items, onSelect]);
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const nextIndex = Math.min(focusedIndex + 1, items.length - 1);
+        setFocusedIndex(nextIndex);
+        onSelect(items[nextIndex].id);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prevIndex = Math.max(focusedIndex - 1, 0);
+        setFocusedIndex(prevIndex);
+        onSelect(items[prevIndex].id);
+      }
+    },
+    [focusedIndex, items, onSelect]
+  );
 
   // Update focused index when selection changes externally
   useEffect(() => {
     if (selectedId) {
-      const index = items.findIndex(item => item.id === selectedId);
+      const index = items.findIndex((item) => item.id === selectedId);
       if (index !== -1) {
         setFocusedIndex(index);
       }
@@ -124,8 +127,18 @@ export function QueueList({
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center">
             <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-semantic-success/10 flex items-center justify-center">
-              <svg className="w-6 h-6 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-6 h-6 text-semantic-success"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <p className="text-sm font-medium text-white/70">
@@ -134,8 +147,7 @@ export function QueueList({
             <p className="text-xs text-white/40 mt-1">
               {mode === 'autopilot' && routineCount > 0
                 ? `${routineCount} routine items auto-handled`
-                : 'No pending actions'
-              }
+                : 'No pending actions'}
             </p>
           </div>
         </div>
@@ -144,10 +156,7 @@ export function QueueList({
   }
 
   return (
-    <div
-      className="flex flex-col h-full"
-      onKeyDown={handleKeyDown}
-    >
+    <div className="flex flex-col h-full" onKeyDown={handleKeyDown}>
       {/* Header */}
       {showHeader && (
         <div className="px-3 py-2.5 border-b border-slate-4 shrink-0">
@@ -168,9 +177,7 @@ export function QueueList({
               </span>
             )}
             {mode === 'copilot' && (
-              <span className="text-xs text-brand-cyan">
-                AI-ranked
-              </span>
+              <span className="text-xs text-brand-cyan">AI-ranked</span>
             )}
           </div>
           <p className="text-xs text-white/30 mt-0.5">
@@ -204,7 +211,11 @@ export function QueueList({
               isSelected={selectedId === item.id}
               isPinned={pinnedId === item.id}
               onClick={() => onSelect(item.id)}
-              onPinToggle={mode === 'manual' && onPinToggle ? () => onPinToggle(item.id) : undefined}
+              onPinToggle={
+                mode === 'manual' && onPinToggle
+                  ? () => onPinToggle(item.id)
+                  : undefined
+              }
               mode={mode}
               index={index}
             />
@@ -216,9 +227,7 @@ export function QueueList({
       {mode === 'manual' && items.length > 1 && (
         <div className="px-3 py-2 border-t border-slate-4 shrink-0">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-white/30">
-              ↑↓ navigate · Enter select
-            </span>
+            <span className="text-white/30">↑↓ navigate · Enter select</span>
             <button className="text-white/40 hover:text-brand-iris transition-colors">
               Re-rank →
             </button>

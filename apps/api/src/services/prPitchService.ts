@@ -101,14 +101,19 @@ export class PRPitchService {
     journalistId: string
   ): Promise<PRPitchContext> {
     // Gather context from multiple sources in parallel
-    const [pressReleaseData, journalistData, orgData, personalityData, interactionsData] =
-      await Promise.all([
-        pressReleaseId ? this.fetchPressRelease(orgId, pressReleaseId) : null,
-        this.fetchJournalistProfile(orgId, journalistId),
-        this.fetchOrganizationContext(orgId),
-        this.fetchPersonality(orgId),
-        this.fetchRecentInteractions(orgId, journalistId),
-      ]);
+    const [
+      pressReleaseData,
+      journalistData,
+      orgData,
+      personalityData,
+      interactionsData,
+    ] = await Promise.all([
+      pressReleaseId ? this.fetchPressRelease(orgId, pressReleaseId) : null,
+      this.fetchJournalistProfile(orgId, journalistId),
+      this.fetchOrganizationContext(orgId),
+      this.fetchPersonality(orgId),
+      this.fetchRecentInteractions(orgId, journalistId),
+    ]);
 
     return {
       pressRelease: pressReleaseData,
@@ -188,7 +193,10 @@ export class PRPitchService {
     // Handle both single object and array from Supabase join
     const outletData = data.media_outlets;
     const outlet = Array.isArray(outletData) ? outletData[0] : outletData;
-    const typedOutlet = outlet as { name: string; tier: string } | null | undefined;
+    const typedOutlet = outlet as
+      | { name: string; tier: string }
+      | null
+      | undefined;
 
     return {
       id: data.id,
@@ -219,7 +227,10 @@ export class PRPitchService {
       return { id: orgId, name: 'Unknown', industry: null, description: null };
     }
 
-    const metadata = (data.metadata || {}) as { industry?: string; description?: string };
+    const metadata = (data.metadata || {}) as {
+      industry?: string;
+      description?: string;
+    };
 
     return {
       id: data.id,
@@ -280,8 +291,13 @@ export class PRPitchService {
       return data
         .filter((event) => {
           const contactData = event.pr_pitch_contacts;
-          const contact = Array.isArray(contactData) ? contactData[0] : contactData;
-          const typedContact = contact as { journalist_id: string } | null | undefined;
+          const contact = Array.isArray(contactData)
+            ? contactData[0]
+            : contactData;
+          const typedContact = contact as
+            | { journalist_id: string }
+            | null
+            | undefined;
           return typedContact?.journalist_id === journalistId;
         })
         .map((event) => ({
@@ -312,7 +328,9 @@ export class PRPitchService {
       throw new Error('Sequence not found');
     }
 
-    const step = sequence.steps.find((s) => s.position === (input.stepPosition || 1));
+    const step = sequence.steps.find(
+      (s) => s.position === (input.stepPosition || 1)
+    );
     if (!step) {
       throw new Error('Step not found');
     }
@@ -382,7 +400,12 @@ export class PRPitchService {
     personalizationScore: number;
     suggestions: PitchSuggestion[];
   }> {
-    const prompt = this.buildPitchPrompt(context, step, sequence, customContext);
+    const prompt = this.buildPitchPrompt(
+      context,
+      step,
+      sequence,
+      customContext
+    );
 
     try {
       const response = await this.llmRouter!.generate({
@@ -502,10 +525,13 @@ Include a clear call-to-action.`);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
         return {
-          subject: parsed.subject || this.generateFallbackSubject(context, step),
+          subject:
+            parsed.subject || this.generateFallbackSubject(context, step),
           body: parsed.body || this.generateFallbackBody(context, step),
           personalizationScore: parsed.personalizationScore || 50,
-          suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : [],
+          suggestions: Array.isArray(parsed.suggestions)
+            ? parsed.suggestions
+            : [],
         };
       }
     } catch {
@@ -535,7 +561,9 @@ Include a clear call-to-action.`);
     suggestions: PitchSuggestion[];
   } {
     const subject = this.interpolateTemplate(
-      step.subjectTemplate || sequence.defaultSubject || 'Story Idea for {{journalist.name}}',
+      step.subjectTemplate ||
+        sequence.defaultSubject ||
+        'Story Idea for {{journalist.name}}',
       context
     );
 
@@ -552,7 +580,10 @@ Include a clear call-to-action.`);
   /**
    * Generate fallback subject line
    */
-  private generateFallbackSubject(context: PRPitchContext, _step: PRPitchStep): string {
+  private generateFallbackSubject(
+    context: PRPitchContext,
+    _step: PRPitchStep
+  ): string {
     if (context.pressRelease) {
       return `Story Idea: ${context.pressRelease.headline.substring(0, 50)}`;
     }
@@ -562,7 +593,10 @@ Include a clear call-to-action.`);
   /**
    * Generate fallback body
    */
-  private generateFallbackBody(context: PRPitchContext, _step: PRPitchStep): string {
+  private generateFallbackBody(
+    context: PRPitchContext,
+    _step: PRPitchStep
+  ): string {
     const parts: string[] = [];
 
     // Greeting
@@ -575,7 +609,9 @@ Include a clear call-to-action.`);
         `\nI've been following your coverage of ${context.journalist.beat} and thought this might be of interest.`
       );
     } else {
-      parts.push(`\nI have a story idea that I think would resonate with your audience.`);
+      parts.push(
+        `\nI have a story idea that I think would resonate with your audience.`
+      );
     }
 
     // Value proposition
@@ -587,7 +623,9 @@ Include a clear call-to-action.`);
     }
 
     // CTA
-    parts.push(`\nWould you be interested in learning more? Happy to provide additional details or arrange an interview.`);
+    parts.push(
+      `\nWould you be interested in learning more? Happy to provide additional details or arrange an interview.`
+    );
 
     // Sign-off
     parts.push(`\nBest regards,\n${context.organization.name}`);
@@ -598,15 +636,33 @@ Include a clear call-to-action.`);
   /**
    * Interpolate template variables
    */
-  private interpolateTemplate(template: string, context: PRPitchContext): string {
+  private interpolateTemplate(
+    template: string,
+    context: PRPitchContext
+  ): string {
     return template
       .replace(/\{\{journalist\.name\}\}/g, context.journalist.name)
-      .replace(/\{\{journalist\.firstName\}\}/g, context.journalist.name.split(' ')[0])
-      .replace(/\{\{journalist\.beat\}\}/g, context.journalist.beat || 'your coverage area')
-      .replace(/\{\{journalist\.outlet\}\}/g, context.journalist.outlet || 'your outlet')
+      .replace(
+        /\{\{journalist\.firstName\}\}/g,
+        context.journalist.name.split(' ')[0]
+      )
+      .replace(
+        /\{\{journalist\.beat\}\}/g,
+        context.journalist.beat || 'your coverage area'
+      )
+      .replace(
+        /\{\{journalist\.outlet\}\}/g,
+        context.journalist.outlet || 'your outlet'
+      )
       .replace(/\{\{organization\.name\}\}/g, context.organization.name)
-      .replace(/\{\{pressRelease\.headline\}\}/g, context.pressRelease?.headline || '')
-      .replace(/\{\{pressRelease\.angle\}\}/g, context.pressRelease?.angle || '');
+      .replace(
+        /\{\{pressRelease\.headline\}\}/g,
+        context.pressRelease?.headline || ''
+      )
+      .replace(
+        /\{\{pressRelease\.angle\}\}/g,
+        context.pressRelease?.angle || ''
+      );
   }
 
   // ==========================================================================
@@ -647,12 +703,18 @@ Include a clear call-to-action.`);
       throw new Error(`Failed to create sequence: ${sequenceError?.message}`);
     }
 
-    const sequence = transformPRPitchSequenceRecord(sequenceData as PRPitchSequenceRecord);
+    const sequence = transformPRPitchSequenceRecord(
+      sequenceData as PRPitchSequenceRecord
+    );
 
     // Create steps if provided
     const steps: PRPitchStep[] = [];
     if (input.steps && input.steps.length > 0) {
-      const stepRecords = await this.createSteps(orgId, sequence.id, input.steps);
+      const stepRecords = await this.createSteps(
+        orgId,
+        sequence.id,
+        input.steps
+      );
       steps.push(...stepRecords);
     }
 
@@ -773,7 +835,9 @@ Include a clear call-to-action.`);
         wait_days: step.waitDays ?? 3,
       }));
 
-      const { error } = await this.supabase.from('pr_pitch_steps').insert(stepData);
+      const { error } = await this.supabase
+        .from('pr_pitch_steps')
+        .insert(stepData);
 
       if (error) {
         throw new Error(`Failed to update steps: ${error.message}`);
@@ -788,7 +852,12 @@ Include a clear call-to-action.`);
     orgId: string,
     query: ListPRPitchSequencesQuery = {}
   ): Promise<{ sequences: PRPitchSequence[]; total: number }> {
-    const { limit = 20, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    const {
+      limit = 20,
+      offset = 0,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = query;
 
     let builder = this.supabase
       .from('pr_pitch_sequences')
@@ -813,7 +882,12 @@ Include a clear call-to-action.`);
     }
 
     // Apply sorting
-    const sortColumn = sortBy === 'createdAt' ? 'created_at' : sortBy === 'updatedAt' ? 'updated_at' : 'name';
+    const sortColumn =
+      sortBy === 'createdAt'
+        ? 'created_at'
+        : sortBy === 'updatedAt'
+          ? 'updated_at'
+          : 'name';
     builder = builder.order(sortColumn, { ascending: sortOrder === 'asc' });
 
     // Apply pagination
@@ -968,7 +1042,12 @@ Include a clear call-to-action.`);
     orgId: string,
     query: ListPRPitchContactsQuery = {}
   ): Promise<{ contacts: PRPitchContactWithJournalist[]; total: number }> {
-    const { limit = 20, offset = 0, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+    const {
+      limit = 20,
+      offset = 0,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = query;
 
     let builder = this.supabase
       .from('pr_pitch_contacts')
@@ -996,8 +1075,8 @@ Include a clear call-to-action.`);
       sortBy === 'createdAt'
         ? 'created_at'
         : sortBy === 'lastEventAt'
-        ? 'last_event_at'
-        : 'status';
+          ? 'last_event_at'
+          : 'status';
     builder = builder.order(sortColumn, { ascending: sortOrder === 'asc' });
 
     // Apply pagination
@@ -1009,28 +1088,32 @@ Include a clear call-to-action.`);
       throw new Error(`Failed to list contacts: ${error.message}`);
     }
 
-    const contacts: PRPitchContactWithJournalist[] = (data || []).map((record) => {
-      const base = transformPRPitchContactRecord(record as PRPitchContactRecord);
-      const journalist = record.journalists as {
-        id: string;
-        name: string;
-        email: string | null;
-        beat: string | null;
-        media_outlets: { name: string; tier: string } | null;
-      };
+    const contacts: PRPitchContactWithJournalist[] = (data || []).map(
+      (record) => {
+        const base = transformPRPitchContactRecord(
+          record as PRPitchContactRecord
+        );
+        const journalist = record.journalists as {
+          id: string;
+          name: string;
+          email: string | null;
+          beat: string | null;
+          media_outlets: { name: string; tier: string } | null;
+        };
 
-      return {
-        ...base,
-        journalist: {
-          id: journalist.id,
-          name: journalist.name,
-          email: journalist.email,
-          beat: journalist.beat,
-          outlet: journalist.media_outlets?.name || null,
-          tier: journalist.media_outlets?.tier || null,
-        },
-      };
-    });
+        return {
+          ...base,
+          journalist: {
+            id: journalist.id,
+            name: journalist.name,
+            email: journalist.email,
+            beat: journalist.beat,
+            outlet: journalist.media_outlets?.name || null,
+            tier: journalist.media_outlets?.tier || null,
+          },
+        };
+      }
+    );
 
     return { contacts, total: count || 0 };
   }
@@ -1056,7 +1139,9 @@ Include a clear call-to-action.`);
 
     if (!contactData) return null;
 
-    const base = transformPRPitchContactRecord(contactData as PRPitchContactRecord);
+    const base = transformPRPitchContactRecord(
+      contactData as PRPitchContactRecord
+    );
     const journalist = contactData.journalists as {
       id: string;
       name: string;

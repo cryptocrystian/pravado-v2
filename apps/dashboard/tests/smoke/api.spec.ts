@@ -10,7 +10,9 @@ const API = 'https://pravado-api.onrender.com';
 
 test.describe('Dashboard API proxies (unauthenticated)', () => {
   test('PR pitches sequences returns non-500', async ({ request }) => {
-    const response = await request.get(`${BASE}/api/pr/pitches/sequences?limit=10`);
+    const response = await request.get(
+      `${BASE}/api/pr/pitches/sequences?limit=10`
+    );
     // Should return 401 (auth required) or 200, not 500
     expect(response.status()).not.toBe(500);
   });

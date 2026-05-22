@@ -25,15 +25,19 @@ const PLACEHOLDER_PNG = Buffer.from(
 
 const assetsDir = path.join(__dirname, '..', 'assets');
 
-['icon.png', 'splash.png', 'adaptive-icon.png', 'favicon.png'].forEach(name => {
-  const filePath = path.join(assetsDir, name);
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, PLACEHOLDER_PNG);
-    console.log(`Created placeholder: ${name}`);
-  } else {
-    console.log(`Already exists: ${name}`);
+['icon.png', 'splash.png', 'adaptive-icon.png', 'favicon.png'].forEach(
+  (name) => {
+    const filePath = path.join(assetsDir, name);
+    if (!fs.existsSync(filePath)) {
+      fs.writeFileSync(filePath, PLACEHOLDER_PNG);
+      console.log(`Created placeholder: ${name}`);
+    } else {
+      console.log(`Already exists: ${name}`);
+    }
   }
-});
+);
 
 console.log('\nPlaceholder assets created.');
-console.log('IMPORTANT: Replace with real brand assets before App Store submission.');
+console.log(
+  'IMPORTANT: Replace with real brand assets before App Store submission.'
+);

@@ -90,7 +90,9 @@ export function SourceList({
             </div>
             <button
               onClick={handleAddSource}
-              disabled={isAdding || !newSourceName.trim() || !newSourceUrl.trim()}
+              disabled={
+                isAdding || !newSourceName.trim() || !newSourceUrl.trim()
+              }
               className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               {isAdding ? 'Adding...' : 'Add Source'}
@@ -162,8 +164,18 @@ export function SourceList({
                       className="ml-2 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-opacity"
                       title="Deactivate source"
                     >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>

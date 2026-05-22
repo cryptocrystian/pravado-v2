@@ -20,7 +20,12 @@ import { Sidebar } from './components/Sidebar';
 import { Toolbar } from './components/Toolbar';
 import { usePlaybookEditor } from './hooks/usePlaybookEditor';
 import { usePlaybookGraph } from './hooks/usePlaybookGraph';
-import type { NodeType, EditorNode, GraphValidation, EditorGraph } from './types/graph';
+import type {
+  NodeType,
+  EditorNode,
+  GraphValidation,
+  EditorGraph,
+} from './types/graph';
 
 export default function PlaybookEditorPage() {
   const searchParams = useSearchParams();
@@ -65,20 +70,26 @@ export default function PlaybookEditorPage() {
   }, [playbookId]);
 
   // S23: Handle branch change
-  const handleBranchChange = useCallback((newBranchId: string) => {
-    setCurrentBranchId(newBranchId);
-    // Reload playbook data for the new branch
-    if (playbookId) {
-      window.location.reload(); // Simple approach: reload page to get new branch data
-    }
-  }, [playbookId]);
+  const handleBranchChange = useCallback(
+    (newBranchId: string) => {
+      setCurrentBranchId(newBranchId);
+      // Reload playbook data for the new branch
+      if (playbookId) {
+        window.location.reload(); // Simple approach: reload page to get new branch data
+      }
+    },
+    [playbookId]
+  );
 
   // S23: Handle branch created
-  const handleBranchCreated = useCallback((newBranchId: string) => {
-    setCurrentBranchId(newBranchId);
-    // Optionally switch to the new branch
-    handleBranchChange(newBranchId);
-  }, [handleBranchChange]);
+  const handleBranchCreated = useCallback(
+    (newBranchId: string) => {
+      setCurrentBranchId(newBranchId);
+      // Optionally switch to the new branch
+      handleBranchChange(newBranchId);
+    },
+    [handleBranchChange]
+  );
 
   // Convert playbook to graph for editor
   const initialGraph = playbook ? convertToGraph(playbook) : undefined;
@@ -268,14 +279,23 @@ export default function PlaybookEditorPage() {
         {showExecutionPlan && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-              <h2 className="text-xl font-semibold mb-4">Execution Plan Preview</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Execution Plan Preview
+              </h2>
               <div className="space-y-2">
                 {editor.nodes.map((node, index) => (
-                  <div key={node.id} className="border border-gray-200 rounded p-3">
+                  <div
+                    key={node.id}
+                    className="border border-gray-200 rounded p-3"
+                  >
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-500 text-sm">Step {index + 1}</span>
+                      <span className="text-gray-500 text-sm">
+                        Step {index + 1}
+                      </span>
                       <span className="font-medium">{node.data.label}</span>
-                      <span className="text-xs text-gray-500 uppercase">{node.type}</span>
+                      <span className="text-xs text-gray-500 uppercase">
+                        {node.type}
+                      </span>
                     </div>
                   </div>
                 ))}

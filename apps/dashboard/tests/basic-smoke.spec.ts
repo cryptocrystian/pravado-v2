@@ -18,21 +18,29 @@ test.describe('Dashboard Smoke Tests', () => {
   test('should show sign up form when toggled', async ({ page }) => {
     await page.goto('/login');
 
-    const toggleButton = page.locator('button:has-text("Don\'t have an account")');
+    const toggleButton = page.locator(
+      'button:has-text("Don\'t have an account")'
+    );
     await toggleButton.click();
 
     await expect(page.locator('h2')).toContainText('Create your account');
-    await expect(page.locator('button[type="submit"]')).toContainText('Sign up');
+    await expect(page.locator('button[type="submit"]')).toContainText(
+      'Sign up'
+    );
   });
 
-  test('should redirect unauthenticated users from /app to /login', async ({ page }) => {
+  test('should redirect unauthenticated users from /app to /login', async ({
+    page,
+  }) => {
     await page.goto('/app');
 
     // Should redirect to login
     await expect(page).toHaveURL(/\/login/);
   });
 
-  test('should redirect unauthenticated users from /onboarding to /login', async ({ page }) => {
+  test('should redirect unauthenticated users from /onboarding to /login', async ({
+    page,
+  }) => {
     await page.goto('/onboarding');
 
     // Should redirect to login

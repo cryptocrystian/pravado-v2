@@ -17,7 +17,10 @@ import { FastifyInstance } from 'fastify';
 
 import { getSupabaseClient } from '../../lib/supabase';
 import { requireUser } from '../../middleware/requireUser';
-import { enforcePlanLimit, PlanLimitExceededError } from '../../services/billing/planLimitsService';
+import {
+  enforcePlanLimit,
+  PlanLimitExceededError,
+} from '../../services/billing/planLimitsService';
 import { calculateEVI } from '../../services/evi/eviCalculationService';
 import { getEVIDelta } from '../../services/evi/eviDeltaService';
 import { getActionStreamForOrg } from '../../services/sage/sageActionStreamService';
@@ -45,45 +48,45 @@ export async function sageRoutes(server: FastifyInstance) {
    * Trigger a full SAGE signal scan for the authenticated user's org.
    * This is an admin/test endpoint for Sprint S-INT-02 verification.
    */
-  server.post(
-    '/scan',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      if (!FLAGS.ENABLE_SAGE_SIGNALS) {
-        return reply.code(404).send({
-          success: false,
-          error: { code: 'FEATURE_DISABLED', message: 'SAGE signals not enabled' },
-        });
-      }
-
-      if (!request.user) {
-        return reply.code(401).send({
-          success: false,
-          error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
-        });
-      }
-
-      const orgId = await getUserOrgId(request.user.id);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: { code: 'NO_ORG', message: 'User has no organization' },
-        });
-      }
-
-      try {
-        const result = await runSignalScan(supabase, orgId);
-        return reply.send({ success: true, data: result });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'SAGE scan failed';
-        console.error('[SAGE /scan] Error:', message);
-        return reply.code(500).send({
-          success: false,
-          error: { code: 'SAGE_SCAN_ERROR', message },
-        });
-      }
+  server.post('/scan', { preHandler: requireUser }, async (request, reply) => {
+    if (!FLAGS.ENABLE_SAGE_SIGNALS) {
+      return reply.code(404).send({
+        success: false,
+        error: {
+          code: 'FEATURE_DISABLED',
+          message: 'SAGE signals not enabled',
+        },
+      });
     }
-  );
+
+    if (!request.user) {
+      return reply.code(401).send({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+      });
+    }
+
+    const orgId = await getUserOrgId(request.user.id);
+    if (!orgId) {
+      return reply.code(403).send({
+        success: false,
+        error: { code: 'NO_ORG', message: 'User has no organization' },
+      });
+    }
+
+    try {
+      const result = await runSignalScan(supabase, orgId);
+      return reply.send({ success: true, data: result });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'SAGE scan failed';
+      console.error('[SAGE /scan] Error:', message);
+      return reply.code(500).send({
+        success: false,
+        error: { code: 'SAGE_SCAN_ERROR', message },
+      });
+    }
+  });
 
   /**
    * GET /signals
@@ -97,7 +100,10 @@ export async function sageRoutes(server: FastifyInstance) {
       if (!FLAGS.ENABLE_SAGE_SIGNALS) {
         return reply.code(404).send({
           success: false,
-          error: { code: 'FEATURE_DISABLED', message: 'SAGE signals not enabled' },
+          error: {
+            code: 'FEATURE_DISABLED',
+            message: 'SAGE signals not enabled',
+          },
         });
       }
 
@@ -155,7 +161,10 @@ export async function sageRoutes(server: FastifyInstance) {
       if (!FLAGS.ENABLE_SAGE_SIGNALS) {
         return reply.code(404).send({
           success: false,
-          error: { code: 'FEATURE_DISABLED', message: 'SAGE signals not enabled' },
+          error: {
+            code: 'FEATURE_DISABLED',
+            message: 'SAGE signals not enabled',
+          },
         });
       }
 
@@ -180,7 +189,8 @@ export async function sageRoutes(server: FastifyInstance) {
         const opportunities = await scoreOpportunities(supabase, orgId, limit);
         return reply.send({ success: true, data: opportunities });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Opportunity scoring failed';
+        const message =
+          error instanceof Error ? error.message : 'Opportunity scoring failed';
         return reply.code(500).send({
           success: false,
           error: { code: 'SCORING_ERROR', message },
@@ -199,12 +209,18 @@ export async function sageRoutes(server: FastifyInstance) {
    */
   server.post(
     '/generate-proposals',
-    { preHandler: requireUser, config: { rateLimit: { max: 5, timeWindow: '1 hour' } } },
+    {
+      preHandler: requireUser,
+      config: { rateLimit: { max: 5, timeWindow: '1 hour' } },
+    },
     async (request, reply) => {
       if (!FLAGS.ENABLE_SAGE_SIGNALS) {
         return reply.code(404).send({
           success: false,
-          error: { code: 'FEATURE_DISABLED', message: 'SAGE signals not enabled' },
+          error: {
+            code: 'FEATURE_DISABLED',
+            message: 'SAGE signals not enabled',
+          },
         });
       }
 
@@ -242,7 +258,8 @@ export async function sageRoutes(server: FastifyInstance) {
             },
           });
         }
-        const message = error instanceof Error ? error.message : 'Proposal generation failed';
+        const message =
+          error instanceof Error ? error.message : 'Proposal generation failed';
         return reply.code(500).send({
           success: false,
           error: { code: 'PROPOSAL_ERROR', message },
@@ -282,7 +299,8 @@ export async function sageRoutes(server: FastifyInstance) {
         });
         return reply.send(result);
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Action stream failed';
+        const message =
+          error instanceof Error ? error.message : 'Action stream failed';
         return reply.code(500).send({
           success: false,
           error: { code: 'ACTION_STREAM_ERROR', message },
@@ -322,24 +340,45 @@ export async function sageRoutes(server: FastifyInstance) {
         // Get top 3 proposals as "top movers"
         const { data: topProposals } = await supabase
           .from('sage_proposals')
-          .select('id, pillar, title, evi_impact_estimate, signal_type, deep_link, created_at')
+          .select(
+            'id, pillar, title, evi_impact_estimate, signal_type, deep_link, created_at'
+          )
           .eq('org_id', orgId)
           .eq('status', 'active')
           .order('evi_impact_estimate', { ascending: false })
           .limit(3);
 
-        const eviStatus = eviBreakdown.evi_score >= 81 ? 'dominant'
-          : eviBreakdown.evi_score >= 61 ? 'competitive'
-          : eviBreakdown.evi_score >= 41 ? 'emerging'
-          : 'at_risk';
+        const eviStatus =
+          eviBreakdown.evi_score >= 81
+            ? 'dominant'
+            : eviBreakdown.evi_score >= 61
+              ? 'competitive'
+              : eviBreakdown.evi_score >= 41
+                ? 'emerging'
+                : 'at_risk';
 
-        const trend = eviDelta.direction === 'up' ? 'up' : eviDelta.direction === 'down' ? 'down' : 'flat';
+        const trend =
+          eviDelta.direction === 'up'
+            ? 'up'
+            : eviDelta.direction === 'down'
+              ? 'down'
+              : 'flat';
 
-        const pillarMap: Record<string, string> = { PR: 'pr', Content: 'content', SEO: 'seo' };
+        const pillarMap: Record<string, string> = {
+          PR: 'pr',
+          Content: 'content',
+          SEO: 'seo',
+        };
         const driverMap: Record<string, string> = {
-          pr_stale_followup: 'visibility', pr_high_value_unpitched: 'visibility', pr_pitch_window: 'visibility',
-          content_stale_draft: 'momentum', content_low_quality: 'authority', content_coverage_gap: 'authority',
-          seo_position_drop: 'authority', seo_opportunity_keyword: 'momentum', seo_content_gap: 'authority',
+          pr_stale_followup: 'visibility',
+          pr_high_value_unpitched: 'visibility',
+          pr_pitch_window: 'visibility',
+          content_stale_draft: 'momentum',
+          content_low_quality: 'authority',
+          content_coverage_gap: 'authority',
+          seo_position_drop: 'authority',
+          seo_opportunity_keyword: 'momentum',
+          seo_content_gap: 'authority',
         };
 
         const topMovers = (topProposals ?? []).map((p: any) => ({
@@ -369,7 +408,7 @@ export async function sageRoutes(server: FastifyInstance) {
                 type: 'visibility',
                 label: 'Visibility',
                 score: eviBreakdown.visibility_score,
-                weight: 0.40,
+                weight: 0.4,
                 delta_7d: 0,
                 trend: 'flat',
                 metrics: [],
@@ -401,7 +440,8 @@ export async function sageRoutes(server: FastifyInstance) {
 
         return reply.send(strategyPanel);
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Strategy panel failed';
+        const message =
+          error instanceof Error ? error.message : 'Strategy panel failed';
         return reply.code(500).send({
           success: false,
           error: { code: 'STRATEGY_PANEL_ERROR', message },
@@ -414,7 +454,9 @@ export async function sageRoutes(server: FastifyInstance) {
    * GET /orchestration-calendar
    * Returns scheduled content items and pitch activities.
    */
-  server.get<{ Querystring: { start?: string; end?: string; pillar?: string } }>(
+  server.get<{
+    Querystring: { start?: string; end?: string; pillar?: string };
+  }>(
     '/orchestration-calendar',
     { preHandler: requireUser },
     async (request, reply) => {
@@ -445,13 +487,20 @@ export async function sageRoutes(server: FastifyInstance) {
         // Build calendar items from content
         const items = (contentItems ?? []).map((item: any) => ({
           id: `cal_${item.id}`,
-          date: (item.updated_at || item.created_at || new Date().toISOString()).split('T')[0],
+          date: (
+            item.updated_at ||
+            item.created_at ||
+            new Date().toISOString()
+          ).split('T')[0],
           time: '09:00',
           pillar: 'content' as const,
           title: item.title || 'Untitled',
-          status: item.status === 'published' ? 'published'
-            : item.status === 'draft' ? 'drafting'
-            : 'planned',
+          status:
+            item.status === 'published'
+              ? 'published'
+              : item.status === 'draft'
+                ? 'drafting'
+                : 'planned',
           mode: 'copilot' as const,
           linked: { action_id: null, campaign_id: null },
           details: {
@@ -466,13 +515,17 @@ export async function sageRoutes(server: FastifyInstance) {
         // Apply filters
         let filtered = items;
         if (request.query.start) {
-          filtered = filtered.filter((i: any) => i.date >= request.query.start!);
+          filtered = filtered.filter(
+            (i: any) => i.date >= request.query.start!
+          );
         }
         if (request.query.end) {
           filtered = filtered.filter((i: any) => i.date <= request.query.end!);
         }
         if (request.query.pillar) {
-          filtered = filtered.filter((i: any) => i.pillar === request.query.pillar);
+          filtered = filtered.filter(
+            (i: any) => i.pillar === request.query.pillar
+          );
         }
 
         const summary = {
@@ -492,7 +545,9 @@ export async function sageRoutes(server: FastifyInstance) {
         };
 
         const now = new Date();
-        const twoWeeksLater = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+        const twoWeeksLater = new Date(
+          now.getTime() + 14 * 24 * 60 * 60 * 1000
+        );
 
         return reply.send({
           range: {
@@ -504,14 +559,22 @@ export async function sageRoutes(server: FastifyInstance) {
           items: filtered,
           filters: {
             pillars: ['pr', 'content', 'seo'],
-            statuses: ['planned', 'drafting', 'awaiting_approval', 'scheduled', 'published', 'failed'],
+            statuses: [
+              'planned',
+              'drafting',
+              'awaiting_approval',
+              'scheduled',
+              'published',
+              'failed',
+            ],
             modes: ['manual', 'copilot', 'autopilot'],
             owners: ['AI', 'User'],
           },
           summary,
         });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Calendar failed';
+        const message =
+          error instanceof Error ? error.message : 'Calendar failed';
         return reply.code(500).send({
           success: false,
           error: { code: 'CALENDAR_ERROR', message },
@@ -546,7 +609,11 @@ export async function sageRoutes(server: FastifyInstance) {
 
       try {
         // Get org for brand node
-        const { data: org } = await supabase.from('orgs').select('name').eq('id', orgId).single();
+        const { data: org } = await supabase
+          .from('orgs')
+          .select('name')
+          .eq('id', orgId)
+          .single();
         const orgName = (org as { name: string } | null)?.name || 'Brand';
 
         // Ring 1 (Owned): content topics
@@ -564,11 +631,19 @@ export async function sageRoutes(server: FastifyInstance) {
           .limit(20);
 
         // Get journalist names from the journalists table
-        const journalistIds = (journalists ?? []).map((j: any) => j.journalist_id).filter(Boolean);
-        const { data: journalistNames } = journalistIds.length > 0
-          ? await supabase.from('journalists').select('id, name').in('id', journalistIds)
-          : { data: [] };
-        const nameMap = new Map((journalistNames ?? []).map((j: any) => [j.id, j.name]));
+        const journalistIds = (journalists ?? [])
+          .map((j: any) => j.journalist_id)
+          .filter(Boolean);
+        const { data: journalistNames } =
+          journalistIds.length > 0
+            ? await supabase
+                .from('journalists')
+                .select('id, name')
+                .in('id', journalistIds)
+            : { data: [] };
+        const nameMap = new Map(
+          (journalistNames ?? []).map((j: any) => [j.id, j.name])
+        );
 
         // Build nodes
         const nodes: any[] = [];
@@ -586,7 +661,7 @@ export async function sageRoutes(server: FastifyInstance) {
 
         // Topic nodes (Ring 1)
         const seenTopics = new Set<string>();
-        for (const topic of (topics ?? [])) {
+        for (const topic of topics ?? []) {
           if (seenTopics.has(topic.name)) continue;
           seenTopics.add(topic.name);
           const nodeId = `n_topic_${topic.id}`;
@@ -609,9 +684,11 @@ export async function sageRoutes(server: FastifyInstance) {
         }
 
         // Journalist nodes (Ring 2)
-        for (const jp of (journalists ?? [])) {
+        for (const jp of journalists ?? []) {
           const nodeId = `n_journalist_${jp.id}`;
-          const name = nameMap.get(jp.journalist_id) || `Journalist ${jp.id.substring(0, 6)}`;
+          const name =
+            nameMap.get(jp.journalist_id) ||
+            `Journalist ${jp.id.substring(0, 6)}`;
           nodes.push({
             id: nodeId,
             kind: 'journalist',
@@ -642,19 +719,24 @@ export async function sageRoutes(server: FastifyInstance) {
         ];
 
         // Get citation counts per engine for this org (last 30 days)
-        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        const thirtyDaysAgo = new Date(
+          Date.now() - 30 * 24 * 60 * 60 * 1000
+        ).toISOString();
         const { data: citationCounts } = await supabase
           .from('citation_monitor_results')
           .select('engine, brand_mentioned')
           .eq('org_id', orgId)
           .gte('monitored_at', thirtyDaysAgo);
 
-        const engineStats: Record<string, { total: number; mentions: number }> = {};
-        for (const c of (citationCounts ?? [])) {
-          const eng = (c as { engine: string; brand_mentioned: boolean }).engine;
+        const engineStats: Record<string, { total: number; mentions: number }> =
+          {};
+        for (const c of citationCounts ?? []) {
+          const eng = (c as { engine: string; brand_mentioned: boolean })
+            .engine;
           if (!engineStats[eng]) engineStats[eng] = { total: 0, mentions: 0 };
           engineStats[eng].total++;
-          if ((c as { brand_mentioned: boolean }).brand_mentioned) engineStats[eng].mentions++;
+          if ((c as { brand_mentioned: boolean }).brand_mentioned)
+            engineStats[eng].mentions++;
         }
 
         for (const engine of AI_ENGINES) {
@@ -694,7 +776,8 @@ export async function sageRoutes(server: FastifyInstance) {
           action_impacts: {},
         });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Entity map failed';
+        const message =
+          error instanceof Error ? error.message : 'Entity map failed';
         return reply.code(500).send({
           success: false,
           error: { code: 'ENTITY_MAP_ERROR', message },
@@ -729,7 +812,11 @@ export async function sageRoutes(server: FastifyInstance) {
 
       try {
         // Reuse entity map data for nodes/edges
-        const { data: org } = await supabase.from('orgs').select('name').eq('id', orgId).single();
+        const { data: org } = await supabase
+          .from('orgs')
+          .select('name')
+          .eq('id', orgId)
+          .single();
         const orgName = (org as { name: string } | null)?.name || 'Brand';
 
         const { data: topics } = await supabase
@@ -744,11 +831,16 @@ export async function sageRoutes(server: FastifyInstance) {
         const edges: any[] = [];
 
         const seenTopics = new Set<string>();
-        for (const topic of (topics ?? [])) {
+        for (const topic of topics ?? []) {
           if (seenTopics.has(topic.name)) continue;
           seenTopics.add(topic.name);
           const nodeId = `n_topic_${topic.id}`;
-          nodes.push({ id: nodeId, kind: 'topic_cluster', label: topic.name, meta: {} });
+          nodes.push({
+            id: nodeId,
+            kind: 'topic_cluster',
+            label: topic.name,
+            meta: {},
+          });
           edges.push({
             id: `e_${topic.id}`,
             from: `n_brand_${orgId}`,
@@ -761,7 +853,9 @@ export async function sageRoutes(server: FastifyInstance) {
         // S-INT-05: Populate citation_feed from real data
         const { data: citations } = await supabase
           .from('citation_monitor_results')
-          .select('id, engine, query_prompt, query_topic, response_excerpt, brand_mentioned, monitored_at')
+          .select(
+            'id, engine, query_prompt, query_topic, response_excerpt, brand_mentioned, monitored_at'
+          )
           .eq('org_id', orgId)
           .eq('brand_mentioned', true)
           .order('monitored_at', { ascending: false })
@@ -783,7 +877,8 @@ export async function sageRoutes(server: FastifyInstance) {
           citation_feed,
         });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Intelligence canvas failed';
+        const message =
+          error instanceof Error ? error.message : 'Intelligence canvas failed';
         return reply.code(500).send({
           success: false,
           error: { code: 'INTELLIGENCE_CANVAS_ERROR', message },

@@ -24,7 +24,9 @@ describe('MemoryRetrievalService', () => {
       })),
     };
 
-    memoryRetrieval = new MemoryRetrievalService(mockSupabase, { debugMode: false });
+    memoryRetrieval = new MemoryRetrievalService(mockSupabase, {
+      debugMode: false,
+    });
   });
 
   describe('retrieveSemanticMemory', () => {

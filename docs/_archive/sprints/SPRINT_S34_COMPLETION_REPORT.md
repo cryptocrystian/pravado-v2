@@ -1,4 +1,5 @@
 # Sprint S34 Completion Report
+
 ## Billing History & Invoice Viewer
 
 **Sprint:** S34
@@ -38,12 +39,14 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 **Purpose:** Stores Stripe invoice metadata locally for fast retrieval and reduced API calls.
 
 **Key Features:**
+
 - Unique constraint on `stripe_invoice_id` for upsert-friendly updates
 - JSONB metadata field for flexible line item storage
 - Optimized indexes for common query patterns
 - RLS policies for org isolation
 
 **Performance Impact:**
+
 - Query latency reduced from ~200-500ms (Stripe API) to ~10-50ms (local DB)
 - Eliminates Stripe rate limit concerns for invoice viewing
 - Enables complex querying and aggregation
@@ -55,12 +58,14 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 **File:** `apps/api/src/services/stripeService.ts`
 
 **New Methods:**
+
 - `listInvoicesForOrg()` - List invoices from Stripe API
 - `syncInvoiceToCache()` - Upsert invoice to cache
 - `getInvoiceDetails()` - Retrieve full invoice with expanded data
 - `syncAllInvoicesForOrg()` - Batch sync for migrations
 
 **Integration:**
+
 - Stripe SDK v12+ with expanded relations
 - Automatic metadata extraction
 - Error handling for API failures
@@ -70,11 +75,13 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 **File:** `apps/api/src/services/billingService.ts`
 
 **New Methods:**
+
 - `getBillingHistorySummary()` - Invoice history with aggregate metrics
 - `getInvoiceWithBreakdown()` - Detailed invoice breakdown with categorization
 - `getUsageSnapshotForPeriod()` - Historical usage aggregation (private helper)
 
 **Business Logic:**
+
 - Automatic line item categorization (plan, overage, discount, etc.)
 - Overage cost extraction from metadata
 - Usage snapshot aggregation from org_usage_tracking
@@ -85,12 +92,14 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 **File:** `apps/api/src/routes/billing/index.ts`
 
 #### GET /api/v1/billing/org/invoices
+
 - Returns last 12 invoices with aggregate metrics
 - Calculates total paid, highest invoice, average cost
 - Identifies overage costs per invoice
 - Response time: ~50ms average
 
 #### GET /api/v1/billing/org/invoices/:id
+
 - Returns complete invoice breakdown
 - Categorized line items with type badges
 - Usage snapshot for billing period
@@ -98,6 +107,7 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 - Response time: ~70ms average
 
 #### POST /api/v1/billing/org/invoices/sync
+
 - Manual invoice sync from Stripe (admin feature)
 - Protected by `ENABLE_ADMIN_INVOICE_SYNC` feature flag
 - Syncs last 12 invoices
@@ -110,6 +120,7 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 **File:** `apps/dashboard/src/app/app/billing/history/page.tsx`
 
 **Features:**
+
 - Summary cards: Total Paid (12 Mo), Average Monthly Cost, Highest Invoice
 - Sortable invoice table (by date, amount, status)
 - Status badges with semantic colors:
@@ -124,6 +135,7 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 - Loading states with spinners
 
 **UI/UX Decisions:**
+
 - Descending date sort by default (newest first)
 - Currency formatting with $XX.XX
 - Period formatting: "Jan 1 - Feb 1, 2024"
@@ -134,6 +146,7 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 **File:** `apps/dashboard/src/app/app/billing/invoice/[id]/page.tsx`
 
 **Sections:**
+
 1. **Invoice Summary Card**
    - Status badge
    - Billing period
@@ -165,6 +178,7 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
    - Alert messages with context
 
 **Navigation:**
+
 - Back to billing history link
 - Breadcrumb support
 
@@ -173,6 +187,7 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 **File:** `apps/dashboard/src/lib/billingApi.ts`
 
 **New Functions:**
+
 - `getBillingHistory()` - Fetch invoice history
 - `getInvoiceDetails(invoiceId)` - Fetch invoice breakdown
 - `syncInvoices()` - Trigger manual sync
@@ -180,6 +195,7 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 - `formatInvoicePeriod(start, end)` - Period formatting
 
 **TypeScript Types:**
+
 - `BillingHistorySummary`
 - `Invoice`
 - `InvoiceDetails`
@@ -192,6 +208,7 @@ Sprint S34 successfully delivers a complete billing invoice history and viewer s
 **File:** `packages/feature-flags/src/flags.ts`
 
 **New Flag:**
+
 ```typescript
 ENABLE_ADMIN_INVOICE_SYNC: true, // S34: Manual invoice sync from Stripe
 ```
@@ -205,6 +222,7 @@ ENABLE_ADMIN_INVOICE_SYNC: true, // S34: Manual invoice sync from Stripe
 **File:** `apps/api/__tests__/billingInvoices.test.ts`
 
 **Coverage:**
+
 - getBillingHistorySummary() - 5 tests
 - getInvoiceWithBreakdown() - 7 tests
 - Invoice line item type detection - 3 tests
@@ -212,6 +230,7 @@ ENABLE_ADMIN_INVOICE_SYNC: true, // S34: Manual invoice sync from Stripe
 - **Total: 19 comprehensive test cases**
 
 **Test Approach:**
+
 - Mock Supabase client with realistic data
 - Test aggregate calculations
 - Verify line item categorization logic
@@ -221,16 +240,19 @@ ENABLE_ADMIN_INVOICE_SYNC: true, // S34: Manual invoice sync from Stripe
 #### E2E Tests
 
 **Files:**
+
 - `apps/dashboard/tests/billing/invoice-history.spec.ts`
 - `apps/dashboard/tests/billing/invoice-details.spec.ts`
 
 **Coverage:**
+
 - Invoice history page rendering - 3 tests
 - Invoice details page rendering - 3 tests
 - User interactions (sorting, navigation)
 - **Total: 6 E2E test cases**
 
 **Test Approach:**
+
 - Mock API responses with Playwright
 - Test UI rendering and interactions
 - Verify data display accuracy
@@ -240,6 +262,7 @@ ENABLE_ADMIN_INVOICE_SYNC: true, // S34: Manual invoice sync from Stripe
 **File:** `docs/product/billing_invoices_v1.md`
 
 **Sections:**
+
 - Overview & key features
 - Architecture & data flow
 - Database schema
@@ -265,6 +288,7 @@ ENABLE_ADMIN_INVOICE_SYNC: true, // S34: Manual invoice sync from Stripe
 **Requirement:** Store Stripe invoice metadata locally for fast retrieval.
 
 **Implementation:**
+
 - ✅ `org_invoice_cache` table created with proper schema
 - ✅ Unique constraint on `stripe_invoice_id` for upserts
 - ✅ JSONB metadata field for line items and totals
@@ -272,6 +296,7 @@ ENABLE_ADMIN_INVOICE_SYNC: true, // S34: Manual invoice sync from Stripe
 - ✅ RLS policies for org isolation
 
 **Verification:**
+
 ```sql
 -- Query demonstrates fast retrieval
 SELECT * FROM org_invoice_cache WHERE org_id = 'org-123' ORDER BY period_start DESC LIMIT 12;
@@ -283,6 +308,7 @@ SELECT * FROM org_invoice_cache WHERE org_id = 'org-123' ORDER BY period_start D
 **Requirement:** Display last 12 invoices with aggregate metrics.
 
 **Implementation:**
+
 - ✅ GET /api/v1/billing/org/invoices endpoint
 - ✅ Returns last 12 invoices sorted by period_start DESC
 - ✅ Calculates totalPaid12Mo, highestInvoice, averageMonthlyCost
@@ -290,6 +316,7 @@ SELECT * FROM org_invoice_cache WHERE org_id = 'org-123' ORDER BY period_start D
 - ✅ Frontend history page with summary cards and table
 
 **Verification:**
+
 ```bash
 curl -X GET /api/v1/billing/org/invoices \
   -H "Authorization: Bearer <token>"
@@ -307,6 +334,7 @@ curl -X GET /api/v1/billing/org/invoices \
 **Requirement:** Detailed invoice view with line-by-line cost breakdown.
 
 **Implementation:**
+
 - ✅ GET /api/v1/billing/org/invoices/:id endpoint
 - ✅ Categorized line items (plan, overage, discount, proration, tax, other)
 - ✅ Breakdown summary (planCost, tokenOverages, runOverages, etc.)
@@ -315,6 +343,7 @@ curl -X GET /api/v1/billing/org/invoices \
 - ✅ Related alerts from same period
 
 **Verification:**
+
 ```bash
 curl -X GET /api/v1/billing/org/invoices/inv-123 \
   -H "Authorization: Bearer <token>"
@@ -332,6 +361,7 @@ curl -X GET /api/v1/billing/org/invoices/inv-123 \
 **Requirement:** Automatically identify and highlight overage charges.
 
 **Implementation:**
+
 - ✅ Line item categorization logic in BillingService
 - ✅ Pattern matching: "token" + "overage", "run" + "overage"
 - ✅ Separate breakdown fields: tokenOverages, runOverages
@@ -339,6 +369,7 @@ curl -X GET /api/v1/billing/org/invoices/inv-123 \
 - ✅ Orange highlighting in UI
 
 **Verification:**
+
 ```typescript
 // Line item categorization logic
 if (desc.includes('token') && desc.includes('overage')) {
@@ -353,19 +384,23 @@ if (desc.includes('token') && desc.includes('overage')) {
 **Requirement:** Show historical usage data for each billing period.
 
 **Implementation:**
+
 - ✅ Query org_usage_tracking for invoice period
 - ✅ Aggregate tokens, playbookRuns, seats
 - ✅ Display in invoice details page
 - ✅ Handle missing data gracefully
 
 **Verification:**
+
 ```typescript
 // Usage snapshot aggregation
 const usage = { tokens: 0, playbookRuns: 0, seats: 0 };
 for (const record of usageData) {
   if (record.resource_type === 'tokens') usage.tokens += record.amount_used;
-  else if (record.resource_type === 'playbook_runs') usage.playbookRuns += record.amount_used;
-  else if (record.resource_type === 'seats') usage.seats = Math.max(usage.seats, record.amount_used);
+  else if (record.resource_type === 'playbook_runs')
+    usage.playbookRuns += record.amount_used;
+  else if (record.resource_type === 'seats')
+    usage.seats = Math.max(usage.seats, record.amount_used);
 }
 // ✅ Correctly aggregates usage data
 ```
@@ -375,12 +410,14 @@ for (const record of usageData) {
 **Requirement:** Display related billing alerts on invoice details page.
 
 **Implementation:**
+
 - ✅ Query billing_usage_alerts for alerts during invoice period
 - ✅ Filter by created_at between period_start and period_end
 - ✅ Display with severity indicators
 - ✅ Provide context for why overages occurred
 
 **Verification:**
+
 ```sql
 -- Related alerts query
 SELECT * FROM billing_usage_alerts
@@ -395,12 +432,14 @@ AND created_at <= '2024-02-01';
 **Requirement:** Sync invoices from Stripe to local cache.
 
 **Implementation:**
+
 - ✅ StripeService methods for listing and syncing invoices
 - ✅ Webhook support (invoice.created, invoice.updated)
 - ✅ Manual sync endpoint for admin/troubleshooting
 - ✅ Upsert-friendly caching strategy
 
 **Verification:**
+
 ```typescript
 // Webhook handler
 if (event.type === 'invoice.created') {
@@ -414,12 +453,14 @@ if (event.type === 'invoice.created') {
 **Requirement:** Fast invoice retrieval without repeated Stripe API calls.
 
 **Implementation:**
+
 - ✅ Local caching reduces latency from 200-500ms to 10-50ms
 - ✅ Database indexes for optimized queries
 - ✅ JSONB metadata for efficient storage
 - ✅ No Stripe rate limit concerns for viewing
 
 **Verification:**
+
 ```bash
 # Response time comparison
 Stripe API: ~200-500ms per request
@@ -432,12 +473,14 @@ Cached DB:  ~10-50ms per request
 **Requirement:** Protect invoice data with RLS and org isolation.
 
 **Implementation:**
+
 - ✅ RLS policy on org_invoice_cache
 - ✅ Org isolation via user_organizations join
 - ✅ JWT authentication on all endpoints
 - ✅ No sensitive payment data stored
 
 **Verification:**
+
 ```sql
 -- RLS policy test
 SET ROLE authenticated;
@@ -451,12 +494,14 @@ SELECT * FROM org_invoice_cache;
 **Requirement:** Comprehensive API and E2E tests.
 
 **Implementation:**
+
 - ✅ 19 API test cases covering all service methods
 - ✅ 6 E2E test cases covering UI interactions
 - ✅ Mock data for realistic test scenarios
 - ✅ Edge case handling (missing data, errors)
 
 **Verification:**
+
 ```bash
 pnpm test billingInvoices.test.ts
 # ✅ All 19 tests passing
@@ -475,6 +520,7 @@ pnpm test:e2e invoice-details
 **Decision:** Store invoice metadata in `org_invoice_cache` table instead of querying Stripe API repeatedly.
 
 **Rationale:**
+
 - **Performance:** 4-10x faster response times (10-50ms vs 200-500ms)
 - **Reliability:** No dependency on Stripe API availability for viewing
 - **Cost:** Reduces Stripe API usage (though not billable)
@@ -482,11 +528,13 @@ pnpm test:e2e invoice-details
 - **Querying:** Enables complex aggregations and filtering locally
 
 **Trade-offs:**
+
 - **Storage:** Additional ~1-2 KB per invoice (acceptable)
 - **Sync Complexity:** Requires webhook handling or manual sync
 - **Staleness:** Cache must be updated when invoices change
 
 **Mitigation:**
+
 - Stripe webhooks for automatic sync
 - Manual sync endpoint for troubleshooting
 - Upsert strategy handles updates gracefully
@@ -496,12 +544,14 @@ pnpm test:e2e invoice-details
 **Decision:** Automatic categorization based on description pattern matching.
 
 **Rationale:**
+
 - **Simplicity:** No need for complex Stripe metadata parsing
 - **Flexibility:** Easy to add new categories
 - **Accuracy:** Description patterns are consistent from Stripe
 - **User Experience:** Clear visual distinction in UI
 
 **Algorithm:**
+
 ```typescript
 if (desc.includes('subscription') || desc.includes('plan')) → 'plan'
 if (desc.includes('token') && desc.includes('overage')) → 'overage'
@@ -513,10 +563,12 @@ else → 'other'
 ```
 
 **Limitations:**
+
 - Depends on consistent Stripe description formatting
 - May require updates if Stripe changes descriptions
 
 **Future Enhancement:**
+
 - Use Stripe line item metadata/tags for more reliable categorization
 
 ### 3. JSONB Metadata Storage
@@ -524,16 +576,19 @@ else → 'other'
 **Decision:** Store invoice line items and totals in JSONB field rather than separate tables.
 
 **Rationale:**
+
 - **Flexibility:** Schema-less storage for varying Stripe data structures
 - **Simplicity:** Avoids complex JOIN queries
 - **Performance:** JSONB indexing and querying is fast in PostgreSQL
 - **Maintenance:** No need to update schema when Stripe adds fields
 
 **Trade-offs:**
+
 - Less normalized (not a traditional relational approach)
 - JSONB querying is less intuitive than SQL
 
 **Validation:**
+
 - PostgreSQL JSONB performance is excellent for this use case
 - Indexing can be added later if needed (GIN indexes)
 
@@ -542,11 +597,13 @@ else → 'other'
 **Decision:** Use React useState and useEffect for component state, no global state management.
 
 **Rationale:**
+
 - **Simplicity:** Invoice data is page-scoped, no need for global state
 - **Performance:** Data is fetched once per page load
 - **Bundle Size:** Avoid additional dependencies (Redux, Zustand, etc.)
 
 **Pattern:**
+
 ```typescript
 const [invoice, setInvoice] = useState<InvoiceDetails | null>(null);
 const [loading, setLoading] = useState(true);
@@ -557,6 +614,7 @@ useEffect(() => {
 ```
 
 **Future Enhancement:**
+
 - If invoice data is needed across multiple pages, consider React Context or global state
 
 ### 5. Manual Sync Feature Flag
@@ -564,12 +622,14 @@ useEffect(() => {
 **Decision:** Protect manual sync endpoint with feature flag.
 
 **Rationale:**
+
 - **Production Safety:** Prevent accidental bulk API calls in production
 - **Development Utility:** Enable manual sync for testing and troubleshooting
 - **Migration Support:** Useful for one-time bulk syncs during setup
 - **Flexibility:** Can be toggled without code changes
 
 **Recommendation:**
+
 - Development: `ENABLE_ADMIN_INVOICE_SYNC=true`
 - Production: `ENABLE_ADMIN_INVOICE_SYNC=false` (rely on webhooks)
 
@@ -578,22 +638,27 @@ useEffect(() => {
 ## Integration with Previous Sprints
 
 ### S28: Billing Plans & Tiers
+
 - Invoice breakdown links to plan details
 - Plan charges identified in line items
 
 ### S29: Usage Tracking
+
 - Usage snapshot aggregates from org_usage_tracking
 - Historical usage data displayed per invoice period
 
 ### S31: Overage Pricing
+
 - Overage costs automatically identified and categorized
 - Token and run overages separated in breakdown
 
 ### S32: Usage Alerts
+
 - Related alerts displayed on invoice details page
 - Provides context for why overages occurred
 
 ### S33: Self-Service Billing Portal
+
 - Invoice history linked from main billing page
 - Seamless navigation between billing views
 
@@ -603,27 +668,27 @@ useEffect(() => {
 
 ### API Response Times (Average)
 
-| Endpoint | Response Time | Notes |
-|----------|---------------|-------|
-| GET /invoices | ~50ms | Includes 12 invoices + aggregations |
-| GET /invoices/:id | ~70ms | Includes breakdown + usage + alerts |
-| POST /invoices/sync | ~2-5s | Depends on Stripe API latency |
+| Endpoint            | Response Time | Notes                               |
+| ------------------- | ------------- | ----------------------------------- |
+| GET /invoices       | ~50ms         | Includes 12 invoices + aggregations |
+| GET /invoices/:id   | ~70ms         | Includes breakdown + usage + alerts |
+| POST /invoices/sync | ~2-5s         | Depends on Stripe API latency       |
 
 ### Database Query Performance
 
-| Query | Execution Time | Notes |
-|-------|----------------|-------|
-| List 12 invoices | ~10ms | Using org_id + period_start index |
-| Get single invoice | ~5ms | Using primary key |
-| Usage snapshot | ~15ms | Aggregating org_usage_tracking |
-| Related alerts | ~10ms | Using created_at range filter |
+| Query              | Execution Time | Notes                             |
+| ------------------ | -------------- | --------------------------------- |
+| List 12 invoices   | ~10ms          | Using org_id + period_start index |
+| Get single invoice | ~5ms           | Using primary key                 |
+| Usage snapshot     | ~15ms          | Aggregating org_usage_tracking    |
+| Related alerts     | ~10ms          | Using created_at range filter     |
 
 ### Frontend Load Times
 
-| Page | Initial Load | Notes |
-|------|--------------|-------|
-| Invoice History | ~200ms | Includes API call + render |
-| Invoice Details | ~250ms | Includes API call + render |
+| Page            | Initial Load | Notes                      |
+| --------------- | ------------ | -------------------------- |
+| Invoice History | ~200ms       | Includes API call + render |
+| Invoice Details | ~250ms       | Includes API call + render |
 
 ---
 
@@ -636,6 +701,7 @@ useEffect(() => {
 **Impact:** Users might see a delay of 1-5 minutes before new invoices appear.
 
 **Mitigation:**
+
 - Stripe webhooks provide near-real-time sync
 - Manual sync button available for immediate needs
 
@@ -646,6 +712,7 @@ useEffect(() => {
 **Impact:** If Stripe changes description formatting, categorization may break.
 
 **Mitigation:**
+
 - Monitor Stripe API changelog
 - Add fallback to 'other' category
 - Future: Use Stripe metadata/tags for reliable categorization
@@ -657,6 +724,7 @@ useEffect(() => {
 **Impact:** Old invoices (pre-S29) may not have usage snapshots.
 
 **Mitigation:**
+
 - Return `null` usage snapshot gracefully
 - Display "No usage data available" message in UI
 
@@ -667,6 +735,7 @@ useEffect(() => {
 **Impact:** Multi-currency orgs may see incorrect formatting.
 
 **Mitigation:**
+
 - Store currency in cache
 - Format based on invoice currency (future enhancement)
 
@@ -677,6 +746,7 @@ useEffect(() => {
 **Impact:** Users with >12 invoices cannot access older ones.
 
 **Mitigation:**
+
 - Current limit (12 months) covers most use cases
 - Future: Add pagination or "load more" feature
 
@@ -749,12 +819,14 @@ useEffect(() => {
 ### Deployment Steps
 
 1. **Database Migration**
+
    ```bash
    # Run migration 39
    psql> \i apps/api/supabase/migrations/39_billing_invoice_cache.sql
    ```
 
 2. **Backend Deployment**
+
    ```bash
    cd apps/api
    pnpm build
@@ -762,6 +834,7 @@ useEffect(() => {
    ```
 
 3. **Frontend Deployment**
+
    ```bash
    cd apps/dashboard
    pnpm build
@@ -802,6 +875,7 @@ If critical issues are discovered post-deployment:
 ### Immediate Rollback
 
 1. **Disable Endpoints**
+
    ```typescript
    // In routes/billing/index.ts
    // Comment out or disable new endpoints temporarily

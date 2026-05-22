@@ -46,13 +46,15 @@ export interface PressReleaseStepConfig {
 export const pressReleasePlaybookTemplate: PressReleasePlaybookConfig = {
   id: 'pr-release-generator-v1',
   name: 'Press Release Generator',
-  description: 'AI-powered press release generation with SEO optimization and narrative angle finding',
+  description:
+    'AI-powered press release generation with SEO optimization and narrative angle finding',
   version: '1.0.0',
   steps: [
     {
       id: 'step-1-gather-context',
       name: 'GATHER_CONTEXT',
-      description: 'Assemble context from SEO intelligence, content, personality, memory, and brand info',
+      description:
+        'Assemble context from SEO intelligence, content, personality, memory, and brand info',
       type: 'gather_context',
       order: 1,
       config: {
@@ -74,7 +76,8 @@ export const pressReleasePlaybookTemplate: PressReleasePlaybookConfig = {
     {
       id: 'step-2-generate-draft',
       name: 'GENERATE_DRAFT',
-      description: 'Find narrative angles, generate headlines, and create full press release draft',
+      description:
+        'Find narrative angles, generate headlines, and create full press release draft',
       type: 'generate_draft',
       order: 2,
       config: {
@@ -107,7 +110,8 @@ export const pressReleasePlaybookTemplate: PressReleasePlaybookConfig = {
     {
       id: 'step-3-optimize-format',
       name: 'OPTIMIZE_AND_FORMAT',
-      description: 'Apply SEO optimization, readability improvements, tone alignment, and final formatting',
+      description:
+        'Apply SEO optimization, readability improvements, tone alignment, and final formatting',
       type: 'optimize_format',
       order: 3,
       config: {
@@ -127,7 +131,11 @@ export const pressReleasePlaybookTemplate: PressReleasePlaybookConfig = {
                 suggestions: { type: 'array' },
               },
             },
-            embeddings: { type: 'array', items: { type: 'number' }, nullable: true },
+            embeddings: {
+              type: 'array',
+              items: { type: 'number' },
+              nullable: true,
+            },
           },
         },
       },
@@ -137,11 +145,7 @@ export const pressReleasePlaybookTemplate: PressReleasePlaybookConfig = {
     category: 'pr-intelligence',
     tags: ['press-release', 'pr', 'media', 'seo', 'content-generation'],
     estimatedDuration: '2-5 minutes',
-    requiredInputs: [
-      'newsType',
-      'announcement',
-      'companyName',
-    ],
+    requiredInputs: ['newsType', 'announcement', 'companyName'],
   },
 };
 
@@ -169,12 +173,20 @@ export interface StepResult {
  */
 export async function executeGatherContext(
   context: StepHandlerContext,
-  service: { assembleContext: (orgId: string, input: PRGenerationInput) => Promise<unknown> }
+  service: {
+    assembleContext: (
+      orgId: string,
+      input: PRGenerationInput
+    ) => Promise<unknown>;
+  }
 ): Promise<StepResult> {
   const startTime = Date.now();
 
   try {
-    const generationContext = await service.assembleContext(context.orgId, context.input);
+    const generationContext = await service.assembleContext(
+      context.orgId,
+      context.input
+    );
 
     return {
       success: true,
@@ -184,7 +196,8 @@ export async function executeGatherContext(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to gather context',
+      error:
+        error instanceof Error ? error.message : 'Failed to gather context',
       duration: Date.now() - startTime,
     };
   }
@@ -198,9 +211,18 @@ export async function executeGenerateDraft(
   context: StepHandlerContext,
   generationContext: unknown,
   service: {
-    findAngles: (ctx: unknown) => Promise<{ angles: unknown[]; selectedAngle: unknown }>;
-    generateHeadlines: (ctx: unknown, angle: unknown) => Promise<{ variants: unknown[]; selectedHeadline: unknown }>;
-    generateDraft: (ctx: unknown, angle: unknown, headline: unknown) => Promise<unknown>;
+    findAngles: (
+      ctx: unknown
+    ) => Promise<{ angles: unknown[]; selectedAngle: unknown }>;
+    generateHeadlines: (
+      ctx: unknown,
+      angle: unknown
+    ) => Promise<{ variants: unknown[]; selectedHeadline: unknown }>;
+    generateDraft: (
+      ctx: unknown,
+      angle: unknown,
+      headline: unknown
+    ) => Promise<unknown>;
   }
 ): Promise<StepResult> {
   const startTime = Date.now();
@@ -210,7 +232,10 @@ export async function executeGenerateDraft(
     const angleResult = await service.findAngles(generationContext);
 
     // Generate headline variants
-    const headlineResult = await service.generateHeadlines(generationContext, angleResult.selectedAngle);
+    const headlineResult = await service.generateHeadlines(
+      generationContext,
+      angleResult.selectedAngle
+    );
 
     // Generate full draft
     const draft = await service.generateDraft(
@@ -233,7 +258,8 @@ export async function executeGenerateDraft(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to generate draft',
+      error:
+        error instanceof Error ? error.message : 'Failed to generate draft',
       duration: Date.now() - startTime,
     };
   }
@@ -267,7 +293,8 @@ export async function executeOptimizeFormat(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to optimize draft',
+      error:
+        error instanceof Error ? error.message : 'Failed to optimize draft',
       duration: Date.now() - startTime,
     };
   }

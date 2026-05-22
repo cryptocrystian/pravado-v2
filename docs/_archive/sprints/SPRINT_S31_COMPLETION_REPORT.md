@@ -31,11 +31,13 @@ Sprint S31 successfully implemented the Overage Billing Engine V1, providing com
 **File:** `apps/api/supabase/migrations/37_add_overage_billing.sql`
 
 **Schema Changes:**
+
 - Created `org_billing_overages` table with RLS policies
 - Extended `org_billing_usage_monthly` with overage counters
 - Added indexes for efficient overage queries
 
 **Tables:**
+
 ```sql
 org_billing_overages (
   id, org_id, metric_type, amount, unit_price, cost,
@@ -55,6 +57,7 @@ org_billing_usage_monthly (
 **File:** `packages/types/src/billing.ts`
 
 **New Types:**
+
 - `OverageMetricType` - 'tokens' | 'playbook_runs' | 'seats'
 - `BillingPeriod` - Billing period timeframe
 - `OverageRates` - Pricing configuration
@@ -72,6 +75,7 @@ org_billing_usage_monthly (
 **File:** `packages/validators/src/billing.ts`
 
 **New Schemas:**
+
 - `overageMetricTypeSchema` - Validates metric type enum
 - `billingPeriodSchema` - Validates billing period structure
 - `overageRatesSchema` - Validates overage pricing
@@ -88,8 +92,9 @@ org_billing_usage_monthly (
 **File:** `packages/feature-flags/src/flags.ts`
 
 **Addition:**
+
 ```typescript
-ENABLE_OVERAGE_BILLING: true  // S31: Overage-based billing calculations and tracking
+ENABLE_OVERAGE_BILLING: true; // S31: Overage-based billing calculations and tracking
 ```
 
 **Status:** ✅ Complete
@@ -101,22 +106,26 @@ ENABLE_OVERAGE_BILLING: true  // S31: Overage-based billing calculations and tra
 **New Methods:**
 
 #### `calculateOveragesForOrg(orgId: string): Promise<OverageCalculationResult | null>`
+
 - Calculates overage amounts based on usage vs. plan limits
 - Applies overage rates from billing plan
 - Returns detailed cost breakdown
 
 **Formula:**
+
 ```
 overage_amount = max(0, usage - limit)
 cost = overage_amount × unit_price
 ```
 
 #### `recordOverages(orgId: string, calculation: OverageCalculationResult): Promise<void>`
+
 - Inserts overage records into org_billing_overages table
 - Updates org_billing_usage_monthly with overage totals
 - Skips insertion for zero overages
 
 #### `getOverageSummaryForOrg(orgId: string): Promise<OverageCalculationResult | null>`
+
 - Aggregates all overage records for current billing period
 - Returns total costs by metric type
 - Used for dashboard display
@@ -132,11 +141,13 @@ cost = overage_amount × unit_price
 **New Methods (Stub):**
 
 #### `createInvoiceItemForOverage(...): Promise<string>`
+
 - Stub implementation for S31
 - Returns mock invoice item ID
 - Will be fully implemented in future sprint
 
 #### `attachOveragesToUpcomingInvoice(...): Promise<void>`
+
 - Stub implementation for S31
 - Logs overage attachment intent
 - Will create actual Stripe invoice items in future sprint
@@ -150,11 +161,13 @@ cost = overage_amount × unit_price
 **File:** `apps/api/src/routes/billing/index.ts`
 
 #### `GET /api/v1/billing/org/overages`
+
 - Returns overage summary for current billing period
 - Feature-flagged with ENABLE_OVERAGE_BILLING
 - Returns zero overages if none exist
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -172,6 +185,7 @@ cost = overage_amount × unit_price
 ```
 
 #### `POST /api/v1/billing/org/overages/recalculate`
+
 - Recalculates and records overages for current period
 - Accepts optional `force` parameter
 - Returns calculation result
@@ -211,6 +225,7 @@ cost = overage_amount × unit_price
 **File:** `docs/product/billing_overage_engine_v1.md`
 
 **Sections:**
+
 - Overview and architecture
 - Overage calculation formulas with examples
 - Database schema details
@@ -234,6 +249,7 @@ cost = overage_amount × unit_price
 ### Overage Calculation Formula
 
 #### Token Overages
+
 ```
 overage_amount = max(0, tokens_used - token_limit)
 token_limit = soft_limit ?? plan.included_tokens_monthly
@@ -242,12 +258,14 @@ cost_cents = (overage_amount × unit_price) / 1000
 ```
 
 **Example:**
+
 - Plan: 500,000 tokens/month
 - Used: 750,000 tokens
 - Overage: 250,000 tokens @ $0.00001/token
 - **Cost: $25.00**
 
 #### Playbook Run Overages
+
 ```
 overage_amount = max(0, runs_used - run_limit)
 run_limit = soft_limit ?? plan.included_playbook_runs_monthly
@@ -256,12 +274,14 @@ cost_cents = overage_amount × unit_price
 ```
 
 **Example:**
+
 - Plan: 50 runs/month
 - Used: 75 runs
 - Overage: 25 runs @ $1.00/run
 - **Cost: $25.00**
 
 #### Seat Overages
+
 ```
 overage_amount = max(0, seats_used - seat_limit)
 unit_price = 0  // S31: Stub - not priced yet
@@ -270,16 +290,19 @@ unit_price = 0  // S31: Stub - not priced yet
 ### Integration Points
 
 #### S28 (Billing Kernel)
+
 - Reads billing plans for overage rates
 - Reads org_billing_usage_monthly for current usage
 - Writes overage totals back to usage table
 
 #### S29 (Hard Limits)
+
 - Overage billing runs after hard limits are checked
 - Hard limits prevent usage beyond hard caps
 - Overages apply only to usage within allowed limits
 
 #### S30 (Stripe Integration)
+
 - Stub methods for invoice generation
 - Future: Create Stripe invoice items
 - Future: Attach overages to subscription invoices
@@ -289,34 +312,37 @@ unit_price = 0  // S31: Stub - not priced yet
 ## Code Quality Metrics
 
 ### TypeScript Compilation
+
 - **Status:** ✅ PASSING
 - All new code passes `pnpm typecheck`
 - No type errors introduced
 
 ### Linting
+
 - **Status:** ⚠️ Pre-existing warnings
 - S31 code follows linting rules
 - 235 pre-existing warnings (not from S31)
 - Import order errors auto-fixed
 
 ### Test Coverage
+
 - **10+ test cases** covering all overage methods
 - **100% coverage** of core overage logic
 - **Integration tests** for full lifecycle
 
 ### Code Volume
 
-| Component              | Lines Added |
-|------------------------|-------------|
-| Migration              | 128         |
-| Types                  | 100         |
-| Validators             | 75          |
-| BillingService         | 290         |
-| StripeService          | 76          |
-| API Routes             | 152         |
-| Tests                  | 350         |
-| Documentation          | 550         |
-| **Total**              | **1,721**   |
+| Component      | Lines Added |
+| -------------- | ----------- |
+| Migration      | 128         |
+| Types          | 100         |
+| Validators     | 75          |
+| BillingService | 290         |
+| StripeService  | 76          |
+| API Routes     | 152         |
+| Tests          | 350         |
+| Documentation  | 550         |
+| **Total**      | **1,721**   |
 
 ---
 
@@ -324,12 +350,13 @@ unit_price = 0  // S31: Stub - not priced yet
 
 ### Implemented Endpoints
 
-| Method | Endpoint                                    | Description                          |
-|--------|---------------------------------------------|--------------------------------------|
-| GET    | /api/v1/billing/org/overages                | Get overage summary                  |
-| POST   | /api/v1/billing/org/overages/recalculate    | Recalculate and record overages      |
+| Method | Endpoint                                 | Description                     |
+| ------ | ---------------------------------------- | ------------------------------- |
+| GET    | /api/v1/billing/org/overages             | Get overage summary             |
+| POST   | /api/v1/billing/org/overages/recalculate | Recalculate and record overages |
 
 ### Feature Flag Gating
+
 Both endpoints are gated by `ENABLE_OVERAGE_BILLING` feature flag.
 
 ---
@@ -337,6 +364,7 @@ Both endpoints are gated by `ENABLE_OVERAGE_BILLING` feature flag.
 ## Testing Summary
 
 ### Test Execution
+
 ```bash
 pnpm test --filter @pravado/api
 ```
@@ -344,6 +372,7 @@ pnpm test --filter @pravado/api
 **Test File:** `__tests__/overageBilling.test.ts`
 
 **Test Results:**
+
 - ✅ calculateOveragesForOrg - 3 tests
 - ✅ recordOverages - 2 tests
 - ✅ getOverageSummaryForOrg - 2 tests
@@ -351,6 +380,7 @@ pnpm test --filter @pravado/api
 - **Total:** 8 passing tests
 
 ### Coverage Areas
+
 - ✅ Overage calculation logic
 - ✅ Database insertion and updates
 - ✅ Aggregation and retrieval
@@ -402,11 +432,13 @@ pnpm test --filter @pravado/api
 ## Dependencies Satisfied
 
 ### S31 Built On:
+
 - ✅ **S28** - Billing Kernel (plans, usage tracking, quotas)
 - ✅ **S29** - Hard Quota Limits (enforcement, error handling)
 - ✅ **S30** - Stripe Integration (customer management, subscriptions)
 
 ### S31 Enables:
+
 - 🔜 **S32** - Stripe Invoice Generation (full implementation)
 - 🔜 **S33** - Overage Notifications & Dashboards
 - 🔜 **S34** - Advanced Overage Analytics
@@ -416,6 +448,7 @@ pnpm test --filter @pravado/api
 ## Files Changed
 
 ### New Files Created
+
 ```
 apps/api/supabase/migrations/37_add_overage_billing.sql
 apps/api/__tests__/overageBilling.test.ts
@@ -424,6 +457,7 @@ SPRINT_S31_COMPLETION_REPORT.md
 ```
 
 ### Modified Files
+
 ```
 packages/types/src/billing.ts                   (+100 lines)
 packages/validators/src/billing.ts              (+75 lines)
@@ -434,6 +468,7 @@ apps/api/src/routes/billing/index.ts            (+152 lines)
 ```
 
 ### Total Changes
+
 - **4 new files**
 - **6 modified files**
 - **+1,721 lines** of production code
@@ -445,6 +480,7 @@ apps/api/src/routes/billing/index.ts            (+152 lines)
 ## Verification Checklist
 
 ### Core Functionality
+
 - [x] Database migration runs successfully
 - [x] Types compile without errors
 - [x] Validators accept valid inputs
@@ -454,6 +490,7 @@ apps/api/src/routes/billing/index.ts            (+152 lines)
 - [x] Tests pass successfully
 
 ### Code Quality
+
 - [x] TypeScript compilation passes
 - [x] No type errors introduced
 - [x] Code follows existing patterns
@@ -462,6 +499,7 @@ apps/api/src/routes/billing/index.ts            (+152 lines)
 - [x] Feature flag gating throughout
 
 ### Documentation
+
 - [x] Product spec document complete
 - [x] Code comments added
 - [x] API endpoints documented
@@ -474,23 +512,27 @@ apps/api/src/routes/billing/index.ts            (+152 lines)
 ## Deployment Notes
 
 ### Feature Flag
+
 ```typescript
 // packages/feature-flags/src/flags.ts
-ENABLE_OVERAGE_BILLING: true
+ENABLE_OVERAGE_BILLING: true;
 ```
 
 Set to `false` to disable overage billing features.
 
 ### Database Migration
+
 ```bash
 # Run migration 37
 psql $DATABASE_URL < apps/api/supabase/migrations/37_add_overage_billing.sql
 ```
 
 ### Environment Variables
+
 No new environment variables required for S31.
 
 ### Rollback Plan
+
 1. Set `ENABLE_OVERAGE_BILLING = false`
 2. Revert migration 37 if needed
 3. Remove overage-related code
@@ -500,6 +542,7 @@ No new environment variables required for S31.
 ## Performance Considerations
 
 ### Database Impact
+
 - **New table:** `org_billing_overages`
   - Expected rows: ~3 per org per month (tokens, runs, seats)
   - 1,000 orgs = ~3,000 rows/month = ~36,000 rows/year
@@ -508,11 +551,13 @@ No new environment variables required for S31.
   - Added 3 numeric columns (minimal overhead)
 
 ### Query Performance
+
 - Indexed on (org_id, period) for fast lookups
 - Aggregation queries use composite indexes
 - Expected query time: <50ms for typical org
 
 ### API Response Times
+
 - `GET /org/overages`: ~100-200ms (database query + aggregation)
 - `POST /org/overages/recalculate`: ~200-400ms (calculation + insertion)
 
@@ -521,17 +566,22 @@ No new environment variables required for S31.
 ## Security & Compliance
 
 ### Row Level Security
+
 All overage tables have RLS policies:
+
 - **SELECT:** Users can view their org's overages
 - **INSERT/UPDATE/DELETE:** Service role only
 
 ### Data Privacy
+
 - Overage records contain no PII
 - Org-scoped access control enforced
 - Audit trail via created_at timestamps
 
 ### Authentication
+
 All API endpoints require:
+
 - Valid Bearer token
 - Org membership verification
 
@@ -542,6 +592,7 @@ All API endpoints require:
 Sprint S31 has been **successfully completed** with all deliverables implemented, tested, and documented. The Overage Billing Engine V1 provides a solid foundation for tracking and billing usage beyond plan limits, with clear integration points for future Stripe invoice generation.
 
 ### Next Steps
+
 1. **S32:** Implement full Stripe invoice generation (replace stubs)
 2. **S33:** Add overage notifications and dashboard UI
 3. **S34:** Enable for beta customers

@@ -5,7 +5,10 @@
 
 'use client';
 
-import type { ExecutiveRadarSummary, ReputationTimeWindow } from '@pravado/types';
+import type {
+  ExecutiveRadarSummary,
+  ReputationTimeWindow,
+} from '@pravado/types';
 import {
   FileText,
   AlertTriangle,
@@ -19,12 +22,8 @@ import {
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  getTimeWindowLabel,
-  formatDate,
-} from '@/lib/brandReputationApi';
+import { getTimeWindowLabel, formatDate } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-
 
 interface ExecutiveSummaryPanelProps {
   summary: ExecutiveRadarSummary;
@@ -53,7 +52,10 @@ export function ExecutiveSummaryPanel({
               {getTimeWindowLabel(timeWindow)}
             </Badge>
             {summary.activeCrises > 0 && (
-              <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">
+              <Badge
+                variant="outline"
+                className="bg-red-50 text-red-700 text-xs"
+              >
                 <AlertCircle className="h-3 w-3 mr-1" />
                 {summary.activeCrises} Active Crisis
               </Badge>
@@ -66,7 +68,8 @@ export function ExecutiveSummaryPanel({
         {/* Summary Narrative */}
         <div className="p-4 bg-gray-50 rounded-lg border">
           <p className="text-sm text-gray-700 leading-relaxed">
-            {summary.summary || 'No executive summary available for this period.'}
+            {summary.summary ||
+              'No executive summary available for this period.'}
           </p>
         </div>
 
@@ -79,11 +82,18 @@ export function ExecutiveSummaryPanel({
             <div className="text-xs text-blue-600">Current Score</div>
           </div>
           <div className="p-3 bg-gray-50 rounded-lg text-center">
-            <div className={cn(
-              'text-2xl font-bold',
-              summary.scoreDelta > 0 ? 'text-green-600' : summary.scoreDelta < 0 ? 'text-red-600' : 'text-gray-600'
-            )}>
-              {summary.scoreDelta > 0 ? '+' : ''}{summary.scoreDelta.toFixed(1)}
+            <div
+              className={cn(
+                'text-2xl font-bold',
+                summary.scoreDelta > 0
+                  ? 'text-green-600'
+                  : summary.scoreDelta < 0
+                    ? 'text-red-600'
+                    : 'text-gray-600'
+              )}
+            >
+              {summary.scoreDelta > 0 ? '+' : ''}
+              {summary.scoreDelta.toFixed(1)}
             </div>
             <div className="text-xs text-gray-600">Score Change</div>
           </div>
@@ -106,7 +116,9 @@ export function ExecutiveSummaryPanel({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-red-600" />
-              <span className="text-sm font-medium text-gray-700">Key Risks</span>
+              <span className="text-sm font-medium text-gray-700">
+                Key Risks
+              </span>
             </div>
             <div className="pl-6 space-y-2">
               {summary.keyRisks.map((risk, idx) => (
@@ -127,7 +139,9 @@ export function ExecutiveSummaryPanel({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Lightbulb className="h-4 w-4 text-green-600" />
-              <span className="text-sm font-medium text-gray-700">Key Opportunities</span>
+              <span className="text-sm font-medium text-gray-700">
+                Key Opportunities
+              </span>
             </div>
             <div className="pl-6 space-y-2">
               {summary.keyOpportunities.map((opportunity, idx) => (
@@ -148,7 +162,9 @@ export function ExecutiveSummaryPanel({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <CheckSquare className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-medium text-gray-700">Recommended Actions</span>
+              <span className="text-sm font-medium text-gray-700">
+                Recommended Actions
+              </span>
             </div>
             <div className="pl-6 space-y-2">
               {summary.recommendedActions.map((action, idx) => (
@@ -171,18 +187,22 @@ export function ExecutiveSummaryPanel({
           <div className="p-3 bg-red-50 rounded-lg border border-red-200">
             <div className="flex items-center gap-2 mb-2">
               <AlertCircle className="h-4 w-4 text-red-600" />
-              <span className="text-sm font-medium text-red-700">Crisis Impact</span>
+              <span className="text-sm font-medium text-red-700">
+                Crisis Impact
+              </span>
             </div>
             <p className="text-sm text-red-800">{summary.crisisNotes}</p>
             <p className="text-xs text-red-600 mt-1">
-              Impact on score: -{Math.abs(summary.crisisImpactOnScore).toFixed(1)} points
+              Impact on score: -
+              {Math.abs(summary.crisisImpactOnScore).toFixed(1)} points
             </p>
           </div>
         )}
 
         {/* Timestamp */}
         <div className="text-xs text-gray-500 text-right pt-2 border-t">
-          Analysis window: {formatDate(summary.windowStart)} - {formatDate(summary.windowEnd)}
+          Analysis window: {formatDate(summary.windowStart)} -{' '}
+          {formatDate(summary.windowEnd)}
           <br />
           Calculated at: {formatDate(summary.calculatedAt)}
         </div>

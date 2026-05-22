@@ -20,20 +20,20 @@ This guide covers deploying the Pravado Platform (API + Dashboard) to developmen
 
 ### System Requirements
 
-| Requirement | Version | Notes |
-|-------------|---------|-------|
-| Node.js | >=18.x | LTS recommended |
-| pnpm | >=8.x | Package manager |
-| Git | Latest | Version control |
+| Requirement | Version | Notes           |
+| ----------- | ------- | --------------- |
+| Node.js     | >=18.x  | LTS recommended |
+| pnpm        | >=8.x   | Package manager |
+| Git         | Latest  | Version control |
 
 ### External Services
 
-| Service | Purpose | Required |
-|---------|---------|----------|
-| **Supabase** | Database & Auth | Yes |
-| **OpenAI** or **Anthropic** | LLM Provider | Yes (for AI features) |
-| **Mailgun** | Email delivery | No (console fallback) |
-| **Stripe** | Billing/Payments | No (disabled by default) |
+| Service                     | Purpose          | Required                 |
+| --------------------------- | ---------------- | ------------------------ |
+| **Supabase**                | Database & Auth  | Yes                      |
+| **OpenAI** or **Anthropic** | LLM Provider     | Yes (for AI features)    |
+| **Mailgun**                 | Email delivery   | No (console fallback)    |
+| **Stripe**                  | Billing/Payments | No (disabled by default) |
 
 ### Supabase Setup
 
@@ -48,16 +48,19 @@ This guide covers deploying the Pravado Platform (API + Dashboard) to developmen
 Choose one:
 
 **OpenAI:**
+
 - Get API key from https://platform.openai.com
 - Set `LLM_PROVIDER=openai`
 - Set `LLM_OPENAI_API_KEY=sk-...`
 
 **Anthropic:**
+
 - Get API key from https://console.anthropic.com
 - Set `LLM_PROVIDER=anthropic`
 - Set `LLM_ANTHROPIC_API_KEY=sk-ant-...`
 
 **Stub Mode (Testing):**
+
 - Set `LLM_PROVIDER=stub` (default)
 - No API key required
 - LLM calls return placeholder responses
@@ -141,6 +144,7 @@ supabase db push
 **Option B: Direct SQL**
 
 Apply migrations 00-76 in order via the Supabase SQL Editor:
+
 1. Go to https://supabase.com/dashboard/project/_/sql
 2. Paste and run each migration file in order
 
@@ -157,12 +161,14 @@ pnpm --filter @pravado/feature-flags build
 ### 5. Start Development Servers
 
 **Terminal 1 - API:**
+
 ```bash
 pnpm --filter @pravado/api dev
 # Runs on http://localhost:3001
 ```
 
 **Terminal 2 - Dashboard:**
+
 ```bash
 pnpm --filter @pravado/dashboard dev
 # Runs on http://localhost:3000
@@ -189,15 +195,18 @@ curl http://localhost:3001/health/info
 ### API Deployment
 
 The API is a Node.js Fastify application that can be deployed to:
+
 - **Recommended:** Railway, Render, Fly.io, DigitalOcean App Platform
 - **Alternative:** AWS ECS, Google Cloud Run, Kubernetes
 
 **Build Command:**
+
 ```bash
 pnpm --filter @pravado/api build
 ```
 
 **Start Command:**
+
 ```bash
 pnpm --filter @pravado/api start
 # Or directly: node apps/api/dist/index.js
@@ -205,52 +214,56 @@ pnpm --filter @pravado/api start
 
 **Environment Variables (Production):**
 
-| Variable | Required | Notes |
-|----------|----------|-------|
-| `NODE_ENV` | Yes | Set to `production` |
-| `API_PORT` | No | Default: 3001 |
-| `API_HOST` | No | Set to `0.0.0.0` for containers |
-| `SUPABASE_URL` | Yes | Your Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Service role key (secret!) |
-| `SUPABASE_ANON_KEY` | Yes | Anon key |
-| `CORS_ORIGIN` | Yes | Dashboard URL |
-| `COOKIE_SECRET` | Yes | Random secret (32+ chars) |
-| `LLM_PROVIDER` | No | `openai` or `anthropic` |
-| `LLM_OPENAI_API_KEY` | Cond. | If using OpenAI |
-| `LLM_ANTHROPIC_API_KEY` | Cond. | If using Anthropic |
-| `LOG_LEVEL` | No | `info` recommended |
+| Variable                    | Required | Notes                           |
+| --------------------------- | -------- | ------------------------------- |
+| `NODE_ENV`                  | Yes      | Set to `production`             |
+| `API_PORT`                  | No       | Default: 3001                   |
+| `API_HOST`                  | No       | Set to `0.0.0.0` for containers |
+| `SUPABASE_URL`              | Yes      | Your Supabase project URL       |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes      | Service role key (secret!)      |
+| `SUPABASE_ANON_KEY`         | Yes      | Anon key                        |
+| `CORS_ORIGIN`               | Yes      | Dashboard URL                   |
+| `COOKIE_SECRET`             | Yes      | Random secret (32+ chars)       |
+| `LLM_PROVIDER`              | No       | `openai` or `anthropic`         |
+| `LLM_OPENAI_API_KEY`        | Cond.    | If using OpenAI                 |
+| `LLM_ANTHROPIC_API_KEY`     | Cond.    | If using Anthropic              |
+| `LOG_LEVEL`                 | No       | `info` recommended              |
 
 **Health Check Configuration:**
 
 Configure your load balancer/orchestrator with:
+
 - **Liveness:** `GET /health/live` (should return 200)
 - **Readiness:** `GET /health/ready` (should return 200)
 
 ### Dashboard Deployment
 
 The dashboard is a Next.js application. Deploy to:
+
 - **Recommended:** Vercel (native Next.js support)
 - **Alternative:** Netlify, Cloudflare Pages, Docker
 
 **Build Command:**
+
 ```bash
 pnpm --filter @pravado/dashboard build
 ```
 
 **Start Command (if self-hosting):**
+
 ```bash
 pnpm --filter @pravado/dashboard start
 ```
 
 **Environment Variables:**
 
-| Variable | Required | Notes |
-|----------|----------|-------|
-| `NODE_ENV` | Yes | Set to `production` |
-| `NEXT_PUBLIC_API_URL` | Yes | API URL (e.g., https://api.pravado.com) |
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anon key |
-| `NEXT_PUBLIC_DASHBOARD_URL` | Yes | Dashboard URL for invite links |
+| Variable                        | Required | Notes                                   |
+| ------------------------------- | -------- | --------------------------------------- |
+| `NODE_ENV`                      | Yes      | Set to `production`                     |
+| `NEXT_PUBLIC_API_URL`           | Yes      | API URL (e.g., https://api.pravado.com) |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Yes      | Supabase project URL                    |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes      | Supabase anon key                       |
+| `NEXT_PUBLIC_DASHBOARD_URL`     | Yes      | Dashboard URL for invite links          |
 
 **Vercel Deployment:**
 
@@ -310,6 +323,7 @@ VALUES ('user-uuid', 'org-uuid', 'owner', now());
 ### 4. Verify Dashboard Access
 
 Visit key dashboards:
+
 - `/app` - Main dashboard
 - `/app/playbooks` - AI Playbooks
 - `/app/content` - Content Intelligence
@@ -318,6 +332,7 @@ Visit key dashboards:
 ### 5. Test LLM Integration
 
 If LLM is configured:
+
 1. Create a new playbook
 2. Run a step that uses AI
 3. Verify generation works
@@ -328,12 +343,12 @@ If LLM is configured:
 
 ### Available Endpoints
 
-| Endpoint | Purpose | Response |
-|----------|---------|----------|
-| `GET /health/live` | Liveness probe | `{"alive":true}` |
+| Endpoint            | Purpose         | Response                         |
+| ------------------- | --------------- | -------------------------------- |
+| `GET /health/live`  | Liveness probe  | `{"alive":true}`                 |
 | `GET /health/ready` | Readiness probe | `{"ready":true,"version":"..."}` |
-| `GET /health/info` | App info | Environment, features, version |
-| `GET /` | Root | App name, version, status |
+| `GET /health/info`  | App info        | Environment, features, version   |
+| `GET /`             | Root            | App name, version, status        |
 
 ### Recommended Monitoring
 
@@ -366,21 +381,25 @@ All logs are JSON-structured:
 ### Common Issues
 
 **"Invalid environment configuration"**
+
 - Check all required env vars are set
 - Verify URLs are valid (include https://)
 - Check service role key is correct
 
 **Database connection errors**
+
 - Verify `SUPABASE_URL` is correct
 - Check service role key has correct permissions
 - Ensure migrations are applied
 
 **LLM calls failing**
+
 - Verify API key is valid
 - Check LLM_PROVIDER matches your key type
 - Review rate limits on your LLM provider
 
 **CORS errors**
+
 - Set `CORS_ORIGIN` to your dashboard URL
 - Include protocol (https://)
 - Restart API after changes

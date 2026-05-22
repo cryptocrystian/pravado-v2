@@ -62,13 +62,13 @@ curl http://localhost:3001/health/info | jq '.environment'
 
 ### Freeze Behavior
 
-| Operation | Frozen Routes | Result |
-|-----------|---------------|--------|
-| GET / HEAD | All | Normal 200 response |
+| Operation                   | Frozen Routes          | Result                      |
+| --------------------------- | ---------------------- | --------------------------- |
+| GET / HEAD                  | All                    | Normal 200 response         |
 | POST / PUT / PATCH / DELETE | Core domains (S38-S76) | 503 + PLATFORM_FROZEN error |
-| Any | /health/* | Always works |
-| Any | /api/v1/auth/* | Always works |
-| Any | /api/v1/logs/* | Always works |
+| Any                         | /health/\*             | Always works                |
+| Any                         | /api/v1/auth/\*        | Always works                |
+| Any                         | /api/v1/logs/\*        | Always works                |
 
 ### When to Use Freeze Mode
 
@@ -158,6 +158,7 @@ Push to main → Validate → Test → Build → Deploy Staging → Deploy Produ
 **File:** `.github/workflows/deploy-api.yml`
 
 **Triggers:**
+
 - Push to `main` (auto-deploy to staging)
 - Manual dispatch (select staging or production)
 
@@ -174,6 +175,7 @@ Push to main → Validate → Test → Build → Deploy Staging → Deploy Produ
 **File:** `.github/workflows/deploy-dashboard.yml`
 
 **Triggers:**
+
 - Push to `main` (auto-deploy preview)
 - Manual dispatch (select staging or production)
 
@@ -189,15 +191,15 @@ Push to main → Validate → Test → Build → Deploy Staging → Deploy Produ
 
 Configure these in GitHub → Settings → Secrets:
 
-| Secret | Description |
-|--------|-------------|
-| `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Service role key |
-| `SUPABASE_ANON_KEY` | Anon/public key |
-| `VERCEL_TOKEN` | Vercel deployment token |
-| `VERCEL_ORG_ID` | Vercel organization ID |
-| `VERCEL_PROJECT_ID` | Vercel project ID |
-| `NEXT_PUBLIC_*` | Dashboard env vars |
+| Secret                      | Description             |
+| --------------------------- | ----------------------- |
+| `SUPABASE_URL`              | Supabase project URL    |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key        |
+| `SUPABASE_ANON_KEY`         | Anon/public key         |
+| `VERCEL_TOKEN`              | Vercel deployment token |
+| `VERCEL_ORG_ID`             | Vercel organization ID  |
+| `VERCEL_PROJECT_ID`         | Vercel project ID       |
+| `NEXT_PUBLIC_*`             | Dashboard env vars      |
 
 ### Deployment Verification
 
@@ -300,19 +302,21 @@ pnpm --filter @pravado/api seed:demo
 
 ### Demo Credentials
 
-| User | Email | Role |
-|------|-------|------|
-| Executive | demo-exec@demo.local | Owner |
-| Analyst | demo-analyst@demo.local | Member |
+| User      | Email                   | Role   |
+| --------- | ----------------------- | ------ |
+| Executive | demo-exec@demo.local    | Owner  |
+| Analyst   | demo-analyst@demo.local | Member |
 
 ### Re-Running Seed
 
 The seed script is idempotent:
+
 - Existing org is reused
 - Existing users are linked
 - New data is appended
 
 To start fresh:
+
 1. Delete demo org from database
 2. Run seed script again
 
@@ -327,11 +331,11 @@ DELETE FROM orgs WHERE slug = 'demo-org';
 
 ### Health Endpoints
 
-| Endpoint | Purpose | Expected |
-|----------|---------|----------|
-| `/health/live` | Liveness probe | `{"alive":true}` |
+| Endpoint        | Purpose         | Expected                               |
+| --------------- | --------------- | -------------------------------------- |
+| `/health/live`  | Liveness probe  | `{"alive":true}`                       |
 | `/health/ready` | Readiness probe | `{"ready":true,"version":"1.0.0-rc1"}` |
-| `/health/info` | App info | Full config (safe fields) |
+| `/health/info`  | App info        | Full config (safe fields)              |
 
 ### Recommended Monitoring
 

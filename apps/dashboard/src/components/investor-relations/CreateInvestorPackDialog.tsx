@@ -5,7 +5,10 @@
 
 'use client';
 
-import type { InvestorPackFormat, InvestorPrimaryAudience } from '@pravado/types';
+import type {
+  InvestorPackFormat,
+  InvestorPrimaryAudience,
+} from '@pravado/types';
 import { Plus, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -29,7 +32,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { createPack, type CreateInvestorPack } from '@/lib/investorRelationsApi';
+import {
+  createPack,
+  type CreateInvestorPack,
+} from '@/lib/investorRelationsApi';
 
 interface CreateInvestorPackDialogProps {
   onSuccess?: () => void;
@@ -98,8 +104,8 @@ export function CreateInvestorPackDialog({
           <DialogHeader>
             <DialogTitle>Create Investor Pack</DialogTitle>
             <DialogDescription>
-              Create a new investor relations pack for quarterly earnings, annual review, or other
-              investor communications.
+              Create a new investor relations pack for quarterly earnings,
+              annual review, or other investor communications.
             </DialogDescription>
           </DialogHeader>
 
@@ -110,7 +116,9 @@ export function CreateInvestorPackDialog({
                 id="title"
                 placeholder="Q1 2025 Investor Pack"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 required
               />
             </div>
@@ -121,7 +129,9 @@ export function CreateInvestorPackDialog({
                 id="description"
                 placeholder="Brief description of this pack..."
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 rows={2}
               />
             </div>
@@ -132,18 +142,25 @@ export function CreateInvestorPackDialog({
                 <Select
                   value={formData.format}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, format: value as InvestorPackFormat })
+                    setFormData({
+                      ...formData,
+                      format: value as InvestorPackFormat,
+                    })
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select format" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="quarterly_earnings">Quarterly Earnings</SelectItem>
+                    <SelectItem value="quarterly_earnings">
+                      Quarterly Earnings
+                    </SelectItem>
                     <SelectItem value="annual_review">Annual Review</SelectItem>
                     <SelectItem value="investor_day">Investor Day</SelectItem>
                     <SelectItem value="board_update">Board Update</SelectItem>
-                    <SelectItem value="fundraising_round">Fundraising Round</SelectItem>
+                    <SelectItem value="fundraising_round">
+                      Fundraising Round
+                    </SelectItem>
                     <SelectItem value="custom">Custom</SelectItem>
                   </SelectContent>
                 </Select>
@@ -154,17 +171,24 @@ export function CreateInvestorPackDialog({
                 <Select
                   value={formData.primaryAudience}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, primaryAudience: value as InvestorPrimaryAudience })
+                    setFormData({
+                      ...formData,
+                      primaryAudience: value as InvestorPrimaryAudience,
+                    })
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select audience" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="investors">Institutional Investors</SelectItem>
+                    <SelectItem value="investors">
+                      Institutional Investors
+                    </SelectItem>
                     <SelectItem value="board">Board of Directors</SelectItem>
                     <SelectItem value="analysts">Financial Analysts</SelectItem>
-                    <SelectItem value="internal_execs">Internal Executives</SelectItem>
+                    <SelectItem value="internal_execs">
+                      Internal Executives
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -209,7 +233,9 @@ export function CreateInvestorPackDialog({
                 <Label htmlFor="fiscalQuarter">Fiscal Quarter</Label>
                 <Select
                   value={formData.fiscalQuarter || ''}
-                  onValueChange={(value) => setFormData({ ...formData, fiscalQuarter: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, fiscalQuarter: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select quarter" />
@@ -232,7 +258,10 @@ export function CreateInvestorPackDialog({
                   max={2100}
                   value={formData.fiscalYear}
                   onChange={(e) =>
-                    setFormData({ ...formData, fiscalYear: parseInt(e.target.value) })
+                    setFormData({
+                      ...formData,
+                      fiscalYear: parseInt(e.target.value),
+                    })
                   }
                 />
               </div>
@@ -243,7 +272,12 @@ export function CreateInvestorPackDialog({
                 <Label htmlFor="tone">Writing Tone</Label>
                 <Select
                   value={formData.tone}
-                  onValueChange={(value) => setFormData({ ...formData, tone: value as 'professional' | 'formal' | 'executive' })}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      tone: value as 'professional' | 'formal' | 'executive',
+                    })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select tone" />
@@ -260,7 +294,15 @@ export function CreateInvestorPackDialog({
                 <Label htmlFor="targetLength">Target Length</Label>
                 <Select
                   value={formData.targetLength}
-                  onValueChange={(value) => setFormData({ ...formData, targetLength: value as 'brief' | 'standard' | 'comprehensive' })}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      targetLength: value as
+                        | 'brief'
+                        | 'standard'
+                        | 'comprehensive',
+                    })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select length" />

@@ -17,19 +17,25 @@ export async function POST(
 
   if (!accessToken) {
     return NextResponse.json(
-      { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+      {
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
+      },
       { status: 401 }
     );
   }
 
-  const response = await fetch(`${API_URL}/api/v1/orgs/${id}/invites/${inviteId}/resend`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Cookie: `access_token=${accessToken}`,
-    },
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${API_URL}/api/v1/orgs/${id}/invites/${inviteId}/resend`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: `access_token=${accessToken}`,
+      },
+      credentials: 'include',
+    }
+  );
 
   const data = await response.json();
 

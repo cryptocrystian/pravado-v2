@@ -14,7 +14,9 @@ test.describe('Audit Log Page', () => {
   test.describe('Page Layout', () => {
     test('should display page header', async ({ page }) => {
       await expect(page.locator('h1')).toContainText('Audit Log');
-      await expect(page.locator('text=Track and review all activity')).toBeVisible();
+      await expect(
+        page.locator('text=Track and review all activity')
+      ).toBeVisible();
     });
 
     test('should display stats cards', async ({ page }) => {
@@ -41,8 +43,9 @@ test.describe('Audit Log Page', () => {
       await page.selectOption('select:near(:text("Severity"))', 'error');
 
       // Wait for filtered results
-      await page.waitForResponse((response) =>
-        response.url().includes('/api/v1/audit') && response.status() === 200
+      await page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/v1/audit') && response.status() === 200
       );
 
       // Verify filter was applied (table should update)
@@ -55,8 +58,9 @@ test.describe('Audit Log Page', () => {
       // Select system actor
       await page.selectOption('select:near(:text("Actor Type"))', 'system');
 
-      await page.waitForResponse((response) =>
-        response.url().includes('/api/v1/audit') && response.status() === 200
+      await page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/v1/audit') && response.status() === 200
       );
 
       await expect(page.locator('table')).toBeVisible();
@@ -81,8 +85,9 @@ test.describe('Audit Log Page', () => {
       const startDateInput = page.locator('input[type="date"]').first();
       await startDateInput.fill('2024-01-01');
 
-      await page.waitForResponse((response) =>
-        response.url().includes('/api/v1/audit') && response.status() === 200
+      await page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/v1/audit') && response.status() === 200
       );
 
       await expect(page.locator('table')).toBeVisible();
@@ -94,7 +99,9 @@ test.describe('Audit Log Page', () => {
       await page.waitForSelector('table');
 
       // Check for pagination text
-      await expect(page.locator('text=/Showing \\d+ to \\d+ of \\d+ results/')).toBeVisible();
+      await expect(
+        page.locator('text=/Showing \\d+ to \\d+ of \\d+ results/')
+      ).toBeVisible();
 
       // Check for navigation buttons
       await expect(page.locator('button:has-text("Previous")')).toBeVisible();
@@ -105,19 +112,25 @@ test.describe('Audit Log Page', () => {
       await page.waitForSelector('table');
 
       // Get initial showing text
-      const initialText = await page.locator('text=/Showing \\d+ to/').textContent();
+      const initialText = await page
+        .locator('text=/Showing \\d+ to/')
+        .textContent();
 
       // Click next if enabled
       const nextButton = page.locator('button:has-text("Next")');
       if (await nextButton.isEnabled()) {
         await nextButton.click();
 
-        await page.waitForResponse((response) =>
-          response.url().includes('/api/v1/audit') && response.status() === 200
+        await page.waitForResponse(
+          (response) =>
+            response.url().includes('/api/v1/audit') &&
+            response.status() === 200
         );
 
         // Verify page changed
-        const newText = await page.locator('text=/Showing \\d+ to/').textContent();
+        const newText = await page
+          .locator('text=/Showing \\d+ to/')
+          .textContent();
         expect(newText).not.toBe(initialText);
       }
     });
@@ -143,7 +156,11 @@ test.describe('Audit Log Page', () => {
       await expect(page.locator('text=Event ID')).toBeVisible();
 
       // Close modal
-      await page.locator('button:has(svg)').filter({ hasText: '' }).first().click();
+      await page
+        .locator('button:has(svg)')
+        .filter({ hasText: '' })
+        .first()
+        .click();
 
       // Modal should be closed
       await expect(page.locator('.fixed.inset-0')).not.toBeVisible();
@@ -210,7 +227,9 @@ test.describe('Audit Log Page', () => {
       await expect(page.locator('text=Status')).toBeVisible();
     });
 
-    test('should show download button when export completes', async ({ page }) => {
+    test('should show download button when export completes', async ({
+      page,
+    }) => {
       await page.waitForSelector('table');
 
       // Intercept export API call
@@ -254,7 +273,9 @@ test.describe('Audit Log Page', () => {
       await page.locator('button:has-text("Export CSV")').click();
 
       // Wait for modal with download button
-      await expect(page.locator('a:has-text("Download CSV")')).toBeVisible({ timeout: 10000 });
+      await expect(page.locator('a:has-text("Download CSV")')).toBeVisible({
+        timeout: 10000,
+      });
     });
   });
 
@@ -301,7 +322,11 @@ test.describe('Audit Log Page', () => {
 
       await page.reload();
 
-      await expect(page.locator('text=Failed to fetch audit logs').or(page.locator('.bg-red-50'))).toBeVisible();
+      await expect(
+        page
+          .locator('text=Failed to fetch audit logs')
+          .or(page.locator('.bg-red-50'))
+      ).toBeVisible();
     });
   });
 });

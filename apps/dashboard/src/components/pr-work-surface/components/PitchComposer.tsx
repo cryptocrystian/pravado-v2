@@ -21,7 +21,12 @@ interface Props {
   onClose?: () => void;
 }
 
-export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) {
+export function PitchComposer({
+  contact,
+  onSend,
+  onSaveDraft,
+  onClose,
+}: Props) {
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [personalizationScore, setPersonalizationScore] = useState(0);
@@ -33,7 +38,12 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
     if (body.length > 100) score += 20;
     if (contact?.name && body.includes(contact.name)) score += 20;
     if (contact?.outlet && body.includes(contact.outlet)) score += 20;
-    if (contact?.beats?.some((beat) => body.toLowerCase().includes(beat.toLowerCase()))) score += 20;
+    if (
+      contact?.beats?.some((beat) =>
+        body.toLowerCase().includes(beat.toLowerCase())
+      )
+    )
+      score += 20;
     setPersonalizationScore(Math.min(score, 100));
   };
 
@@ -84,8 +94,18 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-white/5 transition-colors"
           >
-            <svg className="w-5 h-5 text-white/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5 text-white/55"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         )}
@@ -132,7 +152,9 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
       {/* Personalization Score */}
       <div className="flex items-center justify-between p-4 rounded-xl bg-slate-2 border border-border-subtle">
         <div>
-          <div className="text-sm font-medium text-white/95">Personalization Score</div>
+          <div className="text-sm font-medium text-white/95">
+            Personalization Score
+          </div>
           <div className="text-xs text-white/55 mt-0.5">
             Higher scores indicate better tailoring to the contact
           </div>
@@ -144,8 +166,8 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
                 personalizationScore >= 80
                   ? 'bg-semantic-success'
                   : personalizationScore >= 60
-                  ? 'bg-semantic-warning'
-                  : 'bg-semantic-danger'
+                    ? 'bg-semantic-warning'
+                    : 'bg-semantic-danger'
               }`}
               style={{ width: `${personalizationScore}%` }}
             />
@@ -155,8 +177,8 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
               personalizationScore >= 80
                 ? 'text-semantic-success'
                 : personalizationScore >= 60
-                ? 'text-semantic-warning'
-                : 'text-semantic-danger'
+                  ? 'text-semantic-warning'
+                  : 'text-semantic-danger'
             }`}
           >
             {personalizationScore}%
@@ -168,12 +190,23 @@ export function PitchComposer({ contact, onSend, onSaveDraft, onClose }: Props) 
       {personalizationScore < 60 && personalizationScore > 0 && (
         <div className="p-3 rounded-lg bg-semantic-warning/10 border border-semantic-warning/20">
           <div className="flex items-start gap-2">
-            <svg className="w-4 h-4 text-semantic-warning shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              className="w-4 h-4 text-semantic-warning shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
             <div className="text-xs text-semantic-warning">
-              <strong>Low personalization detected.</strong> Consider adding the contact&apos;s name,
-              outlet, or relevant beat topics to improve engagement.
+              <strong>Low personalization detected.</strong> Consider adding the
+              contact&apos;s name, outlet, or relevant beat topics to improve
+              engagement.
             </div>
           </div>
         </div>

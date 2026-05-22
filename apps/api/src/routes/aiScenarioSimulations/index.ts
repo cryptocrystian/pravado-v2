@@ -27,7 +27,11 @@ import { FastifyPluginAsync } from 'fastify';
 import * as service from '../../services/aiScenarioSimulationService';
 
 // Helper to get service context from request
-const getContext = (request: { supabase: unknown; orgId: string; userId: string }) => ({
+const getContext = (request: {
+  supabase: unknown;
+  orgId: string;
+  userId: string;
+}) => ({
   supabase: request.supabase as service.AIScenarioSimulationContext['supabase'],
   orgId: request.orgId,
   userId: request.userId,
@@ -43,7 +47,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
     if (!isEnabled('ENABLE_AI_SCENARIO_SIMULATIONS')) {
       return reply.status(403).send({
         success: false,
-        error: 'AI Scenario Simulations feature is not enabled for this organization',
+        error:
+          'AI Scenario Simulations feature is not enabled for this organization',
       });
     }
   });
@@ -60,7 +65,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.listSimulations(ctx, query);
       return reply.send({ success: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list simulations';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list simulations';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -73,7 +79,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const simulation = await service.createSimulation(ctx, input);
       return reply.status(201).send({ success: true, simulation });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to create simulation';
+      const message =
+        error instanceof Error ? error.message : 'Failed to create simulation';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -86,12 +93,15 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const simulation = await service.getSimulationById(ctx, id);
 
       if (!simulation) {
-        return reply.status(404).send({ success: false, error: 'Simulation not found' });
+        return reply
+          .status(404)
+          .send({ success: false, error: 'Simulation not found' });
       }
 
       return reply.send({ success: true, simulation });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to get simulation';
+      const message =
+        error instanceof Error ? error.message : 'Failed to get simulation';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -105,7 +115,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const simulation = await service.updateSimulation(ctx, id, input);
       return reply.send({ success: true, simulation });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to update simulation';
+      const message =
+        error instanceof Error ? error.message : 'Failed to update simulation';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -119,7 +130,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.archiveSimulation(ctx, id, input.reason);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to archive simulation';
+      const message =
+        error instanceof Error ? error.message : 'Failed to archive simulation';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -132,7 +144,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       await service.deleteSimulation(ctx, id);
       return reply.status(204).send();
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to delete simulation';
+      const message =
+        error instanceof Error ? error.message : 'Failed to delete simulation';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -150,7 +163,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const run = await service.startRun(ctx, id, input);
       return reply.status(201).send({ success: true, run });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to start run';
+      const message =
+        error instanceof Error ? error.message : 'Failed to start run';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -164,7 +178,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.listRunsForSimulation(ctx, id, query);
       return reply.send({ success: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list runs';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list runs';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -177,12 +192,15 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.getRunDetail(ctx, runId);
 
       if (!result) {
-        return reply.status(404).send({ success: false, error: 'Run not found' });
+        return reply
+          .status(404)
+          .send({ success: false, error: 'Run not found' });
       }
 
       return reply.send({ success: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to get run';
+      const message =
+        error instanceof Error ? error.message : 'Failed to get run';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -196,7 +214,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const run = await service.runOneStep(ctx, runId, input);
       return reply.send({ success: true, run });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to step run';
+      const message =
+        error instanceof Error ? error.message : 'Failed to step run';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -210,7 +229,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.runUntilConverged(ctx, runId, input);
       return reply.send({ success: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to run to completion';
+      const message =
+        error instanceof Error ? error.message : 'Failed to run to completion';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -224,7 +244,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.postAgentFeedback(ctx, runId, input);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to post feedback';
+      const message =
+        error instanceof Error ? error.message : 'Failed to post feedback';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -237,7 +258,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const run = await service.abortRun(ctx, runId);
       return reply.send({ success: true, run });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to abort run';
+      const message =
+        error instanceof Error ? error.message : 'Failed to abort run';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -255,7 +277,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.listRunTurns(ctx, runId, query);
       return reply.send({ success: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list turns';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list turns';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -269,7 +292,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.listRunMetrics(ctx, runId, query);
       return reply.send({ success: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list metrics';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list metrics';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -283,7 +307,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.listRunOutcomes(ctx, runId, query);
       return reply.send({ success: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list outcomes';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list outcomes';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -297,7 +322,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.summarizeOutcomes(ctx, runId, input);
       return reply.send({ success: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to summarize outcomes';
+      const message =
+        error instanceof Error ? error.message : 'Failed to summarize outcomes';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -313,7 +339,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       const stats = await service.getSimulationStats(ctx);
       return reply.send({ success: true, stats });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to get stats';
+      const message =
+        error instanceof Error ? error.message : 'Failed to get stats';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -342,7 +369,8 @@ const aiScenarioSimulationRoutes: FastifyPluginAsync = async (fastify) => {
       });
       return reply.send({ success: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list audit logs';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list audit logs';
       return reply.status(400).send({ success: false, error: message });
     }
   });

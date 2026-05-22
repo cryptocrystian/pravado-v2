@@ -67,8 +67,12 @@ export async function createUserClient(): Promise<SupabaseClient> {
  * Get the current user's org ID from their session.
  * Returns null if no user is logged in or if they have no org.
  */
-export async function getUserOrgId(client: SupabaseClient): Promise<string | null> {
-  const { data: { user } } = await client.auth.getUser();
+export async function getUserOrgId(
+  client: SupabaseClient
+): Promise<string | null> {
+  const {
+    data: { user },
+  } = await client.auth.getUser();
   if (!user) return null;
 
   const { data: userOrg } = await client
@@ -98,11 +102,17 @@ export async function checkSupabaseHealth(): Promise<{
 }> {
   try {
     if (!SUPABASE_URL) {
-      return { connected: false, hasServiceRole: false, error: 'SUPABASE_URL not configured' };
+      return {
+        connected: false,
+        hasServiceRole: false,
+        error: 'SUPABASE_URL not configured',
+      };
     }
 
     const hasServiceRole = hasServiceRoleKey();
-    const client = hasServiceRole ? createServiceClient() : createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const client = hasServiceRole
+      ? createServiceClient()
+      : createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Simple health check query
     const { error } = await client.from('orgs').select('count').limit(1);

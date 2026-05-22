@@ -21,7 +21,9 @@ export interface SageSignalScanPayload {
  * Process a SAGE signal scan job.
  * Called by BullMQ worker when a job arrives on the 'sage:signal-scan' queue.
  */
-export async function processSageSignalScan(payload: SageSignalScanPayload): Promise<void> {
+export async function processSageSignalScan(
+  payload: SageSignalScanPayload
+): Promise<void> {
   const { orgId } = payload;
   logger.info(`Running SAGE signal scan for org ${orgId}`);
 
@@ -31,12 +33,14 @@ export async function processSageSignalScan(payload: SageSignalScanPayload): Pro
     const result = await runSignalScan(supabase, orgId);
     logger.info(
       `SAGE scan complete for org ${orgId}: ` +
-      `found=${result.signals_found}, written=${result.signals_written}, ` +
-      `PR=${result.by_pillar.PR}, Content=${result.by_pillar.Content}, SEO=${result.by_pillar.SEO}`
+        `found=${result.signals_found}, written=${result.signals_written}, ` +
+        `PR=${result.by_pillar.PR}, Content=${result.by_pillar.Content}, SEO=${result.by_pillar.SEO}`
     );
 
     if (result.errors.length > 0) {
-      logger.warn(`SAGE scan had ${result.errors.length} errors: ${result.errors.join('; ')}`);
+      logger.warn(
+        `SAGE scan had ${result.errors.length} errors: ${result.errors.join('; ')}`
+      );
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

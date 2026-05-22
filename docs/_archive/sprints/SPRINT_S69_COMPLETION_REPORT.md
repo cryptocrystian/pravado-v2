@@ -5,6 +5,7 @@
 **Sprint Goal:** Reduce @pravado/dashboard TypeScript errors from 122 to 0 WITHOUT modifying backend or shared business logic.
 
 **Final Status:**
+
 - @pravado/types: 0 errors (maintained)
 - @pravado/validators: 0 errors (maintained)
 - @pravado/api: 0 errors (maintained)
@@ -15,6 +16,7 @@
 ### 1. Validator Schema Defaults (packages/validators/src/strategicIntelligence.ts)
 
 Made validator schemas more permissive by adding `.optional()` before `.default()`:
+
 - `listStrategicReportsQuerySchema`: limit, offset, sortBy, sortOrder now optional
 - `listStrategicSourcesQuerySchema`: limit, offset now optional
 - `listStrategicAuditLogsQuerySchema`: limit, offset now optional
@@ -24,6 +26,7 @@ Made validator schemas more permissive by adding `.optional()` before `.default(
 ### 2. AudiencePersonaInsight Type (packages/types/src/audiencePersona.ts)
 
 Added optional display alias fields for UI convenience:
+
 - `title?: string` (alias for insightTitle)
 - `description?: string` (alias for insightDescription)
 - `evidence?: Array<Record<string, any>>` (alias for supportingEvidence)
@@ -45,24 +48,29 @@ Added optional display alias fields for UI convenience:
 ### 4. Component Fixes
 
 **Crisis Components:**
+
 - `CrisisEscalationRuleEditor.tsx`: Removed unused imports (AlertTriangle, Bell, Webhook, Settings)
 
 **Media Performance Components:**
+
 - `CampaignHeatmap.tsx`: Removed unused `_maxValue` and `_cellGap` variables
 - `CoverageVelocityChart.tsx`: Fixed unused index variable in map
 - `PerformanceScoreCard.tsx`: Removed unused `formatChange` import, fixed TrendDirection type handling
 - `SentimentTrendChart.tsx`: Aliased unused props with underscore prefix
 
 **Personas Components:**
+
 - `InsightPanel.tsx`: Removed unused imports, fixed Record<string,any> to ReactNode conversion
 
 **Strategic Intelligence Components:**
+
 - `StrategicReportHeader.tsx`: Fixed canGenerate/canApprove/canPublish/canArchive to use `report.status`, fixed fiscalQuarter parsing
 - `StrategicReportListItem.tsx`: Removed unused getStatusColor import, fixed fiscalQuarter parsing
 - `StrategicAuditLogTimeline.tsx`: Fixed showReportInfo prop aliasing
 - `index.ts`: Removed non-existent StrategicAuditLogCompact export
 
 **Unified Graph Components:**
+
 - `EdgeInspectorDrawer.tsx`: Fixed confidenceScore possibly undefined with `!= null` check
 - `GraphEdgeCard.tsx`: Fixed confidenceScore possibly undefined
 - `GraphQueryBuilder.tsx`: Aliased unused onSelectNode and setIncludeReasoning
@@ -73,6 +81,7 @@ Added optional display alias fields for UI convenience:
 ### 5. API Client Unused Import Cleanup
 
 Removed unused type imports from:
+
 - `brandReputationAlertsApi.ts`: BrandReputationReport, BrandReputationReportSection, BrandReputationReportRecipient
 - `brandReputationApi.ts`: ExecutiveRadarSummary, ReputationDriver
 - `crisisApi.ts`: CrisisSourceSystem, CrisisBriefSectionType, EscalationRuleType
@@ -85,6 +94,7 @@ Removed unused type imports from:
 ### 6. Test File Configuration
 
 Excluded test files from main typecheck by updating `tsconfig.json`:
+
 - Added `tests/**` to exclude
 - Added `**/*.test.ts`, `**/*.test.tsx`, `**/*.spec.ts`, `**/*.spec.tsx` to exclude
 
@@ -102,10 +112,12 @@ Test files need separate TypeScript configuration with testing library types.
 ## Files Modified
 
 ### Packages
+
 - packages/validators/src/strategicIntelligence.ts
 - packages/types/src/audiencePersona.ts
 
 ### Dashboard - API Clients
+
 - apps/dashboard/src/lib/strategicIntelligenceApi.ts
 - apps/dashboard/src/lib/brandReputationAlertsApi.ts
 - apps/dashboard/src/lib/brandReputationApi.ts
@@ -117,6 +129,7 @@ Test files need separate TypeScript configuration with testing library types.
 - apps/dashboard/src/lib/prOutreachDeliverabilityApi.ts
 
 ### Dashboard - Components
+
 - apps/dashboard/src/components/crisis/CrisisEscalationRuleEditor.tsx
 - apps/dashboard/src/components/media-performance/CampaignHeatmap.tsx
 - apps/dashboard/src/components/media-performance/CoverageVelocityChart.tsx
@@ -135,6 +148,7 @@ Test files need separate TypeScript configuration with testing library types.
 - apps/dashboard/src/components/unified-graph/SnapshotPanel.tsx
 
 ### Dashboard - Config
+
 - apps/dashboard/tsconfig.json
 
 ## Constraints Followed

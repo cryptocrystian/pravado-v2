@@ -69,7 +69,10 @@ export default function InvoiceDetailsPage() {
 
   // Get line item type badge
   const getLineItemTypeBadge = (type: InvoiceLineItem['type']) => {
-    const badges: Record<InvoiceLineItem['type'], { label: string; class: string }> = {
+    const badges: Record<
+      InvoiceLineItem['type'],
+      { label: string; class: string }
+    > = {
       plan: { label: 'Plan', class: 'bg-blue-100 text-blue-800' },
       overage: { label: 'Overage', class: 'bg-orange-100 text-orange-800' },
       discount: { label: 'Discount', class: 'bg-green-100 text-green-800' },
@@ -125,7 +128,10 @@ export default function InvoiceDetailsPage() {
               Invoice {invoice.invoice.invoiceNumber || 'Draft'}
             </h1>
             <p className="text-gray-600">
-              {formatInvoicePeriod(invoice.invoice.periodStart, invoice.invoice.periodEnd)}
+              {formatInvoicePeriod(
+                invoice.invoice.periodStart,
+                invoice.invoice.periodEnd
+              )}
             </p>
           </div>
           <Link
@@ -155,7 +161,10 @@ export default function InvoiceDetailsPage() {
             <div className="mb-4">
               <div className="text-sm text-gray-600">Billing Period</div>
               <div className="mt-1 text-gray-900">
-                {formatInvoicePeriod(invoice.invoice.periodStart, invoice.invoice.periodEnd)}
+                {formatInvoicePeriod(
+                  invoice.invoice.periodStart,
+                  invoice.invoice.periodEnd
+                )}
               </div>
             </div>
 
@@ -208,28 +217,37 @@ export default function InvoiceDetailsPage() {
         <div className="space-y-3">
           <div className="flex justify-between items-center py-2 border-b border-gray-200">
             <span className="text-gray-700">Plan Charges</span>
-            <span className="font-medium text-gray-900">{formatCurrency(invoice.breakdown.planCost)}</span>
+            <span className="font-medium text-gray-900">
+              {formatCurrency(invoice.breakdown.planCost)}
+            </span>
           </div>
 
           {invoice.breakdown.tokenOverages > 0 && (
             <div className="flex justify-between items-center py-2 border-b border-gray-200">
               <span className="text-gray-700">Token Overages</span>
-              <span className="font-medium text-orange-600">+{formatCurrency(invoice.breakdown.tokenOverages)}</span>
+              <span className="font-medium text-orange-600">
+                +{formatCurrency(invoice.breakdown.tokenOverages)}
+              </span>
             </div>
           )}
 
           {invoice.breakdown.runOverages > 0 && (
             <div className="flex justify-between items-center py-2 border-b border-gray-200">
               <span className="text-gray-700">Playbook Run Overages</span>
-              <span className="font-medium text-orange-600">+{formatCurrency(invoice.breakdown.runOverages)}</span>
+              <span className="font-medium text-orange-600">
+                +{formatCurrency(invoice.breakdown.runOverages)}
+              </span>
             </div>
           )}
 
           {invoice.breakdown.prorations !== 0 && (
             <div className="flex justify-between items-center py-2 border-b border-gray-200">
               <span className="text-gray-700">Prorations</span>
-              <span className={`font-medium ${invoice.breakdown.prorations > 0 ? 'text-gray-900' : 'text-green-600'}`}>
-                {invoice.breakdown.prorations > 0 ? '+' : ''}{formatCurrency(invoice.breakdown.prorations)}
+              <span
+                className={`font-medium ${invoice.breakdown.prorations > 0 ? 'text-gray-900' : 'text-green-600'}`}
+              >
+                {invoice.breakdown.prorations > 0 ? '+' : ''}
+                {formatCurrency(invoice.breakdown.prorations)}
               </span>
             </div>
           )}
@@ -237,20 +255,26 @@ export default function InvoiceDetailsPage() {
           {invoice.breakdown.discounts > 0 && (
             <div className="flex justify-between items-center py-2 border-b border-gray-200">
               <span className="text-gray-700">Discounts</span>
-              <span className="font-medium text-green-600">-{formatCurrency(invoice.breakdown.discounts)}</span>
+              <span className="font-medium text-green-600">
+                -{formatCurrency(invoice.breakdown.discounts)}
+              </span>
             </div>
           )}
 
           {invoice.breakdown.tax > 0 && (
             <div className="flex justify-between items-center py-2 border-b border-gray-200">
               <span className="text-gray-700">Tax</span>
-              <span className="font-medium text-gray-900">{formatCurrency(invoice.breakdown.tax)}</span>
+              <span className="font-medium text-gray-900">
+                {formatCurrency(invoice.breakdown.tax)}
+              </span>
             </div>
           )}
 
           <div className="flex justify-between items-center py-3 border-t-2 border-gray-300 mt-2">
             <span className="text-lg font-semibold text-gray-900">Total</span>
-            <span className="text-lg font-bold text-gray-900">{formatCurrency(invoice.breakdown.total)}</span>
+            <span className="text-lg font-bold text-gray-900">
+              {formatCurrency(invoice.breakdown.total)}
+            </span>
           </div>
         </div>
       </div>
@@ -263,16 +287,28 @@ export default function InvoiceDetailsPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Description
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Type
                 </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Quantity
                 </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Amount
                 </th>
               </tr>
@@ -280,10 +316,16 @@ export default function InvoiceDetailsPage() {
             <tbody className="bg-white divide-y divide-gray-200">
               {invoice.lineItems.map((item, index) => (
                 <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-900">{item.description}</td>
-                  <td className="px-6 py-4 text-sm">{getLineItemTypeBadge(item.type)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {item.description}
+                  </td>
+                  <td className="px-6 py-4 text-sm">
+                    {getLineItemTypeBadge(item.type)}
+                  </td>
                   <td className="px-6 py-4 text-sm text-right text-gray-500">
-                    {item.quantity !== null ? item.quantity.toLocaleString() : '-'}
+                    {item.quantity !== null
+                      ? item.quantity.toLocaleString()
+                      : '-'}
                   </td>
                   <td className="px-6 py-4 text-sm text-right font-medium text-gray-900">
                     {formatCurrency(item.amount)}
@@ -298,7 +340,9 @@ export default function InvoiceDetailsPage() {
       {/* Usage Snapshot */}
       {invoice.usageSnapshot && (
         <div className="bg-white shadow rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Usage During This Period</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Usage During This Period
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="border border-gray-200 rounded-lg p-4">
@@ -338,13 +382,15 @@ export default function InvoiceDetailsPage() {
                   alert.severity === 'critical'
                     ? 'bg-red-50 border-red-200'
                     : alert.severity === 'warning'
-                    ? 'bg-yellow-50 border-yellow-200'
-                    : 'bg-blue-50 border-blue-200'
+                      ? 'bg-yellow-50 border-yellow-200'
+                      : 'bg-blue-50 border-blue-200'
                 }`}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{alert.message}</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {alert.message}
+                    </p>
                     <p className="text-xs text-gray-500 mt-1">
                       {new Date(alert.createdAt).toLocaleString()}
                     </p>

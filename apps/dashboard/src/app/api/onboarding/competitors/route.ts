@@ -15,7 +15,10 @@ export async function GET() {
     return NextResponse.json({ success: true, data });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }
 
@@ -29,6 +32,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, data });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

@@ -495,7 +495,9 @@ describe('playbookGraphService', () => {
       const result = validateGraph(graph);
 
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Found 1 orphaned nodes (not connected to graph)');
+      expect(result.errors).toContain(
+        'Found 1 orphaned nodes (not connected to graph)'
+      );
     });
 
     it('should allow single node without edges', () => {

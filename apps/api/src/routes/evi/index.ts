@@ -76,7 +76,8 @@ export async function eviRoutes(server: FastifyInstance) {
           },
         });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'EVI calculation failed';
+        const message =
+          error instanceof Error ? error.message : 'EVI calculation failed';
         console.error('[EVI /current] Error:', message);
         return reply.code(500).send({
           success: false,
@@ -128,7 +129,8 @@ export async function eviRoutes(server: FastifyInstance) {
           data: history,
         });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'EVI history query failed';
+        const message =
+          error instanceof Error ? error.message : 'EVI history query failed';
         console.error('[EVI /history] Error:', message);
         return reply.code(500).send({
           success: false,

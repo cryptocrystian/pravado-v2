@@ -16,8 +16,7 @@ import { TopicClusterList } from '@/components/seo/TopicClusterList';
 export default function TopicsPage() {
   const [selectedId, setSelectedId] = useState('tc-1');
 
-  const selectedCluster =
-    mockClusters.find((c) => c.id === selectedId) ?? null;
+  const selectedCluster = mockClusters.find((c) => c.id === selectedId) ?? null;
 
   return (
     <div className="flex h-[calc(100vh-49px)] overflow-hidden">

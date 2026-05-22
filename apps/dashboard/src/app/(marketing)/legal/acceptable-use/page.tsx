@@ -16,9 +16,9 @@ export default function AcceptableUsePage() {
       <P>
         This Acceptable Use Policy (&quot;AUP&quot;) governs your use of the
         Pravado platform at{' '}
-        <LegalLink href="https://app.pravado.io">app.pravado.io</LegalLink>{' '}
-        and all associated services (the &quot;Service&quot;) provided by
-        Saipien Labs LLC (&quot;Pravado&quot;, &quot;we&quot;, &quot;us&quot;, or
+        <LegalLink href="https://app.pravado.io">app.pravado.io</LegalLink> and
+        all associated services (the &quot;Service&quot;) provided by Saipien
+        Labs LLC (&quot;Pravado&quot;, &quot;we&quot;, &quot;us&quot;, or
         &quot;our&quot;). This AUP supplements our{' '}
         <LegalLink href="/legal/terms">Terms of Service</LegalLink> and is
         incorporated therein by reference.
@@ -32,9 +32,7 @@ export default function AcceptableUsePage() {
 
       {/* 1 */}
       <H2>1. Prohibited Uses</H2>
-      <P>
-        You may not use the Service for any of the following purposes:
-      </P>
+      <P>You may not use the Service for any of the following purposes:</P>
 
       <H3>1.1 Spam and Unsolicited Communications</H3>
       <UL>
@@ -188,9 +186,7 @@ export default function AcceptableUsePage() {
           Respect all published rate limits and usage quotas for your
           subscription tier.
         </li>
-        <li>
-          Use appropriate caching to minimize redundant API calls.
-        </li>
+        <li>Use appropriate caching to minimize redundant API calls.</li>
         <li>
           Identify your integration with a descriptive{' '}
           <code className="text-white">User-Agent</code> header.
@@ -241,9 +237,7 @@ export default function AcceptableUsePage() {
 
       {/* 4 */}
       <H2>4. AI Output Use Restrictions</H2>
-      <P>
-        When using AI-generated content from the Service, you must:
-      </P>
+      <P>When using AI-generated content from the Service, you must:</P>
       <UL>
         <li>
           Review all AI-generated outputs for accuracy, completeness, and
@@ -317,9 +311,7 @@ export default function AcceptableUsePage() {
       </P>
       <UL>
         <li>A description of the violation.</li>
-        <li>
-          Any relevant evidence or screenshots.
-        </li>
+        <li>Any relevant evidence or screenshots.</li>
         <li>The date and time the violation occurred, if known.</li>
         <li>Your contact information for follow-up.</li>
       </UL>

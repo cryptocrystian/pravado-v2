@@ -20,7 +20,11 @@ export async function GET(
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/releases/[id]] Error:', { status, message, code });
+    console.error('[API /api/pr/releases/[id]] Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

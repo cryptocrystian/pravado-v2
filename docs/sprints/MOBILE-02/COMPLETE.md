@@ -8,12 +8,14 @@
 ## What's Complete
 
 ### Push Notification API
+
 - `POST /api/v1/notifications/register-device` endpoint created
 - `device_push_tokens` table (migration 89)
 - Upserts token on registration, tracks last_seen
 - Mobile app now successfully registers push tokens
 
 ### Content Detail Screen
+
 - Full CiteMind score breakdown with 6 factor bars
 - Color-coded bars (green >75, yellow 55-75, red <55)
 - Gate status explanation text
@@ -22,6 +24,7 @@
 - "Open in Pravado" deep link
 
 ### Pitch Detail Screen
+
 - Journalist card with avatar and outlet
 - Full pitch subject + body
 - Visual status timeline (Created -> Sent -> Opened -> Responded -> Placed)
@@ -29,17 +32,20 @@
 - "Open in Pravado" and "Edit in Pravado" deep links
 
 ### Deep Linking
+
 - iOS: Associated Domains for app.pravado.io
 - Android: Intent filters for https://app.pravado.io
 - URL handler in root layout parses paths and navigates to correct screen
 - Supports: /app/content/:id, /app/pr, /app/analytics, /app/command-center
 
 ### Store Metadata
+
 - iOS App Store metadata (store-metadata/ios.md)
 - Android Play Store metadata (store-metadata/android.md)
 - App description, keywords, URLs, categories
 
 ### Build Infrastructure
+
 - Pre-build check script (scripts/pre-build-check.sh)
 - Placeholder asset generator (scripts/generate-placeholders.js)
 - Placeholder PNGs created for icon, splash, adaptive-icon, favicon

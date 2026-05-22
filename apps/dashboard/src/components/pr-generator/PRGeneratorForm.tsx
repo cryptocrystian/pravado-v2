@@ -8,7 +8,6 @@
 import type { PRGenerationInput, PRNewsType, PRTone } from '@pravado/types';
 import { useState } from 'react';
 
-
 interface PRGeneratorFormProps {
   onSubmit: (input: PRGenerationInput) => void;
   isLoading?: boolean;
@@ -61,7 +60,9 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Core Information */}
       <div className="bg-slate-2 rounded-lg border border-border-subtle p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Core Information</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">
+          Core Information
+        </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -84,7 +85,9 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
             </label>
             <select
               value={formData.newsType || 'product_launch'}
-              onChange={(e) => updateField('newsType', e.target.value as PRNewsType)}
+              onChange={(e) =>
+                updateField('newsType', e.target.value as PRNewsType)
+              }
               className="w-full px-3 py-2 border border-slate-4 rounded-md bg-slate-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-iris/50 focus:border-brand-iris/50"
             >
               {NEWS_TYPES.map((type) => (
@@ -126,7 +129,9 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
 
       {/* Quotes Section */}
       <div className="bg-slate-2 rounded-lg border border-border-subtle p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Quotes & Attribution</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">
+          Quotes & Attribution
+        </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -162,7 +167,9 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
             <input
               type="text"
               value={formData.secondarySpokesperson || ''}
-              onChange={(e) => updateField('secondarySpokesperson', e.target.value)}
+              onChange={(e) =>
+                updateField('secondarySpokesperson', e.target.value)
+              }
               className="w-full px-3 py-2 border border-slate-4 rounded-md bg-slate-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-iris/50 focus:border-brand-iris/50"
               placeholder="Jane Doe"
             />
@@ -175,7 +182,9 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
             <input
               type="text"
               value={formData.secondarySpokespersonTitle || ''}
-              onChange={(e) => updateField('secondarySpokespersonTitle', e.target.value)}
+              onChange={(e) =>
+                updateField('secondarySpokespersonTitle', e.target.value)
+              }
               className="w-full px-3 py-2 border border-slate-4 rounded-md bg-slate-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-iris/50 focus:border-brand-iris/50"
               placeholder="VP of Marketing"
             />
@@ -197,7 +206,12 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
@@ -210,7 +224,9 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
                 </label>
                 <select
                   value={formData.tone || 'professional'}
-                  onChange={(e) => updateField('tone', e.target.value as PRTone)}
+                  onChange={(e) =>
+                    updateField('tone', e.target.value as PRTone)
+                  }
                   className="w-full px-3 py-2 border border-slate-4 rounded-md bg-slate-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-iris/50 focus:border-brand-iris/50"
                 >
                   {TONES.map((tone) => (
@@ -241,7 +257,9 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
                 <input
                   type="text"
                   value={formData.targetAudience || ''}
-                  onChange={(e) => updateField('targetAudience', e.target.value)}
+                  onChange={(e) =>
+                    updateField('targetAudience', e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-slate-4 rounded-md bg-slate-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-iris/50 focus:border-brand-iris/50"
                   placeholder="Enterprise customers, investors"
                 />
@@ -257,7 +275,10 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
                   onChange={(e) =>
                     updateField(
                       'targetKeywords',
-                      e.target.value.split(',').map((k) => k.trim()).filter(Boolean)
+                      e.target.value
+                        .split(',')
+                        .map((k) => k.trim())
+                        .filter(Boolean)
                     )
                   }
                   className="w-full px-3 py-2 border border-slate-4 rounded-md bg-slate-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-iris/50 focus:border-brand-iris/50"
@@ -285,7 +306,9 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
               </label>
               <textarea
                 value={formData.additionalContext || ''}
-                onChange={(e) => updateField('additionalContext', e.target.value)}
+                onChange={(e) =>
+                  updateField('additionalContext', e.target.value)
+                }
                 rows={3}
                 className="w-full px-3 py-2 border border-slate-4 rounded-md bg-slate-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-iris/50 focus:border-brand-iris/50"
                 placeholder="Any additional information that should be included..."
@@ -299,7 +322,9 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
       <div className="flex justify-end">
         <button
           type="submit"
-          disabled={isLoading || !formData.companyName || !formData.announcement}
+          disabled={
+            isLoading || !formData.companyName || !formData.announcement
+          }
           className="px-6 py-2 bg-brand-iris text-white font-medium rounded-md hover:bg-brand-iris/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
         >
           {isLoading ? (
@@ -309,8 +334,18 @@ export function PRGeneratorForm({ onSubmit, isLoading }: PRGeneratorFormProps) {
             </>
           ) : (
             <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
               <span>Generate Press Release</span>
             </>

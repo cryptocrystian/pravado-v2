@@ -67,10 +67,13 @@ describe('Investor Relations E2E Tests', () => {
         targetLength: 'standard',
       };
 
-      const { response, data } = await apiRequest('/api/v1/investor-relations/packs', {
-        method: 'POST',
-        body: packData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/investor-relations/packs',
+        {
+          method: 'POST',
+          body: packData,
+        }
+      );
 
       if (response.ok) {
         expect(response.status).toBe(201);
@@ -196,7 +199,8 @@ describe('Investor Relations E2E Tests', () => {
       }
 
       const updateData = {
-        contentMd: '# Updated Executive Summary\n\nThis is the updated content.',
+        contentMd:
+          '# Updated Executive Summary\n\nThis is the updated content.',
       };
 
       const { response, data } = await apiRequest(
@@ -239,7 +243,8 @@ describe('Investor Relations E2E Tests', () => {
 
       const qnaData = {
         question: 'What drove the quarterly growth?',
-        answerMd: 'Growth was driven by our expanded product line and increased market penetration.',
+        answerMd:
+          'Growth was driven by our expanded product line and increased market penetration.',
         category: 'financial',
       };
 
@@ -392,7 +397,9 @@ describe('Investor Relations E2E Tests', () => {
 
   describe('Statistics', () => {
     it('should get pack statistics', async () => {
-      const { response, data } = await apiRequest('/api/v1/investor-relations/stats');
+      const { response, data } = await apiRequest(
+        '/api/v1/investor-relations/stats'
+      );
 
       if (response.ok) {
         expect(data.totalPacks).toBeDefined();
@@ -441,10 +448,13 @@ describe('Investor Relations E2E Tests', () => {
         description: 'Test',
       };
 
-      const { response } = await apiRequest('/api/v1/investor-relations/packs', {
-        method: 'POST',
-        body: invalidData,
-      });
+      const { response } = await apiRequest(
+        '/api/v1/investor-relations/packs',
+        {
+          method: 'POST',
+          body: invalidData,
+        }
+      );
 
       // Should be 400 Bad Request
       expect([400, 422]).toContain(response.status);
@@ -459,10 +469,13 @@ describe('Investor Relations E2E Tests', () => {
         periodEnd: '2024-03-31T23:59:59.999Z',
       };
 
-      const { response } = await apiRequest('/api/v1/investor-relations/packs', {
-        method: 'POST',
-        body: invalidData,
-      });
+      const { response } = await apiRequest(
+        '/api/v1/investor-relations/packs',
+        {
+          method: 'POST',
+          body: invalidData,
+        }
+      );
 
       expect([400, 422]).toContain(response.status);
     });
@@ -504,7 +517,15 @@ describe('Investor Relations UI Flow Tests', () => {
 
     it('should have filtering capabilities', () => {
       const filterOptions = {
-        status: ['all', 'draft', 'generating', 'review', 'approved', 'published', 'archived'],
+        status: [
+          'all',
+          'draft',
+          'generating',
+          'review',
+          'approved',
+          'published',
+          'archived',
+        ],
         format: [
           'all',
           'quarterly_earnings',
@@ -558,7 +579,13 @@ describe('Investor Relations UI Flow Tests', () => {
 
   describe('Create Dialog', () => {
     it('should have all required form fields', () => {
-      const requiredFields = ['title', 'format', 'primaryAudience', 'periodStart', 'periodEnd'];
+      const requiredFields = [
+        'title',
+        'format',
+        'primaryAudience',
+        'periodStart',
+        'periodEnd',
+      ];
 
       const optionalFields = [
         'description',

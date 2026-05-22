@@ -133,14 +133,17 @@ export const priorityStyles = {
 // MODE STYLING (Manual/Copilot/Autopilot)
 // ============================================
 
-export const modeStyles: Record<Mode, {
-  bg: string;
-  text: string;
-  border: string;
-  label: string;
-  description: string;
-  icon: 'lock' | 'user' | 'bolt';
-}> = {
+export const modeStyles: Record<
+  Mode,
+  {
+    bg: string;
+    text: string;
+    border: string;
+    label: string;
+    description: string;
+    icon: 'lock' | 'user' | 'bolt';
+  }
+> = {
   manual: {
     bg: 'bg-white/5',
     text: 'text-white/70',
@@ -344,42 +347,56 @@ export const badgeStyles = {
   },
 
   // Count badge (numeric — still semantic content)
-  count: 'px-1.5 py-0.5 text-[13px] font-medium rounded bg-white/10 text-white/70',
+  count:
+    'px-1.5 py-0.5 text-[13px] font-medium rounded bg-white/10 text-white/70',
 
   // Status badges
-  success: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30',
-  warning: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
-  danger: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30',
+  success:
+    'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30',
+  warning:
+    'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
+  danger:
+    'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30',
 
   // Tier badges (outlet tier — semantic content)
   tier: {
     t1: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-brand-iris/15 text-brand-iris border border-brand-iris/30',
     t2: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30',
     t3: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-white/10 text-white/60 border border-white/20',
-    trade: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
-    niche: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-white/10 text-white/50 border border-white/15',
+    trade:
+      'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
+    niche:
+      'px-2 py-0.5 text-[13px] font-semibold rounded bg-white/10 text-white/50 border border-white/15',
   },
 
   // Relationship stage badges
   relationship: {
     cold: 'px-2 py-0.5 text-[13px] font-medium rounded bg-white/10 text-white/55',
     warm: 'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-warning/15 text-semantic-warning',
-    engaged: 'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-success/15 text-semantic-success',
-    advocate: 'px-2 py-0.5 text-[13px] font-medium rounded bg-brand-iris/20 text-brand-iris',
+    engaged:
+      'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-success/15 text-semantic-success',
+    advocate:
+      'px-2 py-0.5 text-[13px] font-medium rounded bg-brand-iris/20 text-brand-iris',
   },
 
   // Track badges (distribution)
   track: {
-    citemind_aeo: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30',
-    legacy_wire: 'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
+    citemind_aeo:
+      'px-2 py-0.5 text-[13px] font-semibold rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30',
+    legacy_wire:
+      'px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
   },
 
   // Verification status
   verification: {
-    verified: 'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-success/15 text-semantic-success',
-    unverified: 'px-2 py-0.5 text-[13px] font-medium rounded bg-white/10 text-white/50',
-    outdated: 'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-warning/15 text-semantic-warning',
-    needs_review: 'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-danger/15 text-semantic-danger',
+    verified:
+      'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-success/15 text-semantic-success',
+    unverified:
+      'px-2 py-0.5 text-[13px] font-medium rounded bg-white/10 text-white/50',
+    outdated:
+      'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-warning/15 text-semantic-warning',
+    needs_review:
+      'px-2 py-0.5 text-[13px] font-medium rounded bg-semantic-danger/15 text-semantic-danger',
   },
 };
 
@@ -422,7 +439,8 @@ export const sectionStyles = {
   `,
   headerIcon: 'w-5 h-5 text-brand-magenta',
   headerTitle: 'text-sm font-semibold text-white/90 leading-snug',
-  headerCount: 'px-1.5 py-0.5 text-[13px] font-medium rounded bg-brand-magenta/15 text-brand-magenta',
+  headerCount:
+    'px-1.5 py-0.5 text-[13px] font-medium rounded bg-brand-magenta/15 text-brand-magenta',
 
   // Divider
   divider: 'h-px bg-border-subtle my-4',
@@ -486,9 +504,9 @@ export const FORBIDDEN_LEGACY_TOKENS = [
 
   // Old color patterns (use semantic tokens instead)
   'emerald-400', // Use semantic-success
-  'red-400',     // Use semantic-danger  ← banned, was found in ContactFormModal
-  'red-500',     // Use semantic-danger  ← banned, was found in ContactFormModal
-  'amber-400',   // Use semantic-warning
+  'red-400', // Use semantic-danger  ← banned, was found in ContactFormModal
+  'red-500', // Use semantic-danger  ← banned, was found in ContactFormModal
+  'amber-400', // Use semantic-warning
 
   // Non-existent tokens (typos that silently produce no style)
   'semantic-error', // Does not exist — use semantic-danger

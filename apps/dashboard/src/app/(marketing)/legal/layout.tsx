@@ -77,8 +77,7 @@ export default function LegalLayout({ children }: { children: ReactNode }) {
                     pathname === link.href ? 'text-white font-medium' : ''
                   }`}
                   style={{
-                    color:
-                      pathname === link.href ? '#FFFFFF' : '#7A7A8A',
+                    color: pathname === link.href ? '#FFFFFF' : '#7A7A8A',
                     backgroundColor:
                       pathname === link.href
                         ? 'rgba(255,255,255,0.06)'

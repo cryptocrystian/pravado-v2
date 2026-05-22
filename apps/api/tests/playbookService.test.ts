@@ -481,7 +481,9 @@ describe('PlaybookService', () => {
         .mockReturnValueOnce(mockInsert);
 
       // Mock getPlaybookById call
-      vi.spyOn(service, 'getPlaybookById').mockResolvedValue(mockPlaybook as any);
+      vi.spyOn(service, 'getPlaybookById').mockResolvedValue(
+        mockPlaybook as any
+      );
 
       const result = await service.updatePlaybook(orgId, playbookId, data);
 

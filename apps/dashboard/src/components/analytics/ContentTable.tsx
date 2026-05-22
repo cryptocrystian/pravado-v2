@@ -41,7 +41,8 @@ export function ContentTable() {
 
   const topPerformers = mockContentRows.filter((r) => r.citeMind >= 80).length;
   const avgCiteMind = Math.round(
-    mockContentRows.reduce((sum, r) => sum + r.citeMind, 0) / mockContentRows.length,
+    mockContentRows.reduce((sum, r) => sum + r.citeMind, 0) /
+      mockContentRows.length
   );
 
   return (
@@ -58,9 +59,15 @@ export function ContentTable() {
         </div>
         <div className="bg-panel border border-border-subtle rounded-xl p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-1">
-            Avg CiteMind <InfoTooltip content="CiteMind scores how well your content is optimized for AI citation. Higher scores mean AI engines are more likely to reference your content in their answers." size={11} />
+            Avg CiteMind{' '}
+            <InfoTooltip
+              content="CiteMind scores how well your content is optimized for AI citation. Higher scores mean AI engines are more likely to reference your content in their answers."
+              size={11}
+            />
           </p>
-          <p className="text-2xl font-bold text-white/95 tabular-nums">{avgCiteMind}</p>
+          <p className="text-2xl font-bold text-white/95 tabular-nums">
+            {avgCiteMind}
+          </p>
         </div>
         <div className="bg-panel border border-border-subtle rounded-xl p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-1">
@@ -137,7 +144,11 @@ export function ContentTable() {
       {/* Citation Velocity Chart */}
       <div className="bg-panel border border-border-subtle rounded-xl p-5">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-4">
-          Citation Velocity (Top 3 Content Pieces) <InfoTooltip content="Citation velocity tracks how quickly your content is being cited by AI engines over time. Rising velocity means AI engines are increasingly referencing your content." size={11} />
+          Citation Velocity (Top 3 Content Pieces){' '}
+          <InfoTooltip
+            content="Citation velocity tracks how quickly your content is being cited by AI engines over time. Rising velocity means AI engines are increasingly referencing your content."
+            size={11}
+          />
         </h3>
         <ResponsiveContainer width="100%" height={180}>
           <LineChart data={mockCitationVelocity}>
@@ -169,7 +180,10 @@ export function ContentTable() {
               labelStyle={{ color: 'rgba(255,255,255,0.45)' }}
             />
             <Legend
-              wrapperStyle={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)' }}
+              wrapperStyle={{
+                fontSize: '11px',
+                color: 'rgba(255,255,255,0.45)',
+              }}
             />
             {/* Sprint 1: stroke values use DS brand token hex values */}
             <Line

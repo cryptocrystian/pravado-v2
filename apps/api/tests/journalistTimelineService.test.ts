@@ -41,7 +41,9 @@ function createMockSupabase(): SupabaseClient {
       range: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
       single: vi.fn(() => Promise.resolve({ data: finalData, error: null })),
-      maybeSingle: vi.fn(() => Promise.resolve({ data: finalData, error: null })),
+      maybeSingle: vi.fn(() =>
+        Promise.resolve({ data: finalData, error: null })
+      ),
     };
 
     // Make chain thenable
@@ -58,7 +60,10 @@ function createMockSupabase(): SupabaseClient {
         return createChainableMock(mockData.events);
       }
       if (table === 'journalist_profiles') {
-        return createChainableMock({ id: 'journalist-1', name: 'Test Journalist' });
+        return createChainableMock({
+          id: 'journalist-1',
+          name: 'Test Journalist',
+        });
       }
       return createChainableMock(null);
     }),
@@ -68,9 +73,16 @@ function createMockSupabase(): SupabaseClient {
           data: {
             total_events: 10,
             last_interaction: new Date().toISOString(),
-            first_interaction: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+            first_interaction: new Date(
+              Date.now() - 90 * 24 * 60 * 60 * 1000
+            ).toISOString(),
             event_type_counts: { pitch_sent: 5, pitch_replied: 2 },
-            sentiment_distribution: { positive: 5, neutral: 3, negative: 2, unknown: 0 },
+            sentiment_distribution: {
+              positive: 5,
+              neutral: 3,
+              negative: 2,
+              unknown: 0,
+            },
             avg_relevance_score: 0.75,
             avg_relationship_impact: 0.3,
             total_clusters: 2,
@@ -124,7 +136,9 @@ describe('JournalistTimelineService', () => {
       const event = await service.createEvent(orgId, input, userId);
 
       expect(event).toBeDefined();
-      expect(mockSupabase.from).toHaveBeenCalledWith('journalist_relationship_events');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'journalist_relationship_events'
+      );
     });
 
     it('should apply default relevance score for high-value events', async () => {
@@ -232,7 +246,10 @@ describe('JournalistTimelineService', () => {
     });
 
     it('should calculate relationship health score', async () => {
-      const healthScore = await service.calculateHealthScore(orgId, journalistId);
+      const healthScore = await service.calculateHealthScore(
+        orgId,
+        journalistId
+      );
 
       expect(healthScore).toBeDefined();
       expect(healthScore.score).toBeGreaterThanOrEqual(0);
@@ -242,7 +259,10 @@ describe('JournalistTimelineService', () => {
     });
 
     it('should generate health score recommendations', async () => {
-      const healthScore = await service.calculateHealthScore(orgId, journalistId);
+      const healthScore = await service.calculateHealthScore(
+        orgId,
+        journalistId
+      );
 
       expect(healthScore.recommendations).toBeDefined();
       expect(Array.isArray(healthScore.recommendations)).toBe(true);
@@ -251,13 +271,19 @@ describe('JournalistTimelineService', () => {
 
   describe('Event Clustering', () => {
     it('should auto-cluster related events', async () => {
-      const clustersCreated = await service.autoClusterEvents(orgId, journalistId);
+      const clustersCreated = await service.autoClusterEvents(
+        orgId,
+        journalistId
+      );
 
       expect(clustersCreated).toBe(2);
-      expect(mockSupabase.rpc).toHaveBeenCalledWith('auto_cluster_timeline_events', {
-        p_org_id: orgId,
-        p_journalist_id: journalistId,
-      });
+      expect(mockSupabase.rpc).toHaveBeenCalledWith(
+        'auto_cluster_timeline_events',
+        {
+          p_org_id: orgId,
+          p_journalist_id: journalistId,
+        }
+      );
     });
 
     it('should retrieve cluster with all events', async () => {
@@ -416,9 +442,13 @@ describe('JournalistTimelineService', () => {
       vi.mocked(mockSupabase.from).mockReturnValue({
         insert: vi.fn().mockReturnThis(),
         select: vi.fn().mockReturnThis(),
-        single: vi.fn(() => Promise.resolve({ data: null, error: { message: 'DB error' } })),
+        single: vi.fn(() =>
+          Promise.resolve({ data: null, error: { message: 'DB error' } })
+        ),
         then: (resolve: any) =>
-          Promise.resolve({ data: null, error: { message: 'DB error' } }).then(resolve),
+          Promise.resolve({ data: null, error: { message: 'DB error' } }).then(
+            resolve
+          ),
       } as any);
 
       const input: CreateTimelineEventInput = {
@@ -440,7 +470,9 @@ describe('JournalistTimelineService', () => {
 
       await service.listEvents(orgId, query);
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('journalist_relationship_events');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'journalist_relationship_events'
+      );
     });
 
     it('should include org_id in all inserts', async () => {
@@ -453,7 +485,9 @@ describe('JournalistTimelineService', () => {
 
       await service.createEvent(orgId, input, userId);
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('journalist_relationship_events');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'journalist_relationship_events'
+      );
     });
   });
 
@@ -483,7 +517,13 @@ describe('JournalistTimelineService', () => {
           }).then(resolve),
       } as any);
 
-      const aggregation = await service.getAggregation(orgId, journalistId, 'day', startDate, endDate);
+      const aggregation = await service.getAggregation(
+        orgId,
+        journalistId,
+        'day',
+        startDate,
+        endDate
+      );
 
       expect(aggregation).toBeDefined();
       expect(aggregation.period).toBe('day');

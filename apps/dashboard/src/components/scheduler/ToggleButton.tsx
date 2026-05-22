@@ -9,7 +9,11 @@ interface ToggleButtonProps {
   disabled?: boolean;
 }
 
-export function ToggleButton({ enabled, onChange, disabled }: ToggleButtonProps) {
+export function ToggleButton({
+  enabled,
+  onChange,
+  disabled,
+}: ToggleButtonProps) {
   return (
     <button
       type="button"

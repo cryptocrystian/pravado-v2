@@ -6,11 +6,14 @@
  * S97: Added context preservation from URL params
  */
 
-import type { OutreachRun, OutreachSequence, OutreachStats } from '@pravado/types';
+import type {
+  OutreachRun,
+  OutreachSequence,
+  OutreachStats,
+} from '@pravado/types';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-
 
 import { OutreachRunDetailDrawer } from '@/components/pr-outreach/OutreachRunDetailDrawer';
 import { OutreachRunList } from '@/components/pr-outreach/OutreachRunList';
@@ -37,9 +40,11 @@ interface OutreachContext {
 export default function PROutreachPage() {
   // Sequences state
   const [sequences, setSequences] = useState<OutreachSequence[]>([]);
-  const [selectedSequence, setSelectedSequence] = useState<OutreachSequence | null>(null);
+  const [selectedSequence, setSelectedSequence] =
+    useState<OutreachSequence | null>(null);
   const [showSequenceEditor, setShowSequenceEditor] = useState(false);
-  const [editingSequence, setEditingSequence] = useState<OutreachSequence | null>(null);
+  const [editingSequence, setEditingSequence] =
+    useState<OutreachSequence | null>(null);
   const [sequencesLoading, setSequencesLoading] = useState(false);
 
   // Runs state
@@ -53,7 +58,8 @@ export default function PROutreachPage() {
 
   // Context state (from URL params)
   const searchParams = useSearchParams();
-  const [outreachContext, setOutreachContext] = useState<OutreachContext | null>(null);
+  const [outreachContext, setOutreachContext] =
+    useState<OutreachContext | null>(null);
 
   // Extract context from URL params on mount
   useEffect(() => {
@@ -165,8 +171,18 @@ export default function PROutreachPage() {
             href="/app/pr"
             className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-flex items-center gap-1"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             Back to PR Dashboard
           </Link>
@@ -182,24 +198,45 @@ export default function PROutreachPage() {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0">
-              <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div className="flex-1">
-              <h3 className="text-sm font-semibold text-blue-900">Outreach Context</h3>
+              <h3 className="text-sm font-semibold text-blue-900">
+                Outreach Context
+              </h3>
               <p className="text-sm text-blue-700 mt-1">
                 {outreachContext.action === 'respond' && (
-                  <>Responding to inquiry from <strong>{outreachContext.outlet}</strong></>
+                  <>
+                    Responding to inquiry from{' '}
+                    <strong>{outreachContext.outlet}</strong>
+                  </>
                 )}
                 {outreachContext.action === 'pitch' && (
-                  <>Creating pitch for <strong>{outreachContext.outlet}</strong> on <strong>{outreachContext.topic?.replace(/-/g, ' ')}</strong></>
+                  <>
+                    Creating pitch for <strong>{outreachContext.outlet}</strong>{' '}
+                    on{' '}
+                    <strong>{outreachContext.topic?.replace(/-/g, ' ')}</strong>
+                  </>
                 )}
                 {outreachContext.action === 'follow-up' && (
                   <>Following up on pending outreach</>
                 )}
                 {!outreachContext.action && outreachContext.outlet && (
-                  <>Targeting <strong>{outreachContext.outlet}</strong></>
+                  <>
+                    Targeting <strong>{outreachContext.outlet}</strong>
+                  </>
                 )}
               </p>
               <div className="flex flex-wrap gap-2 mt-2">
@@ -234,8 +271,18 @@ export default function PROutreachPage() {
               onClick={() => setOutreachContext(null)}
               className="flex-shrink-0 text-blue-400 hover:text-blue-600"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -247,7 +294,9 @@ export default function PROutreachPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg border p-4">
             <div className="text-sm text-gray-600">Total Sequences</div>
-            <div className="text-2xl font-bold mt-1">{stats.totalSequences}</div>
+            <div className="text-2xl font-bold mt-1">
+              {stats.totalSequences}
+            </div>
           </div>
           <div className="bg-white rounded-lg border p-4">
             <div className="text-sm text-gray-600">Active Runs</div>
@@ -255,7 +304,9 @@ export default function PROutreachPage() {
           </div>
           <div className="bg-white rounded-lg border p-4">
             <div className="text-sm text-gray-600">Emails Sent</div>
-            <div className="text-2xl font-bold mt-1">{stats.totalEmailsSent}</div>
+            <div className="text-2xl font-bold mt-1">
+              {stats.totalEmailsSent}
+            </div>
           </div>
           <div className="bg-white rounded-lg border p-4">
             <div className="text-sm text-gray-600">Replies</div>

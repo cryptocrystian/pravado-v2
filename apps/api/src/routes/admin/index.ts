@@ -30,42 +30,48 @@ export async function adminRoutes(server: FastifyInstance) {
   // Admin Auth Hook — all routes require admin
   // ========================================
 
-  server.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
-    const authHeader = request.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return reply.code(401).send({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Bearer token required' },
-      });
+  server.addHook(
+    'onRequest',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const authHeader = request.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return reply.code(401).send({
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: 'Bearer token required' },
+        });
+      }
+
+      const token = authHeader.replace('Bearer ', '');
+
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser(token);
+      if (authError || !user) {
+        return reply.code(401).send({
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: 'Invalid or expired token' },
+        });
+      }
+
+      // Check admin flag on profiles
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !profile || profile.is_admin !== true) {
+        return reply.code(403).send({
+          success: false,
+          error: { code: 'FORBIDDEN', message: 'Admin access required' },
+        });
+      }
+
+      // Attach admin user to request for downstream use
+      (request as any).adminUser = user;
     }
-
-    const token = authHeader.replace('Bearer ', '');
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user) {
-      return reply.code(401).send({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Invalid or expired token' },
-      });
-    }
-
-    // Check admin flag on profiles
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profile || profile.is_admin !== true) {
-      return reply.code(403).send({
-        success: false,
-        error: { code: 'FORBIDDEN', message: 'Admin access required' },
-      });
-    }
-
-    // Attach admin user to request for downstream use
-    (request as any).adminUser = user;
-  });
+  );
 
   // ========================================
   // Helper: log admin action
@@ -88,7 +94,10 @@ export async function adminRoutes(server: FastifyInstance) {
       ip_address: ipAddress ?? null,
     });
     if (error) {
-      logger.error('Failed to write admin audit log', { error: error.message, action });
+      logger.error('Failed to write admin audit log', {
+        error: error.message,
+        action,
+      });
     }
   }
 
@@ -98,30 +107,39 @@ export async function adminRoutes(server: FastifyInstance) {
 
   server.get('/', async (_request, reply) => {
     try {
-      const [orgsResult, activeOrgsResult, onboardingResult, llmResult, sageResult, betaResult] =
-        await Promise.all([
-          supabase.from('orgs').select('id', { count: 'exact', head: true }),
-          supabase
-            .from('orgs')
-            .select('id', { count: 'exact', head: true })
-            .gte('updated_at', new Date(Date.now() - 7 * 86400000).toISOString()),
-          supabase
-            .from('orgs')
-            .select('id', { count: 'exact', head: true })
-            .not('completed_onboarding_at', 'is', null),
-          supabase
-            .from('llm_usage_ledger')
-            .select('total_tokens')
-            .gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString()),
-          supabase
-            .from('sage_proposals')
-            .select('id, status')
-            .gte('created_at', new Date(Date.now() - 7 * 86400000).toISOString()),
-          supabase
-            .from('beta_requests')
-            .select('id', { count: 'exact', head: true })
-            .eq('status', 'pending'),
-        ]);
+      const [
+        orgsResult,
+        activeOrgsResult,
+        onboardingResult,
+        llmResult,
+        sageResult,
+        betaResult,
+      ] = await Promise.all([
+        supabase.from('orgs').select('id', { count: 'exact', head: true }),
+        supabase
+          .from('orgs')
+          .select('id', { count: 'exact', head: true })
+          .gte('updated_at', new Date(Date.now() - 7 * 86400000).toISOString()),
+        supabase
+          .from('orgs')
+          .select('id', { count: 'exact', head: true })
+          .not('completed_onboarding_at', 'is', null),
+        supabase
+          .from('llm_usage_ledger')
+          .select('total_tokens')
+          .gte(
+            'created_at',
+            new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
+          ),
+        supabase
+          .from('sage_proposals')
+          .select('id, status')
+          .gte('created_at', new Date(Date.now() - 7 * 86400000).toISOString()),
+        supabase
+          .from('beta_requests')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'pending'),
+      ]);
 
       // Aggregate LLM tokens
       const todayTokens = (llmResult.data ?? []).reduce(
@@ -131,8 +149,12 @@ export async function adminRoutes(server: FastifyInstance) {
 
       // Aggregate SAGE proposals
       const sageProposals = sageResult.data ?? [];
-      const sageAccepted = sageProposals.filter((p: any) => p.status === 'accepted').length;
-      const sageRejected = sageProposals.filter((p: any) => p.status === 'rejected').length;
+      const sageAccepted = sageProposals.filter(
+        (p: any) => p.status === 'accepted'
+      ).length;
+      const sageRejected = sageProposals.filter(
+        (p: any) => p.status === 'rejected'
+      ).length;
 
       return reply.send({
         success: true,
@@ -184,7 +206,11 @@ export async function adminRoutes(server: FastifyInstance) {
       if (!redisUrl) {
         return reply.send({
           success: true,
-          data: { queues: [], redis_unavailable: true, reason: 'REDIS_URL not configured' },
+          data: {
+            queues: [],
+            redis_unavailable: true,
+            reason: 'REDIS_URL not configured',
+          },
         });
       }
 
@@ -200,8 +226,13 @@ export async function adminRoutes(server: FastifyInstance) {
         enableOfflineQueue: false,
       };
       if (parsed.password) connection.password = parsed.password;
-      if (parsed.username && parsed.username !== 'default') connection.username = parsed.username;
-      if (redisUrl.startsWith('rediss://') || parsed.hostname.includes('upstash') || parsed.hostname.includes('redislabs')) {
+      if (parsed.username && parsed.username !== 'default')
+        connection.username = parsed.username;
+      if (
+        redisUrl.startsWith('rediss://') ||
+        parsed.hostname.includes('upstash') ||
+        parsed.hostname.includes('redislabs')
+      ) {
         connection.tls = {};
       }
 
@@ -221,7 +252,10 @@ export async function adminRoutes(server: FastifyInstance) {
         }
       }
 
-      return reply.send({ success: true, data: { queues, redis_unavailable: false } });
+      return reply.send({
+        success: true,
+        data: { queues, redis_unavailable: false },
+      });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       logger.error('Queue stats failed', { error: message });
@@ -241,7 +275,10 @@ export async function adminRoutes(server: FastifyInstance) {
   }>('/beta/waitlist', async (request, reply) => {
     const status = request.query.status;
     const page = Math.max(1, parseInt(request.query.page || '1', 10));
-    const limit = Math.min(100, Math.max(1, parseInt(request.query.limit || '25', 10)));
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(request.query.limit || '25', 10))
+    );
     const offset = (page - 1) * limit;
 
     let query = supabase
@@ -410,7 +447,10 @@ export async function adminRoutes(server: FastifyInstance) {
     Querystring: { page?: string; limit?: string; search?: string };
   }>('/orgs', async (request, reply) => {
     const page = Math.max(1, parseInt(request.query.page || '1', 10));
-    const limit = Math.min(100, Math.max(1, parseInt(request.query.limit || '25', 10)));
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(request.query.limit || '25', 10))
+    );
     const offset = (page - 1) * limit;
     const search = request.query.search?.trim();
 

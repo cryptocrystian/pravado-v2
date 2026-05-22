@@ -34,7 +34,10 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
     // Use getSession() — reads cookie data WITHOUT triggering a server-side refresh.
     // getUser() would call setAll() to persist refreshed tokens, but since setAll
     // is a no-op here, those tokens would be lost, causing redirect loops.
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
 
     if (error || !session?.user) {
       console.log('[getCurrentUser] No session:', error?.message ?? 'no user');
@@ -55,7 +58,10 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
       .eq('user_id', user.id);
 
     if (membershipError) {
-      console.error('[getCurrentUser] Org membership error:', membershipError.message);
+      console.error(
+        '[getCurrentUser] Org membership error:',
+        membershipError.message
+      );
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,8 +81,10 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
       user: {
         id: user.id,
         email: user.email || null,
-        fullName: user.user_metadata?.full_name || user.user_metadata?.name || null,
-        avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+        fullName:
+          user.user_metadata?.full_name || user.user_metadata?.name || null,
+        avatarUrl:
+          user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
         createdAt: user.created_at || now,
         updatedAt: user.updated_at || now,
       },

@@ -13,11 +13,13 @@ import { EVI_WEIGHTS, EVI_BANDS } from '../types';
 import type { EVIInputSnapshot, ComputedEVI } from '../types';
 
 // Helper to create a valid input snapshot
-function createSnapshot(overrides: Partial<{
-  visibility: number;
-  authority: number;
-  momentum: number;
-}>): EVIInputSnapshot {
+function createSnapshot(
+  overrides: Partial<{
+    visibility: number;
+    authority: number;
+    momentum: number;
+  }>
+): EVIInputSnapshot {
   const now = new Date().toISOString();
   return {
     generated_at: now,
@@ -50,12 +52,30 @@ function createSnapshot(overrides: Partial<{
       updated_at: now,
     },
     historical_scores: [
-      { date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), score: 54.2 },
-      { date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), score: 56.8 },
-      { date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), score: 59.1 },
-      { date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), score: 61.2 },
-      { date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), score: 63.3 },
-      { date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), score: 65.1 },
+      {
+        date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 54.2,
+      },
+      {
+        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 56.8,
+      },
+      {
+        date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 59.1,
+      },
+      {
+        date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 61.2,
+      },
+      {
+        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 63.3,
+      },
+      {
+        date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 65.1,
+      },
       { date: now, score: 67.4 },
     ],
   };
@@ -63,12 +83,13 @@ function createSnapshot(overrides: Partial<{
 
 describe('EVI Formula Constants', () => {
   it('should have weights summing to 1.0', () => {
-    const sum = EVI_WEIGHTS.visibility + EVI_WEIGHTS.authority + EVI_WEIGHTS.momentum;
+    const sum =
+      EVI_WEIGHTS.visibility + EVI_WEIGHTS.authority + EVI_WEIGHTS.momentum;
     expect(sum).toBeCloseTo(1.0, 3);
   });
 
   it('should have correct individual weights', () => {
-    expect(EVI_WEIGHTS.visibility).toBe(0.40);
+    expect(EVI_WEIGHTS.visibility).toBe(0.4);
     expect(EVI_WEIGHTS.authority).toBe(0.35);
     expect(EVI_WEIGHTS.momentum).toBe(0.25);
   });
@@ -102,19 +123,27 @@ describe('computeEVI', () => {
 
   it('should determine correct status band', () => {
     // At Risk (0-40)
-    let result = computeEVI(createSnapshot({ visibility: 30, authority: 30, momentum: 30 }));
+    let result = computeEVI(
+      createSnapshot({ visibility: 30, authority: 30, momentum: 30 })
+    );
     expect(result.status).toBe('at_risk');
 
     // Emerging (41-60)
-    result = computeEVI(createSnapshot({ visibility: 50, authority: 50, momentum: 50 }));
+    result = computeEVI(
+      createSnapshot({ visibility: 50, authority: 50, momentum: 50 })
+    );
     expect(result.status).toBe('emerging');
 
     // Competitive (61-80)
-    result = computeEVI(createSnapshot({ visibility: 70, authority: 70, momentum: 70 }));
+    result = computeEVI(
+      createSnapshot({ visibility: 70, authority: 70, momentum: 70 })
+    );
     expect(result.status).toBe('competitive');
 
     // Dominant (81-100)
-    result = computeEVI(createSnapshot({ visibility: 90, authority: 90, momentum: 90 }));
+    result = computeEVI(
+      createSnapshot({ visibility: 90, authority: 90, momentum: 90 })
+    );
     expect(result.status).toBe('dominant');
   });
 
@@ -128,11 +157,15 @@ describe('computeEVI', () => {
 
   it('should clamp score to 0-100 range', () => {
     // Over 100
-    let result = computeEVI(createSnapshot({ visibility: 150, authority: 150, momentum: 150 }));
+    let result = computeEVI(
+      createSnapshot({ visibility: 150, authority: 150, momentum: 150 })
+    );
     expect(result.score).toBeLessThanOrEqual(100);
 
     // Below 0 (theoretically impossible but test boundary)
-    result = computeEVI(createSnapshot({ visibility: 0, authority: 0, momentum: 0 }));
+    result = computeEVI(
+      createSnapshot({ visibility: 0, authority: 0, momentum: 0 })
+    );
     expect(result.score).toBeGreaterThanOrEqual(0);
   });
 

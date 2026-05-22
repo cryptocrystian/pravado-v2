@@ -10,9 +10,12 @@ import { ArrowUp, ArrowDown, Minus } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getScoreColor, getScoreLabel, getTrendColor } from '@/lib/mediaPerformanceApi';
+import {
+  getScoreColor,
+  getScoreLabel,
+  getTrendColor,
+} from '@/lib/mediaPerformanceApi';
 import { cn } from '@/lib/utils';
-
 
 interface PerformanceScoreCardProps {
   title: string;
@@ -42,20 +45,24 @@ export function PerformanceScoreCard({
   const calculatedChange =
     changePct !== undefined
       ? changePct
-      : score !== null && score !== undefined && previousScore !== null && previousScore !== undefined
-      ? ((score - previousScore) / previousScore) * 100
-      : null;
+      : score !== null &&
+          score !== undefined &&
+          previousScore !== null &&
+          previousScore !== undefined
+        ? ((score - previousScore) / previousScore) * 100
+        : null;
 
   // Determine trend if not provided (map any non-standard value to 'stable')
   const determinedTrend: 'up' | 'down' | 'stable' | undefined =
-    (trend === 'up' || trend === 'down' || trend === 'stable') ? trend :
-    (calculatedChange !== null && calculatedChange !== undefined
-      ? calculatedChange > 0
-        ? 'up'
-        : calculatedChange < 0
-        ? 'down'
-        : 'stable'
-      : undefined);
+    trend === 'up' || trend === 'down' || trend === 'stable'
+      ? trend
+      : calculatedChange !== null && calculatedChange !== undefined
+        ? calculatedChange > 0
+          ? 'up'
+          : calculatedChange < 0
+            ? 'down'
+            : 'stable'
+        : undefined;
 
   const trendColor = getTrendColor(determinedTrend || 'stable');
 
@@ -82,10 +89,14 @@ export function PerformanceScoreCard({
 
       <CardHeader className="pb-3 relative z-10">
         <div className="flex items-start justify-between">
-          <CardTitle className="text-sm font-medium text-gray-600">{title}</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-600">
+            {title}
+          </CardTitle>
           {icon && <div className="text-gray-400">{icon}</div>}
         </div>
-        {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
+        {description && (
+          <p className="text-xs text-gray-500 mt-1">{description}</p>
+        )}
       </CardHeader>
 
       <CardContent className="space-y-3 relative z-10">
@@ -144,7 +155,8 @@ export function PerformanceScoreCard({
                 trendColor === 'gray' && 'text-gray-600'
               )}
             >
-              {calculatedChange > 0 ? '+' : ''}{calculatedChange.toFixed(1)}%
+              {calculatedChange > 0 ? '+' : ''}
+              {calculatedChange.toFixed(1)}%
             </span>
             {previousScore !== null && previousScore !== undefined && (
               <span className="text-xs text-gray-500">

@@ -17,12 +17,18 @@ export default function IntelligencePage() {
       <div className="max-w-[1600px] mx-auto">
         {/* Stub card */}
         <div className="bg-cc-surface border border-white/8 rounded-2xl p-8 text-center mb-8">
-          <Lightning size={48} className="text-cc-cyan mx-auto" weight="regular" />
-          <h2 className="text-xl font-bold text-white mt-4">SAGE Situation Brief</h2>
+          <Lightning
+            size={48}
+            className="text-cc-cyan mx-auto"
+            weight="regular"
+          />
+          <h2 className="text-xl font-bold text-white mt-4">
+            SAGE Situation Brief
+          </h2>
           <p className="text-sm text-white/70 leading-relaxed mt-2 mb-6 max-w-md mx-auto">
             SAGE monitors your media landscape in real-time and generates weekly
-            intelligence briefings. Connect your topic clusters in the SEO surface
-            to activate.
+            intelligence briefings. Connect your topic clusters in the SEO
+            surface to activate.
           </p>
           <button
             type="button"
@@ -40,7 +46,9 @@ export default function IntelligencePage() {
               className="bg-cc-surface border border-white/8 rounded-xl p-4 flex items-center justify-between"
             >
               <div>
-                <h3 className="text-sm font-semibold text-white">{topic.topic}</h3>
+                <h3 className="text-sm font-semibold text-white">
+                  {topic.topic}
+                </h3>
                 <p className="text-xs text-white/70 mt-0.5">
                   {topic.articles} articles this week
                   {topic.delta && (

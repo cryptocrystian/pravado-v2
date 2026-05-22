@@ -55,7 +55,9 @@ export function usePR() {
     }
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return { pitches, coverage, journalists, loading, error, refresh };
 }

@@ -39,7 +39,9 @@ export interface PlaybookGraph {
 /**
  * Convert PlaybookDefinitionDTO to graph
  */
-export function playbookToGraph(playbook: PlaybookDefinitionDTO): PlaybookGraph {
+export function playbookToGraph(
+  playbook: PlaybookDefinitionDTO
+): PlaybookGraph {
   const { steps } = playbook;
 
   // Create nodes from steps
@@ -258,7 +260,9 @@ export function validateGraph(graph: PlaybookGraph): {
   const entryNodes = graph.nodes.filter((n) => !targetNodes.has(n.id));
 
   if (entryNodes.length === 0 && graph.nodes.length > 0) {
-    errors.push('Graph must have exactly one entry point (node with no incoming edges)');
+    errors.push(
+      'Graph must have exactly one entry point (node with no incoming edges)'
+    );
     issues.push({
       code: 'NO_ENTRY_POINT',
       message: 'Graph must have an entry point',
@@ -267,10 +271,12 @@ export function validateGraph(graph: PlaybookGraph): {
   }
 
   if (entryNodes.length > 1) {
-    errors.push(`Graph has ${entryNodes.length} entry points, but should have exactly one`);
+    errors.push(
+      `Graph has ${entryNodes.length} entry points, but should have exactly one`
+    );
     issues.push({
       code: 'MULTIPLE_ENTRY_POINTS',
-      message: `Found ${entryNodes.length} entry points: ${entryNodes.map(n => n.data.label).join(', ')}`,
+      message: `Found ${entryNodes.length} entry points: ${entryNodes.map((n) => n.data.label).join(', ')}`,
       severity: 'error',
     });
   }
@@ -287,10 +293,12 @@ export function validateGraph(graph: PlaybookGraph): {
   );
 
   if (orphanedNodes.length > 0) {
-    errors.push(`Found ${orphanedNodes.length} orphaned nodes (not connected to graph)`);
+    errors.push(
+      `Found ${orphanedNodes.length} orphaned nodes (not connected to graph)`
+    );
     issues.push({
       code: 'ORPHANED_NODES',
-      message: `Orphaned nodes: ${orphanedNodes.map(n => n.data.label).join(', ')}`,
+      message: `Orphaned nodes: ${orphanedNodes.map((n) => n.data.label).join(', ')}`,
       severity: 'error',
     });
   }
@@ -311,7 +319,9 @@ export function validateGraph(graph: PlaybookGraph): {
   );
 
   if (invalidEdges.length > 0) {
-    errors.push(`Found ${invalidEdges.length} edges connecting to non-existent nodes`);
+    errors.push(
+      `Found ${invalidEdges.length} edges connecting to non-existent nodes`
+    );
     issues.push({
       code: 'INVALID_EDGES',
       message: `${invalidEdges.length} edges reference non-existent nodes`,
@@ -356,7 +366,9 @@ export function normalizeGraph(graph: PlaybookGraph): PlaybookGraph {
   let nodes = graph.nodes;
 
   if (graph.nodes.length > 1) {
-    nodes = graph.nodes.filter((n) => connectedNodes.has(n.id) || graph.edges.length === 0);
+    nodes = graph.nodes.filter(
+      (n) => connectedNodes.has(n.id) || graph.edges.length === 0
+    );
   }
 
   // Remove edges that reference non-existent nodes

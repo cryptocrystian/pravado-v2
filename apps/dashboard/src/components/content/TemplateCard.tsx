@@ -48,7 +48,9 @@ export function TemplateCard({ template, onClick }: TemplateCardProps) {
     >
       <Icon size={28} className="text-cc-cyan" weight="regular" />
 
-      <h4 className="text-base font-semibold text-white mt-3">{template.name}</h4>
+      <h4 className="text-base font-semibold text-white mt-3">
+        {template.name}
+      </h4>
 
       {/* Tags */}
       <div className="flex flex-wrap gap-1.5 mt-1">
@@ -62,9 +64,13 @@ export function TemplateCard({ template, onClick }: TemplateCardProps) {
         ))}
       </div>
 
-      <p className="text-sm text-white/70 mt-2 leading-relaxed">{template.description}</p>
+      <p className="text-sm text-white/70 mt-2 leading-relaxed">
+        {template.description}
+      </p>
 
-      <p className="text-xs text-cc-cyan mt-3">Est. CiteMind boost: {template.citeMindBoost}</p>
+      <p className="text-xs text-cc-cyan mt-3">
+        Est. CiteMind boost: {template.citeMindBoost}
+      </p>
 
       <span className="text-sm font-medium text-cc-cyan mt-3 opacity-0 group-hover:opacity-100 transition-opacity block">
         Use this template &rarr;

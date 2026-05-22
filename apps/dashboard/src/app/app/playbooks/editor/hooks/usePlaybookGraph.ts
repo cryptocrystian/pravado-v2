@@ -8,7 +8,12 @@
 import type { PlaybookDefinitionDTO, PlaybookStep } from '@pravado/types';
 import { useCallback } from 'react';
 
-import type { EditorGraph, EditorNode, EditorEdge, NodeType } from '../types/graph';
+import type {
+  EditorGraph,
+  EditorNode,
+  EditorEdge,
+  NodeType,
+} from '../types/graph';
 
 /**
  * Convert PlaybookDefinitionDTO to EditorGraph
@@ -130,65 +135,78 @@ export function graphToSteps(graph: EditorGraph): PlaybookStep[] {
  * Hook for playbook graph operations
  */
 export function usePlaybookGraph() {
-  const convertToGraph = useCallback((playbook: PlaybookDefinitionDTO): EditorGraph => {
-    return playbookToGraph(playbook);
-  }, []);
+  const convertToGraph = useCallback(
+    (playbook: PlaybookDefinitionDTO): EditorGraph => {
+      return playbookToGraph(playbook);
+    },
+    []
+  );
 
-  const convertToSteps = useCallback((graph: EditorGraph): Partial<PlaybookStep>[] => {
-    return graphToSteps(graph);
-  }, []);
+  const convertToSteps = useCallback(
+    (graph: EditorGraph): Partial<PlaybookStep>[] => {
+      return graphToSteps(graph);
+    },
+    []
+  );
 
-  const validateGraph = useCallback((graph: EditorGraph): {
-    valid: boolean;
-    errors: string[];
-  } => {
-    const errors: string[] = [];
+  const validateGraph = useCallback(
+    (
+      graph: EditorGraph
+    ): {
+      valid: boolean;
+      errors: string[];
+    } => {
+      const errors: string[] = [];
 
-    // Basic validation
-    if (graph.nodes.length === 0) {
-      errors.push('Graph must have at least one node');
-    }
+      // Basic validation
+      if (graph.nodes.length === 0) {
+        errors.push('Graph must have at least one node');
+      }
 
-    // Check for entry point
-    const targetNodes = new Set(graph.edges.map((e) => e.target));
-    const entryNodes = graph.nodes.filter((n) => !targetNodes.has(n.id));
+      // Check for entry point
+      const targetNodes = new Set(graph.edges.map((e) => e.target));
+      const entryNodes = graph.nodes.filter((n) => !targetNodes.has(n.id));
 
-    if (entryNodes.length === 0 && graph.nodes.length > 0) {
-      errors.push('Graph must have an entry point (node with no incoming edges)');
-    }
+      if (entryNodes.length === 0 && graph.nodes.length > 0) {
+        errors.push(
+          'Graph must have an entry point (node with no incoming edges)'
+        );
+      }
 
-    if (entryNodes.length > 1) {
-      errors.push('Graph should have only one entry point');
-    }
+      if (entryNodes.length > 1) {
+        errors.push('Graph should have only one entry point');
+      }
 
-    // Check for orphaned nodes
-    const connectedNodes = new Set<string>();
-    for (const edge of graph.edges) {
-      connectedNodes.add(edge.source);
-      connectedNodes.add(edge.target);
-    }
+      // Check for orphaned nodes
+      const connectedNodes = new Set<string>();
+      for (const edge of graph.edges) {
+        connectedNodes.add(edge.source);
+        connectedNodes.add(edge.target);
+      }
 
-    const orphanedNodes = graph.nodes.filter(
-      (n) => !connectedNodes.has(n.id) && graph.nodes.length > 1
-    );
-
-    if (orphanedNodes.length > 0) {
-      errors.push(
-        `Found ${orphanedNodes.length} orphaned node(s): ${orphanedNodes.map((n) => n.data.label).join(', ')}`
+      const orphanedNodes = graph.nodes.filter(
+        (n) => !connectedNodes.has(n.id) && graph.nodes.length > 1
       );
-    }
 
-    // Validate individual nodes
-    for (const node of graph.nodes) {
-      const nodeErrors = validateNode(node);
-      errors.push(...nodeErrors.map((err) => `${node.data.label}: ${err}`));
-    }
+      if (orphanedNodes.length > 0) {
+        errors.push(
+          `Found ${orphanedNodes.length} orphaned node(s): ${orphanedNodes.map((n) => n.data.label).join(', ')}`
+        );
+      }
 
-    return {
-      valid: errors.length === 0,
-      errors,
-    };
-  }, []);
+      // Validate individual nodes
+      for (const node of graph.nodes) {
+        const nodeErrors = validateNode(node);
+        errors.push(...nodeErrors.map((err) => `${node.data.label}: ${err}`));
+      }
+
+      return {
+        valid: errors.length === 0,
+        errors,
+      };
+    },
+    []
+  );
 
   return {
     convertToGraph,

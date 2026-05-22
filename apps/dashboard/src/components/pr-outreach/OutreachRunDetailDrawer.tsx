@@ -8,8 +8,11 @@
 import type { OutreachRunWithDetails } from '@pravado/types';
 import { useEffect, useState } from 'react';
 
-
-import { advanceOutreachRun, getOutreachRun, stopOutreachRun } from '@/lib/prOutreachApi';
+import {
+  advanceOutreachRun,
+  getOutreachRun,
+  stopOutreachRun,
+} from '@/lib/prOutreachApi';
 
 export interface OutreachRunDetailDrawerProps {
   runId: string;
@@ -17,7 +20,11 @@ export interface OutreachRunDetailDrawerProps {
   onRunChange: () => void;
 }
 
-export function OutreachRunDetailDrawer({ runId, onClose, onRunChange }: OutreachRunDetailDrawerProps) {
+export function OutreachRunDetailDrawer({
+  runId,
+  onClose,
+  onRunChange,
+}: OutreachRunDetailDrawerProps) {
   const [run, setRun] = useState<OutreachRunWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(false);
@@ -49,7 +56,9 @@ export function OutreachRunDetailDrawer({ runId, onClose, onRunChange }: Outreac
       loadRun();
     } catch (error) {
       console.error('Failed to stop run:', error);
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     } finally {
       setActing(false);
     }
@@ -65,7 +74,9 @@ export function OutreachRunDetailDrawer({ runId, onClose, onRunChange }: Outreac
       loadRun();
     } catch (error) {
       console.error('Failed to advance run:', error);
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     } finally {
       setActing(false);
     }
@@ -107,12 +118,19 @@ export function OutreachRunDetailDrawer({ runId, onClose, onRunChange }: Outreac
             </p>
           )}
         </div>
-        <button
-          onClick={onClose}
-          className="p-2 hover:bg-gray-200 rounded"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -149,14 +167,20 @@ export function OutreachRunDetailDrawer({ runId, onClose, onRunChange }: Outreac
               {run.nextStepAt && (
                 <div className="mt-4 pt-4 border-t">
                   <div className="text-sm text-gray-600">Next Step At</div>
-                  <div className="font-medium">{formatDate(run.nextStepAt)}</div>
+                  <div className="font-medium">
+                    {formatDate(run.nextStepAt)}
+                  </div>
                 </div>
               )}
 
               {run.repliedAt && (
                 <div className="mt-4 pt-4 border-t">
-                  <div className="text-sm text-green-600">Journalist Replied!</div>
-                  <div className="font-medium">At step {run.replyStepNumber}</div>
+                  <div className="text-sm text-green-600">
+                    Journalist Replied!
+                  </div>
+                  <div className="font-medium">
+                    At step {run.replyStepNumber}
+                  </div>
                   <div className="text-sm">{formatDate(run.repliedAt)}</div>
                 </div>
               )}
@@ -187,7 +211,9 @@ export function OutreachRunDetailDrawer({ runId, onClose, onRunChange }: Outreac
                   {run.journalist.outlet && (
                     <div>
                       <span className="text-sm text-gray-600">Outlet: </span>
-                      <span className="font-medium">{run.journalist.outlet}</span>
+                      <span className="font-medium">
+                        {run.journalist.outlet}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -198,20 +224,28 @@ export function OutreachRunDetailDrawer({ runId, onClose, onRunChange }: Outreac
             <div>
               <h3 className="font-medium mb-2">Events Timeline</h3>
               {run.events.length === 0 && (
-                <div className="text-center py-4 text-gray-500">No events yet</div>
+                <div className="text-center py-4 text-gray-500">
+                  No events yet
+                </div>
               )}
               <div className="space-y-3">
                 {run.events.map((event) => (
                   <div key={event.id} className="bg-gray-50 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <span className="text-2xl">{getEventIcon(event.eventType)}</span>
+                      <span className="text-2xl">
+                        {getEventIcon(event.eventType)}
+                      </span>
                       <div className="flex-1">
-                        <div className="font-medium capitalize">{event.eventType}</div>
+                        <div className="font-medium capitalize">
+                          {event.eventType}
+                        </div>
                         <div className="text-sm text-gray-600">
                           Step {event.stepNumber}
                         </div>
                         {event.emailSubject && (
-                          <div className="text-sm mt-2 font-medium">{event.emailSubject}</div>
+                          <div className="text-sm mt-2 font-medium">
+                            {event.emailSubject}
+                          </div>
                         )}
                         <div className="text-xs text-gray-500 mt-1">
                           {formatDate(event.createdAt)}

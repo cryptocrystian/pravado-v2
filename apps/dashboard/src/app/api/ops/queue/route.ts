@@ -16,6 +16,9 @@ export async function GET() {
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
     console.error('[API /api/ops/queue] GET Error:', { status, message, code });
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

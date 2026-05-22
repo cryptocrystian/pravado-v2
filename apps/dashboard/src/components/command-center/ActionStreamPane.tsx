@@ -46,12 +46,24 @@
  */
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { RedirectToOnboarding } from '@/components/auth/RedirectToOnboarding';
 
 import { ActionCard, type DensityLevel } from './ActionCard';
-import type { ActionItem, ActionStreamResponse, EVIFilterState, Priority } from './types';
+import type {
+  ActionItem,
+  ActionStreamResponse,
+  EVIFilterState,
+  Priority,
+} from './types';
 
 interface ActionStreamPaneProps {
   data?: ActionStreamResponse | null;
@@ -86,7 +98,9 @@ function isActionLocked(action: ActionItem): boolean {
 }
 
 // Helper to compute lifecycle bucket from execution state
-function getLifecycleBucket(executionState: 'idle' | 'executing' | 'success' | 'error'): LifecycleBucket {
+function getLifecycleBucket(
+  executionState: 'idle' | 'executing' | 'success' | 'error'
+): LifecycleBucket {
   // Active: idle or executing (still actionable)
   // History: success (completed) or error (failed)
   if (executionState === 'success' || executionState === 'error') {
@@ -129,7 +143,10 @@ const priorityConfig: Record<Priority, { dot: string; urgent: boolean }> = {
  * - Comfortable is DEFAULT and should be most common
  * - Only fall back to standard/compact when necessary
  */
-function calculateDensityLevel(availableHeight: number, cardCount: number): DensityLevel {
+function calculateDensityLevel(
+  availableHeight: number,
+  cardCount: number
+): DensityLevel {
   // Default to comfortable for empty or small lists
   if (cardCount === 0) return 'comfortable';
 
@@ -140,7 +157,10 @@ function calculateDensityLevel(availableHeight: number, cardCount: number): Dens
   // Rule 1: <=8 cards = comfortable (unless height-constrained)
   if (cardCount <= DENSITY_THRESHOLDS.comfortable.maxCards) {
     // Even with 8 cards, prefer comfortable if we have room for 6+ visible
-    if (heightPerCard >= DENSITY_THRESHOLDS.comfortable.minHeightPerCard * 0.75) {
+    if (
+      heightPerCard >=
+      DENSITY_THRESHOLDS.comfortable.minHeightPerCard * 0.75
+    ) {
       return 'comfortable';
     }
   }
@@ -158,13 +178,20 @@ function calculateDensityLevel(availableHeight: number, cardCount: number): Dens
 
 function LoadingSkeleton({ density }: { density: DensityLevel }) {
   // Skeleton counts by density
-  const skeletonCount = density === 'compact' ? 6 : density === 'standard' ? 4 : 3;
-  const skeletonHeight = density === 'compact' ? 'h-12' : density === 'standard' ? 'h-20' : 'h-32';
+  const skeletonCount =
+    density === 'compact' ? 6 : density === 'standard' ? 4 : 3;
+  const skeletonHeight =
+    density === 'compact' ? 'h-12' : density === 'standard' ? 'h-20' : 'h-32';
 
   return (
-    <div className={density === 'compact' ? 'p-2 space-y-1' : 'p-3 space-y-2.5'}>
+    <div
+      className={density === 'compact' ? 'p-2 space-y-1' : 'p-3 space-y-2.5'}
+    >
       {Array.from({ length: skeletonCount }).map((_, i) => (
-        <div key={i} className={`${skeletonHeight} bg-slate-1 border-l-[3px] border-l-white/10 border border-border-subtle border-l-0 rounded-lg animate-pulse`} />
+        <div
+          key={i}
+          className={`${skeletonHeight} bg-slate-1 border-l-[3px] border-l-white/10 border border-border-subtle border-l-0 rounded-lg animate-pulse`}
+        />
       ))}
     </div>
   );
@@ -175,11 +202,21 @@ function ErrorState({ error }: { error: Error }) {
     <div className="p-3">
       <div className="p-3 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg">
         <div className="flex items-start gap-2">
-          <svg className="w-4 h-4 text-semantic-danger flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          <svg
+            className="w-4 h-4 text-semantic-danger flex-shrink-0 mt-0.5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clipRule="evenodd"
+            />
           </svg>
           <div>
-            <h4 className="text-xs font-semibold text-semantic-danger">Failed to load actions</h4>
+            <h4 className="text-xs font-semibold text-semantic-danger">
+              Failed to load actions
+            </h4>
             <p className="text-xs text-white/55 mt-0.5">{error.message}</p>
           </div>
         </div>
@@ -193,12 +230,32 @@ function EmptyState({ isHistory }: { isHistory: boolean }) {
     <div className="p-6 text-center">
       <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-slate-3 flex items-center justify-center">
         {isHistory ? (
-          <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-6 h-6 text-white/50"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         ) : (
-          <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          <svg
+            className="w-6 h-6 text-white/50"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+            />
           </svg>
         )}
       </div>
@@ -232,7 +289,9 @@ export function ActionStreamPane({
   // upstream 403 NO_ORG responses, and the previous naive `r.json()` path
   // treated the error-shaped body as success data and crashed on `.items`.
   // See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0A-COLD-START-UNBLOCK.md §2.
-  const [fetchedData, setFetchedData] = useState<ActionStreamResponse | null>(null);
+  const [fetchedData, setFetchedData] = useState<ActionStreamResponse | null>(
+    null
+  );
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState<Error | null>(null);
   const [noOrgState, setNoOrgState] = useState(false);
@@ -247,9 +306,9 @@ export function ActionStreamPane({
         });
 
         if (!response.ok) {
-          const body = (await response.json().catch(() => null)) as
-            | { error?: { code?: string; message?: string } }
-            | null;
+          const body = (await response.json().catch(() => null)) as {
+            error?: { code?: string; message?: string };
+          } | null;
 
           if (response.status === 403 && body?.error?.code === 'NO_ORG') {
             if (!cancelled) {
@@ -260,7 +319,8 @@ export function ActionStreamPane({
           }
 
           const message =
-            body?.error?.message ?? `Action stream fetch failed (${response.status})`;
+            body?.error?.message ??
+            `Action stream fetch failed (${response.status})`;
           if (!cancelled) {
             setFetchError(new Error(message));
             setFetchLoading(false);
@@ -295,10 +355,12 @@ export function ActionStreamPane({
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [lifecycleBucket, setLifecycleBucket] = useState<LifecycleBucket>('active');
+  const [lifecycleBucket, setLifecycleBucket] =
+    useState<LifecycleBucket>('active');
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
   const [densityMode, setDensityMode] = useState<DensityMode>('auto');
-  const [computedDensity, setComputedDensity] = useState<DensityLevel>('comfortable'); // Default to comfortable
+  const [computedDensity, setComputedDensity] =
+    useState<DensityLevel>('comfortable'); // Default to comfortable
   const listRef = useRef<HTMLDivElement>(null);
 
   // v5: Single-hover coordination state
@@ -312,7 +374,9 @@ export function ActionStreamPane({
   // Usage: ?density=comfortable|standard|compact
   const densityOverride = searchParams?.get('density') as DensityLevel | null;
   const validOverrides: DensityLevel[] = ['comfortable', 'standard', 'compact'];
-  const hasValidOverride = !!(densityOverride && validOverrides.includes(densityOverride));
+  const hasValidOverride = !!(
+    densityOverride && validOverrides.includes(densityOverride)
+  );
 
   // LOCKED ACTIONS: Separate locked items (sorted by impact)
   const lockedItems = useMemo(() => {
@@ -341,7 +405,11 @@ export function ActionStreamPane({
     if (eviFilter) {
       items = items.filter((item) => {
         // Filter by driver if specified
-        if (eviFilter.driver && item.evi_driver && item.evi_driver !== eviFilter.driver) {
+        if (
+          eviFilter.driver &&
+          item.evi_driver &&
+          item.evi_driver !== eviFilter.driver
+        ) {
           return false;
         }
         // Filter by pillar if specified
@@ -355,9 +423,11 @@ export function ActionStreamPane({
     // Then apply category filter
     items = items.filter((item) => {
       if (activeFilter === 'all') return true;
-      if (activeFilter === 'urgent') return item.priority === 'critical' || item.priority === 'high';
+      if (activeFilter === 'urgent')
+        return item.priority === 'critical' || item.priority === 'high';
       if (activeFilter === 'draft') return item.mode === 'manual';
-      if (activeFilter === 'proposed') return item.mode === 'copilot' || item.mode === 'autopilot';
+      if (activeFilter === 'proposed')
+        return item.mode === 'copilot' || item.mode === 'autopilot';
       if (activeFilter === 'signal') return item.confidence > 0.8;
       return true;
     });
@@ -375,7 +445,9 @@ export function ActionStreamPane({
     } else {
       // History: Most recently completed first (by updated_at)
       items = items.sort((a, b) => {
-        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+        return (
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
       });
     }
 
@@ -421,80 +493,98 @@ export function ActionStreamPane({
   // Count items per lifecycle bucket (excluding locked items)
   const bucketCounts = useMemo(() => {
     if (!data?.items) return { active: 0, history: 0, locked: 0 };
-    return data.items.reduce((acc, item) => {
-      // LOCKED ACTIONS: Count separately
-      if (isActionLocked(item)) {
-        acc.locked++;
+    return data.items.reduce(
+      (acc, item) => {
+        // LOCKED ACTIONS: Count separately
+        if (isActionLocked(item)) {
+          acc.locked++;
+          return acc;
+        }
+        const itemState = executionStates[item.id] || 'idle';
+        const bucket = getLifecycleBucket(itemState);
+        acc[bucket]++;
         return acc;
-      }
-      const itemState = executionStates[item.id] || 'idle';
-      const bucket = getLifecycleBucket(itemState);
-      acc[bucket]++;
-      return acc;
-    }, { active: 0, history: 0, locked: 0 });
+      },
+      { active: 0, history: 0, locked: 0 }
+    );
   }, [data, executionStates]);
 
   // Count items per filter (within current lifecycle bucket, excluding locked)
   const counts = useMemo(() => {
     // Filter items by current lifecycle bucket first, excluding locked items
-    const bucketItems = data?.items.filter((item) => {
-      // LOCKED ACTIONS: Exclude from counts
-      if (isActionLocked(item)) return false;
-      const itemState = executionStates[item.id] || 'idle';
-      return getLifecycleBucket(itemState) === lifecycleBucket;
-    }) || [];
+    const bucketItems =
+      data?.items.filter((item) => {
+        // LOCKED ACTIONS: Exclude from counts
+        if (isActionLocked(item)) return false;
+        const itemState = executionStates[item.id] || 'idle';
+        return getLifecycleBucket(itemState) === lifecycleBucket;
+      }) || [];
 
     return {
       all: bucketItems.length,
-      urgent: bucketItems.filter(i => i.priority === 'critical' || i.priority === 'high').length,
-      draft: bucketItems.filter(i => i.mode === 'manual').length,
-      proposed: bucketItems.filter(i => i.mode === 'copilot' || i.mode === 'autopilot').length,
-      signal: bucketItems.filter(i => i.confidence > 0.8).length,
+      urgent: bucketItems.filter(
+        (i) => i.priority === 'critical' || i.priority === 'high'
+      ).length,
+      draft: bucketItems.filter((i) => i.mode === 'manual').length,
+      proposed: bucketItems.filter(
+        (i) => i.mode === 'copilot' || i.mode === 'autopilot'
+      ).length,
+      signal: bucketItems.filter((i) => i.confidence > 0.8).length,
     };
   }, [data, lifecycleBucket, executionStates]);
 
   // INTERACTION CONTRACT v2.0:
   // - handleReview opens the modal (card click or Review button)
   // - handlePrimaryAction executes the action (Primary CTA only)
-  const handleReview = useCallback((action: ActionItem) => {
-    onReview?.(action);
-  }, [onReview]);
+  const handleReview = useCallback(
+    (action: ActionItem) => {
+      onReview?.(action);
+    },
+    [onReview]
+  );
 
-  const handlePrimaryActionClick = useCallback((action: ActionItem) => {
-    // If action has a deep link, navigate to it (e.g. View Crisis Hub → /app/pr/crisis)
-    if (action.deep_link?.href) {
-      router.push(action.deep_link.href);
-      return;
-    }
-    // Otherwise fall back to the parent-provided execute handler
-    onPrimaryAction?.(action);
-  }, [onPrimaryAction, router]);
+  const handlePrimaryActionClick = useCallback(
+    (action: ActionItem) => {
+      // If action has a deep link, navigate to it (e.g. View Crisis Hub → /app/pr/crisis)
+      if (action.deep_link?.href) {
+        router.push(action.deep_link.href);
+        return;
+      }
+      // Otherwise fall back to the parent-provided execute handler
+      onPrimaryAction?.(action);
+    },
+    [onPrimaryAction, router]
+  );
 
   // v5: Handle hover state changes for single-hover coordination
   // v2 Entity Map: Also notify parent for cross-pane coordination
-  const handleHoverOpenChange = useCallback((actionId: string) => (open: boolean) => {
-    if (open) {
-      // Opening a new hover - set this as the active one
-      setHoveredActionId(actionId);
-      onHoverActionChange?.(actionId);
-    } else {
-      // Closing hover - only clear if this is the currently hovered card
-      setHoveredActionId((current) => {
-        const newId = current === actionId ? null : current;
-        if (current === actionId) {
-          onHoverActionChange?.(null);
-        }
-        return newId;
-      });
-    }
-  }, [onHoverActionChange]);
+  const handleHoverOpenChange = useCallback(
+    (actionId: string) => (open: boolean) => {
+      if (open) {
+        // Opening a new hover - set this as the active one
+        setHoveredActionId(actionId);
+        onHoverActionChange?.(actionId);
+      } else {
+        // Closing hover - only clear if this is the currently hovered card
+        setHoveredActionId((current) => {
+          const newId = current === actionId ? null : current;
+          if (current === actionId) {
+            onHoverActionChange?.(null);
+          }
+          return newId;
+        });
+      }
+    },
+    [onHoverActionChange]
+  );
 
   // Spacing based on density
-  const listSpacing = effectiveDensity === 'compact'
-    ? 'p-2 space-y-1.5'
-    : effectiveDensity === 'standard'
-    ? 'p-3 space-y-2'
-    : 'p-3 space-y-2.5'; // Comfortable - more spacious
+  const listSpacing =
+    effectiveDensity === 'compact'
+      ? 'p-2 space-y-1.5'
+      : effectiveDensity === 'standard'
+        ? 'p-3 space-y-2'
+        : 'p-3 space-y-2.5'; // Comfortable - more spacious
 
   // Phase 0 Track 0A: a user with no org membership should be sent to onboarding,
   // not shown a crash-prone Action Stream. Early return AFTER all hooks to
@@ -511,17 +601,22 @@ export function ActionStreamPane({
           onClick={() => setLifecycleBucket('active')}
           className={`
             flex-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200
-            ${lifecycleBucket === 'active'
-              ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
-              : 'text-white/55 hover:text-white/90 hover:bg-slate-3 border border-transparent'
+            ${
+              lifecycleBucket === 'active'
+                ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
+                : 'text-white/55 hover:text-white/90 hover:bg-slate-3 border border-transparent'
             }
           `}
         >
           Active
           {bucketCounts.active > 0 && (
-            <span className={`ml-1.5 px-1.5 py-0.5 text-[11px] font-bold tabular-nums rounded ${
-              lifecycleBucket === 'active' ? 'bg-brand-cyan/20' : 'bg-white/10'
-            }`}>
+            <span
+              className={`ml-1.5 px-1.5 py-0.5 text-[11px] font-bold tabular-nums rounded ${
+                lifecycleBucket === 'active'
+                  ? 'bg-brand-cyan/20'
+                  : 'bg-white/10'
+              }`}
+            >
               {bucketCounts.active}
             </span>
           )}
@@ -530,17 +625,20 @@ export function ActionStreamPane({
           onClick={() => setLifecycleBucket('history')}
           className={`
             flex-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200
-            ${lifecycleBucket === 'history'
-              ? 'bg-white/10 text-white/90 border border-white/20'
-              : 'text-white/55 hover:text-white/90 hover:bg-slate-3 border border-transparent'
+            ${
+              lifecycleBucket === 'history'
+                ? 'bg-white/10 text-white/90 border border-white/20'
+                : 'text-white/55 hover:text-white/90 hover:bg-slate-3 border border-transparent'
             }
           `}
         >
           History
           {bucketCounts.history > 0 && (
-            <span className={`ml-1.5 px-1.5 py-0.5 text-[11px] font-bold tabular-nums rounded ${
-              lifecycleBucket === 'history' ? 'bg-white/15' : 'bg-white/10'
-            }`}>
+            <span
+              className={`ml-1.5 px-1.5 py-0.5 text-[11px] font-bold tabular-nums rounded ${
+                lifecycleBucket === 'history' ? 'bg-white/15' : 'bg-white/10'
+              }`}
+            >
               {bucketCounts.history}
             </span>
           )}
@@ -550,8 +648,18 @@ export function ActionStreamPane({
       {/* EVI Filter Chip (from Strategy Panel) */}
       {eviFilter && (
         <div className="flex items-center gap-2 px-3 py-1.5 border-b border-brand-cyan/30 bg-brand-cyan/5 flex-shrink-0">
-          <svg className="w-3.5 h-3.5 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          <svg
+            className="w-3.5 h-3.5 text-brand-cyan"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+            />
           </svg>
           <span className="text-xs text-brand-cyan font-medium">
             Filtered by: {eviFilter.label}
@@ -562,8 +670,18 @@ export function ActionStreamPane({
               className="ml-auto p-0.5 rounded hover:bg-brand-cyan/20 text-brand-cyan transition-colors"
               title="Clear filter"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           )}
@@ -584,15 +702,18 @@ export function ActionStreamPane({
                 className={`
                   px-2 py-1 text-[11px] font-semibold uppercase tracking-wide rounded
                   transition-all duration-200 ease-out whitespace-nowrap
-                  ${isActive
-                    ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
-                    : 'text-white/55 hover:text-white/90 hover:bg-slate-3'
+                  ${
+                    isActive
+                      ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
+                      : 'text-white/55 hover:text-white/90 hover:bg-slate-3'
                   }
                 `}
               >
                 {tab.label}
                 {count > 0 && (
-                  <span className={`ml-1 ${isActive ? 'text-brand-cyan/70' : 'text-white/35'}`}>
+                  <span
+                    className={`ml-1 ${isActive ? 'text-brand-cyan/70' : 'text-white/35'}`}
+                  >
                     {count}
                   </span>
                 )}
@@ -610,25 +731,29 @@ export function ActionStreamPane({
             </span>
           )}
           <div className="flex items-center bg-slate-1 rounded p-0.5 border border-border-subtle">
-            {(['auto', 'comfortable', 'compact'] as DensityMode[]).map((mode) => (
-              <button
-                key={mode}
-                onClick={() => setDensityMode(mode)}
-                disabled={hasValidOverride}
-                className={`
+            {(['auto', 'comfortable', 'compact'] as DensityMode[]).map(
+              (mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setDensityMode(mode)}
+                  disabled={hasValidOverride}
+                  className={`
                   px-1.5 py-0.5 text-xs font-medium rounded transition-colors
                   ${hasValidOverride ? 'opacity-50 cursor-not-allowed' : ''}
                   ${densityMode === mode ? 'bg-white/10 text-white/90' : 'text-white/45 hover:text-white/75'}
                 `}
-                title={
-                  mode === 'auto' ? 'Adaptive density (default)' :
-                  mode === 'comfortable' ? 'Force comfortable (UX-Pilot)' :
-                  'Force compact'
-                }
-              >
-                {mode === 'auto' ? 'A' : mode === 'comfortable' ? 'F' : 'C'}
-              </button>
-            ))}
+                  title={
+                    mode === 'auto'
+                      ? 'Adaptive density (default)'
+                      : mode === 'comfortable'
+                        ? 'Force comfortable (UX-Pilot)'
+                        : 'Force compact'
+                  }
+                >
+                  {mode === 'auto' ? 'A' : mode === 'comfortable' ? 'F' : 'C'}
+                </button>
+              )
+            )}
           </div>
         </div>
       </div>
@@ -636,18 +761,27 @@ export function ActionStreamPane({
       {/* Content */}
       <div ref={listRef} className="flex-1 overflow-y-auto">
         {/* ── SAGE Daily Brief card — shows real data or empty state ── */}
-        <div className="mx-3 mt-3 mb-1 rounded-xl border border-brand-iris/25
-          bg-gradient-to-br from-brand-iris/8 to-transparent overflow-hidden">
-          <div className="flex items-center gap-2 px-3 pt-3 pb-2
-            border-b border-brand-iris/15">
-            <span className="w-2 h-2 rounded-full bg-brand-iris
-              shadow-[0_0_8px_rgba(168,85,247,0.8)] animate-pulse" />
+        <div
+          className="mx-3 mt-3 mb-1 rounded-xl border border-brand-iris/25
+          bg-gradient-to-br from-brand-iris/8 to-transparent overflow-hidden"
+        >
+          <div
+            className="flex items-center gap-2 px-3 pt-3 pb-2
+            border-b border-brand-iris/15"
+          >
+            <span
+              className="w-2 h-2 rounded-full bg-brand-iris
+              shadow-[0_0_8px_rgba(168,85,247,0.8)] animate-pulse"
+            />
             <span className="text-xs font-bold uppercase tracking-widest text-brand-iris">
               SAGE&trade; Daily Brief
             </span>
             {data?.daily_brief && (
               <span className="ml-auto text-xs text-white/30">
-                {new Date(data.generated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                {new Date(data.generated_at).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                })}
               </span>
             )}
           </div>
@@ -671,27 +805,48 @@ export function ActionStreamPane({
             {/* History header - shows completion context */}
             {lifecycleBucket === 'history' && (
               <div className="flex items-center gap-1.5 px-1 py-0.5 mb-1">
-                <svg className="w-3.5 h-3.5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-3.5 h-3.5 text-white/40"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
-                <span className="text-xs font-medium text-white/50 uppercase tracking-wider">Recently Completed</span>
+                <span className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                  Recently Completed
+                </span>
               </div>
             )}
 
             {/* Urgent section header (Active mode only) */}
-            {lifecycleBucket === 'active' && processedItems.some(i => priorityConfig[i.priority].urgent) && activeFilter === 'all' && (
-              <div className="flex items-center gap-1.5 px-1 py-0.5 mb-1">
-                <span className="w-1 h-1 rounded-full bg-semantic-danger animate-pulse" />
-                <span className="text-xs font-semibold text-semantic-danger uppercase tracking-wider">Requires Attention</span>
-              </div>
-            )}
+            {lifecycleBucket === 'active' &&
+              processedItems.some((i) => priorityConfig[i.priority].urgent) &&
+              activeFilter === 'all' && (
+                <div className="flex items-center gap-1.5 px-1 py-0.5 mb-1">
+                  <span className="w-1 h-1 rounded-full bg-semantic-danger animate-pulse" />
+                  <span className="text-xs font-semibold text-semantic-danger uppercase tracking-wider">
+                    Requires Attention
+                  </span>
+                </div>
+              )}
 
             {processedItems.map((action, index) => {
               const isUrgent = priorityConfig[action.priority].urgent;
               const nextItem = processedItems[index + 1];
-              const nextIsNotUrgent = nextItem && !priorityConfig[nextItem.priority].urgent;
+              const nextIsNotUrgent =
+                nextItem && !priorityConfig[nextItem.priority].urgent;
               // Only show divider in active mode
-              const showDivider = lifecycleBucket === 'active' && isUrgent && nextIsNotUrgent && activeFilter === 'all';
+              const showDivider =
+                lifecycleBucket === 'active' &&
+                isUrgent &&
+                nextIsNotUrgent &&
+                activeFilter === 'all';
 
               return (
                 <div key={action.id}>
@@ -705,12 +860,16 @@ export function ActionStreamPane({
                     // v5: HoverCard coordination props
                     isHoverOpen={hoveredActionId === action.id}
                     onHoverOpenChange={handleHoverOpenChange(action.id)}
-                    isDimmed={hoveredActionId !== null && hoveredActionId !== action.id}
+                    isDimmed={
+                      hoveredActionId !== null && hoveredActionId !== action.id
+                    }
                   />
                   {showDivider && (
                     <div className="flex items-center gap-1.5 px-1 py-1 mt-1.5">
                       <div className="flex-1 h-px bg-border-subtle" />
-                      <span className="text-xs text-white/35 uppercase tracking-wider">Other Actions</span>
+                      <span className="text-xs text-white/35 uppercase tracking-wider">
+                        Other Actions
+                      </span>
                       <div className="flex-1 h-px bg-border-subtle" />
                     </div>
                   )}
@@ -727,8 +886,18 @@ export function ActionStreamPane({
                   className="w-full flex items-center justify-between px-2 py-2 rounded-lg hover:bg-slate-3 transition-colors group"
                 >
                   <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-brand-iris/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    <svg
+                      className="w-4 h-4 text-brand-iris/70"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
                     </svg>
                     <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">
                       Upgrade Opportunities
@@ -743,7 +912,12 @@ export function ActionStreamPane({
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
@@ -763,7 +937,10 @@ export function ActionStreamPane({
                         // v5: HoverCard coordination props
                         isHoverOpen={hoveredActionId === action.id}
                         onHoverOpenChange={handleHoverOpenChange(action.id)}
-                        isDimmed={hoveredActionId !== null && hoveredActionId !== action.id}
+                        isDimmed={
+                          hoveredActionId !== null &&
+                          hoveredActionId !== action.id
+                        }
                       />
                     ))}
                   </div>

@@ -89,7 +89,9 @@ function buildQueryString(params: Record<string, any>): string {
 // BRIEFING MANAGEMENT API
 // ============================================================================
 
-export async function createBriefing(data: CreateBriefingRequest): Promise<MediaBriefing> {
+export async function createBriefing(
+  data: CreateBriefingRequest
+): Promise<MediaBriefing> {
   const result = await apiClient<MediaBriefing>('/briefings', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -162,10 +164,13 @@ export async function generateBriefing(
   briefingId: string,
   options?: Partial<GenerateBriefingRequest>
 ): Promise<BriefingGenerationResponse> {
-  const result = await apiClient<BriefingGenerationResponse>(`/briefings/${briefingId}/generate`, {
-    method: 'POST',
-    body: JSON.stringify(options || {}),
-  });
+  const result = await apiClient<BriefingGenerationResponse>(
+    `/briefings/${briefingId}/generate`,
+    {
+      method: 'POST',
+      body: JSON.stringify(options || {}),
+    }
+  );
   return result.data!;
 }
 
@@ -261,7 +266,9 @@ export async function getTalkingPoints(
   offset: number = 0
 ): Promise<GetTalkingPointsResponse> {
   const query = buildQueryString({ ...filters, limit, offset });
-  const result = await apiClient<GetTalkingPointsResponse>(`/talking-points?${query}`);
+  const result = await apiClient<GetTalkingPointsResponse>(
+    `/talking-points?${query}`
+  );
   return result.data!;
 }
 
@@ -288,9 +295,12 @@ export async function deleteTalkingPoint(id: string): Promise<void> {
 }
 
 export async function approveTalkingPoint(id: string): Promise<TalkingPoint> {
-  const result = await apiClient<TalkingPoint>(`/talking-points/${id}/approve`, {
-    method: 'POST',
-  });
+  const result = await apiClient<TalkingPoint>(
+    `/talking-points/${id}/approve`,
+    {
+      method: 'POST',
+    }
+  );
   return result.data!;
 }
 
@@ -303,7 +313,9 @@ export async function getBriefingSources(
   sourceType?: BriefingSourceType
 ): Promise<SourceReference[]> {
   const query = sourceType ? `?sourceType=${sourceType}` : '';
-  const result = await apiClient<SourceReference[]>(`/briefings/${briefingId}/sources${query}`);
+  const result = await apiClient<SourceReference[]>(
+    `/briefings/${briefingId}/sources${query}`
+  );
   return result.data!;
 }
 
@@ -439,7 +451,9 @@ export function getSectionTypeIcon(type: BriefingSectionType): string {
 /**
  * Get label for talking point category
  */
-export function getTalkingPointCategoryLabel(category: TalkingPointCategory): string {
+export function getTalkingPointCategoryLabel(
+  category: TalkingPointCategory
+): string {
   const labels: Record<TalkingPointCategory, string> = {
     primary_message: 'Primary Message',
     supporting_point: 'Supporting Point',
@@ -456,7 +470,9 @@ export function getTalkingPointCategoryLabel(category: TalkingPointCategory): st
 /**
  * Get color for talking point category
  */
-export function getTalkingPointCategoryColor(category: TalkingPointCategory): string {
+export function getTalkingPointCategoryColor(
+  category: TalkingPointCategory
+): string {
   const colors: Record<TalkingPointCategory, string> = {
     primary_message: 'text-blue-600',
     supporting_point: 'text-green-600',
@@ -473,7 +489,9 @@ export function getTalkingPointCategoryColor(category: TalkingPointCategory): st
 /**
  * Get background color for talking point category
  */
-export function getTalkingPointCategoryBgColor(category: TalkingPointCategory): string {
+export function getTalkingPointCategoryBgColor(
+  category: TalkingPointCategory
+): string {
   const colors: Record<TalkingPointCategory, string> = {
     primary_message: 'bg-blue-50',
     supporting_point: 'bg-green-50',
@@ -570,7 +588,9 @@ export function getSourceTypeIcon(type: BriefingSourceType): string {
 /**
  * Format confidence score
  */
-export function formatConfidenceScore(score: number | null | undefined): string {
+export function formatConfidenceScore(
+  score: number | null | undefined
+): string {
   if (score === null || score === undefined) return 'N/A';
   if (score >= 80) return `${score.toFixed(0)}% (High)`;
   if (score >= 60) return `${score.toFixed(0)}% (Good)`;
@@ -581,7 +601,9 @@ export function formatConfidenceScore(score: number | null | undefined): string 
 /**
  * Get color for confidence score
  */
-export function getConfidenceScoreColor(score: number | null | undefined): string {
+export function getConfidenceScoreColor(
+  score: number | null | undefined
+): string {
   if (score === null || score === undefined) return 'text-gray-600';
   if (score >= 80) return 'text-green-600';
   if (score >= 60) return 'text-blue-600';

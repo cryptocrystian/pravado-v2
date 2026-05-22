@@ -107,7 +107,11 @@ export const RiskRadarNoteType = {
 /**
  * Trend direction
  */
-export type RiskRadarTrendDirection = 'improving' | 'stable' | 'worsening' | 'volatile';
+export type RiskRadarTrendDirection =
+  | 'improving'
+  | 'stable'
+  | 'worsening'
+  | 'volatile';
 
 export const RiskRadarTrendDirection = {
   IMPROVING: 'improving' as const,

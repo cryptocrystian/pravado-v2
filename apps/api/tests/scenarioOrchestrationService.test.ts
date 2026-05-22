@@ -122,7 +122,11 @@ describe('scenarioOrchestrationService', () => {
 
       mockSingle.mockResolvedValue({ data: mockSuite, error: null });
 
-      const result = await scenarioOrchestrationService.createSuite(mockOrgId, mockUserId, input);
+      const result = await scenarioOrchestrationService.createSuite(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.suite).toBeDefined();
       expect(result.suite.name).toBe(input.name);
@@ -153,7 +157,11 @@ describe('scenarioOrchestrationService', () => {
 
       mockSingle.mockResolvedValue({ data: mockSuite, error: null });
 
-      const result = await scenarioOrchestrationService.createSuite(mockOrgId, mockUserId, input);
+      const result = await scenarioOrchestrationService.createSuite(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.suite.config.maxConcurrentSimulations).toBe(3);
       expect(result.suite.config.stopOnFailure).toBe(false);
@@ -162,7 +170,10 @@ describe('scenarioOrchestrationService', () => {
     it('should throw error on database failure', async () => {
       const input: CreateScenarioSuiteInput = { name: 'Fail Suite' };
 
-      mockSingle.mockResolvedValue({ data: null, error: { message: 'DB Error' } });
+      mockSingle.mockResolvedValue({
+        data: null,
+        error: { message: 'DB Error' },
+      });
 
       await expect(
         scenarioOrchestrationService.createSuite(mockOrgId, mockUserId, input)
@@ -181,14 +192,27 @@ describe('scenarioOrchestrationService', () => {
       };
 
       const mockItems = [
-        { id: 'item-1', suite_id: 'suite-1', simulation_id: 'sim-1', order_index: 0 },
-        { id: 'item-2', suite_id: 'suite-1', simulation_id: 'sim-2', order_index: 1 },
+        {
+          id: 'item-1',
+          suite_id: 'suite-1',
+          simulation_id: 'sim-1',
+          order_index: 0,
+        },
+        {
+          id: 'item-2',
+          suite_id: 'suite-1',
+          simulation_id: 'sim-2',
+          order_index: 1,
+        },
       ];
 
       mockMaybeSingle.mockResolvedValueOnce({ data: mockSuite, error: null });
       mockOrder.mockReturnValue({ data: mockItems, error: null });
 
-      const result = await scenarioOrchestrationService.getSuite(mockOrgId, 'suite-1');
+      const result = await scenarioOrchestrationService.getSuite(
+        mockOrgId,
+        'suite-1'
+      );
 
       expect(result.suite).toBeDefined();
       expect(result.items).toHaveLength(2);
@@ -197,7 +221,10 @@ describe('scenarioOrchestrationService', () => {
     it('should return null for non-existent suite', async () => {
       mockMaybeSingle.mockResolvedValue({ data: null, error: null });
 
-      const result = await scenarioOrchestrationService.getSuite(mockOrgId, 'non-existent');
+      const result = await scenarioOrchestrationService.getSuite(
+        mockOrgId,
+        'non-existent'
+      );
 
       expect(result.suite).toBeNull();
     });
@@ -288,8 +315,12 @@ describe('scenarioOrchestrationService', () => {
       };
 
       // Mock simulation lookup returning null
-      const { getSimulation } = await import('../src/services/aiScenarioSimulationService');
-      (getSimulation as ReturnType<typeof vi.fn>).mockResolvedValue({ simulation: null });
+      const { getSimulation } = await import(
+        '../src/services/aiScenarioSimulationService'
+      );
+      (getSimulation as ReturnType<typeof vi.fn>).mockResolvedValue({
+        simulation: null,
+      });
 
       mockSingle.mockResolvedValue({
         data: null,
@@ -297,7 +328,12 @@ describe('scenarioOrchestrationService', () => {
       });
 
       await expect(
-        scenarioOrchestrationService.addSuiteItem(mockOrgId, 'suite-1', mockUserId, input)
+        scenarioOrchestrationService.addSuiteItem(
+          mockOrgId,
+          'suite-1',
+          mockUserId,
+          input
+        )
       ).rejects.toThrow();
     });
   });
@@ -348,7 +384,11 @@ describe('scenarioOrchestrationService', () => {
       mockOrder.mockReturnValueOnce({ data: [], error: null });
 
       await expect(
-        scenarioOrchestrationService.startSuiteRun(mockOrgId, 'suite-1', mockUserId)
+        scenarioOrchestrationService.startSuiteRun(
+          mockOrgId,
+          'suite-1',
+          mockUserId
+        )
       ).rejects.toThrow('Suite has no items');
     });
 
@@ -362,7 +402,11 @@ describe('scenarioOrchestrationService', () => {
       mockMaybeSingle.mockResolvedValueOnce({ data: mockSuite, error: null });
 
       await expect(
-        scenarioOrchestrationService.startSuiteRun(mockOrgId, 'suite-1', mockUserId)
+        scenarioOrchestrationService.startSuiteRun(
+          mockOrgId,
+          'suite-1',
+          mockUserId
+        )
       ).rejects.toThrow('Cannot run archived suite');
     });
   });
@@ -370,7 +414,10 @@ describe('scenarioOrchestrationService', () => {
   describe('evaluateCondition', () => {
     it('should evaluate always condition as true', () => {
       const condition: TriggerCondition = { type: 'always' };
-      const result = scenarioOrchestrationService.evaluateCondition(condition, {});
+      const result = scenarioOrchestrationService.evaluateCondition(
+        condition,
+        {}
+      );
       expect(result).toBe(true);
     });
 
@@ -385,17 +432,23 @@ describe('scenarioOrchestrationService', () => {
 
       // high >= high should be true
       expect(
-        scenarioOrchestrationService.evaluateCondition(condition, { riskLevel: 'high' })
+        scenarioOrchestrationService.evaluateCondition(condition, {
+          riskLevel: 'high',
+        })
       ).toBe(true);
 
       // critical >= high should be true
       expect(
-        scenarioOrchestrationService.evaluateCondition(condition, { riskLevel: 'critical' })
+        scenarioOrchestrationService.evaluateCondition(condition, {
+          riskLevel: 'critical',
+        })
       ).toBe(true);
 
       // medium >= high should be false
       expect(
-        scenarioOrchestrationService.evaluateCondition(condition, { riskLevel: 'medium' })
+        scenarioOrchestrationService.evaluateCondition(condition, {
+          riskLevel: 'medium',
+        })
       ).toBe(false);
     });
 
@@ -509,8 +562,14 @@ describe('scenarioOrchestrationService', () => {
 
       mockMaybeSingle.mockResolvedValueOnce({ data: mockRun, error: null });
       mockOrder.mockReturnValueOnce({ data: mockRunItems, error: null });
-      mockMaybeSingle.mockResolvedValueOnce({ data: mockNextItem, error: null });
-      mockSingle.mockResolvedValue({ data: { ...mockRun, current_item_index: 1 }, error: null });
+      mockMaybeSingle.mockResolvedValueOnce({
+        data: mockNextItem,
+        error: null,
+      });
+      mockSingle.mockResolvedValue({
+        data: { ...mockRun, current_item_index: 1 },
+        error: null,
+      });
 
       const result = await scenarioOrchestrationService.advanceSuiteRun(
         mockOrgId,
@@ -545,14 +604,21 @@ describe('scenarioOrchestrationService', () => {
       const mockNextItem = {
         id: 'item-2',
         trigger_condition_type: 'risk_threshold',
-        trigger_condition: { type: 'risk_threshold', minRiskLevel: 'high', comparison: '>=' },
+        trigger_condition: {
+          type: 'risk_threshold',
+          minRiskLevel: 'high',
+          comparison: '>=',
+        },
         simulation_id: 'sim-2',
         order_index: 1,
       };
 
       mockMaybeSingle.mockResolvedValueOnce({ data: mockRun, error: null });
       mockOrder.mockReturnValueOnce({ data: mockRunItems, error: null });
-      mockMaybeSingle.mockResolvedValueOnce({ data: mockNextItem, error: null });
+      mockMaybeSingle.mockResolvedValueOnce({
+        data: mockNextItem,
+        error: null,
+      });
       mockSingle.mockResolvedValue({ data: mockRun, error: null });
 
       const result = await scenarioOrchestrationService.advanceSuiteRun(
@@ -664,7 +730,9 @@ describe('scenarioOrchestrationService', () => {
       const { routeLLM } = await import('@pravado/utils');
       (routeLLM as ReturnType<typeof vi.fn>).mockResolvedValue({
         content: JSON.stringify({
-          risks: [{ category: 'Reputation', level: 'high', description: 'Test' }],
+          risks: [
+            { category: 'Reputation', level: 'high', description: 'Test' },
+          ],
           opportunities: [],
         }),
       });
@@ -694,7 +762,8 @@ describe('scenarioOrchestrationService', () => {
         count: 5,
       });
 
-      const result = await scenarioOrchestrationService.getSuiteStats(mockOrgId);
+      const result =
+        await scenarioOrchestrationService.getSuiteStats(mockOrgId);
 
       expect(result.totalSuites).toBe(5);
       expect(result.activeSuites).toBeGreaterThanOrEqual(0);

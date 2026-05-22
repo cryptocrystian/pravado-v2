@@ -30,13 +30,19 @@ interface JournalistsClientProps {
   initialTotal: number;
 }
 
-export default function JournalistsClient({ initialProfiles, initialTotal }: JournalistsClientProps) {
-  const [journalists, setJournalists] = useState<JournalistProfile[]>(initialProfiles);
+export default function JournalistsClient({
+  initialProfiles,
+  initialTotal,
+}: JournalistsClientProps) {
+  const [journalists, setJournalists] =
+    useState<JournalistProfile[]>(initialProfiles);
   const [total, setTotal] = useState(initialTotal);
   const [searchQuery, setSearchQuery] = useState('');
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [isInitialLoading, setIsInitialLoading] = useState(initialProfiles.length === 0);
+  const [isInitialLoading, setIsInitialLoading] = useState(
+    initialProfiles.length === 0
+  );
 
   // S100: Load data on mount via route handler
   useEffect(() => {
@@ -56,14 +62,17 @@ export default function JournalistsClient({ initialProfiles, initialTotal }: Jou
       const response = await fetch(`/api/pr/journalists?${params.toString()}`);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Failed to load journalists: ${response.status}`);
+        throw new Error(
+          errorData.error || `Failed to load journalists: ${response.status}`
+        );
       }
 
       const data = await response.json();
       setJournalists(data.profiles || []);
       setTotal(data.total || 0);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to load journalists';
+      const message =
+        err instanceof Error ? err.message : 'Failed to load journalists';
       setError(message);
     } finally {
       setIsInitialLoading(false);
@@ -80,10 +89,14 @@ export default function JournalistsClient({ initialProfiles, initialTotal }: Jou
         params.set('sortBy', 'engagement_score');
         params.set('sortOrder', 'desc');
 
-        const response = await fetch(`/api/pr/journalists?${params.toString()}`);
+        const response = await fetch(
+          `/api/pr/journalists?${params.toString()}`
+        );
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `Search failed: ${response.status}`);
+          throw new Error(
+            errorData.error || `Search failed: ${response.status}`
+          );
         }
 
         const data = await response.json();
@@ -151,83 +164,108 @@ export default function JournalistsClient({ initialProfiles, initialTotal }: Jou
 
       {/* Journalist List */}
       {!isInitialLoading && (
-      <div className="bg-white rounded-lg shadow">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Outlet
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Beat
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Engagement
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Last Activity
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {journalists.map((journalist) => (
-              <tr key={journalist.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <Link href={`/app/pr/journalists/${journalist.id}`} className="block">
-                    <div className="font-medium text-gray-900 hover:text-blue-600">{journalist.fullName}</div>
-                    <div className="text-sm text-gray-500">{journalist.primaryEmail}</div>
-                  </Link>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <Link href={`/app/pr/journalists/${journalist.id}`} className="block hover:text-blue-600">
-                    {journalist.primaryOutlet || '\u2014'}
-                  </Link>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <Link href={`/app/pr/journalists/${journalist.id}`} className="block hover:text-blue-600">
-                    {journalist.beat || '\u2014'}
-                  </Link>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <Link href={`/app/pr/journalists/${journalist.id}`} className="block">
-                    <div className="flex items-center">
-                      <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                        <div
-                          className="bg-blue-600 h-2 rounded-full"
-                          style={{ width: `${journalist.engagementScore * 100}%` }}
-                        />
-                      </div>
-                      <span className="text-sm text-gray-600">
-                        {(journalist.engagementScore * 100).toFixed(0)}%
-                      </span>
-                    </div>
-                  </Link>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <Link href={`/app/pr/journalists/${journalist.id}`} className="block hover:text-blue-600">
-                    {journalist.lastActivityAt
-                      ? new Date(journalist.lastActivityAt).toLocaleDateString()
-                      : '\u2014'}
-                  </Link>
-                </td>
+        <div className="bg-white rounded-lg shadow">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Outlet
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Beat
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Engagement
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Last Activity
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {journalists.map((journalist) => (
+                <tr key={journalist.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Link
+                      href={`/app/pr/journalists/${journalist.id}`}
+                      className="block"
+                    >
+                      <div className="font-medium text-gray-900 hover:text-blue-600">
+                        {journalist.fullName}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {journalist.primaryEmail}
+                      </div>
+                    </Link>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <Link
+                      href={`/app/pr/journalists/${journalist.id}`}
+                      className="block hover:text-blue-600"
+                    >
+                      {journalist.primaryOutlet || '\u2014'}
+                    </Link>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <Link
+                      href={`/app/pr/journalists/${journalist.id}`}
+                      className="block hover:text-blue-600"
+                    >
+                      {journalist.beat || '\u2014'}
+                    </Link>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Link
+                      href={`/app/pr/journalists/${journalist.id}`}
+                      className="block"
+                    >
+                      <div className="flex items-center">
+                        <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                          <div
+                            className="bg-blue-600 h-2 rounded-full"
+                            style={{
+                              width: `${journalist.engagementScore * 100}%`,
+                            }}
+                          />
+                        </div>
+                        <span className="text-sm text-gray-600">
+                          {(journalist.engagementScore * 100).toFixed(0)}%
+                        </span>
+                      </div>
+                    </Link>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <Link
+                      href={`/app/pr/journalists/${journalist.id}`}
+                      className="block hover:text-blue-600"
+                    >
+                      {journalist.lastActivityAt
+                        ? new Date(
+                            journalist.lastActivityAt
+                          ).toLocaleDateString()
+                        : '\u2014'}
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        {journalists.length === 0 && (
-          <div className="text-center py-12 text-gray-500">No journalists found</div>
-        )}
+          {journalists.length === 0 && (
+            <div className="text-center py-12 text-gray-500">
+              No journalists found
+            </div>
+          )}
 
-        {total > 0 && (
-          <div className="px-6 py-4 border-t border-gray-200 text-sm text-gray-600">
-            Showing {journalists.length} of {total} journalists
-          </div>
-        )}
-      </div>
+          {total > 0 && (
+            <div className="px-6 py-4 border-t border-gray-200 text-sm text-gray-600">
+              Showing {journalists.length} of {total} journalists
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

@@ -450,27 +450,35 @@ export const talkingPointIdParamSchema = z.object({
 /**
  * Get Briefings Query (filters + pagination)
  */
-export const getBriefingsQuerySchema = briefingFiltersSchema.merge(paginationQuerySchema);
+export const getBriefingsQuerySchema = briefingFiltersSchema.merge(
+  paginationQuerySchema
+);
 
 /**
  * Get Talking Points Query (filters + pagination)
  */
-export const getTalkingPointsQuerySchema = talkingPointFiltersSchema.merge(paginationQuerySchema);
+export const getTalkingPointsQuerySchema = talkingPointFiltersSchema.merge(
+  paginationQuerySchema
+);
 
 /**
  * Get Insights Query (filters + pagination)
  */
-export const getBriefingInsightsQuerySchema = briefingInsightFiltersSchema.merge(paginationQuerySchema);
+export const getBriefingInsightsQuerySchema =
+  briefingInsightFiltersSchema.merge(paginationQuerySchema);
 
 /**
  * Get Source References Query (filters + pagination)
  */
-export const getSourceReferencesQuerySchema = sourceReferenceFiltersSchema.merge(paginationQuerySchema);
+export const getSourceReferencesQuerySchema =
+  sourceReferenceFiltersSchema.merge(paginationQuerySchema);
 
 /**
  * Get Audit Log Query (filters + pagination)
  */
-export const getAuditLogQuerySchema = auditLogFiltersSchema.merge(paginationQuerySchema);
+export const getAuditLogQuerySchema = auditLogFiltersSchema.merge(
+  paginationQuerySchema
+);
 
 // ============================================================================
 // INTELLIGENCE CONTEXT VALIDATORS
@@ -553,24 +561,32 @@ export const briefingIntelligenceContextSchema = z.object({
   journalistProfiles: z.array(journalistProfileContextSchema).optional(),
   personas: z.array(personaContextSchema).optional(),
   competitorIntel: z.array(competitorIntelContextSchema).optional(),
-  performanceMetrics: z.object({
-    mentionVolume: z.number().int().min(0),
-    avgSentiment: z.number().min(-1).max(1),
-    eviScore: z.number().min(0).max(100),
-    shareOfVoice: z.number().min(0).max(100),
-    topJournalists: z.array(z.object({
-      name: z.string(),
-      mentionCount: z.number().int().min(0),
-    })),
-  }).optional(),
+  performanceMetrics: z
+    .object({
+      mentionVolume: z.number().int().min(0),
+      avgSentiment: z.number().min(-1).max(1),
+      eviScore: z.number().min(0).max(100),
+      shareOfVoice: z.number().min(0).max(100),
+      topJournalists: z.array(
+        z.object({
+          name: z.string(),
+          mentionCount: z.number().int().min(0),
+        })
+      ),
+    })
+    .optional(),
 });
 
 // ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
-export type BriefingSectionTypeValue = z.infer<typeof briefingSectionTypeSchema>;
-export type TalkingPointCategoryValue = z.infer<typeof talkingPointCategorySchema>;
+export type BriefingSectionTypeValue = z.infer<
+  typeof briefingSectionTypeSchema
+>;
+export type TalkingPointCategoryValue = z.infer<
+  typeof talkingPointCategorySchema
+>;
 export type InsightStrengthValue = z.infer<typeof insightStrengthSchema>;
 export type BriefFormatTypeValue = z.infer<typeof briefFormatTypeSchema>;
 export type BriefingStatusValue = z.infer<typeof briefingStatusSchema>;
@@ -578,16 +594,34 @@ export type BriefingSourceTypeValue = z.infer<typeof briefingSourceTypeSchema>;
 
 export type CreateBriefingInput = z.infer<typeof createBriefingRequestSchema>;
 export type UpdateBriefingInput = z.infer<typeof updateBriefingRequestSchema>;
-export type GenerateBriefingInput = z.infer<typeof generateBriefingRequestSchema>;
-export type RegenerateSectionInput = z.infer<typeof regenerateSectionRequestSchema>;
-export type CreateTalkingPointInput = z.infer<typeof createTalkingPointRequestSchema>;
-export type UpdateTalkingPointInput = z.infer<typeof updateTalkingPointRequestSchema>;
-export type GenerateTalkingPointsInput = z.infer<typeof generateTalkingPointsRequestSchema>;
+export type GenerateBriefingInput = z.infer<
+  typeof generateBriefingRequestSchema
+>;
+export type RegenerateSectionInput = z.infer<
+  typeof regenerateSectionRequestSchema
+>;
+export type CreateTalkingPointInput = z.infer<
+  typeof createTalkingPointRequestSchema
+>;
+export type UpdateTalkingPointInput = z.infer<
+  typeof updateTalkingPointRequestSchema
+>;
+export type GenerateTalkingPointsInput = z.infer<
+  typeof generateTalkingPointsRequestSchema
+>;
 export type UpdateSectionInput = z.infer<typeof updateSectionRequestSchema>;
-export type CreateSourceReferenceInput = z.infer<typeof createSourceReferenceRequestSchema>;
+export type CreateSourceReferenceInput = z.infer<
+  typeof createSourceReferenceRequestSchema
+>;
 
 export type BriefingFiltersInput = z.infer<typeof briefingFiltersSchema>;
-export type TalkingPointFiltersInput = z.infer<typeof talkingPointFiltersSchema>;
-export type BriefingInsightFiltersInput = z.infer<typeof briefingInsightFiltersSchema>;
-export type SourceReferenceFiltersInput = z.infer<typeof sourceReferenceFiltersSchema>;
+export type TalkingPointFiltersInput = z.infer<
+  typeof talkingPointFiltersSchema
+>;
+export type BriefingInsightFiltersInput = z.infer<
+  typeof briefingInsightFiltersSchema
+>;
+export type SourceReferenceFiltersInput = z.infer<
+  typeof sourceReferenceFiltersSchema
+>;
 export type AuditLogFiltersInput = z.infer<typeof auditLogFiltersSchema>;

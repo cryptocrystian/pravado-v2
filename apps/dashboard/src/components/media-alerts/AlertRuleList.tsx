@@ -74,7 +74,9 @@ export function AlertRuleList({
         <div className="space-y-2">
           <select
             value={filterType}
-            onChange={(e) => setFilterType(e.target.value as MediaAlertType | 'all')}
+            onChange={(e) =>
+              setFilterType(e.target.value as MediaAlertType | 'all')
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
           >
             <option value="all">All Types</option>
@@ -87,7 +89,9 @@ export function AlertRuleList({
           <select
             value={filterActive === 'all' ? 'all' : String(filterActive)}
             onChange={(e) =>
-              setFilterActive(e.target.value === 'all' ? 'all' : e.target.value === 'true')
+              setFilterActive(
+                e.target.value === 'all' ? 'all' : e.target.value === 'true'
+              )
             }
             className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
           >
@@ -119,10 +123,14 @@ export function AlertRuleList({
                 }`}
               >
                 <div className="flex items-start justify-between mb-1">
-                  <h3 className="font-medium text-gray-900 text-sm">{rule.name}</h3>
+                  <h3 className="font-medium text-gray-900 text-sm">
+                    {rule.name}
+                  </h3>
                   <span
                     className={`px-2 py-0.5 rounded text-xs font-medium ${
-                      rule.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                      rule.isActive
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-600'
                     }`}
                   >
                     {rule.isActive ? 'Active' : 'Inactive'}
@@ -137,7 +145,8 @@ export function AlertRuleList({
                   </span>
                   {rule.lastTriggeredAt && (
                     <span className="text-xs text-gray-500">
-                      Last: {new Date(rule.lastTriggeredAt).toLocaleDateString()}
+                      Last:{' '}
+                      {new Date(rule.lastTriggeredAt).toLocaleDateString()}
                     </span>
                   )}
                 </div>

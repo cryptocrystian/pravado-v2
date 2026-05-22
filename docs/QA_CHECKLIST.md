@@ -6,6 +6,7 @@ This checklist covers what automation cannot.
 ---
 
 ## Email Flows (Manual)
+
 - [ ] Magic link email arrives within 60 seconds
 - [ ] Email renders correctly (white background, readable text)
 - [ ] From address shows "Pravado" or "hello@pravado.io" (not "Supabase Auth")
@@ -15,6 +16,7 @@ This checklist covers what automation cannot.
 - [ ] Invite code in email matches invite code in admin panel
 
 ## Third-Party Integrations (Manual)
+
 - [ ] Google OAuth completes → lands on /app/command-center
 - [ ] Microsoft OAuth completes → lands on /app/command-center
 - [ ] GSC "Connect" button → opens Google authorization page
@@ -22,6 +24,7 @@ This checklist covers what automation cannot.
 - [ ] Stripe billing page loads when navigating to /app/billing
 
 ## AI Features (Manual — requires LLM_PROVIDER=anthropic)
+
 - [ ] Press release generation produces >150 words of original prose
 - [ ] Press release does NOT echo announcement text verbatim
 - [ ] Quote attribution uses the provided spokesperson name (not generic)
@@ -30,6 +33,7 @@ This checklist covers what automation cannot.
 - [ ] CiteMind score appears on content items
 
 ## New Account First Experience (Manual)
+
 - [ ] New user after onboarding lands on /app/command-center (not error)
 - [ ] EVI shows 0 or initialization state (not broken/NaN)
 - [ ] Action Stream shows empty state ("No actions yet") not crash
@@ -40,6 +44,7 @@ This checklist covers what automation cannot.
 - [ ] UserMenu dropdown opens with Sign Out option
 
 ## Analytics & Reports (Manual)
+
 - [ ] Export CSV downloads a valid .csv file on each tab
 - [ ] "vs prior" toggle changes headline metrics display
 - [ ] EVI Growth chart responds to date range changes (7d/30d/60d/90d)
@@ -47,6 +52,7 @@ This checklist covers what automation cannot.
 - [ ] All 4 report templates trigger print dialog
 
 ## Visual/Design (Manual)
+
 - [ ] No white/light backgrounds on dark-theme pages
 - [ ] Logo is Nexus-P icon + "PRAVADO" monospace on all surfaces
 - [ ] OmniTray opens on right-edge click (not on mouse proximity)
@@ -56,12 +62,14 @@ This checklist covers what automation cannot.
 ## Automated Smoke Tests
 
 Run:
+
 ```bash
 cd apps/dashboard
 PLAYWRIGHT_BASE_URL=https://app.pravado.io npx playwright test tests/smoke/ --project=chromium
 ```
 
 Tests cover:
+
 - Auth: login page renders, OAuth redirects, callback error handling, protected route guards
 - Beta: form renders, work email validation, API endpoint responds
 - Navigation: all public routes return 200, all protected routes redirect to /login, API health
@@ -72,14 +80,15 @@ Tests cover:
 
 ## Run Schedule
 
-| When | What |
-|------|------|
-| Every PR | Automated smoke tests (CI) |
-| Before deploy | Full manual checklist |
-| Weekly | AI feature spot-check (press release + pitch quality) |
-| After env var changes | Auth + email flows |
+| When                  | What                                                  |
+| --------------------- | ----------------------------------------------------- |
+| Every PR              | Automated smoke tests (CI)                            |
+| Before deploy         | Full manual checklist                                 |
+| Weekly                | AI feature spot-check (press release + pitch quality) |
+| After env var changes | Auth + email flows                                    |
 
 ## Brand Name Verification
+
 - [ ] SAGE™ appears with ™ on first use in every major view
 - [ ] CRAFT™ appears with ™ on first use in every major view
 - [ ] CiteMind™ appears with ™ on first use in every major view

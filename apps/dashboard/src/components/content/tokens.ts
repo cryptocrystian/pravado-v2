@@ -73,7 +73,8 @@ export const interactive = {
   /** Ghost button */
   ghost: 'hover:bg-slate-3 text-white/50 hover:text-white',
   /** Input field */
-  input: 'bg-slate-2 border-slate-4 focus:border-brand-iris/40 focus:ring-1 focus:ring-brand-iris/20',
+  input:
+    'bg-slate-2 border-slate-4 focus:border-brand-iris/40 focus:ring-1 focus:ring-brand-iris/20',
 } as const;
 
 // ============================================
@@ -220,7 +221,9 @@ export type CalendarRiskLevel = 'low' | 'med' | 'high';
  * - high → high
  * - critical → high (calendar doesn't distinguish critical from high)
  */
-export function toCalendarRiskLevel(internal: InternalRiskClass): CalendarRiskLevel {
+export function toCalendarRiskLevel(
+  internal: InternalRiskClass
+): CalendarRiskLevel {
   const mapping: Record<InternalRiskClass, CalendarRiskLevel> = {
     low: 'low',
     medium: 'med',
@@ -234,7 +237,9 @@ export function toCalendarRiskLevel(internal: InternalRiskClass): CalendarRiskLe
  * Map calendar risk level back to internal risk class.
  * Note: 'high' maps to 'high' (not 'critical') as the inverse operation.
  */
-export function fromCalendarRiskLevel(calendar: CalendarRiskLevel): InternalRiskClass {
+export function fromCalendarRiskLevel(
+  calendar: CalendarRiskLevel
+): InternalRiskClass {
   const mapping: Record<CalendarRiskLevel, InternalRiskClass> = {
     low: 'low',
     med: 'medium',
@@ -246,11 +251,30 @@ export function fromCalendarRiskLevel(calendar: CalendarRiskLevel): InternalRisk
 /**
  * Risk styling tokens for internal risk classes.
  */
-export const riskTokens: Record<InternalRiskClass, { color: string; label: string; calendarLabel: CalendarRiskLevel }> = {
-  low: { color: 'text-semantic-success', label: 'Low Risk', calendarLabel: 'low' },
-  medium: { color: 'text-semantic-warning', label: 'Medium Risk', calendarLabel: 'med' },
-  high: { color: 'text-semantic-danger', label: 'High Risk', calendarLabel: 'high' },
-  critical: { color: 'text-semantic-danger', label: 'Critical', calendarLabel: 'high' },
+export const riskTokens: Record<
+  InternalRiskClass,
+  { color: string; label: string; calendarLabel: CalendarRiskLevel }
+> = {
+  low: {
+    color: 'text-semantic-success',
+    label: 'Low Risk',
+    calendarLabel: 'low',
+  },
+  medium: {
+    color: 'text-semantic-warning',
+    label: 'Medium Risk',
+    calendarLabel: 'med',
+  },
+  high: {
+    color: 'text-semantic-danger',
+    label: 'High Risk',
+    calendarLabel: 'high',
+  },
+  critical: {
+    color: 'text-semantic-danger',
+    label: 'Critical',
+    calendarLabel: 'high',
+  },
 };
 
 // ============================================
@@ -288,7 +312,8 @@ export const motion = {
     /** Colors only (hover states) */
     colors: 'transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]',
     /** Opacity only (fade effects) */
-    opacity: 'transition-opacity duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]',
+    opacity:
+      'transition-opacity duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]',
   },
 } as const;
 
@@ -309,7 +334,8 @@ export const skeleton = {
 export const sectionHeader = 'flex items-center justify-between mb-3';
 
 /** Label text */
-export const label = 'text-[11px] font-bold uppercase tracking-wider text-white/50';
+export const label =
+  'text-[11px] font-bold uppercase tracking-wider text-white/50';
 
 /** Progress bar track */
 export const progressTrack = 'h-1.5 bg-slate-4 rounded-full overflow-hidden';

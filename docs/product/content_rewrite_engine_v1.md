@@ -54,9 +54,9 @@ The Semantic Rewriting Engine provides deterministic content improvement with qu
 ```typescript
 interface RewriteRequestInput {
   contentItemId: string;
-  personalityId?: string | null;      // Optional S11 personality
-  targetKeyword?: string | null;      // SEO keyword to optimize for
-  targetIntent?: string | null;       // Search intent
+  personalityId?: string | null; // Optional S11 personality
+  targetKeyword?: string | null; // SEO keyword to optimize for
+  targetIntent?: string | null; // Search intent
 }
 ```
 
@@ -69,7 +69,10 @@ interface RewriteRequestInput {
 ### 3. Quality Analysis (S14 Integration)
 
 ```typescript
-const qualityAnalysis = await contentQualityService.analyzeQuality(orgId, contentItemId);
+const qualityAnalysis = await contentQualityService.analyzeQuality(
+  orgId,
+  contentItemId
+);
 
 // Metrics captured:
 // - Overall quality score (0-100)
@@ -92,14 +95,14 @@ function stubRewrite(text, context) {
 
   // 1. Apply personality transformations
   if (personality.tone === 'assertive') {
-    sentences = shortenSentences(sentences);  // <15 words
+    sentences = shortenSentences(sentences); // <15 words
   }
   if (personality.tone === 'supportive') {
     sentences = addSoftTransitions(sentences);
   }
 
   // 2. Improve readability
-  sentences = splitLongSentences(sentences);  // Split >20 words
+  sentences = splitLongSentences(sentences); // Split >20 words
 
   // 3. Keyword optimization
   if (targetKeyword && !isPresent(targetKeyword)) {
@@ -148,6 +151,7 @@ const diff = {
 ```
 
 **Diff Algorithm (V1)**:
+
 - Split both texts into sentences
 - Compare sentence by sentence (exact match)
 - Classify as added, removed, or unchanged
@@ -157,11 +161,11 @@ const diff = {
 
 ```typescript
 const improvements = [
-  "Added 3 new sentence(s) to improve clarity",
-  "Removed 1 redundant sentence(s)",
-  "Applied assertive tone",
+  'Added 3 new sentence(s) to improve clarity',
+  'Removed 1 redundant sentence(s)',
+  'Applied assertive tone',
   "Optimized for keyword: 'content quality'",
-  "Improved readability by splitting long sentences"
+  'Improved readability by splitting long sentences',
 ];
 ```
 
@@ -184,7 +188,7 @@ const improvements = [
 
 ```typescript
 const readabilityAfter = computeReadability(rewrittenText);
-const qualityAfter = qualityBefore + 10;  // Stub: always +10 points
+const qualityAfter = qualityBefore + 10; // Stub: always +10 points
 ```
 
 **V1 Limitation**: Quality improvement is hardcoded at +10 points
@@ -218,16 +222,18 @@ RETURNING id;
 Generate a new content rewrite.
 
 **Request Body**:
+
 ```json
 {
   "contentItemId": "uuid",
-  "personalityId": "uuid",          // Optional
+  "personalityId": "uuid", // Optional
   "targetKeyword": "content quality", // Optional
-  "targetIntent": "informational"     // Optional
+  "targetIntent": "informational" // Optional
 }
 ```
 
 **Response** (201 Created):
+
 ```json
 {
   "success": true,
@@ -266,11 +272,13 @@ Generate a new content rewrite.
 List rewrites for organization.
 
 **Query Parameters**:
+
 - `page` (number, default: 1)
 - `pageSize` (number, default: 20, max: 100)
 - `contentItemId` (UUID, optional) - Filter by content item
 
 **Response** (200 OK):
+
 ```json
 {
   "success": true,
@@ -303,6 +311,7 @@ List rewrites for organization.
 Get single rewrite with full metadata.
 
 **Response** (200 OK):
+
 ```json
 {
   "success": true,
@@ -338,6 +347,7 @@ Get single rewrite with full metadata.
 The rewrite engine adjusts content based on personality profile tone:
 
 ### Assertive Tone
+
 - **Transformation**: Shorten sentences to <15 words
 - **Goal**: Direct, concise communication
 - **Example**:
@@ -345,17 +355,20 @@ The rewrite engine adjusts content based on personality profile tone:
   - After: "This feature needs performance and scalability considerations."
 
 ### Supportive Tone
+
 - **Transformation**: Add soft transition phrases
 - **Goal**: Warm, collaborative communication
 - **Example**:
   - Before: "Performance issues exist. Optimization is needed."
-  - After**: "Performance issues exist. Additionally, optimization would be beneficial."
+  - After\*\*: "Performance issues exist. Additionally, optimization would be beneficial."
 
 ### Professional Tone
+
 - **Transformation**: Maintain formal structure
 - **Goal**: Business-appropriate communication
 
 ### Casual Tone
+
 - **Transformation**: Simplify language
 - **Goal**: Approachable, friendly communication
 
@@ -367,21 +380,23 @@ The rewrite engine adjusts content based on personality profile tone:
 
 ```typescript
 interface QualityMetrics {
-  readabilityBefore: number;   // Flesch-Kincaid score
-  readabilityAfter: number;    // After rewrite
-  qualityBefore: number;       // S14 overall score
-  qualityAfter: number;        // After rewrite
+  readabilityBefore: number; // Flesch-Kincaid score
+  readabilityAfter: number; // After rewrite
+  qualityBefore: number; // S14 overall score
+  qualityAfter: number; // After rewrite
 }
 ```
 
 ### Improvement Calculation
 
 **V1 (Stub)**:
+
 ```typescript
-qualityAfter = qualityBefore + 10;  // Fixed +10 improvement
+qualityAfter = qualityBefore + 10; // Fixed +10 improvement
 ```
 
 **Future (S16)**:
+
 ```typescript
 // Re-run full S14 analysis
 const newAnalysis = await analyzeQuality(rewrittenText);
@@ -404,26 +419,26 @@ const CONTENT_REWRITE_PLAYBOOK = {
     {
       key: 'LOAD_CONTENT',
       type: 'DATA',
-      handler: 'fetchContentAndPersonality'
+      handler: 'fetchContentAndPersonality',
     },
     {
       key: 'ANALYZE_QUALITY',
       type: 'AGENT',
       service: 'ContentQualityService',
-      method: 'analyzeQuality'
+      method: 'analyzeQuality',
     },
     {
       key: 'REWRITE_CONTENT',
       type: 'AGENT',
       service: 'ContentRewriteService',
-      method: 'stubRewrite'
+      method: 'stubRewrite',
     },
     {
       key: 'ASSEMBLE_RESULT',
       type: 'DATA',
-      handler: 'computeDiffAndMetrics'
-    }
-  ]
+      handler: 'computeDiffAndMetrics',
+    },
+  ],
 };
 ```
 
@@ -436,11 +451,13 @@ const CONTENT_REWRITE_PLAYBOOK = {
 **Trigger**: "Rewrite Content" button on content item page
 
 **Form Fields**:
+
 - Personality Profile (dropdown, optional)
 - Target Keyword (text input, optional)
 - Search Intent (dropdown: informational, navigational, commercial, transactional)
 
 **Actions**:
+
 - Submit → Calls POST /api/v1/content/rewrites
 - Cancel → Closes modal
 
@@ -451,11 +468,13 @@ const CONTENT_REWRITE_PLAYBOOK = {
 **Sections**:
 
 #### A. Header
+
 - Content title
 - Rewrite timestamp
 - Quality improvement badge (+10 points)
 
 #### B. Diff Viewer
+
 - Side-by-side or inline diff
 - Color coding:
   - Green: Added sentences
@@ -463,12 +482,14 @@ const CONTENT_REWRITE_PLAYBOOK = {
   - Gray: Unchanged sentences
 
 #### C. Metrics Comparison
+
 ```
 Readability:  [45] → [62]  +17 points ✅
 Quality:      [58] → [68]  +10 points ✅
 ```
 
 #### D. Improvements List
+
 - Bulleted list of applied improvements
 - Examples:
   - "Added 3 new sentence(s) to improve clarity"
@@ -476,6 +497,7 @@ Quality:      [58] → [68]  +10 points ✅
   - "Optimized for keyword: 'content quality'"
 
 #### E. Metadata Panel
+
 - Personality used
 - Target keyword
 - Search intent
@@ -483,6 +505,7 @@ Quality:      [58] → [68]  +10 points ✅
 - Timestamp
 
 #### F. Actions
+
 - Apply Rewrite → Update content item with rewritten text
 - Discard → Delete rewrite
 - Edit & Apply → Manual editing before application
@@ -492,53 +515,62 @@ Quality:      [58] → [68]  +10 points ✅
 ## Future Enhancements
 
 ### V2: LLM Integration (Sprint S16)
+
 - Replace stub rewrite logic with OpenAI/Anthropic API calls
 - Prompt engineering for quality-focused rewriting
 - Real-time quality re-analysis
 - A/B testing of prompts
 
 ### V3: Advanced Diff Algorithm
+
 - Use embeddings for semantic similarity matching
 - Highlight modified sentences (not just added/removed)
 - Paragraph-level diff instead of sentence-level
 - Visual diff with word-level highlighting
 
 ### V4: Multi-Pass Rewriting
+
 - First pass: Structure and readability
 - Second pass: Keyword optimization
 - Third pass: Tone adjustment
 - Fourth pass: Fact checking
 
 ### V5: Rewrite Templates
+
 - Industry-specific templates
 - Content type templates (blog, social, newsletter)
 - Brand voice templates
 - SEO optimization templates
 
 ### V6: Collaborative Editing
+
 - Accept/reject individual changes
 - Comment on specific diff entries
 - Merge multiple rewrite versions
 - Rewrite history and rollback
 
 ### V7: Real-Time Preview
+
 - Live diff as LLM generates text
 - Streaming response support
 - Progressive enhancement display
 
 ### V8: Bulk Rewriting
+
 - Batch rewrite multiple items
 - Queue-based processing
 - Progress tracking
 - Batch quality reporting
 
 ### V9: Rewrite Analytics
+
 - Track acceptance rate of rewrites
 - A/B test rewrite strategies
 - Measure SEO impact of rewrites
 - Quality improvement trends
 
 ### V10: Smart Rewrite Suggestions
+
 - Auto-suggest rewrite candidates based on quality scores
 - Proactive rewrite recommendations
 - Scheduled automated rewrites
@@ -582,8 +614,8 @@ CREATE INDEX idx_content_rewrites_created ON content_rewrites(org_id, created_at
 
 ```typescript
 class ContentRewriteService {
-  private qualityService: ContentQualityService;  // S14
-  private personalityStore: PersonalityStore;      // S11
+  private qualityService: ContentQualityService; // S14
+  private personalityStore: PersonalityStore; // S11
 
   async generateRewrite(orgId, input): Promise<RewriteResult> {
     // 1. Load content + personality
@@ -596,13 +628,13 @@ class ContentRewriteService {
     // 8. Return result
   }
 
-  async getRewrite(orgId, rewriteId): Promise<ContentRewrite | null>
-  async listRewrites(orgId, options): Promise<{ rewrites, total }>
+  async getRewrite(orgId, rewriteId): Promise<ContentRewrite | null>;
+  async listRewrites(orgId, options): Promise<{ rewrites; total }>;
 
-  private stubRewrite(text, context): string
-  private computeSemanticDiff(original, rewritten): Record<string, unknown>
-  private extractImprovements(context, diff): string[]
-  private generateReasoning(context, improvements): Record<string, unknown>
+  private stubRewrite(text, context): string;
+  private computeSemanticDiff(original, rewritten): Record<string, unknown>;
+  private extractImprovements(context, diff): string[];
+  private generateReasoning(context, improvements): Record<string, unknown>;
 }
 ```
 
@@ -611,6 +643,7 @@ class ContentRewriteService {
 ## Testing Strategy
 
 ### Unit Tests
+
 - ✅ Stub rewrite transformations
 - ✅ Sentence splitting logic
 - ✅ Diff computation correctness
@@ -620,6 +653,7 @@ class ContentRewriteService {
 - ✅ Duplicate removal
 
 ### Integration Tests
+
 - ✅ Full rewrite flow (load → analyze → rewrite → save)
 - ✅ S14 quality service integration
 - ✅ S11 personality store integration
@@ -627,6 +661,7 @@ class ContentRewriteService {
 - ✅ API endpoint functionality
 
 ### API Tests
+
 - ✅ POST /rewrites with valid input
 - ✅ POST /rewrites with missing content
 - ✅ POST /rewrites with invalid personality
@@ -640,11 +675,13 @@ class ContentRewriteService {
 ## Performance Considerations
 
 ### V1 Performance
+
 - **Rewrite Generation**: <100ms (deterministic logic)
 - **Diff Computation**: O(n) sentence comparison
 - **Database Write**: Single INSERT operation
 
 ### Future Optimizations
+
 - **LLM Caching**: Cache rewrites for identical inputs
 - **Streaming**: Progressive diff rendering
 - **Background Processing**: Queue-based rewriting
@@ -657,6 +694,7 @@ class ContentRewriteService {
 ### Common Errors
 
 **Content Not Found**:
+
 ```json
 {
   "success": false,
@@ -668,6 +706,7 @@ class ContentRewriteService {
 ```
 
 **Invalid Personality**:
+
 ```json
 {
   "success": false,
@@ -679,6 +718,7 @@ class ContentRewriteService {
 ```
 
 **Validation Error**:
+
 ```json
 {
   "success": false,

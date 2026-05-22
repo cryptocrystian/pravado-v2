@@ -8,7 +8,12 @@
  * @see /docs/canon/EVI_SPEC.md
  */
 
-import type { EVIComponentMetric, EVIInputSnapshot, TopMover, EVIAttributionEvent } from './types';
+import type {
+  EVIComponentMetric,
+  EVIInputSnapshot,
+  TopMover,
+  EVIAttributionEvent,
+} from './types';
 
 // ============================================
 // PR PROVIDER - Visibility & Authority inputs
@@ -35,7 +40,9 @@ export interface PRInputData {
 /**
  * Transform PR data into EVI Visibility components
  */
-export function prToVisibilityComponents(data: PRInputData | null): EVIComponentMetric[] {
+export function prToVisibilityComponents(
+  data: PRInputData | null
+): EVIComponentMetric[] {
   if (!data) {
     return getDefaultVisibilityComponents();
   }
@@ -74,20 +81,26 @@ export function prToVisibilityComponents(data: PRInputData | null): EVIComponent
 /**
  * Transform PR data into EVI Authority components
  */
-export function prToAuthorityComponents(data: PRInputData | null): EVIComponentMetric[] {
+export function prToAuthorityComponents(
+  data: PRInputData | null
+): EVIComponentMetric[] {
   if (!data) {
     return getDefaultAuthorityComponents();
   }
 
   // Citation Quality Score (avg of citation quality)
-  const avgCitationQuality = data.citations.length > 0
-    ? data.citations.reduce((sum, c) => sum + c.quality_score, 0) / data.citations.length
-    : 50;
+  const avgCitationQuality =
+    data.citations.length > 0
+      ? data.citations.reduce((sum, c) => sum + c.quality_score, 0) /
+        data.citations.length
+      : 50;
 
   // Journalist Match Strength
-  const avgMatchScore = data.journalist_matches.length > 0
-    ? data.journalist_matches.reduce((sum, j) => sum + j.match_score, 0) / data.journalist_matches.length
-    : 50;
+  const avgMatchScore =
+    data.journalist_matches.length > 0
+      ? data.journalist_matches.reduce((sum, j) => sum + j.match_score, 0) /
+        data.journalist_matches.length
+      : 50;
 
   return [
     {
@@ -95,7 +108,7 @@ export function prToAuthorityComponents(data: PRInputData | null): EVIComponentM
       label: 'Citation Quality Score',
       value: Math.round(avgCitationQuality),
       max_value: 100,
-      weight: 0.30,
+      weight: 0.3,
       source: 'pr',
     },
     {
@@ -103,7 +116,7 @@ export function prToAuthorityComponents(data: PRInputData | null): EVIComponentM
       label: 'Journalist Match Strength',
       value: Math.round(avgMatchScore),
       max_value: 100,
-      weight: 0.20,
+      weight: 0.2,
       source: 'pr',
     },
   ];
@@ -134,22 +147,43 @@ export interface SEOInputData {
 /**
  * Transform SEO data into EVI Visibility components
  */
-export function seoToVisibilityComponents(data: SEOInputData | null): EVIComponentMetric[] {
+export function seoToVisibilityComponents(
+  data: SEOInputData | null
+): EVIComponentMetric[] {
   if (!data) {
     return [
-      { id: 'm_serp_coverage', label: 'Topic SERP Coverage', value: 45, max_value: 100, weight: 0.25, source: 'seo' },
-      { id: 'm_featured_snippets', label: 'Featured Snippets', value: 12, max_value: 50, weight: 0.15, source: 'seo' },
+      {
+        id: 'm_serp_coverage',
+        label: 'Topic SERP Coverage',
+        value: 45,
+        max_value: 100,
+        weight: 0.25,
+        source: 'seo',
+      },
+      {
+        id: 'm_featured_snippets',
+        label: 'Featured Snippets',
+        value: 12,
+        max_value: 50,
+        weight: 0.15,
+        source: 'seo',
+      },
     ];
   }
 
   // Topic SERP Coverage (% of keywords in top 10)
-  const top10Keywords = data.serp_coverage.filter(k => k.position <= 10).length;
-  const serpCoverage = data.serp_coverage.length > 0
-    ? (top10Keywords / data.serp_coverage.length) * 100
-    : 0;
+  const top10Keywords = data.serp_coverage.filter(
+    (k) => k.position <= 10
+  ).length;
+  const serpCoverage =
+    data.serp_coverage.length > 0
+      ? (top10Keywords / data.serp_coverage.length) * 100
+      : 0;
 
   // Featured Snippets count
-  const snippetCount = data.serp_coverage.filter(k => k.has_featured_snippet).length;
+  const snippetCount = data.serp_coverage.filter(
+    (k) => k.has_featured_snippet
+  ).length;
 
   return [
     {
@@ -174,18 +208,36 @@ export function seoToVisibilityComponents(data: SEOInputData | null): EVICompone
 /**
  * Transform SEO data into EVI Authority components
  */
-export function seoToAuthorityComponents(data: SEOInputData | null): EVIComponentMetric[] {
+export function seoToAuthorityComponents(
+  data: SEOInputData | null
+): EVIComponentMetric[] {
   if (!data) {
     return [
-      { id: 'm_domain_authority', label: 'Referring Domain Authority', value: 58, max_value: 100, weight: 0.25, source: 'seo' },
-      { id: 'm_structured_data', label: 'Structured Data Coverage', value: 48, max_value: 100, weight: 0.15, source: 'seo' },
+      {
+        id: 'm_domain_authority',
+        label: 'Referring Domain Authority',
+        value: 58,
+        max_value: 100,
+        weight: 0.25,
+        source: 'seo',
+      },
+      {
+        id: 'm_structured_data',
+        label: 'Structured Data Coverage',
+        value: 48,
+        max_value: 100,
+        weight: 0.15,
+        source: 'seo',
+      },
     ];
   }
 
   // Weighted average backlink authority
-  const avgBacklinkAuthority = data.backlinks.length > 0
-    ? data.backlinks.reduce((sum, b) => sum + b.authority, 0) / data.backlinks.length
-    : data.domain_authority;
+  const avgBacklinkAuthority =
+    data.backlinks.length > 0
+      ? data.backlinks.reduce((sum, b) => sum + b.authority, 0) /
+        data.backlinks.length
+      : data.domain_authority;
 
   return [
     {
@@ -229,20 +281,26 @@ export interface ContentInputData {
 /**
  * Transform Content data into EVI Momentum components
  */
-export function contentToMomentumComponents(data: ContentInputData | null): EVIComponentMetric[] {
+export function contentToMomentumComponents(
+  data: ContentInputData | null
+): EVIComponentMetric[] {
   if (!data) {
     return getDefaultMomentumComponents();
   }
 
   // Content Velocity vs Competitors
-  const velocityRatio = data.content_velocity.competitor_avg_per_week > 0
-    ? data.content_velocity.brand_pieces_per_week / data.content_velocity.competitor_avg_per_week
-    : 1;
+  const velocityRatio =
+    data.content_velocity.competitor_avg_per_week > 0
+      ? data.content_velocity.brand_pieces_per_week /
+        data.content_velocity.competitor_avg_per_week
+      : 1;
 
   // Topic Growth Rate (avg across topics)
-  const avgTopicGrowth = data.topic_coverage.length > 0
-    ? data.topic_coverage.reduce((sum, t) => sum + t.growth_rate, 0) / data.topic_coverage.length
-    : 0;
+  const avgTopicGrowth =
+    data.topic_coverage.length > 0
+      ? data.topic_coverage.reduce((sum, t) => sum + t.growth_rate, 0) /
+        data.topic_coverage.length
+      : 0;
 
   return [
     {
@@ -250,7 +308,7 @@ export function contentToMomentumComponents(data: ContentInputData | null): EVIC
       label: 'Content Velocity vs Competitors',
       value: Math.round(velocityRatio * 100) / 100,
       max_value: 2,
-      weight: 0.20,
+      weight: 0.2,
       source: 'content',
     },
     {
@@ -270,28 +328,112 @@ export function contentToMomentumComponents(data: ContentInputData | null): EVIC
 
 function getDefaultVisibilityComponents(): EVIComponentMetric[] {
   return [
-    { id: 'm_ai_presence', label: 'AI Answer Presence', value: 24, max_value: 100, weight: 0.35, source: 'pr' },
-    { id: 'm_press_coverage', label: 'Press Mention Coverage', value: 78, max_value: 100, weight: 0.25, source: 'pr' },
-    { id: 'm_serp_coverage', label: 'Topic SERP Coverage', value: 45, max_value: 100, weight: 0.25, source: 'seo' },
-    { id: 'm_featured_snippets', label: 'Featured Snippets', value: 12, max_value: 50, weight: 0.15, source: 'seo' },
+    {
+      id: 'm_ai_presence',
+      label: 'AI Answer Presence',
+      value: 24,
+      max_value: 100,
+      weight: 0.35,
+      source: 'pr',
+    },
+    {
+      id: 'm_press_coverage',
+      label: 'Press Mention Coverage',
+      value: 78,
+      max_value: 100,
+      weight: 0.25,
+      source: 'pr',
+    },
+    {
+      id: 'm_serp_coverage',
+      label: 'Topic SERP Coverage',
+      value: 45,
+      max_value: 100,
+      weight: 0.25,
+      source: 'seo',
+    },
+    {
+      id: 'm_featured_snippets',
+      label: 'Featured Snippets',
+      value: 12,
+      max_value: 50,
+      weight: 0.15,
+      source: 'seo',
+    },
   ];
 }
 
 function getDefaultAuthorityComponents(): EVIComponentMetric[] {
   return [
-    { id: 'm_citation_quality', label: 'Citation Quality Score', value: 71, max_value: 100, weight: 0.30, source: 'pr' },
-    { id: 'm_domain_authority', label: 'Referring Domain Authority', value: 58, max_value: 100, weight: 0.25, source: 'seo' },
-    { id: 'm_journalist_match', label: 'Journalist Match Strength', value: 82, max_value: 100, weight: 0.20, source: 'pr' },
-    { id: 'm_structured_data', label: 'Structured Data Coverage', value: 48, max_value: 100, weight: 0.15, source: 'seo' },
+    {
+      id: 'm_citation_quality',
+      label: 'Citation Quality Score',
+      value: 71,
+      max_value: 100,
+      weight: 0.3,
+      source: 'pr',
+    },
+    {
+      id: 'm_domain_authority',
+      label: 'Referring Domain Authority',
+      value: 58,
+      max_value: 100,
+      weight: 0.25,
+      source: 'seo',
+    },
+    {
+      id: 'm_journalist_match',
+      label: 'Journalist Match Strength',
+      value: 82,
+      max_value: 100,
+      weight: 0.2,
+      source: 'pr',
+    },
+    {
+      id: 'm_structured_data',
+      label: 'Structured Data Coverage',
+      value: 48,
+      max_value: 100,
+      weight: 0.15,
+      source: 'seo',
+    },
   ];
 }
 
 function getDefaultMomentumComponents(): EVIComponentMetric[] {
   return [
-    { id: 'm_citation_velocity', label: 'Citation Velocity (WoW)', value: 17, max_value: 100, weight: 0.30, source: 'pr' },
-    { id: 'm_sov_change', label: 'Share of Voice Change', value: -2, max_value: 100, weight: 0.25, source: 'pr' },
-    { id: 'm_content_velocity', label: 'Content Velocity vs Competitors', value: 0.8, max_value: 2, weight: 0.20, source: 'content' },
-    { id: 'm_topic_growth', label: 'Topic Growth Rate', value: 34, max_value: 100, weight: 0.15, source: 'content' },
+    {
+      id: 'm_citation_velocity',
+      label: 'Citation Velocity (WoW)',
+      value: 17,
+      max_value: 100,
+      weight: 0.3,
+      source: 'pr',
+    },
+    {
+      id: 'm_sov_change',
+      label: 'Share of Voice Change',
+      value: -2,
+      max_value: 100,
+      weight: 0.25,
+      source: 'pr',
+    },
+    {
+      id: 'm_content_velocity',
+      label: 'Content Velocity vs Competitors',
+      value: 0.8,
+      max_value: 2,
+      weight: 0.2,
+      source: 'content',
+    },
+    {
+      id: 'm_topic_growth',
+      label: 'Topic Growth Rate',
+      value: 34,
+      max_value: 100,
+      weight: 0.15,
+      source: 'content',
+    },
   ];
 }
 
@@ -349,12 +491,30 @@ export function generateMockEVISnapshot(orgId: string): EVIInputSnapshot {
       updated_at: now.toISOString(),
     },
     historical_scores: [
-      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(), score: 54.2 },
-      { date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(), score: 56.8 },
-      { date: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(), score: 59.1 },
-      { date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(), score: 61.2 },
-      { date: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(), score: 63.3 },
-      { date: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(), score: 65.1 },
+      {
+        date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 54.2,
+      },
+      {
+        date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 56.8,
+      },
+      {
+        date: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 59.1,
+      },
+      {
+        date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 61.2,
+      },
+      {
+        date: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 63.3,
+      },
+      {
+        date: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        score: 65.1,
+      },
       { date: now.toISOString(), score: 67.4 },
     ],
   };
@@ -430,14 +590,26 @@ export function generateMockAttributionEvents(): EVIAttributionEvent[] {
   return [
     {
       id: 'attr_techcrunch_cite',
-      timestamp: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      timestamp: new Date(
+        now.getTime() - 2 * 24 * 60 * 60 * 1000
+      ).toISOString(),
       driver: 'visibility',
       pillar: 'pr',
       delta_points: 2.4,
-      reason: 'TechCrunch article mentioned EVI methodology, triggering AI model citations',
+      reason:
+        'TechCrunch article mentioned EVI methodology, triggering AI model citations',
       evidence: [
-        { type: 'citation', label: 'TechCrunch article', value: 'AI Marketing Tools Are Finally Delivering', url: 'https://techcrunch.com/ai-marketing-tools' },
-        { type: 'metric', label: 'AI citation increase', value: '+17% in Claude/Perplexity' },
+        {
+          type: 'citation',
+          label: 'TechCrunch article',
+          value: 'AI Marketing Tools Are Finally Delivering',
+          url: 'https://techcrunch.com/ai-marketing-tools',
+        },
+        {
+          type: 'metric',
+          label: 'AI citation increase',
+          value: '+17% in Claude/Perplexity',
+        },
       ],
       deep_link: {
         label: 'View Coverage',
@@ -448,14 +620,25 @@ export function generateMockAttributionEvents(): EVIAttributionEvent[] {
     },
     {
       id: 'attr_schema_deploy',
-      timestamp: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      timestamp: new Date(
+        now.getTime() - 3 * 24 * 60 * 60 * 1000
+      ).toISOString(),
       driver: 'authority',
       pillar: 'seo',
       delta_points: 1.2,
-      reason: 'Deployed structured data on 12 product pages, improving AI comprehension',
+      reason:
+        'Deployed structured data on 12 product pages, improving AI comprehension',
       evidence: [
-        { type: 'diff', label: 'Schema changes', value: '+12 pages with FAQ schema' },
-        { type: 'metric', label: 'Validation status', value: '100% valid per Google' },
+        {
+          type: 'diff',
+          label: 'Schema changes',
+          value: '+12 pages with FAQ schema',
+        },
+        {
+          type: 'metric',
+          label: 'Validation status',
+          value: '100% valid per Google',
+        },
       ],
       deep_link: {
         label: 'View Technical',

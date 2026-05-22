@@ -22,22 +22,22 @@ Sprint S76 focused on production readiness infrastructure without adding new use
 
 ### @pravado/api
 
-| File | Change |
-|------|--------|
-| `src/config.ts` | **NEW** - Centralized config module with typed env access |
-| `src/lib/observability.ts` | **NEW** - Logging helpers for service operations |
-| `src/routes/health.ts` | Enhanced with `/info` endpoint, version info, feature flags |
-| `src/server.ts` | Uses config module instead of direct process.env |
-| `src/services/realityMapService.ts` | Fixed unused variable, added missing type properties |
-| `src/services/scenarioOrchestrationService.ts` | Added missing `running`, `paused` status to stats |
-| `src/services/insightConflictService.ts` | Fixed unused variable warnings |
+| File                                           | Change                                                      |
+| ---------------------------------------------- | ----------------------------------------------------------- |
+| `src/config.ts`                                | **NEW** - Centralized config module with typed env access   |
+| `src/lib/observability.ts`                     | **NEW** - Logging helpers for service operations            |
+| `src/routes/health.ts`                         | Enhanced with `/info` endpoint, version info, feature flags |
+| `src/server.ts`                                | Uses config module instead of direct process.env            |
+| `src/services/realityMapService.ts`            | Fixed unused variable, added missing type properties        |
+| `src/services/scenarioOrchestrationService.ts` | Added missing `running`, `paused` status to stats           |
+| `src/services/insightConflictService.ts`       | Fixed unused variable warnings                              |
 
 ### Root Level
 
-| File | Change |
-|------|--------|
-| `.env.example` | **UPDATED** - Comprehensive env template with all variables |
-| `docs/DEPLOYMENT_GUIDE.md` | **NEW** - Complete deployment documentation |
+| File                       | Change                                                      |
+| -------------------------- | ----------------------------------------------------------- |
+| `.env.example`             | **UPDATED** - Comprehensive env template with all variables |
+| `docs/DEPLOYMENT_GUIDE.md` | **NEW** - Complete deployment documentation                 |
 
 ---
 
@@ -46,6 +46,7 @@ Sprint S76 focused on production readiness infrastructure without adding new use
 ### 1. `apps/api/src/config.ts`
 
 Centralized configuration module:
+
 - Wraps `@pravado/validators` env validation
 - Exports typed `config` object
 - Provides `isDevelopment`, `isProduction`, `isTest` helpers
@@ -62,6 +63,7 @@ console.log(config.LLM_PROVIDER);
 ### 2. `apps/api/src/lib/observability.ts`
 
 Logging utilities for services:
+
 - `withOperationLogging()` - Wraps async operations with start/end logging
 - `createServiceLogger()` - Creates named loggers for services
 - Pre-configured loggers for critical services
@@ -69,6 +71,7 @@ Logging utilities for services:
 ### 3. `docs/DEPLOYMENT_GUIDE.md`
 
 Complete deployment guide covering:
+
 - Prerequisites (Node, pnpm, Supabase, LLM providers)
 - Repository structure
 - Local development setup
@@ -85,12 +88,12 @@ Complete deployment guide covering:
 
 All endpoints available at `/health/*`:
 
-| Endpoint | Purpose | Response |
-|----------|---------|----------|
-| `GET /health/live` | Liveness probe | `{"alive":true,"timestamp":"..."}` |
+| Endpoint            | Purpose         | Response                                           |
+| ------------------- | --------------- | -------------------------------------------------- |
+| `GET /health/live`  | Liveness probe  | `{"alive":true,"timestamp":"..."}`                 |
 | `GET /health/ready` | Readiness probe | `{"ready":true,"version":"...","timestamp":"..."}` |
-| `GET /health/info` | App info | Version, environment, safe feature flags |
-| `GET /health/` | Basic health | Status, version, timestamp |
+| `GET /health/info`  | App info        | Version, environment, safe feature flags           |
+| `GET /health/`      | Basic health    | Status, version, timestamp                         |
 
 ### /health/info Response Example
 
@@ -124,6 +127,7 @@ All endpoints available at `/health/*`:
 ## TypeScript Validation
 
 ### Before S76
+
 ```
 @pravado/types:      0 errors
 @pravado/validators: 0 errors
@@ -132,6 +136,7 @@ All endpoints available at `/health/*`:
 ```
 
 ### After S76
+
 ```
 @pravado/types:      0 errors
 @pravado/validators: 0 errors
@@ -140,6 +145,7 @@ All endpoints available at `/health/*`:
 ```
 
 Fixed API issues:
+
 - Added `aggregatedRisks`, `aggregatedOpportunities` to RealityMapAnalysisResponse
 - Added `running`, `paused` to runsByStatus in scenarioOrchestrationService
 - Removed unused `_threshold` variables in insightConflictService
@@ -152,16 +158,16 @@ Fixed API issues:
 
 Updated template now includes:
 
-| Category | Variables |
-|----------|-----------|
-| **General** | NODE_ENV, LOG_LEVEL |
+| Category       | Variables                                                     |
+| -------------- | ------------------------------------------------------------- |
+| **General**    | NODE_ENV, LOG_LEVEL                                           |
 | **API Server** | API_PORT, API_HOST, CORS_ORIGIN, COOKIE_SECRET, DASHBOARD_URL |
-| **Supabase** | SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY |
-| **LLM** | LLM_PROVIDER, LLM_OPENAI_API_KEY, LLM_ANTHROPIC_API_KEY, etc. |
-| **Email** | MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_FROM_EMAIL |
-| **Billing** | BILLING_DEFAULT_PLAN_SLUG, STRIPE_* keys |
-| **Audit** | AUDIT_EXPORT_STORAGE_DIR |
-| **Dashboard** | NEXT_PUBLIC_API_URL, NEXT_PUBLIC_SUPABASE_URL, etc. |
+| **Supabase**   | SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY    |
+| **LLM**        | LLM_PROVIDER, LLM_OPENAI_API_KEY, LLM_ANTHROPIC_API_KEY, etc. |
+| **Email**      | MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_FROM_EMAIL           |
+| **Billing**    | BILLING*DEFAULT_PLAN_SLUG, STRIPE*\* keys                     |
+| **Audit**      | AUDIT_EXPORT_STORAGE_DIR                                      |
+| **Dashboard**  | NEXT_PUBLIC_API_URL, NEXT_PUBLIC_SUPABASE_URL, etc.           |
 
 ---
 
@@ -170,28 +176,33 @@ Updated template now includes:
 To deploy Pravado to a fresh environment:
 
 ### Prerequisites
+
 - [ ] Node.js 18+ installed
 - [ ] pnpm 8+ installed
 - [ ] Supabase project created
 - [ ] LLM API key obtained (OpenAI or Anthropic)
 
 ### Database
+
 - [ ] Migrations 0-76 applied to Supabase
 - [ ] Row Level Security (RLS) configured
 
 ### API Deployment
+
 - [ ] Environment variables configured (see .env.example)
 - [ ] Build: `pnpm --filter @pravado/api build`
 - [ ] Start: `pnpm --filter @pravado/api start`
 - [ ] Health checks responding: `/health/live`, `/health/ready`
 
 ### Dashboard Deployment
+
 - [ ] Environment variables configured
 - [ ] Build: `pnpm --filter @pravado/dashboard build`
 - [ ] Deploy to Vercel/hosting platform
 - [ ] CORS_ORIGIN set to dashboard URL
 
 ### First-Time Setup
+
 - [ ] Create first organization in database
 - [ ] Create first user via auth signup
 - [ ] Link user to organization

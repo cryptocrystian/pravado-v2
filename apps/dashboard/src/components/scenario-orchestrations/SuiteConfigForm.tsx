@@ -22,7 +22,9 @@ import {
 
 interface SuiteConfigFormProps {
   suite?: ScenarioSuite;
-  onSubmit: (input: CreateScenarioSuiteInput | UpdateScenarioSuiteInput) => Promise<void>;
+  onSubmit: (
+    input: CreateScenarioSuiteInput | UpdateScenarioSuiteInput
+  ) => Promise<void>;
   onCancel: () => void;
   loading?: boolean;
 }
@@ -44,11 +46,21 @@ export function SuiteConfigForm({
 }: SuiteConfigFormProps) {
   const [name, setName] = useState(suite?.name || '');
   const [description, setDescription] = useState(suite?.description || '');
-  const [narrativeEnabled, setNarrativeEnabled] = useState(suite?.config.narrativeEnabled ?? true);
-  const [riskMapEnabled, setRiskMapEnabled] = useState(suite?.config.riskMapEnabled ?? true);
-  const [stopOnFailure, setStopOnFailure] = useState(suite?.config.stopOnFailure ?? true);
-  const [maxConcurrent, setMaxConcurrent] = useState(suite?.config.maxConcurrentSimulations ?? 1);
-  const [timeoutSeconds, setTimeoutSeconds] = useState(suite?.config.timeoutSeconds ?? 3600);
+  const [narrativeEnabled, setNarrativeEnabled] = useState(
+    suite?.config.narrativeEnabled ?? true
+  );
+  const [riskMapEnabled, setRiskMapEnabled] = useState(
+    suite?.config.riskMapEnabled ?? true
+  );
+  const [stopOnFailure, setStopOnFailure] = useState(
+    suite?.config.stopOnFailure ?? true
+  );
+  const [maxConcurrent, setMaxConcurrent] = useState(
+    suite?.config.maxConcurrentSimulations ?? 1
+  );
+  const [timeoutSeconds, setTimeoutSeconds] = useState(
+    suite?.config.timeoutSeconds ?? 3600
+  );
   const [items, setItems] = useState<CreateSuiteItemInput[]>([]);
   const [simulations, setSimulations] = useState<AIScenarioSimulation[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +71,10 @@ export function SuiteConfigForm({
 
   const loadSimulations = async () => {
     try {
-      const result = await listSimulations({ limit: 100, status: 'configured' });
+      const result = await listSimulations({
+        limit: 100,
+        status: 'configured',
+      });
       setSimulations(result.simulations);
     } catch (err) {
       console.error('Failed to load simulations', err);
@@ -83,8 +98,13 @@ export function SuiteConfigForm({
     setItems(items.filter((_, i) => i !== index));
   };
 
-  const handleItemChange = (index: number, updates: Partial<CreateSuiteItemInput>) => {
-    setItems(items.map((item, i) => (i === index ? { ...item, ...updates } : item)));
+  const handleItemChange = (
+    index: number,
+    updates: Partial<CreateSuiteItemInput>
+  ) => {
+    setItems(
+      items.map((item, i) => (i === index ? { ...item, ...updates } : item))
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -150,7 +170,9 @@ export function SuiteConfigForm({
 
       {/* Configuration */}
       <div className="border-t pt-4">
-        <h4 className="text-sm font-medium text-gray-900 mb-3">Configuration</h4>
+        <h4 className="text-sm font-medium text-gray-900 mb-3">
+          Configuration
+        </h4>
         <div className="grid grid-cols-2 gap-4">
           <label className="flex items-center gap-2">
             <input
@@ -182,7 +204,9 @@ export function SuiteConfigForm({
         </div>
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div>
-            <label className="block text-sm text-gray-700 mb-1">Max Concurrent</label>
+            <label className="block text-sm text-gray-700 mb-1">
+              Max Concurrent
+            </label>
             <input
               type="number"
               value={maxConcurrent}
@@ -193,7 +217,9 @@ export function SuiteConfigForm({
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-700 mb-1">Timeout (sec)</label>
+            <label className="block text-sm text-gray-700 mb-1">
+              Timeout (sec)
+            </label>
             <input
               type="number"
               value={timeoutSeconds}
@@ -223,7 +249,8 @@ export function SuiteConfigForm({
 
           {items.length === 0 ? (
             <p className="text-sm text-gray-500 italic">
-              No simulations added. Click &quot;Add Simulation&quot; to add items.
+              No simulations added. Click &quot;Add Simulation&quot; to add
+              items.
             </p>
           ) : (
             <div className="space-y-3">
@@ -235,7 +262,11 @@ export function SuiteConfigForm({
                     </span>
                     <select
                       value={item.simulationId}
-                      onChange={(e) => handleItemChange(index, { simulationId: e.target.value })}
+                      onChange={(e) =>
+                        handleItemChange(index, {
+                          simulationId: e.target.value,
+                        })
+                      }
                       className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
                     >
                       {simulations.map((sim) => (
@@ -249,8 +280,18 @@ export function SuiteConfigForm({
                       onClick={() => handleRemoveItem(index)}
                       className="text-red-600 hover:text-red-800"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -258,10 +299,13 @@ export function SuiteConfigForm({
                     <label className="text-xs text-gray-500">Trigger:</label>
                     <select
                       value={item.triggerConditionType}
-                      onChange={(e) => handleItemChange(index, {
-                        triggerConditionType: e.target.value as CreateSuiteItemInput['triggerConditionType'],
-                        triggerCondition: { type: e.target.value },
-                      })}
+                      onChange={(e) =>
+                        handleItemChange(index, {
+                          triggerConditionType: e.target
+                            .value as CreateSuiteItemInput['triggerConditionType'],
+                          triggerCondition: { type: e.target.value },
+                        })
+                      }
                       className="px-2 py-1 border border-gray-300 rounded text-xs"
                     >
                       {CONDITION_TYPES.map((type) => (
@@ -270,7 +314,14 @@ export function SuiteConfigForm({
                         </option>
                       ))}
                     </select>
-                    <span className="text-xs text-gray-400" title={CONDITION_TYPE_DESCRIPTIONS[item.triggerConditionType || 'always']}>
+                    <span
+                      className="text-xs text-gray-400"
+                      title={
+                        CONDITION_TYPE_DESCRIPTIONS[
+                          item.triggerConditionType || 'always'
+                        ]
+                      }
+                    >
                       ?
                     </span>
                   </div>

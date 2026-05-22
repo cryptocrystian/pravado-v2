@@ -11,7 +11,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getPRConfig } from '@/lib/env/pr-config';
-import { authenticatePRRequest, createAuthErrorResponse, addPRAuthHeader } from '@/server/pr/prAuth';
+import {
+  authenticatePRRequest,
+  createAuthErrorResponse,
+  addPRAuthHeader,
+} from '@/server/pr/prAuth';
 import { createPRService } from '@/server/pr/prService';
 
 export const dynamic = 'force-dynamic';
@@ -30,7 +34,9 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/sequences/${id}] GET Auth failed: ${auth.status}`);
+      console.log(
+        `[API /api/pr/pitches/sequences/${id}] GET Auth failed: ${auth.status}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -48,7 +54,9 @@ export async function GET(_request: NextRequest, context: RouteContext) {
     }
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/sequences/${id}] GET: ${sequence.name}`);
+      console.log(
+        `[API /api/pr/pitches/sequences/${id}] GET: ${sequence.name}`
+      );
     }
 
     const response = NextResponse.json(sequence);
@@ -74,7 +82,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/sequences/${id}] PATCH Auth failed: ${auth.status}`);
+      console.log(
+        `[API /api/pr/pitches/sequences/${id}] PATCH Auth failed: ${auth.status}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -92,11 +102,18 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     if (body.status !== undefined) {
       updateInput.status = body.status;
     }
-    if (body.defaultSubject !== undefined || body.default_subject !== undefined) {
+    if (
+      body.defaultSubject !== undefined ||
+      body.default_subject !== undefined
+    ) {
       updateInput.defaultSubject = body.defaultSubject || body.default_subject;
     }
-    if (body.defaultPreviewText !== undefined || body.default_preview_text !== undefined) {
-      updateInput.defaultPreviewText = body.defaultPreviewText || body.default_preview_text;
+    if (
+      body.defaultPreviewText !== undefined ||
+      body.default_preview_text !== undefined
+    ) {
+      updateInput.defaultPreviewText =
+        body.defaultPreviewText || body.default_preview_text;
     }
     if (body.settings !== undefined) {
       updateInput.settings = body.settings;
@@ -105,14 +122,19 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const sequence = await prService.updatePitchSequence(id, updateInput);
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/sequences/${id}] PATCH: Updated ${sequence.name} to status ${sequence.status}`);
+      console.log(
+        `[API /api/pr/pitches/sequences/${id}] PATCH: Updated ${sequence.name} to status ${sequence.status}`
+      );
     }
 
     const response = NextResponse.json(sequence);
     return addPRAuthHeader(response, 'ok');
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error(`[API /api/pr/pitches/sequences/${id}] PATCH Error:`, message);
+    console.error(
+      `[API /api/pr/pitches/sequences/${id}] PATCH Error:`,
+      message
+    );
 
     // Handle not found case
     if (message.includes('not found') || message.includes('No rows')) {
@@ -140,7 +162,9 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/sequences/${id}] DELETE Auth failed: ${auth.status}`);
+      console.log(
+        `[API /api/pr/pitches/sequences/${id}] DELETE Auth failed: ${auth.status}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -149,17 +173,24 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
     const prService = createPRService(auth.client, auth.orgId);
 
     // Archive the sequence (soft delete)
-    const sequence = await prService.updatePitchSequence(id, { status: 'archived' });
+    const sequence = await prService.updatePitchSequence(id, {
+      status: 'archived',
+    });
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/pitches/sequences/${id}] DELETE: Archived ${sequence.name}`);
+      console.log(
+        `[API /api/pr/pitches/sequences/${id}] DELETE: Archived ${sequence.name}`
+      );
     }
 
     const response = NextResponse.json({ success: true, archived: true });
     return addPRAuthHeader(response, 'ok');
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error(`[API /api/pr/pitches/sequences/${id}] DELETE Error:`, message);
+    console.error(
+      `[API /api/pr/pitches/sequences/${id}] DELETE Error:`,
+      message
+    );
 
     const response = NextResponse.json(
       { error: message, code: 'DELETE_ERROR' },

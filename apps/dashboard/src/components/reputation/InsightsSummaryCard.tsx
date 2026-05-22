@@ -34,7 +34,8 @@ export function InsightsSummaryCard({
   refreshTrigger = 0,
   compact = false,
 }: InsightsSummaryCardProps) {
-  const [insights, setInsights] = useState<GetReputationReportInsightsResponse | null>(null);
+  const [insights, setInsights] =
+    useState<GetReputationReportInsightsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -97,7 +98,9 @@ export function InsightsSummaryCard({
     return null;
   }
 
-  const { text: deltaText, colorClass: deltaColor } = formatDelta(insights.scoreDelta);
+  const { text: deltaText, colorClass: deltaColor } = formatDelta(
+    insights.scoreDelta
+  );
   const trendIcon = getTrendIcon(insights.trend);
   const trendColorClass = getTrendColor(insights.trend);
 
@@ -106,7 +109,9 @@ export function InsightsSummaryCard({
       <div className="bg-white rounded-lg shadow p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className={`text-3xl font-bold ${getScoreColor(insights.currentOverallScore)}`}>
+            <div
+              className={`text-3xl font-bold ${getScoreColor(insights.currentOverallScore)}`}
+            >
               {insights.currentOverallScore.toFixed(0)}
             </div>
             <div>
@@ -133,7 +138,9 @@ export function InsightsSummaryCard({
   return (
     <div className="bg-white rounded-lg shadow">
       <div className="px-6 py-4 border-b border-gray-200">
-        <h2 className="text-lg font-medium text-gray-900">Reputation Insights</h2>
+        <h2 className="text-lg font-medium text-gray-900">
+          Reputation Insights
+        </h2>
       </div>
 
       <div className="p-6">
@@ -143,19 +150,31 @@ export function InsightsSummaryCard({
             <div
               className={`w-20 h-20 rounded-full flex items-center justify-center ${getScoreBgColor(insights.currentOverallScore)}`}
             >
-              <span className={`text-2xl font-bold ${getScoreColor(insights.currentOverallScore)}`}>
+              <span
+                className={`text-2xl font-bold ${getScoreColor(insights.currentOverallScore)}`}
+              >
                 {insights.currentOverallScore.toFixed(0)}
               </span>
             </div>
             <div>
-              <p className="text-lg font-medium text-gray-900">Overall Reputation</p>
-              <p className={`text-sm ${getScoreColor(insights.currentOverallScore)}`}>
+              <p className="text-lg font-medium text-gray-900">
+                Overall Reputation
+              </p>
+              <p
+                className={`text-sm ${getScoreColor(insights.currentOverallScore)}`}
+              >
                 {getScoreLabel(insights.currentOverallScore)}
               </p>
               <div className="flex items-center space-x-2 mt-1">
-                <span className={`text-sm font-medium ${deltaColor}`}>{deltaText}</span>
-                <span className={`text-lg ${trendColorClass}`}>{trendIcon}</span>
-                <span className="text-xs text-gray-400">vs previous period</span>
+                <span className={`text-sm font-medium ${deltaColor}`}>
+                  {deltaText}
+                </span>
+                <span className={`text-lg ${trendColorClass}`}>
+                  {trendIcon}
+                </span>
+                <span className="text-xs text-gray-400">
+                  vs previous period
+                </span>
               </div>
             </div>
           </div>
@@ -184,14 +203,25 @@ export function InsightsSummaryCard({
         {/* Component Scores */}
         {insights.componentScores && (
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Component Breakdown</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-3">
+              Component Breakdown
+            </h3>
             <div className="grid grid-cols-5 gap-4">
-              {(Object.entries(insights.componentScores) as [string, number | undefined][]).map(([key, value]) => {
+              {(
+                Object.entries(insights.componentScores) as [
+                  string,
+                  number | undefined,
+                ][]
+              ).map(([key, value]) => {
                 if (value === undefined) return null;
                 return (
                   <div key={key} className="text-center">
-                    <span className="text-xl mb-1 block">{getComponentKeyIcon(key as any)}</span>
-                    <p className={`text-lg font-semibold ${getScoreColor(value)}`}>
+                    <span className="text-xl mb-1 block">
+                      {getComponentKeyIcon(key as any)}
+                    </span>
+                    <p
+                      className={`text-lg font-semibold ${getScoreColor(value)}`}
+                    >
                       {value.toFixed(0)}
                     </p>
                     <p className="text-xs text-gray-500 truncate">
@@ -206,47 +236,67 @@ export function InsightsSummaryCard({
 
         {/* Top Drivers */}
         <div className="grid grid-cols-2 gap-6">
-          {insights.topPositiveDrivers && insights.topPositiveDrivers.length > 0 && (
-            <div>
-              <h3 className="text-sm font-medium text-green-700 mb-2 flex items-center">
-                <span className="mr-1">+</span> Top Positive Drivers
-              </h3>
-              <ul className="space-y-2">
-                {insights.topPositiveDrivers.slice(0, 3).map((driver, index) => (
-                  <li key={index} className="text-sm text-gray-600 flex items-start">
-                    <span className="text-green-500 mr-2">+{driver.impact.toFixed(1)}</span>
-                    <span className="truncate">{driver.title}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {insights.topPositiveDrivers &&
+            insights.topPositiveDrivers.length > 0 && (
+              <div>
+                <h3 className="text-sm font-medium text-green-700 mb-2 flex items-center">
+                  <span className="mr-1">+</span> Top Positive Drivers
+                </h3>
+                <ul className="space-y-2">
+                  {insights.topPositiveDrivers
+                    .slice(0, 3)
+                    .map((driver, index) => (
+                      <li
+                        key={index}
+                        className="text-sm text-gray-600 flex items-start"
+                      >
+                        <span className="text-green-500 mr-2">
+                          +{driver.impact.toFixed(1)}
+                        </span>
+                        <span className="truncate">{driver.title}</span>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
 
-          {insights.topNegativeDrivers && insights.topNegativeDrivers.length > 0 && (
-            <div>
-              <h3 className="text-sm font-medium text-red-700 mb-2 flex items-center">
-                <span className="mr-1">-</span> Top Negative Drivers
-              </h3>
-              <ul className="space-y-2">
-                {insights.topNegativeDrivers.slice(0, 3).map((driver, index) => (
-                  <li key={index} className="text-sm text-gray-600 flex items-start">
-                    <span className="text-red-500 mr-2">{driver.impact.toFixed(1)}</span>
-                    <span className="truncate">{driver.title}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {insights.topNegativeDrivers &&
+            insights.topNegativeDrivers.length > 0 && (
+              <div>
+                <h3 className="text-sm font-medium text-red-700 mb-2 flex items-center">
+                  <span className="mr-1">-</span> Top Negative Drivers
+                </h3>
+                <ul className="space-y-2">
+                  {insights.topNegativeDrivers
+                    .slice(0, 3)
+                    .map((driver, index) => (
+                      <li
+                        key={index}
+                        className="text-sm text-gray-600 flex items-start"
+                      >
+                        <span className="text-red-500 mr-2">
+                          {driver.impact.toFixed(1)}
+                        </span>
+                        <span className="truncate">{driver.title}</span>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
         </div>
 
         {/* Crisis Summary */}
         {insights.crisisSummary && (
           <div className="mt-6 pt-4 border-t border-gray-200">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Crisis Status</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">
+              Crisis Status
+            </h3>
             <div className="flex items-center space-x-6 text-sm">
               <div>
                 <span className="text-gray-500">Active Incidents: </span>
-                <span className={`font-medium ${insights.crisisSummary.activeIncidents > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                <span
+                  className={`font-medium ${insights.crisisSummary.activeIncidents > 0 ? 'text-red-600' : 'text-green-600'}`}
+                >
                   {insights.crisisSummary.activeIncidents}
                 </span>
               </div>

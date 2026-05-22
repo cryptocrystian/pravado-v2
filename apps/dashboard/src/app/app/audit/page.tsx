@@ -35,7 +35,9 @@ export default function AuditLogPage() {
   // State
   const [entries, setEntries] = useState<AuditLogEntry[]>([]);
   const [stats, setStats] = useState<AuditStats | null>(null);
-  const [eventTypes, setEventTypes] = useState<AuditEventTypesResponse | null>(null);
+  const [eventTypes, setEventTypes] = useState<AuditEventTypesResponse | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
@@ -46,7 +48,9 @@ export default function AuditLogPage() {
     limit: 25,
     offset: 0,
   });
-  const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(
+    null
+  );
 
   // Export state (S36)
   const [exportJob, setExportJob] = useState<AuditExportJob | null>(null);
@@ -72,7 +76,9 @@ export default function AuditLogPage() {
       setEventTypes(typesResult);
     } catch (err: unknown) {
       console.error('Failed to load audit data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load audit data');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load audit data'
+      );
     } finally {
       setLoading(false);
     }
@@ -83,7 +89,10 @@ export default function AuditLogPage() {
   }, [loadData]);
 
   // Handle filter changes
-  const updateFilter = (key: keyof AuditQueryFilters, value: AuditQueryFilters[keyof AuditQueryFilters]) => {
+  const updateFilter = (
+    key: keyof AuditQueryFilters,
+    value: AuditQueryFilters[keyof AuditQueryFilters]
+  ) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
@@ -119,7 +128,10 @@ export default function AuditLogPage() {
           const status = await getExportStatus(result.jobId);
           setExportJob(status.job);
 
-          if (status.job.status === 'queued' || status.job.status === 'processing') {
+          if (
+            status.job.status === 'queued' ||
+            status.job.status === 'processing'
+          ) {
             setTimeout(pollStatus, 2000);
           }
         } catch (err) {
@@ -218,15 +230,37 @@ export default function AuditLogPage() {
           {exportLoading ? (
             <>
               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
               </svg>
               <span>Exporting...</span>
             </>
           ) : (
             <>
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
               <span>Export CSV</span>
             </>
@@ -276,7 +310,9 @@ export default function AuditLogPage() {
               type="text"
               placeholder="Search in context..."
               value={filters.search || ''}
-              onChange={(e) => updateFilter('search', e.target.value || undefined)}
+              onChange={(e) =>
+                updateFilter('search', e.target.value || undefined)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -287,8 +323,10 @@ export default function AuditLogPage() {
               Severity
             </label>
             <select
-              value={filters.severity as string || ''}
-              onChange={(e) => updateFilter('severity', e.target.value || undefined)}
+              value={(filters.severity as string) || ''}
+              onChange={(e) =>
+                updateFilter('severity', e.target.value || undefined)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Severities</option>
@@ -305,8 +343,10 @@ export default function AuditLogPage() {
               Actor Type
             </label>
             <select
-              value={filters.actorType as string || ''}
-              onChange={(e) => updateFilter('actorType', e.target.value || undefined)}
+              value={(filters.actorType as string) || ''}
+              onChange={(e) =>
+                updateFilter('actorType', e.target.value || undefined)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Actors</option>
@@ -322,8 +362,10 @@ export default function AuditLogPage() {
               Category
             </label>
             <select
-              value={filters.eventType as string || ''}
-              onChange={(e) => updateFilter('eventType', e.target.value || undefined)}
+              value={(filters.eventType as string) || ''}
+              onChange={(e) =>
+                updateFilter('eventType', e.target.value || undefined)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Categories</option>
@@ -346,7 +388,9 @@ export default function AuditLogPage() {
               onChange={(e) =>
                 updateFilter(
                   'startDate',
-                  e.target.value ? new Date(e.target.value).toISOString() : undefined
+                  e.target.value
+                    ? new Date(e.target.value).toISOString()
+                    : undefined
                 )
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -381,7 +425,10 @@ export default function AuditLogPage() {
             <tbody className="bg-white divide-y divide-gray-200">
               {entries.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                  <td
+                    colSpan={5}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
                     No audit logs found matching your filters.
                   </td>
                 </tr>
@@ -427,7 +474,8 @@ export default function AuditLogPage() {
         <div className="bg-gray-50 px-6 py-3 flex justify-between items-center border-t border-gray-200">
           <div className="text-sm text-gray-500">
             Showing {(filters.offset || 0) + 1} to{' '}
-            {Math.min((filters.offset || 0) + entries.length, total)} of {total} results
+            {Math.min((filters.offset || 0) + entries.length, total)} of {total}{' '}
+            results
           </div>
           <div className="flex gap-2">
             <button
@@ -458,7 +506,9 @@ export default function AuditLogPage() {
                   <h2 className="text-xl font-bold text-gray-900">
                     {formatEventType(selectedEntry.eventType)}
                   </h2>
-                  <p className="text-sm text-gray-500">{selectedEntry.eventType}</p>
+                  <p className="text-sm text-gray-500">
+                    {selectedEntry.eventType}
+                  </p>
                 </div>
                 <button
                   onClick={() => setSelectedEntry(null)}
@@ -484,13 +534,17 @@ export default function AuditLogPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <div className="text-sm text-gray-600">Severity</div>
-                    <span className={getSeverityBadgeClass(selectedEntry.severity)}>
+                    <span
+                      className={getSeverityBadgeClass(selectedEntry.severity)}
+                    >
                       {selectedEntry.severity.toUpperCase()}
                     </span>
                   </div>
                   <div>
                     <div className="text-sm text-gray-600">Actor</div>
-                    <span className={getActorBadgeClass(selectedEntry.actorType)}>
+                    <span
+                      className={getActorBadgeClass(selectedEntry.actorType)}
+                    >
                       {getActorTypeDisplay(selectedEntry.actorType)}
                     </span>
                   </div>
@@ -544,7 +598,9 @@ export default function AuditLogPage() {
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Export Status</h2>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Export Status
+                </h2>
                 <button
                   onClick={() => {
                     setShowExportModal(false);
@@ -552,8 +608,18 @@ export default function AuditLogPage() {
                   }}
                   className="text-gray-400 hover:text-gray-600"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -562,13 +628,19 @@ export default function AuditLogPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Status</span>
-                    <span className={`px-2 py-1 rounded text-sm font-medium ${
-                      exportJob.status === 'success' ? 'bg-green-100 text-green-800' :
-                      exportJob.status === 'failed' ? 'bg-red-100 text-red-800' :
-                      exportJob.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {exportJob.status.charAt(0).toUpperCase() + exportJob.status.slice(1)}
+                    <span
+                      className={`px-2 py-1 rounded text-sm font-medium ${
+                        exportJob.status === 'success'
+                          ? 'bg-green-100 text-green-800'
+                          : exportJob.status === 'failed'
+                            ? 'bg-red-100 text-red-800'
+                            : exportJob.status === 'processing'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
+                      {exportJob.status.charAt(0).toUpperCase() +
+                        exportJob.status.slice(1)}
                     </span>
                   </div>
 
@@ -577,18 +649,21 @@ export default function AuditLogPage() {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-blue-100">
                         <div className="animate-pulse bg-blue-500 h-full w-full" />
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">Processing audit logs...</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Processing audit logs...
+                      </p>
                     </div>
                   )}
 
-                  {exportJob.rowCount !== null && exportJob.rowCount !== undefined && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Records</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        {exportJob.rowCount.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
+                  {exportJob.rowCount !== null &&
+                    exportJob.rowCount !== undefined && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Records</span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {exportJob.rowCount.toLocaleString()}
+                        </span>
+                      </div>
+                    )}
 
                   {exportJob.fileSizeBytes && (
                     <div className="flex items-center justify-between">
@@ -601,7 +676,9 @@ export default function AuditLogPage() {
 
                   {exportJob.status === 'failed' && exportJob.errorMessage && (
                     <div className="p-3 bg-red-50 rounded-md">
-                      <p className="text-sm text-red-700">{exportJob.errorMessage}</p>
+                      <p className="text-sm text-red-700">
+                        {exportJob.errorMessage}
+                      </p>
                     </div>
                   )}
 
@@ -618,7 +695,9 @@ export default function AuditLogPage() {
               ) : (
                 <div className="text-center py-4">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                  <p className="mt-2 text-sm text-gray-500">Starting export...</p>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Starting export...
+                  </p>
                 </div>
               )}
             </div>

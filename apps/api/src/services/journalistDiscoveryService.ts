@@ -240,7 +240,8 @@ export class JournalistDiscoveryService {
 
     // Apply sorting
     const sortColumn = query.sortBy || 'created_at';
-    const sortOrder = query.sortOrder === 'asc' ? { ascending: true } : { ascending: false };
+    const sortOrder =
+      query.sortOrder === 'asc' ? { ascending: true } : { ascending: false };
     dbQuery = dbQuery.order(sortColumn, sortOrder);
 
     // Apply pagination
@@ -252,7 +253,9 @@ export class JournalistDiscoveryService {
 
     if (error) throw error;
 
-    const discoveries = (data || []).map((d) => this.mapDbDiscoveryToDiscovery(d));
+    const discoveries = (data || []).map((d) =>
+      this.mapDbDiscoveryToDiscovery(d)
+    );
 
     // Optionally include stats
     let stats: DiscoveryStats | undefined;
@@ -285,7 +288,8 @@ export class JournalistDiscoveryService {
     if (updates.fullName !== undefined) updateData.full_name = updates.fullName;
     if (updates.email !== undefined) updateData.email = updates.email;
     if (updates.outlet !== undefined) updateData.outlet = updates.outlet;
-    if (updates.socialLinks !== undefined) updateData.social_links = updates.socialLinks;
+    if (updates.socialLinks !== undefined)
+      updateData.social_links = updates.socialLinks;
     if (updates.beats !== undefined) updateData.beats = updates.beats;
     if (updates.bio !== undefined) updateData.bio = updates.bio;
 
@@ -306,7 +310,8 @@ export class JournalistDiscoveryService {
         rawPayload: existing.rawPayload,
       };
 
-      const confidenceBreakdown = this.calculateConfidenceBreakdown(updatedInput);
+      const confidenceBreakdown =
+        this.calculateConfidenceBreakdown(updatedInput);
       updateData.confidence_score = confidenceBreakdown.overallScore;
       updateData.confidence_breakdown = confidenceBreakdown;
     }
@@ -374,7 +379,12 @@ export class JournalistDiscoveryService {
       }
 
       // Merge into existing journalist profile (S46)
-      await this.mergeIntoGraph(discovery, input.targetJournalistId, orgId, userId);
+      await this.mergeIntoGraph(
+        discovery,
+        input.targetJournalistId,
+        orgId,
+        userId
+      );
 
       updateData.status = 'merged';
       updateData.merged_into = input.targetJournalistId;
@@ -412,7 +422,10 @@ export class JournalistDiscoveryService {
       throw new Error('Discovery not found');
     }
 
-    const targetProfile = await this.graphService.getProfile(targetJournalistId, orgId);
+    const targetProfile = await this.graphService.getProfile(
+      targetJournalistId,
+      orgId
+    );
     if (!targetProfile) {
       throw new Error('Target journalist not found');
     }
@@ -426,7 +439,9 @@ export class JournalistDiscoveryService {
 
     // Check email conflicts
     if (discovery.email && discovery.email !== targetProfile.primaryEmail) {
-      const isNewSecondary = !targetProfile.secondaryEmails.includes(discovery.email);
+      const isNewSecondary = !targetProfile.secondaryEmails.includes(
+        discovery.email
+      );
       conflicts.push({
         field: 'email',
         discoveryValue: discovery.email,
@@ -446,7 +461,10 @@ export class JournalistDiscoveryService {
     }
 
     // Check beat conflicts
-    if (discovery.beats.length > 0 && discovery.beats[0] !== targetProfile.beat) {
+    if (
+      discovery.beats.length > 0 &&
+      discovery.beats[0] !== targetProfile.beat
+    ) {
       conflicts.push({
         field: 'beat',
         discoveryValue: discovery.beats,
@@ -456,26 +474,38 @@ export class JournalistDiscoveryService {
     }
 
     // Check social links conflicts
-    if (discovery.socialLinks.twitter && discovery.socialLinks.twitter !== targetProfile.twitterHandle) {
+    if (
+      discovery.socialLinks.twitter &&
+      discovery.socialLinks.twitter !== targetProfile.twitterHandle
+    ) {
       conflicts.push({
         field: 'twitterHandle',
         discoveryValue: discovery.socialLinks.twitter,
         existingValue: targetProfile.twitterHandle,
-        recommendation: targetProfile.twitterHandle ? 'keep_existing' : 'use_discovery',
+        recommendation: targetProfile.twitterHandle
+          ? 'keep_existing'
+          : 'use_discovery',
       });
     }
 
-    if (discovery.socialLinks.linkedin && discovery.socialLinks.linkedin !== targetProfile.linkedinUrl) {
+    if (
+      discovery.socialLinks.linkedin &&
+      discovery.socialLinks.linkedin !== targetProfile.linkedinUrl
+    ) {
       conflicts.push({
         field: 'linkedinUrl',
         discoveryValue: discovery.socialLinks.linkedin,
         existingValue: targetProfile.linkedinUrl,
-        recommendation: targetProfile.linkedinUrl ? 'keep_existing' : 'use_discovery',
+        recommendation: targetProfile.linkedinUrl
+          ? 'keep_existing'
+          : 'use_discovery',
       });
     }
 
     const autoResolvable = conflicts.every(
-      (c) => c.recommendation === 'keep_existing' || c.recommendation === 'merge_both'
+      (c) =>
+        c.recommendation === 'keep_existing' ||
+        c.recommendation === 'merge_both'
     );
 
     return {
@@ -526,7 +556,9 @@ export class JournalistDiscoveryService {
 
     // Also check title for author mentions
     if (!authorName) {
-      const titleMatch = input.articleTitle.match(/By\s+([A-Z][a-z]+ [A-Z][a-z]+)/i);
+      const titleMatch = input.articleTitle.match(
+        /By\s+([A-Z][a-z]+ [A-Z][a-z]+)/i
+      );
       if (titleMatch && titleMatch[1]) {
         authorName = titleMatch[1];
       }
@@ -547,7 +579,10 @@ export class JournalistDiscoveryService {
       }
 
       // Try to extract beats from article content
-      const potentialBeats = this.extractBeatsFromContent(input.articleContent, input.articleTitle);
+      const potentialBeats = this.extractBeatsFromContent(
+        input.articleContent,
+        input.articleTitle
+      );
       extractedBeats.push(...potentialBeats);
 
       authors.push({
@@ -568,7 +603,9 @@ export class JournalistDiscoveryService {
 
     // Calculate extraction confidence
     const confidence = authorName ? 0.75 : 0.0;
-    const extractionMethod = authorName ? 'byline_pattern_match' : 'no_author_found';
+    const extractionMethod = authorName
+      ? 'byline_pattern_match'
+      : 'no_author_found';
 
     return {
       authors,
@@ -599,7 +636,10 @@ export class JournalistDiscoveryService {
 
     for (let i = 0; i < articles.length; i++) {
       try {
-        const extractionResult = await this.extractAuthorsFromArticle(orgId, articles[i]);
+        const extractionResult = await this.extractAuthorsFromArticle(
+          orgId,
+          articles[i]
+        );
 
         for (const author of extractionResult.authors) {
           // Check for duplicates
@@ -675,12 +715,15 @@ export class JournalistDiscoveryService {
     input: DiscoveredJournalistInput
   ): Promise<string[]> {
     // Use database function for fuzzy matching
-    const { data, error } = await this.supabase.rpc('find_duplicate_discoveries', {
-      p_org_id: orgId,
-      p_full_name: input.fullName,
-      p_email: input.email || null,
-      p_outlet: input.outlet || null,
-    });
+    const { data, error } = await this.supabase.rpc(
+      'find_duplicate_discoveries',
+      {
+        p_org_id: orgId,
+        p_full_name: input.fullName,
+        p_email: input.email || null,
+        p_outlet: input.outlet || null,
+      }
+    );
 
     if (error) {
       console.error('Error finding duplicates:', error);
@@ -831,7 +874,12 @@ export class JournalistDiscoveryService {
       if (isValidEmail(input.email)) {
         emailConfidence = 0.7;
         const domain = extractEmailDomain(input.email);
-        if (domain && !['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'].includes(domain)) {
+        if (
+          domain &&
+          !['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'].includes(
+            domain
+          )
+        ) {
           emailConfidence = 0.9; // Professional domain
         }
       }
@@ -842,8 +890,17 @@ export class JournalistDiscoveryService {
     if (input.outlet) {
       outletConfidence = 0.6;
       const knownOutlets = [
-        'techcrunch', 'verge', 'wired', 'forbes', 'wsj', 'nytimes',
-        'venturebeat', 'mashable', 'engadget', 'bloomberg', 'reuters',
+        'techcrunch',
+        'verge',
+        'wired',
+        'forbes',
+        'wsj',
+        'nytimes',
+        'venturebeat',
+        'mashable',
+        'engadget',
+        'bloomberg',
+        'reuters',
       ];
       const normalizedOutlet = input.outlet.toLowerCase();
       if (knownOutlets.some((o) => normalizedOutlet.includes(o))) {
@@ -869,10 +926,10 @@ export class JournalistDiscoveryService {
     // Calculate weighted overall score
     const weights = {
       name: 0.25,
-      email: 0.30,
-      outlet: 0.20,
+      email: 0.3,
+      outlet: 0.2,
       social: 0.15,
-      beat: 0.10,
+      beat: 0.1,
     };
 
     const overallScore =
@@ -954,7 +1011,10 @@ export class JournalistDiscoveryService {
     _userId: string
   ): Promise<void> {
     // Get existing profile
-    const profile = await this.graphService.getProfile(targetJournalistId, orgId);
+    const profile = await this.graphService.getProfile(
+      targetJournalistId,
+      orgId
+    );
     if (!profile) {
       throw new Error('Target journalist not found');
     }
@@ -1035,13 +1095,41 @@ export class JournalistDiscoveryService {
   private extractBeatsFromContent(content: string, title: string): string[] {
     const beats: string[] = [];
     const beatKeywords: Record<string, string[]> = {
-      technology: ['tech', 'software', 'hardware', 'ai', 'machine learning', 'cloud', 'saas'],
-      business: ['business', 'enterprise', 'startup', 'funding', 'venture', 'ipo'],
-      finance: ['finance', 'banking', 'fintech', 'payments', 'crypto', 'blockchain'],
+      technology: [
+        'tech',
+        'software',
+        'hardware',
+        'ai',
+        'machine learning',
+        'cloud',
+        'saas',
+      ],
+      business: [
+        'business',
+        'enterprise',
+        'startup',
+        'funding',
+        'venture',
+        'ipo',
+      ],
+      finance: [
+        'finance',
+        'banking',
+        'fintech',
+        'payments',
+        'crypto',
+        'blockchain',
+      ],
       healthcare: ['health', 'medical', 'pharma', 'biotech', 'wellness'],
       politics: ['politics', 'government', 'policy', 'election', 'congress'],
       sports: ['sports', 'athletic', 'game', 'championship', 'league'],
-      entertainment: ['entertainment', 'movie', 'music', 'celebrity', 'streaming'],
+      entertainment: [
+        'entertainment',
+        'movie',
+        'music',
+        'celebrity',
+        'streaming',
+      ],
     };
 
     const combinedText = (title + ' ' + content).toLowerCase();

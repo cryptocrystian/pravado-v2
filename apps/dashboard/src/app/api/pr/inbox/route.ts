@@ -17,7 +17,11 @@
 import { NextResponse } from 'next/server';
 
 import { getPRConfig } from '@/lib/env/pr-config';
-import { authenticatePRRequest, createAuthErrorResponse, addPRAuthHeader } from '@/server/pr/prAuth';
+import {
+  authenticatePRRequest,
+  createAuthErrorResponse,
+  addPRAuthHeader,
+} from '@/server/pr/prAuth';
 import { createPRService } from '@/server/pr/prService';
 
 export const dynamic = 'force-dynamic';
@@ -32,7 +36,9 @@ export async function GET() {
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     // Log for debugging
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/inbox] Auth failed: ${auth.status} - ${auth.error}`);
+      console.log(
+        `[API /api/pr/inbox] Auth failed: ${auth.status} - ${auth.error}`
+      );
     }
     return createAuthErrorResponse(auth);
   }

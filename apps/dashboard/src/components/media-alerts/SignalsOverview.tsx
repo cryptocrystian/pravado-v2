@@ -11,7 +11,15 @@ interface SignalsOverviewProps {
   onRefresh: () => void;
 }
 
-function StatCard({ label, value, color = 'blue' }: { label: string; value: number; color?: string }) {
+function StatCard({
+  label,
+  value,
+  color = 'blue',
+}: {
+  label: string;
+  value: number;
+  color?: string;
+}) {
   const colorClasses = {
     blue: 'bg-blue-50 text-blue-700 border-blue-200',
     red: 'bg-red-50 text-red-700 border-red-200',
@@ -21,14 +29,20 @@ function StatCard({ label, value, color = 'blue' }: { label: string; value: numb
   };
 
   return (
-    <div className={`p-4 border rounded-lg ${colorClasses[color as keyof typeof colorClasses] || colorClasses.blue}`}>
+    <div
+      className={`p-4 border rounded-lg ${colorClasses[color as keyof typeof colorClasses] || colorClasses.blue}`}
+    >
       <p className="text-2xl font-bold">{value}</p>
       <p className="text-sm mt-1">{label}</p>
     </div>
   );
 }
 
-export function SignalsOverview({ signals, isLoading, onRefresh }: SignalsOverviewProps) {
+export function SignalsOverview({
+  signals,
+  isLoading,
+  onRefresh,
+}: SignalsOverviewProps) {
   if (isLoading) {
     return (
       <div className="p-4 space-y-3">
@@ -59,7 +73,9 @@ export function SignalsOverview({ signals, isLoading, onRefresh }: SignalsOvervi
 
       {/* Critical Alerts */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">Past 24 Hours</h3>
+        <h3 className="text-sm font-semibold text-gray-700 mb-2">
+          Past 24 Hours
+        </h3>
         <div className="space-y-2">
           <StatCard
             label="Critical Alerts"
@@ -104,14 +120,18 @@ export function SignalsOverview({ signals, isLoading, onRefresh }: SignalsOvervi
       {/* Top Alert Types */}
       {signals.topAlertTypes.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-2">Top Alert Types (7d)</h3>
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">
+            Top Alert Types (7d)
+          </h3>
           <div className="space-y-2">
             {signals.topAlertTypes.map((type) => (
               <div
                 key={type.alertType}
                 className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm"
               >
-                <span className="text-gray-700">{type.alertType.replace('_', ' ')}</span>
+                <span className="text-gray-700">
+                  {type.alertType.replace('_', ' ')}
+                </span>
                 <span className="font-medium text-gray-900">{type.count}</span>
               </div>
             ))}
@@ -122,10 +142,15 @@ export function SignalsOverview({ signals, isLoading, onRefresh }: SignalsOvervi
       {/* Recent Events Preview */}
       {signals.recentEvents.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-2">Recent Events</h3>
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">
+            Recent Events
+          </h3>
           <div className="space-y-2">
             {signals.recentEvents.slice(0, 3).map((event) => (
-              <div key={event.eventId} className="p-2 bg-gray-50 rounded text-xs">
+              <div
+                key={event.eventId}
+                className="p-2 bg-gray-50 rounded text-xs"
+              >
                 <p className="font-medium text-gray-900">{event.ruleName}</p>
                 <p className="text-gray-600 mt-1 truncate">{event.summary}</p>
               </div>

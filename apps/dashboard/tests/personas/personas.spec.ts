@@ -20,7 +20,9 @@ test.describe('Audience Personas', () => {
     // Navigate to personas page and ensure auth
     await page.goto(PERSONAS_PAGE);
     // Wait for page load
-    await page.waitForSelector('h1:has-text("Audience Personas")', { timeout: 10000 });
+    await page.waitForSelector('h1:has-text("Audience Personas")', {
+      timeout: 10000,
+    });
   });
 
   // ========================================
@@ -31,7 +33,9 @@ test.describe('Audience Personas', () => {
     await page.click('button:has-text("Generate Persona")');
 
     // Wait for form modal
-    await expect(page.locator('h2:has-text("Generate New Persona")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Generate New Persona")')
+    ).toBeVisible();
 
     // Select source type
     await page.click('[id="sourceType"]');
@@ -55,11 +59,17 @@ test.describe('Audience Personas', () => {
     await page.click('button:has-text("Generate Persona")');
 
     // Wait for generation (may take a few seconds)
-    await expect(page.locator('button:has-text("Generating...")')).toBeVisible({ timeout: 2000 });
-    await expect(page.locator('button:has-text("Generating...")')).not.toBeVisible({ timeout: 30000 });
+    await expect(page.locator('button:has-text("Generating...")')).toBeVisible({
+      timeout: 2000,
+    });
+    await expect(
+      page.locator('button:has-text("Generating...")')
+    ).not.toBeVisible({ timeout: 30000 });
 
     // Verify persona appears in list
-    await expect(page.locator('text=Enterprise CTO')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text=Enterprise CTO')).toBeVisible({
+      timeout: 5000,
+    });
 
     // Verify traits and insights were extracted
     await expect(page.locator('text=Traits (')).toBeVisible();
@@ -74,7 +84,10 @@ test.describe('Audience Personas', () => {
     await page.click('button:has-text("Generate Persona")');
 
     // Fill manual form
-    await page.fill('[id="sourceText"]', 'Marketing managers at SaaS companies');
+    await page.fill(
+      '[id="sourceText"]',
+      'Marketing managers at SaaS companies'
+    );
     await page.fill('[id="suggestedName"]', 'SaaS Marketing Manager');
 
     // Select source type: Manual
@@ -89,7 +102,9 @@ test.describe('Audience Personas', () => {
     await page.click('button:has-text("Generate Persona")');
 
     // Verify creation
-    await expect(page.locator('text=SaaS Marketing Manager')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=SaaS Marketing Manager')).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   // ========================================
@@ -120,8 +135,12 @@ test.describe('Audience Personas', () => {
     await page.click('button:has-text("Save Changes")');
 
     // Verify update
-    await expect(page.locator('text=Updated Persona Name')).toBeVisible({ timeout: 5000 });
-    await expect(page.locator('text=This is an updated description')).toBeVisible();
+    await expect(page.locator('text=Updated Persona Name')).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(
+      page.locator('text=This is an updated description')
+    ).toBeVisible();
   });
 
   // ========================================
@@ -151,11 +170,15 @@ test.describe('Audience Personas', () => {
     await page.click('button:has-text("Insights")');
 
     // Verify insight panel loads
-    await expect(page.locator('text=total insights')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text=total insights')).toBeVisible({
+      timeout: 5000,
+    });
 
     // Test tab navigation
     await page.click('button:has-text("Actionable")');
-    await expect(page.locator('button:has-text("Actionable")[aria-selected="true"]')).toBeVisible();
+    await expect(
+      page.locator('button:has-text("Actionable")[aria-selected="true"]')
+    ).toBeVisible();
   });
 
   // ========================================
@@ -173,7 +196,9 @@ test.describe('Audience Personas', () => {
 
     // Test date filters
     await page.click('button:has-text("7D")');
-    await expect(page.locator('button:has-text("7D")[class*="blue"]')).toBeVisible();
+    await expect(
+      page.locator('button:has-text("7D")[class*="blue"]')
+    ).toBeVisible();
   });
 
   // ========================================
@@ -187,7 +212,9 @@ test.describe('Audience Personas', () => {
     await page.click('button:has-text("History")');
 
     // Verify score changes are visible
-    await expect(page.locator('text=Overall').or(page.locator('text=Relevance'))).toBeVisible();
+    await expect(
+      page.locator('text=Overall').or(page.locator('text=Relevance'))
+    ).toBeVisible();
   });
 
   // ========================================
@@ -210,11 +237,15 @@ test.describe('Audience Personas', () => {
     await page.click('button:has-text("Compare")');
 
     // Verify comparison drawer opens
-    await expect(page.locator('text=Persona Comparison')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text=Persona Comparison')).toBeVisible({
+      timeout: 5000,
+    });
     await expect(page.locator('text=Similarity Score')).toBeVisible();
 
     // Check for common/unique traits sections
-    await expect(page.locator('text=Common Traits').or(page.locator('text=Unique to'))).toBeVisible();
+    await expect(
+      page.locator('text=Common Traits').or(page.locator('text=Unique to'))
+    ).toBeVisible();
   });
 
   // ========================================
@@ -224,7 +255,7 @@ test.describe('Audience Personas', () => {
     // This requires high similarity personas
     // We'll test the UI exists
     const personaCards = page.locator('[class*="PersonaCard"]');
-    if (await personaCards.count() < 2) {
+    if ((await personaCards.count()) < 2) {
       test.skip();
       return;
     }
@@ -304,14 +335,22 @@ test.describe('Audience Personas', () => {
     await page.click('button:has-text("Generate Persona")');
 
     // Verify error message
-    await expect(page.locator('text=Source text is required').or(page.locator('[class*="red"]'))).toBeVisible();
+    await expect(
+      page
+        .locator('text=Source text is required')
+        .or(page.locator('[class*="red"]'))
+    ).toBeVisible();
 
     // Try with text too short
     await page.fill('[id="sourceText"]', 'Hi');
     await page.click('button:has-text("Generate Persona")');
 
     // Verify error
-    await expect(page.locator('text=at least 10 characters').or(page.locator('[class*="red"]'))).toBeVisible();
+    await expect(
+      page
+        .locator('text=at least 10 characters')
+        .or(page.locator('[class*="red"]'))
+    ).toBeVisible();
   });
 });
 
@@ -327,7 +366,10 @@ test.describe('Persona Statistics', () => {
     await expect(page.locator('text=Validated')).toBeVisible();
 
     // Stats should have numbers
-    const totalText = await page.locator('text=Total Personas').locator('..').textContent();
+    const totalText = await page
+      .locator('text=Total Personas')
+      .locator('..')
+      .textContent();
     expect(totalText).toMatch(/\d+/);
   });
 });
@@ -344,13 +386,19 @@ test.describe('Persona Detail Views', () => {
 
       // Test tab switching
       await page.click('button:has-text("Traits")');
-      await expect(page.locator('button:has-text("Traits")[aria-selected="true"]')).toBeVisible();
+      await expect(
+        page.locator('button:has-text("Traits")[aria-selected="true"]')
+      ).toBeVisible();
 
       await page.click('button:has-text("Insights")');
-      await expect(page.locator('button:has-text("Insights")[aria-selected="true"]')).toBeVisible();
+      await expect(
+        page.locator('button:has-text("Insights")[aria-selected="true"]')
+      ).toBeVisible();
 
       await page.click('button:has-text("History")');
-      await expect(page.locator('button:has-text("History")[aria-selected="true"]')).toBeVisible();
+      await expect(
+        page.locator('button:has-text("History")[aria-selected="true"]')
+      ).toBeVisible();
     }
   });
 });
@@ -361,7 +409,9 @@ test.describe('Responsive Design', () => {
     await page.goto(PERSONAS_PAGE);
 
     // Page should still render
-    await expect(page.locator('h1:has-text("Audience Personas")')).toBeVisible();
+    await expect(
+      page.locator('h1:has-text("Audience Personas")')
+    ).toBeVisible();
   });
 
   test('should work on tablet viewport', async ({ page }) => {
@@ -369,6 +419,8 @@ test.describe('Responsive Design', () => {
     await page.goto(PERSONAS_PAGE);
 
     // Three-panel layout should adapt
-    await expect(page.locator('h1:has-text("Audience Personas")')).toBeVisible();
+    await expect(
+      page.locator('h1:has-text("Audience Personas")')
+    ).toBeVisible();
   });
 });

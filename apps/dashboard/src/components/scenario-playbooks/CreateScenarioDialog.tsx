@@ -6,7 +6,12 @@
  */
 
 import type { Scenario, ScenarioPlaybook } from '@pravado/types';
-import { ScenarioType, ScenarioRiskLevel, SCENARIO_TYPE_LABELS, SCENARIO_RISK_LEVEL_LABELS } from '@pravado/types';
+import {
+  ScenarioType,
+  ScenarioRiskLevel,
+  SCENARIO_TYPE_LABELS,
+  SCENARIO_RISK_LEVEL_LABELS,
+} from '@pravado/types';
 import { useState, useEffect } from 'react';
 
 import { createScenario, listPlaybooks } from '../../lib/scenarioPlaybookApi';
@@ -135,7 +140,9 @@ export function CreateScenarioDialog({
       onCreated?.(scenario);
       handleClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create scenario');
+      setError(
+        err instanceof Error ? err.message : 'Failed to create scenario'
+      );
     } finally {
       setLoading(false);
     }
@@ -158,13 +165,25 @@ export function CreateScenarioDialog({
         <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Create New Scenario</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Create New Scenario
+            </h2>
             <button
               onClick={handleClose}
               className="text-gray-400 hover:text-gray-600"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -186,7 +205,9 @@ export function CreateScenarioDialog({
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="e.g., Q4 Product Launch Response"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 />
@@ -199,7 +220,9 @@ export function CreateScenarioDialog({
                 </label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   placeholder="Describe the scenario context and goals..."
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
@@ -222,7 +245,9 @@ export function CreateScenarioDialog({
                 ) : (
                   <select
                     value={formData.playbookId}
-                    onChange={(e) => setFormData({ ...formData, playbookId: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, playbookId: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   >
                     <option value="">Select a playbook</option>
@@ -242,11 +267,15 @@ export function CreateScenarioDialog({
                     {selectedPlaybook.name}
                   </h4>
                   {selectedPlaybook.description && (
-                    <p className="text-sm text-purple-700 mb-2">{selectedPlaybook.description}</p>
+                    <p className="text-sm text-purple-700 mb-2">
+                      {selectedPlaybook.description}
+                    </p>
                   )}
                   {selectedPlaybook.category && (
                     <div className="text-xs text-purple-600">
-                      <span className="capitalize">{selectedPlaybook.category.replace(/_/g, ' ')}</span>
+                      <span className="capitalize">
+                        {selectedPlaybook.category.replace(/_/g, ' ')}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -260,7 +289,12 @@ export function CreateScenarioDialog({
                   </label>
                   <select
                     value={formData.scenarioType}
-                    onChange={(e) => setFormData({ ...formData, scenarioType: e.target.value as ScenarioType })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        scenarioType: e.target.value as ScenarioType,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   >
                     {SCENARIO_TYPES.map((type) => (
@@ -277,7 +311,12 @@ export function CreateScenarioDialog({
                   </label>
                   <select
                     value={formData.baselineRiskLevel}
-                    onChange={(e) => setFormData({ ...formData, baselineRiskLevel: e.target.value as ScenarioRiskLevel })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        baselineRiskLevel: e.target.value as ScenarioRiskLevel,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   >
                     {RISK_LEVELS.map((level) => (
@@ -313,7 +352,8 @@ export function CreateScenarioDialog({
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                  These parameters will be available during playbook execution and simulation.
+                  These parameters will be available during playbook execution
+                  and simulation.
                 </p>
               </div>
 
@@ -351,7 +391,9 @@ export function CreateScenarioDialog({
               </button>
               <button
                 type="submit"
-                disabled={loading || !formData.name.trim() || !formData.playbookId}
+                disabled={
+                  loading || !formData.name.trim() || !formData.playbookId
+                }
                 className="px-4 py-2 text-sm text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Creating...' : 'Create Scenario'}

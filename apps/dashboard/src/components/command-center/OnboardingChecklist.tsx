@@ -27,7 +27,11 @@ export function OnboardingChecklist() {
           <div key={step.id} className="flex items-center gap-3">
             {step.completed ? (
               <div className="w-5 h-5 rounded-full bg-semantic-success/20 flex items-center justify-center flex-shrink-0">
-                <Check size={12} className="text-semantic-success" weight="bold" />
+                <Check
+                  size={12}
+                  className="text-semantic-success"
+                  weight="bold"
+                />
               </div>
             ) : (
               <div className="w-5 h-5 rounded-full border border-white/20 flex-shrink-0" />
@@ -35,9 +39,7 @@ export function OnboardingChecklist() {
 
             <span
               className={`text-sm flex-1 ${
-                step.completed
-                  ? 'text-white/45 line-through'
-                  : 'text-white/70'
+                step.completed ? 'text-white/45 line-through' : 'text-white/70'
               }`}
             >
               {step.label}

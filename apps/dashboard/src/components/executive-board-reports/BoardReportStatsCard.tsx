@@ -20,7 +20,10 @@ import {
 } from 'lucide-react';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { type ExecBoardReportStats, formatRelativeTime } from '@/lib/executiveBoardReportApi';
+import {
+  type ExecBoardReportStats,
+  formatRelativeTime,
+} from '@/lib/executiveBoardReportApi';
 import { cn } from '@/lib/utils';
 
 interface BoardReportStatsCardProps {
@@ -90,7 +93,12 @@ export function BoardReportStatsCard({
   ];
 
   return (
-    <div className={cn('grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4', className)}>
+    <div
+      className={cn(
+        'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4',
+        className
+      )}
+    >
       {statItems.map((item) => (
         <Card key={item.label}>
           <CardContent className="p-4">
@@ -132,7 +140,9 @@ export function BoardReportStatsCard({
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-gray-400" />
               <span className="text-gray-500">This Quarter:</span>
-              <span className="font-medium text-gray-900">{stats.reportsThisQuarter}</span>
+              <span className="font-medium text-gray-900">
+                {stats.reportsThisQuarter}
+              </span>
             </div>
 
             {stats.lastPublishedAt && (

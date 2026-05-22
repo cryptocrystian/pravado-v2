@@ -8,17 +8,25 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_URL =
+  process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables.');
+  console.error(
+    'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables.'
+  );
   process.exit(1);
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-const GHOST_NAMES = ['Pravado Test', 'Pravado Test 01', 'Test Biz', 'Pravado Demo Org'];
+const GHOST_NAMES = [
+  'Pravado Test',
+  'Pravado Test 01',
+  'Test Biz',
+  'Pravado Demo Org',
+];
 const CUTOFF_DATE = '2026-01-01T00:00:00Z';
 
 // Cascade tables — order matters (children before parent)
@@ -68,7 +76,9 @@ async function main() {
   console.log();
 
   if (!confirm) {
-    console.log('Run with --confirm to delete these orgs and their cascade data.');
+    console.log(
+      'Run with --confirm to delete these orgs and their cascade data.'
+    );
     process.exit(0);
   }
 

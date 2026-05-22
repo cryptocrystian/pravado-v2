@@ -7,11 +7,11 @@
 import { cookies } from 'next/headers';
 
 // In production, NEXT_PUBLIC_API_URL must be set
-const API_URL = process.env.NEXT_PUBLIC_API_URL || (
-  process.env.NODE_ENV === 'production'
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === 'production'
     ? 'https://api-url-not-configured.invalid'
-    : 'http://localhost:3001'
-);
+    : 'http://localhost:3001');
 
 export interface ApiResponse<T> {
   success: boolean;

@@ -14,10 +14,10 @@ export type DiscoverySourceType =
   | 'staff_directory';
 
 export type DiscoveryStatus =
-  | 'pending'      // Awaiting human review
-  | 'confirmed'    // Vetted and ready to merge
-  | 'merged'       // Attached to journalist graph
-  | 'rejected';    // Not a journalist or duplicate
+  | 'pending' // Awaiting human review
+  | 'confirmed' // Vetted and ready to merge
+  | 'merged' // Attached to journalist graph
+  | 'rejected'; // Not a journalist or duplicate
 
 export type SocialPlatform = 'twitter' | 'linkedin' | 'mastodon' | 'bluesky';
 
@@ -74,12 +74,12 @@ export interface SocialProfileLinks {
 }
 
 export interface DiscoveryConfidenceBreakdown {
-  nameConfidence: number;      // 0-1: Name quality and completeness
-  emailConfidence: number;      // 0-1: Email validity and format
-  outletConfidence: number;     // 0-1: Outlet identification strength
-  socialConfidence: number;     // 0-1: Social profile verification
-  beatConfidence: number;       // 0-1: Beat classification accuracy
-  overallScore: number;         // Weighted combination
+  nameConfidence: number; // 0-1: Name quality and completeness
+  emailConfidence: number; // 0-1: Email validity and format
+  outletConfidence: number; // 0-1: Outlet identification strength
+  socialConfidence: number; // 0-1: Social profile verification
+  beatConfidence: number; // 0-1: Beat classification accuracy
+  overallScore: number; // Weighted combination
 }
 
 export interface SuggestedMatch {
@@ -108,7 +108,7 @@ export interface DiscoveredJournalistInput {
 
 export interface ResolveDiscoveryInput {
   action: 'merge' | 'confirm' | 'reject';
-  targetJournalistId?: string;  // For merge action
+  targetJournalistId?: string; // For merge action
   notes?: string;
 }
 
@@ -284,7 +284,7 @@ export interface DiscoveryPipeline {
   name: string;
   sourceType: DiscoverySourceType;
   enabled: boolean;
-  schedule?: string;  // Cron expression
+  schedule?: string; // Cron expression
   config: {
     autoMergeEnabled: boolean;
     minimumConfidenceScore: number;

@@ -1,4 +1,5 @@
 # COMMAND CENTER IMPLEMENTATION AUDIT
+
 **Date:** 2026-02-18  
 **Auditor:** Architect session  
 **Method:** Line-by-line comparison of all frozen components against `COMMAND_CENTER_CONTRACT.md`, `COMMAND_CENTER_GOLDEN_FLOW.md`, `MODE_UX_ARCHITECTURE.md`, and `docs/skills/PRAVADO_DESIGN_SKILL.md`  
@@ -8,18 +9,18 @@
 
 ## Files Audited
 
-| File | Status |
-|------|--------|
-| `command-center/page.tsx` | ✅ Read |
-| `command-center/TriPaneShell.tsx` | ✅ Read |
-| `command-center/ActionCard.tsx` | ✅ Read |
-| `command-center/ActionStreamPane.tsx` | ✅ Read |
-| `command-center/StrategyPanelPane.tsx` | ✅ Read |
-| `command-center/pillar-accents.ts` | ✅ Read |
-| `command-center/CalendarPeek.tsx` | ❌ Not read — spot-check needed |
-| `command-center/EntityMap.tsx` | ❌ Not read — spot-check needed |
-| `command-center/ActionModal.tsx` | ❌ Not read — spot-check needed |
-| `command-center/ActionHoverBrief.tsx` | ❌ Not read — spot-check needed |
+| File                                        | Status                          |
+| ------------------------------------------- | ------------------------------- |
+| `command-center/page.tsx`                   | ✅ Read                         |
+| `command-center/TriPaneShell.tsx`           | ✅ Read                         |
+| `command-center/ActionCard.tsx`             | ✅ Read                         |
+| `command-center/ActionStreamPane.tsx`       | ✅ Read                         |
+| `command-center/StrategyPanelPane.tsx`      | ✅ Read                         |
+| `command-center/pillar-accents.ts`          | ✅ Read                         |
+| `command-center/CalendarPeek.tsx`           | ❌ Not read — spot-check needed |
+| `command-center/EntityMap.tsx`              | ❌ Not read — spot-check needed |
+| `command-center/ActionModal.tsx`            | ❌ Not read — spot-check needed |
+| `command-center/ActionHoverBrief.tsx`       | ❌ Not read — spot-check needed |
 | `command-center/IntelligenceCanvasPane.tsx` | ❌ Not read — spot-check needed |
 
 Files not read are flagged in the gap list where contract invariants require verification.
@@ -28,25 +29,25 @@ Files not read are flagged in the gap list where contract invariants require ver
 
 ## Gap Summary (by severity)
 
-| # | Gap | File(s) | Severity | Category |
-|---|-----|---------|----------|---------|
-| 1 | `surfaceTokens` JS hex object — banned pattern | `pillar-accents.ts` | 🔴 Critical | DS Token |
-| 2 | `modeStyles.manual.bg = 'bg-white/20/50'` — invalid chained opacity | `pillar-accents.ts` | 🔴 Critical | DS Token |
-| 3 | Phantom hex values throughout ActionStreamPane | `ActionStreamPane.tsx` | 🔴 Critical | DS Token |
-| 4 | Phantom hex values throughout StrategyPanelPane | `StrategyPanelPane.tsx` | 🔴 Critical | DS Token |
-| 5 | `border-[#2A2A36]` — off-by-1 phantom value | `ActionCard.tsx` | 🔴 Critical | DS Token |
-| 6 | `text-white` without opacity on pane headers | `TriPaneShell.tsx` | 🟠 High | DS Token |
-| 7 | Non-standard opacity steps (`/8`) on semantic colors | `ActionStreamPane.tsx`, `StrategyPanelPane.tsx` | 🟠 High | DS Token |
-| 8 | Impact Strip absent — required on every work surface | `page.tsx` | 🟠 High | Missing Feature |
-| 9 | Mode badges incomplete — only "Auto" shown on cards | `ActionCard.tsx` | 🟠 High | Contract Gap |
-| 10 | Strategy Panel width doesn't match contract at non-xl | `TriPaneShell.tsx` | 🟡 Medium | Contract Gap |
-| 11 | Upgrade hook button in Strategy Panel — possible contract violation | `StrategyPanelPane.tsx` | 🟡 Medium | Contract Gap |
-| 12 | Autopilot mode badge border `/25` — non-standard step | `ActionCard.tsx` | 🟡 Medium | DS Token |
-| 13 | CalendarPeek height contract `h-[280px]` — unverified | `CalendarPeek.tsx` | 🟡 Medium | Unverified |
-| 14 | Entity Map zone layout invariant — unverified | `EntityMap.tsx` | 🟡 Medium | Unverified |
-| 15 | `cardElevated: '#1A1A24'` in `surfaceTokens` — phantom in banned list | `pillar-accents.ts` | 🔴 Critical | DS Token |
-| 16 | `borderSubtle: '#16161E'` in `surfaceTokens` — phantom in banned list | `pillar-accents.ts` | 🔴 Critical | DS Token |
-| 17 | `borderHover: '#2A2A36'` in `surfaceTokens` — off-by-1 phantom | `pillar-accents.ts` | 🔴 Critical | DS Token |
+| #   | Gap                                                                   | File(s)                                         | Severity    | Category        |
+| --- | --------------------------------------------------------------------- | ----------------------------------------------- | ----------- | --------------- |
+| 1   | `surfaceTokens` JS hex object — banned pattern                        | `pillar-accents.ts`                             | 🔴 Critical | DS Token        |
+| 2   | `modeStyles.manual.bg = 'bg-white/20/50'` — invalid chained opacity   | `pillar-accents.ts`                             | 🔴 Critical | DS Token        |
+| 3   | Phantom hex values throughout ActionStreamPane                        | `ActionStreamPane.tsx`                          | 🔴 Critical | DS Token        |
+| 4   | Phantom hex values throughout StrategyPanelPane                       | `StrategyPanelPane.tsx`                         | 🔴 Critical | DS Token        |
+| 5   | `border-[#2A2A36]` — off-by-1 phantom value                           | `ActionCard.tsx`                                | 🔴 Critical | DS Token        |
+| 6   | `text-white` without opacity on pane headers                          | `TriPaneShell.tsx`                              | 🟠 High     | DS Token        |
+| 7   | Non-standard opacity steps (`/8`) on semantic colors                  | `ActionStreamPane.tsx`, `StrategyPanelPane.tsx` | 🟠 High     | DS Token        |
+| 8   | Impact Strip absent — required on every work surface                  | `page.tsx`                                      | 🟠 High     | Missing Feature |
+| 9   | Mode badges incomplete — only "Auto" shown on cards                   | `ActionCard.tsx`                                | 🟠 High     | Contract Gap    |
+| 10  | Strategy Panel width doesn't match contract at non-xl                 | `TriPaneShell.tsx`                              | 🟡 Medium   | Contract Gap    |
+| 11  | Upgrade hook button in Strategy Panel — possible contract violation   | `StrategyPanelPane.tsx`                         | 🟡 Medium   | Contract Gap    |
+| 12  | Autopilot mode badge border `/25` — non-standard step                 | `ActionCard.tsx`                                | 🟡 Medium   | DS Token        |
+| 13  | CalendarPeek height contract `h-[280px]` — unverified                 | `CalendarPeek.tsx`                              | 🟡 Medium   | Unverified      |
+| 14  | Entity Map zone layout invariant — unverified                         | `EntityMap.tsx`                                 | 🟡 Medium   | Unverified      |
+| 15  | `cardElevated: '#1A1A24'` in `surfaceTokens` — phantom in banned list | `pillar-accents.ts`                             | 🔴 Critical | DS Token        |
+| 16  | `borderSubtle: '#16161E'` in `surfaceTokens` — phantom in banned list | `pillar-accents.ts`                             | 🔴 Critical | DS Token        |
+| 17  | `borderHover: '#2A2A36'` in `surfaceTokens` — off-by-1 phantom        | `pillar-accents.ts`                             | 🔴 Critical | DS Token        |
 
 ---
 
@@ -55,6 +56,7 @@ Files not read are flagged in the gap list where contract invariants require ver
 ---
 
 ### GAP-001 🔴 `surfaceTokens` JS hex object — BANNED PATTERN
+
 **File:** `pillar-accents.ts`  
 **Lines:** ~60–70
 
@@ -63,10 +65,10 @@ Files not read are flagged in the gap list where contract invariants require ver
 export const surfaceTokens = {
   page: '#0A0A0F',
   card: '#13131A',
-  cardElevated: '#1A1A24',   // ← PHANTOM (banned list)
+  cardElevated: '#1A1A24', // ← PHANTOM (banned list)
   border: '#1F1F28',
-  borderSubtle: '#16161E',   // ← PHANTOM (banned list)
-  borderHover: '#2A2A36',    // ← PHANTOM off-by-1 (banned list)
+  borderSubtle: '#16161E', // ← PHANTOM (banned list)
+  borderHover: '#2A2A36', // ← PHANTOM off-by-1 (banned list)
   hoverOverlay: 'rgba(255, 255, 255, 0.02)',
   focusRing: 'ring-brand-cyan/30',
 };
@@ -79,6 +81,7 @@ export const surfaceTokens = {
 ---
 
 ### GAP-002 🔴 Invalid chained opacity — `'bg-white/20/50'`
+
 **File:** `pillar-accents.ts`  
 **Line:** `modeStyles.manual.bg`
 
@@ -93,6 +96,7 @@ manual: {
 **Problem:** Chained opacity (`/X/Y`) is invalid Tailwind. The class silently resolves to the first value only. This is explicitly listed as a banned anti-pattern.
 
 **Fix:**
+
 ```typescript
 manual: {
   bg: 'bg-white/5',   // ← Use single opacity step from standard scale
@@ -104,22 +108,24 @@ manual: {
 ---
 
 ### GAP-003 🔴 Phantom hex values throughout ActionStreamPane
+
 **File:** `ActionStreamPane.tsx`
 
 Phantom values found inline in className strings:
 
-| Value Used | Correct Token | Count |
-|-----------|--------------|-------|
-| `bg-[#0D0D12]` | `bg-slate-1` | ~4 |
-| `bg-[#0A0A0F]` | `bg-page` | ~2 |
-| `bg-[#1A1A24]` | `bg-slate-3` | ~6 |
-| `border-[#1A1A24]` | `border-border-subtle` | ~5 |
-| `bg-[#1A1A24]` in LoadingSkeleton | `bg-slate-3 border-border-subtle` | 2 |
-| `border-l-white/10` in LoadingSkeleton | Acceptable — no phantom | — |
+| Value Used                             | Correct Token                     | Count |
+| -------------------------------------- | --------------------------------- | ----- |
+| `bg-[#0D0D12]`                         | `bg-slate-1`                      | ~4    |
+| `bg-[#0A0A0F]`                         | `bg-page`                         | ~2    |
+| `bg-[#1A1A24]`                         | `bg-slate-3`                      | ~6    |
+| `border-[#1A1A24]`                     | `border-border-subtle`            | ~5    |
+| `bg-[#1A1A24]` in LoadingSkeleton      | `bg-slate-3 border-border-subtle` | 2     |
+| `border-l-white/10` in LoadingSkeleton | Acceptable — no phantom           | —     |
 
 All `#0D0D12`, `#0A0A0F`, `#1A1A24` values are from the DS audit's banned phantom list.
 
 **Fix:** Global replace in this file:
+
 - `bg-[#0D0D12]` → `bg-slate-1`
 - `bg-[#0A0A0F]` → `bg-page`
 - `bg-[#1A1A24]` → `bg-slate-3`
@@ -128,19 +134,20 @@ All `#0D0D12`, `#0A0A0F`, `#1A1A24` values are from the DS audit's banned phanto
 ---
 
 ### GAP-004 🔴 Phantom hex values throughout StrategyPanelPane
+
 **File:** `StrategyPanelPane.tsx`
 
 Same phantom values as GAP-003, plus non-standard opacity steps:
 
-| Value Used | Correct Token |
-|-----------|--------------|
-| `bg-[#0D0D12]` | `bg-slate-1` |
-| `bg-[#0A0A0F]` | `bg-page` |
-| `bg-[#1A1A24]` | `bg-slate-3` |
-| `border-[#1A1A24]` | `border-border-subtle` |
-| `bg-semantic-danger/8` | `bg-semantic-danger/10` |
+| Value Used              | Correct Token            |
+| ----------------------- | ------------------------ |
+| `bg-[#0D0D12]`          | `bg-slate-1`             |
+| `bg-[#0A0A0F]`          | `bg-page`                |
+| `bg-[#1A1A24]`          | `bg-slate-3`             |
+| `border-[#1A1A24]`      | `border-border-subtle`   |
+| `bg-semantic-danger/8`  | `bg-semantic-danger/10`  |
 | `bg-semantic-warning/8` | `bg-semantic-warning/10` |
-| `bg-brand-cyan/8` | `bg-brand-cyan/10` |
+| `bg-brand-cyan/8`       | `bg-brand-cyan/10`       |
 
 The `/8` opacity is non-standard — DS uses `/10` as the minimum bg opacity for semantic chips.
 
@@ -149,6 +156,7 @@ The `/8` opacity is non-standard — DS uses `/10` as the minimum bg opacity for
 ---
 
 ### GAP-005 🔴 `border-[#2A2A36]` — off-by-1 phantom
+
 **File:** `ActionCard.tsx`
 
 ```tsx
@@ -157,6 +165,7 @@ ${isSelected ? `${pillar.glow} border-[#2A2A36]` : ''}
 ```
 
 **Fix:**
+
 ```tsx
 ${isSelected ? `${pillar.glow} border-slate-5` : ''}
 ```
@@ -166,6 +175,7 @@ ${isSelected ? `${pillar.glow} border-slate-5` : ''}
 ---
 
 ### GAP-006 🟠 `text-white` without opacity on pane headers
+
 **File:** `TriPaneShell.tsx`
 
 ```tsx
@@ -180,13 +190,14 @@ ${isSelected ? `${pillar.glow} border-slate-5` : ''}
 ---
 
 ### GAP-007 🟠 Non-standard opacity steps on semantic colors
+
 **Files:** `ActionStreamPane.tsx`, `StrategyPanelPane.tsx`
 
 ```tsx
 // CURRENT — non-standard
-bg-semantic-danger/8
-bg-semantic-warning/8
-bg-brand-cyan/8
+bg - semantic - danger / 8;
+bg - semantic - warning / 8;
+bg - brand - cyan / 8;
 ```
 
 DS standard opacity steps for bg: `/5 /10 /15 /20 /25 /30 /40 /50 /60 /70 /80 /90`. The `/8` step is off-standard and may not be in the Tailwind safelist.
@@ -196,14 +207,16 @@ DS standard opacity steps for bg: `/5 /10 /15 /20 /25 /30 /40 /50 /60 /70 /80 /9
 ---
 
 ### GAP-008 🟠 Impact Strip absent — required on every work surface
+
 **File:** `page.tsx` (and all work surface shells)
 
 **Contract source:** `MODE_UX_ARCHITECTURE.md` Section 6:
+
 > "Required in every mode on every surface: ModeSwitcher in header (shows current mode), Impact Strip with mode badge visible, AI state dot reflecting current automation state"
 
 The Command Center page renders `TriPaneShell` directly with no Impact Strip above or below it. No SAGE tag, no EVI score display, no mode badge anywhere on the page shell.
 
-**Note:** The Strategy Panel *contains* an EVI display (the hero score), but this is not the same as the Impact Strip. The Impact Strip is a persistent surface-level strip — always visible regardless of which pane the user is looking at — not embedded inside one of the three scrollable panes.
+**Note:** The Strategy Panel _contains_ an EVI display (the hero score), but this is not the same as the Impact Strip. The Impact Strip is a persistent surface-level strip — always visible regardless of which pane the user is looking at — not embedded inside one of the three scrollable panes.
 
 **Fix:** Add Impact Strip component between the page header and `TriPaneShell`. Minimal V1 implementation:
 
@@ -213,7 +226,7 @@ The Command Center page renders `TriPaneShell` directly with no Impact Strip abo
   sageTag="Cross-pillar authority gap identified"
   eviScore={strategyPanel.data?.evi?.score ?? null}
   eviDelta={strategyPanel.data?.evi?.delta_7d ?? null}
-  mode="copilot"  // from pillar mode config — wired in Phase 2
+  mode="copilot" // from pillar mode config — wired in Phase 2
 />
 ```
 
@@ -222,35 +235,49 @@ This is a new component to build. Strip anatomy is defined in `PRAVADO_DESIGN_SK
 ---
 
 ### GAP-009 🟠 Mode badges incomplete — only "Auto" shown
+
 **File:** `ActionCard.tsx`
 
 The comfortable mode card only shows a badge when `action.mode === 'autopilot'`:
 
 ```tsx
-{/* CURRENT — only autopilot gets a badge */}
-{action.mode === 'autopilot' && !isCompleted && (
-  <span className="px-2 py-1 text-[11px] font-medium uppercase rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/25">
-    Auto
-  </span>
-)}
+{
+  /* CURRENT — only autopilot gets a badge */
+}
+{
+  action.mode === 'autopilot' && !isCompleted && (
+    <span className="px-2 py-1 text-[11px] font-medium uppercase rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/25">
+      Auto
+    </span>
+  );
+}
 ```
 
 Per `MODE_UX_ARCHITECTURE.md` and the design skill, all three modes should have distinct badges:
 
-| Mode | Badge |
-|------|-------|
-| Manual | `bg-white/5 text-white/70 border-white/20` |
-| Copilot | `bg-brand-iris/10 text-brand-iris border-brand-iris/30` |
+| Mode      | Badge                                                   |
+| --------- | ------------------------------------------------------- |
+| Manual    | `bg-white/5 text-white/70 border-white/20`              |
+| Copilot   | `bg-brand-iris/10 text-brand-iris border-brand-iris/30` |
 | Autopilot | `bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30` |
 
 **Fix:** Replace the single conditional with:
+
 ```tsx
-<span className={`px-2 py-1 text-[11px] font-bold uppercase rounded border ${
-  action.mode === 'autopilot' ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30' :
-  action.mode === 'copilot'   ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30' :
-                                'bg-white/5 text-white/70 border-white/20'
-}`}>
-  {action.mode === 'autopilot' ? 'Auto' : action.mode === 'copilot' ? 'Copilot' : 'Manual'}
+<span
+  className={`px-2 py-1 text-[11px] font-bold uppercase rounded border ${
+    action.mode === 'autopilot'
+      ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30'
+      : action.mode === 'copilot'
+        ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30'
+        : 'bg-white/5 text-white/70 border-white/20'
+  }`}
+>
+  {action.mode === 'autopilot'
+    ? 'Auto'
+    : action.mode === 'copilot'
+      ? 'Copilot'
+      : 'Manual'}
 </span>
 ```
 
@@ -259,6 +286,7 @@ Also fix the border on the autopilot badge: current implementation uses `border-
 ---
 
 ### GAP-010 🟡 Strategy Panel width doesn't match contract at base desktop
+
 **File:** `TriPaneShell.tsx`
 
 **Contract:** `w-[320px]` fixed at desktop (≥1280px)  
@@ -271,6 +299,7 @@ At desktop (1280px+), the contract says 320px. The implementation shows 300px at
 ---
 
 ### GAP-011 🟡 Upgrade hook button in Strategy Panel — possible contract violation
+
 **File:** `StrategyPanelPane.tsx` — `UpgradeHookCard`
 
 ```tsx
@@ -288,6 +317,7 @@ At desktop (1280px+), the contract says 320px. The implementation shows 300px at
 ---
 
 ### GAP-012 🟡 Autopilot badge border — non-standard opacity step
+
 **File:** `ActionCard.tsx`
 
 ```tsx
@@ -303,6 +333,7 @@ Small but explicit — `/25` is not in the standard opacity scale for brand colo
 ---
 
 ### GAP-013 🟡 CalendarPeek height contract — unverified
+
 **File:** `CalendarPeek.tsx` (not read)
 
 **Contract invariant:** Container height fixed at `h-[280px]`  
@@ -313,6 +344,7 @@ Cannot confirm without reading the component. Spot-check required.
 ---
 
 ### GAP-014 🟡 Entity Map zone layout — unverified
+
 **File:** `EntityMap.tsx` (not read)
 
 **Contract invariant:** Zone layout must match SAGE dimensions (Authority/Signal/Growth/Exposure). Deterministic layout (same seed = same positions). No navigation on entity click.
@@ -325,20 +357,20 @@ Cannot confirm without reading the component. Spot-check required.
 
 These aspects are compliant and should not be touched:
 
-| Area | Finding |
-|------|---------|
-| Golden Flow state coordination | `hoveredActionId` and `executingActionId` are properly lifted to page.tsx and passed down — contract compliant |
-| Hover timing | 200ms open, 250ms close — contract compliant |
-| HoverCard positioning | `side="left"` with proper arrow — contract compliant |
-| Single-hover coordination | `hoveredActionId` in ActionStreamPane correctly dims non-hovered cards — contract compliant |
-| Card dimming on hover | `isDimmed` prop and `opacity-40` dimming — contract compliant |
-| Density calculation | Three-tier system (comfortable default ≤8, standard 9-12, compact 13+) — contract compliant |
-| EVI filter state | URL persistence and cross-pane communication — contract compliant |
-| Lifecycle buckets (Active/History) | Correct separation of executing vs completed — contract compliant |
-| Locked actions policy | Separate "Upgrade Opportunities" section — correct |
-| Strategy Panel: EVI only top-level KPI | No duplicate KPIs found — contract compliant |
-| `pillarAccents` object | Token values correct — matches design skill reference |
-| Scrollbar styles | `cc-scrollbar` class — DS compliant |
+| Area                                   | Finding                                                                                                        |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Golden Flow state coordination         | `hoveredActionId` and `executingActionId` are properly lifted to page.tsx and passed down — contract compliant |
+| Hover timing                           | 200ms open, 250ms close — contract compliant                                                                   |
+| HoverCard positioning                  | `side="left"` with proper arrow — contract compliant                                                           |
+| Single-hover coordination              | `hoveredActionId` in ActionStreamPane correctly dims non-hovered cards — contract compliant                    |
+| Card dimming on hover                  | `isDimmed` prop and `opacity-40` dimming — contract compliant                                                  |
+| Density calculation                    | Three-tier system (comfortable default ≤8, standard 9-12, compact 13+) — contract compliant                    |
+| EVI filter state                       | URL persistence and cross-pane communication — contract compliant                                              |
+| Lifecycle buckets (Active/History)     | Correct separation of executing vs completed — contract compliant                                              |
+| Locked actions policy                  | Separate "Upgrade Opportunities" section — correct                                                             |
+| Strategy Panel: EVI only top-level KPI | No duplicate KPIs found — contract compliant                                                                   |
+| `pillarAccents` object                 | Token values correct — matches design skill reference                                                          |
+| Scrollbar styles                       | `cc-scrollbar` class — DS compliant                                                                            |
 
 ---
 
@@ -346,10 +378,10 @@ These aspects are compliant and should not be touched:
 
 These are already documented in `COMMAND_CENTER_CONTRACT.md` Section 6 and need no action:
 
-| Deviation | Contract Status |
-|-----------|----------------|
-| Calendar click opens drawer, not modal | V1 ACCEPTED |
-| Entity Map 5-state progression not fully visualized | V1 ACCEPTED |
+| Deviation                                           | Contract Status |
+| --------------------------------------------------- | --------------- |
+| Calendar click opens drawer, not modal              | V1 ACCEPTED     |
+| Entity Map 5-state progression not fully visualized | V1 ACCEPTED     |
 
 ---
 
@@ -389,16 +421,16 @@ These are all pure token swaps — no behavioral change, no risk to contract com
 
 These CI checks are specified in the contract. Their existence in the actual codebase is unverified:
 
-| Check | File | Status |
-|-------|------|--------|
-| `check-command-center-kpis.mjs` | `scripts/` | ❓ Unverified |
-| `check-entity-map-zones.mjs` | `scripts/` | ❓ Unverified |
-| `check-calendar-height.mjs` | `scripts/` | ❓ Unverified |
-| `check-strategy-panel-buttons.mjs` | `scripts/` | ❓ Unverified |
+| Check                               | File       | Status        |
+| ----------------------------------- | ---------- | ------------- |
+| `check-command-center-kpis.mjs`     | `scripts/` | ❓ Unverified |
+| `check-entity-map-zones.mjs`        | `scripts/` | ❓ Unverified |
+| `check-calendar-height.mjs`         | `scripts/` | ❓ Unverified |
+| `check-strategy-panel-buttons.mjs`  | `scripts/` | ❓ Unverified |
 | `check-golden-flow-integration.mjs` | `scripts/` | ❓ Unverified |
 
 These should be verified to exist before any Sprint 1 work begins. If they don't exist, the contract's enforcement mechanism is missing and needs to be created before merge gates apply.
 
 ---
 
-*Audit complete. See ARCHITECT_BRIEFING.md for Phase 2 next steps.*
+_Audit complete. See ARCHITECT_BRIEFING.md for Phase 2 next steps._

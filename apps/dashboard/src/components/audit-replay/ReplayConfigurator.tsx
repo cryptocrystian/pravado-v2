@@ -14,7 +14,10 @@ interface ReplayConfiguratorProps {
   loading?: boolean;
 }
 
-export function ReplayConfigurator({ onStartReplay, loading }: ReplayConfiguratorProps) {
+export function ReplayConfigurator({
+  onStartReplay,
+  loading,
+}: ReplayConfiguratorProps) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [eventTypes, setEventTypes] = useState<string[]>([]);
@@ -65,7 +68,9 @@ export function ReplayConfigurator({ onStartReplay, loading }: ReplayConfigurato
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Configure Replay</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        Configure Replay
+      </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {/* Start Date */}
@@ -164,7 +169,12 @@ export function ReplayConfigurator({ onStartReplay, loading }: ReplayConfigurato
           </>
         ) : (
           <>
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

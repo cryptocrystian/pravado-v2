@@ -23,7 +23,6 @@ import {
 } from '@/lib/executiveCommandCenterApi';
 import { cn } from '@/lib/utils';
 
-
 interface ExecKpiGridProps {
   kpis: ExecDashboardKpi[];
   loading?: boolean;
@@ -131,7 +130,10 @@ export function ExecKpiGrid({ kpis, loading, className }: ExecKpiGridProps) {
               {kpi.sourceSystem && (
                 <Badge
                   variant="outline"
-                  className={cn('text-xs mb-2', getSourceSystemColor(kpi.sourceSystem))}
+                  className={cn(
+                    'text-xs mb-2',
+                    getSourceSystemColor(kpi.sourceSystem)
+                  )}
                 >
                   {getSourceSystemLabel(kpi.sourceSystem)}
                 </Badge>
@@ -173,9 +175,13 @@ export function ExecKpiGrid({ kpis, loading, className }: ExecKpiGridProps) {
               </div>
 
               {/* Unit */}
-              {kpi.metricUnit && kpi.metricUnit !== 'count' && kpi.metricUnit !== 'score' && (
-                <div className="text-xs text-gray-400 mt-1">{kpi.metricUnit}</div>
-              )}
+              {kpi.metricUnit &&
+                kpi.metricUnit !== 'count' &&
+                kpi.metricUnit !== 'score' && (
+                  <div className="text-xs text-gray-400 mt-1">
+                    {kpi.metricUnit}
+                  </div>
+                )}
             </div>
           ))}
         </div>

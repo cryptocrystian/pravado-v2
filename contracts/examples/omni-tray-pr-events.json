@@ -106,19 +106,38 @@
     ]
   },
   "eventPayloadSchema": {
-    "required": ["eventId", "eventType", "action", "title", "urgency", "createdAt"],
+    "required": [
+      "eventId",
+      "eventType",
+      "action",
+      "title",
+      "urgency",
+      "createdAt"
+    ],
     "properties": {
       "eventId": { "type": "uuid" },
-      "eventType": { "type": "enum", "values": ["action_required", "approval_required", "risk_detected"] },
+      "eventType": {
+        "type": "enum",
+        "values": ["action_required", "approval_required", "risk_detected"]
+      },
       "action": { "type": "string" },
       "title": { "type": "string", "maxLength": 80 },
       "description": { "type": "string", "maxLength": 200 },
-      "urgency": { "type": "enum", "values": ["low", "medium", "high", "critical"] },
+      "urgency": {
+        "type": "enum",
+        "values": ["low", "medium", "high", "critical"]
+      },
       "cta": { "type": "string", "maxLength": 30 },
       "targetRoute": { "type": "string" },
       "relatedEntityId": { "type": "uuid" },
-      "relatedEntityType": { "type": "enum", "values": ["contact", "pitch", "coverage", "distribution"] },
-      "copilotReasoning": { "type": "string", "description": "Explanation for AI-triggered events" },
+      "relatedEntityType": {
+        "type": "enum",
+        "values": ["contact", "pitch", "coverage", "distribution"]
+      },
+      "copilotReasoning": {
+        "type": "string",
+        "description": "Explanation for AI-triggered events"
+      },
       "createdAt": { "type": "datetime" },
       "expiresAt": { "type": "datetime", "required": false }
     }

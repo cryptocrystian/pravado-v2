@@ -10,7 +10,10 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
  * Middleware to require admin role
  * Must be used after requireUser middleware
  */
-export async function requireAdmin(request: FastifyRequest, reply: FastifyReply) {
+export async function requireAdmin(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
   const user = request.user;
 
   if (!user) {
@@ -24,7 +27,8 @@ export async function requireAdmin(request: FastifyRequest, reply: FastifyReply)
   }
 
   // Check if user has admin role in profiles table
-  const supabase = (request.server as unknown as { supabase: SupabaseClient }).supabase;
+  const supabase = (request.server as unknown as { supabase: SupabaseClient })
+    .supabase;
 
   const { data: profile, error } = await supabase
     .from('profiles')

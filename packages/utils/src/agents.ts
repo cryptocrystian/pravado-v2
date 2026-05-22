@@ -228,7 +228,9 @@ export function estimatePlaybookDuration(
     const agentDef = agentDefinitions.find((a) => a.id === node.agentId);
     if (agentDef && agentDef.estimatedDuration) {
       // Parse duration string like '2-5 minutes'
-      const match = agentDef.estimatedDuration.match(/(\d+)-?(\d+)?\s*(minute|hour)/);
+      const match = agentDef.estimatedDuration.match(
+        /(\d+)-?(\d+)?\s*(minute|hour)/
+      );
       if (match) {
         const min = parseInt(match[1], 10);
         const max = match[2] ? parseInt(match[2], 10) : min;

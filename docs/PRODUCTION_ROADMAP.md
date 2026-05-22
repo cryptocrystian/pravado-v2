@@ -1,4 +1,5 @@
 # PRAVADO v2 — PRODUCTION ROADMAP
+
 **Version:** 1.0  
 **Date:** 2026-03-07  
 **Authority:** This is the canonical plan for taking Pravado from demo-grade to production beta.  
@@ -10,6 +11,7 @@
 ## EXECUTIVE SUMMARY
 
 The audit confirmed Pravado v2 has a production-quality foundation:
+
 - ✅ Real auth (OAuth, magic link, JWT, RLS multi-tenancy)
 - ✅ 79 database migrations with comprehensive schema
 - ✅ 52-route Fastify backend, 63 service files, real Supabase queries
@@ -17,6 +19,7 @@ The audit confirmed Pravado v2 has a production-quality foundation:
 - ✅ Stripe billing, SendGrid email, OpenAI/Anthropic provider abstraction
 
 The critical gap is the **intelligence layer** — the entire product thesis:
+
 - ❌ SAGE Protocol: no proposal engine
 - ❌ EVI: formula defined, no calculation pipeline
 - ❌ CiteMind: UI stubs only, no citation monitoring
@@ -42,15 +45,18 @@ All intelligence layer code must meet these standards:
 ---
 
 ## PHASE 1 — INTELLIGENCE FOUNDATION
+
 **Goal:** Build the computational core. Nothing ships to beta until this is complete.  
 **Estimated effort:** 35–45 days  
-**Owner:** Backend + AI engineering  
+**Owner:** Backend + AI engineering
 
 ### 1.1 — EVI Calculation Pipeline
+
 **Priority:** P0 — Every surface depends on EVI  
 **Effort:** 5–7 days
 
 The formula is already canonical:
+
 ```
 EVI = (Visibility × 0.40) + (Authority × 0.35) + (Momentum × 0.25)
 ```
@@ -58,6 +64,7 @@ EVI = (Visibility × 0.40) + (Authority × 0.35) + (Momentum × 0.25)
 **What to build:**
 
 **`apps/api/src/services/evi/`**
+
 ```
 eviCalculationService.ts     — core formula executor
 eviSignalAggregator.ts       — pulls signals from all three pillars
@@ -67,13 +74,14 @@ eviDeltaService.ts           — calculates period-over-period change
 
 **Signal sources per sub-score:**
 
-| Sub-score | Weight | Data Sources |
-|-----------|--------|--------------|
-| Visibility | 40% | `pr_pitches` (sent/opened/replied), `journalist_profiles` (DA/reach), AI citation monitoring results |
-| Authority | 35% | `content_quality_scores` (CiteMind score), `seo_backlinks` (domain authority), `seo_keyword_metrics` (ranking positions) |
-| Momentum | 25% | Period-over-period delta on Visibility + Authority, recency weighting (last 30 days > last 90 days) |
+| Sub-score  | Weight | Data Sources                                                                                                             |
+| ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Visibility | 40%    | `pr_pitches` (sent/opened/replied), `journalist_profiles` (DA/reach), AI citation monitoring results                     |
+| Authority  | 35%    | `content_quality_scores` (CiteMind score), `seo_backlinks` (domain authority), `seo_keyword_metrics` (ranking positions) |
+| Momentum   | 25%    | Period-over-period delta on Visibility + Authority, recency weighting (last 30 days > last 90 days)                      |
 
 **Database additions required:**
+
 ```sql
 -- New table: evi_snapshots
 CREATE TABLE evi_snapshots (
@@ -93,13 +101,14 @@ CREATE TABLE evi_snapshots (
 
 **API route:** `GET /api/evi/current` → real-time calculation  
 **API route:** `GET /api/evi/history?days=90` → trend data for charts  
-**Background job:** `evi-recalculate` — runs nightly per org via Redis queue  
+**Background job:** `evi-recalculate` — runs nightly per org via Redis queue
 
 **Dashboard integration:** Replace hardcoded values in `EviScoreCard.tsx`, `EviGrowthChart.tsx`, and all chrome bar EVI displays with `useSWR('/api/evi/current')`.
 
 ---
 
 ### 1.2 — SAGE Proposal Engine
+
 **Priority:** P0 — The reason the product exists  
 **Effort:** 12–15 days
 
@@ -120,6 +129,7 @@ Action Stream API (replaces MSW mock)
 ```
 
 **`apps/api/src/services/sage/`**
+
 ```
 sageSignalIngestor.ts        — pulls signals from PR, Content, SEO tables
 sageOpportunityScorer.ts     — scores each signal by EVI impact potential
@@ -131,36 +141,38 @@ sageReasoningAuditor.ts      — logs reasoning chain for every proposal (audit)
 
 **Signal types SAGE understands:**
 
-| Signal | Source Table | Opportunity Type |
-|--------|-------------|------------------|
-| Journalist covering competitor | `brand_reputation_mentions` | Pitch window |
-| Content gap detected | `content_topics` (no published item) | Content creation |
-| Keyword ranking declined | `seo_keyword_metrics` | SEO action |
-| Pitch not followed up | `pr_pitches` (sent >5 days, no reply) | Follow-up |
-| High-DA journalist not pitched | `journalist_profiles` | Outreach |
-| Content not cited in LLM | `citeMind_results` (low citation rate) | Schema/optimization |
+| Signal                         | Source Table                           | Opportunity Type    |
+| ------------------------------ | -------------------------------------- | ------------------- |
+| Journalist covering competitor | `brand_reputation_mentions`            | Pitch window        |
+| Content gap detected           | `content_topics` (no published item)   | Content creation    |
+| Keyword ranking declined       | `seo_keyword_metrics`                  | SEO action          |
+| Pitch not followed up          | `pr_pitches` (sent >5 days, no reply)  | Follow-up           |
+| High-DA journalist not pitched | `journalist_profiles`                  | Outreach            |
+| Content not cited in LLM       | `citeMind_results` (low citation rate) | Schema/optimization |
 
 **Proposal schema (extends existing `ActionItem` type):**
+
 ```typescript
 interface SAGEProposal {
-  id: string
-  org_id: string
-  signal_id: string           // traceable to source signal
-  signal_type: SignalType
-  pillar: 'PR' | 'Content' | 'SEO'
-  priority: 'critical' | 'high' | 'medium' | 'low'
-  title: string
-  rationale: string           // LLM-generated, human-readable
-  evi_impact_estimate: number // projected EVI delta
-  confidence: number          // 0–1
-  mode: 'manual' | 'copilot' | 'autopilot'
-  deep_link: { href: string; label: string }
-  expires_at: timestamptz     // proposals have TTL
-  reasoning_trace: jsonb      // full audit trail
+  id: string;
+  org_id: string;
+  signal_id: string; // traceable to source signal
+  signal_type: SignalType;
+  pillar: 'PR' | 'Content' | 'SEO';
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  title: string;
+  rationale: string; // LLM-generated, human-readable
+  evi_impact_estimate: number; // projected EVI delta
+  confidence: number; // 0–1
+  mode: 'manual' | 'copilot' | 'autopilot';
+  deep_link: { href: string; label: string };
+  expires_at: timestamptz; // proposals have TTL
+  reasoning_trace: jsonb; // full audit trail
 }
 ```
 
 **Database additions required:**
+
 ```sql
 CREATE TABLE sage_proposals (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -184,26 +196,29 @@ CREATE TABLE sage_proposals (
 ```
 
 **API routes (replace MSW):**
+
 - `GET /api/command-center/action-stream` → `sageActionStreamService.getForOrg(orgId)`
 - `GET /api/command-center/strategy-panel` → real EVI + SAGE summary
 - `POST /api/command-center/proposals/:id/dismiss`
 - `POST /api/command-center/proposals/:id/execute`
 
-**Background job:** `sage-signal-scan` — runs every 4 hours per org, generates new proposals  
+**Background job:** `sage-signal-scan` — runs every 4 hours per org, generates new proposals
 
 **LLM prompt strategy:** Use structured output (JSON mode) with Claude or GPT-4o. System prompt is org-specific (brand voice, industry, competitive context). All prompts templated in `apps/api/src/prompts/sage/`.
 
 ---
 
 ### 1.3 — CiteMind Engine
+
 **Priority:** P1 — Core differentiator, needed for Content surface  
-**Effort:** 12–18 days  
+**Effort:** 12–18 days
 
 CiteMind monitors how AI engines cite content and scores content for citation-worthiness.
 
 **Three subsystems:**
 
 **A. Citation Monitor** (is our content being cited?)
+
 ```
 apps/api/src/services/citeMind/
   citationMonitor.ts         — queries LLM APIs with brand-relevant prompts
@@ -214,6 +229,7 @@ apps/api/src/services/citeMind/
 Implementation: Poll ChatGPT, Perplexity, and Claude APIs with ~20 brand-relevant queries per org per day. Parse responses for brand mentions. Store in new `citation_monitor_results` table.
 
 **B. Content Quality Scorer** (will this content get cited?)
+
 ```
   qualityScoringService.ts   — evaluates content against citation factors
   schemaGeneratorService.ts  — generates structured data markup
@@ -221,6 +237,7 @@ Implementation: Poll ChatGPT, Perplexity, and Claude APIs with ~20 brand-relevan
 ```
 
 Scoring factors (weighted):
+
 - Entity density (named entities per 1000 words): 20%
 - Claim verifiability (stats, studies, specific dates): 20%
 - Structural clarity (headers, lists, answer-first): 15%
@@ -229,12 +246,14 @@ Scoring factors (weighted):
 - Citation pattern matching (format LLMs prefer): 15%
 
 **C. Schema Generator**
+
 ```
   schemaTemplates/           — JSON-LD templates per content type
   schemaInjector.ts          — injects into content before publish
 ```
 
 **Database additions required:**
+
 ```sql
 CREATE TABLE citation_monitor_results (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -265,6 +284,7 @@ CREATE TABLE citeMind_scores (
 ```
 
 **API routes:**
+
 - `POST /api/content/items/:id/citeMind-score` — trigger scoring
 - `GET /api/content/items/:id/citeMind-score` — get latest score
 - `GET /api/citeMind/citation-monitor` — brand citation dashboard data
@@ -273,12 +293,14 @@ CREATE TABLE citeMind_scores (
 ---
 
 ### 1.4 — AUTOMATE: Redis Queue Wiring
+
 **Priority:** P1 — Required for background intelligence jobs  
-**Effort:** 3–4 days  
+**Effort:** 3–4 days
 
 The queue abstraction exists. Wire it.
 
 **What to wire:**
+
 ```typescript
 // apps/api/src/queue/workers/
 eviRecalculateWorker.ts      — triggered nightly
@@ -289,40 +311,50 @@ pitchFollowUpWorker.ts       — triggered daily for aged pitches
 ```
 
 **Redis setup:**
+
 - Use Upstash Redis (serverless, works with Render) or Redis Cloud free tier for beta
 - Add `REDIS_URL` to Render environment
 - BullMQ as the job queue library (already in most Node stacks)
 
 **Cost guardrails (must implement before any job runs in production):**
+
 ```typescript
 // Every job that calls an LLM must check this before executing
-async function checkLLMBudget(orgId: string, estimatedTokens: number): Promise<boolean> {
-  const monthlyUsage = await getLLMUsageThisMonth(orgId)
-  const plan = await getOrgPlan(orgId)
-  return monthlyUsage + estimatedTokens <= plan.llm_token_limit
+async function checkLLMBudget(
+  orgId: string,
+  estimatedTokens: number
+): Promise<boolean> {
+  const monthlyUsage = await getLLMUsageThisMonth(orgId);
+  const plan = await getOrgPlan(orgId);
+  return monthlyUsage + estimatedTokens <= plan.llm_token_limit;
 }
 ```
 
 ---
 
 ## PHASE 2 — COMMAND CENTER DE-MOCKING
+
 **Goal:** Replace all MSW mock handlers with real data services  
 **Estimated effort:** 8–12 days  
-**Dependency:** Phase 1 must be complete  
+**Dependency:** Phase 1 must be complete
 
 ### 2.1 — Action Stream (real SAGE proposals)
+
 Remove MSW handler for `/api/command-center/action-stream`.  
 Wire to `sageActionStreamService.getForOrg(orgId)`.  
 The `ActionItem` type contract is already defined — this is a drop-in.
 
 ### 2.2 — Strategy Panel (real EVI + SAGE summary)
+
 Remove MSW handler for `/api/command-center/strategy-panel`.  
 Wire to: EVI current score + EVI drivers + SAGE top movers + top proposals.
 
 ### 2.3 — Entity Map (real graph data)
-Remove MSW handler for `/api/command-center/entity-map`.  
+
+Remove MSW handler for `/api/command-center/entity-map`.
 
 Real entity map data sources:
+
 - **Ring 1 (Owned):** `content_topics` → topic clusters the org publishes on
 - **Ring 2 (Earned):** `journalist_profiles` (pitched/covered) + `content_items` with external links
 - **Ring 3 (Perceived):** `citation_monitor_results` → AI engines citing the brand
@@ -330,22 +362,27 @@ Real entity map data sources:
 Build `entityMapService.ts` in the API that assembles this graph per org.
 
 ### 2.4 — Orchestration Calendar (real scheduled items)
+
 Remove MSW handler for `/api/command-center/orchestration-calendar`.  
 Wire to: `content_items` (scheduled publish dates) + `pr_pitches` (send dates) + `scheduler_tasks`.
 
 ### 2.5 — Intelligence Canvas CiteMind Feed
+
 Wire the CiteMind feed in the Intelligence Canvas to real `citation_monitor_results` data.
 
 ---
 
 ## PHASE 3 — DATA INGESTION PIPELINES
+
 **Goal:** Populate the database with real data so intelligence engines have inputs  
-**Estimated effort:** 15–20 days  
+**Estimated effort:** 15–20 days
 
 ### 3.1 — Journalist Database Integration
-**Effort:** 5–7 days  
+
+**Effort:** 5–7 days
 
 Options (evaluate in order):
+
 1. **Hunter.io API** — email discovery, fast to integrate, good for outreach
 2. **Muck Rack API** — gold standard for journalist data, expensive
 3. **Custom RSS/news scraping** — free but requires maintenance
@@ -353,14 +390,17 @@ Options (evaluate in order):
 For beta: Hunter.io for email + custom scraping of journalist beat/publication data from public sources.
 
 Build `journalistEnrichmentService.ts`:
+
 - Input: journalist name + publication
 - Output: email, beat topics, recent articles (last 90 days), social profiles
 - Store in `journalist_profiles` table
 
 ### 3.2 — SEO Data Ingestion
-**Effort:** 5–7 days  
+
+**Effort:** 5–7 days
 
 For beta, use **Google Search Console API** (free, requires user OAuth to connect their GSC account):
+
 - Pulls real keyword impressions, clicks, positions for their domain
 - Stores in `seo_keyword_metrics`
 
@@ -369,11 +409,13 @@ Secondary: **DataForSEO API** for competitor data and keyword research (paid, us
 Build onboarding step: "Connect your Google Search Console" — OAuth flow, then sync job pulls last 90 days of data.
 
 ### 3.3 — AI Citation Monitoring (LLM Polling)
-**Effort:** 3–5 days  
+
+**Effort:** 3–5 days
 
 For each org, generate a set of brand-relevant queries (SAGE generates these based on content clusters). Poll 3–5 LLM APIs with these queries on a 6-hour cycle.
 
 LLM APIs to poll:
+
 - ChatGPT via OpenAI API (already wired)
 - Perplexity via their API (low cost, high search relevance)
 - Claude via Anthropic API (already in provider abstraction)
@@ -381,9 +423,11 @@ LLM APIs to poll:
 Cost estimate: ~$0.10–0.30/org/day at beta scale.
 
 ### 3.4 — Content Analysis on Publish
-**Effort:** 2–3 days  
+
+**Effort:** 2–3 days
 
 When a content item moves to `published` status:
+
 1. Trigger `contentAnalysisWorker`
 2. Run CiteMind scoring
 3. Generate JSON-LD schema
@@ -393,13 +437,15 @@ When a content item moves to `published` status:
 ---
 
 ## PHASE 4 — ONBOARDING (activation-critical)
+
 **Goal:** User signs up → workspace populated with real data within 10 minutes  
 **Estimated effort:** 8–10 days  
-**Dependency:** Phase 3.2 (GSC integration) for meaningful first-run data  
+**Dependency:** Phase 3.2 (GSC integration) for meaningful first-run data
 
 The onboarding redesign spec exists at `docs/product/ONBOARDING_REDESIGN_BRIEF.md`. Build it now.
 
 **7-step onboarding flow:**
+
 1. Brand basics (name, website, industry)
 2. Connect Google Search Console → seed keyword data
 3. Add competitors (2–3 domains)
@@ -413,44 +459,56 @@ This is the activation moment. A user who completes onboarding and sees their re
 ---
 
 ## PHASE 5 — PRODUCTION HARDENING
+
 **Goal:** Enterprise-grade reliability, observability, and security  
-**Estimated effort:** 8–10 days  
+**Estimated effort:** 8–10 days
 
 ### 5.1 — Error Monitoring (Day 1 of beta)
+
 Install **Sentry** in both `apps/dashboard` and `apps/api`:
+
 ```bash
 pnpm add @sentry/nextjs @sentry/node
 ```
+
 Configure error grouping, user context (org_id), and performance tracing.  
 **This is non-negotiable.** Flying blind in production is unacceptable.
 
 ### 5.2 — Product Analytics
+
 Install **PostHog** (open source, can self-host later):
+
 - Track: surface visits, action executions, EVI views, CiteMind scores requested, pitches sent
 - Funnel: onboarding step completion
 - Retention: weekly active users by surface
 - Feature flags: PostHog can replace the current custom flag system long-term
 
 ### 5.3 — API Rate Limiting
+
 Add rate limiting to all Fastify routes using `@fastify/rate-limit`:
+
 ```typescript
 // Per org, per endpoint:
 fastify.register(rateLimit, {
   max: 100,
   timeWindow: '1 minute',
-  keyGenerator: (req) => req.orgId ?? req.ip
-})
+  keyGenerator: (req) => req.orgId ?? req.ip,
+});
 ```
 
 ### 5.4 — Uptime Monitoring
+
 Configure **Better Uptime** or **UptimeRobot** for:
+
 - `api.pravado.com/health`
 - `app.pravado.com`
 - Supabase connection health
 - Redis queue depth alert (if depth > 1000, something is broken)
 
 ### 5.5 — MFA
+
 Add TOTP-based MFA via Supabase Auth (built-in, requires UI additions):
+
 - Settings page: Enable/disable MFA
 - Login page: MFA challenge step
 - Enterprise plan feature flag
@@ -458,22 +516,28 @@ Add TOTP-based MFA via Supabase Auth (built-in, requires UI additions):
 ---
 
 ## PHASE 6 — BETA LAUNCH PREPARATION
+
 **Goal:** Everything needed to onboard real paying users  
-**Estimated effort:** 5–7 days  
+**Estimated effort:** 5–7 days
 
 ### 6.1 — Seed / Demo Org Quality
+
 The existing `seedDemoOrg.ts` script needs updating to produce demo data that reflects real intelligence outputs (not hardcoded strings). When a prospect sees the demo, they should see realistic SAGE proposals, a believable EVI score, and real CiteMind scores.
 
 ### 6.2 — Beta Invite Flow
+
 Build `POST /api/beta/request-access` → stores email, sends confirmation via SendGrid → admin approves → invite sent. Simple waitlist flow.
 
 ### 6.3 — Billing Activation
+
 Enable Stripe in production (`ENABLE_STRIPE_BILLING=true`). Configure plans:
+
 - **Starter** ($99/mo): 1 user, basic SAGE, no AUTOMATE
 - **Pro** ($299/mo): 3 users, full SAGE + CiteMind, manual AUTOMATE
 - **Growth** ($799/mo): 10 users, full stack including autopilot
 
 ### 6.4 — Legal
+
 - Privacy policy and Terms of Service pages
 - Cookie consent (minimal — PostHog can be configured for EU compliance)
 - Data Processing Agreement template for enterprise customers
@@ -482,22 +546,23 @@ Enable Stripe in production (`ENABLE_STRIPE_BILLING=true`). Configure plans:
 
 ## SPRINT SEQUENCING
 
-| Sprint | Focus | Duration | Exit Criteria | Status |
-|--------|-------|----------|---------------|--------|
-| S-INT-01 | EVI Pipeline + Redis Queue Wiring | 1 week | Real EVI scores calculating for a test org | ✅ COMPLETE 2026-03-07 |
-| S-INT-02 | SAGE Signal Ingestors + Opportunity Scorer | 1 week | Signals flowing from DB into scoring engine | ✅ COMPLETE 2026-03-07 |
-| S-INT-03 | SAGE Proposal Generator + Action Stream API | 1 week | Real proposals replacing MSW in Command Center | ✅ COMPLETE 2026-03-07 |
-| S-INT-04 | CiteMind Quality Scorer + Publish Gate | 1 week | Content items receiving real CiteMind scores | ✅ COMPLETE 2026-03-07 |
-| S-INT-05 | CiteMind Citation Monitor + LLM Polling | 1 week | Brand citations appearing in Intelligence Canvas | ✅ COMPLETE 2026-03-07 |
-| S-INT-06 | GSC Integration + Journalist Enrichment | 1 week | Real SEO and journalist data flowing into DB | ✅ COMPLETE 2026-03-10 |
-| S-INT-07 | Onboarding rebuild | 1 week | New user reaches first EVI score + proposals | ✅ COMPLETE 2026-03-10 |
-| S-INT-08 | Sentry + PostHog + Rate Limiting | 3 days | Observable, rate-limited production environment | ✅ COMPLETE 2026-03-10 |
-| S-INT-09 | Billing activation + Beta invite flow | 3 days | First paying user can sign up and pay | ✅ COMPLETE 2026-03-10 |
-| S-INT-10 | MFA + Session management + Pre-launch hardening | 3 days | TOTP 2FA live, session revocation UI, security headers, health checks | ✅ COMPLETE 2026-03-10 |
+| Sprint   | Focus                                           | Duration | Exit Criteria                                                         | Status                 |
+| -------- | ----------------------------------------------- | -------- | --------------------------------------------------------------------- | ---------------------- |
+| S-INT-01 | EVI Pipeline + Redis Queue Wiring               | 1 week   | Real EVI scores calculating for a test org                            | ✅ COMPLETE 2026-03-07 |
+| S-INT-02 | SAGE Signal Ingestors + Opportunity Scorer      | 1 week   | Signals flowing from DB into scoring engine                           | ✅ COMPLETE 2026-03-07 |
+| S-INT-03 | SAGE Proposal Generator + Action Stream API     | 1 week   | Real proposals replacing MSW in Command Center                        | ✅ COMPLETE 2026-03-07 |
+| S-INT-04 | CiteMind Quality Scorer + Publish Gate          | 1 week   | Content items receiving real CiteMind scores                          | ✅ COMPLETE 2026-03-07 |
+| S-INT-05 | CiteMind Citation Monitor + LLM Polling         | 1 week   | Brand citations appearing in Intelligence Canvas                      | ✅ COMPLETE 2026-03-07 |
+| S-INT-06 | GSC Integration + Journalist Enrichment         | 1 week   | Real SEO and journalist data flowing into DB                          | ✅ COMPLETE 2026-03-10 |
+| S-INT-07 | Onboarding rebuild                              | 1 week   | New user reaches first EVI score + proposals                          | ✅ COMPLETE 2026-03-10 |
+| S-INT-08 | Sentry + PostHog + Rate Limiting                | 3 days   | Observable, rate-limited production environment                       | ✅ COMPLETE 2026-03-10 |
+| S-INT-09 | Billing activation + Beta invite flow           | 3 days   | First paying user can sign up and pay                                 | ✅ COMPLETE 2026-03-10 |
+| S-INT-10 | MFA + Session management + Pre-launch hardening | 3 days   | TOTP 2FA live, session revocation UI, security headers, health checks | ✅ COMPLETE 2026-03-10 |
 
 **Total: ~10 sprints ≈ 10–12 weeks to production beta**
 
 ### Completed Sprint Notes
+
 - **S-INT-01:** EVI formula implemented with full signal aggregation (PR, Content, SEO). BullMQ + Redis wired with graceful fallback. All chrome bars now show real EVI. `evi_snapshots` table live.
 - **S-INT-02:** 9 signal types across 3 pillar ingestors. Composite scoring with EVI impact estimation, confidence, priority, and TTL. `sage_signals` table live. Background worker every 4h.
 - **S-INT-03:** LLM proposal generator with Claude Sonnet primary + stub fallback. Budget enforcement via `llm_usage_ledger`. All 5 MSW Command Center handlers removed — zero mock interception. `sage_proposals` table live. `SAGE_PROPOSALS_ENABLED` feature flag.
@@ -513,36 +578,37 @@ Enable Stripe in production (`ENABLE_STRIPE_BILLING=true`). Configure plans:
 
 ## TECHNOLOGY DECISIONS
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Job queue | BullMQ + Upstash Redis | BullMQ is battle-tested, Upstash is serverless Redis that works on Render |
-| LLM primary | Claude (Anthropic) | Already in provider abstraction, best at structured output, aligned with existing tooling |
-| LLM fallback | GPT-4o (OpenAI) | Already wired, reliable backup |
-| Citation polling | Perplexity API | Best search-grounded LLM for citation monitoring, low cost |
-| SEO data | Google Search Console API | Free, user's own data, high trust |
-| Journalist data | Hunter.io (beta) → Muck Rack (scale) | Hunter.io is fast to integrate and sufficient for beta |
-| Error monitoring | Sentry | Industry standard, Next.js + Node.js native integration |
-| Product analytics | PostHog | Open source, self-hostable, feature flags, replays |
-| Schema markup | JSON-LD via custom templates | No dependency on third-party schema tools |
+| Decision          | Choice                               | Rationale                                                                                 |
+| ----------------- | ------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Job queue         | BullMQ + Upstash Redis               | BullMQ is battle-tested, Upstash is serverless Redis that works on Render                 |
+| LLM primary       | Claude (Anthropic)                   | Already in provider abstraction, best at structured output, aligned with existing tooling |
+| LLM fallback      | GPT-4o (OpenAI)                      | Already wired, reliable backup                                                            |
+| Citation polling  | Perplexity API                       | Best search-grounded LLM for citation monitoring, low cost                                |
+| SEO data          | Google Search Console API            | Free, user's own data, high trust                                                         |
+| Journalist data   | Hunter.io (beta) → Muck Rack (scale) | Hunter.io is fast to integrate and sufficient for beta                                    |
+| Error monitoring  | Sentry                               | Industry standard, Next.js + Node.js native integration                                   |
+| Product analytics | PostHog                              | Open source, self-hostable, feature flags, replays                                        |
+| Schema markup     | JSON-LD via custom templates         | No dependency on third-party schema tools                                                 |
 
 ---
 
 ## RISK REGISTER
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| LLM API costs exceed budget at scale | Medium | High | `llm_usage_ledger` + per-org monthly caps enforced before every LLM call |
-| Citation polling gets rate-limited | Medium | Medium | Exponential backoff, distribute queries across 6-hour windows, cache results |
-| GSC OAuth adds friction to onboarding | High | Medium | Make GSC optional (can manually enter domain, SAGE works with reduced signal) |
-| SAGE proposal quality is poor without sufficient data | High | High | Require minimum 5 content items + 5 journalist profiles before SAGE activates |
-| Redis queue backup if Render instance restarts | Medium | Medium | Use Upstash (persistent Redis, survives restarts) — don't use in-memory fallback |
-| Journalist enrichment accuracy | Medium | Medium | Show confidence score on journalist cards; let users correct data |
+| Risk                                                  | Likelihood | Impact | Mitigation                                                                       |
+| ----------------------------------------------------- | ---------- | ------ | -------------------------------------------------------------------------------- |
+| LLM API costs exceed budget at scale                  | Medium     | High   | `llm_usage_ledger` + per-org monthly caps enforced before every LLM call         |
+| Citation polling gets rate-limited                    | Medium     | Medium | Exponential backoff, distribute queries across 6-hour windows, cache results     |
+| GSC OAuth adds friction to onboarding                 | High       | Medium | Make GSC optional (can manually enter domain, SAGE works with reduced signal)    |
+| SAGE proposal quality is poor without sufficient data | High       | High   | Require minimum 5 content items + 5 journalist profiles before SAGE activates    |
+| Redis queue backup if Render instance restarts        | Medium     | Medium | Use Upstash (persistent Redis, survives restarts) — don't use in-memory fallback |
+| Journalist enrichment accuracy                        | Medium     | Medium | Show confidence score on journalist cards; let users correct data                |
 
 ---
 
 ## DEFINITION OF "PRODUCTION BETA READY"
 
 A user can:
+
 1. ✅ Sign up (invite-gated), complete onboarding, connect GSC (S-INT-06, S-INT-07, S-INT-09)
 2. ✅ See their **real EVI score** calculated from their actual data (S-INT-01)
 3. ✅ Receive **real SAGE proposals** based on signals from their domain (S-INT-02, S-INT-03)
@@ -562,28 +628,30 @@ A user can:
 
 After each phase ships, the following docs must be written or updated:
 
-| Document | Location | Trigger |
-|----------|----------|---------|
-| EVI Formula Reference | `docs/canon/EVI_FORMULA.md` | After Phase 1.1 |
-| SAGE Architecture | `docs/canon/SAGE_ARCHITECTURE.md` | After Phase 1.2 |
-| CiteMind System | `docs/canon/CITEMIND_SYSTEM.md` | After Phase 1.3 |
-| API Reference | `docs/api/` | After Phase 2 |
-| Integration Guides | `docs/integrations/` | After Phase 3 |
-| Runbook | `docs/RUNBOOK.md` | Before beta launch |
-| Incident Response | `docs/INCIDENT_RESPONSE.md` | Before beta launch |
+| Document              | Location                          | Trigger            |
+| --------------------- | --------------------------------- | ------------------ |
+| EVI Formula Reference | `docs/canon/EVI_FORMULA.md`       | After Phase 1.1    |
+| SAGE Architecture     | `docs/canon/SAGE_ARCHITECTURE.md` | After Phase 1.2    |
+| CiteMind System       | `docs/canon/CITEMIND_SYSTEM.md`   | After Phase 1.3    |
+| API Reference         | `docs/api/`                       | After Phase 2      |
+| Integration Guides    | `docs/integrations/`              | After Phase 3      |
+| Runbook               | `docs/RUNBOOK.md`                 | Before beta launch |
+| Incident Response     | `docs/INCIDENT_RESPONSE.md`       | Before beta launch |
 
 ---
 
-*This document is the authoritative production roadmap for Pravado v2.*  
-*All sprints, Claude Code sessions, and engineering decisions should reference it.*  
-*Last updated: 2026-03-14 — SMOKE TEST COMPLETE, FIX SPRINT 03 COMPLETE, SURFACE AUDIT IN PROGRESS*
+_This document is the authoritative production roadmap for Pravado v2._  
+_All sprints, Claude Code sessions, and engineering decisions should reference it._  
+_Last updated: 2026-03-14 — SMOKE TEST COMPLETE, FIX SPRINT 03 COMPLETE, SURFACE AUDIT IN PROGRESS_
 
 ---
 
 ## POST-SPRINT STATUS (2026-03-14)
 
 ### Smoke Test Results — PASSED
+
 Full 7-step onboarding flow verified end-to-end:
+
 - Step 1 Brand Setup → DB write ✅
 - Step 2 GSC → skip path ✅
 - Step 3 Competitors → DB write ✅
@@ -594,18 +662,20 @@ Full 7-step onboarding flow verified end-to-end:
 - Onboarding completion → /app/command-center redirect ✅ (after fix)
 
 ### Issues Resolved During Smoke Test
-| Issue | Fix | Status |
-|-------|-----|--------|
-| NEXT_PUBLIC_MSW_ENABLED=true stale | Set to false, MSW auto-unregister in MSWProvider.tsx | ✅ Fixed |
-| NEXT_PUBLIC_API_URL missing | Added to dashboard/.env.local | ✅ Fixed |
-| Fastify helmet version mismatch | Pinned @fastify/helmet@11, fastify-plugin@4 | ✅ Fixed |
-| DB health check queried billing_plans (missing) | Changed to query orgs table | ✅ Fixed |
-| Supabase migrations 06–79 not applied | Applied via Management API + pooler endpoint | ✅ Fixed |
-| Onboarding completion flag not set | Fixed backend update error checking, corrected redirect path | ✅ Fixed |
-| Invalid Sentry DSN format | Added DSN format guard in server.ts | ✅ Fixed |
-| Redis health showing "configured" not "ok" | Real ioredis ping with 2s timeout | ✅ Fixed |
+
+| Issue                                           | Fix                                                          | Status   |
+| ----------------------------------------------- | ------------------------------------------------------------ | -------- |
+| NEXT_PUBLIC_MSW_ENABLED=true stale              | Set to false, MSW auto-unregister in MSWProvider.tsx         | ✅ Fixed |
+| NEXT_PUBLIC_API_URL missing                     | Added to dashboard/.env.local                                | ✅ Fixed |
+| Fastify helmet version mismatch                 | Pinned @fastify/helmet@11, fastify-plugin@4                  | ✅ Fixed |
+| DB health check queried billing_plans (missing) | Changed to query orgs table                                  | ✅ Fixed |
+| Supabase migrations 06–79 not applied           | Applied via Management API + pooler endpoint                 | ✅ Fixed |
+| Onboarding completion flag not set              | Fixed backend update error checking, corrected redirect path | ✅ Fixed |
+| Invalid Sentry DSN format                       | Added DSN format guard in server.ts                          | ✅ Fixed |
+| Redis health showing "configured" not "ok"      | Real ioredis ping with 2s timeout                            | ✅ Fixed |
 
 ### Fix Sprint 03 — COMPLETE
+
 - TS errors: 0 (were already 0)
 - MSW stale worker auto-unregister: ✅
 - Redis real liveness ping: ✅
@@ -615,17 +685,18 @@ Full 7-step onboarding flow verified end-to-end:
 
 All 7 surfaces audited via live browser testing (Chrome extension). Bugs found, fixed, and verified.
 
-| Surface | Loads | Real Data | Bugs Found | Status |
-|---------|-------|-----------|-----------|--------|
-| Command Center | ✅ | EVI real (12.5), CiteMind wired | CC-01 crash, CC-02 BullMQ, CC-03 demo brief | ✅ All fixed |
-| PR | ✅ | EVI now real, queue wired | PR-01–04 demo data + missing routes | ✅ All fixed |
-| Content | ✅ | Empty states live | CON-01 API 500, CON-02 demo | ✅ All fixed |
-| SEO | ✅ | GSC prompt shown | SEO-01 all demo (CompetitorA–D) | ✅ All fixed |
-| Analytics | ✅ | Real EVI delta, trend empty state ✅ | ANA-01 stat cards + Top Wins demo | ✅ All fixed |
-| Calendar | ✅ | Empty state, real date | CAL-01 hardcoded Feb 20, CAL-02 no API route | ✅ All fixed |
-| Settings | ✅ | Security: real session data | SET-01 billing 404, SET-02 nav 404s | ✅ All fixed |
+| Surface        | Loads | Real Data                            | Bugs Found                                   | Status       |
+| -------------- | ----- | ------------------------------------ | -------------------------------------------- | ------------ |
+| Command Center | ✅    | EVI real (12.5), CiteMind wired      | CC-01 crash, CC-02 BullMQ, CC-03 demo brief  | ✅ All fixed |
+| PR             | ✅    | EVI now real, queue wired            | PR-01–04 demo data + missing routes          | ✅ All fixed |
+| Content        | ✅    | Empty states live                    | CON-01 API 500, CON-02 demo                  | ✅ All fixed |
+| SEO            | ✅    | GSC prompt shown                     | SEO-01 all demo (CompetitorA–D)              | ✅ All fixed |
+| Analytics      | ✅    | Real EVI delta, trend empty state ✅ | ANA-01 stat cards + Top Wins demo            | ✅ All fixed |
+| Calendar       | ✅    | Empty state, real date               | CAL-01 hardcoded Feb 20, CAL-02 no API route | ✅ All fixed |
+| Settings       | ✅    | Security: real session data          | SET-01 billing 404, SET-02 nav 404s          | ✅ All fixed |
 
 ### Additional Fixes During Audit
+
 - Middleware escape hatch (Sign out link on onboarding)
 - Middleware graceful failure on DB error (no redirect loop)
 - Ghost org cleanup script created (not run)
@@ -642,6 +713,7 @@ All 7 surfaces audited via live browser testing (Chrome extension). Bugs found, 
 
 **1a. The LLM Visibility Framework (white paper)**
 A rigorous, practitioner-focused framework that defines:
+
 - Organic AI Visibility vs. Paid AI Visibility — the distinction that doesn't yet have a name
 - AI Share of Voice (AI-SOV) — how to measure brand presence across LLM responses
 - LLM Ad Quality Score — why citation probability predicts paid placement performance
@@ -651,6 +723,7 @@ A rigorous, practitioner-focused framework that defines:
 Target: 4,000–6,000 words, heavily cited, original data where possible (use beta customer EVI/CiteMind data with permission). Register at copyright.gov.
 
 **1b. PR campaign (around white paper launch)**
+
 - Target tier-1 marketing/tech press: Marketing Week, Adweek, TechCrunch, The Drum, Digiday, Search Engine Journal
 - Pitch angle: "The agency that measures AI ads before platforms even launch them"
 - Secondary angle: "Why your Google Ads budget won't translate to ChatGPT"
@@ -671,6 +744,7 @@ Target: 4,000–6,000 words, heavily cited, original data where possible (use be
 | 8 | "Agency guide to AI Visibility" (gated lead magnet) | Landing page |
 
 **1d. Vocabulary to own (publish and repeat consistently)**
+
 - "AI Visibility" — the category name
 - "Earned AI Visibility" — organic brand presence in LLM responses
 - "Paid AI Visibility" — sponsored placements in LLM responses
@@ -679,6 +753,7 @@ Target: 4,000–6,000 words, heavily cited, original data where possible (use be
 - "Visibility Operating System" — Pravado's product positioning
 
 #### Phase 2 — Platform Integration Abstraction Layer (Q3 2026)
+
 - Monitor each LLM ad platform's API/format as they launch
 - Build CiteMind → "LLM Ad Readiness" score (existing CiteMind, new label)
 - Build EVI → "AI SOV" dashboard panel (existing monitoring, new framing)
@@ -686,15 +761,18 @@ Target: 4,000–6,000 words, heavily cited, original data where possible (use be
 - No bidding integration yet — monitoring and readiness scoring only
 
 #### Phase 3 — LLM Ad Management (Q4 2026 / Q1 2027)
+
 - Platform API integrations: Perplexity Ads, ChatGPT Sponsored (when available)
 - Unified LLM Ad dashboard: manage spend, see AI-SOV, attribute EVI changes
 - Attribution: connect paid LLM placements to EVI delta movements
 - Agency tier: white-label AI Visibility reporting for agency clients
 
 #### Agency Plan Overlap
+
 The agency tier (planned post-beta) and the LLM ad management layer are the same product. Agency clients need: (a) AI-SOV reporting for multiple client brands, (b) LLM ad readiness scoring, (c) white-label EVI dashboards. Design the agency tier with LLM ad management in mind from the start — they ship together.
 
 #### Key risks
+
 - Platform timing: ChatGPT/Perplexity ad APIs may be slow to open → mitigation: monitoring layer doesn't require API access
 - Incumbent response: Semrush/Meltwater will move into this space → mitigation: ship the white paper and own the vocabulary before they do
 - Standard fragmentation: each LLM doing ads differently → mitigation: abstraction layer is the product, fragmentation is the moat
@@ -702,34 +780,39 @@ The agency tier (planned post-beta) and the LLM ad management layer are the same
 ### Proprietary IP Portfolio
 
 #### Trade Secrets (protected immediately, no filing required)
-| Asset | Protection | Status |
-|-------|-----------|--------|
-| EVI formula weights (V×0.40 + A×0.35 + M×0.25) | DTSA trade secret | ✅ Active — ToS prohibits reverse engineering, API exposes scores only |
-| CiteMind 6-factor scoring algorithm + weights | DTSA trade secret | ✅ Active — heuristic logic never exposed via API |
-| SAGE signal scoring + proposal generation prompts | DTSA trade secret | ✅ Active — LLM prompts are server-side only |
+
+| Asset                                             | Protection        | Status                                                                 |
+| ------------------------------------------------- | ----------------- | ---------------------------------------------------------------------- |
+| EVI formula weights (V×0.40 + A×0.35 + M×0.25)    | DTSA trade secret | ✅ Active — ToS prohibits reverse engineering, API exposes scores only |
+| CiteMind 6-factor scoring algorithm + weights     | DTSA trade secret | ✅ Active — heuristic logic never exposed via API                      |
+| SAGE signal scoring + proposal generation prompts | DTSA trade secret | ✅ Active — LLM prompts are server-side only                           |
 
 #### Trademark Filings (register at USPTO.gov)
-| Mark | Class | Priority | Notes |
-|------|-------|----------|-------|
-| PRAVADO | Class 42 (SaaS) | High | Search TESS first |
-| EARNED VISIBILITY INDEX | Class 42 + 35 | High | Core branded metric |
-| EVI (in marketing/SaaS context) | Class 42 + 35 | High | File with design mark |
-| CITEMIND | Class 42 | High | Coined compound word, strong distinctiveness |
-| SAGE (AI strategy orchestration) | Class 42 | Medium | Common word, verify clearance |
-| Nexus-P logo mark | Class 42 | Medium | File as design mark |
+
+| Mark                             | Class           | Priority | Notes                                        |
+| -------------------------------- | --------------- | -------- | -------------------------------------------- |
+| PRAVADO                          | Class 42 (SaaS) | High     | Search TESS first                            |
+| EARNED VISIBILITY INDEX          | Class 42 + 35   | High     | Core branded metric                          |
+| EVI (in marketing/SaaS context)  | Class 42 + 35   | High     | File with design mark                        |
+| CITEMIND                         | Class 42        | High     | Coined compound word, strong distinctiveness |
+| SAGE (AI strategy orchestration) | Class 42        | Medium   | Common word, verify clearance                |
+| Nexus-P logo mark                | Class 42        | Medium   | File as design mark                          |
 
 **Filing cost:** ~$350/class via USPTO TEAS Plus. Recommend IP attorney review goods/services description (~$1,500 total). Texas State Bar referral: texasbar.com/findalawyer
 
 #### Copyright (automatic, registration strengthens enforcement)
+
 - Nexus-P logo — register at copyright.gov ($65) for statutory damages eligibility
 - Source code — copyright attaches automatically; document creation dates
 
 #### Patent (defer until post-revenue)
+
 - CiteMind AI citation scoring methodology — potentially patentable as business method
 - Cost: $10–20k + 2–3 year timeline — revisit at Series A
 - Trade secret protection is stronger and faster at current stage
 
 #### Operational IP Protection Checklist
+
 - [ ] Conduct USPTO TESS searches for all 6 marks above
 - [ ] File PRAVADO, EVI, EARNED VISIBILITY INDEX, CITEMIND trademarks
 - [ ] Register Nexus-P logo copyright
@@ -739,25 +822,28 @@ The agency tier (planned post-beta) and the LLM ad management layer are the same
 - [ ] Mark all internal methodology docs as CONFIDENTIAL — TRADE SECRET
 
 ### Intelligence Governance Layer — PLANNED (S-GOV-01)
+
 Design complete. Build scheduled after Render deployment.
 Components: Output Telemetry → Quality Eval Jobs → Threshold Governance → Recalibration Triggers
 Admin dashboard to be built alongside (see docs/admin-dashboard-spec.md when created)
 
 ### Mobile App — Sprint MOBILE-01 Complete (2026-03-15)
-| Screen | Status |
-|--------|--------|
-| Login (Google OAuth + Magic Link) | ✅ |
-| Today (EVI, SAGE brief, pending actions, CiteMind feed) | ✅ |
-| Action Queue (filter, swipe approve/dismiss) | ✅ |
-| Analytics (EVI trend, time range, driver cards) | ✅ |
-| Content (status tabs, CiteMind badges) | ✅ |
-| PR (Pitches/Coverage/Journalists) | ✅ |
-| Content Detail (modal stub) | ✅ |
-| Pitch Detail (modal stub) | ✅ |
+
+| Screen                                                  | Status |
+| ------------------------------------------------------- | ------ |
+| Login (Google OAuth + Magic Link)                       | ✅     |
+| Today (EVI, SAGE brief, pending actions, CiteMind feed) | ✅     |
+| Action Queue (filter, swipe approve/dismiss)            | ✅     |
+| Analytics (EVI trend, time range, driver cards)         | ✅     |
+| Content (status tabs, CiteMind badges)                  | ✅     |
+| PR (Pitches/Coverage/Journalists)                       | ✅     |
+| Content Detail (modal stub)                             | ✅     |
+| Pitch Detail (modal stub)                               | ✅     |
 
 Infrastructure: Supabase auth + SecureStore, API client with auto-auth, push notification registration, DS v3 dark theme, expo-router, EAS config
 
 ### Mobile App — Sprint MOBILE-02 Complete (2026-03-15)
+
 - ✅ POST /api/v1/notifications/register-device (migration 89)
 - ✅ Content Detail — CiteMind 6-factor bars, gate status, approve action
 - ✅ Pitch Detail — journalist card, full pitch body, 5-step status timeline, EVI attribution
@@ -766,6 +852,7 @@ Infrastructure: Supabase auth + SecureStore, API client with auto-auth, push not
 - ✅ Placeholder assets + pre-build check script
 
 **Manual steps before App Store submission:**
+
 - [ ] Replace placeholder assets with real Nexus-P brand icons (1024×1024)
 - [x] Apply migration 89 via Supabase SQL Editor — device_push_tokens table live
 - [x] Create .well-known/apple-app-site-association on app.pravado.io — live, Team ID placeholder
@@ -775,6 +862,7 @@ Infrastructure: Supabase auth + SecureStore, API client with auto-auth, push not
 - [ ] Capture screenshots for store listings
 
 ### Remaining Pre-Beta Checklist
+
 - [x] Restart dev server and do final smoke verification of all surfaces
 - [x] Run cleanupTestOrgs.ts --confirm — 23 ghost orgs + 22 org_members deleted
 - [x] Render production deployment — https://pravado-api.onrender.com LIVE
@@ -791,32 +879,36 @@ Infrastructure: Supabase auth + SecureStore, API client with auto-auth, push not
 - [ ] First beta invite sent
 
 ### Production Infrastructure (2026-03-15)
-| Service | URL | Status |
-|---------|-----|--------|
-| API (Fastify) | https://pravado-api.onrender.com | ✅ Live |
+
+| Service             | URL                                  | Status            |
+| ------------------- | ------------------------------------ | ----------------- |
+| API (Fastify)       | https://pravado-api.onrender.com     | ✅ Live           |
 | Dashboard (Next.js) | https://pravado-dashboard.vercel.app | ⏳ Needs env vars |
-| Database | Supabase (kroexsdyyqmlxfpbwajv) | ✅ Connected |
-| Redis | Redis Cloud (redis-13861) | ✅ Connected |
-| Stripe | Live mode | ✅ Configured |
-| Sentry | Initialized | ✅ Active |
-| PostHog | Initialized | ✅ Active |
+| Database            | Supabase (kroexsdyyqmlxfpbwajv)      | ✅ Connected      |
+| Redis               | Redis Cloud (redis-13861)            | ✅ Connected      |
+| Stripe              | Live mode                            | ✅ Configured     |
+| Sentry              | Initialized                          | ✅ Active         |
+| PostHog             | Initialized                          | ✅ Active         |
 
 ---
 
 ## POST-BETA BACKLOG
 
 ### MOBILE-NAV-001 — No mobile navigation for authenticated app
+
 **Priority:** Post-beta
 **Status:** Logged
 
 The `CommandCenterTopbar` surface navigation uses `hidden md:flex` and is completely invisible below 768px. No hamburger menu, mobile drawer, or bottom tab bar exists. Mobile users cannot navigate between surfaces (Command Center, PR, Content, SEO, Calendar, Analytics) or access Settings/Team.
 
 **Confirmed via Playwright audit (375px):**
+
 - `<nav>` element has `hidden md:flex` — invisible at mobile widths
 - No `<button>` with hamburger/menu icon exists in the DOM
 - No drawer or slide-out component exists
 
 **Fix required:**
+
 - Add a hamburger button (`md:hidden`) to the topbar right cluster
 - Create a `MobileNavDrawer` component with all 6 surface links + Settings/Team
 - Use DS v3 dark theme (bg-slate-1, border-border-subtle)

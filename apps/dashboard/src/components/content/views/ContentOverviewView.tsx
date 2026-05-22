@@ -61,7 +61,11 @@ export interface SAGEProposal {
 
 export interface CrossPillarEvent {
   id: string;
-  type: 'pr_coverage' | 'citation_detected' | 'pr_pitch_sent' | 'aeo_score_change';
+  type:
+    | 'pr_coverage'
+    | 'citation_detected'
+    | 'pr_pitch_sent'
+    | 'aeo_score_change';
   description: string;
   impact: number;
   timestamp: string;
@@ -79,7 +83,12 @@ export interface ContentOverviewData {
   publishedThisMonth: number;
   topAssetThisMonth: { title: string; score: number } | null;
   needsAttentionCount: number;
-  themes: Array<{ name: string; assetCount: number; avgCiteMind: number; trend: 'up' | 'down' | 'flat' }>;
+  themes: Array<{
+    name: string;
+    assetCount: number;
+    avgCiteMind: number;
+    trend: 'up' | 'down' | 'flat';
+  }>;
   crossPillarFeed: CrossPillarEvent[];
   recentAssets: ContentAsset[];
 }
@@ -162,12 +171,14 @@ function getCiteGlow(s: number): string {
 
 const PRIORITY_CONFIG = {
   critical: {
-    badge: 'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
+    badge:
+      'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
     label: 'Critical',
     border: 'border-l-semantic-danger',
   },
   high: {
-    badge: 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
+    badge:
+      'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
     label: 'High',
     border: 'border-l-semantic-warning',
   },
@@ -179,19 +190,40 @@ const PRIORITY_CONFIG = {
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  guide: 'Guide', article: 'Article', report: 'Report',
-  comparison: 'Comparison', faq: 'FAQ Page',
+  guide: 'Guide',
+  article: 'Article',
+  report: 'Report',
+  comparison: 'Comparison',
+  faq: 'FAQ Page',
 };
 
 const EFFORT_LABELS: Record<string, string> = {
-  low: 'Low effort', medium: 'Moderate effort', high: 'High effort',
+  low: 'Low effort',
+  medium: 'Moderate effort',
+  high: 'High effort',
 };
 
 const EVENT_ICON_MAP = {
-  pr_coverage:       { icon: Newspaper, bg: 'bg-brand-magenta/10', text: 'text-brand-magenta' },
-  citation_detected: { icon: Robot,     bg: 'bg-brand-cyan/10',    text: 'text-brand-cyan' },
-  pr_pitch_sent:     { icon: Lightning, bg: 'bg-brand-magenta/10', text: 'text-brand-magenta' },
-  aeo_score_change:  { icon: ChartBar,  bg: 'bg-brand-cyan/10',    text: 'text-brand-cyan' },
+  pr_coverage: {
+    icon: Newspaper,
+    bg: 'bg-brand-magenta/10',
+    text: 'text-brand-magenta',
+  },
+  citation_detected: {
+    icon: Robot,
+    bg: 'bg-brand-cyan/10',
+    text: 'text-brand-cyan',
+  },
+  pr_pitch_sent: {
+    icon: Lightning,
+    bg: 'bg-brand-magenta/10',
+    text: 'text-brand-magenta',
+  },
+  aeo_score_change: {
+    icon: ChartBar,
+    bg: 'bg-brand-cyan/10',
+    text: 'text-brand-cyan',
+  },
 };
 
 // Cross-pillar tail lines — populated dynamically from SAGE proposals
@@ -203,7 +235,13 @@ const SPARKLINE_POINTS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // Confidence scores come from SAGE proposals — default 0.85
 const CONFIDENCE_SCORES: Record<string, number> = {};
 
-function MiniSparkline({ data, className }: { data: number[]; className?: string }) {
+function MiniSparkline({
+  data,
+  className,
+}: {
+  data: number[];
+  className?: string;
+}) {
   const w = 96;
   const h = 28;
   const pad = 2;
@@ -218,7 +256,8 @@ function MiniSparkline({ data, className }: { data: number[]; className?: string
   });
 
   const lastX = pad + ((data.length - 1) / (data.length - 1)) * (w - 2 * pad);
-  const lastY = h - pad - ((data[data.length - 1] - min) / range) * (h - 2 * pad);
+  const lastY =
+    h - pad - ((data[data.length - 1] - min) / range) * (h - 2 * pad);
 
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className={className}>
@@ -230,7 +269,12 @@ function MiniSparkline({ data, className }: { data: number[]; className?: string
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx={lastX.toFixed(1)} cy={lastY.toFixed(1)} r="2.5" fill="currentColor" />
+      <circle
+        cx={lastX.toFixed(1)}
+        cy={lastY.toFixed(1)}
+        r="2.5"
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -260,8 +304,12 @@ function ManualStatusBar({ data }: { data: ContentOverviewData }) {
       <div className="px-4 py-2.5 flex items-center">
         {/* CiteMind Score */}
         <div className="pr-5 flex items-baseline gap-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">CiteMind</span>
-          <span className={`text-2xl font-bold tabular-nums ${getCiteColor(data.avgCiteMindScore)}`}>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+            CiteMind
+          </span>
+          <span
+            className={`text-2xl font-bold tabular-nums ${getCiteColor(data.avgCiteMindScore)}`}
+          >
             {data.avgCiteMindScore}
           </span>
         </div>
@@ -274,39 +322,69 @@ function ManualStatusBar({ data }: { data: ContentOverviewData }) {
             { label: 'X-Pillar', value: data.avgCrossPillarImpact },
           ].map((m) => (
             <div key={m.label} className="flex items-baseline gap-1">
-              <span className="text-base font-bold tabular-nums text-white/85">{m.value}</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">{m.label}</span>
+              <span className="text-base font-bold tabular-nums text-white/85">
+                {m.value}
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+                {m.label}
+              </span>
             </div>
           ))}
         </div>
 
         {/* Pipeline */}
         <div className="border-l border-border-subtle pl-4 pr-5 flex items-center gap-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mr-1">Pipeline</span>
-          <span className="text-base font-bold tabular-nums text-white/85">{data.inProgressCount}</span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Draft</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mr-1">
+            Pipeline
+          </span>
+          <span className="text-base font-bold tabular-nums text-white/85">
+            {data.inProgressCount}
+          </span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+            Draft
+          </span>
           <span className="text-white/25">→</span>
-          <span className="text-base font-bold tabular-nums text-white/85">0</span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Review</span>
+          <span className="text-base font-bold tabular-nums text-white/85">
+            0
+          </span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+            Review
+          </span>
           <span className="text-white/25">→</span>
-          <span className="text-base font-bold tabular-nums text-white/85">{data.publishedThisMonth}</span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Pub</span>
+          <span className="text-base font-bold tabular-nums text-white/85">
+            {data.publishedThisMonth}
+          </span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+            Pub
+          </span>
         </div>
 
         {/* Ops stats */}
         <div className="border-l border-border-subtle pl-4 ml-auto flex items-center gap-4">
           <div className="flex items-baseline gap-1">
-            <span className="text-lg font-bold tabular-nums text-white/85">{data.inProgressCount}</span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Active</span>
+            <span className="text-lg font-bold tabular-nums text-white/85">
+              {data.inProgressCount}
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+              Active
+            </span>
           </div>
           <div className="flex items-baseline gap-1">
-            <span className="text-lg font-bold tabular-nums text-white/85">{data.publishedThisMonth}</span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Published</span>
+            <span className="text-lg font-bold tabular-nums text-white/85">
+              {data.publishedThisMonth}
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+              Published
+            </span>
           </div>
           {data.topAssetThisMonth && (
             <div className="flex items-baseline gap-1">
-              <span className="text-lg font-bold tabular-nums text-semantic-success">{data.topAssetThisMonth.score}</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Top</span>
+              <span className="text-lg font-bold tabular-nums text-semantic-success">
+                {data.topAssetThisMonth.score}
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+                Top
+              </span>
             </div>
           )}
         </div>
@@ -337,10 +415,16 @@ function ManualFilterBar() {
 }
 
 const MANUAL_STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  published: { label: 'PUBLISHED', color: 'bg-semantic-success/15 text-semantic-success' },
+  published: {
+    label: 'PUBLISHED',
+    color: 'bg-semantic-success/15 text-semantic-success',
+  },
   draft: { label: 'DRAFT', color: 'bg-white/5 text-white/50' },
   review: { label: 'REVIEW', color: 'bg-brand-cyan/15 text-brand-cyan' },
-  needs_review: { label: 'NEEDS REV', color: 'bg-semantic-warning/15 text-semantic-warning' },
+  needs_review: {
+    label: 'NEEDS REV',
+    color: 'bg-semantic-warning/15 text-semantic-warning',
+  },
 };
 
 function ManualQueueRow({
@@ -350,31 +434,45 @@ function ManualQueueRow({
   item: ManualQueueItem;
   onEdit?: (id: string) => void;
 }) {
-  const statusCfg = MANUAL_STATUS_CONFIG[item.status] || MANUAL_STATUS_CONFIG.draft;
+  const statusCfg =
+    MANUAL_STATUS_CONFIG[item.status] || MANUAL_STATUS_CONFIG.draft;
 
   return (
     <div className="group flex items-center gap-3 px-4 py-3 border-b border-border-subtle hover:bg-white/[0.02] transition-colors">
       {/* Drag handle */}
-      <DotsSixVertical className="w-4 h-4 text-white/25 cursor-grab flex-shrink-0" weight="bold" />
+      <DotsSixVertical
+        className="w-4 h-4 text-white/25 cursor-grab flex-shrink-0"
+        weight="bold"
+      />
 
       {/* Status badge */}
-      <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded flex-shrink-0 ${statusCfg.color}`}>
+      <span
+        className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded flex-shrink-0 ${statusCfg.color}`}
+      >
         {statusCfg.label}
       </span>
 
       {/* Title */}
-      <span className="text-sm font-medium text-white/85 flex-1 min-w-0 truncate">{item.title}</span>
+      <span className="text-sm font-medium text-white/85 flex-1 min-w-0 truncate">
+        {item.title}
+      </span>
 
       {/* CiteMind score */}
-      <span className={`text-sm font-bold tabular-nums flex-shrink-0 ${item.citeMindScore > 0 ? getCiteColor(item.citeMindScore) : 'text-white/30'}`}>
+      <span
+        className={`text-sm font-bold tabular-nums flex-shrink-0 ${item.citeMindScore > 0 ? getCiteColor(item.citeMindScore) : 'text-white/30'}`}
+      >
         {item.citeMindScore > 0 ? item.citeMindScore : '—'}
       </span>
 
       {/* Content type */}
-      <span className="text-[13px] text-white/50 flex-shrink-0 w-20 text-right">{item.contentType}</span>
+      <span className="text-[13px] text-white/50 flex-shrink-0 w-20 text-right">
+        {item.contentType}
+      </span>
 
       {/* Updated at */}
-      <span className="text-[13px] text-white/40 flex-shrink-0 w-16 text-right">{item.updatedAt}</span>
+      <span className="text-[13px] text-white/40 flex-shrink-0 w-16 text-right">
+        {item.updatedAt}
+      </span>
 
       {/* Word count */}
       <span className="text-[13px] text-white/40 tabular-nums flex-shrink-0 w-20 text-right">
@@ -384,7 +482,10 @@ function ManualQueueRow({
       {/* Entity tags */}
       <div className="flex gap-1.5 flex-shrink-0">
         {item.entityTags.slice(0, 2).map((tag) => (
-          <span key={tag} className="px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded bg-brand-iris/10 text-brand-iris/70">
+          <span
+            key={tag}
+            className="px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded bg-brand-iris/10 text-brand-iris/70"
+          >
             {tag}
           </span>
         ))}
@@ -420,7 +521,9 @@ function ManualView({
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="text-sm text-white/50">No content items yet</p>
-            <p className="text-[13px] text-white/30 mt-1">Create your first piece of content to get started.</p>
+            <p className="text-[13px] text-white/30 mt-1">
+              Create your first piece of content to get started.
+            </p>
           </div>
         )}
       </div>
@@ -433,8 +536,15 @@ function ManualView({
 // ============================================
 
 function CiteMindInstrumentStrip({
-  score, delta, citationEligibility, aiIngestion, crossPillarImpact,
-  inProgressCount, publishedThisMonth, topAssetThisMonth, needsAttentionCount,
+  score,
+  delta,
+  citationEligibility,
+  aiIngestion,
+  crossPillarImpact,
+  inProgressCount,
+  publishedThisMonth,
+  topAssetThisMonth,
+  needsAttentionCount,
 }: {
   score: number;
   delta: number;
@@ -452,28 +562,38 @@ function CiteMindInstrumentStrip({
   return (
     <div className="bg-slate-1 border-b border-border-subtle shadow-[inset_0_0_60px_rgba(168,85,247,0.03)]">
       <div className="px-4 py-3 flex items-stretch">
-
         {/* Score Block */}
         <div className="pr-5 flex flex-col justify-center">
           <span className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-1">
             Content CiteMind Score
           </span>
           <div className="flex items-baseline gap-1.5">
-            <span className={`text-5xl font-bold tabular-nums leading-none ${scoreColor} ${scoreGlow}`}>
+            <span
+              className={`text-5xl font-bold tabular-nums leading-none ${scoreColor} ${scoreGlow}`}
+            >
               {score}
             </span>
             <span className="text-xl text-white/30 font-light">/100</span>
           </div>
           <div className="flex items-center gap-1.5 mt-1.5">
             {delta > 0 ? (
-              <TrendUp className="w-3.5 h-3.5 text-semantic-success" weight="bold" />
+              <TrendUp
+                className="w-3.5 h-3.5 text-semantic-success"
+                weight="bold"
+              />
             ) : delta < 0 ? (
-              <TrendDown className="w-3.5 h-3.5 text-semantic-danger" weight="bold" />
+              <TrendDown
+                className="w-3.5 h-3.5 text-semantic-danger"
+                weight="bold"
+              />
             ) : (
               <Minus className="w-3.5 h-3.5 text-white/40" weight="bold" />
             )}
-            <span className={`text-[13px] font-semibold ${delta > 0 ? 'text-semantic-success' : delta < 0 ? 'text-semantic-danger' : 'text-white/40'}`}>
-              {delta > 0 ? '+' : ''}{delta} pts
+            <span
+              className={`text-[13px] font-semibold ${delta > 0 ? 'text-semantic-success' : delta < 0 ? 'text-semantic-danger' : 'text-white/40'}`}
+            >
+              {delta > 0 ? '+' : ''}
+              {delta} pts
             </span>
             <span className="text-[13px] text-white/40">· 30d</span>
           </div>
@@ -481,8 +601,13 @@ function CiteMindInstrumentStrip({
 
         {/* Sparkline */}
         <div className="border-l border-border-subtle px-4 flex flex-col items-center justify-center">
-          <MiniSparkline data={SPARKLINE_POINTS} className={`${scoreColor} opacity-70`} />
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/30 mt-0.5">30d trend</span>
+          <MiniSparkline
+            data={SPARKLINE_POINTS}
+            className={`${scoreColor} opacity-70`}
+          />
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/30 mt-0.5">
+            30d trend
+          </span>
         </div>
 
         {/* Sub-metrics */}
@@ -492,30 +617,51 @@ function CiteMindInstrumentStrip({
             { label: 'AI Ingestion', value: aiIngestion },
             { label: 'Cross-Pillar', value: crossPillarImpact },
           ].map((m, i) => (
-            <div key={m.label} className={`px-4 flex flex-col justify-center ${i > 0 ? 'border-l border-border-subtle' : ''}`}>
-              <span className="text-xl font-bold tabular-nums text-white/90 leading-none">{m.value}</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mt-1">{m.label}</span>
+            <div
+              key={m.label}
+              className={`px-4 flex flex-col justify-center ${i > 0 ? 'border-l border-border-subtle' : ''}`}
+            >
+              <span className="text-xl font-bold tabular-nums text-white/90 leading-none">
+                {m.value}
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mt-1">
+                {m.label}
+              </span>
             </div>
           ))}
         </div>
 
         {/* Pipeline Flow */}
         <div className="flex-1 border-l border-border-subtle px-5 flex flex-col items-center justify-center min-w-0">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mb-1.5">Pipeline</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mb-1.5">
+            Pipeline
+          </span>
           <div className="flex items-center gap-3">
             <div className="flex flex-col items-center">
-              <span className="text-base font-bold tabular-nums text-white/90">{inProgressCount}</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Draft</span>
+              <span className="text-base font-bold tabular-nums text-white/90">
+                {inProgressCount}
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+                Draft
+              </span>
             </div>
             <span className="text-white/25">→</span>
             <div className="flex flex-col items-center">
-              <span className="text-base font-bold tabular-nums text-white/90">1</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Review</span>
+              <span className="text-base font-bold tabular-nums text-white/90">
+                1
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+                Review
+              </span>
             </div>
             <span className="text-white/25">→</span>
             <div className="flex flex-col items-center">
-              <span className="text-base font-bold tabular-nums text-white/90">{publishedThisMonth}</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Published</span>
+              <span className="text-base font-bold tabular-nums text-white/90">
+                {publishedThisMonth}
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+                Published
+              </span>
             </div>
           </div>
         </div>
@@ -523,36 +669,53 @@ function CiteMindInstrumentStrip({
         {/* Operational Stats (2×2 grid) */}
         <div className="border-l border-border-subtle pl-5 grid grid-cols-2 gap-x-5 gap-y-2 content-center">
           <div>
-            <span className="text-2xl font-bold tabular-nums text-white/90 leading-none">{inProgressCount}</span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 block mt-0.5">In Progress</span>
+            <span className="text-2xl font-bold tabular-nums text-white/90 leading-none">
+              {inProgressCount}
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 block mt-0.5">
+              In Progress
+            </span>
           </div>
           <div>
-            <span className="text-2xl font-bold tabular-nums text-white/90 leading-none">{publishedThisMonth}</span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 block mt-0.5">Published</span>
+            <span className="text-2xl font-bold tabular-nums text-white/90 leading-none">
+              {publishedThisMonth}
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 block mt-0.5">
+              Published
+            </span>
           </div>
           {topAssetThisMonth && (
             <div>
-              <span className="text-2xl font-bold tabular-nums text-semantic-success leading-none">{topAssetThisMonth.score}</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-semantic-success/70 block mt-0.5">Top CiteMind</span>
+              <span className="text-2xl font-bold tabular-nums text-semantic-success leading-none">
+                {topAssetThisMonth.score}
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-semantic-success/70 block mt-0.5">
+                Top CiteMind
+              </span>
             </div>
           )}
           <div>
             {needsAttentionCount > 0 ? (
               <>
-                <span className="text-2xl font-bold tabular-nums text-semantic-warning leading-none">{needsAttentionCount}</span>
+                <span className="text-2xl font-bold tabular-nums text-semantic-warning leading-none">
+                  {needsAttentionCount}
+                </span>
                 <button className="text-[11px] font-bold uppercase tracking-wider text-semantic-warning/70 hover:text-semantic-warning block mt-0.5 transition-colors">
                   Resolve →
                 </button>
               </>
             ) : (
               <>
-                <span className="text-2xl font-bold tabular-nums text-semantic-success leading-none">0</span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-semantic-success/70 block mt-0.5">All Clear</span>
+                <span className="text-2xl font-bold tabular-nums text-semantic-success leading-none">
+                  0
+                </span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-semantic-success/70 block mt-0.5">
+                  All Clear
+                </span>
               </>
             )}
           </div>
         </div>
-
       </div>
     </div>
   );
@@ -568,7 +731,8 @@ function CopilotSAGECard({
   onDismiss?: (id: string) => void;
 }) {
   const priority = PRIORITY_CONFIG[proposal.priority];
-  const tailLine = CROSS_PILLAR_TAILS[proposal.id] || '→ Cross-pillar actions pending';
+  const tailLine =
+    CROSS_PILLAR_TAILS[proposal.id] || '→ Cross-pillar actions pending';
   const confidence = CONFIDENCE_SCORES[proposal.id] || 0.85;
 
   return (
@@ -583,7 +747,9 @@ function CopilotSAGECard({
       {/* Row 1 — Badges + EVI impact */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${priority.badge}`}>
+          <span
+            className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${priority.badge}`}
+          >
             {priority.label}
           </span>
           <span className="text-[13px] text-white/50">
@@ -594,7 +760,9 @@ function CopilotSAGECard({
           <span className="text-base font-bold text-semantic-success tabular-nums">
             +{proposal.eviImpact.low}–{proposal.eviImpact.high}
           </span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 ml-0.5">EVI pts</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 ml-0.5">
+            EVI pts
+          </span>
         </div>
       </div>
 
@@ -605,17 +773,20 @@ function CopilotSAGECard({
 
       {/* Row 3 — SAGE Reasoning chip + Competitive gap text */}
       <div className="mt-1.5">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-brand-iris/70">SAGE Reasoning</span>
+        <span className="text-[11px] font-bold uppercase tracking-wider text-brand-iris/70">
+          SAGE Reasoning
+        </span>
       </div>
       <p className="text-sm text-white/65 leading-snug mt-0.5">
-        <Lightning className="inline w-3.5 h-3.5 text-brand-iris opacity-80 mr-1 -mt-0.5" weight="fill" />
+        <Lightning
+          className="inline w-3.5 h-3.5 text-brand-iris opacity-80 mr-1 -mt-0.5"
+          weight="fill"
+        />
         {proposal.competitiveGap}
       </p>
 
       {/* Row 4 — Cross-pillar tail line */}
-      <p className="text-xs text-white/45 mt-1">
-        {tailLine}
-      </p>
+      <p className="text-xs text-white/45 mt-1">{tailLine}</p>
 
       {/* Row 5 — Effort + Confidence + Actions */}
       <div className="flex items-center justify-between mt-2.5">
@@ -666,7 +837,9 @@ function CopilotSAGEQueue({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Lightning className="w-4 h-4 text-brand-iris" weight="fill" />
-          <span className="text-sm font-semibold text-white/90">SAGE Action Queue</span>
+          <span className="text-sm font-semibold text-white/90">
+            SAGE Action Queue
+          </span>
           <span className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-full bg-brand-iris/20 text-brand-iris border border-brand-iris/30">
             {proposals.length}
           </span>
@@ -701,9 +874,14 @@ function CopilotSAGEQueue({
         ))
       ) : (
         <div className="flex flex-col items-center justify-center py-12">
-          <CheckCircle className="w-8 h-8 text-brand-iris/40 mb-3" weight="duotone" />
+          <CheckCircle
+            className="w-8 h-8 text-brand-iris/40 mb-3"
+            weight="duotone"
+          />
           <p className="text-sm text-white/50">All caught up</p>
-          <p className="text-[13px] text-white/30 mt-1">SAGE has no open proposals</p>
+          <p className="text-[13px] text-white/30 mt-1">
+            SAGE has no open proposals
+          </p>
         </div>
       )}
     </div>
@@ -717,7 +895,9 @@ function AttributionFeed({ events }: { events: CrossPillarEvent[] }) {
     <div className="flex flex-col">
       <div className="flex items-center gap-2 mb-2.5">
         <div className="w-1.5 h-1.5 rounded-full bg-brand-iris" />
-        <span className="text-sm font-semibold text-white/90">Cross-Pillar Attribution</span>
+        <span className="text-sm font-semibold text-white/90">
+          Cross-Pillar Attribution
+        </span>
       </div>
 
       <div className="flex flex-col">
@@ -729,18 +909,31 @@ function AttributionFeed({ events }: { events: CrossPillarEvent[] }) {
               key={event.id}
               className={`flex items-start gap-3 py-3.5 ${i > 0 ? 'border-t border-border-subtle' : ''}`}
             >
-              <div className={`w-7 h-7 rounded-md flex-shrink-0 flex items-center justify-center ${config.bg}`}>
+              <div
+                className={`w-7 h-7 rounded-md flex-shrink-0 flex items-center justify-center ${config.bg}`}
+              >
                 <Icon className={`w-3.5 h-3.5 ${config.text}`} weight="fill" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-white/70 leading-snug">{event.description}</p>
-                <p className="text-[13px] text-white/40 mt-0.5">{event.source}</p>
+                <p className="text-sm text-white/70 leading-snug">
+                  {event.description}
+                </p>
+                <p className="text-[13px] text-white/40 mt-0.5">
+                  {event.source}
+                </p>
               </div>
               <div className="flex-shrink-0">
-                <span className={`text-sm font-bold tabular-nums ${
-                  event.impact > 0 ? 'text-semantic-success' : event.impact < 0 ? 'text-semantic-danger' : 'text-white/30'
-                }`}>
-                  {event.impact > 0 ? '+' : ''}{event.impact.toFixed(1)}
+                <span
+                  className={`text-sm font-bold tabular-nums ${
+                    event.impact > 0
+                      ? 'text-semantic-success'
+                      : event.impact < 0
+                        ? 'text-semantic-danger'
+                        : 'text-white/30'
+                  }`}
+                >
+                  {event.impact > 0 ? '+' : ''}
+                  {event.impact.toFixed(1)}
                 </span>
               </div>
             </div>
@@ -751,7 +944,11 @@ function AttributionFeed({ events }: { events: CrossPillarEvent[] }) {
   );
 }
 
-function ActiveThemesSection({ themes }: { themes: ContentOverviewData['themes'] }) {
+function ActiveThemesSection({
+  themes,
+}: {
+  themes: ContentOverviewData['themes'];
+}) {
   if (themes.length === 0) return null;
 
   const visibleThemes = themes.slice(0, 4);
@@ -759,7 +956,9 @@ function ActiveThemesSection({ themes }: { themes: ContentOverviewData['themes']
   return (
     <div className="mt-4 pt-4 border-t border-border-subtle">
       <div className="flex items-center justify-between mb-2.5">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Active Themes</span>
+        <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+          Active Themes
+        </span>
         {themes.length > 4 && (
           <button className="text-[13px] text-white/40 hover:text-white/70 transition-colors">
             See all →
@@ -774,17 +973,29 @@ function ActiveThemesSection({ themes }: { themes: ContentOverviewData['themes']
             className={`flex items-center justify-between py-2.5 cursor-pointer ${i > 0 ? 'border-t border-border-subtle' : ''}`}
           >
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-white/85">{theme.name}</p>
-              <p className="text-[13px] text-white/50">{theme.assetCount} assets</p>
+              <p className="text-sm font-semibold text-white/85">
+                {theme.name}
+              </p>
+              <p className="text-[13px] text-white/50">
+                {theme.assetCount} assets
+              </p>
             </div>
             <div className="flex items-baseline gap-1.5 flex-shrink-0 ml-3">
-              <span className={`text-lg font-bold tabular-nums ${getCiteColor(theme.avgCiteMind)}`}>
+              <span
+                className={`text-lg font-bold tabular-nums ${getCiteColor(theme.avgCiteMind)}`}
+              >
                 {theme.avgCiteMind}
               </span>
               <span className="text-[13px]">
-                {theme.trend === 'up' && <span className="text-semantic-success">↑</span>}
-                {theme.trend === 'down' && <span className="text-semantic-danger">↓</span>}
-                {theme.trend === 'flat' && <span className="text-white/40">→</span>}
+                {theme.trend === 'up' && (
+                  <span className="text-semantic-success">↑</span>
+                )}
+                {theme.trend === 'down' && (
+                  <span className="text-semantic-danger">↓</span>
+                )}
+                {theme.trend === 'flat' && (
+                  <span className="text-white/40">→</span>
+                )}
               </span>
             </div>
           </div>
@@ -795,7 +1006,9 @@ function ActiveThemesSection({ themes }: { themes: ContentOverviewData['themes']
 }
 
 function RecentAssetsSection({
-  assets, onViewAsset, onViewLibrary,
+  assets,
+  onViewAsset,
+  onViewLibrary,
 }: {
   assets: ContentAsset[];
   onViewAsset?: (id: string) => void;
@@ -806,7 +1019,9 @@ function RecentAssetsSection({
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">Recent Assets</span>
+        <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
+          Recent Assets
+        </span>
         <button
           onClick={onViewLibrary}
           className="text-[13px] text-white/40 hover:text-white/70 transition-colors flex items-center gap-1"
@@ -907,7 +1122,9 @@ function AutopilotStatusBar({ onPause }: { onPause?: () => void }) {
 
         {/* Health Summary */}
         <div className="border-l border-border-subtle px-6 flex items-center gap-3">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">CiteMind</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+            CiteMind
+          </span>
           <span className="text-sm text-white/40">No data</span>
         </div>
 
@@ -952,21 +1169,31 @@ function ExceptionCard({
   const urgency = URGENCY_CONFIG[exception.urgency];
 
   return (
-    <div className={`${urgency.border} ${urgency.bg} rounded-xl p-4 border border-border-subtle`}>
+    <div
+      className={`${urgency.border} ${urgency.bg} rounded-xl p-4 border border-border-subtle`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${urgency.badge}`}>
+            <span
+              className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${urgency.badge}`}
+            >
               {exception.issue}
             </span>
             {exception.citeMindScore > 0 && (
-              <span className={`text-[13px] font-bold tabular-nums ${getCiteColor(exception.citeMindScore)}`}>
+              <span
+                className={`text-[13px] font-bold tabular-nums ${getCiteColor(exception.citeMindScore)}`}
+              >
                 {exception.citeMindScore}
               </span>
             )}
           </div>
-          <h4 className="text-[15px] font-semibold text-white/90 leading-snug">{exception.title}</h4>
-          <p className="text-sm text-white/60 leading-snug mt-1">{exception.reason}</p>
+          <h4 className="text-[15px] font-semibold text-white/90 leading-snug">
+            {exception.title}
+          </h4>
+          <p className="text-sm text-white/60 leading-snug mt-1">
+            {exception.reason}
+          </p>
         </div>
       </div>
       <div className="flex justify-end mt-3">
@@ -987,16 +1214,28 @@ function AllClearState() {
       <div className="w-12 h-12 rounded-full bg-semantic-success/10 flex items-center justify-center mb-4">
         <Check className="w-6 h-6 text-semantic-success" weight="bold" />
       </div>
-      <h3 className="text-lg font-semibold text-white/90">All clear — no exceptions</h3>
-      <p className="text-[13px] text-white/50 mt-1">No items currently executing.</p>
+      <h3 className="text-lg font-semibold text-white/90">
+        All clear — no exceptions
+      </h3>
+      <p className="text-[13px] text-white/50 mt-1">
+        No items currently executing.
+      </p>
     </div>
   );
 }
 
 const ACTIVITY_TYPE_CONFIG = {
-  quality:    { icon: CheckCircle,   color: 'text-semantic-success', bg: 'bg-semantic-success/10' },
-  derivative: { icon: ArrowSquareOut, color: 'text-brand-iris',       bg: 'bg-brand-iris/10' },
-  brief:      { icon: Lightning,      color: 'text-brand-cyan',       bg: 'bg-brand-cyan/10' },
+  quality: {
+    icon: CheckCircle,
+    color: 'text-semantic-success',
+    bg: 'bg-semantic-success/10',
+  },
+  derivative: {
+    icon: ArrowSquareOut,
+    color: 'text-brand-iris',
+    bg: 'bg-brand-iris/10',
+  },
+  brief: { icon: Lightning, color: 'text-brand-cyan', bg: 'bg-brand-cyan/10' },
 };
 
 function ActivityLogEntry({ entry }: { entry: AutopilotActivity }) {
@@ -1005,7 +1244,9 @@ function ActivityLogEntry({ entry }: { entry: AutopilotActivity }) {
 
   return (
     <div className="flex items-start gap-3 py-3">
-      <div className={`w-7 h-7 rounded-md flex-shrink-0 flex items-center justify-center ${config.bg}`}>
+      <div
+        className={`w-7 h-7 rounded-md flex-shrink-0 flex items-center justify-center ${config.bg}`}
+      >
         <Icon className={`w-3.5 h-3.5 ${config.color}`} weight="fill" />
       </div>
       <div className="flex-1 min-w-0">
@@ -1013,7 +1254,9 @@ function ActivityLogEntry({ entry }: { entry: AutopilotActivity }) {
         <p className="text-[13px] text-white/50">{entry.asset}</p>
         <p className="text-[13px] text-white/40 mt-0.5">{entry.result}</p>
       </div>
-      <span className="text-[13px] text-white/30 flex-shrink-0">{entry.timestamp}</span>
+      <span className="text-[13px] text-white/30 flex-shrink-0">
+        {entry.timestamp}
+      </span>
     </div>
   );
 }
@@ -1037,7 +1280,9 @@ function AutopilotView({
         <div className="flex-[55] min-w-0 overflow-y-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-4">
             <Warning className="w-4 h-4 text-semantic-warning" weight="fill" />
-            <span className="text-sm font-semibold text-white/90">Exceptions</span>
+            <span className="text-sm font-semibold text-white/90">
+              Exceptions
+            </span>
             <span className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-full bg-semantic-warning/20 text-semantic-warning border border-semantic-warning/30">
               {exceptions.length}
             </span>
@@ -1046,7 +1291,11 @@ function AutopilotView({
           {exceptions.length > 0 ? (
             <div className="flex flex-col gap-3">
               {exceptions.map((ex) => (
-                <ExceptionCard key={ex.id} exception={ex} onResolve={onResolveException} />
+                <ExceptionCard
+                  key={ex.id}
+                  exception={ex}
+                  onResolve={onResolveException}
+                />
               ))}
             </div>
           ) : (
@@ -1059,7 +1308,9 @@ function AutopilotView({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-white/40" weight="regular" />
-              <span className="text-sm font-semibold text-white/90">Activity Log</span>
+              <span className="text-sm font-semibold text-white/90">
+                Activity Log
+              </span>
             </div>
             <button className="text-[13px] text-white/40 hover:text-white/70 transition-colors">
               View full log →
@@ -1069,14 +1320,19 @@ function AutopilotView({
           <div className="flex flex-col">
             {activities.length > 0 ? (
               activities.map((entry, i) => (
-                <div key={entry.id} className={i > 0 ? 'border-t border-border-subtle' : ''}>
+                <div
+                  key={entry.id}
+                  className={i > 0 ? 'border-t border-border-subtle' : ''}
+                >
                   <ActivityLogEntry entry={entry} />
                 </div>
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-8">
                 <p className="text-sm text-white/50">No activity yet</p>
-                <p className="text-[13px] text-white/30 mt-1">Autopilot activity will appear here as tasks execute.</p>
+                <p className="text-[13px] text-white/30 mt-1">
+                  Autopilot activity will appear here as tasks execute.
+                </p>
               </div>
             )}
           </div>

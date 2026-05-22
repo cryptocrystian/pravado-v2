@@ -31,8 +31,12 @@ async function apiFetch(endpoint: string, options?: RequestInit) {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Request failed' }));
-    throw new Error(error.message || error?.error?.message || `HTTP ${response.status}`);
+    const error = await response
+      .json()
+      .catch(() => ({ message: 'Request failed' }));
+    throw new Error(
+      error.message || error?.error?.message || `HTTP ${response.status}`
+    );
   }
 
   return response.json();
@@ -44,12 +48,16 @@ export async function listProfiles(query?: ListJournalistProfilesQuery) {
   if (query?.q) params.append('q', query.q);
   if (query?.outlet) params.append('outlet', query.outlet);
   if (query?.beat) params.append('beat', query.beat);
-  if (query?.minEngagementScore !== undefined) params.append('minEngagementScore', query.minEngagementScore.toString());
-  if (query?.minRelevanceScore !== undefined) params.append('minRelevanceScore', query.minRelevanceScore.toString());
+  if (query?.minEngagementScore !== undefined)
+    params.append('minEngagementScore', query.minEngagementScore.toString());
+  if (query?.minRelevanceScore !== undefined)
+    params.append('minRelevanceScore', query.minRelevanceScore.toString());
   if (query?.sortBy) params.append('sortBy', query.sortBy);
   if (query?.sortOrder) params.append('sortOrder', query.sortOrder);
-  if (query?.limit !== undefined) params.append('limit', query.limit.toString());
-  if (query?.offset !== undefined) params.append('offset', query.offset.toString());
+  if (query?.limit !== undefined)
+    params.append('limit', query.limit.toString());
+  if (query?.offset !== undefined)
+    params.append('offset', query.offset.toString());
 
   const queryString = params.toString();
   return apiFetch(`/api/pr/journalists${queryString ? `?${queryString}` : ''}`);
@@ -70,7 +78,10 @@ export async function createProfile(input: CreateJournalistProfileInput) {
   });
 }
 
-export async function updateProfile(id: string, input: UpdateJournalistProfileInput) {
+export async function updateProfile(
+  id: string,
+  input: UpdateJournalistProfileInput
+) {
   return apiFetch(`/api/pr/journalists/${id}`, {
     method: 'PUT',
     body: JSON.stringify(input),
@@ -110,26 +121,33 @@ export async function listActivities(query?: ListActivitiesQuery) {
   if (query?.journalistId) params.append('journalistId', query.journalistId);
   if (query?.activityType) {
     if (Array.isArray(query.activityType)) {
-      query.activityType.forEach(type => params.append('activityType', type));
+      query.activityType.forEach((type) => params.append('activityType', type));
     } else {
       params.append('activityType', query.activityType);
     }
   }
   if (query?.sourceSystem) {
     if (Array.isArray(query.sourceSystem)) {
-      query.sourceSystem.forEach(system => params.append('sourceSystem', system));
+      query.sourceSystem.forEach((system) =>
+        params.append('sourceSystem', system)
+      );
     } else {
       params.append('sourceSystem', query.sourceSystem);
     }
   }
   if (query?.sentiment) params.append('sentiment', query.sentiment);
-  if (query?.startDate) params.append('startDate', query.startDate.toISOString());
+  if (query?.startDate)
+    params.append('startDate', query.startDate.toISOString());
   if (query?.endDate) params.append('endDate', query.endDate.toISOString());
-  if (query?.limit !== undefined) params.append('limit', query.limit.toString());
-  if (query?.offset !== undefined) params.append('offset', query.offset.toString());
+  if (query?.limit !== undefined)
+    params.append('limit', query.limit.toString());
+  if (query?.offset !== undefined)
+    params.append('offset', query.offset.toString());
 
   const queryString = params.toString();
-  return apiFetch(`/api/pr/journalists/activities${queryString ? `?${queryString}` : ''}`);
+  return apiFetch(
+    `/api/pr/journalists/activities${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 export async function createActivity(input: CreateActivityInput) {

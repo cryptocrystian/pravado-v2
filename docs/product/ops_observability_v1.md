@@ -13,6 +13,7 @@ Provides internal visibility into LLM usage, playbook execution, and queue healt
 Append-only ledger tracking all LLM API calls.
 
 **Schema**:
+
 ```sql
 - id: UUID (Primary Key)
 - org_id: UUID (nullable, references orgs)
@@ -31,6 +32,7 @@ Append-only ledger tracking all LLM API calls.
 ```
 
 **Indexes**:
+
 - `(org_id, created_at)` - Most common query pattern
 - `(provider, created_at)` - Provider analytics
 - `(run_id)` - Run association
@@ -44,12 +46,14 @@ Append-only ledger tracking all LLM API calls.
 **File**: `packages/utils/src/llmRouter.ts`
 
 The LLM router now writes to the ledger after each call:
+
 - Tracks all provider calls (OpenAI, Anthropic, stub)
 - Captures tokens, latency, status, errors
 - Associates with playbook runs/steps when available
 - Best-effort writes (doesn't fail LLM requests if ledger write fails)
 
 **Usage**:
+
 ```typescript
 const router = new LlmRouter({
   provider: 'openai',
@@ -73,22 +77,26 @@ await router.generate({
 Provides aggregated metrics:
 
 **`getOrgExecutionStats(orgId, period)`**:
+
 - Run counts by state (queued, running, success, failed, canceled)
 - Average runtime for successful runs
 - Step failure counts by type (AGENT, DATA, BRANCH, API)
 
 **`getQueueStats()`**:
+
 - Pending job counts by type
 - Average wait time for queued jobs
 - Retry statistics (min, max, avg attempts)
 
 **`getLlmUsageSummary(orgId, period)`**:
+
 - Total tokens and calls
 - Error rate per provider
 - Token usage by provider/model
 - Average latency statistics
 
 **`getRecentFailures(orgId, limit)`**:
+
 - Last N failed runs with playbook names
 - Error messages and timestamps
 
@@ -97,11 +105,13 @@ Provides aggregated metrics:
 **Base Path**: `/api/v1/ops`
 
 **`GET /api/v1/ops/overview?period=24h|7d`**
+
 - Requires authentication
 - Returns org-scoped execution + LLM usage stats
 - Includes recent failures
 
 **`GET /api/v1/ops/queue`**
+
 - Requires authentication
 - Returns global queue stats (non-sensitive)
 
@@ -110,6 +120,7 @@ Provides aggregated metrics:
 **URL**: `/app/ops`
 
 **Sections**:
+
 1. **System Health Cards**:
    - Total Runs (24h) with success rate
    - Queue Pending with avg wait time
@@ -127,18 +138,21 @@ Provides aggregated metrics:
 ## Key Metrics Exposed
 
 ### Execution Metrics
+
 - Run counts by state over 24h / 7d
 - Success rate percentage
 - Average runtime for successful runs
 - Step-level failure distribution by type
 
 ### LLM Metrics
+
 - Total API calls and tokens used
 - Error rate per provider
 - Token distribution by provider/model
 - Latency statistics (average, p50, p95 in future)
 
 ### Queue Metrics
+
 - Pending job counts by type
 - Average wait time for queued jobs
 - Retry attempt distribution
@@ -146,16 +160,19 @@ Provides aggregated metrics:
 ## Usage (Internal Teams)
 
 ### For Product/Engineering:
+
 - Monitor LLM provider performance and errors
 - Identify step types with high failure rates
 - Track queue health and processing times
 
 ### For Operations:
+
 - Detect anomalies in error rates
 - Monitor queue backlogs
 - Ensure execution engine health
 
 ### For Finance (Future):
+
 - Token usage for cost estimation
 - Cost breakdown by provider/model
 - Usage trends for budget planning
@@ -163,6 +180,7 @@ Provides aggregated metrics:
 ## Limitations
 
 ### Current Limitations:
+
 1. **No Cost Calculation**: `cost_usd` field is NULL (pricing to be added in S28)
 2. **No Sampling**: All LLM calls are logged (may need sampling at scale)
 3. **In-Memory Queue**: Queue stats only available when API server is running
@@ -170,6 +188,7 @@ Provides aggregated metrics:
 5. **No Historical Trends**: UI shows current period only (24h/7d)
 
 ### Provider-Specific Notes:
+
 - **Stub Provider**: Logs fake token counts based on prompt/completion length
 - **Real Providers**: Token counts come directly from provider responses
 - **Latency**: End-to-end including network, not provider-reported values
@@ -177,12 +196,14 @@ Provides aggregated metrics:
 ## Future Enhancements (S28+)
 
 ### Sprint S28 - Billing & Pricing:
+
 - Add cost calculation using provider pricing tables
 - Populate `cost_usd` field in ledger
 - Add cost breakdowns to dashboard
 - Implement budget alerts
 
 ### Future Sprints:
+
 - Sampling for high-volume scenarios
 - Retention policies for ledger data
 - Historical trend charts (weekly/monthly)
@@ -194,16 +215,19 @@ Provides aggregated metrics:
 ## Technical Notes
 
 ### Performance Considerations:
+
 - Indexes optimized for common query patterns (org + time)
 - Ledger writes are best-effort (don't block LLM responses)
 - Queue stats computed in-memory (fast)
 
 ### Security:
+
 - All endpoints require authentication
 - RLS enforces org-level data isolation
 - System-wide metrics (queue) contain no sensitive data
 
 ### Deployment:
+
 - Migration 34 must be run on database
 - Supabase dependency added to `@pravado/utils`
 - No environment variables required (uses existing Supabase config)
@@ -211,6 +235,7 @@ Provides aggregated metrics:
 ## Testing
 
 Basic tests cover:
+
 - Ops API endpoint authentication
 - Metrics aggregation logic
 - LLM ledger writes (unit tests with mocks)

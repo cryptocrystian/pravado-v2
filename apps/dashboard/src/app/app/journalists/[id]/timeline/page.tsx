@@ -30,9 +30,11 @@ export default function JournalistTimelinePage() {
 
   // State
   const [events, setEvents] = useState<JournalistTimelineEvent[]>([]);
-  const [selectedEvent, setSelectedEvent] = useState<JournalistTimelineEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] =
+    useState<JournalistTimelineEvent | null>(null);
   const [stats, setStats] = useState<TimelineStats | null>(null);
-  const [healthScore, setHealthScore] = useState<RelationshipHealthScore | null>(null);
+  const [healthScore, setHealthScore] =
+    useState<RelationshipHealthScore | null>(null);
   const [narrative, setNarrative] = useState<JournalistNarrative | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -83,7 +85,9 @@ export default function JournalistTimelinePage() {
   };
 
   // Generate narrative
-  const generateNarrative = async (timeframe?: 'last_30_days' | 'last_90_days' | 'all_time') => {
+  const generateNarrative = async (
+    timeframe?: 'last_30_days' | 'last_90_days' | 'all_time'
+  ) => {
     setIsNarrativeLoading(true);
     try {
       const narrativeData = await timelineApi.generateNarrative({
@@ -175,11 +179,15 @@ export default function JournalistTimelinePage() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-white rounded-lg p-4 shadow-sm border border-gray-200">
             <div>
               <div className="text-sm text-gray-500">Total Events</div>
-              <div className="text-2xl font-bold text-gray-900">{stats.totalEvents}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {stats.totalEvents}
+              </div>
             </div>
             <div>
               <div className="text-sm text-gray-500">Last 30 Days</div>
-              <div className="text-2xl font-bold text-gray-900">{stats.recent30Days}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {stats.recent30Days}
+              </div>
             </div>
             <div>
               <div className="text-sm text-gray-500">Avg Relevance</div>
@@ -195,7 +203,9 @@ export default function JournalistTimelinePage() {
             </div>
             <div>
               <div className="text-sm text-gray-500">Total Clusters</div>
-              <div className="text-2xl font-bold text-gray-900">{stats.totalClusters}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {stats.totalClusters}
+              </div>
             </div>
           </div>
         )}
@@ -235,7 +245,11 @@ export default function JournalistTimelinePage() {
               📊 Generate full narrative
             </button>
             <button
-              onClick={() => timelineApi.autoClusterEvents(journalistId).then(() => loadTimeline())}
+              onClick={() =>
+                timelineApi
+                  .autoClusterEvents(journalistId)
+                  .then(() => loadTimeline())
+              }
               className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded transition-colors"
             >
               🔗 Auto-cluster events
@@ -276,7 +290,8 @@ export default function JournalistTimelinePage() {
                 No timeline events yet
               </h3>
               <p className="text-gray-600 mb-4">
-                Start tracking interactions by adding manual notes or wait for automated events from S38-S48 systems.
+                Start tracking interactions by adding manual notes or wait for
+                automated events from S38-S48 systems.
               </p>
               <button
                 onClick={() => setIsAddNoteModalOpen(true)}
@@ -304,12 +319,20 @@ export default function JournalistTimelinePage() {
           {pagination.total > 0 && (
             <div className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4">
               <div className="text-sm text-gray-600">
-                Showing {pagination.offset + 1} - {Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
+                Showing {pagination.offset + 1} -{' '}
+                {Math.min(
+                  pagination.offset + pagination.limit,
+                  pagination.total
+                )}{' '}
+                of {pagination.total}
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
-                    setPagination({ ...pagination, offset: Math.max(0, pagination.offset - pagination.limit) });
+                    setPagination({
+                      ...pagination,
+                      offset: Math.max(0, pagination.offset - pagination.limit),
+                    });
                     loadTimeline();
                   }}
                   disabled={pagination.offset === 0}
@@ -319,7 +342,10 @@ export default function JournalistTimelinePage() {
                 </button>
                 <button
                   onClick={() => {
-                    setPagination({ ...pagination, offset: pagination.offset + pagination.limit });
+                    setPagination({
+                      ...pagination,
+                      offset: pagination.offset + pagination.limit,
+                    });
                     loadTimeline();
                   }}
                   disabled={!pagination.hasMore}

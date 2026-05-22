@@ -170,16 +170,19 @@ export class MediaPerformanceService {
     // Apply filters
     if (filters.brandId) query = query.eq('brand_id', filters.brandId);
     if (filters.campaignId) query = query.eq('campaign_id', filters.campaignId);
-    if (filters.journalistId) query = query.eq('journalist_id', filters.journalistId);
+    if (filters.journalistId)
+      query = query.eq('journalist_id', filters.journalistId);
     if (filters.outletTier) query = query.eq('outlet_tier', filters.outletTier);
-    if (filters.topicCluster) query = query.eq('topic_cluster', filters.topicCluster);
+    if (filters.topicCluster)
+      query = query.eq('topic_cluster', filters.topicCluster);
     if (filters.startDate) query = query.gte('snapshot_at', filters.startDate);
     if (filters.endDate) query = query.lte('snapshot_at', filters.endDate);
     if (filters.aggregationPeriod)
       query = query.eq('aggregation_period', filters.aggregationPeriod);
     if (filters.hasAnomaly !== undefined)
       query = query.eq('has_anomaly', filters.hasAnomaly);
-    if (filters.minEviScore) query = query.gte('evi_score', filters.minEviScore);
+    if (filters.minEviScore)
+      query = query.gte('evi_score', filters.minEviScore);
     if (filters.minVisibilityScore)
       query = query.gte('visibility_score', filters.minVisibilityScore);
 
@@ -196,7 +199,10 @@ export class MediaPerformanceService {
   /**
    * Get snapshot by ID
    */
-  async getSnapshot(orgId: string, snapshotId: string): Promise<MediaPerformanceSnapshot> {
+  async getSnapshot(
+    orgId: string,
+    snapshotId: string
+  ): Promise<MediaPerformanceSnapshot> {
     const { data, error } = await this.supabase
       .from('media_performance_snapshots')
       .select('*')
@@ -266,8 +272,10 @@ export class MediaPerformanceService {
       .order('start_date', { ascending: false })
       .range(offset, offset + limit - 1);
 
-    if (filters.dimensionType) query = query.eq('dimension_type', filters.dimensionType);
-    if (filters.dimensionValue) query = query.eq('dimension_value', filters.dimensionValue);
+    if (filters.dimensionType)
+      query = query.eq('dimension_type', filters.dimensionType);
+    if (filters.dimensionValue)
+      query = query.eq('dimension_value', filters.dimensionValue);
     if (filters.startDate) query = query.gte('start_date', filters.startDate);
     if (filters.endDate) query = query.lte('end_date', filters.endDate);
 
@@ -290,7 +298,10 @@ export class MediaPerformanceService {
   /**
    * Create or update score
    */
-  async upsertScore(orgId: string, data: CreateScoreRequest): Promise<MediaPerformanceScore> {
+  async upsertScore(
+    orgId: string,
+    data: CreateScoreRequest
+  ): Promise<MediaPerformanceScore> {
     const { data: score, error } = await this.supabase
       .from('media_performance_scores')
       .upsert(
@@ -339,7 +350,8 @@ export class MediaPerformanceService {
     if (filters.scoreType) query = query.eq('score_type', filters.scoreType);
     if (filters.minScore) query = query.gte('score_value', filters.minScore);
     if (filters.maxScore) query = query.lte('score_value', filters.maxScore);
-    if (filters.startDate) query = query.gte('calculated_at', filters.startDate);
+    if (filters.startDate)
+      query = query.gte('calculated_at', filters.startDate);
     if (filters.endDate) query = query.lte('calculated_at', filters.endDate);
 
     const { data, error, count } = await query;
@@ -432,12 +444,16 @@ export class MediaPerformanceService {
       .range(offset, offset + limit - 1);
 
     if (filters.category) query = query.eq('category', filters.category);
-    if (filters.isRead !== undefined) query = query.eq('is_read', filters.isRead);
-    if (filters.isDismissed !== undefined) query = query.eq('is_dismissed', filters.isDismissed);
+    if (filters.isRead !== undefined)
+      query = query.eq('is_read', filters.isRead);
+    if (filters.isDismissed !== undefined)
+      query = query.eq('is_dismissed', filters.isDismissed);
     if (filters.relatedEntityType)
       query = query.eq('related_entity_type', filters.relatedEntityType);
-    if (filters.relatedEntityId) query = query.eq('related_entity_id', filters.relatedEntityId);
-    if (filters.minImpactScore) query = query.gte('impact_score', filters.minImpactScore);
+    if (filters.relatedEntityId)
+      query = query.eq('related_entity_id', filters.relatedEntityId);
+    if (filters.minImpactScore)
+      query = query.gte('impact_score', filters.minImpactScore);
     if (filters.startDate) query = query.gte('created_at', filters.startDate);
     if (filters.endDate) query = query.lte('created_at', filters.endDate);
 
@@ -473,7 +489,8 @@ export class MediaPerformanceService {
     const prompt = this.buildInsightPrompt(snapshot, category);
 
     const response = await routeLLM({
-      systemPrompt: 'You are a PR analytics expert. Generate actionable insights from media performance data.',
+      systemPrompt:
+        'You are a PR analytics expert. Generate actionable insights from media performance data.',
       userPrompt: prompt,
       responseFormat: 'json',
       schema: {
@@ -558,10 +575,16 @@ export class MediaPerformanceService {
     const currentValue = values[0] || 0;
     const previousValue = values[1] || 0;
     const changePct =
-      previousValue !== 0 ? ((currentValue - previousValue) / previousValue) * 100 : 0;
+      previousValue !== 0
+        ? ((currentValue - previousValue) / previousValue) * 100
+        : 0;
 
     const trendDirection: TrendDirection =
-      Math.abs(changePct) < 5 ? TrendDirection.STABLE : changePct > 0 ? TrendDirection.UP : TrendDirection.DOWN;
+      Math.abs(changePct) < 5
+        ? TrendDirection.STABLE
+        : changePct > 0
+          ? TrendDirection.UP
+          : TrendDirection.DOWN;
 
     return {
       metric,
@@ -571,7 +594,10 @@ export class MediaPerformanceService {
         previousValue,
         changePct,
         trendDirection,
-        avgValue: values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0,
+        avgValue:
+          values.length > 0
+            ? values.reduce((a, b) => a + b, 0) / values.length
+            : 0,
         maxValue: values.length > 0 ? Math.max(...values) : 0,
         minValue: values.length > 0 ? Math.min(...values) : 0,
       },
@@ -587,7 +613,11 @@ export class MediaPerformanceService {
     limit = 20
   ): Promise<GetAnomaliesResponse> {
     const anomalyFilters = { ...filters, hasAnomaly: true };
-    const { snapshots, total } = await this.getSnapshots(orgId, anomalyFilters, limit);
+    const { snapshots, total } = await this.getSnapshots(
+      orgId,
+      anomalyFilters,
+      limit
+    );
 
     const anomalies = await Promise.all(
       snapshots.map(async (snapshot) => {
@@ -607,7 +637,8 @@ export class MediaPerformanceService {
             anomalyType: (snapshot.anomalyType as AnomalyType) || undefined,
             magnitude: snapshot.anomalyMagnitude || 0,
             zScore: historicalData.stdDev
-              ? (snapshot.mentionCount - historicalData.avg) / historicalData.stdDev
+              ? (snapshot.mentionCount - historicalData.avg) /
+                historicalData.stdDev
               : 0,
           },
           context: {
@@ -650,16 +681,24 @@ export class MediaPerformanceService {
       totalMentions: snapshots.reduce((sum, s) => sum + s.mentionCount, 0),
       totalArticles: snapshots.reduce((sum, s) => sum + s.articleCount, 0),
       totalJournalists: new Set(
-        snapshots.flatMap((s) => s.topJournalists?.map((j) => j.journalistId) || [])
+        snapshots.flatMap(
+          (s) => s.topJournalists?.map((j) => j.journalistId) || []
+        )
       ).size,
       totalOutlets: snapshots.reduce((sum, s) => sum + s.outletCount, 0),
       avgSentiment:
-        snapshots.reduce((sum, s) => sum + (s.avgSentiment || 0), 0) / snapshots.length || 0,
-      estimatedReach: snapshots.reduce((sum, s) => sum + (s.estimatedReach || 0), 0),
+        snapshots.reduce((sum, s) => sum + (s.avgSentiment || 0), 0) /
+          snapshots.length || 0,
+      estimatedReach: snapshots.reduce(
+        (sum, s) => sum + (s.estimatedReach || 0),
+        0
+      ),
       avgVisibilityScore:
-        snapshots.reduce((sum, s) => sum + (s.visibilityScore || 0), 0) / snapshots.length || 0,
+        snapshots.reduce((sum, s) => sum + (s.visibilityScore || 0), 0) /
+          snapshots.length || 0,
       avgEviScore:
-        snapshots.reduce((sum, s) => sum + (s.eviScore || 0), 0) / snapshots.length || 0,
+        snapshots.reduce((sum, s) => sum + (s.eviScore || 0), 0) /
+          snapshots.length || 0,
     };
 
     // Calculate trends
@@ -668,9 +707,12 @@ export class MediaPerformanceService {
     const secondHalf = snapshots.slice(midpoint);
 
     const calcTrend = (metric: (s: MediaPerformanceSnapshot) => number) => {
-      const firstAvg = firstHalf.reduce((sum, s) => sum + metric(s), 0) / firstHalf.length || 0;
+      const firstAvg =
+        firstHalf.reduce((sum, s) => sum + metric(s), 0) / firstHalf.length ||
+        0;
       const secondAvg =
-        secondHalf.reduce((sum, s) => sum + metric(s), 0) / secondHalf.length || 0;
+        secondHalf.reduce((sum, s) => sum + metric(s), 0) / secondHalf.length ||
+        0;
       return firstAvg !== 0 ? ((secondAvg - firstAvg) / firstAvg) * 100 : 0;
     };
 
@@ -683,9 +725,27 @@ export class MediaPerformanceService {
 
     // Get top performers
     const topPerformers = {
-      campaigns: await this.getTopPerformers(orgId, 'campaign', startDate, endDate, 5),
-      journalists: await this.getTopPerformers(orgId, 'journalist', startDate, endDate, 5),
-      topics: await this.getTopPerformers(orgId, 'topic', startDate, endDate, 5),
+      campaigns: await this.getTopPerformers(
+        orgId,
+        'campaign',
+        startDate,
+        endDate,
+        5
+      ),
+      journalists: await this.getTopPerformers(
+        orgId,
+        'journalist',
+        startDate,
+        endDate,
+        5
+      ),
+      topics: await this.getTopPerformers(
+        orgId,
+        'topic',
+        startDate,
+        endDate,
+        5
+      ),
     };
 
     // Get latest insights
@@ -735,7 +795,8 @@ export class MediaPerformanceService {
       tierDistribution.tier3 +
       tierDistribution.tier4 +
       tierDistribution.unknown;
-    const normalizedTierScore = totalTier > 0 ? (tierScore / totalTier) * 100 : 0;
+    const normalizedTierScore =
+      totalTier > 0 ? (tierScore / totalTier) * 100 : 0;
 
     // Frequency score (log scale)
     const frequencyScore = Math.min(100, Math.log10(mentionCount + 1) * 20);
@@ -743,7 +804,12 @@ export class MediaPerformanceService {
     // Share of voice score (already 0-100)
     const sovScore = shareOfVoice;
 
-    return reachScore * 0.3 + normalizedTierScore * 0.3 + frequencyScore * 0.2 + sovScore * 0.2;
+    return (
+      reachScore * 0.3 +
+      normalizedTierScore * 0.3 +
+      frequencyScore * 0.2 +
+      sovScore * 0.2
+    );
   }
 
   /**
@@ -773,12 +839,16 @@ export class MediaPerformanceService {
       tierDistribution.tier3 +
       tierDistribution.tier4 +
       tierDistribution.unknown;
-    const normalizedTierScore = totalTier > 0 ? (tierScore / totalTier) * 100 : 0;
+    const normalizedTierScore =
+      totalTier > 0 ? (tierScore / totalTier) * 100 : 0;
 
     const frequencyScore = Math.min(100, Math.log10(mentionCount + 1) * 20);
 
     const eviScore =
-      reachScore * 0.3 + sentimentScore * 0.25 + normalizedTierScore * 0.3 + frequencyScore * 0.15;
+      reachScore * 0.3 +
+      sentimentScore * 0.25 +
+      normalizedTierScore * 0.3 +
+      frequencyScore * 0.15;
 
     return Math.max(0, Math.min(100, eviScore));
   }
@@ -792,7 +862,9 @@ export class MediaPerformanceService {
     windowDays = 90
   ): Promise<number> {
     const endDate = new Date();
-    const startDate = new Date(endDate.getTime() - windowDays * 24 * 60 * 60 * 1000);
+    const startDate = new Date(
+      endDate.getTime() - windowDays * 24 * 60 * 60 * 1000
+    );
 
     const { snapshots } = await this.getSnapshots(
       orgId,
@@ -822,7 +894,8 @@ export class MediaPerformanceService {
 
     // Sentiment bonus (30%)
     const avgSentiment =
-      snapshots.reduce((sum, s) => sum + (s.avgSentiment || 0), 0) / snapshots.length;
+      snapshots.reduce((sum, s) => sum + (s.avgSentiment || 0), 0) /
+      snapshots.length;
     const sentimentBonus = (avgSentiment + 1) * 50 * 0.3;
 
     return frequencyScore * 0.3 + tierScore * 0.4 + sentimentBonus;
@@ -837,9 +910,15 @@ export class MediaPerformanceService {
     windowDays = 30
   ): Promise<number> {
     const endDate = new Date();
-    const startDate = new Date(endDate.getTime() - windowDays * 24 * 60 * 60 * 1000);
+    const startDate = new Date(
+      endDate.getTime() - windowDays * 24 * 60 * 60 * 1000
+    );
 
-    const { snapshots } = await this.getSnapshots(orgId, { brandId, startDate, endDate }, 1000);
+    const { snapshots } = await this.getSnapshots(
+      orgId,
+      { brandId, startDate, endDate },
+      1000
+    );
 
     if (snapshots.length < 2) return 100;
 
@@ -851,7 +930,8 @@ export class MediaPerformanceService {
 
     const mean = sentiments.reduce((sum, s) => sum + s, 0) / sentiments.length;
     const variance =
-      sentiments.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) / sentiments.length;
+      sentiments.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) /
+      sentiments.length;
     const stdDev = Math.sqrt(variance);
 
     // Convert stdDev to stability score (lower variance = higher stability)
@@ -869,7 +949,12 @@ export class MediaPerformanceService {
     campaignId?: string,
     thresholdSigma = 2.0
   ): Promise<AnomalyDetection> {
-    const stats = await this.getHistoricalStats(orgId, metric, brandId, campaignId);
+    const stats = await this.getHistoricalStats(
+      orgId,
+      metric,
+      brandId,
+      campaignId
+    );
 
     if (stats.count < 3 || stats.stdDev === 0) {
       return { hasAnomaly: false, magnitude: 0, zScore: 0 };
@@ -908,7 +993,9 @@ export class MediaPerformanceService {
     windowDays = 30
   ): Promise<{ avg: number; stdDev: number; count: number }> {
     const endDate = new Date();
-    const startDate = new Date(endDate.getTime() - windowDays * 24 * 60 * 60 * 1000);
+    const startDate = new Date(
+      endDate.getTime() - windowDays * 24 * 60 * 60 * 1000
+    );
 
     const { snapshots } = await this.getSnapshots(
       orgId,
@@ -922,7 +1009,8 @@ export class MediaPerformanceService {
 
     const values = snapshots.map((s) => s.mentionCount);
     const avg = values.reduce((sum, v) => sum + v, 0) / values.length;
-    const variance = values.reduce((sum, v) => sum + Math.pow(v - avg, 2), 0) / values.length;
+    const variance =
+      values.reduce((sum, v) => sum + Math.pow(v - avg, 2), 0) / values.length;
     const stdDev = Math.sqrt(variance);
 
     return { avg, stdDev, count: values.length };
@@ -962,7 +1050,10 @@ export class MediaPerformanceService {
   /**
    * Build insight prompt for LLM
    */
-  private buildInsightPrompt(snapshot: MediaPerformanceSnapshot, category: InsightCategory): string {
+  private buildInsightPrompt(
+    snapshot: MediaPerformanceSnapshot,
+    category: InsightCategory
+  ): string {
     return `
 Analyze the following media performance snapshot and generate a ${category} insight:
 
@@ -1087,8 +1178,12 @@ Generate:
       llmPromptVersion: row.llm_prompt_version,
       relatedEntityType: row.related_entity_type,
       relatedEntityId: row.related_entity_id,
-      timeWindowStart: row.time_window_start ? new Date(row.time_window_start) : undefined,
-      timeWindowEnd: row.time_window_end ? new Date(row.time_window_end) : undefined,
+      timeWindowStart: row.time_window_start
+        ? new Date(row.time_window_start)
+        : undefined,
+      timeWindowEnd: row.time_window_end
+        ? new Date(row.time_window_end)
+        : undefined,
       impactScore: row.impact_score,
       confidenceScore: row.confidence_score,
       supportingData: row.supporting_data,

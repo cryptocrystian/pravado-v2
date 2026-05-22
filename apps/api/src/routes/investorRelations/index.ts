@@ -12,7 +12,9 @@
  */
 
 import { FLAGS } from '@pravado/feature-flags';
-import { validateEnv, apiEnvSchema ,
+import {
+  validateEnv,
+  apiEnvSchema,
   createInvestorPackSchema,
   updateInvestorPackSchema,
   listInvestorPacksQuerySchema,
@@ -83,7 +85,10 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
   }
 
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const service = createInvestorRelationsService({
     supabase,
     openaiApiKey: env.LLM_OPENAI_API_KEY || '',
@@ -103,14 +108,18 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
     try {
       const orgId = getOrgId(request);
       const validated = listInvestorPacksQuerySchema.parse(request.query);
-      const response = await service.listPacks(orgId, validated as ListInvestorPacksQuery);
+      const response = await service.listPacks(
+        orgId,
+        validated as ListInvestorPacksQuery
+      );
 
       return reply.send({
         success: true,
         data: response,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error listing investor packs');
       return reply.status(500).send({
         success: false,
@@ -129,19 +138,27 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
       const userId = getUserId(request);
       const userEmail = getUserEmail(request);
       const validated = createInvestorPackSchema.parse(request.body);
-      const pack = await service.createPack(orgId, userId, userEmail, validated as CreateInvestorPack);
+      const pack = await service.createPack(
+        orgId,
+        userId,
+        userEmail,
+        validated as CreateInvestorPack
+      );
 
       return reply.status(201).send({
         success: true,
         data: pack,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error creating investor pack');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+      return reply
+        .status(errorMessage.includes('validation') ? 400 : 500)
+        .send({
+          success: false,
+          error: errorMessage,
+        });
     }
   });
 
@@ -159,7 +176,8 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
         data: stats,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error getting pack stats');
       return reply.status(500).send({
         success: false,
@@ -190,7 +208,8 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
         data: pack,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error getting investor pack');
       return reply.status(500).send({
         success: false,
@@ -210,7 +229,13 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
       const userEmail = getUserEmail(request);
       const { id } = investorPackIdParamSchema.parse(request.params);
       const validated = updateInvestorPackSchema.parse(request.body);
-      const pack = await service.updatePack(orgId, id, userId, userEmail, validated as UpdateInvestorPack);
+      const pack = await service.updatePack(
+        orgId,
+        id,
+        userId,
+        userEmail,
+        validated as UpdateInvestorPack
+      );
 
       if (!pack) {
         return reply.status(404).send({
@@ -224,7 +249,8 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
         data: pack,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error updating investor pack');
       return reply.status(500).send({
         success: false,
@@ -237,34 +263,38 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
    * DELETE /investor-relations/:id
    * Delete an investor pack
    */
-  server.delete('/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const userEmail = getUserEmail(request);
-      const { id } = investorPackIdParamSchema.parse(request.params);
-      const success = await service.deletePack(orgId, id, userId, userEmail);
+  server.delete(
+    '/:id',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const userEmail = getUserEmail(request);
+        const { id } = investorPackIdParamSchema.parse(request.params);
+        const success = await service.deletePack(orgId, id, userId, userEmail);
 
-      if (!success) {
-        return reply.status(404).send({
+        if (!success) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Pack not found or already deleted',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          message: 'Pack deleted successfully',
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error deleting investor pack');
+        return reply.status(500).send({
           success: false,
-          error: 'Pack not found or already deleted',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        message: 'Pack deleted successfully',
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error deleting investor pack');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   // =========================================================================
   // PACK WORKFLOW ENDPOINTS
@@ -274,130 +304,170 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
    * POST /investor-relations/:id/generate
    * Generate or regenerate pack content
    */
-  server.post('/:id/generate', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const userEmail = getUserEmail(request);
-      const { id } = investorPackIdParamSchema.parse(request.params);
-      const validated = generateInvestorPackSchema.parse(request.body || {});
-      const response = await service.generatePack(orgId, id, userId, userEmail, validated as GenerateInvestorPack);
+  server.post(
+    '/:id/generate',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const userEmail = getUserEmail(request);
+        const { id } = investorPackIdParamSchema.parse(request.params);
+        const validated = generateInvestorPackSchema.parse(request.body || {});
+        const response = await service.generatePack(
+          orgId,
+          id,
+          userId,
+          userEmail,
+          validated as GenerateInvestorPack
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error generating investor pack');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error generating investor pack');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   /**
    * POST /investor-relations/:id/approve
    * Approve an investor pack
    */
-  server.post('/:id/approve', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const userEmail = getUserEmail(request);
-      const { id } = investorPackIdParamSchema.parse(request.params);
-      const validated = approveInvestorPackSchema.parse(request.body || {});
-      const pack = await service.approvePack(orgId, id, userId, userEmail, validated as ApproveInvestorPack);
+  server.post(
+    '/:id/approve',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const userEmail = getUserEmail(request);
+        const { id } = investorPackIdParamSchema.parse(request.params);
+        const validated = approveInvestorPackSchema.parse(request.body || {});
+        const pack = await service.approvePack(
+          orgId,
+          id,
+          userId,
+          userEmail,
+          validated as ApproveInvestorPack
+        );
 
-      if (!pack) {
-        return reply.status(400).send({
+        if (!pack) {
+          return reply.status(400).send({
+            success: false,
+            error: 'Pack not found or not in review status',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: pack,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error approving investor pack');
+        return reply.status(500).send({
           success: false,
-          error: 'Pack not found or not in review status',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: pack,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error approving investor pack');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * POST /investor-relations/:id/publish
    * Publish an investor pack
    */
-  server.post('/:id/publish', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const userEmail = getUserEmail(request);
-      const { id } = investorPackIdParamSchema.parse(request.params);
-      const validated = publishInvestorPackSchema.parse(request.body || {});
-      const response = await service.publishPack(orgId, id, userId, userEmail, validated as PublishInvestorPack);
+  server.post(
+    '/:id/publish',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const userEmail = getUserEmail(request);
+        const { id } = investorPackIdParamSchema.parse(request.params);
+        const validated = publishInvestorPackSchema.parse(request.body || {});
+        const response = await service.publishPack(
+          orgId,
+          id,
+          userId,
+          userEmail,
+          validated as PublishInvestorPack
+        );
 
-      if (!response) {
-        return reply.status(400).send({
+        if (!response) {
+          return reply.status(400).send({
+            success: false,
+            error: 'Pack not found or not in approved status',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error publishing investor pack');
+        return reply.status(500).send({
           success: false,
-          error: 'Pack not found or not in approved status',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error publishing investor pack');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * POST /investor-relations/:id/archive
    * Archive an investor pack
    */
-  server.post('/:id/archive', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const userEmail = getUserEmail(request);
-      const { id } = investorPackIdParamSchema.parse(request.params);
-      const validated = archiveInvestorPackSchema.parse(request.body || {});
-      const pack = await service.archivePack(orgId, id, userId, userEmail, validated as ArchiveInvestorPack);
+  server.post(
+    '/:id/archive',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const userEmail = getUserEmail(request);
+        const { id } = investorPackIdParamSchema.parse(request.params);
+        const validated = archiveInvestorPackSchema.parse(request.body || {});
+        const pack = await service.archivePack(
+          orgId,
+          id,
+          userId,
+          userEmail,
+          validated as ArchiveInvestorPack
+        );
 
-      if (!pack) {
-        return reply.status(404).send({
+        if (!pack) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Pack not found',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: pack,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error archiving investor pack');
+        return reply.status(500).send({
           success: false,
-          error: 'Pack not found',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: pack,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error archiving investor pack');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   // =========================================================================
   // SECTION MANAGEMENT ENDPOINTS
@@ -407,96 +477,134 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
    * PATCH /investor-relations/:id/sections/:sectionId
    * Update a pack section
    */
-  server.patch('/:id/sections/:sectionId', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const userEmail = getUserEmail(request);
-      const { id, sectionId } = investorPackSectionParamSchema.parse(request.params);
-      const validated = updateInvestorSectionSchema.parse(request.body);
-      const section = await service.updateSection(orgId, id, sectionId, userId, userEmail, validated as UpdateInvestorSection);
+  server.patch(
+    '/:id/sections/:sectionId',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const userEmail = getUserEmail(request);
+        const { id, sectionId } = investorPackSectionParamSchema.parse(
+          request.params
+        );
+        const validated = updateInvestorSectionSchema.parse(request.body);
+        const section = await service.updateSection(
+          orgId,
+          id,
+          sectionId,
+          userId,
+          userEmail,
+          validated as UpdateInvestorSection
+        );
 
-      if (!section) {
-        return reply.status(404).send({
+        if (!section) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Section not found',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: section,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error updating pack section');
+        return reply.status(500).send({
           success: false,
-          error: 'Section not found',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: section,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error updating pack section');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * POST /investor-relations/:id/sections/:sectionId/regenerate
    * Regenerate a specific section
    */
-  server.post('/:id/sections/:sectionId/regenerate', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const userEmail = getUserEmail(request);
-      const { id, sectionId } = investorPackSectionParamSchema.parse(request.params);
-      const validated = regenerateInvestorSectionSchema.parse(request.body || {});
-      const section = await service.regenerateSection(orgId, id, sectionId, userId, userEmail, validated as RegenerateInvestorSection);
+  server.post(
+    '/:id/sections/:sectionId/regenerate',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const userEmail = getUserEmail(request);
+        const { id, sectionId } = investorPackSectionParamSchema.parse(
+          request.params
+        );
+        const validated = regenerateInvestorSectionSchema.parse(
+          request.body || {}
+        );
+        const section = await service.regenerateSection(
+          orgId,
+          id,
+          sectionId,
+          userId,
+          userEmail,
+          validated as RegenerateInvestorSection
+        );
 
-      if (!section) {
-        return reply.status(404).send({
+        if (!section) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Section not found',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: section,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error regenerating pack section');
+        return reply.status(500).send({
           success: false,
-          error: 'Section not found',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: section,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error regenerating pack section');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * POST /investor-relations/:id/sections/reorder
    * Reorder pack sections
    */
-  server.post('/:id/sections/reorder', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const userEmail = getUserEmail(request);
-      const { id } = investorPackIdParamSchema.parse(request.params);
-      const validated = reorderInvestorSectionsSchema.parse(request.body);
-      const sections = await service.reorderSections(orgId, id, userId, userEmail, validated as ReorderInvestorSections);
+  server.post(
+    '/:id/sections/reorder',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const userEmail = getUserEmail(request);
+        const { id } = investorPackIdParamSchema.parse(request.params);
+        const validated = reorderInvestorSectionsSchema.parse(request.body);
+        const sections = await service.reorderSections(
+          orgId,
+          id,
+          userId,
+          userEmail,
+          validated as ReorderInvestorSections
+        );
 
-      return reply.send({
-        success: true,
-        data: sections,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error reordering pack sections');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: sections,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error reordering pack sections');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   // =========================================================================
   // Q&A MANAGEMENT ENDPOINTS
@@ -510,14 +618,18 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
     try {
       const orgId = getOrgId(request);
       const validated = listInvestorQnAQuerySchema.parse(request.query);
-      const response = await service.listQnAs(orgId, validated as ListInvestorQnAQuery);
+      const response = await service.listQnAs(
+        orgId,
+        validated as ListInvestorQnAQuery
+      );
 
       return reply.send({
         success: true,
         data: response,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error listing Q&As');
       return reply.status(500).send({
         success: false,
@@ -536,14 +648,20 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
       const userId = getUserId(request);
       const userEmail = getUserEmail(request);
       const validated = createInvestorQnASchema.parse(request.body);
-      const qna = await service.createQnA(orgId, userId, userEmail, validated as CreateInvestorQnA);
+      const qna = await service.createQnA(
+        orgId,
+        userId,
+        userEmail,
+        validated as CreateInvestorQnA
+      );
 
       return reply.status(201).send({
         success: true,
         data: qna,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error creating Q&A');
       return reply.status(500).send({
         success: false,
@@ -556,92 +674,115 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
    * POST /investor-relations/qna/generate
    * Generate Q&A entries using AI
    */
-  server.post('/qna/generate', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const userEmail = getUserEmail(request);
-      const validated = generateInvestorQnASchema.parse(request.body);
-      const response = await service.generateQnAs(orgId, userId, userEmail, validated as GenerateInvestorQnA);
+  server.post(
+    '/qna/generate',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const userEmail = getUserEmail(request);
+        const validated = generateInvestorQnASchema.parse(request.body);
+        const response = await service.generateQnAs(
+          orgId,
+          userId,
+          userEmail,
+          validated as GenerateInvestorQnA
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error generating Q&As');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error generating Q&As');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   /**
    * PATCH /investor-relations/qna/:qnaId
    * Update a Q&A entry
    */
-  server.patch('/qna/:qnaId', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const userEmail = getUserEmail(request);
-      const { qnaId } = investorQnAIdParamSchema.parse(request.params);
-      const validated = updateInvestorQnASchema.parse(request.body);
-      const qna = await service.updateQnA(orgId, qnaId, userId, userEmail, validated as UpdateInvestorQnA);
+  server.patch(
+    '/qna/:qnaId',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const userEmail = getUserEmail(request);
+        const { qnaId } = investorQnAIdParamSchema.parse(request.params);
+        const validated = updateInvestorQnASchema.parse(request.body);
+        const qna = await service.updateQnA(
+          orgId,
+          qnaId,
+          userId,
+          userEmail,
+          validated as UpdateInvestorQnA
+        );
 
-      if (!qna) {
-        return reply.status(404).send({
+        if (!qna) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Q&A not found',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: qna,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error updating Q&A');
+        return reply.status(500).send({
           success: false,
-          error: 'Q&A not found',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: qna,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error updating Q&A');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * DELETE /investor-relations/qna/:qnaId
    * Delete a Q&A entry
    */
-  server.delete('/qna/:qnaId', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { qnaId } = investorQnAIdParamSchema.parse(request.params);
-      const success = await service.deleteQnA(orgId, qnaId);
+  server.delete(
+    '/qna/:qnaId',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { qnaId } = investorQnAIdParamSchema.parse(request.params);
+        const success = await service.deleteQnA(orgId, qnaId);
 
-      if (!success) {
-        return reply.status(404).send({
+        if (!success) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Q&A not found or already deleted',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          message: 'Q&A deleted successfully',
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error deleting Q&A');
+        return reply.status(500).send({
           success: false,
-          error: 'Q&A not found or already deleted',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        message: 'Q&A deleted successfully',
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error deleting Q&A');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   // =========================================================================
   // AUDIT LOG ENDPOINTS
@@ -655,14 +796,18 @@ export async function investorRelationsRoutes(server: FastifyInstance) {
     try {
       const orgId = getOrgId(request);
       const validated = listInvestorAuditLogQuerySchema.parse(request.query);
-      const response = await service.listAuditLogs(orgId, validated as ListInvestorAuditLogQuery);
+      const response = await service.listAuditLogs(
+        orgId,
+        validated as ListInvestorAuditLogQuery
+      );
 
       return reply.send({
         success: true,
         data: response,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error listing audit logs');
       return reply.status(500).send({
         success: false,

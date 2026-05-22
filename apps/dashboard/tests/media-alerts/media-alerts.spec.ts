@@ -20,18 +20,24 @@ test.describe('Media Alerts Page', () => {
     test('should display three-panel layout', async ({ page }) => {
       // Left panel - Alert Rules
       await expect(page.getByText('Alert Rules')).toBeVisible();
-      await expect(page.getByText('Manage monitoring conditions')).toBeVisible();
+      await expect(
+        page.getByText('Manage monitoring conditions')
+      ).toBeVisible();
 
       // Center panel - Events
       await expect(page.getByText('Media Alerts')).toBeVisible();
 
       // Right panel - Signals
       await expect(page.getByText('Smart Signals')).toBeVisible();
-      await expect(page.getByText('Real-time monitoring overview')).toBeVisible();
+      await expect(
+        page.getByText('Real-time monitoring overview')
+      ).toBeVisible();
     });
 
     test('should display New Rule button', async ({ page }) => {
-      await expect(page.getByRole('button', { name: /new rule/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /new rule/i })
+      ).toBeVisible();
     });
   });
 
@@ -67,7 +73,9 @@ test.describe('Media Alerts Page', () => {
       const options = await typeSelect.locator('option').allTextContents();
       expect(options.some((opt) => opt.includes('Mention Match'))).toBeTruthy();
       expect(options.some((opt) => opt.includes('Volume Spike'))).toBeTruthy();
-      expect(options.some((opt) => opt.includes('Sentiment Shift'))).toBeTruthy();
+      expect(
+        options.some((opt) => opt.includes('Sentiment Shift'))
+      ).toBeTruthy();
     });
 
     test('should close form on cancel', async ({ page }) => {
@@ -83,7 +91,9 @@ test.describe('Media Alerts Page', () => {
 
   test.describe('Alert Events', () => {
     test('should display events list or empty state', async ({ page }) => {
-      const hasEvents = await page.locator('[class*="bg-white border rounded-lg"]').count();
+      const hasEvents = await page
+        .locator('[class*="bg-white border rounded-lg"]')
+        .count();
       const hasEmptyState = await page.getByText('No alerts yet').isVisible();
 
       expect(hasEvents > 0 || hasEmptyState).toBeTruthy();
@@ -93,14 +103,20 @@ test.describe('Media Alerts Page', () => {
       // If empty, should show helpful message
       const emptyState = await page.getByText('No alerts yet').isVisible();
       if (emptyState) {
-        await expect(page.getByText('When your alert rules trigger, events will appear here')).toBeVisible();
+        await expect(
+          page.getByText(
+            'When your alert rules trigger, events will appear here'
+          )
+        ).toBeVisible();
       }
     });
   });
 
   test.describe('Signals Overview', () => {
     test('should display refresh button', async ({ page }) => {
-      await expect(page.getByRole('button', { name: /refresh signals/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /refresh signals/i })
+      ).toBeVisible();
     });
 
     test('should display statistics sections', async ({ page }) => {

@@ -1,12 +1,14 @@
 # PRAVADO v2 — CANON INDEX
+
 Version: v2.0
 Last updated: 2026-04-22
 
-> **CONFLICT RESOLUTION RULE:** When two canon files disagree, the higher priority file wins. Priority order: PRODUCT_CONSTITUTION → SAGE/CRAFT → DS v3 → UX Flows/Modes → UX Surfaces → V1 Freeze Contracts (per surface) → Plans/Limits → contracts/*. Full chain documented in `/CLAUDE.md`.
+> **CONFLICT RESOLUTION RULE:** When two canon files disagree, the higher priority file wins. Priority order: PRODUCT_CONSTITUTION → SAGE/CRAFT → DS v3 → UX Flows/Modes → UX Surfaces → V1 Freeze Contracts (per surface) → Plans/Limits → contracts/\*. Full chain documented in `/CLAUDE.md`.
 
 > **SUPERSEDED FILES:** Files marked ~~strikethrough~~ or **SUPERSEDED** below have been archived to `docs/_archive/canon-superseded/`. They are non-authoritative. Do not implement from them.
 
 ## Purpose
+
 This index lists every canonical file that must exist, what it's for, and its category.
 
 ---
@@ -50,13 +52,16 @@ When in doubt, ask the architect before committing.
 All UI development, surfaces, and user-facing features MUST be implemented in this single application.
 
 ### Rules
+
 - `apps/dashboard` is the ONLY authorized UI application
 - Creating a new UI app (e.g., `apps/command-center`, `apps/mobile`) requires a **Canon Amendment PR**
 - Canon Amendment PRs must follow the `CHANGE_CONTROL.md` process
 - The amendment must justify why a separate app is necessary vs. extending `apps/dashboard`
 
 ### Rationale
+
 A single canonical UI app ensures:
+
 - Consistent design system application
 - Unified routing and navigation
 - Shared component library
@@ -65,65 +70,67 @@ A single canonical UI app ensures:
 ---
 
 ## A) Governance Canon
+
 These files exist to prevent drift and ensure development discipline:
 
-| File | Purpose |
-|------|---------|
-| `BOOT_PROMPT.md` | Initial session context for Claude |
-| `CLAUDE_CODE_PROMPT.md` | Claude Code specific instructions |
-| `CHANGE_CONTROL.md` | Process for modifying canon |
-| `DECISIONS_LOG.md` | Record of architectural decisions |
-| `CI_GATES_CHECKLIST.md` | Quality gates for CI/CD |
-| `SPRINT_ZERO_DEMO_SCRIPT.md` | Demo script for sprint reviews |
+| File                                | Purpose                                                     |
+| ----------------------------------- | ----------------------------------------------------------- |
+| `BOOT_PROMPT.md`                    | Initial session context for Claude                          |
+| `CLAUDE_CODE_PROMPT.md`             | Claude Code specific instructions                           |
+| `CHANGE_CONTROL.md`                 | Process for modifying canon                                 |
+| `DECISIONS_LOG.md`                  | Record of architectural decisions                           |
+| `CI_GATES_CHECKLIST.md`             | Quality gates for CI/CD                                     |
+| `SPRINT_ZERO_DEMO_SCRIPT.md`        | Demo script for sprint reviews                              |
 | `JOURNALIST_DATABASE_GOVERNANCE.md` | Journalist database compliance, consent, retention policies |
-| `SPRINT_PLAN.md` | Sprint planning and tracking conventions |
+| `SPRINT_PLAN.md`                    | Sprint planning and tracking conventions                    |
 
 ---
 
 ## B) Product Canon
+
 These files define WHAT Pravado is and HOW it should work:
 
-| File | Purpose |
-|------|---------|
-| `PRODUCT_CONSTITUTION.md` | Mission, non-negotiables, success definition |
-| `SAGE_v2.md` | Strategy mesh specification (S-A-G-E) |
-| `CRAFT_v2.md` | Execution layer specification |
-| `UX_SURFACES.md` | The 7 canonical user-facing surfaces |
-| `COMMAND-CENTER-UI.md` | Command Center interaction patterns and styling |
-| `CORE_UX_FLOWS.md` | The 7 canonical user flows |
-| `DS_v3_PRINCIPLES.md` | Design system principles |
-| `DS_v3_1_EXPRESSION.md` | Design tokens and expression |
-| `DS_v3_COMPLIANCE_CHECKLIST.md` | **Pre-commit self-check, banned token list, pass/fail criteria** — Read before any UI work |
-| `AUTOMATION_MODES_UX.md` | Manual/Copilot/Autopilot UX patterns (thin summary) |
-| `AUTOMATION_MODE_CONTRACTS_CANON.md` | Mode semantic + behavioral contracts (authority boundaries) |
-| `MODE_UX_ARCHITECTURE.md` | **Governance system, component contracts, layout-switching logic, ModeSwitcher spec** |
-| `AI_VISUAL_COMMUNICATION_CANON.md` | AI state, confidence, and motion principles |
-| ~~`CONTENT_MODE_UX_THESIS.md`~~ | ~~User mental models~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
-| ~~`EDITOR_IDENTITY_CANON.md`~~ | ~~Editor boundaries~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
-| ~~`INFORMATION_DENSITY_HIERARCHY_CANON.md`~~ | ~~Typography, density~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
-| ~~`ACTION_GRAVITY_CTA_CANON.md`~~ | ~~CTA placement~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
-| ~~`EDITOR_ACTION_PERSISTENCE_CANON.md`~~ | ~~Action persistence~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
-| `PLANS_LIMITS_ENTITLEMENTS.md` | Pricing tiers and limits |
-| `PR_PILLAR_MODEL.md` | PR pillar operating model (Influence Orchestration) |
-| `CONTENT_PILLAR_CANON.md` | Authoritative specification for Content work surface |
-| `CONTENT_PILLAR_SYSTEM.md` | Content pillar system model (objects, views, agents, playbooks) |
-| `SEO_AEO_CONTINUITY_ADDENDUM.md` | SEO/AEO invariants and forbidden patterns (v0.1 — extended by SEO_AEO_PILLAR_CANON) |
-| `SEO_AEO_PILLAR_CANON.md` | **Full SEO/AEO pillar spec** — Three-layer model, AEO score, Share of Model, CiteMind integration, competitive position, work surface definition |
+| File                                         | Purpose                                                                                                                                          |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `PRODUCT_CONSTITUTION.md`                    | Mission, non-negotiables, success definition                                                                                                     |
+| `SAGE_v2.md`                                 | Strategy mesh specification (S-A-G-E)                                                                                                            |
+| `CRAFT_v2.md`                                | Execution layer specification                                                                                                                    |
+| `UX_SURFACES.md`                             | The 7 canonical user-facing surfaces                                                                                                             |
+| `COMMAND-CENTER-UI.md`                       | Command Center interaction patterns and styling                                                                                                  |
+| `CORE_UX_FLOWS.md`                           | The 7 canonical user flows                                                                                                                       |
+| `DS_v3_PRINCIPLES.md`                        | Design system principles                                                                                                                         |
+| `DS_v3_1_EXPRESSION.md`                      | Design tokens and expression                                                                                                                     |
+| `DS_v3_COMPLIANCE_CHECKLIST.md`              | **Pre-commit self-check, banned token list, pass/fail criteria** — Read before any UI work                                                       |
+| `AUTOMATION_MODES_UX.md`                     | Manual/Copilot/Autopilot UX patterns (thin summary)                                                                                              |
+| `AUTOMATION_MODE_CONTRACTS_CANON.md`         | Mode semantic + behavioral contracts (authority boundaries)                                                                                      |
+| `MODE_UX_ARCHITECTURE.md`                    | **Governance system, component contracts, layout-switching logic, ModeSwitcher spec**                                                            |
+| `AI_VISUAL_COMMUNICATION_CANON.md`           | AI state, confidence, and motion principles                                                                                                      |
+| ~~`CONTENT_MODE_UX_THESIS.md`~~              | ~~User mental models~~ **ARCHIVED** → `docs/_archive/canon-superseded/`                                                                          |
+| ~~`EDITOR_IDENTITY_CANON.md`~~               | ~~Editor boundaries~~ **ARCHIVED** → `docs/_archive/canon-superseded/`                                                                           |
+| ~~`INFORMATION_DENSITY_HIERARCHY_CANON.md`~~ | ~~Typography, density~~ **ARCHIVED** → `docs/_archive/canon-superseded/`                                                                         |
+| ~~`ACTION_GRAVITY_CTA_CANON.md`~~            | ~~CTA placement~~ **ARCHIVED** → `docs/_archive/canon-superseded/`                                                                               |
+| ~~`EDITOR_ACTION_PERSISTENCE_CANON.md`~~     | ~~Action persistence~~ **ARCHIVED** → `docs/_archive/canon-superseded/`                                                                          |
+| `PLANS_LIMITS_ENTITLEMENTS.md`               | Pricing tiers and limits                                                                                                                         |
+| `PR_PILLAR_MODEL.md`                         | PR pillar operating model (Influence Orchestration)                                                                                              |
+| `CONTENT_PILLAR_CANON.md`                    | Authoritative specification for Content work surface                                                                                             |
+| `CONTENT_PILLAR_SYSTEM.md`                   | Content pillar system model (objects, views, agents, playbooks)                                                                                  |
+| `SEO_AEO_CONTINUITY_ADDENDUM.md`             | SEO/AEO invariants and forbidden patterns (v0.1 — extended by SEO_AEO_PILLAR_CANON)                                                              |
+| `SEO_AEO_PILLAR_CANON.md`                    | **Full SEO/AEO pillar spec** — Three-layer model, AEO score, Share of Model, CiteMind integration, competitive position, work surface definition |
 
 ### Work Surfaces (Product Canon)
 
 These files define layout and interaction patterns specific to work surfaces:
 
-| File | Purpose |
-|------|---------|
-| `work/WORK_SURFACE_CONTRACT.md` | **AUTHORITATIVE** - Consolidated work surface requirements |
-| `work/WORK_SURFACE_QA_GATE.md` | **AUTHORITATIVE** - Pass/fail verification checks |
-| `work/CONTENT_WORK_SURFACE_RECONSTRUCTION.md` | Content work surface reconstruction from canon sources |
-| ~~`work/EDITOR_FOCUS_LAYOUT_CANON.md`~~ | ~~Focus layout~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
-| `COMPETITIVE_INTELLIGENCE_2026.md` | Competitive intelligence model and surfaces |
-| `CONTENT_REBUILD_BRIEF.md` | Content surface rebuild brief and scope |
-| `SAGE_ARCHITECTURE.md` | SAGE architectural diagrams and component boundaries |
-| `UX_CONTINUITY_CANON.md` | Cross-surface UX continuity rules |
+| File                                          | Purpose                                                           |
+| --------------------------------------------- | ----------------------------------------------------------------- |
+| `work/WORK_SURFACE_CONTRACT.md`               | **AUTHORITATIVE** - Consolidated work surface requirements        |
+| `work/WORK_SURFACE_QA_GATE.md`                | **AUTHORITATIVE** - Pass/fail verification checks                 |
+| `work/CONTENT_WORK_SURFACE_RECONSTRUCTION.md` | Content work surface reconstruction from canon sources            |
+| ~~`work/EDITOR_FOCUS_LAYOUT_CANON.md`~~       | ~~Focus layout~~ **ARCHIVED** → `docs/_archive/canon-superseded/` |
+| `COMPETITIVE_INTELLIGENCE_2026.md`            | Competitive intelligence model and surfaces                       |
+| `CONTENT_REBUILD_BRIEF.md`                    | Content surface rebuild brief and scope                           |
+| `SAGE_ARCHITECTURE.md`                        | SAGE architectural diagrams and component boundaries              |
+| `UX_CONTINUITY_CANON.md`                      | Cross-surface UX continuity rules                                 |
 
 > **Note:** `WORK_SURFACE_CONTRACT.md` consolidates and supersedes multiple micro-canons.
 > See the contract for the list of superseded documents.
@@ -131,54 +138,59 @@ These files define layout and interaction patterns specific to work surfaces:
 ---
 
 ## C) V1 Freeze Contracts
+
 These files define FROZEN behavior for V1 release:
 
-| File | Purpose |
-|------|---------|
-| `COMMAND_CENTER_CONTRACT.md` | V1 freeze contract for Command Center |
-| `COMMAND_CENTER_GOLDEN_FLOW.md` | THE single prioritized user flow |
-| `ENTITY_MAP_CONTRACT.md` | Entity Map semantic contract |
-| `ORCHESTRATION_CALENDAR_CONTRACT.md` | Calendar semantic contract |
-| `EARNED_VISIBILITY_INDEX.md` | EVI calculation and display |
-| `ENTITY-MAP-SAGE.md` | Entity Map SAGE-native specification |
-| `PR_WORK_SURFACE_CONTRACT.md` | V1 freeze contract for PR Work Surface |
-| `PR_INBOX_CONTRACT.md` | V1.1 PR Inbox / Work Queue specification |
-| `PR_CONTACT_LEDGER_CONTRACT.md` | V1.1 Contact Timeline / Relationship Ledger specification |
-| `PR_PITCH_PIPELINE_CONTRACT.md` | V1.1 Pitch Pipeline specification |
-| `CONTENT_WORK_SURFACE_CONTRACT.md` | V1 freeze contract for Content Work Surface |
-| `ANALYTICS_CONTRACT.md` | V1 freeze contract for Analytics surface |
-| `ENTITY_MAP_SPEC.md` | Entity Map data shape and rendering spec |
-| `OMNI_TRAY_SPEC.md` | Omni-Tray support surface specification |
-| `PRESS_RELEASE_DISTRIBUTION_CONTRACT.md` | Press release distribution channels and SLAs |
+| File                                     | Purpose                                                   |
+| ---------------------------------------- | --------------------------------------------------------- |
+| `COMMAND_CENTER_CONTRACT.md`             | V1 freeze contract for Command Center                     |
+| `COMMAND_CENTER_GOLDEN_FLOW.md`          | THE single prioritized user flow                          |
+| `ENTITY_MAP_CONTRACT.md`                 | Entity Map semantic contract                              |
+| `ORCHESTRATION_CALENDAR_CONTRACT.md`     | Calendar semantic contract                                |
+| `EARNED_VISIBILITY_INDEX.md`             | EVI calculation and display                               |
+| `ENTITY-MAP-SAGE.md`                     | Entity Map SAGE-native specification                      |
+| `PR_WORK_SURFACE_CONTRACT.md`            | V1 freeze contract for PR Work Surface                    |
+| `PR_INBOX_CONTRACT.md`                   | V1.1 PR Inbox / Work Queue specification                  |
+| `PR_CONTACT_LEDGER_CONTRACT.md`          | V1.1 Contact Timeline / Relationship Ledger specification |
+| `PR_PITCH_PIPELINE_CONTRACT.md`          | V1.1 Pitch Pipeline specification                         |
+| `CONTENT_WORK_SURFACE_CONTRACT.md`       | V1 freeze contract for Content Work Surface               |
+| `ANALYTICS_CONTRACT.md`                  | V1 freeze contract for Analytics surface                  |
+| `ENTITY_MAP_SPEC.md`                     | Entity Map data shape and rendering spec                  |
+| `OMNI_TRAY_SPEC.md`                      | Omni-Tray support surface specification                   |
+| `PRESS_RELEASE_DISTRIBUTION_CONTRACT.md` | Press release distribution channels and SLAs              |
 
 ---
 
 ## D) Defensible IP Canon
+
 These files define trade secrets and patent-eligible systems:
 
-| File | Purpose |
-|------|---------|
-| `SAGE_OPERATING_MODEL.md` | SAGE internal operating model (RESTRICTED) |
-| `CRAFT_EXECUTION_MODEL.md` | CRAFT execution model (RESTRICTED) |
-| `EVI_MATHEMATICS.md` | EVI calculation mathematics (RESTRICTED) |
-| `INFLUENCE_FIELD_VISUALIZATION.md` | Physics-based visualization (RESTRICTED) |
-| `CITEMIND_SYSTEM.md` | CiteMind multi-engine system (RESTRICTED) |
-| `PATENT_CLAIMS_DRAFT.md` | Patent claim drafts (CONFIDENTIAL) |
-| `TRADE_SECRET_BOUNDARIES.md` | Disclosure classifications (INTERNAL) |
-| `EXECUTIVE_NARRATIVE.md` | CMO/CEO/Investor narrative (PUBLIC) |
-| `SALES_OBJECTIONS.md` | Sales objection handling (PUBLIC)
-| `EVI_FORMULA.md` | EVI formula (RESTRICTED) |
+| File                               | Purpose                                    |
+| ---------------------------------- | ------------------------------------------ |
+| `SAGE_OPERATING_MODEL.md`          | SAGE internal operating model (RESTRICTED) |
+| `CRAFT_EXECUTION_MODEL.md`         | CRAFT execution model (RESTRICTED)         |
+| `EVI_MATHEMATICS.md`               | EVI calculation mathematics (RESTRICTED)   |
+| `INFLUENCE_FIELD_VISUALIZATION.md` | Physics-based visualization (RESTRICTED)   |
+| `CITEMIND_SYSTEM.md`               | CiteMind multi-engine system (RESTRICTED)  |
+| `PATENT_CLAIMS_DRAFT.md`           | Patent claim drafts (CONFIDENTIAL)         |
+| `TRADE_SECRET_BOUNDARIES.md`       | Disclosure classifications (INTERNAL)      |
+| `EXECUTIVE_NARRATIVE.md`           | CMO/CEO/Investor narrative (PUBLIC)        |
+| `SALES_OBJECTIONS.md`              | Sales objection handling (PUBLIC)          |
+| `EVI_FORMULA.md`                   | EVI formula (RESTRICTED)                   |
 
 ---
 
 ## Compliance Rule
+
 Any code, component, or feature that does not trace back to a canonical document is considered **drift** and must be either:
+
 1. Justified and added to canon via `CHANGE_CONTROL.md` process
 2. Removed or deprecated
 
 ---
 
 ## Canonical Surfaces (from UX_SURFACES.md)
+
 1. Command Center (Tri-pane)
 2. PR Work Surface
 3. Content Work Surface

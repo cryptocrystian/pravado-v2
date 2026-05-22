@@ -24,7 +24,11 @@ export async function POST(
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/lists/[id]/members] POST Error:', { status, message, code });
+    console.error('[API /api/pr/lists/[id]/members] POST Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }
@@ -43,7 +47,11 @@ export async function DELETE(
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/lists/[id]/members] DELETE Error:', { status, message, code });
+    console.error('[API /api/pr/lists/[id]/members] DELETE Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

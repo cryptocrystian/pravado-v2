@@ -42,8 +42,12 @@ describe('EditorEventBus (S22)', () => {
       const events1: EditorEvent[] = [];
       const events2: EditorEvent[] = [];
 
-      const unsub1 = eventBus.subscribe(playbookId, (event) => events1.push(event));
-      const unsub2 = eventBus.subscribe(playbookId, (event) => events2.push(event));
+      const unsub1 = eventBus.subscribe(playbookId, (event) =>
+        events1.push(event)
+      );
+      const unsub2 = eventBus.subscribe(playbookId, (event) =>
+        events2.push(event)
+      );
 
       eventBus.publish({
         type: 'presence.join',
@@ -104,8 +108,12 @@ describe('EditorEventBus (S22)', () => {
       const events1: EditorEvent[] = [];
       const events2: EditorEvent[] = [];
 
-      const unsub1 = eventBus.subscribe(playbookId1, (event) => events1.push(event));
-      const unsub2 = eventBus.subscribe(playbookId2, (event) => events2.push(event));
+      const unsub1 = eventBus.subscribe(playbookId1, (event) =>
+        events1.push(event)
+      );
+      const unsub2 = eventBus.subscribe(playbookId2, (event) =>
+        events2.push(event)
+      );
 
       eventBus.publish({
         type: 'cursor.update',

@@ -106,7 +106,10 @@ export class MediaListService {
 
     let beatAlignment = 0;
     if (beat) {
-      const beatSimilarity = stringSimilarity(normalizeText(beat), normalizedTopic);
+      const beatSimilarity = stringSimilarity(
+        normalizeText(beat),
+        normalizedTopic
+      );
       beatAlignment = beatSimilarity;
       if (containsKeyword(beat, topic)) {
         beatAlignment = Math.min(1.0, beatAlignment + 0.3);
@@ -115,14 +118,18 @@ export class MediaListService {
 
     let bioAlignment = 0;
     if (bio) {
-      const bioSimilarity = stringSimilarity(normalizeText(bio), normalizedTopic);
+      const bioSimilarity = stringSimilarity(
+        normalizeText(bio),
+        normalizedTopic
+      );
       bioAlignment = bioSimilarity * 0.5;
       if (containsKeyword(bio, topic)) {
         bioAlignment = Math.min(1.0, bioAlignment + 0.2);
       }
     }
 
-    const keywordScore = keywords.length > 0 ? matchedKeywords.length / keywords.length : 0;
+    const keywordScore =
+      keywords.length > 0 ? matchedKeywords.length / keywords.length : 0;
     const score = beatAlignment * 0.5 + bioAlignment * 0.3 + keywordScore * 0.2;
 
     return {
@@ -195,10 +202,14 @@ export class MediaListService {
       }
     }
 
-    const positiveCoverage = activities.filter((a) => a.sentiment === 'positive').length;
-    const coverageQuality = totalCoverage > 0 ? positiveCoverage / totalCoverage : 0;
+    const positiveCoverage = activities.filter(
+      (a) => a.sentiment === 'positive'
+    ).length;
+    const coverageQuality =
+      totalCoverage > 0 ? positiveCoverage / totalCoverage : 0;
 
-    const relevanceRate = totalCoverage > 0 ? relevantCoverage / totalCoverage : 0;
+    const relevanceRate =
+      totalCoverage > 0 ? relevantCoverage / totalCoverage : 0;
     const recencyRate = totalCoverage > 0 ? recentCoverage / totalCoverage : 0;
     const volumeScore = Math.min(1.0, totalCoverage / 20);
 
@@ -299,11 +310,11 @@ export class MediaListService {
     journalist: any,
     input: MediaListGenerationInput,
     weights: FitScoringWeights = {
-      topicRelevance: 0.40,
+      topicRelevance: 0.4,
       pastCoverage: 0.25,
       engagement: 0.15,
-      responsiveness: 0.10,
-      outletTier: 0.10,
+      responsiveness: 0.1,
+      outletTier: 0.1,
     }
   ): Promise<JournalistFitAnalysis> {
     const journalistId = journalist.id;
@@ -432,11 +443,16 @@ export class MediaListService {
         const reasons: string[] = [];
         if (analysis.topicRelevance.score > 0.5) {
           reasons.push(
-            'Strong topic relevance (' + (analysis.topicRelevance.score * 100).toFixed(0) + '%)'
+            'Strong topic relevance (' +
+              (analysis.topicRelevance.score * 100).toFixed(0) +
+              '%)'
           );
         }
         if (analysis.pastCoverage.relevantCoverage > 0) {
-          reasons.push(analysis.pastCoverage.relevantCoverage + ' relevant coverage articles');
+          reasons.push(
+            analysis.pastCoverage.relevantCoverage +
+              ' relevant coverage articles'
+          );
         }
         if (analysis.engagement.engagementScore > 0.6) {
           reasons.push('High engagement history');
@@ -445,7 +461,8 @@ export class MediaListService {
           reasons.push('Top-tier outlet: ' + analysis.outletTier.outlet);
         }
 
-        const reason = reasons.length > 0 ? reasons.join('; ') : 'Matches search criteria';
+        const reason =
+          reasons.length > 0 ? reasons.join('; ') : 'Matches search criteria';
 
         scoredMatches.push({
           journalistId: journalist.id,
@@ -550,7 +567,10 @@ export class MediaListService {
   /**
    * Get media list with entries
    */
-  async getMediaList(listId: string, orgId: string): Promise<MediaListWithEntries> {
+  async getMediaList(
+    listId: string,
+    orgId: string
+  ): Promise<MediaListWithEntries> {
     const { data: list, error: listError } = await this.supabase
       .from('media_lists')
       .select('*')
@@ -572,35 +592,43 @@ export class MediaListService {
       throw new Error('Failed to get list entries: ' + entriesError.message);
     }
 
-    const entriesWithJournalist: MediaListEntryWithJournalist[] = (entries || []).map(
-      (entry: any) => ({
-        id: entry.id,
-        listId: entry.list_id,
-        journalistId: entry.journalist_id,
-        fitScore: entry.fit_score,
-        tier: entry.tier,
-        reason: entry.reason,
-        fitBreakdown: entry.fit_breakdown || {},
-        position: entry.position,
-        createdAt: new Date(entry.created_at),
-        journalist: {
-          id: entry.journalist.id,
-          fullName: entry.journalist.full_name,
-          primaryEmail: entry.journalist.primary_email,
-          primaryOutlet: entry.journalist.primary_outlet,
-          beat: entry.journalist.beat,
-          engagementScore: entry.journalist.engagement_score || 0,
-          responsivenessScore: entry.journalist.responsiveness_score || 0,
-          relevanceScore: entry.journalist.relevance_score || 0,
-          tier: entry.journalist.tier,
-        },
-      })
-    );
+    const entriesWithJournalist: MediaListEntryWithJournalist[] = (
+      entries || []
+    ).map((entry: any) => ({
+      id: entry.id,
+      listId: entry.list_id,
+      journalistId: entry.journalist_id,
+      fitScore: entry.fit_score,
+      tier: entry.tier,
+      reason: entry.reason,
+      fitBreakdown: entry.fit_breakdown || {},
+      position: entry.position,
+      createdAt: new Date(entry.created_at),
+      journalist: {
+        id: entry.journalist.id,
+        fullName: entry.journalist.full_name,
+        primaryEmail: entry.journalist.primary_email,
+        primaryOutlet: entry.journalist.primary_outlet,
+        beat: entry.journalist.beat,
+        engagementScore: entry.journalist.engagement_score || 0,
+        responsivenessScore: entry.journalist.responsiveness_score || 0,
+        relevanceScore: entry.journalist.relevance_score || 0,
+        tier: entry.journalist.tier,
+      },
+    }));
 
-    const tierACount = entriesWithJournalist.filter((e) => e.tier === 'A').length;
-    const tierBCount = entriesWithJournalist.filter((e) => e.tier === 'B').length;
-    const tierCCount = entriesWithJournalist.filter((e) => e.tier === 'C').length;
-    const tierDCount = entriesWithJournalist.filter((e) => e.tier === 'D').length;
+    const tierACount = entriesWithJournalist.filter(
+      (e) => e.tier === 'A'
+    ).length;
+    const tierBCount = entriesWithJournalist.filter(
+      (e) => e.tier === 'B'
+    ).length;
+    const tierCCount = entriesWithJournalist.filter(
+      (e) => e.tier === 'C'
+    ).length;
+    const tierDCount = entriesWithJournalist.filter(
+      (e) => e.tier === 'D'
+    ).length;
 
     const avgFitScore =
       entriesWithJournalist.length > 0
@@ -655,7 +683,9 @@ export class MediaListService {
       .eq('org_id', orgId);
 
     if (q) {
-      dbQuery = dbQuery.or('name.ilike.%' + q + '%,description.ilike.%' + q + '%');
+      dbQuery = dbQuery.or(
+        'name.ilike.%' + q + '%,description.ilike.%' + q + '%'
+      );
     }
     if (topic) {
       dbQuery = dbQuery.ilike('input_topic', '%' + topic + '%');
@@ -842,6 +872,8 @@ export class MediaListService {
   }
 }
 
-export function createMediaListService(supabase: SupabaseClient): MediaListService {
+export function createMediaListService(
+  supabase: SupabaseClient
+): MediaListService {
   return new MediaListService(supabase);
 }

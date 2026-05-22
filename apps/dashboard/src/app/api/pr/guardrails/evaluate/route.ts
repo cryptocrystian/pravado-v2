@@ -42,7 +42,12 @@ const PERSONALIZATION_BLOCKED_THRESHOLD = 40;
 const PERSONALIZATION_WARNING_THRESHOLD = 60;
 
 interface GuardrailRequest {
-  action: 'send_pitch' | 'send_followup' | 'bulk_pitch' | 'auto_schedule' | 'generate_audio';
+  action:
+    | 'send_pitch'
+    | 'send_followup'
+    | 'bulk_pitch'
+    | 'auto_schedule'
+    | 'generate_audio';
   journalistId?: string;
   pitchId?: string;
   personalizationScore?: number;
@@ -74,7 +79,9 @@ interface GuardrailResponse {
 // Get daily pitch count for the org
 async function getDailyPitchCount(): Promise<number> {
   try {
-    const response = await prBackendFetch<{ count: number }>('/api/v1/pr/pitches/daily-count');
+    const response = await prBackendFetch<{ count: number }>(
+      '/api/v1/pr/pitches/daily-count'
+    );
     return response.count || 0;
   } catch {
     // If we can't get the count, assume 0 to not block the user
@@ -98,7 +105,12 @@ async function getFollowUpCount(journalistId: string): Promise<number> {
 export async function POST(request: NextRequest) {
   try {
     const body: GuardrailRequest = await request.json();
-    const { action, journalistId, personalizationScore, batchSize: _batchSize } = body;
+    const {
+      action,
+      journalistId,
+      personalizationScore,
+      batchSize: _batchSize,
+    } = body;
 
     const violations: GuardrailViolation[] = [];
     let modeCeiling: 'manual' | 'copilot' | 'autopilot' = 'autopilot';
@@ -118,7 +130,8 @@ export async function POST(request: NextRequest) {
     // NON-NEGOTIABLE: All pitch sending is Manual-only
     if (action === 'send_pitch' || action === 'send_followup') {
       modeCeiling = 'manual';
-      rationale = 'Pitch and follow-up sending always requires manual execution to maintain relationship quality.';
+      rationale =
+        'Pitch and follow-up sending always requires manual execution to maintain relationship quality.';
 
       // Check personalization score
       if (personalizationScore !== undefined) {
@@ -127,14 +140,16 @@ export async function POST(request: NextRequest) {
             code: 'PERSONALIZATION_BELOW_MINIMUM',
             message: `Personalization score ${personalizationScore}% is below 40% minimum`,
             severity: 'blocked',
-            suggestion: 'Add more personalized content referencing recent articles or beats',
+            suggestion:
+              'Add more personalized content referencing recent articles or beats',
           });
         } else if (personalizationScore < PERSONALIZATION_WARNING_THRESHOLD) {
           violations.push({
             code: 'PERSONALIZATION_LOW',
             message: `Personalization score ${personalizationScore}% is below recommended 60%`,
             severity: 'warning',
-            suggestion: 'Consider adding more specific references to improve engagement',
+            suggestion:
+              'Consider adding more specific references to improve engagement',
           });
         }
       }
@@ -145,7 +160,8 @@ export async function POST(request: NextRequest) {
           code: 'DAILY_PITCH_CAP_REACHED',
           message: `Daily pitch cap of ${dailyPitchCap} reached`,
           severity: 'blocked',
-          suggestion: 'Wait until tomorrow or upgrade your plan for higher limits',
+          suggestion:
+            'Wait until tomorrow or upgrade your plan for higher limits',
         });
       }
     }
@@ -155,12 +171,16 @@ export async function POST(request: NextRequest) {
       modeCeiling = 'manual';
 
       // Check follow-up limits
-      if (journalistId && followUpsThisWeek >= MAX_FOLLOWUPS_PER_CONTACT_PER_WEEK) {
+      if (
+        journalistId &&
+        followUpsThisWeek >= MAX_FOLLOWUPS_PER_CONTACT_PER_WEEK
+      ) {
         violations.push({
           code: 'FOLLOWUP_LIMIT_REACHED',
           message: `Maximum ${MAX_FOLLOWUPS_PER_CONTACT_PER_WEEK} follow-ups per contact per week reached`,
           severity: 'blocked',
-          suggestion: 'This contact has received the maximum follow-ups for this week. Wait before sending more.',
+          suggestion:
+            'This contact has received the maximum follow-ups for this week. Wait before sending more.',
         });
       }
     }
@@ -171,7 +191,8 @@ export async function POST(request: NextRequest) {
         code: 'BULK_BLAST_BLOCKED', // guardrail-allow: error code
         message: 'Bulk pitch blasts are not allowed',
         severity: 'blocked',
-        suggestion: 'Use individual personalized pitches through the pitch pipeline',
+        suggestion:
+          'Use individual personalized pitches through the pitch pipeline',
       });
       modeCeiling = 'manual';
     }
@@ -185,11 +206,14 @@ export async function POST(request: NextRequest) {
     // NON-NEGOTIABLE: No auto-scheduling without human approval
     if (action === 'auto_schedule') {
       modeCeiling = 'copilot';
-      rationale = 'Scheduling requires human review. SAGE can suggest times but cannot auto-schedule.';
+      rationale =
+        'Scheduling requires human review. SAGE can suggest times but cannot auto-schedule.';
     }
 
     // Determine if action is allowed
-    const hasBlockingViolation = violations.some(v => v.severity === 'blocked');
+    const hasBlockingViolation = violations.some(
+      (v) => v.severity === 'blocked'
+    );
     const allowed = !hasBlockingViolation;
 
     const response: GuardrailResponse = {
@@ -197,9 +221,11 @@ export async function POST(request: NextRequest) {
       mode: modeCeiling,
       modeCeiling,
       violations,
-      rationale: rationale || (violations.length > 0
-        ? violations.map(v => v.message).join('; ')
-        : 'Action is permitted within guardrails'),
+      rationale:
+        rationale ||
+        (violations.length > 0
+          ? violations.map((v) => v.message).join('; ')
+          : 'Action is permitted within guardrails'),
       limits: {
         dailyPitchCap,
         dailyPitchesUsed: dailyPitchCount,
@@ -212,7 +238,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/guardrails/evaluate] POST Error:', { status, message, code });
+    console.error('[API /api/pr/guardrails/evaluate] POST Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }
@@ -238,7 +268,8 @@ export async function GET() {
           warning: PERSONALIZATION_WARNING_THRESHOLD,
         },
       },
-      nonNegotiables: [ // guardrail-allow: documentation array
+      nonNegotiables: [
+        // guardrail-allow: documentation array
         'Pitch sending is ALWAYS Manual-only',
         'Follow-up sending requires human review',
         'CiteMind audio generation is Manual-only in V1',
@@ -247,7 +278,11 @@ export async function GET() {
     });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/guardrails/evaluate] GET Error:', { status, message, code });
+    console.error('[API /api/pr/guardrails/evaluate] GET Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

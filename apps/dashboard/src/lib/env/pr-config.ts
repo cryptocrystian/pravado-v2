@@ -49,8 +49,11 @@ export interface PRConfig {
  */
 export function getPRConfig(): PRConfig {
   // Check environment variables
-  const demoModeRaw = process.env.PRAVADO_DEMO_MODE || process.env.NEXT_PUBLIC_PRAVADO_DEMO_MODE;
-  const strictApiRaw = process.env.PRAVADO_STRICT_API || process.env.NEXT_PUBLIC_PRAVADO_STRICT_API;
+  const demoModeRaw =
+    process.env.PRAVADO_DEMO_MODE || process.env.NEXT_PUBLIC_PRAVADO_DEMO_MODE;
+  const strictApiRaw =
+    process.env.PRAVADO_STRICT_API ||
+    process.env.NEXT_PUBLIC_PRAVADO_STRICT_API;
 
   const isDemoMode = demoModeRaw === '1' || demoModeRaw === 'true';
   const isStrictApi = strictApiRaw === '1' || strictApiRaw === 'true';
@@ -100,8 +103,12 @@ export function getPRConfigCached(): PRConfig {
 export function logPRConfig(): void {
   const config = getPRConfig();
   console.log('[PR Config] Environment flags:');
-  console.log(`  - PRAVADO_DEMO_MODE: ${config.isDemoMode ? 'ENABLED' : 'disabled'}`);
-  console.log(`  - PRAVADO_STRICT_API: ${config.isStrictApi ? 'ENABLED' : 'disabled'}`);
+  console.log(
+    `  - PRAVADO_DEMO_MODE: ${config.isDemoMode ? 'ENABLED' : 'disabled'}`
+  );
+  console.log(
+    `  - PRAVADO_STRICT_API: ${config.isStrictApi ? 'ENABLED' : 'disabled'}`
+  );
   console.log(`  - Allow mock fallback: ${config.allowMockFallback}`);
   console.log(`  - Environment: ${config.environment}`);
 }
@@ -114,11 +121,15 @@ export function validatePRConfig(): { valid: boolean; warnings: string[] } {
   const warnings: string[] = [];
 
   if (config.environment === 'production' && config.allowMockFallback) {
-    warnings.push('WARNING: PRAVADO_DEMO_MODE is enabled in production. Mock data may be served.');
+    warnings.push(
+      'WARNING: PRAVADO_DEMO_MODE is enabled in production. Mock data may be served.'
+    );
   }
 
   if (!config.isStrictApi && config.environment === 'production') {
-    warnings.push('WARNING: PRAVADO_STRICT_API is not enabled in production. Consider enabling for data integrity.');
+    warnings.push(
+      'WARNING: PRAVADO_STRICT_API is not enabled in production. Consider enabling for data integrity.'
+    );
   }
 
   return {

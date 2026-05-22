@@ -22,7 +22,10 @@ export const mediaListGenerationInputSchema = z.object({
   product: z.string().max(200).optional(),
   targetCount: z.coerce.number().int().min(1).max(200).optional().default(50),
   minFitScore: z.coerce.number().min(0).max(1).optional().default(0.3),
-  includeTiers: z.array(tierLevelSchema).optional().default(['A', 'B', 'C', 'D']),
+  includeTiers: z
+    .array(tierLevelSchema)
+    .optional()
+    .default(['A', 'B', 'C', 'D']),
 });
 
 export const mediaListCreateInputSchema = z.object({
@@ -49,7 +52,10 @@ export const mediaListQuerySchema = z.object({
   topic: z.string().max(500).optional(),
   market: z.string().max(200).optional(),
   createdBy: z.string().uuid().optional(),
-  sortBy: z.enum(['created_at', 'updated_at', 'name']).optional().default('created_at'),
+  sortBy: z
+    .enum(['created_at', 'updated_at', 'name'])
+    .optional()
+    .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(50),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -69,7 +75,9 @@ export const mediaListEntryQuerySchema = z.object({
 // Type Exports
 // ===================================
 
-export type MediaListGenerationInput = z.infer<typeof mediaListGenerationInputSchema>;
+export type MediaListGenerationInput = z.infer<
+  typeof mediaListGenerationInputSchema
+>;
 export type MediaListCreateInput = z.infer<typeof mediaListCreateInputSchema>;
 export type MediaListUpdateInput = z.infer<typeof mediaListUpdateInputSchema>;
 export type MediaListQuery = z.infer<typeof mediaListQuerySchema>;

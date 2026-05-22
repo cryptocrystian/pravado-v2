@@ -10,7 +10,10 @@ const statusConfig: Record<DocStatus, { label: string; className: string }> = {
   draft: { label: 'Draft', className: 'bg-white/5 text-white/45' },
   in_progress: { label: 'In Progress', className: 'bg-white/5 text-white/45' },
   review: { label: 'Review', className: 'bg-amber-500/10 text-amber-500' },
-  published: { label: 'Published', className: 'bg-semantic-success/10 text-semantic-success' },
+  published: {
+    label: 'Published',
+    className: 'bg-semantic-success/10 text-semantic-success',
+  },
   archived: { label: 'Archived', className: 'bg-white/5 text-white/45' },
 };
 
@@ -39,7 +42,9 @@ export function DocumentCard({ doc }: { doc: ContentDocument }) {
           <span className="bg-cc-cyan/10 text-cc-cyan text-xs px-2 py-0.5 rounded-full">
             {doc.typeLabel}
           </span>
-          <span className={`text-xs px-2 py-0.5 rounded-full ${status.className}`}>
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full ${status.className}`}
+          >
             {status.label}
           </span>
         </div>
@@ -56,8 +61,16 @@ export function DocumentCard({ doc }: { doc: ContentDocument }) {
 
         {/* CiteMind score row */}
         <div className="mt-auto flex items-center gap-2">
-          <span className="text-[13px] text-white/50 inline-flex items-center gap-1">CiteMind&trade; <InfoTooltip content="CiteMind scores how well this content is optimized for AI citation. Scores above 80 mean AI engines are likely to reference it. Below 50, consider rewriting for better AI visibility." size={11} /></span>
-          <span className={`text-sm font-bold ${citeMindColor(doc.citeMindScore)}`}>
+          <span className="text-[13px] text-white/50 inline-flex items-center gap-1">
+            CiteMind&trade;{' '}
+            <InfoTooltip
+              content="CiteMind scores how well this content is optimized for AI citation. Scores above 80 mean AI engines are likely to reference it. Below 50, consider rewriting for better AI visibility."
+              size={11}
+            />
+          </span>
+          <span
+            className={`text-sm font-bold ${citeMindColor(doc.citeMindScore)}`}
+          >
             {doc.citeMindScore}
           </span>
           <div className="w-20 h-1 rounded-full bg-white/8 flex-shrink-0">

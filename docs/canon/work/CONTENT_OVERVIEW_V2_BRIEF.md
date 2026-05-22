@@ -1,4 +1,5 @@
 # CONTENT OVERVIEW — V2 REDESIGN BRIEF
+
 **Status:** ACTIVE — For Claude Code execution
 **Supersedes:** CONTENT_OVERVIEW_REDESIGN_BRIEF.md (the 3-zone/column-percentage brief)
 **Date:** 2026-03-02
@@ -91,6 +92,7 @@ This is what must be present. How you arrange it is up to you.
 The Content CiteMind score is a live instrument reading, not a stat widget. It must read as a live signal.
 
 **Must include:**
+
 - The score number: `74` — large, colored by range (see DS), dominant
 - Label: `CONTENT CITEMIND SCORE`
 - Trend: `+6 pts · 30d` with directional arrow in semantic-success
@@ -101,6 +103,7 @@ The Content CiteMind score is a live instrument reading, not a stat widget. It m
   - Cross-Pillar Impact: 65
 
 **Score color rules:**
+
 - 80–100: `text-semantic-success` with subtle green glow
 - 60–79: `text-brand-cyan`
 - 40–59: `text-semantic-warning`
@@ -111,6 +114,7 @@ The Content CiteMind score is a live instrument reading, not a stat widget. It m
 Three competitive intelligence proposals. Each is a decision unit: read it, decide whether to act.
 
 **Each proposal must include:**
+
 - Priority badge: CRITICAL / HIGH / MEDIUM (colored by severity)
 - Content type + topic cluster label
 - EVI impact range (right-aligned, `text-semantic-success`, prominent)
@@ -123,6 +127,7 @@ Three competitive intelligence proposals. Each is a decision unit: read it, deci
 **Hover behavior:** Edge glow only (`hover:shadow-[0_0_0_1px_rgba(168,85,247,0.2)]`). No physical lift (no translate-y).
 
 **Priority left-border stripe:**
+
 - CRITICAL: `border-l-2 border-semantic-danger`
 - HIGH: `border-l-2 border-semantic-warning`
 - MEDIUM: `border-l-2 border-brand-cyan`
@@ -134,12 +139,14 @@ This is the moat. No competitor can show this. It must be above the fold.
 Each event in the feed is a causal chain item — something that happened in one pillar that moved a metric in another pillar.
 
 **Each event includes:**
+
 - Pillar source icon (PR = magenta, Content = iris, SEO/AEO = cyan)
 - Description: the specific action and its cross-pillar consequence
 - EVI delta (right-aligned, colored, tabular-nums): `+4.2`
 - Source label: `PR Surface — TechCrunch placement`
 
 **Feed items (from mock data):**
+
 1. TechCrunch coverage raised AI Marketing cluster CiteMind → +4.2
 2. Enterprise AEO Guide cited in 3 ChatGPT responses → +1.8
 3. PR pitch to Sarah Chen queued → +0.0 projected / +1.8 if secured
@@ -191,12 +198,14 @@ If you see a better structure that satisfies all five outcomes, use it. The outc
 These are not suggestions. They are requirements regardless of layout choice.
 
 ### Layout
+
 - No scrolling required to see CiteMind score, all 3 SAGE proposals, and 2+ attribution events
 - No dead space — every region earns its space
 - Full viewport width — the shell no longer imposes `px-6` margins (you fixed that above)
 - SAGE proposals receive the most horizontal space and visual weight
 
 ### DS Token Compliance (from DS_v3_COMPLIANCE_CHECKLIST.md)
+
 - Zero phantom hex values — no `#050508`, `#0D0D12`, `#111116`, or any other raw hex
 - No `bg-gray-*`, `text-gray-*`, `bg-zinc-*`, `bg-neutral-*`
 - No plain `text-white` — always `text-white/[opacity]`
@@ -206,6 +215,7 @@ These are not suggestions. They are requirements regardless of layout choice.
 - All `text-xs` standalone labels must have `uppercase tracking-wide`
 
 ### Typography
+
 - CiteMind score: `text-5xl font-bold tabular-nums` minimum (this is an instrument reading)
 - SAGE competitive gap text: `text-sm` (14px) minimum, never truncated
 - EVI impact numbers: `tabular-nums` always
@@ -213,6 +223,7 @@ These are not suggestions. They are requirements regardless of layout choice.
 - Operational stats numbers: `text-2xl font-bold tabular-nums`
 
 ### Moat Expression
+
 - Every SAGE proposal must include the cross-pillar tail line (`→ PR pitch queued · AEO snippet ready`)
 - The attribution feed must be visible above the fold — this is the feature no competitor has
 
@@ -221,25 +232,32 @@ These are not suggestions. They are requirements regardless of layout choice.
 ## ACCEPTANCE CRITERIA
 
 ### 5-Second Test
+
 A new user landing on this page can identify within 5 seconds:
+
 - [ ] What is my Content CiteMind score and is it trending up or down?
 - [ ] What is the single most important thing SAGE wants me to do?
 - [ ] Has my content strategy produced measurable cross-pillar results?
 
 ### No-Scroll Test
+
 On a 1440 × 900 viewport, without scrolling:
+
 - [ ] CiteMind score visible
 - [ ] All 3 SAGE proposals visible (or 2 full + 1 partially visible indicating scroll)
 - [ ] At least 2 attribution feed events visible
 - [ ] Operational stats visible
 
 ### DS Compliance
+
 Run through DS_v3_COMPLIANCE_CHECKLIST.md before declaring done. Every item must pass.
 
 ### Dead Space Test
+
 No layout region larger than 2 card heights contains only empty background.
 
 ### Moat Expression Test
+
 - [ ] Cross-pillar tail line present on every SAGE proposal
 - [ ] Attribution feed is above the fold
 - [ ] The feed visually communicates cause-and-effect (not just a list of events)
@@ -249,6 +267,7 @@ No layout region larger than 2 card heights contains only empty background.
 ## WHEN DONE
 
 Confirm:
+
 1. Which acceptance criteria pass
 2. Layout approach chosen and brief rationale (one sentence)
 3. Any DS violations flagged with `// DS-VIOLATION: [reason]`

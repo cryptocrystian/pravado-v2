@@ -179,10 +179,13 @@ export class NarrativeGeneratorService {
       }
 
       const coverageEvents = timelineData.events.filter(
-        (e) => e.eventType === 'media_mention' || e.eventType === 'coverage_published'
+        (e) =>
+          e.eventType === 'media_mention' ||
+          e.eventType === 'coverage_published'
       );
       if (coverageEvents.length > 0) {
-        narrative.coverageSummary = await this.generateCoverageSummary(coverageEvents);
+        narrative.coverageSummary =
+          await this.generateCoverageSummary(coverageEvents);
       }
     } else {
       // Fallback to rule-based generation
@@ -190,7 +193,8 @@ export class NarrativeGeneratorService {
         timelineData.stats,
         timelineData.events
       );
-      narrative.sentimentExplanation = this.generateFallbackSentimentExplanation(timelineData.stats);
+      narrative.sentimentExplanation =
+        this.generateFallbackSentimentExplanation(timelineData.stats);
       if (input.includeRecommendations) {
         narrative.recommendations = this.generateFallbackRecommendations(
           timelineData.stats,
@@ -200,12 +204,20 @@ export class NarrativeGeneratorService {
     }
 
     // Calculate other metrics
-    narrative.highlights = this.extractHighlights(timelineData.events, input.focusAreas);
-    narrative.overallSentiment = this.calculateOverallSentiment(timelineData.stats);
+    narrative.highlights = this.extractHighlights(
+      timelineData.events,
+      input.focusAreas
+    );
+    narrative.overallSentiment = this.calculateOverallSentiment(
+      timelineData.stats
+    );
     narrative.sentimentTrend = this.calculateSentimentTrend(timelineData.stats);
     narrative.activityLevel = this.calculateActivityLevel(timelineData.stats);
     narrative.lastInteractionDays = timelineData.stats.lastInteraction
-      ? Math.floor((Date.now() - timelineData.stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.floor(
+          (Date.now() - timelineData.stats.lastInteraction.getTime()) /
+            (1000 * 60 * 60 * 24)
+        )
       : 0;
 
     narrative.coverageCount = timelineData.coverageCount;
@@ -227,7 +239,10 @@ export class NarrativeGeneratorService {
   /**
    * Gathers all timeline data needed for narrative generation
    */
-  private async gatherTimelineData(orgId: string, input: GenerateNarrativeInput) {
+  private async gatherTimelineData(
+    orgId: string,
+    input: GenerateNarrativeInput
+  ) {
     // Get timeline events
     const timelineQuery: any = {
       journalistId: input.journalistId,
@@ -240,21 +255,32 @@ export class NarrativeGeneratorService {
       timelineQuery.last90Days = true;
     }
 
-    const timeline = await this.timelineService.listEvents(orgId, timelineQuery);
+    const timeline = await this.timelineService.listEvents(
+      orgId,
+      timelineQuery
+    );
     const stats = timeline.stats!;
 
     // Calculate health score
-    const healthScoreData = await this.timelineService.calculateHealthScore(orgId, input.journalistId);
+    const healthScoreData = await this.timelineService.calculateHealthScore(
+      orgId,
+      input.journalistId
+    );
     const healthScore = healthScoreData.score;
 
     // Calculate engagement metrics
-    const sentEvents = (stats.eventTypeCounts['pitch_sent'] || 0) + (stats.eventTypeCounts['outreach_sent'] || 0);
+    const sentEvents =
+      (stats.eventTypeCounts['pitch_sent'] || 0) +
+      (stats.eventTypeCounts['outreach_sent'] || 0);
     const replyEvents =
-      (stats.eventTypeCounts['pitch_replied'] || 0) + (stats.eventTypeCounts['outreach_replied'] || 0);
+      (stats.eventTypeCounts['pitch_replied'] || 0) +
+      (stats.eventTypeCounts['outreach_replied'] || 0);
     const openEvents =
-      (stats.eventTypeCounts['pitch_opened'] || 0) + (stats.eventTypeCounts['outreach_opened'] || 0);
+      (stats.eventTypeCounts['pitch_opened'] || 0) +
+      (stats.eventTypeCounts['outreach_opened'] || 0);
     const clickEvents =
-      (stats.eventTypeCounts['pitch_clicked'] || 0) + (stats.eventTypeCounts['outreach_clicked'] || 0);
+      (stats.eventTypeCounts['pitch_clicked'] || 0) +
+      (stats.eventTypeCounts['outreach_clicked'] || 0);
 
     const engagementMetrics = {
       replyRate: sentEvents > 0 ? (replyEvents / sentEvents) * 100 : 0,
@@ -264,10 +290,12 @@ export class NarrativeGeneratorService {
 
     // Coverage data
     const coverageEvents = timeline.events.filter(
-      (e) => e.eventType === 'media_mention' || e.eventType === 'coverage_published'
+      (e) =>
+        e.eventType === 'media_mention' || e.eventType === 'coverage_published'
     );
     const coverageCount = coverageEvents.length;
-    const lastCoverageDate = coverageEvents.length > 0 ? coverageEvents[0].eventTimestamp : undefined;
+    const lastCoverageDate =
+      coverageEvents.length > 0 ? coverageEvents[0].eventTimestamp : undefined;
 
     return {
       events: timeline.events,
@@ -283,7 +311,10 @@ export class NarrativeGeneratorService {
   /**
    * Gets journalist profile information
    */
-  private async getJournalistInfo(orgId: string, journalistId: string): Promise<{ name: string } | null> {
+  private async getJournalistInfo(
+    orgId: string,
+    journalistId: string
+  ): Promise<{ name: string } | null> {
     const { data } = await this.supabase
       .from('journalist_profiles')
       .select('name')
@@ -311,17 +342,26 @@ export class NarrativeGeneratorService {
     }
 
     const lastInteractionDays = stats.lastInteraction
-      ? Math.floor((Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.floor(
+          (Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24)
+        )
       : 999;
 
     const coverageCount =
-      (stats.eventTypeCounts['media_mention'] || 0) + (stats.eventTypeCounts['coverage_published'] || 0);
+      (stats.eventTypeCounts['media_mention'] || 0) +
+      (stats.eventTypeCounts['coverage_published'] || 0);
 
     const sentimentDist = `${stats.sentimentDistribution.positive} positive, ${stats.sentimentDistribution.neutral} neutral, ${stats.sentimentDistribution.negative} negative`;
 
-    const recentActivity = stats.recent30Days > 0 ? `${stats.recent30Days} events in last 30 days` : 'No recent activity';
+    const recentActivity =
+      stats.recent30Days > 0
+        ? `${stats.recent30Days} events in last 30 days`
+        : 'No recent activity';
 
-    const prompt = EXECUTIVE_SUMMARY_PROMPT.replace('{journalistName}', journalistName)
+    const prompt = EXECUTIVE_SUMMARY_PROMPT.replace(
+      '{journalistName}',
+      journalistName
+    )
       .replace('{totalEvents}', stats.totalEvents.toString())
       .replace('{lastInteractionDays}', lastInteractionDays.toString())
       .replace('{coverageCount}', coverageCount.toString())
@@ -360,9 +400,15 @@ export class NarrativeGeneratorService {
       .map((e) => `- ${e.eventType}: ${e.title} (${e.sentiment})`)
       .join('\n');
 
-    const prompt = SENTIMENT_EXPLANATION_PROMPT.replace('{positiveCount}', stats.sentimentDistribution.positive.toString())
+    const prompt = SENTIMENT_EXPLANATION_PROMPT.replace(
+      '{positiveCount}',
+      stats.sentimentDistribution.positive.toString()
+    )
       .replace('{neutralCount}', stats.sentimentDistribution.neutral.toString())
-      .replace('{negativeCount}', stats.sentimentDistribution.negative.toString())
+      .replace(
+        '{negativeCount}',
+        stats.sentimentDistribution.negative.toString()
+      )
       .replace('{overallSentiment}', overallSentiment)
       .replace('{recentEvents}', recentEvents || 'No recent events');
 
@@ -376,7 +422,9 @@ export class NarrativeGeneratorService {
 
       return response.completion.trim();
     } catch (error) {
-      logger.error('Failed to generate sentiment explanation with LLM', { error });
+      logger.error('Failed to generate sentiment explanation with LLM', {
+        error,
+      });
       return this.generateFallbackSentimentExplanation(stats);
     }
   }
@@ -387,18 +435,25 @@ export class NarrativeGeneratorService {
   private async generateRecommendations(
     stats: TimelineStats,
     healthScore: number,
-    engagementMetrics: { replyRate: number; openRate: number; clickRate: number }
+    engagementMetrics: {
+      replyRate: number;
+      openRate: number;
+      clickRate: number;
+    }
   ): Promise<NarrativeRecommendation[]> {
     if (!this.llmRouter) {
       return this.generateFallbackRecommendations(stats, healthScore);
     }
 
     const lastInteractionDays = stats.lastInteraction
-      ? Math.floor((Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.floor(
+          (Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24)
+        )
       : 999;
 
     const coverageCount =
-      (stats.eventTypeCounts['media_mention'] || 0) + (stats.eventTypeCounts['coverage_published'] || 0);
+      (stats.eventTypeCounts['media_mention'] || 0) +
+      (stats.eventTypeCounts['coverage_published'] || 0);
 
     const overallSentiment = this.calculateOverallSentiment(stats);
 
@@ -407,9 +462,13 @@ export class NarrativeGeneratorService {
     if (lastInteractionDays > 30) keyIssues.push('- No recent interactions');
     if (coverageCount === 0) keyIssues.push('- No coverage achieved');
     if (engagementMetrics.replyRate < 10) keyIssues.push('- Low reply rate');
-    if (overallSentiment === 'negative') keyIssues.push('- Negative sentiment trend');
+    if (overallSentiment === 'negative')
+      keyIssues.push('- Negative sentiment trend');
 
-    const prompt = RECOMMENDATIONS_PROMPT.replace('{healthScore}', healthScore.toFixed(0))
+    const prompt = RECOMMENDATIONS_PROMPT.replace(
+      '{healthScore}',
+      healthScore.toFixed(0)
+    )
       .replace('{lastInteractionDays}', lastInteractionDays.toString())
       .replace('{totalEvents}', stats.totalEvents.toString())
       .replace('{recent30Days}', stats.recent30Days.toString())
@@ -429,7 +488,9 @@ export class NarrativeGeneratorService {
 
       // Parse recommendations from response
       const recommendations: NarrativeRecommendation[] = [];
-      const lines = response.completion.split('\n').filter((line: string) => line.trim());
+      const lines = response.completion
+        .split('\n')
+        .filter((line: string) => line.trim());
 
       for (const line of lines) {
         if (line.match(/^[\d*-]/)) {
@@ -438,7 +499,8 @@ export class NarrativeGeneratorService {
           if (cleanLine.length > 10) {
             recommendations.push({
               type: 'action',
-              priority: healthScore < 30 ? 'high' : healthScore > 70 ? 'low' : 'medium',
+              priority:
+                healthScore < 30 ? 'high' : healthScore > 70 ? 'low' : 'medium',
               title: cleanLine.substring(0, 50),
               description: cleanLine,
             });
@@ -456,18 +518,24 @@ export class NarrativeGeneratorService {
   /**
    * Generates coverage summary using LLM
    */
-  private async generateCoverageSummary(coverageEvents: JournalistTimelineEvent[]): Promise<string> {
+  private async generateCoverageSummary(
+    coverageEvents: JournalistTimelineEvent[]
+  ): Promise<string> {
     if (!this.llmRouter || coverageEvents.length === 0) {
       return `${coverageEvents.length} coverage mention${coverageEvents.length > 1 ? 's' : ''} tracked.`;
     }
 
-    const lastCoverageDate = coverageEvents[0].eventTimestamp.toLocaleDateString();
+    const lastCoverageDate =
+      coverageEvents[0].eventTimestamp.toLocaleDateString();
     const eventsList = coverageEvents
       .slice(0, 5)
       .map((e) => `- ${e.title} (${e.eventTimestamp.toLocaleDateString()})`)
       .join('\n');
 
-    const prompt = COVERAGE_SUMMARY_PROMPT.replace('{coverageCount}', coverageEvents.length.toString())
+    const prompt = COVERAGE_SUMMARY_PROMPT.replace(
+      '{coverageCount}',
+      coverageEvents.length.toString()
+    )
       .replace('{lastCoverageDate}', lastCoverageDate)
       .replace('{coverageEvents}', eventsList);
 
@@ -493,14 +561,20 @@ export class NarrativeGeneratorService {
   /**
    * Fallback executive summary without LLM
    */
-  private generateFallbackExecutiveSummary(stats: TimelineStats, _events: JournalistTimelineEvent[]): string {
+  private generateFallbackExecutiveSummary(
+    stats: TimelineStats,
+    _events: JournalistTimelineEvent[]
+  ): string {
     const totalEvents = stats.totalEvents;
     const lastInteractionDays = stats.lastInteraction
-      ? Math.floor((Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.floor(
+          (Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24)
+        )
       : 999;
 
     const coverageCount =
-      (stats.eventTypeCounts['media_mention'] || 0) + (stats.eventTypeCounts['coverage_published'] || 0);
+      (stats.eventTypeCounts['media_mention'] || 0) +
+      (stats.eventTypeCounts['coverage_published'] || 0);
 
     let summary = `${totalEvents} total interactions recorded. `;
 
@@ -535,11 +609,16 @@ export class NarrativeGeneratorService {
   /**
    * Fallback recommendations without LLM
    */
-  private generateFallbackRecommendations(stats: TimelineStats, healthScore: number): NarrativeRecommendation[] {
+  private generateFallbackRecommendations(
+    stats: TimelineStats,
+    healthScore: number
+  ): NarrativeRecommendation[] {
     const recommendations: NarrativeRecommendation[] = [];
 
     const lastInteractionDays = stats.lastInteraction
-      ? Math.floor((Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.floor(
+          (Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24)
+        )
       : 999;
 
     // Recency recommendations
@@ -548,7 +627,8 @@ export class NarrativeGeneratorService {
         type: 'action',
         priority: 'high',
         title: 'Re-engage',
-        description: 'No recent interactions. Consider reaching out with a personalized pitch.',
+        description:
+          'No recent interactions. Consider reaching out with a personalized pitch.',
       });
     }
 
@@ -558,19 +638,22 @@ export class NarrativeGeneratorService {
         type: 'action',
         priority: 'medium',
         title: 'Follow Up',
-        description: 'No activity in the last 30 days. Schedule a follow-up or share relevant content.',
+        description:
+          'No activity in the last 30 days. Schedule a follow-up or share relevant content.',
       });
     }
 
     // Coverage recommendations
     const coverageCount =
-      (stats.eventTypeCounts['media_mention'] || 0) + (stats.eventTypeCounts['coverage_published'] || 0);
+      (stats.eventTypeCounts['media_mention'] || 0) +
+      (stats.eventTypeCounts['coverage_published'] || 0);
     if (coverageCount === 0 && stats.totalEvents > 5) {
       recommendations.push({
         type: 'insight',
         priority: 'medium',
         title: 'Review Strategy',
-        description: 'No coverage achieved yet. Review pitch angles and journalist beat alignment.',
+        description:
+          'No coverage achieved yet. Review pitch angles and journalist beat alignment.',
       });
     }
 
@@ -580,14 +663,16 @@ export class NarrativeGeneratorService {
         type: 'warning',
         priority: 'high',
         title: 'Relationship Health Low',
-        description: 'Low relationship health. Focus on rebuilding rapport with value-first communication.',
+        description:
+          'Low relationship health. Focus on rebuilding rapport with value-first communication.',
       });
     } else if (healthScore > 70) {
       recommendations.push({
         type: 'insight',
         priority: 'low',
         title: 'Strong Relationship',
-        description: 'Strong relationship. Good time to pitch premium stories or request introductions.',
+        description:
+          'Strong relationship. Good time to pitch premium stories or request introductions.',
       });
     }
 
@@ -610,13 +695,24 @@ export class NarrativeGeneratorService {
     // Filter by focus areas if specified
     if (focusAreas && focusAreas.length > 0) {
       filteredEvents = events.filter((e) => {
-        if (focusAreas.includes('coverage') && (e.eventType === 'media_mention' || e.eventType === 'coverage_published')) {
+        if (
+          focusAreas.includes('coverage') &&
+          (e.eventType === 'media_mention' ||
+            e.eventType === 'coverage_published')
+        ) {
           return true;
         }
-        if (focusAreas.includes('engagement') && (e.eventType === 'pitch_replied' || e.eventType === 'outreach_replied')) {
+        if (
+          focusAreas.includes('engagement') &&
+          (e.eventType === 'pitch_replied' ||
+            e.eventType === 'outreach_replied')
+        ) {
           return true;
         }
-        if (focusAreas.includes('outreach') && (e.eventType === 'pitch_sent' || e.eventType === 'outreach_sent')) {
+        if (
+          focusAreas.includes('outreach') &&
+          (e.eventType === 'pitch_sent' || e.eventType === 'outreach_sent')
+        ) {
           return true;
         }
         if (focusAreas.includes('sentiment') && e.sentiment === 'positive') {
@@ -635,10 +731,11 @@ export class NarrativeGeneratorService {
         eventType: e.eventType,
         title: e.title,
         description: e.description || '',
-        importance: (e.relevanceScore >= 0.8 ? 'high' : e.relevanceScore >= 0.6 ? 'medium' : 'low') as
-          | 'high'
-          | 'medium'
-          | 'low',
+        importance: (e.relevanceScore >= 0.8
+          ? 'high'
+          : e.relevanceScore >= 0.6
+            ? 'medium'
+            : 'low') as 'high' | 'medium' | 'low',
       }));
 
     return importantEvents;
@@ -647,7 +744,9 @@ export class NarrativeGeneratorService {
   /**
    * Calculates overall sentiment
    */
-  private calculateOverallSentiment(stats: TimelineStats): 'positive' | 'neutral' | 'negative' | 'unknown' {
+  private calculateOverallSentiment(
+    stats: TimelineStats
+  ): 'positive' | 'neutral' | 'negative' | 'unknown' {
     const { positive, neutral, negative } = stats.sentimentDistribution;
     const total = positive + neutral + negative;
 
@@ -661,7 +760,9 @@ export class NarrativeGeneratorService {
   /**
    * Calculates sentiment trend
    */
-  private calculateSentimentTrend(stats: TimelineStats): 'improving' | 'stable' | 'declining' {
+  private calculateSentimentTrend(
+    stats: TimelineStats
+  ): 'improving' | 'stable' | 'declining' {
     const recent30 = stats.recent30Days;
     const recent90 = stats.recent90Days;
     const total = stats.totalEvents;
@@ -680,7 +781,9 @@ export class NarrativeGeneratorService {
   /**
    * Calculates activity level
    */
-  private calculateActivityLevel(stats: TimelineStats): 'very_active' | 'active' | 'moderate' | 'low' | 'inactive' {
+  private calculateActivityLevel(
+    stats: TimelineStats
+  ): 'very_active' | 'active' | 'moderate' | 'low' | 'inactive' {
     const recent30 = stats.recent30Days;
 
     if (recent30 >= 10) return 'very_active';

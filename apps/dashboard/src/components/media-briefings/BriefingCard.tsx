@@ -63,10 +63,14 @@ export default function BriefingCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-lg">{getFormatIcon(briefing.format)}</span>
-              <CardTitle className="text-lg truncate">{briefing.title}</CardTitle>
+              <CardTitle className="text-lg truncate">
+                {briefing.title}
+              </CardTitle>
             </div>
             {briefing.subtitle && (
-              <p className="text-sm text-white/50 truncate">{briefing.subtitle}</p>
+              <p className="text-sm text-white/50 truncate">
+                {briefing.subtitle}
+              </p>
             )}
           </div>
 
@@ -113,8 +117,15 @@ export default function BriefingCard({
           </div>
           <div className="text-center">
             <div className="text-xs text-white/50">Confidence</div>
-            <div className={cn('text-sm font-semibold', getConfidenceScoreColor(briefing.confidenceScore))}>
-              {briefing.confidenceScore ? `${briefing.confidenceScore.toFixed(0)}%` : 'N/A'}
+            <div
+              className={cn(
+                'text-sm font-semibold',
+                getConfidenceScoreColor(briefing.confidenceScore)
+              )}
+            >
+              {briefing.confidenceScore
+                ? `${briefing.confidenceScore.toFixed(0)}%`
+                : 'N/A'}
             </div>
           </div>
         </div>
@@ -125,17 +136,26 @@ export default function BriefingCard({
             {hasJournalists && (
               <Badge variant="secondary" className="text-xs">
                 <Users className="h-3 w-3 mr-1" />
-                {briefing.journalistIds.length} Journalist{briefing.journalistIds.length !== 1 ? 's' : ''}
+                {briefing.journalistIds.length} Journalist
+                {briefing.journalistIds.length !== 1 ? 's' : ''}
               </Badge>
             )}
             {hasPersonas && (
-              <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700">
-                {briefing.personaIds.length} Persona{briefing.personaIds.length !== 1 ? 's' : ''}
+              <Badge
+                variant="secondary"
+                className="text-xs bg-purple-100 text-purple-700"
+              >
+                {briefing.personaIds.length} Persona
+                {briefing.personaIds.length !== 1 ? 's' : ''}
               </Badge>
             )}
             {hasCompetitors && (
-              <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-700">
-                {briefing.competitorIds.length} Competitor{briefing.competitorIds.length !== 1 ? 's' : ''}
+              <Badge
+                variant="secondary"
+                className="text-xs bg-orange-100 text-orange-700"
+              >
+                {briefing.competitorIds.length} Competitor
+                {briefing.competitorIds.length !== 1 ? 's' : ''}
               </Badge>
             )}
           </div>

@@ -27,11 +27,18 @@ interface ForecastGenerationFormProps {
   snapshotId: string;
   open: boolean;
   onClose: () => void;
-  onSubmit: (horizon: RiskRadarForecastHorizon, useLlm: boolean) => Promise<void>;
+  onSubmit: (
+    horizon: RiskRadarForecastHorizon,
+    useLlm: boolean
+  ) => Promise<void>;
   defaultHorizon?: RiskRadarForecastHorizon;
 }
 
-const horizonOptions: { value: RiskRadarForecastHorizon; description: string; icon: React.ReactNode }[] = [
+const horizonOptions: {
+  value: RiskRadarForecastHorizon;
+  description: string;
+  icon: React.ReactNode;
+}[] = [
   {
     value: '24h',
     description: 'Short-term outlook for immediate decision making',
@@ -66,7 +73,8 @@ export function ForecastGenerationForm({
   onSubmit,
   defaultHorizon = '7d',
 }: ForecastGenerationFormProps) {
-  const [horizon, setHorizon] = useState<RiskRadarForecastHorizon>(defaultHorizon);
+  const [horizon, setHorizon] =
+    useState<RiskRadarForecastHorizon>(defaultHorizon);
   const [useLlm, setUseLlm] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -81,7 +89,10 @@ export function ForecastGenerationForm({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen: boolean) => !isOpen && onClose()}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen: boolean) => !isOpen && onClose()}
+    >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -99,7 +110,9 @@ export function ForecastGenerationForm({
             <Label className="text-sm font-medium">Forecast Horizon</Label>
             <RadioGroup
               value={horizon}
-              onValueChange={(value: string) => setHorizon(value as RiskRadarForecastHorizon)}
+              onValueChange={(value: string) =>
+                setHorizon(value as RiskRadarForecastHorizon)
+              }
               className="space-y-2"
             >
               {horizonOptions.map((option) => (
@@ -112,7 +125,11 @@ export function ForecastGenerationForm({
                   }`}
                   onClick={() => setHorizon(option.value)}
                 >
-                  <RadioGroupItem value={option.value} id={option.value} className="mt-0.5" />
+                  <RadioGroupItem
+                    value={option.value}
+                    id={option.value}
+                    className="mt-0.5"
+                  />
                   <div className="flex-1">
                     <Label
                       htmlFor={option.value}
@@ -121,7 +138,9 @@ export function ForecastGenerationForm({
                       {option.icon}
                       {getHorizonLabel(option.value)}
                     </Label>
-                    <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {option.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -143,17 +162,14 @@ export function ForecastGenerationForm({
                 </p>
               </div>
             </div>
-            <Switch
-              id="useLlm"
-              checked={useLlm}
-              onCheckedChange={setUseLlm}
-            />
+            <Switch id="useLlm" checked={useLlm} onCheckedChange={setUseLlm} />
           </div>
 
           {useLlm && (
             <div className="flex items-center gap-2 text-xs text-gray-500 bg-blue-50 p-3 rounded-lg">
               <Sparkles className="h-4 w-4 text-blue-500" />
-              AI will analyze indicators and drivers to generate actionable insights
+              AI will analyze indicators and drivers to generate actionable
+              insights
             </div>
           )}
         </div>

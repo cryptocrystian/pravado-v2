@@ -11,7 +11,7 @@
  * - Max 10 proposals per org per scan cycle
  */
 
-import { createLogger , LlmRouter } from '@pravado/utils';
+import { createLogger, LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import {
@@ -62,7 +62,11 @@ export async function generateProposals(
   const orgContext = await getOrgContext(supabase, orgId);
 
   // Get top signals that don't already have proposals
-  const signals = await getUnprocessedSignals(supabase, orgId, MAX_PROPOSALS_PER_SCAN);
+  const signals = await getUnprocessedSignals(
+    supabase,
+    orgId,
+    MAX_PROPOSALS_PER_SCAN
+  );
 
   if (signals.length === 0) {
     logger.info(`No unprocessed signals for org ${orgId}`);
@@ -81,7 +85,8 @@ export async function generateProposals(
   // Create LLM router
   const router = new LlmRouter({
     provider: withinBudget ? 'anthropic' : 'stub',
-    anthropicApiKey: process.env.LLM_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
+    anthropicApiKey:
+      process.env.LLM_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
     anthropicModel: 'claude-sonnet-4-20250514',
     openaiApiKey: process.env.LLM_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
     openaiModel: 'gpt-4o-mini',
@@ -138,7 +143,9 @@ export async function generateProposals(
           };
         } catch (llmError) {
           // Fall back to stub on LLM error
-          logger.warn(`LLM failed for signal ${signal.id}, using stub`, { error: llmError });
+          logger.warn(`LLM failed for signal ${signal.id}, using stub`, {
+            error: llmError,
+          });
           const stub = generateStubProposal(promptCtx);
           title = stub.title;
           rationale = stub.rationale;
@@ -156,28 +163,36 @@ export async function generateProposals(
       }
 
       // Build deep link based on pillar
-      const deepLink = buildDeepLink(signal.pillar, signal.signal_type, signal.signal_data);
+      const deepLink = buildDeepLink(
+        signal.pillar,
+        signal.signal_type,
+        signal.signal_data
+      );
 
       // Save proposal to sage_proposals
-      const { error: insertError } = await supabase.from('sage_proposals').insert({
-        org_id: orgId,
-        signal_id: signal.id,
-        signal_type: signal.signal_type,
-        pillar: signal.pillar,
-        priority: signal.priority,
-        title,
-        rationale: `${rationale}\n\nRecommended: ${suggestedAction}`,
-        evi_impact_estimate: signal.evi_impact_estimate,
-        confidence: signal.confidence,
-        mode: signal.pillar === 'SEO' ? 'autopilot' : 'copilot',
-        deep_link: deepLink,
-        status: 'active',
-        expires_at: signal.expires_at,
-        reasoning_trace: reasoningTrace,
-      });
+      const { error: insertError } = await supabase
+        .from('sage_proposals')
+        .insert({
+          org_id: orgId,
+          signal_id: signal.id,
+          signal_type: signal.signal_type,
+          pillar: signal.pillar,
+          priority: signal.priority,
+          title,
+          rationale: `${rationale}\n\nRecommended: ${suggestedAction}`,
+          evi_impact_estimate: signal.evi_impact_estimate,
+          confidence: signal.confidence,
+          mode: signal.pillar === 'SEO' ? 'autopilot' : 'copilot',
+          deep_link: deepLink,
+          status: 'active',
+          expires_at: signal.expires_at,
+          reasoning_trace: reasoningTrace,
+        });
 
       if (insertError) {
-        errors.push(`Insert error for signal ${signal.id}: ${insertError.message}`);
+        errors.push(
+          `Insert error for signal ${signal.id}: ${insertError.message}`
+        );
         logger.error(`Failed to insert proposal: ${insertError.message}`);
       } else {
         proposalsGenerated++;
@@ -185,13 +200,15 @@ export async function generateProposals(
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       errors.push(`Signal ${signal.id}: ${msg}`);
-      logger.error(`Proposal generation failed for signal ${signal.id}: ${msg}`);
+      logger.error(
+        `Proposal generation failed for signal ${signal.id}: ${msg}`
+      );
     }
   }
 
   logger.info(
     `Generated ${proposalsGenerated} proposals for org ${orgId} ` +
-    `(${signals.length} signals processed, provider: ${providerUsed})`
+      `(${signals.length} signals processed, provider: ${providerUsed})`
   );
 
   return {
@@ -217,7 +234,9 @@ async function getOrgContext(
     .eq('id', orgId)
     .single();
 
-  return { name: (data as { name: string } | null)?.name || 'Unknown Organization' };
+  return {
+    name: (data as { name: string } | null)?.name || 'Unknown Organization',
+  };
 }
 
 async function getUnprocessedSignals(
@@ -241,7 +260,9 @@ async function getUnprocessedSignals(
   // Get top signals by evi_impact_estimate that haven't been processed
   let query = supabase
     .from('sage_signals')
-    .select('id, signal_type, pillar, priority, signal_data, evi_impact_estimate, confidence, expires_at')
+    .select(
+      'id, signal_type, pillar, priority, signal_data, evi_impact_estimate, confidence, expires_at'
+    )
     .eq('org_id', orgId)
     .or(`expires_at.is.null,expires_at.gt.${now}`)
     .order('evi_impact_estimate', { ascending: false })
@@ -268,7 +289,9 @@ async function checkLLMBudget(
   orgId: string
 ): Promise<boolean> {
   const now = new Date();
-  const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+  const monthStart = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)
+  ).toISOString();
 
   const { data } = await supabase
     .from('llm_usage_ledger')
@@ -277,13 +300,16 @@ async function checkLLMBudget(
     .gte('created_at', monthStart);
 
   const totalTokens = (data ?? []).reduce(
-    (sum: number, row: { tokens_total: number }) => sum + (row.tokens_total || 0),
+    (sum: number, row: { tokens_total: number }) =>
+      sum + (row.tokens_total || 0),
     0
   );
 
   const withinBudget = totalTokens < MONTHLY_TOKEN_BUDGET;
   if (!withinBudget) {
-    logger.warn(`Org ${orgId} exceeded monthly LLM budget: ${totalTokens}/${MONTHLY_TOKEN_BUDGET}`);
+    logger.warn(
+      `Org ${orgId} exceeded monthly LLM budget: ${totalTokens}/${MONTHLY_TOKEN_BUDGET}`
+    );
   }
   return withinBudget;
 }
@@ -302,7 +328,9 @@ function parseProposalResponse(completion: string): {
     return {
       title: String(parsed.title || 'Untitled Proposal'),
       rationale: String(parsed.rationale || 'No rationale provided.'),
-      suggested_action: String(parsed.suggested_action || 'Review this signal.'),
+      suggested_action: String(
+        parsed.suggested_action || 'Review this signal.'
+      ),
     };
   } catch {
     logger.warn('Failed to parse LLM response as JSON, using raw text');

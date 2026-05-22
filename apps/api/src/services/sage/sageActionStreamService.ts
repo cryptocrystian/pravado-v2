@@ -23,9 +23,18 @@ interface ActionStreamItem {
   summary: string;
   why: string;
   recommended_next_step: string;
-  signals: Array<{ label: string; value: string; tone: 'positive' | 'neutral' | 'warning' | 'critical' }>;
+  signals: Array<{
+    label: string;
+    value: string;
+    tone: 'positive' | 'neutral' | 'warning' | 'critical';
+  }>;
   guardrails: string[];
-  evidence: Array<{ type: 'citation' | 'url' | 'diff' | 'metric'; label: string; value: string; url?: string }>;
+  evidence: Array<{
+    type: 'citation' | 'url' | 'diff' | 'metric';
+    label: string;
+    value: string;
+    url?: string;
+  }>;
   deep_link: { label: string; href: string };
   controls: string[];
   confidence: number;
@@ -48,7 +57,10 @@ const PILLAR_MAP: Record<string, 'pr' | 'content' | 'seo'> = {
   SEO: 'seo',
 };
 
-const SIGNAL_TYPE_TO_ACTION_TYPE: Record<string, 'proposal' | 'alert' | 'task'> = {
+const SIGNAL_TYPE_TO_ACTION_TYPE: Record<
+  string,
+  'proposal' | 'alert' | 'task'
+> = {
   pr_stale_followup: 'task',
   pr_high_value_unpitched: 'proposal',
   pr_pitch_window: 'alert',
@@ -63,7 +75,10 @@ const SIGNAL_TYPE_TO_ACTION_TYPE: Record<string, 'proposal' | 'alert' | 'task'> 
   competitor_citation_gap: 'proposal',
 };
 
-const SIGNAL_TYPE_TO_EVI_DRIVER: Record<string, 'visibility' | 'authority' | 'momentum'> = {
+const SIGNAL_TYPE_TO_EVI_DRIVER: Record<
+  string,
+  'visibility' | 'authority' | 'momentum'
+> = {
   pr_stale_followup: 'visibility',
   pr_high_value_unpitched: 'visibility',
   pr_pitch_window: 'visibility',
@@ -78,7 +93,10 @@ const SIGNAL_TYPE_TO_EVI_DRIVER: Record<string, 'visibility' | 'authority' | 'mo
   competitor_citation_gap: 'visibility',
 };
 
-const SIGNAL_TYPE_TO_CTA: Record<string, { primary: string; secondary: string }> = {
+const SIGNAL_TYPE_TO_CTA: Record<
+  string,
+  { primary: string; secondary: string }
+> = {
   pr_stale_followup: { primary: 'Send Follow-up', secondary: 'Review' },
   pr_high_value_unpitched: { primary: 'Draft Pitch', secondary: 'Review' },
   pr_pitch_window: { primary: 'Send Pitch', secondary: 'Review' },
@@ -89,8 +107,14 @@ const SIGNAL_TYPE_TO_CTA: Record<string, { primary: string; secondary: string }>
   seo_opportunity_keyword: { primary: 'Optimize', secondary: 'Review' },
   seo_content_gap: { primary: 'Create Page', secondary: 'Review' },
   content_low_citemind: { primary: 'Improve Content', secondary: 'View Score' },
-  content_low_citation_rate: { primary: 'Improve AEO', secondary: 'View Citations' },
-  competitor_citation_gap: { primary: 'Analyze Gap', secondary: 'View Details' },
+  content_low_citation_rate: {
+    primary: 'Improve AEO',
+    secondary: 'View Citations',
+  },
+  competitor_citation_gap: {
+    primary: 'Analyze Gap',
+    secondary: 'View Details',
+  },
 };
 
 /**
@@ -111,8 +135,11 @@ export async function getActionStreamForOrg(
     .limit(50);
 
   if (filters?.pillar) {
-    const dbPillar = filters.pillar.toUpperCase() === 'PR' ? 'PR'
-      : filters.pillar.charAt(0).toUpperCase() + filters.pillar.slice(1).toLowerCase();
+    const dbPillar =
+      filters.pillar.toUpperCase() === 'PR'
+        ? 'PR'
+        : filters.pillar.charAt(0).toUpperCase() +
+          filters.pillar.slice(1).toLowerCase();
     query = query.eq('pillar', dbPillar);
   }
 
@@ -123,16 +150,21 @@ export async function getActionStreamForOrg(
   const { data: proposals, error } = await query;
 
   if (error) {
-    logger.error(`Failed to fetch proposals for org ${orgId}: ${error.message}`);
+    logger.error(
+      `Failed to fetch proposals for org ${orgId}: ${error.message}`
+    );
     return { generated_at: new Date().toISOString(), items: [] };
   }
 
-  const items: ActionStreamItem[] = (proposals ?? []).map((p) => mapProposalToActionItem(p));
+  const items: ActionStreamItem[] = (proposals ?? []).map((p) =>
+    mapProposalToActionItem(p)
+  );
 
   // Sort: critical first, then high, medium, low
   const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
   items.sort((a, b) => {
-    const pDiff = (priorityOrder[a.priority] ?? 4) - (priorityOrder[b.priority] ?? 4);
+    const pDiff =
+      (priorityOrder[a.priority] ?? 4) - (priorityOrder[b.priority] ?? 4);
     if (pDiff !== 0) return pDiff;
     return b.impact - a.impact;
   });
@@ -143,10 +175,13 @@ export async function getActionStreamForOrg(
   };
 }
 
-function mapProposalToActionItem(proposal: Record<string, unknown>): ActionStreamItem {
+function mapProposalToActionItem(
+  proposal: Record<string, unknown>
+): ActionStreamItem {
   const pillar = PILLAR_MAP[proposal.pillar as string] || 'content';
   const signalType = proposal.signal_type as string;
-  const signalData = (proposal.reasoning_trace as Record<string, unknown>) || {};
+  const signalData =
+    (proposal.reasoning_trace as Record<string, unknown>) || {};
   const deepLink = proposal.deep_link as { href: string; label: string } | null;
 
   // Split rationale into summary + why
@@ -170,22 +205,34 @@ function mapProposalToActionItem(proposal: Record<string, unknown>): ActionStrea
     signals,
     guardrails: [],
     evidence: buildEvidenceFromSignalData(signalData),
-    deep_link: deepLink || { label: `Open in ${pillar.toUpperCase()}`, href: `/app/${pillar}` },
+    deep_link: deepLink || {
+      label: `Open in ${pillar.toUpperCase()}`,
+      href: `/app/${pillar}`,
+    },
     controls: ['edit'],
     confidence: Number(proposal.confidence) || 0.5,
     impact: Number(proposal.evi_impact_estimate) / 10 || 0.5,
     mode: (proposal.mode as 'manual' | 'copilot' | 'autopilot') || 'copilot',
     gate: { required: false, reason: null, min_plan: null },
-    cta: SIGNAL_TYPE_TO_CTA[signalType] || { primary: 'Review', secondary: 'Dismiss' },
+    cta: SIGNAL_TYPE_TO_CTA[signalType] || {
+      primary: 'Review',
+      secondary: 'Dismiss',
+    },
     updated_at: (proposal.updated_at as string) || new Date().toISOString(),
     evi_driver: SIGNAL_TYPE_TO_EVI_DRIVER[signalType] || 'momentum',
   };
 }
 
-function buildSignalsFromProposal(
-  proposal: Record<string, unknown>
-): Array<{ label: string; value: string; tone: 'positive' | 'neutral' | 'warning' | 'critical' }> {
-  const signals: Array<{ label: string; value: string; tone: 'positive' | 'neutral' | 'warning' | 'critical' }> = [];
+function buildSignalsFromProposal(proposal: Record<string, unknown>): Array<{
+  label: string;
+  value: string;
+  tone: 'positive' | 'neutral' | 'warning' | 'critical';
+}> {
+  const signals: Array<{
+    label: string;
+    value: string;
+    tone: 'positive' | 'neutral' | 'warning' | 'critical';
+  }> = [];
 
   const impact = Number(proposal.evi_impact_estimate) || 0;
   signals.push({
@@ -198,14 +245,24 @@ function buildSignalsFromProposal(
   signals.push({
     label: 'Confidence',
     value: `${Math.round(confidence * 100)}%`,
-    tone: confidence >= 0.7 ? 'positive' : confidence >= 0.5 ? 'neutral' : 'warning',
+    tone:
+      confidence >= 0.7
+        ? 'positive'
+        : confidence >= 0.5
+          ? 'neutral'
+          : 'warning',
   });
 
   const priority = proposal.priority as string;
   signals.push({
     label: 'Priority',
     value: priority.charAt(0).toUpperCase() + priority.slice(1),
-    tone: priority === 'critical' ? 'critical' : priority === 'high' ? 'warning' : 'neutral',
+    tone:
+      priority === 'critical'
+        ? 'critical'
+        : priority === 'high'
+          ? 'warning'
+          : 'neutral',
   });
 
   return signals;
@@ -218,10 +275,18 @@ function buildEvidenceFromSignalData(
   const evidence: Array<{ type: 'metric'; label: string; value: string }> = [];
 
   if (trace.provider) {
-    evidence.push({ type: 'metric', label: 'Generated by', value: String(trace.provider) });
+    evidence.push({
+      type: 'metric',
+      label: 'Generated by',
+      value: String(trace.provider),
+    });
   }
   if (trace.model) {
-    evidence.push({ type: 'metric', label: 'Model', value: String(trace.model) });
+    evidence.push({
+      type: 'metric',
+      label: 'Model',
+      value: String(trace.model),
+    });
   }
 
   return evidence;

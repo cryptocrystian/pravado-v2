@@ -27,13 +27,35 @@ export const getStepSchema = z.object({
 // ENUMS & CONSTANTS
 // ========================================
 
-export const playbookStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'ARCHIVED', 'DEPRECATED']);
+export const playbookStatusSchema = z.enum([
+  'DRAFT',
+  'ACTIVE',
+  'ARCHIVED',
+  'DEPRECATED',
+]);
 
-export const playbookRunStatusSchema = z.enum(['PENDING', 'RUNNING', 'SUCCEEDED', 'FAILED', 'CANCELLED']);
+export const playbookRunStatusSchema = z.enum([
+  'PENDING',
+  'RUNNING',
+  'SUCCEEDED',
+  'FAILED',
+  'CANCELLED',
+]);
 
-export const playbookStepRunStatusSchema = z.enum(['PENDING', 'RUNNING', 'SUCCEEDED', 'FAILED', 'SKIPPED']);
+export const playbookStepRunStatusSchema = z.enum([
+  'PENDING',
+  'RUNNING',
+  'SUCCEEDED',
+  'FAILED',
+  'SKIPPED',
+]);
 
-export const playbookStepTypeSchema = z.enum(['AGENT', 'DATA', 'BRANCH', 'API']);
+export const playbookStepTypeSchema = z.enum([
+  'AGENT',
+  'DATA',
+  'BRANCH',
+  'API',
+]);
 
 // ========================================
 // PLAYBOOK STEP CONFIG SCHEMAS
@@ -70,7 +92,14 @@ export const branchStepConfigSchema = z.object({
   sourceKey: z.string(), // step key to evaluate
   conditions: z.array(
     z.object({
-      operator: z.enum(['equals', 'notEquals', 'contains', 'greaterThan', 'lessThan', 'exists']),
+      operator: z.enum([
+        'equals',
+        'notEquals',
+        'contains',
+        'greaterThan',
+        'lessThan',
+        'exists',
+      ]),
       value: z.unknown().optional(),
       nextStepKey: z.string(),
     })
@@ -202,7 +231,9 @@ export function validatePlaybookStructure(steps: PlaybookStepInput[]): {
   const keySet = new Set(keys);
   for (const step of steps) {
     if (step.nextStepKey && !keySet.has(step.nextStepKey)) {
-      errors.push(`Step "${step.key}" references non-existent nextStepKey "${step.nextStepKey}"`);
+      errors.push(
+        `Step "${step.key}" references non-existent nextStepKey "${step.nextStepKey}"`
+      );
     }
   }
 
@@ -255,7 +286,9 @@ export const listPlaybooksExtendedQuerySchema = z.object({
   offset: z.number().int().nonnegative().optional().default(0),
 });
 
-export type ListPlaybooksExtendedQuery = z.infer<typeof listPlaybooksExtendedQuerySchema>;
+export type ListPlaybooksExtendedQuery = z.infer<
+  typeof listPlaybooksExtendedQuerySchema
+>;
 
 /**
  * Execute playbook with mode (normal or simulation)
@@ -265,7 +298,9 @@ export const executePlaybookExtendedSchema = z.object({
   mode: z.enum(['normal', 'simulation']).optional().default('normal'),
 });
 
-export type ExecutePlaybookExtended = z.infer<typeof executePlaybookExtendedSchema>;
+export type ExecutePlaybookExtended = z.infer<
+  typeof executePlaybookExtendedSchema
+>;
 
 /**
  * Update playbook status
@@ -283,7 +318,12 @@ export type UpdatePlaybookStatus = z.infer<typeof updatePlaybookStatusSchema>;
 /**
  * Escalation level schema
  */
-export const escalationLevelSchema = z.enum(['none', 'agent', 'supervisor', 'human']);
+export const escalationLevelSchema = z.enum([
+  'none',
+  'agent',
+  'supervisor',
+  'human',
+]);
 
 export type EscalationLevel = z.infer<typeof escalationLevelSchema>;
 
@@ -343,7 +383,9 @@ export const executePlaybookCollaborationSchema = z.object({
     .optional(),
 });
 
-export type ExecutePlaybookCollaboration = z.infer<typeof executePlaybookCollaborationSchema>;
+export type ExecutePlaybookCollaboration = z.infer<
+  typeof executePlaybookCollaborationSchema
+>;
 
 // ========================================
 // SPRINT S10: MEMORY SYSTEM V2
@@ -404,7 +446,9 @@ export const memoryRetrievalOptionsSchema = z.object({
   memoryType: memoryTypeSchema.optional(),
 });
 
-export type MemoryRetrievalOptions = z.infer<typeof memoryRetrievalOptionsSchema>;
+export type MemoryRetrievalOptions = z.infer<
+  typeof memoryRetrievalOptionsSchema
+>;
 
 /**
  * Memory retrieval result schema
@@ -463,7 +507,14 @@ export type MemorySearchQuery = z.infer<typeof memorySearchQuerySchema>;
  * Create branch schema
  */
 export const createBranchSchema = z.object({
-  name: z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/, 'Branch name must be alphanumeric with hyphens and underscores'),
+  name: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(
+      /^[a-zA-Z0-9_-]+$/,
+      'Branch name must be alphanumeric with hyphens and underscores'
+    ),
   parentBranchId: z.string().uuid().optional(),
 });
 
@@ -487,11 +538,15 @@ export const mergeBranchesSchema = z.object({
   sourceBranchId: z.string().uuid(),
   targetBranchId: z.string().uuid(),
   message: z.string().min(1).max(500).optional(),
-  resolveConflicts: z.array(z.object({
-    nodeId: z.string().optional(),
-    edgeId: z.string().optional(),
-    resolution: z.enum(['ours', 'theirs']),
-  })).optional(),
+  resolveConflicts: z
+    .array(
+      z.object({
+        nodeId: z.string().optional(),
+        edgeId: z.string().optional(),
+        resolution: z.enum(['ours', 'theirs']),
+      })
+    )
+    .optional(),
 });
 
 export type MergeBranchesInput = z.infer<typeof mergeBranchesSchema>;

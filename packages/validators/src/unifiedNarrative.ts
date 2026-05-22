@@ -217,7 +217,9 @@ export const narrativeGenerationConfigSchema = z.object({
   excludedSections: z.array(narrativeSectionTypeSchema).optional(),
 
   // Tone and style
-  writingStyle: z.enum(['analytical', 'narrative', 'action_oriented']).optional(),
+  writingStyle: z
+    .enum(['analytical', 'narrative', 'action_oriented'])
+    .optional(),
   sentimentBias: z.enum(['neutral', 'optimistic', 'conservative']).optional(),
 
   // LLM settings
@@ -271,13 +273,15 @@ export const contradictionDetectedSchema = z.object({
   id: z.string().uuid().optional(),
   title: z.string().min(1).max(500),
   description: z.string().min(1).max(5000),
-  systems: z.array(
-    z.object({
-      system: narrativeSourceSystemSchema,
-      assertion: z.string().min(1).max(2000),
-      sourceRecordId: z.string().uuid().optional(),
-    })
-  ).min(2),
+  systems: z
+    .array(
+      z.object({
+        system: narrativeSourceSystemSchema,
+        assertion: z.string().min(1).max(2000),
+        sourceRecordId: z.string().uuid().optional(),
+      })
+    )
+    .min(2),
   severity: narrativeInsightStrengthSchema,
   resolutionSuggestion: z.string().max(2000).optional(),
   needsHumanReview: z.boolean(),
@@ -311,14 +315,16 @@ export const dataCorrelationSchema = z.object({
   id: z.string().uuid().optional(),
   title: z.string().min(1).max(500),
   description: z.string().min(1).max(2000),
-  metrics: z.array(
-    z.object({
-      metricName: z.string().max(200),
-      sourceSystem: narrativeSourceSystemSchema,
-      value: z.number(),
-      unit: z.string().max(50).optional(),
-    })
-  ).min(2),
+  metrics: z
+    .array(
+      z.object({
+        metricName: z.string().max(200),
+        sourceSystem: narrativeSourceSystemSchema,
+        value: z.number(),
+        unit: z.string().max(50).optional(),
+      })
+    )
+    .min(2),
   correlationType: z.enum(['positive', 'negative', 'complex']),
   correlationStrength: z.number().min(0).max(1),
   businessImplication: z.string().max(2000).optional(),
@@ -344,7 +350,14 @@ export const sectionSourceReferenceSchema = z.object({
  */
 export const narrativeVisualizationSchema = z.object({
   id: z.string().uuid().optional(),
-  type: z.enum(['chart', 'table', 'timeline', 'comparison', 'heatmap', 'gauge']),
+  type: z.enum([
+    'chart',
+    'table',
+    'timeline',
+    'comparison',
+    'heatmap',
+    'gauge',
+  ]),
   title: z.string().min(1).max(200),
   description: z.string().max(500).optional(),
   dataSource: narrativeSourceSystemSchema,
@@ -471,7 +484,10 @@ export const listNarrativesQuerySchema = z.object({
   search: z.string().max(200).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional().default(20),
   offset: z.coerce.number().int().min(0).optional().default(0),
-  sortBy: z.enum(['created_at', 'updated_at', 'period_start', 'title']).optional().default('created_at'),
+  sortBy: z
+    .enum(['created_at', 'updated_at', 'period_start', 'title'])
+    .optional()
+    .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -549,7 +565,9 @@ export const approveNarrativeSchema = z.object({
 export const publishNarrativeSchema = z.object({
   publishNote: z.string().max(2000).optional(),
   notifyRecipients: z.array(z.string().email()).optional(),
-  generateExports: z.array(z.enum(['pdf', 'docx', 'pptx', 'html', 'md'])).optional(),
+  generateExports: z
+    .array(z.enum(['pdf', 'docx', 'pptx', 'html', 'md']))
+    .optional(),
 });
 
 /**
@@ -612,7 +630,9 @@ export const sourceIdParamSchema = z.object({
 
 export type NarrativeType = z.infer<typeof narrativeTypeSchema>;
 export type NarrativeSectionType = z.infer<typeof narrativeSectionTypeSchema>;
-export type NarrativeInsightStrength = z.infer<typeof narrativeInsightStrengthSchema>;
+export type NarrativeInsightStrength = z.infer<
+  typeof narrativeInsightStrengthSchema
+>;
 export type DeltaType = z.infer<typeof deltaTypeSchema>;
 export type NarrativeFormatType = z.infer<typeof narrativeFormatTypeSchema>;
 export type NarrativeStatus = z.infer<typeof narrativeStatusSchema>;
@@ -620,29 +640,47 @@ export type NarrativeSourceSystem = z.infer<typeof narrativeSourceSystemSchema>;
 export type NarrativeEventType = z.infer<typeof narrativeEventTypeSchema>;
 
 export type AudienceContext = z.infer<typeof audienceContextSchema>;
-export type NarrativeGenerationConfig = z.infer<typeof narrativeGenerationConfigSchema>;
+export type NarrativeGenerationConfig = z.infer<
+  typeof narrativeGenerationConfigSchema
+>;
 export type NarrativeInsight = z.infer<typeof narrativeInsightSchema>;
 export type CrossSystemPattern = z.infer<typeof crossSystemPatternSchema>;
 export type ContradictionDetected = z.infer<typeof contradictionDetectedSchema>;
 export type RiskCluster = z.infer<typeof riskClusterSchema>;
 export type DataCorrelation = z.infer<typeof dataCorrelationSchema>;
-export type SectionSourceReference = z.infer<typeof sectionSourceReferenceSchema>;
-export type NarrativeVisualization = z.infer<typeof narrativeVisualizationSchema>;
+export type SectionSourceReference = z.infer<
+  typeof sectionSourceReferenceSchema
+>;
+export type NarrativeVisualization = z.infer<
+  typeof narrativeVisualizationSchema
+>;
 
 export type CreateNarrative = z.infer<typeof createNarrativeSchema>;
 export type UpdateNarrative = z.infer<typeof updateNarrativeSchema>;
 export type GenerateNarrative = z.infer<typeof generateNarrativeSchema>;
-export type RegenerateNarrativeSection = z.infer<typeof regenerateNarrativeSectionSchema>;
-export type UpdateNarrativeSection = z.infer<typeof updateNarrativeSectionSchema>;
+export type RegenerateNarrativeSection = z.infer<
+  typeof regenerateNarrativeSectionSchema
+>;
+export type UpdateNarrativeSection = z.infer<
+  typeof updateNarrativeSectionSchema
+>;
 export type ComputeDelta = z.infer<typeof computeDeltaSchema>;
 export type AddNarrativeSection = z.infer<typeof addSectionSchema>;
 
 export type ListNarrativesQuery = z.infer<typeof listNarrativesQuerySchema>;
-export type GetNarrativeInsightsQuery = z.infer<typeof getNarrativeInsightsQuerySchema>;
-export type ListNarrativeSectionsQuery = z.infer<typeof listSectionsQuerySchema>;
-export type ListNarrativeSourcesQuery = z.infer<typeof listNarrativeSourcesQuerySchema>;
+export type GetNarrativeInsightsQuery = z.infer<
+  typeof getNarrativeInsightsQuerySchema
+>;
+export type ListNarrativeSectionsQuery = z.infer<
+  typeof listSectionsQuerySchema
+>;
+export type ListNarrativeSourcesQuery = z.infer<
+  typeof listNarrativeSourcesQuerySchema
+>;
 export type ListNarrativeDiffsQuery = z.infer<typeof listDiffsQuerySchema>;
-export type ListNarrativeAuditLogsQuery = z.infer<typeof listAuditLogsQuerySchema>;
+export type ListNarrativeAuditLogsQuery = z.infer<
+  typeof listAuditLogsQuerySchema
+>;
 
 export type ApproveNarrative = z.infer<typeof approveNarrativeSchema>;
 export type PublishNarrative = z.infer<typeof publishNarrativeSchema>;

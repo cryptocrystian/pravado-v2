@@ -200,7 +200,13 @@ export const listNodesSchema = z.object({
   sourceSystem: z.string().max(100).optional(),
   isActive: z.coerce.boolean().optional(),
   sortBy: z
-    .enum(['created_at', 'updated_at', 'label', 'degree_centrality', 'pagerank_score'])
+    .enum([
+      'created_at',
+      'updated_at',
+      'label',
+      'degree_centrality',
+      'pagerank_score',
+    ])
     .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
   clusterId: z.string().uuid().optional(),
@@ -261,7 +267,12 @@ export const listEdgesSchema = z.object({
 export const mergeNodesSchema = z.object({
   sourceNodeIds: z.array(z.string().uuid()).min(2).max(10),
   targetNodeId: z.string().uuid().optional(),
-  mergeStrategy: z.enum(['keep_first', 'keep_newest', 'merge_properties', 'create_new']),
+  mergeStrategy: z.enum([
+    'keep_first',
+    'keep_newest',
+    'merge_properties',
+    'create_new',
+  ]),
   newLabel: z.string().min(1).max(500).optional(),
   newDescription: z.string().max(5000).optional(),
   preserveEdges: z.boolean().default(true),
@@ -296,7 +307,9 @@ export const unifiedGraphQuerySchema = z.object({
   semanticThreshold: z.number().min(0).max(1).default(0.7),
 
   // Aggregation
-  groupBy: z.enum(['node_type', 'edge_type', 'cluster_id', 'community_id']).optional(),
+  groupBy: z
+    .enum(['node_type', 'edge_type', 'cluster_id', 'community_id'])
+    .optional(),
   aggregate: z.enum(['count', 'sum', 'avg', 'min', 'max']).optional(),
   aggregateField: z.string().max(100).optional(),
 
@@ -468,7 +481,9 @@ export const narrativeGenerationSchema = z.object({
   nodeTypes: z.array(nodeTypeEnum).optional(),
   edgeTypes: z.array(edgeTypeEnum).optional(),
   maxDepth: z.number().min(1).max(5).default(3),
-  style: z.enum(['executive', 'technical', 'narrative', 'bullet_points']).default('narrative'),
+  style: z
+    .enum(['executive', 'technical', 'narrative', 'bullet_points'])
+    .default('narrative'),
   maxLength: z.number().min(100).max(5000).default(1000),
 });
 
@@ -501,4 +516,6 @@ export type BulkDeleteEdgesInput = z.infer<typeof bulkDeleteEdgesSchema>;
 export type ImportGraphInput = z.infer<typeof importGraphSchema>;
 export type ExportGraphInput = z.infer<typeof exportGraphSchema>;
 export type ReasoningQueryInput = z.infer<typeof reasoningQuerySchema>;
-export type NarrativeGenerationInput = z.infer<typeof narrativeGenerationSchema>;
+export type NarrativeGenerationInput = z.infer<
+  typeof narrativeGenerationSchema
+>;

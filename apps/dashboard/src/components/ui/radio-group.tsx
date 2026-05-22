@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
 interface RadioGroupProps {
   children: React.ReactNode;
@@ -21,7 +21,12 @@ const RadioGroupContext = React.createContext<{
   onValueChange?: (value: string) => void;
 }>({});
 
-export function RadioGroup({ children, value, onValueChange, className = "" }: RadioGroupProps) {
+export function RadioGroup({
+  children,
+  value,
+  onValueChange,
+  className = '',
+}: RadioGroupProps) {
   return (
     <RadioGroupContext.Provider value={{ value, onValueChange }}>
       <div role="radiogroup" className={className}>
@@ -31,7 +36,12 @@ export function RadioGroup({ children, value, onValueChange, className = "" }: R
   );
 }
 
-export function RadioGroupItem({ value, id, className = "", disabled = false }: RadioGroupItemProps) {
+export function RadioGroupItem({
+  value,
+  id,
+  className = '',
+  disabled = false,
+}: RadioGroupItemProps) {
   const context = React.useContext(RadioGroupContext);
   const isChecked = context.value === value;
 
@@ -47,9 +57,7 @@ export function RadioGroupItem({ value, id, className = "", disabled = false }: 
         isChecked ? 'border-purple-500' : ''
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${className}`}
     >
-      {isChecked && (
-        <div className="h-2 w-2 rounded-full bg-purple-500" />
-      )}
+      {isChecked && <div className="h-2 w-2 rounded-full bg-purple-500" />}
     </button>
   );
 }

@@ -44,7 +44,10 @@ test.describe('Beta page interactions', () => {
     await page.goto(`${BASE}/beta`, { waitUntil: 'networkidle' });
     // Filter out known non-critical errors
     const critical = errors.filter(
-      (e) => !e.includes('Sentry') && !e.includes('PostHog') && !e.includes('lockdown')
+      (e) =>
+        !e.includes('Sentry') &&
+        !e.includes('PostHog') &&
+        !e.includes('lockdown')
     );
     expect(critical).toHaveLength(0);
   });
@@ -89,7 +92,9 @@ test.describe('Command Center / Entity Map', () => {
     expect(page.url()).not.toContain('500');
   });
 
-  test('command center page has no critical JS errors on redirect', async ({ page }) => {
+  test('command center page has no critical JS errors on redirect', async ({
+    page,
+  }) => {
     const errors: string[] = [];
     page.on('pageerror', (err) => errors.push(err.message));
     await page.goto(`${BASE}/app/command-center`, { waitUntil: 'networkidle' });
@@ -109,7 +114,9 @@ test.describe('Command Center / Entity Map', () => {
 
 test.describe('Error handling', () => {
   test('auth callback with error shows friendly message', async ({ page }) => {
-    await page.goto(`${BASE}/callback?error=access_denied&error_description=User+cancelled`);
+    await page.goto(
+      `${BASE}/callback?error=access_denied&error_description=User+cancelled`
+    );
     await expect(page.getByText('Sign-in failed')).toBeVisible();
     await expect(page.getByText('Back to Sign In')).toBeVisible();
   });
@@ -120,7 +127,10 @@ test.describe('Error handling', () => {
     // Should either show error or redirect to login within 15s
     await page.waitForTimeout(13000);
     const url = page.url();
-    const hasError = await page.getByText('Authentication Error').isVisible().catch(() => false);
+    const hasError = await page
+      .getByText('Authentication Error')
+      .isVisible()
+      .catch(() => false);
     expect(url.includes('/login') || hasError).toBeTruthy();
   });
 });

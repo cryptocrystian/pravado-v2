@@ -30,14 +30,28 @@ const typeLabel: Record<string, string> = {
 };
 
 const trendDisplay: Record<string, { icon: React.ReactNode; label: string }> = {
-  daily: { icon: <ArrowUp size={10} className="text-semantic-success" weight="bold" />, label: 'Daily' },
-  growing: { icon: <ArrowUp size={10} className="text-semantic-success" weight="bold" />, label: 'Growing' },
-  stable: { icon: <Minus size={10} className="text-white/30" weight="bold" />, label: 'Stable' },
-  new: { icon: <Star size={10} className="text-cc-cyan" weight="fill" />, label: 'New' },
+  daily: {
+    icon: <ArrowUp size={10} className="text-semantic-success" weight="bold" />,
+    label: 'Daily',
+  },
+  growing: {
+    icon: <ArrowUp size={10} className="text-semantic-success" weight="bold" />,
+    label: 'Growing',
+  },
+  stable: {
+    icon: <Minus size={10} className="text-white/30" weight="bold" />,
+    label: 'Stable',
+  },
+  new: {
+    icon: <Star size={10} className="text-cc-cyan" weight="fill" />,
+    label: 'New',
+  },
 };
 
 export function CitationsTable() {
-  const [selectedCitation, setSelectedCitation] = useState<CitationRow | null>(null);
+  const [selectedCitation, setSelectedCitation] = useState<CitationRow | null>(
+    null
+  );
 
   return (
     <div className="relative">
@@ -62,7 +76,7 @@ export function CitationsTable() {
             >
               {label} &darr;
             </button>
-          ),
+          )
         )}
       </div>
 

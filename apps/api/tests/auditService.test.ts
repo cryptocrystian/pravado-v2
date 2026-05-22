@@ -11,7 +11,11 @@ const mockSupabase = {
 };
 
 // Create mock query builder
-function createMockQueryBuilder(data: any, error: any = null, count: number | null = null) {
+function createMockQueryBuilder(
+  data: any,
+  error: any = null,
+  count: number | null = null
+) {
   return {
     insert: vi.fn().mockReturnThis(),
     select: vi.fn().mockReturnThis(),
@@ -23,7 +27,8 @@ function createMockQueryBuilder(data: any, error: any = null, count: number | nu
     order: vi.fn().mockReturnThis(),
     range: vi.fn().mockReturnThis(),
     single: vi.fn().mockResolvedValue({ data, error }),
-    then: (resolve: any) => Promise.resolve({ data, error, count }).then(resolve),
+    then: (resolve: any) =>
+      Promise.resolve({ data, error, count }).then(resolve),
   };
 }
 
@@ -38,7 +43,10 @@ vi.mock('@pravado/utils', () => ({
 }));
 
 // Import after mocking
-import { AuditService, createScopedAuditLogger } from '../src/services/auditService';
+import {
+  AuditService,
+  createScopedAuditLogger,
+} from '../src/services/auditService';
 import type { AuditLogRecord } from '@pravado/types';
 
 describe('Audit Service (S35)', () => {
@@ -186,7 +194,10 @@ describe('Audit Service (S35)', () => {
         eq: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         range: vi.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: mockEntries, error: null, count: 2 }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: mockEntries, error: null, count: 2 }).then(
+            resolve
+          ),
       };
       mockSupabase.from.mockReturnValue(mockBuilder);
 
@@ -207,7 +218,8 @@ describe('Audit Service (S35)', () => {
         in: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         range: vi.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: [], error: null, count: 0 }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: [], error: null, count: 0 }).then(resolve),
       };
       mockSupabase.from.mockReturnValue(mockBuilder);
 
@@ -225,7 +237,8 @@ describe('Audit Service (S35)', () => {
         in: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         range: vi.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: [], error: null, count: 0 }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: [], error: null, count: 0 }).then(resolve),
       };
       mockSupabase.from.mockReturnValue(mockBuilder);
 
@@ -233,7 +246,10 @@ describe('Audit Service (S35)', () => {
         eventType: ['auth.login', 'auth.logout'],
       });
 
-      expect(mockBuilder.in).toHaveBeenCalledWith('event_type', ['auth.login', 'auth.logout']);
+      expect(mockBuilder.in).toHaveBeenCalledWith('event_type', [
+        'auth.login',
+        'auth.logout',
+      ]);
     });
 
     it('should filter by severity', async () => {
@@ -243,7 +259,8 @@ describe('Audit Service (S35)', () => {
         in: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         range: vi.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: [], error: null, count: 0 }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: [], error: null, count: 0 }).then(resolve),
       };
       mockSupabase.from.mockReturnValue(mockBuilder);
 
@@ -251,7 +268,10 @@ describe('Audit Service (S35)', () => {
         severity: ['error', 'critical'],
       });
 
-      expect(mockBuilder.in).toHaveBeenCalledWith('severity', ['error', 'critical']);
+      expect(mockBuilder.in).toHaveBeenCalledWith('severity', [
+        'error',
+        'critical',
+      ]);
     });
 
     it('should filter by date range', async () => {
@@ -262,7 +282,8 @@ describe('Audit Service (S35)', () => {
         lte: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         range: vi.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: [], error: null, count: 0 }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: [], error: null, count: 0 }).then(resolve),
       };
       mockSupabase.from.mockReturnValue(mockBuilder);
 
@@ -271,8 +292,14 @@ describe('Audit Service (S35)', () => {
         endDate: '2024-01-31T23:59:59Z',
       });
 
-      expect(mockBuilder.gte).toHaveBeenCalledWith('created_at', '2024-01-01T00:00:00Z');
-      expect(mockBuilder.lte).toHaveBeenCalledWith('created_at', '2024-01-31T23:59:59Z');
+      expect(mockBuilder.gte).toHaveBeenCalledWith(
+        'created_at',
+        '2024-01-01T00:00:00Z'
+      );
+      expect(mockBuilder.lte).toHaveBeenCalledWith(
+        'created_at',
+        '2024-01-31T23:59:59Z'
+      );
     });
 
     it('should support cursor-based pagination', async () => {
@@ -282,7 +309,8 @@ describe('Audit Service (S35)', () => {
         lt: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         range: vi.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: [], error: null, count: 0 }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: [], error: null, count: 0 }).then(resolve),
       };
       mockSupabase.from.mockReturnValue(mockBuilder);
 
@@ -290,7 +318,10 @@ describe('Audit Service (S35)', () => {
         cursor: '2024-01-15T10:00:00Z',
       });
 
-      expect(mockBuilder.lt).toHaveBeenCalledWith('created_at', '2024-01-15T10:00:00Z');
+      expect(mockBuilder.lt).toHaveBeenCalledWith(
+        'created_at',
+        '2024-01-15T10:00:00Z'
+      );
     });
 
     it('should filter by search term in context', async () => {
@@ -326,7 +357,10 @@ describe('Audit Service (S35)', () => {
         eq: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         range: vi.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: mockEntries, error: null, count: 2 }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: mockEntries, error: null, count: 2 }).then(
+            resolve
+          ),
       };
       mockSupabase.from.mockReturnValue(mockBuilder);
 
@@ -358,7 +392,10 @@ describe('Audit Service (S35)', () => {
       const mockBuilder = createMockQueryBuilder(mockRecord);
       mockSupabase.from.mockReturnValue(mockBuilder);
 
-      const result = await auditService.getAuditEntry('org-uuid', 'test-uuid-123');
+      const result = await auditService.getAuditEntry(
+        'org-uuid',
+        'test-uuid-123'
+      );
 
       expect(mockBuilder.eq).toHaveBeenCalledWith('org_id', 'org-uuid');
       expect(mockBuilder.eq).toHaveBeenCalledWith('id', 'test-uuid-123');
@@ -367,10 +404,16 @@ describe('Audit Service (S35)', () => {
     });
 
     it('should return null for non-existent entry', async () => {
-      const mockBuilder = createMockQueryBuilder(null, { code: 'PGRST116', message: 'Not found' });
+      const mockBuilder = createMockQueryBuilder(null, {
+        code: 'PGRST116',
+        message: 'Not found',
+      });
       mockSupabase.from.mockReturnValue(mockBuilder);
 
-      const result = await auditService.getAuditEntry('org-uuid', 'non-existent');
+      const result = await auditService.getAuditEntry(
+        'org-uuid',
+        'non-existent'
+      );
 
       expect(result).toBeNull();
     });
@@ -434,7 +477,8 @@ describe('Audit Service (S35)', () => {
         eq: vi.fn().mockReturnThis(),
         gte: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: mockEntries, error: null }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: mockEntries, error: null }).then(resolve),
       };
       mockSupabase.from.mockReturnValue(mockBuilder);
 

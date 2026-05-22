@@ -68,16 +68,23 @@ describe('Unified Narrative E2E Tests', () => {
         periodEnd: '2024-12-31',
         fiscalYear: 2024,
         fiscalQuarter: 'Q4',
-        sourceSystems: ['media_monitoring', 'brand_reputation', 'competitive_intel'],
+        sourceSystems: [
+          'media_monitoring',
+          'brand_reputation',
+          'competitive_intel',
+        ],
         tags: ['e2e-test', 'quarterly'],
         targetAudience: 'Board of Directors',
         metadata: { testRun: true },
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-narratives', {
-        method: 'POST',
-        body: narrativeData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-narratives',
+        {
+          method: 'POST',
+          body: narrativeData,
+        }
+      );
 
       if (response.ok) {
         expect(response.status).toBe(201);
@@ -254,7 +261,8 @@ describe('Unified Narrative E2E Tests', () => {
       }
 
       const updateData = {
-        contentMd: '# Updated Executive Summary\n\nThis content was updated during E2E testing.',
+        contentMd:
+          '# Updated Executive Summary\n\nThis content was updated during E2E testing.',
         keyPoints: ['Updated key point 1', 'Updated key point 2'],
       };
 
@@ -431,15 +439,22 @@ describe('Unified Narrative E2E Tests', () => {
         periodEnd: '2025-03-31',
         fiscalYear: 2025,
         fiscalQuarter: 'Q1',
-        sourceSystems: ['media_monitoring', 'brand_reputation', 'competitive_intel'],
+        sourceSystems: [
+          'media_monitoring',
+          'brand_reputation',
+          'competitive_intel',
+        ],
         previousNarrativeId: createdNarrativeId,
         tags: ['e2e-test', 'delta-test'],
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-narratives', {
-        method: 'POST',
-        body: narrativeData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-narratives',
+        {
+          method: 'POST',
+          body: narrativeData,
+        }
+      );
 
       if (response.ok) {
         expect(data.narrative.previousNarrativeId).toBe(createdNarrativeId);
@@ -497,9 +512,12 @@ describe('Unified Narrative E2E Tests', () => {
       }
 
       // Cleanup
-      await apiRequest(`/api/v1/unified-narratives/${createData.narrative.id}`, {
-        method: 'DELETE',
-      });
+      await apiRequest(
+        `/api/v1/unified-narratives/${createData.narrative.id}`,
+        {
+          method: 'DELETE',
+        }
+      );
     });
   });
 
@@ -593,7 +611,9 @@ describe('Unified Narrative E2E Tests', () => {
 
   describe('Statistics Operations', () => {
     it('should get narrative statistics', async () => {
-      const { response, data } = await apiRequest('/api/v1/unified-narratives/stats');
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-narratives/stats'
+      );
 
       if (response.ok) {
         expect(data.stats).toBeDefined();
@@ -810,9 +830,12 @@ describe('Unified Narrative E2E Tests', () => {
       expect([400, 422]).toContain(response.status);
 
       // Cleanup
-      await apiRequest(`/api/v1/unified-narratives/${createData.narrative.id}`, {
-        method: 'DELETE',
-      });
+      await apiRequest(
+        `/api/v1/unified-narratives/${createData.narrative.id}`,
+        {
+          method: 'DELETE',
+        }
+      );
     });
 
     it('should validate workflow transitions - cannot publish draft', async () => {
@@ -847,9 +870,12 @@ describe('Unified Narrative E2E Tests', () => {
       expect([400, 409]).toContain(response.status);
 
       // Cleanup
-      await apiRequest(`/api/v1/unified-narratives/${createData.narrative.id}`, {
-        method: 'DELETE',
-      });
+      await apiRequest(
+        `/api/v1/unified-narratives/${createData.narrative.id}`,
+        {
+          method: 'DELETE',
+        }
+      );
     });
   });
 
@@ -978,16 +1004,19 @@ describe('Unified Narrative E2E Tests', () => {
       const createdIds: string[] = [];
 
       for (const type of narrativeTypes) {
-        const { response, data } = await apiRequest('/api/v1/unified-narratives', {
-          method: 'POST',
-          body: {
-            title: `${type.replace(/_/g, ' ')} Test Narrative`,
-            narrativeType: type,
-            periodStart: '2024-10-01',
-            periodEnd: '2024-12-31',
-            sourceSystems: ['media_monitoring'],
-          },
-        });
+        const { response, data } = await apiRequest(
+          '/api/v1/unified-narratives',
+          {
+            method: 'POST',
+            body: {
+              title: `${type.replace(/_/g, ' ')} Test Narrative`,
+              narrativeType: type,
+              periodStart: '2024-10-01',
+              periodEnd: '2024-12-31',
+              sourceSystems: ['media_monitoring'],
+            },
+          }
+        );
 
         if (response.ok) {
           expect(data.narrative.narrativeType).toBe(type);
@@ -1029,16 +1058,19 @@ describe('Unified Narrative E2E Tests', () => {
         'pr_outreach',
       ];
 
-      const { response, data } = await apiRequest('/api/v1/unified-narratives', {
-        method: 'POST',
-        body: {
-          title: 'All Systems Test Narrative',
-          narrativeType: 'executive',
-          periodStart: '2024-10-01',
-          periodEnd: '2024-12-31',
-          sourceSystems: allSystems,
-        },
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-narratives',
+        {
+          method: 'POST',
+          body: {
+            title: 'All Systems Test Narrative',
+            narrativeType: 'executive',
+            periodStart: '2024-10-01',
+            periodEnd: '2024-12-31',
+            sourceSystems: allSystems,
+          },
+        }
+      );
 
       if (response.ok) {
         expect(data.narrative.sourceSystems).toHaveLength(allSystems.length);

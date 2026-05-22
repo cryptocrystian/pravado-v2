@@ -93,7 +93,9 @@ export default function CrisisIncidentCard({
               {incident.isEscalated && (
                 <AlertTriangle className="h-4 w-4 text-red-600 shrink-0" />
               )}
-              <CardTitle className="text-lg truncate">{incident.title}</CardTitle>
+              <CardTitle className="text-lg truncate">
+                {incident.title}
+              </CardTitle>
             </div>
             {incident.incidentCode && (
               <p className="text-xs text-white/50 font-mono">
@@ -139,7 +141,11 @@ export default function CrisisIncidentCard({
           </div>
           <Badge
             variant="outline"
-            className={cn('text-xs', propagationColors.bg, propagationColors.text)}
+            className={cn(
+              'text-xs',
+              propagationColors.bg,
+              propagationColors.text
+            )}
           >
             <Radio className="h-3 w-3 mr-1" />
             {incident.propagationLevel}

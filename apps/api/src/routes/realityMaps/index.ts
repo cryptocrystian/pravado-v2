@@ -23,7 +23,10 @@ const realityMapsRoutes: FastifyPluginAsync = async (fastify) => {
     if (!FLAGS.ENABLE_REALITY_MAPS) {
       return reply.code(403).send({
         success: false,
-        error: { code: 'FEATURE_DISABLED', message: 'Reality Maps feature is not enabled' },
+        error: {
+          code: 'FEATURE_DISABLED',
+          message: 'Reality Maps feature is not enabled',
+        },
       });
     }
   });
@@ -54,7 +57,11 @@ const realityMapsRoutes: FastifyPluginAsync = async (fastify) => {
     const userId = (request as unknown as { userId: string }).userId;
     const input = createRealityMapSchema.parse(request.body);
 
-    const result = await realityMapService.createRealityMap(orgId, userId, input);
+    const result = await realityMapService.createRealityMap(
+      orgId,
+      userId,
+      input
+    );
 
     return reply.status(201).send(result);
   });
@@ -89,7 +96,12 @@ const realityMapsRoutes: FastifyPluginAsync = async (fastify) => {
     const { id } = request.params;
     const input = updateRealityMapSchema.parse(request.body);
 
-    const result = await realityMapService.updateRealityMap(orgId, id, userId, input);
+    const result = await realityMapService.updateRealityMap(
+      orgId,
+      id,
+      userId,
+      input
+    );
 
     return reply.send(result);
   });
@@ -115,16 +127,24 @@ const realityMapsRoutes: FastifyPluginAsync = async (fastify) => {
    * POST /reality-maps/:id/generate
    * Generate reality map from source data
    */
-  fastify.post<{ Params: { id: string } }>('/:id/generate', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const userId = (request as unknown as { userId: string }).userId;
-    const { id } = request.params;
-    const input = generateRealityMapSchema.parse(request.body || {});
+  fastify.post<{ Params: { id: string } }>(
+    '/:id/generate',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const userId = (request as unknown as { userId: string }).userId;
+      const { id } = request.params;
+      const input = generateRealityMapSchema.parse(request.body || {});
 
-    const result = await realityMapService.generateRealityMap(orgId, id, userId, input);
+      const result = await realityMapService.generateRealityMap(
+        orgId,
+        id,
+        userId,
+        input
+      );
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 
   // ============================================================================
   // GRAPH & VISUALIZATION
@@ -134,16 +154,19 @@ const realityMapsRoutes: FastifyPluginAsync = async (fastify) => {
    * GET /reality-maps/:id/graph
    * Get graph data for visualization
    */
-  fastify.get<{ Params: { id: string } }>('/:id/graph', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const { id } = request.params;
-    // Query params parsed but not used in current implementation
-    getRealityMapGraphQuerySchema.parse(request.query);
+  fastify.get<{ Params: { id: string } }>(
+    '/:id/graph',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const { id } = request.params;
+      // Query params parsed but not used in current implementation
+      getRealityMapGraphQuerySchema.parse(request.query);
 
-    const result = await realityMapService.getGraph(orgId, id);
+      const result = await realityMapService.getGraph(orgId, id);
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 
   // ============================================================================
   // ANALYSIS
@@ -153,16 +176,19 @@ const realityMapsRoutes: FastifyPluginAsync = async (fastify) => {
    * GET /reality-maps/:id/analysis
    * Get analysis for reality map
    */
-  fastify.get<{ Params: { id: string } }>('/:id/analysis', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const { id } = request.params;
-    // Query params parsed for future use
-    getRealityMapAnalysisQuerySchema.parse(request.query);
+  fastify.get<{ Params: { id: string } }>(
+    '/:id/analysis',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const { id } = request.params;
+      // Query params parsed for future use
+      getRealityMapAnalysisQuerySchema.parse(request.query);
 
-    const result = await realityMapService.getAnalysis(orgId, id);
+      const result = await realityMapService.getAnalysis(orgId, id);
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 
   // ============================================================================
   // STATS
@@ -188,15 +214,18 @@ const realityMapsRoutes: FastifyPluginAsync = async (fastify) => {
    * GET /reality-maps/:id/audit-log
    * List audit events for a reality map
    */
-  fastify.get<{ Params: { id: string } }>('/:id/audit-log', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const { id } = request.params;
-    const query = listRealityMapAuditQuerySchema.parse(request.query);
+  fastify.get<{ Params: { id: string } }>(
+    '/:id/audit-log',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const { id } = request.params;
+      const query = listRealityMapAuditQuerySchema.parse(request.query);
 
-    const result = await realityMapService.listAuditEvents(orgId, id, query);
+      const result = await realityMapService.listAuditEvents(orgId, id, query);
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 };
 
 export default realityMapsRoutes;

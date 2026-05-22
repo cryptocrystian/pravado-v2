@@ -111,7 +111,9 @@ export async function createServer() {
     });
     logger.info('Sentry initialized');
   } else if (sentryDsn) {
-    logger.warn('Sentry DSN not configured or invalid format — skipping Sentry init');
+    logger.warn(
+      'Sentry DSN not configured or invalid format — skipping Sentry init'
+    );
   }
 
   const server = Fastify({
@@ -135,9 +137,10 @@ export async function createServer() {
 
   // CORS (S-INT-10: production-hardened)
   await server.register(cors, {
-    origin: config.NODE_ENV === 'production'
-      ? config.CORS_ORIGIN.split(',').map((o: string) => o.trim())
-      : true,
+    origin:
+      config.NODE_ENV === 'production'
+        ? config.CORS_ORIGIN.split(',').map((o: string) => o.trim())
+        : true,
     credentials: true,
   });
 
@@ -157,7 +160,9 @@ export async function createServer() {
     max: 200,
     timeWindow: '1 minute',
     keyGenerator: (request) => {
-      return (request as any).user?.orgId ?? (request as any).orgId ?? request.ip;
+      return (
+        (request as any).user?.orgId ?? (request as any).orgId ?? request.ip
+      );
     },
     errorResponseBuilder: (_request, context) => ({
       success: false,
@@ -215,9 +220,13 @@ export async function createServer() {
   await server.register(contentRoutes, { prefix: '/api/v1/content' });
   await server.register(seoRoutes, { prefix: '/api/v1/seo' });
   await server.register(playbooksRoutes, { prefix: '/api/v1/playbooks' });
-  await server.register(playbookRunsRoutes, { prefix: '/api/v1/playbook-runs' }); // S19
+  await server.register(playbookRunsRoutes, {
+    prefix: '/api/v1/playbook-runs',
+  }); // S19
   await server.register(agentsRoutes, { prefix: '/api/v1/agents' });
-  await server.register(personalitiesRoutes, { prefix: '/api/v1/personalities' }); // S11
+  await server.register(personalitiesRoutes, {
+    prefix: '/api/v1/personalities',
+  }); // S11
 
   // Brief Generator routes (S13)
   // NOTE: Removed duplicate registration at /api/v1/content/briefs
@@ -509,7 +518,9 @@ export async function createServer() {
   // BULLMQ INITIALIZATION (S-INT-01)
   // ========================================
   if (FLAGS.ENABLE_EVI) {
-    const { initializeBullMQ, setupEVIScheduler } = await import('./queue/bullmqQueue');
+    const { initializeBullMQ, setupEVIScheduler } = await import(
+      './queue/bullmqQueue'
+    );
     const redisUrl = process.env.REDIS_URL;
     await initializeBullMQ({ redisUrl });
     await setupEVIScheduler({ redisUrl });
@@ -522,9 +533,15 @@ export async function createServer() {
     logger.info('Starting scheduler cron tick (every 60 seconds)');
 
     // Import scheduler dependencies dynamically
-    const { createMediaMonitoringService } = await import('./services/mediaMonitoringService');
-    const { createMediaCrawlerService } = await import('./services/mediaCrawlerService');
-    const { createSchedulerService } = await import('./services/schedulerService');
+    const { createMediaMonitoringService } = await import(
+      './services/mediaMonitoringService'
+    );
+    const { createMediaCrawlerService } = await import(
+      './services/mediaCrawlerService'
+    );
+    const { createSchedulerService } = await import(
+      './services/schedulerService'
+    );
 
     const supabase = (server as any).supabase;
     const openaiApiKey = config.LLM_OPENAI_API_KEY;

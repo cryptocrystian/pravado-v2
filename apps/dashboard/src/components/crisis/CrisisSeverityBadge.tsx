@@ -34,7 +34,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { SEVERITY_COLORS, TRAJECTORY_COLORS, PROPAGATION_COLORS } from '@/lib/crisisApi';
+import {
+  SEVERITY_COLORS,
+  TRAJECTORY_COLORS,
+  PROPAGATION_COLORS,
+} from '@/lib/crisisApi';
 import { cn } from '@/lib/utils';
 
 interface CrisisSeverityBadgeProps {
@@ -89,7 +93,9 @@ export function CrisisSeverityBadge({
 }: CrisisSeverityBadgeProps) {
   const severityColors = SEVERITY_COLORS[severity];
   const trajectoryColors = trajectory ? TRAJECTORY_COLORS[trajectory] : null;
-  const propagationColors = propagation ? PROPAGATION_COLORS[propagation] : null;
+  const propagationColors = propagation
+    ? PROPAGATION_COLORS[propagation]
+    : null;
 
   return (
     <TooltipProvider>

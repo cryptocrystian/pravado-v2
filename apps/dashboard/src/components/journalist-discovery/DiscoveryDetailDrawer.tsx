@@ -5,7 +5,11 @@
  * Displays full discovery details with resolution actions
  */
 
-import type { DiscoveredJournalist, ResolveDiscoveryInput, SuggestedMatch } from '@pravado/types';
+import type {
+  DiscoveredJournalist,
+  ResolveDiscoveryInput,
+  SuggestedMatch,
+} from '@pravado/types';
 import { useState } from 'react';
 
 import { resolveDiscovery } from '@/lib/journalistDiscoveryApi';
@@ -28,7 +32,10 @@ export function DiscoveryDetailDrawer({
   const [resolving, setResolving] = useState(false);
   const [notes, setNotes] = useState('');
 
-  const handleResolve = async (action: 'merge' | 'confirm' | 'reject', targetId?: string) => {
+  const handleResolve = async (
+    action: 'merge' | 'confirm' | 'reject',
+    targetId?: string
+  ) => {
     const message =
       action === 'merge'
         ? `Merge this discovery into the selected journalist profile?`
@@ -51,7 +58,9 @@ export function DiscoveryDetailDrawer({
       onClose();
     } catch (error) {
       console.error('Failed to resolve discovery:', error);
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     } finally {
       setResolving(false);
     }
@@ -76,7 +85,12 @@ export function DiscoveryDetailDrawer({
           className="p-2 hover:bg-gray-200 rounded"
           disabled={resolving}
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -154,18 +168,19 @@ export function DiscoveryDetailDrawer({
           </div>
 
           {/* Social Links */}
-          {discovery.socialLinks && Object.keys(discovery.socialLinks).length > 0 && (
-            <div>
-              <h3 className="font-medium mb-2">Social Profiles</h3>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <SocialProfileChips
-                  socialLinks={discovery.socialLinks}
-                  size="md"
-                  clickable={true}
-                />
+          {discovery.socialLinks &&
+            Object.keys(discovery.socialLinks).length > 0 && (
+              <div>
+                <h3 className="font-medium mb-2">Social Profiles</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <SocialProfileChips
+                    socialLinks={discovery.socialLinks}
+                    size="md"
+                    clickable={true}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Beats */}
           {discovery.beats && discovery.beats.length > 0 && (
@@ -197,35 +212,44 @@ export function DiscoveryDetailDrawer({
           )}
 
           {/* Suggested Matches */}
-          {discovery.suggestedMatches && discovery.suggestedMatches.length > 0 && (
-            <div>
-              <h3 className="font-medium mb-2">Suggested Matches</h3>
-              <div className="space-y-2">
-                {discovery.suggestedMatches.map((match: SuggestedMatch, idx: number) => (
-                  <div key={idx} className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <div className="font-medium">{match.journalistName}</div>
-                        <div className="text-sm text-gray-600">{match.matchReason}</div>
+          {discovery.suggestedMatches &&
+            discovery.suggestedMatches.length > 0 && (
+              <div>
+                <h3 className="font-medium mb-2">Suggested Matches</h3>
+                <div className="space-y-2">
+                  {discovery.suggestedMatches.map(
+                    (match: SuggestedMatch, idx: number) => (
+                      <div key={idx} className="bg-gray-50 rounded-lg p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <div className="font-medium">
+                              {match.journalistName}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {match.matchReason}
+                            </div>
+                          </div>
+                          <div className="text-sm font-semibold text-blue-600">
+                            {Math.round(match.similarityScore * 100)}% match
+                          </div>
+                        </div>
+                        {discovery.status === 'pending' && (
+                          <button
+                            onClick={() =>
+                              handleResolve('merge', match.journalistId)
+                            }
+                            disabled={resolving}
+                            className="text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-400"
+                          >
+                            Merge with this profile
+                          </button>
+                        )}
                       </div>
-                      <div className="text-sm font-semibold text-blue-600">
-                        {Math.round(match.similarityScore * 100)}% match
-                      </div>
-                    </div>
-                    {discovery.status === 'pending' && (
-                      <button
-                        onClick={() => handleResolve('merge', match.journalistId)}
-                        disabled={resolving}
-                        className="text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-400"
-                      >
-                        Merge with this profile
-                      </button>
-                    )}
-                  </div>
-                ))}
+                    )
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Source Information */}
           {discovery.sourceUrl && (
@@ -265,7 +289,9 @@ export function DiscoveryDetailDrawer({
               <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                 <div>
                   <div className="text-sm text-gray-600">Resolved At</div>
-                  <div className="font-medium">{formatDate(discovery.resolvedAt)}</div>
+                  <div className="font-medium">
+                    {formatDate(discovery.resolvedAt)}
+                  </div>
                 </div>
                 {discovery.resolutionNotes && (
                   <div>

@@ -26,7 +26,10 @@ import { BriefGeneratorService } from '../../services/briefGeneratorService';
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: any
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -39,15 +42,25 @@ async function getUserOrgId(userId: string, supabase: any): Promise<string | nul
 
 export async function contentBriefGeneratorRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   // S28+S29: Initialize billing service
-  const billingService = new BillingService(supabase, env.BILLING_DEFAULT_PLAN_SLUG);
+  const billingService = new BillingService(
+    supabase,
+    env.BILLING_DEFAULT_PLAN_SLUG
+  );
 
   // S16: Initialize LLM router from environment
   const llmRouter = LlmRouter.fromEnv(env);
 
-  const briefGeneratorService = new BriefGeneratorService(supabase, billingService, llmRouter);
+  const briefGeneratorService = new BriefGeneratorService(
+    supabase,
+    billingService,
+    llmRouter
+  );
 
   // ========================================
   // POST /api/v1/content/briefs/generate
@@ -97,7 +110,11 @@ export async function contentBriefGeneratorRoutes(server: FastifyInstance) {
       }
 
       const input = validation.data;
-      const result = await briefGeneratorService.generateBrief(orgId, request.user.id, input);
+      const result = await briefGeneratorService.generateBrief(
+        orgId,
+        request.user.id,
+        input
+      );
 
       return reply.code(201).send({
         success: true,
@@ -200,8 +217,12 @@ export async function contentBriefGeneratorRoutes(server: FastifyInstance) {
 
       // Parse and validate query params
       const validation = listGeneratedBriefsQuerySchema.safeParse({
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
         contentItemId: request.query.contentItemId,
       });
 
@@ -216,7 +237,10 @@ export async function contentBriefGeneratorRoutes(server: FastifyInstance) {
       }
 
       const filters = validation.data;
-      const items = await briefGeneratorService.listGeneratedBriefs(orgId, filters);
+      const items = await briefGeneratorService.listGeneratedBriefs(
+        orgId,
+        filters
+      );
 
       return reply.send({
         success: true,

@@ -63,12 +63,13 @@
   - Priority sorting for notifications
 
 **Key Functions:**
+
 ```typescript
-evaluateSignal(signal, state) // Evaluate if signal should notify
-prioritizeSignals(signals, state) // Sort by priority
-getHighPrioritySignals(signals) // Filter for notifications
-isHighPrioritySignal(signal) // Quick check utility
-getSignalNotificationText(signal) // Format notification
+evaluateSignal(signal, state); // Evaluate if signal should notify
+prioritizeSignals(signals, state); // Sort by priority
+getHighPrioritySignals(signals); // Filter for notifications
+isHighPrioritySignal(signal); // Quick check utility
+getSignalNotificationText(signal); // Format notification
 ```
 
 ### S94-D: DS v2 Executive Polish
@@ -122,6 +123,7 @@ Crisis Radar → Executive Hub
 ```
 
 **AI Reasoning Flow:**
+
 1. Signals from all pillars collected
 2. `useAIProactivity` evaluates each signal
 3. High-priority signals surface in SituationBrief
@@ -134,6 +136,7 @@ Crisis Radar → Executive Hub
 ## Files Created/Modified
 
 ### New Files
+
 - `/apps/dashboard/src/components/executive-command-center/ExecSituationBrief.tsx`
 - `/apps/dashboard/src/components/executive-command-center/ExecDecisionPanel.tsx`
 - `/apps/dashboard/src/components/executive-command-center/ExecSignalTimeline.tsx`
@@ -141,6 +144,7 @@ Crisis Radar → Executive Hub
 - `/apps/dashboard/src/hooks/useAIProactivity.ts`
 
 ### Modified Files
+
 - `/apps/dashboard/src/components/executive-command-center/index.ts` (exports)
 - `/apps/dashboard/src/app/app/exec/page.tsx` (complete rebuild)
 
@@ -150,33 +154,57 @@ Crisis Radar → Executive Hub
 
 ```typescript
 // From ExecSituationBrief
-export type { SituationBriefData, SituationChange, EmergingSignal, AttentionItem }
+export type {
+  SituationBriefData,
+  SituationChange,
+  EmergingSignal,
+  AttentionItem,
+};
 
 // From ExecDecisionPanel
-export type { DecisionPanelData, Decision, DecisionStatus, DecisionUrgency, DecisionCategory, DecisionDependency, DecisionRecommendation }
+export type {
+  DecisionPanelData,
+  Decision,
+  DecisionStatus,
+  DecisionUrgency,
+  DecisionCategory,
+  DecisionDependency,
+  DecisionRecommendation,
+};
 
 // From ExecSignalTimeline
-export type { TimelineData, TimelineSignal, SignalType, SignalSeverity }
+export type { TimelineData, TimelineSignal, SignalType, SignalSeverity };
 
 // From ExecNarrativeDensityCard
-export type { NarrativeDensityData, NarrativeInput, NarrativeChange, NarrativeAction }
+export type {
+  NarrativeDensityData,
+  NarrativeInput,
+  NarrativeChange,
+  NarrativeAction,
+};
 
 // From useAIProactivity
-export type { AISignal, SignalCategory, SignalUrgency, ThresholdConfig, SignalEvaluation }
+export type {
+  AISignal,
+  SignalCategory,
+  SignalUrgency,
+  ThresholdConfig,
+  SignalEvaluation,
+};
 ```
 
 ---
 
 ## Quality Metrics
 
-| Metric | Status |
-|--------|--------|
-| TypeScript Compilation | Pass |
-| Component Structure | DS v2 Compliant |
-| AI Transparency | Integrated (AIReasoningPopover) |
-| Cross-Pillar Data | Synthesized |
-| Visual Hierarchy | Enhanced |
-| Spacing/Contrast | Improved |
+| Metric                 | Status                          |
+| ---------------------- | ------------------------------- |
+| TypeScript Compilation | Pass                            |
+| Component Structure    | DS v2 Compliant                 |
+| AI Transparency        | Integrated (AIReasoningPopover) |
+| Cross-Pillar Data      | Synthesized                     |
+| Visual Hierarchy       | Enhanced                        |
+| Spacing/Contrast       | Improved                        |
 
 ---
 
@@ -202,4 +230,4 @@ This sprint establishes the Executive Intelligence pillar as a "synthesis layer"
 
 ---
 
-*Sprint S94 Complete*
+_Sprint S94 Complete_

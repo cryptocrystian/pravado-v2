@@ -26,7 +26,7 @@ interface GscConnection {
 }
 
 interface GscSearchRow {
-  keys: string[];    // [query, page]
+  keys: string[]; // [query, page]
   clicks: number;
   impressions: number;
   ctr: number;
@@ -77,7 +77,10 @@ async function refreshAccessToken(
       return null;
     }
 
-    const data = (await res.json()) as { access_token: string; expires_in?: number };
+    const data = (await res.json()) as {
+      access_token: string;
+      expires_in?: number;
+    };
     return {
       access_token: data.access_token,
       expires_in: data.expires_in ?? 3600,
@@ -145,7 +148,9 @@ export async function fetchGscSites(accessToken: string): Promise<GscSite[]> {
   return data.siteEntry ?? [];
 }
 
-export async function fetchGoogleUserEmail(accessToken: string): Promise<string> {
+export async function fetchGoogleUserEmail(
+  accessToken: string
+): Promise<string> {
   const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
@@ -166,7 +171,11 @@ export async function syncOrg(
   supabase: any,
   orgId: string
 ): Promise<GscSyncResult> {
-  const result: GscSyncResult = { keywordsUpserted: 0, metricsUpserted: 0, errors: [] };
+  const result: GscSyncResult = {
+    keywordsUpserted: 0,
+    metricsUpserted: 0,
+    errors: [],
+  };
 
   // Load GSC connection
   const { data: connection, error: connError } = await supabase
@@ -213,7 +222,10 @@ export async function syncOrg(
       const newExpiry = new Date(Date.now() + refreshed.expires_in * 1000);
       await supabase
         .from('gsc_connections')
-        .update({ access_token: accessToken, token_expiry: newExpiry.toISOString() })
+        .update({
+          access_token: accessToken,
+          token_expiry: newExpiry.toISOString(),
+        })
         .eq('id', conn.id);
     }
 
@@ -241,7 +253,10 @@ export async function syncOrg(
               current_position: Math.round(row.position),
               search_volume: row.impressions, // GSC impressions as proxy for volume
               status: 'active',
-              metadata: { source: 'gsc', last_gsc_sync: new Date().toISOString() },
+              metadata: {
+                source: 'gsc',
+                last_gsc_sync: new Date().toISOString(),
+              },
             },
             { onConflict: 'org_id,keyword,tracked_url' }
           )
@@ -249,7 +264,9 @@ export async function syncOrg(
           .single();
 
         if (kwError) {
-          result.errors.push(`Keyword upsert error for "${keyword}": ${kwError.message}`);
+          result.errors.push(
+            `Keyword upsert error for "${keyword}": ${kwError.message}`
+          );
           continue;
         }
 
@@ -276,7 +293,9 @@ export async function syncOrg(
             );
 
           if (metricError) {
-            result.errors.push(`Metric upsert error for "${keyword}": ${metricError.message}`);
+            result.errors.push(
+              `Metric upsert error for "${keyword}": ${metricError.message}`
+            );
           } else {
             result.metricsUpserted++;
           }
@@ -293,7 +312,10 @@ export async function syncOrg(
       .update({
         sync_status: 'synced',
         last_synced_at: new Date().toISOString(),
-        error_message: result.errors.length > 0 ? `${result.errors.length} row errors` : null,
+        error_message:
+          result.errors.length > 0
+            ? `${result.errors.length} row errors`
+            : null,
       })
       .eq('id', conn.id);
 
@@ -330,10 +352,20 @@ function calculatePriorityScore(row: GscSearchRow): number {
   // High impressions + low position = high priority (opportunity)
   // High clicks = already performing well
   const impressionScore = Math.min(row.impressions / 100, 50); // Max 50
-  const positionScore = row.position <= 10 ? 20 : row.position <= 20 ? 30 : row.position <= 50 ? 40 : 50;
+  const positionScore =
+    row.position <= 10
+      ? 20
+      : row.position <= 20
+        ? 30
+        : row.position <= 50
+          ? 40
+          : 50;
   const clickScore = Math.min(row.clicks / 10, 20);
 
-  return Math.min(Math.round(impressionScore + positionScore - clickScore), 100);
+  return Math.min(
+    Math.round(impressionScore + positionScore - clickScore),
+    100
+  );
 }
 
 /**
@@ -347,7 +379,13 @@ export async function getGscStatus(supabase: any, orgId: string) {
     .single();
 
   if (!conn) {
-    return { connected: false, site_url: null, last_synced_at: null, sync_status: null, keyword_count: 0 };
+    return {
+      connected: false,
+      site_url: null,
+      last_synced_at: null,
+      sync_status: null,
+      keyword_count: 0,
+    };
   }
 
   // Count keywords with GSC source
@@ -370,7 +408,10 @@ export async function getGscStatus(supabase: any, orgId: string) {
 /**
  * Disconnect GSC and revoke token
  */
-export async function disconnectGsc(supabase: any, orgId: string): Promise<void> {
+export async function disconnectGsc(
+  supabase: any,
+  orgId: string
+): Promise<void> {
   const { data: conn } = await supabase
     .from('gsc_connections')
     .select('access_token')
@@ -380,12 +421,17 @@ export async function disconnectGsc(supabase: any, orgId: string): Promise<void>
   if (conn?.access_token) {
     // Revoke Google token (best effort)
     try {
-      await fetch(`https://oauth2.googleapis.com/revoke?token=${conn.access_token}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      await fetch(
+        `https://oauth2.googleapis.com/revoke?token=${conn.access_token}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        }
+      );
     } catch {
-      logger.warn(`Failed to revoke Google token for org ${orgId} — continuing`);
+      logger.warn(
+        `Failed to revoke Google token for org ${orgId} — continuing`
+      );
     }
   }
 

@@ -38,7 +38,12 @@
  * - Insight Conflicts (S74)
  */
 
-import { FastifyInstance, FastifyPluginOptions, FastifyRequest, FastifyReply } from 'fastify';
+import {
+  FastifyInstance,
+  FastifyPluginOptions,
+  FastifyRequest,
+  FastifyReply,
+} from 'fastify';
 import fp from 'fastify-plugin';
 
 import { platformFreeze } from '../config';
@@ -167,7 +172,9 @@ async function platformFreezePluginImpl(
 
   // Log platform freeze status on startup
   if (platformFreeze) {
-    fastify.log.warn('PLATFORM FREEZE ENABLED: Write operations to core domains are blocked');
+    fastify.log.warn(
+      'PLATFORM FREEZE ENABLED: Write operations to core domains are blocked'
+    );
   }
 }
 
@@ -182,4 +189,9 @@ export const platformFreezePlugin = fp(platformFreezePluginImpl, {
 /**
  * Export helpers for testing and debugging
  */
-export { isFrozenRoute, isWriteOperation, FROZEN_ROUTE_PREFIXES, WRITE_METHODS };
+export {
+  isFrozenRoute,
+  isWriteOperation,
+  FROZEN_ROUTE_PREFIXES,
+  WRITE_METHODS,
+};

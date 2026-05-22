@@ -34,7 +34,6 @@ import {
   formatTokens,
 } from '@/lib/strategicIntelligenceApi';
 
-
 interface StrategicAuditLogTimelineProps {
   logs: StrategicAuditLogEntry[];
   showReportInfo?: boolean;
@@ -68,11 +67,7 @@ export function StrategicAuditLogTimeline({
             {/* Events */}
             <div className="space-y-6">
               {logs.map((log, index) => (
-                <TimelineEvent
-                  key={log.id}
-                  log={log}
-                  isFirst={index === 0}
-                />
+                <TimelineEvent key={log.id} log={log} isFirst={index === 0} />
               ))}
             </div>
           </div>
@@ -95,7 +90,9 @@ function TimelineEvent({ log, isFirst }: TimelineEventProps) {
       {/* Event icon */}
       <div
         className={`absolute left-0 w-8 h-8 rounded-full flex items-center justify-center ${color} ${
-          isFirst ? 'ring-2 ring-offset-2 ring-offset-background ring-primary' : ''
+          isFirst
+            ? 'ring-2 ring-offset-2 ring-offset-background ring-primary'
+            : ''
         }`}
       >
         <IconComponent className="h-4 w-4 text-white/90" />
@@ -113,7 +110,9 @@ function TimelineEvent({ log, isFirst }: TimelineEventProps) {
         {/* Status change */}
         {log.previousStatus && log.newStatus && (
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline">{getStatusLabel(log.previousStatus)}</Badge>
+            <Badge variant="outline">
+              {getStatusLabel(log.previousStatus)}
+            </Badge>
             <ArrowRight className="h-4 w-4 text-white/50" />
             <Badge variant="default">{getStatusLabel(log.newStatus)}</Badge>
           </div>
@@ -158,13 +157,8 @@ function TimelineEvent({ log, isFirst }: TimelineEventProps) {
   );
 }
 
-function getEventIcon(
-  eventType: string
-): { icon: typeof Plus; color: string } {
-  const iconMap: Record<
-    string,
-    { icon: typeof Plus; color: string }
-  > = {
+function getEventIcon(eventType: string): { icon: typeof Plus; color: string } {
+  const iconMap: Record<string, { icon: typeof Plus; color: string }> = {
     created: { icon: Plus, color: 'bg-blue-500' },
     updated: { icon: Edit, color: 'bg-yellow-500' },
     generated: { icon: Sparkles, color: 'bg-purple-500' },

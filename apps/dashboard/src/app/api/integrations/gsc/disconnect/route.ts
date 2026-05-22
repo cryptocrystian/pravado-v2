@@ -10,10 +10,15 @@ export const dynamic = 'force-dynamic';
 
 export async function DELETE() {
   try {
-    const data = await backendFetch('/api/v1/integrations/gsc/disconnect', { method: 'DELETE' });
+    const data = await backendFetch('/api/v1/integrations/gsc/disconnect', {
+      method: 'DELETE',
+    });
     return NextResponse.json({ success: true, data });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

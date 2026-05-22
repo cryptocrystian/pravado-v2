@@ -14,7 +14,12 @@ import {
 } from '@phosphor-icons/react';
 import { useState } from 'react';
 
-const toneOptions = ['Professional', 'Conversational', 'Technical', 'Authoritative'];
+const toneOptions = [
+  'Professional',
+  'Conversational',
+  'Technical',
+  'Authoritative',
+];
 
 interface BubbleToolbarProps {
   onAction: (action: string, value?: string) => void;

@@ -171,7 +171,10 @@ export function getPlanLimits(planSlug: string): PlanLimits {
 /**
  * Check if a boolean feature is available on the plan.
  */
-export function hasFeature(planSlug: string, feature: BooleanResource): boolean {
+export function hasFeature(
+  planSlug: string,
+  feature: BooleanResource
+): boolean {
   const limits = getPlanLimits(planSlug);
   return limits[feature];
 }
@@ -179,7 +182,10 @@ export function hasFeature(planSlug: string, feature: BooleanResource): boolean 
 /**
  * Get the org's current plan slug from billing state.
  */
-async function getOrgPlanSlug(supabase: SupabaseClient, orgId: string): Promise<string> {
+async function getOrgPlanSlug(
+  supabase: SupabaseClient,
+  orgId: string
+): Promise<string> {
   const { data } = await supabase
     .from('org_billing_state')
     .select('plan_id')
@@ -318,7 +324,12 @@ export async function enforcePlanLimit(
   resource: CountableResource,
   additionalUnits: number = 1
 ): Promise<void> {
-  const result = await checkPlanLimit(supabase, orgId, resource, additionalUnits);
+  const result = await checkPlanLimit(
+    supabase,
+    orgId,
+    resource,
+    additionalUnits
+  );
 
   if (!result.allowed) {
     logger.warn('Plan limit exceeded', {

@@ -27,7 +27,8 @@ async function fetcher<T>(url: string): Promise<T> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Fetch error: ${res.status}`);
   const json = await res.json();
-  if (json.success === false) throw new Error(json.error?.message || 'Unknown error');
+  if (json.success === false)
+    throw new Error(json.error?.message || 'Unknown error');
   return json.data ?? json;
 }
 
@@ -49,7 +50,8 @@ export function useGscStatus() {
 export async function startGscConnect(): Promise<string> {
   const res = await fetch('/api/integrations/gsc/auth-url');
   const json = await res.json();
-  if (!json.success) throw new Error(json.error?.message || 'Failed to get auth URL');
+  if (!json.success)
+    throw new Error(json.error?.message || 'Failed to get auth URL');
   return json.data.auth_url;
 }
 
@@ -60,7 +62,10 @@ export async function triggerGscSync(): Promise<void> {
 }
 
 export async function disconnectGsc(): Promise<void> {
-  const res = await fetch('/api/integrations/gsc/disconnect', { method: 'DELETE' });
+  const res = await fetch('/api/integrations/gsc/disconnect', {
+    method: 'DELETE',
+  });
   const json = await res.json();
-  if (!json.success) throw new Error(json.error?.message || 'Disconnect failed');
+  if (!json.success)
+    throw new Error(json.error?.message || 'Disconnect failed');
 }

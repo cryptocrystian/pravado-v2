@@ -32,11 +32,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import {
-  type ExecDigestRecipient,
-} from '@/lib/executiveDigestApi';
+import { type ExecDigestRecipient } from '@/lib/executiveDigestApi';
 import { cn } from '@/lib/utils';
-
 
 interface ExecDigestRecipientListProps {
   recipients: ExecDigestRecipient[];
@@ -56,13 +53,15 @@ export function ExecDigestRecipientList({
   className,
 }: ExecDigestRecipientListProps) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newRecipient, setNewRecipient] = useState<AddExecDigestRecipientInput>({
-    email: '',
-    name: '',
-    role: '',
-    includePdf: true,
-    includeInlineSummary: true,
-  });
+  const [newRecipient, setNewRecipient] = useState<AddExecDigestRecipientInput>(
+    {
+      email: '',
+      name: '',
+      role: '',
+      includePdf: true,
+      includeInlineSummary: true,
+    }
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddRecipient = async () => {
@@ -168,7 +167,10 @@ export function ExecDigestRecipientList({
                   <Switch
                     checked={newRecipient.includeInlineSummary}
                     onCheckedChange={(checked) =>
-                      setNewRecipient({ ...newRecipient, includeInlineSummary: checked })
+                      setNewRecipient({
+                        ...newRecipient,
+                        includeInlineSummary: checked,
+                      })
                     }
                   />
                 </div>
@@ -197,7 +199,9 @@ export function ExecDigestRecipientList({
           <div className="text-center py-8 text-gray-500">
             <Mail className="h-12 w-12 text-gray-300 mx-auto mb-4" />
             <p>No recipients added yet.</p>
-            <p className="text-sm mt-1">Add recipients to receive digest deliveries.</p>
+            <p className="text-sm mt-1">
+              Add recipients to receive digest deliveries.
+            </p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -240,7 +244,11 @@ interface RecipientRowProps {
   onToggleActive?: (recipientId: string, isActive: boolean) => Promise<void>;
 }
 
-function RecipientRow({ recipient, onRemove, onToggleActive }: RecipientRowProps) {
+function RecipientRow({
+  recipient,
+  onRemove,
+  onToggleActive,
+}: RecipientRowProps) {
   const [isRemoving, setIsRemoving] = useState(false);
 
   const handleRemove = async () => {
@@ -267,7 +275,8 @@ function RecipientRow({ recipient, onRemove, onToggleActive }: RecipientRowProps
             recipient.isActive ? 'bg-indigo-500' : 'bg-gray-400'
           )}
         >
-          {recipient.name?.charAt(0).toUpperCase() || recipient.email.charAt(0).toUpperCase()}
+          {recipient.name?.charAt(0).toUpperCase() ||
+            recipient.email.charAt(0).toUpperCase()}
         </div>
         <div>
           <div className="flex items-center gap-2">

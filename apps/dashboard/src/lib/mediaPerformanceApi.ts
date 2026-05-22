@@ -49,7 +49,9 @@ async function apiClient<T>(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+    const error = await response
+      .json()
+      .catch(() => ({ error: 'Unknown error' }));
     throw new Error(error.error || `API error: ${response.status}`);
   }
 
@@ -79,10 +81,13 @@ function buildQueryString(params: Record<string, any>): string {
 export async function createSnapshot(
   data: CreateSnapshotRequest
 ): Promise<MediaPerformanceSnapshot> {
-  return apiClient<MediaPerformanceSnapshot>('/api/v1/media-performance/snapshots', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
+  return apiClient<MediaPerformanceSnapshot>(
+    '/api/v1/media-performance/snapshots',
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }
+  );
 }
 
 export async function getSnapshots(
@@ -96,7 +101,9 @@ export async function getSnapshots(
   );
 }
 
-export async function getSnapshot(id: string): Promise<MediaPerformanceSnapshot> {
+export async function getSnapshot(
+  id: string
+): Promise<MediaPerformanceSnapshot> {
   return apiClient<MediaPerformanceSnapshot>(
     `/api/v1/media-performance/snapshots/${id}`
   );
@@ -111,10 +118,13 @@ export async function getSnapshot(id: string): Promise<MediaPerformanceSnapshot>
 export async function createDimension(
   data: CreateDimensionRequest
 ): Promise<MediaPerformanceDimension> {
-  return apiClient<MediaPerformanceDimension>('/api/v1/media-performance/dimensions', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
+  return apiClient<MediaPerformanceDimension>(
+    '/api/v1/media-performance/dimensions',
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }
+  );
 }
 
 export async function getDimensions(
@@ -149,7 +159,9 @@ export async function getScores(
   offset = 0
 ): Promise<GetScoresResponse> {
   const query = buildQueryString({ ...filters, limit, offset });
-  return apiClient<GetScoresResponse>(`/api/v1/media-performance/scores?${query}`);
+  return apiClient<GetScoresResponse>(
+    `/api/v1/media-performance/scores?${query}`
+  );
 }
 
 /**
@@ -161,10 +173,13 @@ export async function getScores(
 export async function createInsight(
   data: CreateInsightRequest
 ): Promise<MediaPerformanceInsight> {
-  return apiClient<MediaPerformanceInsight>('/api/v1/media-performance/insights', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
+  return apiClient<MediaPerformanceInsight>(
+    '/api/v1/media-performance/insights',
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }
+  );
 }
 
 export async function generateInsight(
@@ -193,11 +208,15 @@ export async function updateInsight(
   );
 }
 
-export async function markInsightAsRead(id: string): Promise<MediaPerformanceInsight> {
+export async function markInsightAsRead(
+  id: string
+): Promise<MediaPerformanceInsight> {
   return updateInsight(id, { isRead: true });
 }
 
-export async function dismissInsight(id: string): Promise<MediaPerformanceInsight> {
+export async function dismissInsight(
+  id: string
+): Promise<MediaPerformanceInsight> {
   return updateInsight(id, { isDismissed: true });
 }
 
@@ -295,7 +314,9 @@ export function formatSentiment(sentiment: number | null | undefined): string {
 /**
  * Get sentiment color based on value
  */
-export function getSentimentColor(sentiment: number | null | undefined): string {
+export function getSentimentColor(
+  sentiment: number | null | undefined
+): string {
   if (sentiment === null || sentiment === undefined) return 'gray';
   if (sentiment >= 0.4) return 'green';
   if (sentiment >= 0.1) return 'blue';
@@ -345,7 +366,8 @@ export function formatDateRange(start: Date, end: Date): string {
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined,
+      year:
+        date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined,
     });
   };
 
@@ -355,9 +377,7 @@ export function formatDateRange(start: Date, end: Date): string {
 /**
  * Get insight category icon
  */
-export function getInsightCategoryIcon(
-  category: InsightCategory
-): string {
+export function getInsightCategoryIcon(category: InsightCategory): string {
   const icons: Record<InsightCategory, string> = {
     achievement: '🎯',
     anomaly: '⚠️',

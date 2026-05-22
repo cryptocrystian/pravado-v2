@@ -54,7 +54,10 @@ import TalkingPointCard from './TalkingPointCard';
 interface BriefingEditorProps {
   briefing: MediaBriefing;
   onUpdateBriefing?: (data: Partial<MediaBriefing>) => Promise<void>;
-  onRegenerateSection?: (sectionId: string, customInstructions?: string) => Promise<void>;
+  onRegenerateSection?: (
+    sectionId: string,
+    customInstructions?: string
+  ) => Promise<void>;
   onUpdateSection?: (sectionId: string, content: string) => Promise<void>;
   onApproveTalkingPoint?: (id: string) => Promise<void>;
   onDeleteTalkingPoint?: (id: string) => Promise<void>;
@@ -88,7 +91,9 @@ export default function BriefingEditor({
   isSaving = false,
   className = '',
 }: BriefingEditorProps) {
-  const [activeTab, setActiveTab] = useState<'sections' | 'talking-points' | 'settings'>('sections');
+  const [activeTab, setActiveTab] = useState<
+    'sections' | 'talking-points' | 'settings'
+  >('sections');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editTitle, setEditTitle] = useState(briefing.title);
   const [editSubtitle, setEditSubtitle] = useState(briefing.subtitle || '');
@@ -128,8 +133,14 @@ export default function BriefingEditor({
   }, [briefing, sections, talkingPoints]);
 
   const handleSaveTitle = async () => {
-    if (onUpdateBriefing && (editTitle !== briefing.title || editSubtitle !== briefing.subtitle)) {
-      await onUpdateBriefing({ title: editTitle, subtitle: editSubtitle || undefined });
+    if (
+      onUpdateBriefing &&
+      (editTitle !== briefing.title || editSubtitle !== briefing.subtitle)
+    ) {
+      await onUpdateBriefing({
+        title: editTitle,
+        subtitle: editSubtitle || undefined,
+      });
     }
     setIsEditingTitle(false);
   };
@@ -140,9 +151,12 @@ export default function BriefingEditor({
     setIsEditingTitle(false);
   };
 
-  const approvedTalkingPoints = talkingPoints.filter((tp) => tp.isApproved).length;
+  const approvedTalkingPoints = talkingPoints.filter(
+    (tp) => tp.isApproved
+  ).length;
   const totalTokensUsed =
-    sections.reduce((acc, s) => acc + (s.tokensUsed || 0), 0) + (briefing.totalTokensUsed || 0);
+    sections.reduce((acc, s) => acc + (s.tokensUsed || 0), 0) +
+    (briefing.totalTokensUsed || 0);
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -164,10 +178,18 @@ export default function BriefingEditor({
                 className="text-sm text-white/50"
               />
               <div className="flex gap-2">
-                <Button size="sm" onClick={handleSaveTitle} disabled={!editTitle.trim()}>
+                <Button
+                  size="sm"
+                  onClick={handleSaveTitle}
+                  disabled={!editTitle.trim()}
+                >
                   <Save className="h-3 w-3 mr-1" /> Save
                 </Button>
-                <Button size="sm" variant="outline" onClick={handleCancelEditTitle}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleCancelEditTitle}
+                >
                   Cancel
                 </Button>
               </div>
@@ -178,8 +200,12 @@ export default function BriefingEditor({
               onClick={() => onUpdateBriefing && setIsEditingTitle(true)}
             >
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xl">{getFormatIcon(briefing.format)}</span>
-                <h1 className="text-2xl font-bold truncate">{briefing.title}</h1>
+                <span className="text-xl">
+                  {getFormatIcon(briefing.format)}
+                </span>
+                <h1 className="text-2xl font-bold truncate">
+                  {briefing.title}
+                </h1>
               </div>
               {briefing.subtitle && (
                 <p className="text-white/50 truncate">{briefing.subtitle}</p>
@@ -192,12 +218,21 @@ export default function BriefingEditor({
         <div className="flex flex-wrap items-center gap-2">
           <Badge
             variant="outline"
-            className={cn('text-sm', getStatusBgColor(briefing.status), getStatusColor(briefing.status))}
+            className={cn(
+              'text-sm',
+              getStatusBgColor(briefing.status),
+              getStatusColor(briefing.status)
+            )}
           >
             {getStatusLabel(briefing.status)}
           </Badge>
 
-          <Button variant="outline" size="sm" onClick={handleCopyAll} disabled={isGenerating}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCopyAll}
+            disabled={isGenerating}
+          >
             {isCopied ? (
               <>
                 <Check className="h-4 w-4 mr-1 text-green-600" /> Copied
@@ -224,7 +259,8 @@ export default function BriefingEditor({
             <Button onClick={onGenerateBriefing} disabled={isGenerating}>
               {isGenerating ? (
                 <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Generating...
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />{' '}
+                  Generating...
                 </>
               ) : (
                 <>
@@ -241,13 +277,22 @@ export default function BriefingEditor({
           )}
 
           {briefing.status === 'reviewed' && onApproveBriefing && (
-            <Button onClick={onApproveBriefing} disabled={isSaving} className="bg-green-600 hover:bg-green-700">
+            <Button
+              onClick={onApproveBriefing}
+              disabled={isSaving}
+              className="bg-green-600 hover:bg-green-700"
+            >
               <Check className="h-4 w-4 mr-2" /> Approve
             </Button>
           )}
 
           {briefing.status !== 'archived' && onArchiveBriefing && (
-            <Button variant="ghost" size="sm" onClick={onArchiveBriefing} disabled={isSaving}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onArchiveBriefing}
+              disabled={isSaving}
+            >
               <Archive className="h-4 w-4 mr-1" /> Archive
             </Button>
           )}
@@ -287,8 +332,15 @@ export default function BriefingEditor({
               <FileText className="h-4 w-4" />
               <span className="text-xs">Confidence</span>
             </div>
-            <div className={cn('text-2xl font-bold', getConfidenceScoreColor(briefing.confidenceScore))}>
-              {briefing.confidenceScore ? `${briefing.confidenceScore.toFixed(0)}%` : 'N/A'}
+            <div
+              className={cn(
+                'text-2xl font-bold',
+                getConfidenceScoreColor(briefing.confidenceScore)
+              )}
+            >
+              {briefing.confidenceScore
+                ? `${briefing.confidenceScore.toFixed(0)}%`
+                : 'N/A'}
             </div>
           </CardContent>
         </Card>
@@ -299,7 +351,9 @@ export default function BriefingEditor({
               <Sparkles className="h-4 w-4" />
               <span className="text-xs">Tokens Used</span>
             </div>
-            <div className="text-2xl font-bold">{formatTokens(totalTokensUsed)}</div>
+            <div className="text-2xl font-bold">
+              {formatTokens(totalTokensUsed)}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -308,7 +362,9 @@ export default function BriefingEditor({
       <div className="flex flex-wrap items-center gap-4 text-sm text-white/50">
         <span>Format: {getFormatLabel(briefing.format)}</span>
         <span className="text-gray-300">|</span>
-        <span>Tone: <span className="capitalize">{briefing.tone}</span></span>
+        <span>
+          Tone: <span className="capitalize">{briefing.tone}</span>
+        </span>
         <span className="text-gray-300">|</span>
         <span>Updated: {formatRelativeTime(briefing.updatedAt)}</span>
         {briefing.generatedAt && (
@@ -326,7 +382,10 @@ export default function BriefingEditor({
             <Layers className="h-4 w-4" />
             Sections ({sections.length})
           </TabsTrigger>
-          <TabsTrigger value="talking-points" className="flex items-center gap-2">
+          <TabsTrigger
+            value="talking-points"
+            className="flex items-center gap-2"
+          >
             <MessageSquare className="h-4 w-4" />
             Talking Points ({talkingPoints.length})
           </TabsTrigger>
@@ -343,7 +402,11 @@ export default function BriefingEditor({
               <CardContent className="py-8 text-center text-white/50">
                 No sections generated yet.
                 {briefing.status === 'draft' && onGenerateBriefing && (
-                  <Button variant="link" onClick={onGenerateBriefing} className="ml-1">
+                  <Button
+                    variant="link"
+                    onClick={onGenerateBriefing}
+                    className="ml-1"
+                  >
                     Generate briefing
                   </Button>
                 )}
@@ -367,7 +430,11 @@ export default function BriefingEditor({
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Talking Points</h3>
             {onGenerateTalkingPoints && (
-              <Button variant="outline" onClick={() => onGenerateTalkingPoints()} disabled={isGenerating}>
+              <Button
+                variant="outline"
+                onClick={() => onGenerateTalkingPoints()}
+                disabled={isGenerating}
+              >
                 <PlusCircle className="h-4 w-4 mr-2" />
                 Generate More
               </Button>
@@ -379,7 +446,11 @@ export default function BriefingEditor({
               <CardContent className="py-8 text-center text-white/50">
                 No talking points generated yet.
                 {onGenerateTalkingPoints && (
-                  <Button variant="link" onClick={() => onGenerateTalkingPoints()} className="ml-1">
+                  <Button
+                    variant="link"
+                    onClick={() => onGenerateTalkingPoints()}
+                    className="ml-1"
+                  >
                     Generate talking points
                   </Button>
                 )}
@@ -390,7 +461,9 @@ export default function BriefingEditor({
               <div key={category} className="space-y-3">
                 <div className="flex items-center gap-2">
                   <h4 className="text-sm font-medium text-white/50">
-                    {getTalkingPointCategoryLabel(category as TalkingPointCategory)}
+                    {getTalkingPointCategoryLabel(
+                      category as TalkingPointCategory
+                    )}
                   </h4>
                   <Badge variant="secondary" className="text-xs">
                     {points.length}
@@ -431,7 +504,9 @@ export default function BriefingEditor({
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-sm text-white/50">No focus areas specified</span>
+                    <span className="text-sm text-white/50">
+                      No focus areas specified
+                    </span>
                   )}
                 </div>
               </div>
@@ -449,7 +524,9 @@ export default function BriefingEditor({
                     ))}
                   </ul>
                 ) : (
-                  <span className="text-sm text-white/50">No key messages specified</span>
+                  <span className="text-sm text-white/50">
+                    No key messages specified
+                  </span>
                 )}
               </div>
 
@@ -459,12 +536,18 @@ export default function BriefingEditor({
                 <div className="flex flex-wrap gap-2">
                   {briefing.exclusions && briefing.exclusions.length > 0 ? (
                     briefing.exclusions.map((topic, idx) => (
-                      <Badge key={idx} variant="outline" className="bg-red-50 text-red-700">
+                      <Badge
+                        key={idx}
+                        variant="outline"
+                        className="bg-red-50 text-red-700"
+                      >
                         {topic}
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-sm text-white/50">No exclusions specified</span>
+                    <span className="text-sm text-white/50">
+                      No exclusions specified
+                    </span>
                   )}
                 </div>
               </div>
@@ -500,7 +583,9 @@ export default function BriefingEditor({
               {/* Custom Instructions */}
               {briefing.customInstructions && (
                 <div>
-                  <h4 className="text-sm font-medium mb-2">Custom Instructions</h4>
+                  <h4 className="text-sm font-medium mb-2">
+                    Custom Instructions
+                  </h4>
                   <p className="text-sm text-white/50 bg-gray-50 p-3 rounded">
                     {briefing.customInstructions}
                   </p>
@@ -512,7 +597,9 @@ export default function BriefingEditor({
                 <div className="pt-4 border-t text-xs text-white/50">
                   <span>Model: {briefing.llmModel}</span>
                   {briefing.llmTemperature && (
-                    <span className="ml-4">Temperature: {briefing.llmTemperature}</span>
+                    <span className="ml-4">
+                      Temperature: {briefing.llmTemperature}
+                    </span>
                   )}
                 </div>
               )}

@@ -15,13 +15,10 @@ export function TopWins() {
         Top Wins This Period
       </h3>
       <div className="flex flex-col items-center justify-center py-6 text-center">
-        <Trophy
-          size={24}
-          className="text-white/20 mb-3"
-          weight="fill"
-        />
+        <Trophy size={24} className="text-white/20 mb-3" weight="fill" />
         <p className="text-sm text-white/50 leading-relaxed max-w-xs">
-          Your top wins will appear here as SAGE tracks your visibility improvements over time.
+          Your top wins will appear here as SAGE tracks your visibility
+          improvements over time.
         </p>
       </div>
     </div>

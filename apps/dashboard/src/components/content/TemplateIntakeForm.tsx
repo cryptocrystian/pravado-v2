@@ -92,7 +92,9 @@ interface TemplateIntakeFormProps {
   templateName: string;
 }
 
-export function TemplateIntakeForm({ templateName: _templateName }: TemplateIntakeFormProps) {
+export function TemplateIntakeForm({
+  templateName: _templateName,
+}: TemplateIntakeFormProps) {
   // templateName will be used to load template-specific field schemas in integration sprint
   void _templateName;
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -139,7 +141,9 @@ export function TemplateIntakeForm({ templateName: _templateName }: TemplateInta
 
       {/* Right: Preview */}
       <div className="bg-cc-surface border border-white/8 rounded-2xl p-5 h-fit lg:sticky lg:top-6">
-        <span className="text-xs text-white/45 block mb-4">Example outline</span>
+        <span className="text-xs text-white/45 block mb-4">
+          Example outline
+        </span>
 
         <div className="space-y-3">
           {exampleOutline.map((heading, idx) => (

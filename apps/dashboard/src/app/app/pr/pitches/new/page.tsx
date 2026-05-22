@@ -22,7 +22,7 @@ export default function NewPitchPage() {
   const preselected = useMemo(() => {
     if (!journalistName) return undefined;
     return mockJournalists.find(
-      (j) => j.name.toLowerCase() === journalistName.toLowerCase(),
+      (j) => j.name.toLowerCase() === journalistName.toLowerCase()
     );
   }, [journalistName]);
 

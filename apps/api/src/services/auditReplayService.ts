@@ -167,7 +167,9 @@ export class AuditReplayService {
       throw new Error(`Failed to fetch audit logs: ${error.message}`);
     }
 
-    return (data || []).map((record: AuditLogRecord) => this.recordToEntry(record));
+    return (data || []).map((record: AuditLogRecord) =>
+      this.recordToEntry(record)
+    );
   }
 
   /**
@@ -211,7 +213,11 @@ export class AuditReplayService {
   private reconstructContentState(
     state: Map<string, ContentState>,
     entry: AuditLogEntry
-  ): { entityId: string; before: ContentState | null; after: ContentState } | null {
+  ): {
+    entityId: string;
+    before: ContentState | null;
+    after: ContentState;
+  } | null {
     const context = entry.context;
     const contentId = context.contentId as string;
 
@@ -286,8 +292,12 @@ export class AuditReplayService {
       after = {
         id: agentId,
         name: (context.agentName as string) || before?.name,
-        status: entry.eventType === 'llm.call_success' ? 'active' :
-                entry.eventType === 'llm.call_failure' ? 'error' : before?.status,
+        status:
+          entry.eventType === 'llm.call_success'
+            ? 'active'
+            : entry.eventType === 'llm.call_failure'
+              ? 'error'
+              : before?.status,
         lastExecution: entry.createdAt,
         executionCount: (before?.executionCount || 0) + 1,
       };
@@ -304,7 +314,11 @@ export class AuditReplayService {
   private reconstructPlaybookState(
     state: Map<string, PlaybookState>,
     entry: AuditLogEntry
-  ): { entityId: string; before: PlaybookState | null; after: PlaybookState } | null {
+  ): {
+    entityId: string;
+    before: PlaybookState | null;
+    after: PlaybookState;
+  } | null {
     const context = entry.context;
     const playbookId = context.playbookId as string;
 
@@ -436,7 +450,8 @@ export class AuditReplayService {
       case 'llm.call_success':
         after = {
           ...before,
-          tokensUsed: (before.tokensUsed || 0) + (context.tokensUsed as number || 0),
+          tokensUsed:
+            (before.tokensUsed || 0) + ((context.tokensUsed as number) || 0),
         };
         break;
 
@@ -455,7 +470,11 @@ export class AuditReplayService {
   private reconstructExecutionState(
     state: Map<string, ExecutionState>,
     entry: AuditLogEntry
-  ): { entityId: string; before: ExecutionState | null; after: ExecutionState } | null {
+  ): {
+    entityId: string;
+    before: ExecutionState | null;
+    after: ExecutionState;
+  } | null {
     const context = entry.context;
     const runId = context.runId as string;
 
@@ -612,7 +631,10 @@ export class AuditReplayService {
   /**
    * Get a replay job by ID
    */
-  async getReplayJob(orgId: string, jobId: string): Promise<AuditReplayRun | null> {
+  async getReplayJob(
+    orgId: string,
+    jobId: string
+  ): Promise<AuditReplayRun | null> {
     const { data, error } = await this.supabase
       .from('audit_replay_runs')
       .select('*')
@@ -649,7 +671,9 @@ export class AuditReplayService {
     }
 
     return {
-      runs: (data || []).map((record: AuditReplayRunRecord) => this.recordToRun(record)),
+      runs: (data || []).map((record: AuditReplayRunRecord) =>
+        this.recordToRun(record)
+      ),
       total: count || 0,
     };
   }
@@ -674,8 +698,10 @@ export class AuditReplayService {
     if (updates.startedAt) updateData.started_at = updates.startedAt;
     if (updates.finishedAt) updateData.finished_at = updates.finishedAt;
     if (updates.result) updateData.result_json = updates.result;
-    if (updates.eventCount !== undefined) updateData.event_count = updates.eventCount;
-    if (updates.snapshotCount !== undefined) updateData.snapshot_count = updates.snapshotCount;
+    if (updates.eventCount !== undefined)
+      updateData.event_count = updates.eventCount;
+    if (updates.snapshotCount !== undefined)
+      updateData.snapshot_count = updates.snapshotCount;
     if (updates.errorMessage) updateData.error_message = updates.errorMessage;
 
     const { error } = await this.supabase
@@ -774,35 +800,59 @@ export class AuditReplayService {
 
         switch (category) {
           case 'content': {
-            const contentChange = this.reconstructContentState(stateMap.content, entry);
+            const contentChange = this.reconstructContentState(
+              stateMap.content,
+              entry
+            );
             if (contentChange) {
               stateChange = {
                 ...contentChange,
                 entityType: 'content',
-                before: contentChange.before as unknown as Record<string, unknown> | null,
-                after: contentChange.after as unknown as Record<string, unknown>,
+                before: contentChange.before as unknown as Record<
+                  string,
+                  unknown
+                > | null,
+                after: contentChange.after as unknown as Record<
+                  string,
+                  unknown
+                >,
               };
             }
             break;
           }
 
           case 'playbook': {
-            const playbookChange = this.reconstructPlaybookState(stateMap.playbook, entry);
+            const playbookChange = this.reconstructPlaybookState(
+              stateMap.playbook,
+              entry
+            );
             if (playbookChange) {
               stateChange = {
                 ...playbookChange,
                 entityType: 'playbook',
-                before: playbookChange.before as unknown as Record<string, unknown> | null,
-                after: playbookChange.after as unknown as Record<string, unknown>,
+                before: playbookChange.before as unknown as Record<
+                  string,
+                  unknown
+                > | null,
+                after: playbookChange.after as unknown as Record<
+                  string,
+                  unknown
+                >,
               };
             }
             // Also track execution state
-            const execChange = this.reconstructExecutionState(stateMap.execution, entry);
+            const execChange = this.reconstructExecutionState(
+              stateMap.execution,
+              entry
+            );
             if (execChange && !stateChange) {
               stateChange = {
                 ...execChange,
                 entityType: 'execution',
-                before: execChange.before as unknown as Record<string, unknown> | null,
+                before: execChange.before as unknown as Record<
+                  string,
+                  unknown
+                > | null,
                 after: execChange.after as unknown as Record<string, unknown>,
               };
             }
@@ -810,25 +860,40 @@ export class AuditReplayService {
           }
 
           case 'billing': {
-            const billingChange = this.reconstructBillingState(stateMap.billing, entry);
+            const billingChange = this.reconstructBillingState(
+              stateMap.billing,
+              entry
+            );
             if (billingChange) {
               stateChange = {
                 entityType: 'billing',
                 entityId: 'org-billing',
-                before: billingChange.before as unknown as Record<string, unknown>,
-                after: billingChange.after as unknown as Record<string, unknown>,
+                before: billingChange.before as unknown as Record<
+                  string,
+                  unknown
+                >,
+                after: billingChange.after as unknown as Record<
+                  string,
+                  unknown
+                >,
               };
             }
             break;
           }
 
           case 'llm': {
-            const agentChange = this.reconstructAgentState(stateMap.agent, entry);
+            const agentChange = this.reconstructAgentState(
+              stateMap.agent,
+              entry
+            );
             if (agentChange) {
               stateChange = {
                 ...agentChange,
                 entityType: 'agent',
-                before: agentChange.before as unknown as Record<string, unknown> | null,
+                before: agentChange.before as unknown as Record<
+                  string,
+                  unknown
+                > | null,
                 after: agentChange.after as unknown as Record<string, unknown>,
               };
             }
@@ -858,7 +923,9 @@ export class AuditReplayService {
           eventId: entry.id,
           eventType: entry.eventType,
           timestamp: entry.createdAt || new Date().toISOString(),
-          stateBefore: stateChange?.before as Record<string, unknown> | undefined,
+          stateBefore: stateChange?.before as
+            | Record<string, unknown>
+            | undefined,
           stateAfter: stateChange?.after,
           diff: diffs,
           entityType: stateChange?.entityType,
@@ -948,7 +1015,6 @@ export class AuditReplayService {
           result,
         },
       });
-
     } catch (error) {
       console.error('Replay job failed:', error);
 
@@ -1099,15 +1165,23 @@ export class AuditReplayService {
    */
   summarizeReplay(result: ReplayResultSummary): string {
     const lines: string[] = [];
-    lines.push(`Replay completed with ${result.totalEvents} events and ${result.totalSnapshots} snapshots.`);
-    lines.push(`Time range: ${result.timeRange.start} to ${result.timeRange.end}`);
-    lines.push(`State changes: ${result.stateChanges.additions} additions, ${result.stateChanges.modifications} modifications, ${result.stateChanges.deletions} deletions`);
+    lines.push(
+      `Replay completed with ${result.totalEvents} events and ${result.totalSnapshots} snapshots.`
+    );
+    lines.push(
+      `Time range: ${result.timeRange.start} to ${result.timeRange.end}`
+    );
+    lines.push(
+      `State changes: ${result.stateChanges.additions} additions, ${result.stateChanges.modifications} modifications, ${result.stateChanges.deletions} deletions`
+    );
 
     const topEntities = Object.entries(result.entityBreakdown)
       .sort(([, a], [, b]) => b - a)
       .slice(0, 3);
     if (topEntities.length > 0) {
-      lines.push(`Top entities: ${topEntities.map(([k, v]) => `${k} (${v})`).join(', ')}`);
+      lines.push(
+        `Top entities: ${topEntities.map(([k, v]) => `${k} (${v})`).join(', ')}`
+      );
     }
 
     return lines.join('\n');

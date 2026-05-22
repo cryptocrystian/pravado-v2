@@ -15,9 +15,11 @@ Each pillar operates independently but shares data, insights, and workflows thro
 ## PR Intelligence Pillar
 
 ### Purpose
+
 Automate and optimize public relations workflows including media database management, pitch generation, journalist relationship tracking, and earned media value measurement.
 
 ### Core Capabilities
+
 - **Media Database**: Comprehensive tracking of media outlets, journalists, and their coverage areas
 - **Pitch Generation**: AI-powered pitch email creation with personalization
 - **Coverage Tracking**: Monitor press mentions, backlinks, and earned media value
@@ -26,9 +28,11 @@ Automate and optimize public relations workflows including media database manage
 ### Data Models
 
 #### Media Outlets
+
 Tracks publications, websites, podcasts, and other media channels.
 
 **Schema**: `media_outlets`
+
 - `id` (UUID) - Primary key
 - `org_id` (UUID) - Organization reference
 - `name` (TEXT) - Outlet name (e.g., "TechCrunch", "The Verge")
@@ -41,13 +45,16 @@ Tracks publications, websites, podcasts, and other media channels.
 - `created_at`, `updated_at` (TIMESTAMPTZ)
 
 **Relationships**:
+
 - Has many `journalists`
 - Has many `pr_sources` (backlinks/mentions from this outlet)
 
 #### Journalists
+
 Individual media contacts and their coverage areas.
 
 **Schema**: `journalists`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `media_outlet_id` (UUID) - Foreign key to media_outlets
@@ -62,13 +69,16 @@ Individual media contacts and their coverage areas.
 - `created_at`, `updated_at`
 
 **Relationships**:
+
 - Belongs to one `media_outlet`
 - Has many `pr_sources` (articles/mentions attributed to this journalist)
 
 #### PR Sources
+
 Tracks all earned media: press releases, backlinks, mentions, and media coverage.
 
 **Schema**: `pr_sources`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `source_type` (TEXT) - 'press_release', 'backlink', 'mention', 'earned_media'
@@ -83,14 +93,17 @@ Tracks all earned media: press releases, backlinks, mentions, and media coverage
 - `created_at`, `updated_at`
 
 **Relationships**:
+
 - Belongs to one `media_outlet` (optional)
 - Belongs to one `journalist` (optional)
 - Can be tagged via `tag_assignments`
 
 #### PR Events
+
 Tracks PR campaigns, press releases, and outreach events.
 
 **Schema**: `pr_events`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `event_type` (TEXT) - 'campaign', 'press_release', 'pitch', 'event'
@@ -103,13 +116,16 @@ Tracks PR campaigns, press releases, and outreach events.
 - `created_at`, `updated_at`
 
 **Relationships**:
+
 - Can be tagged via `tag_assignments`
 - Can be associated with playbook executions (S4+)
 
 #### PR Topics
+
 Content topics for semantic PR targeting using vector embeddings.
 
 **Schema**: `pr_topics`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `topic` (TEXT) - Topic name
@@ -125,9 +141,11 @@ Content topics for semantic PR targeting using vector embeddings.
 ## Content Intelligence Pillar
 
 ### Purpose
+
 AI-powered content planning, brief generation, performance tracking, and content gap analysis for comprehensive content marketing.
 
 ### Core Capabilities
+
 - **Content Calendar**: AI-generated publishing schedules optimized for audience engagement
 - **Brief Generator**: Automated content brief creation with SEO research and structure
 - **Performance Tracking**: Multi-channel content analytics (traffic, engagement, conversions)
@@ -136,9 +154,11 @@ AI-powered content planning, brief generation, performance tracking, and content
 ### Data Models
 
 #### Content Items
+
 All published or planned content pieces.
 
 **Schema**: `content_items`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `title` (TEXT)
@@ -154,14 +174,17 @@ All published or planned content pieces.
 - `created_at`, `updated_at`
 
 **Relationships**:
+
 - Can have one `content_brief`
 - Can be associated with multiple `content_topics`
 - Can be tagged via `tag_assignments`
 
 #### Content Briefs
+
 Structured content briefs with SEO research and writing guidelines.
 
 **Schema**: `content_briefs`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `content_item_id` (UUID) - Foreign key to content_items
@@ -175,12 +198,15 @@ Structured content briefs with SEO research and writing guidelines.
 - `created_at`, `updated_at`
 
 **Relationships**:
+
 - Belongs to one `content_item`
 
 #### Content Topics
+
 Topic clusters for content organization and gap analysis.
 
 **Schema**: `content_topics`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `topic` (TEXT)
@@ -197,9 +223,11 @@ Topic clusters for content organization and gap analysis.
 ## SEO Intelligence Pillar
 
 ### Purpose
+
 Comprehensive SEO management including keyword tracking, competitive analysis, SERP monitoring, and opportunity discovery.
 
 ### Core Capabilities
+
 - **Keyword Tracking**: Monitor keyword rankings, search volume, and difficulty
 - **Opportunity Finder**: AI-powered discovery of keyword gaps, content refreshes, quick wins
 - **Competitor Analysis**: Track competitor rankings, backlinks, and content strategies
@@ -208,9 +236,11 @@ Comprehensive SEO management including keyword tracking, competitive analysis, S
 ### Data Models
 
 #### SEO Keywords
+
 Target keywords and their performance metrics.
 
 **Schema**: `seo_keywords`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `keyword` (TEXT) - The target keyword phrase
@@ -223,14 +253,17 @@ Target keywords and their performance metrics.
 - `created_at`, `updated_at`
 
 **Relationships**:
+
 - Belongs to one `seo_page`
 - Has many `seo_snapshots` (historical SERP data)
 - Can be tagged via `tag_assignments`
 
 #### SEO Pages
+
 Individual pages being optimized for SEO.
 
 **Schema**: `seo_pages`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `url` (TEXT) - Full page URL
@@ -243,13 +276,16 @@ Individual pages being optimized for SEO.
 - `created_at`, `updated_at`
 
 **Relationships**:
+
 - Has many `seo_keywords`
 - Has many `seo_opportunities`
 
 #### SEO Opportunities
+
 Actionable SEO improvement recommendations.
 
 **Schema**: `seo_opportunities`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `opportunity_type` (TEXT) - 'keyword_gap', 'content_refresh', 'technical_fix', 'quick_win', 'backlink_opportunity'
@@ -264,13 +300,16 @@ Actionable SEO improvement recommendations.
 - `created_at`, `updated_at`
 
 **Relationships**:
+
 - Belongs to one `seo_page` (optional)
 - Belongs to one `seo_keyword` (optional)
 
 #### SEO Competitors
+
 Competitor tracking for competitive analysis.
 
 **Schema**: `seo_competitors`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `domain` (TEXT) - Competitor domain
@@ -282,12 +321,15 @@ Competitor tracking for competitive analysis.
 - `created_at`, `updated_at`
 
 **Relationships**:
+
 - Can be tagged via `tag_assignments`
 
 #### SEO Snapshots
+
 Historical SERP position tracking.
 
 **Schema**: `seo_snapshots`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `seo_keyword_id` (UUID) - Foreign key to seo_keywords
@@ -299,6 +341,7 @@ Historical SERP position tracking.
 - `created_at`
 
 **Relationships**:
+
 - Belongs to one `seo_keyword`
 
 ---
@@ -310,6 +353,7 @@ Historical SERP position tracking.
 All entities across pillars can be tagged using a polymorphic tagging system:
 
 **Schema**: `tags`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `name` (TEXT) - Tag name (unique per org)
@@ -317,6 +361,7 @@ All entities across pillars can be tagged using a polymorphic tagging system:
 - `created_at`, `updated_at`
 
 **Schema**: `tag_assignments`
+
 - `id` (UUID)
 - `org_id` (UUID)
 - `tag_id` (UUID) - Foreign key to tags
@@ -325,6 +370,7 @@ All entities across pillars can be tagged using a polymorphic tagging system:
 - `created_at`
 
 **Use Cases**:
+
 - Tag a PR source with "Product Launch Q1"
 - Tag content items with "AI/ML" topic
 - Tag SEO keywords with "High Priority"
@@ -338,6 +384,7 @@ Both PR and Content pillars use `VECTOR(1536)` embeddings for semantic matching:
 - `content_topics.embedding` - Cluster content by semantic similarity
 
 **Future S4+ Features**:
+
 - Auto-suggest journalists for content topics
 - Identify PR opportunities for existing content
 - Recommend content topics based on PR coverage trends
@@ -374,6 +421,7 @@ The "mesh" concept means all three pillars feed each other:
 Agents (S4+) can execute workflows across pillars:
 
 **Example Playbook**: "Product Launch Campaign"
+
 1. **SEO Agent**: Research high-value keywords for product category
 2. **Content Agent**: Generate content brief for launch announcement
 3. **PR Agent**: Identify tier-1 journalists covering this product category
@@ -391,26 +439,31 @@ All agents share data via the unified database (keywords, content items, journal
 All pillars expose consistent REST API patterns:
 
 ### PR Endpoints
+
 - `GET /api/v1/pr/sources` - List PR sources
 - `GET /api/v1/pr/outlets` - List media outlets
 - `GET /api/v1/pr/journalists` - List journalists
 
 ### Content Endpoints
+
 - `GET /api/v1/content/items` - List content items
 - `GET /api/v1/content/briefs` - List content briefs
 
 ### SEO Endpoints
+
 - `GET /api/v1/seo/keywords` - List SEO keywords
 - `GET /api/v1/seo/pages` - List SEO pages
 - `GET /api/v1/seo/opportunities` - List SEO opportunities
 - `GET /api/v1/seo/competitors` - List competitors
 
 ### Cross-Pillar Endpoints
+
 - `GET /api/v1/playbooks` - List multi-agent playbooks
 - `POST /api/v1/playbooks/validate` - Validate playbook structure
 - `GET /api/v1/agents` - List available agents
 
 All endpoints:
+
 - Require authentication (`requireUser` middleware)
 - Return consistent response shape: `{ success: boolean, data?: T, error?: { code, message } }`
 - Support pagination via `?limit=N&offset=N`
@@ -434,6 +487,7 @@ CREATE POLICY "Users can view pr_sources in their org"
 ```
 
 Every table has policies for:
+
 - **SELECT**: Users can only see data from their org(s)
 - **INSERT**: Users can only create data for their org(s)
 - **UPDATE**: Users can only update data from their org(s)
@@ -446,6 +500,7 @@ This ensures complete data isolation between organizations at the database level
 ## Future Enhancements (S4+)
 
 ### Sprint S4 and Beyond
+
 - **Visual Playbook Editor**: Drag-and-drop workflow builder
 - **Agent Execution Runtime**: Actually run multi-agent workflows
 - **Real-time Monitoring**: Live execution dashboards with step-by-step progress
@@ -458,12 +513,14 @@ This ensures complete data isolation between organizations at the database level
 - **Backlink Monitoring**: Auto-detect new backlinks and mentions
 
 ### Embeddings and Semantic Search
+
 - Populate all `embedding` columns with OpenAI embeddings
 - Build semantic search across all pillars
 - Auto-clustering of content/PR topics
 - Journalist-topic matching based on past coverage analysis
 
 ### Advanced Workflows
+
 - **Content-to-PR Pipeline**: Publish blog post → auto-generate pitch → send to matched journalists
 - **SEO-to-Content Pipeline**: Identify keyword gap → generate brief → assign to writer → track performance
 - **PR-to-SEO Feedback Loop**: Track earned backlinks → measure SEO impact → prioritize outlets

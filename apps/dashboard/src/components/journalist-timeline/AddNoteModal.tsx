@@ -13,7 +13,11 @@ interface AddNoteModalProps {
   onSubmit: (note: CreateManualNoteInput) => Promise<void>;
 }
 
-const sentimentOptions: { value: TimelineSentiment; label: string; icon: string }[] = [
+const sentimentOptions: {
+  value: TimelineSentiment;
+  label: string;
+  icon: string;
+}[] = [
   { value: 'positive', label: 'Positive', icon: '😊' },
   { value: 'neutral', label: 'Neutral', icon: '😐' },
   { value: 'negative', label: 'Negative', icon: '😞' },
@@ -94,8 +98,18 @@ export function AddNoteModal({
             onClick={handleCancel}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -191,7 +205,9 @@ export function AddNoteModal({
                 max="1"
                 step="0.1"
                 value={relationshipImpact}
-                onChange={(e) => setRelationshipImpact(parseFloat(e.target.value))}
+                onChange={(e) =>
+                  setRelationshipImpact(parseFloat(e.target.value))
+                }
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-gray-500">
@@ -201,8 +217,9 @@ export function AddNoteModal({
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              How does this interaction affect your relationship? Use negative values for
-              negative impacts (e.g., unsubscribe), positive for positive impacts (e.g., coverage).
+              How does this interaction affect your relationship? Use negative
+              values for negative impacts (e.g., unsubscribe), positive for
+              positive impacts (e.g., coverage).
             </p>
           </div>
 

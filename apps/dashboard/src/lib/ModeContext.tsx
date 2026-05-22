@@ -55,7 +55,10 @@ interface ModeContextValue {
   /** Check if pillar has override */
   hasPillarOverride: (pillar: Pillar) => boolean;
   /** Resolve mode for a pillar with optional ceiling */
-  resolveMode: (pillar: Pillar, ceiling?: AutomationMode) => ModeResolutionResult;
+  resolveMode: (
+    pillar: Pillar,
+    ceiling?: AutomationMode
+  ) => ModeResolutionResult;
 }
 
 const ModeContext = createContext<ModeContextValue | null>(null);
@@ -77,7 +80,8 @@ const DEFAULT_PREFERENCES: ModePreferences = {
 
 export function ModeProvider({ children }: ModeProviderProps) {
   // Initialize with static default to avoid hydration mismatch (SSR has no localStorage)
-  const [preferences, setPreferences] = useState<ModePreferences>(DEFAULT_PREFERENCES);
+  const [preferences, setPreferences] =
+    useState<ModePreferences>(DEFAULT_PREFERENCES);
   const [isHydrated, setIsHydrated] = useState(false);
 
   // Sync from localStorage AFTER hydration (client-only)
@@ -105,10 +109,13 @@ export function ModeProvider({ children }: ModeProviderProps) {
     setPreferences(getModePreferences());
   }, []);
 
-  const handleSetPillarMode = useCallback((pillar: Pillar, mode: AutomationMode) => {
-    setPillarMode(pillar, mode);
-    setPreferences(getModePreferences());
-  }, []);
+  const handleSetPillarMode = useCallback(
+    (pillar: Pillar, mode: AutomationMode) => {
+      setPillarMode(pillar, mode);
+      setPreferences(getModePreferences());
+    },
+    []
+  );
 
   const handleClearPillarOverride = useCallback((pillar: Pillar) => {
     clearPillarOverride(pillar);
@@ -116,52 +123,59 @@ export function ModeProvider({ children }: ModeProviderProps) {
   }, []);
 
   // Use state-based check to avoid hydration mismatch (don't call hasPillarOverride which reads localStorage)
-  const handleHasPillarOverride = useCallback((pillar: Pillar) => {
-    return pillar in preferences.pillarOverrides;
-  }, [preferences.pillarOverrides]);
+  const handleHasPillarOverride = useCallback(
+    (pillar: Pillar) => {
+      return pillar in preferences.pillarOverrides;
+    },
+    [preferences.pillarOverrides]
+  );
 
   // Use state-based resolution to avoid hydration mismatch
   // This mirrors the logic in resolveMode but uses React state instead of localStorage
-  const handleResolveMode = useCallback((pillar: Pillar, ceiling?: AutomationMode): ModeResolutionResult => {
-    // Determine selected mode from state (not localStorage)
-    let selectedMode: AutomationMode;
-    let source: ModeResolutionResult['source'];
+  const handleResolveMode = useCallback(
+    (pillar: Pillar, ceiling?: AutomationMode): ModeResolutionResult => {
+      // Determine selected mode from state (not localStorage)
+      let selectedMode: AutomationMode;
+      let source: ModeResolutionResult['source'];
 
-    if (preferences.pillarOverrides[pillar]) {
-      selectedMode = preferences.pillarOverrides[pillar]!;
-      source = 'pillar-override';
-    } else if (preferences.globalMode) {
-      selectedMode = preferences.globalMode;
-      source = 'global';
-    } else {
-      selectedMode = 'manual';
-      source = 'default';
-    }
+      if (preferences.pillarOverrides[pillar]) {
+        selectedMode = preferences.pillarOverrides[pillar]!;
+        source = 'pillar-override';
+      } else if (preferences.globalMode) {
+        selectedMode = preferences.globalMode;
+        source = 'global';
+      } else {
+        selectedMode = 'manual';
+        source = 'default';
+      }
 
-    // Apply ceiling if provided
-    if (ceiling) {
-      // Mode autonomy order: manual < copilot < autopilot
-      const modeOrder: AutomationMode[] = ['manual', 'copilot', 'autopilot'];
-      const selectedIndex = modeOrder.indexOf(selectedMode);
-      const ceilingIndex = modeOrder.indexOf(ceiling);
-      const effectiveMode = selectedIndex <= ceilingIndex ? selectedMode : ceiling;
+      // Apply ceiling if provided
+      if (ceiling) {
+        // Mode autonomy order: manual < copilot < autopilot
+        const modeOrder: AutomationMode[] = ['manual', 'copilot', 'autopilot'];
+        const selectedIndex = modeOrder.indexOf(selectedMode);
+        const ceilingIndex = modeOrder.indexOf(ceiling);
+        const effectiveMode =
+          selectedIndex <= ceilingIndex ? selectedMode : ceiling;
+
+        return {
+          selectedMode,
+          effectiveMode,
+          ceilingApplied: effectiveMode !== selectedMode,
+          ceiling,
+          source,
+        };
+      }
 
       return {
         selectedMode,
-        effectiveMode,
-        ceilingApplied: effectiveMode !== selectedMode,
-        ceiling,
+        effectiveMode: selectedMode,
+        ceilingApplied: false,
         source,
       };
-    }
-
-    return {
-      selectedMode,
-      effectiveMode: selectedMode,
-      ceilingApplied: false,
-      source,
-    };
-  }, [preferences]);
+    },
+    [preferences]
+  );
 
   const value: ModeContextValue = {
     preferences,
@@ -172,11 +186,7 @@ export function ModeProvider({ children }: ModeProviderProps) {
     resolveMode: handleResolveMode,
   };
 
-  return (
-    <ModeContext.Provider value={value}>
-      {children}
-    </ModeContext.Provider>
-  );
+  return <ModeContext.Provider value={value}>{children}</ModeContext.Provider>;
 }
 
 // ============================================

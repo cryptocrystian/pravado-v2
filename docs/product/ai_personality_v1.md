@@ -19,17 +19,17 @@ A `PersonalityProfile` defines behavioral characteristics that influence how an 
 
 ```typescript
 interface PersonalityProfile {
-  tone: string;                      // "formal", "analytical", "friendly", etc.
-  style: string;                     // "structured", "concise", "verbose", etc.
-  riskTolerance: RiskTolerance;      // "low" | "medium" | "high"
-  domainSpecialty: string[];         // ["pr", "seo", "content"]
-  biasModifiers: Record<string, number>;  // e.g. { "optimism": +0.2 }
-  memoryWeight: number;              // 0–1 scalar for semantic memory relevance
-  escalationSensitivity: number;     // 0–1 scalar modifying escalation decisions
-  collaborationStyle: CollaborationStyle;  // "assertive" | "supportive" | "balanced"
+  tone: string; // "formal", "analytical", "friendly", etc.
+  style: string; // "structured", "concise", "verbose", etc.
+  riskTolerance: RiskTolerance; // "low" | "medium" | "high"
+  domainSpecialty: string[]; // ["pr", "seo", "content"]
+  biasModifiers: Record<string, number>; // e.g. { "optimism": +0.2 }
+  memoryWeight: number; // 0–1 scalar for semantic memory relevance
+  escalationSensitivity: number; // 0–1 scalar modifying escalation decisions
+  collaborationStyle: CollaborationStyle; // "assertive" | "supportive" | "balanced"
   constraints: {
-    forbid?: string[];               // Forbidden actions/approaches
-    require?: string[];              // Required validations
+    forbid?: string[]; // Forbidden actions/approaches
+    require?: string[]; // Required validations
   };
 }
 ```
@@ -42,7 +42,7 @@ An `AgentPersonality` is a stored personality profile that can be assigned to ag
 interface AgentPersonality {
   id: string;
   orgId: string;
-  slug: string;                      // URL-friendly identifier
+  slug: string; // URL-friendly identifier
   name: string;
   description: string;
   configuration: PersonalityProfile;
@@ -61,6 +61,7 @@ Agents are linked to personalities via the `agent_personality_assignments` table
 The system provides 8 pre-configured personalities that cover common use cases:
 
 ### 1. PR Strategist
+
 - **Tone:** Professional
 - **Style:** Persuasive
 - **Risk Tolerance:** Medium
@@ -70,6 +71,7 @@ The system provides 8 pre-configured personalities that cover common use cases:
 - **Use Case:** Media outreach, journalist relationship management
 
 ### 2. SEO Analyst
+
 - **Tone:** Analytical
 - **Style:** Structured
 - **Risk Tolerance:** Low
@@ -79,6 +81,7 @@ The system provides 8 pre-configured personalities that cover common use cases:
 - **Use Case:** Keyword research, technical SEO, content optimization
 
 ### 3. Content Architect
+
 - **Tone:** Engaging
 - **Style:** Narrative
 - **Risk Tolerance:** Medium
@@ -88,6 +91,7 @@ The system provides 8 pre-configured personalities that cover common use cases:
 - **Use Case:** Long-form content, storytelling, audience engagement
 
 ### 4. Investigative Analyst
+
 - **Tone:** Formal
 - **Style:** Detailed
 - **Risk Tolerance:** Low
@@ -97,6 +101,7 @@ The system provides 8 pre-configured personalities that cover common use cases:
 - **Use Case:** Data gathering, competitive analysis, fact verification
 
 ### 5. Generalist Agent
+
 - **Tone:** Friendly
 - **Style:** Concise
 - **Risk Tolerance:** Medium
@@ -106,6 +111,7 @@ The system provides 8 pre-configured personalities that cover common use cases:
 - **Use Case:** General-purpose tasks across all domains
 
 ### 6. Social Media Manager
+
 - **Tone:** Casual
 - **Style:** Conversational
 - **Risk Tolerance:** High
@@ -115,6 +121,7 @@ The system provides 8 pre-configured personalities that cover common use cases:
 - **Use Case:** Social media content, trend adaptation, audience engagement
 
 ### 7. Technical Writer
+
 - **Tone:** Instructional
 - **Style:** Structured
 - **Risk Tolerance:** Low
@@ -124,6 +131,7 @@ The system provides 8 pre-configured personalities that cover common use cases:
 - **Use Case:** Documentation, technical content, instructional materials
 
 ### 8. Brand Guardian
+
 - **Tone:** Brand-aligned
 - **Style:** Consistent
 - **Risk Tolerance:** Low
@@ -135,41 +143,51 @@ The system provides 8 pre-configured personalities that cover common use cases:
 ## How Personality Influences Behavior
 
 ### 1. Prompt Construction
+
 Personality tone and style modify the system prompts sent to LLMs:
+
 - **Tone** influences the speaking voice (formal vs. casual)
 - **Style** influences structure (concise vs. detailed)
 - **Domain specialty** frames the task within expert context
 
 ### 2. Memory Weighting
+
 The `memoryWeight` scalar (0–1) modifies how heavily semantic memories influence decisions:
+
 - **High memory weight (0.8):** SEO Analyst relies heavily on past keyword research
 - **Low memory weight (0.4):** Social Media Manager prioritizes current trends over history
 
 ### 3. Escalation Sensitivity
+
 The `escalationSensitivity` scalar (0–1) combined with `riskTolerance` determines when to escalate:
 
 ```typescript
 // Low risk + high sensitivity = escalates quickly
 // High risk + low sensitivity = self-reliant, rarely escalates
 
-const riskModifier = riskTolerance === 'low' ? 1.3 :
-                    riskTolerance === 'high' ? 0.7 : 1.0;
+const riskModifier =
+  riskTolerance === 'low' ? 1.3 : riskTolerance === 'high' ? 0.7 : 1.0;
 
 const shouldEscalate = baseThreshold * (sensitivity * riskModifier);
 ```
 
 **Examples:**
+
 - **Brand Guardian** (low risk, 0.2 sensitivity): Escalates frequently to avoid mistakes
 - **Social Media Manager** (high risk, 0.7 sensitivity): Acts independently, rarely escalates
 
 ### 4. Collaboration Style
+
 Determines how agents interact with other agents:
+
 - **Assertive:** More likely to delegate, request help, take initiative
 - **Supportive:** Prefers to assist others, less likely to delegate
 - **Balanced:** Standard collaboration behavior
 
 ### 5. Bias Modifiers
+
 Key-value pairs that influence specific behavioral tendencies:
+
 ```typescript
 {
   "optimism": 0.3,        // PR Strategist leans positive
@@ -180,6 +198,7 @@ Key-value pairs that influence specific behavioral tendencies:
 ```
 
 ### 6. Constraints
+
 - **`require`:** Actions that must be taken (e.g., `["journalist_validation"]`)
 - **`forbid`:** Actions that are prohibited (e.g., `["spam_tactics"]`)
 
@@ -218,6 +237,7 @@ CREATE TABLE agent_personality_assignments (
 ## API Endpoints
 
 ### List Custom Personalities
+
 ```http
 GET /api/v1/personalities?limit=50&offset=0
 Authorization: Bearer <token>
@@ -226,6 +246,7 @@ Authorization: Bearer <token>
 Returns org-specific custom personalities.
 
 ### List System Personalities
+
 ```http
 GET /api/v1/personalities/system
 Authorization: Bearer <token>
@@ -234,12 +255,14 @@ Authorization: Bearer <token>
 Returns all built-in system personalities that can be cloned.
 
 ### Get Personality by ID
+
 ```http
 GET /api/v1/personalities/:id
 Authorization: Bearer <token>
 ```
 
 ### Create Custom Personality
+
 ```http
 POST /api/v1/personalities
 Authorization: Bearer <token>
@@ -267,6 +290,7 @@ Content-Type: application/json
 ```
 
 ### Update Personality
+
 ```http
 PUT /api/v1/personalities/:id
 Authorization: Bearer <token>
@@ -279,6 +303,7 @@ Content-Type: application/json
 ```
 
 ### Assign Personality to Agent
+
 ```http
 POST /api/v1/personalities/assign
 Authorization: Bearer <token>
@@ -291,12 +316,14 @@ Content-Type: application/json
 ```
 
 ### Get Agent's Assigned Personality
+
 ```http
 GET /api/v1/personalities/agent/:agentId
 Authorization: Bearer <token>
 ```
 
 ### Remove Personality from Agent
+
 ```http
 DELETE /api/v1/personalities/agent/:agentId
 Authorization: Bearer <token>
@@ -305,9 +332,14 @@ Authorization: Bearer <token>
 ## Integration Points
 
 ### 1. Playbook Execution Engine
+
 When executing an AGENT step:
+
 ```typescript
-const personality = await personalityStore.getPersonalityForAgent(orgId, agentId);
+const personality = await personalityStore.getPersonalityForAgent(
+  orgId,
+  agentId
+);
 
 // Personality influences:
 // - Prompt tone/style injection
@@ -317,10 +349,12 @@ const personality = await personalityStore.getPersonalityForAgent(orgId, agentId
 ```
 
 ### 2. Collaboration Coordinator
+
 Personality modifies escalation and collaboration:
+
 ```typescript
 const coordinator = new CollaborationCoordinator({
-  personality: personality?.configuration
+  personality: personality?.configuration,
 });
 
 // Risk tolerance + escalation sensitivity determine when to escalate
@@ -328,11 +362,13 @@ const coordinator = new CollaborationCoordinator({
 ```
 
 ### 3. Memory Context Assembly
-*(Reserved for future implementation)*
+
+_(Reserved for future implementation)_
+
 ```typescript
 const assembledContext = await contextAssembler.assembleContextForStep({
   // ...
-  personality: personality?.configuration
+  personality: personality?.configuration,
 });
 
 // memoryWeight influences semantic memory retrieval relevance
@@ -352,16 +388,19 @@ const personalityProfileSchema = z.object({
   memoryWeight: z.number().min(0).max(1).default(0.5),
   escalationSensitivity: z.number().min(0).max(1).default(0.5),
   collaborationStyle: z.enum(['assertive', 'supportive', 'balanced']),
-  constraints: z.object({
-    forbid: z.array(z.string()).optional(),
-    require: z.array(z.string()).optional(),
-  }).default({})
+  constraints: z
+    .object({
+      forbid: z.array(z.string()).optional(),
+      require: z.array(z.string()).optional(),
+    })
+    .default({}),
 });
 ```
 
 ## Testing
 
 Tests cover:
+
 1. **PersonalityStore CRUD operations**
 2. **PersonalityRegistry system personalities**
 3. **Assignment management**
@@ -391,9 +430,9 @@ const customPersonality = await personalityStore.createPersonality(
       domainSpecialty: ['pr', 'tech', 'startups'],
       biasModifiers: {
         ...prPersonality.configuration.biasModifiers,
-        innovation: 0.5
-      }
-    }
+        innovation: 0.5,
+      },
+    },
   }
 );
 
@@ -405,44 +444,47 @@ await personalityStore.assignPersonalityToAgent(
 );
 
 // 3. Execute playbook step - personality is automatically loaded
-const run = await executionEngine.startPlaybookRun(
-  orgId,
-  playbookId,
-  input
-);
+const run = await executionEngine.startPlaybookRun(orgId, playbookId, input);
 // Agent behavior is now influenced by the Tech PR Specialist personality
 ```
 
 ## Future Enhancements (Beyond S11)
 
 ### Adaptive Personality (V2)
+
 - Personalities evolve based on outcomes
 - Success/failure feedback modifies bias modifiers
 - Risk tolerance adjusts based on track record
 
 ### Multi-Personality Agents
+
 - Agents can switch personalities based on task type
 - Context-aware personality selection
 
 ### Personality Analytics
+
 - Track which personalities perform best for specific tasks
 - A/B testing personality configurations
 
 ### Fine-tuned Prompt Engineering
+
 - Personality-specific prompt templates
 - Domain-specific language injection
 
 ## Troubleshooting
 
 ### Personality Not Applied
+
 **Problem:** Agent behavior doesn't reflect assigned personality
 **Solution:** Check personality assignment in database, verify execution engine loads personality
 
 ### Validation Errors
+
 **Problem:** Cannot create personality with invalid configuration
 **Solution:** Ensure `memoryWeight` and `escalationSensitivity` are 0–1, `riskTolerance` is low/medium/high
 
 ### Missing System Personality
+
 **Problem:** Cannot find expected system personality
 **Solution:** Use `/api/v1/personalities/system` to list all available system personalities
 

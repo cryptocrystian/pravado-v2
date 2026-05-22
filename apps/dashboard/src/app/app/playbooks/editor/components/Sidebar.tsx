@@ -11,10 +11,25 @@ export interface SidebarProps {
   onAddNode: (type: NodeType) => void;
 }
 
-const nodeTemplates: { type: NodeType; label: string; icon: string; description: string }[] = [
+const nodeTemplates: {
+  type: NodeType;
+  label: string;
+  icon: string;
+  description: string;
+}[] = [
   { type: 'AGENT', label: 'Agent', icon: '🤖', description: 'AI agent step' },
-  { type: 'DATA', label: 'Data', icon: '⚙️', description: 'Data transformation' },
-  { type: 'BRANCH', label: 'Branch', icon: '◆', description: 'Conditional branching' },
+  {
+    type: 'DATA',
+    label: 'Data',
+    icon: '⚙️',
+    description: 'Data transformation',
+  },
+  {
+    type: 'BRANCH',
+    label: 'Branch',
+    icon: '◆',
+    description: 'Conditional branching',
+  },
   { type: 'API', label: 'API', icon: '🌐', description: 'External API call' },
 ];
 
@@ -34,7 +49,9 @@ export function Sidebar({ onAddNode }: SidebarProps) {
               <span className="text-2xl">{template.icon}</span>
               <div className="flex-1">
                 <div className="font-medium text-sm">{template.label}</div>
-                <div className="text-xs text-gray-500">{template.description}</div>
+                <div className="text-xs text-gray-500">
+                  {template.description}
+                </div>
               </div>
             </div>
           </button>
@@ -42,7 +59,9 @@ export function Sidebar({ onAddNode }: SidebarProps) {
       </div>
 
       <div className="mt-6 pt-6 border-t border-gray-200">
-        <h3 className="text-xs font-semibold mb-2 text-gray-600">Instructions</h3>
+        <h3 className="text-xs font-semibold mb-2 text-gray-600">
+          Instructions
+        </h3>
         <ul className="text-xs text-gray-600 space-y-1">
           <li>• Click nodes to add to canvas</li>
           <li>• Drag nodes to reposition</li>

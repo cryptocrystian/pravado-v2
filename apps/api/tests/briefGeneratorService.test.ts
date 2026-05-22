@@ -7,7 +7,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BriefGeneratorService } from '../src/services/briefGeneratorService';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createMockSupabaseClient, createMockQueryBuilder, createMockSuccess } from './helpers/supabaseMock';
+import {
+  createMockSupabaseClient,
+  createMockQueryBuilder,
+  createMockSuccess,
+} from './helpers/supabaseMock';
 
 describe('BriefGeneratorService', () => {
   let service: BriefGeneratorService;
@@ -51,12 +55,18 @@ describe('BriefGeneratorService', () => {
           1
         )
       );
-      const mockOpportunitiesQuery = createMockQueryBuilder(createMockSuccess([]));
+      const mockOpportunitiesQuery = createMockQueryBuilder(
+        createMockSuccess([])
+      );
       const mockMemoriesQuery = createMockQueryBuilder(createMockSuccess([]));
-      const mockContentItemsQuery = createMockQueryBuilder(createMockSuccess([], 0));
+      const mockContentItemsQuery = createMockQueryBuilder(
+        createMockSuccess([], 0)
+      );
       const mockClustersQuery = createMockQueryBuilder(createMockSuccess([]));
       const mockGapsQuery = createMockQueryBuilder(createMockSuccess([]));
-      const mockPersonalitiesQuery = createMockQueryBuilder(createMockSuccess(null));
+      const mockPersonalitiesQuery = createMockQueryBuilder(
+        createMockSuccess(null)
+      );
       const mockPlaybookRunInsert = createMockQueryBuilder(
         createMockSuccess({
           id: 'run-123',
@@ -66,7 +76,9 @@ describe('BriefGeneratorService', () => {
           created_at: new Date().toISOString(),
         })
       );
-      const mockPlaybookRunUpdate = createMockQueryBuilder(createMockSuccess(null));
+      const mockPlaybookRunUpdate = createMockQueryBuilder(
+        createMockSuccess(null)
+      );
       const mockBriefInsert = createMockQueryBuilder(
         createMockSuccess({
           id: 'brief-789',
@@ -103,7 +115,9 @@ describe('BriefGeneratorService', () => {
           const callCount = (mockSupabase.from as any).mock.calls.filter(
             (c: any) => c[0] === 'playbook_runs'
           ).length;
-          return callCount === 1 ? mockPlaybookRunInsert : mockPlaybookRunUpdate;
+          return callCount === 1
+            ? mockPlaybookRunInsert
+            : mockPlaybookRunUpdate;
         }
         if (table === 'content_generated_briefs') return mockBriefInsert;
         return mockContentQuery;
@@ -126,7 +140,9 @@ describe('BriefGeneratorService', () => {
 
       // Mock queries using comprehensive mock pattern
       const mockEmptyQuery = createMockQueryBuilder(createMockSuccess(null));
-      const mockEmptyArrayQuery = createMockQueryBuilder(createMockSuccess([], 0));
+      const mockEmptyArrayQuery = createMockQueryBuilder(
+        createMockSuccess([], 0)
+      );
       const mockPersonalityQuery = createMockQueryBuilder(
         createMockSuccess({
           id: personalityId,
@@ -142,7 +158,9 @@ describe('BriefGeneratorService', () => {
       const mockPlaybookInsert = createMockQueryBuilder(
         createMockSuccess({ id: 'run-123', org_id: orgId })
       );
-      const mockPlaybookUpdate = createMockQueryBuilder(createMockSuccess(null));
+      const mockPlaybookUpdate = createMockQueryBuilder(
+        createMockSuccess(null)
+      );
       const mockBriefInsert = createMockQueryBuilder(
         createMockSuccess({
           id: 'brief-789',
@@ -165,7 +183,9 @@ describe('BriefGeneratorService', () => {
         if (table === 'agent_personalities') return mockPersonalityQuery;
         if (table === 'playbook_runs') {
           playbookCallCount++;
-          return playbookCallCount === 1 ? mockPlaybookInsert : mockPlaybookUpdate;
+          return playbookCallCount === 1
+            ? mockPlaybookInsert
+            : mockPlaybookUpdate;
         }
         if (table === 'content_generated_briefs') return mockBriefInsert;
         return mockEmptyQuery;
@@ -194,11 +214,15 @@ describe('BriefGeneratorService', () => {
         })
       );
       const mockEmptyQuery = createMockQueryBuilder(createMockSuccess(null));
-      const mockEmptyArrayQuery = createMockQueryBuilder(createMockSuccess([], 0));
+      const mockEmptyArrayQuery = createMockQueryBuilder(
+        createMockSuccess([], 0)
+      );
       const mockPlaybookInsert = createMockQueryBuilder(
         createMockSuccess({ id: 'run-123', org_id: orgId })
       );
-      const mockPlaybookUpdate = createMockQueryBuilder(createMockSuccess(null));
+      const mockPlaybookUpdate = createMockQueryBuilder(
+        createMockSuccess(null)
+      );
       const mockBriefInsert = createMockQueryBuilder(
         createMockSuccess({
           id: 'brief-789',
@@ -219,14 +243,18 @@ describe('BriefGeneratorService', () => {
         if (table === 'content_items') {
           // First call is to get the specific content item, subsequent calls for listing
           contentItemCallCount++;
-          return contentItemCallCount === 1 ? mockContentQuery : mockEmptyArrayQuery;
+          return contentItemCallCount === 1
+            ? mockContentQuery
+            : mockEmptyArrayQuery;
         }
         if (table === 'content_clusters') return mockEmptyArrayQuery;
         if (table === 'content_gaps') return mockEmptyArrayQuery;
         if (table === 'agent_personalities') return mockEmptyQuery;
         if (table === 'playbook_runs') {
           playbookCallCount++;
-          return playbookCallCount === 1 ? mockPlaybookInsert : mockPlaybookUpdate;
+          return playbookCallCount === 1
+            ? mockPlaybookInsert
+            : mockPlaybookUpdate;
         }
         if (table === 'content_generated_briefs') return mockBriefInsert;
         return mockEmptyQuery;
@@ -329,7 +357,9 @@ describe('BriefGeneratorService', () => {
       expect(result[0].id).toBe('brief-1');
       expect(result[1].id).toBe('brief-2');
       expect(mockQuery.eq).toHaveBeenCalledWith('org_id', orgId);
-      expect(mockQuery.order).toHaveBeenCalledWith('created_at', { ascending: false });
+      expect(mockQuery.order).toHaveBeenCalledWith('created_at', {
+        ascending: false,
+      });
     });
 
     it('should apply contentItemId filter when provided', async () => {
@@ -342,7 +372,10 @@ describe('BriefGeneratorService', () => {
       await service.listGeneratedBriefs(orgId, { contentItemId });
 
       expect(mockQuery.eq).toHaveBeenCalledWith('org_id', orgId);
-      expect(mockQuery.eq).toHaveBeenCalledWith('content_item_id', contentItemId);
+      expect(mockQuery.eq).toHaveBeenCalledWith(
+        'content_item_id',
+        contentItemId
+      );
     });
 
     it('should apply pagination with limit and offset', async () => {

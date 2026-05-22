@@ -53,7 +53,9 @@ const createMockSupabase = () => {
             eq: (column: string, value: any) => ({
               eq: (col2: string, val2: any) => ({
                 single: async () => ({
-                  data: mockData.plans.find((p: any) => p[column] === value && p[col2] === val2),
+                  data: mockData.plans.find(
+                    (p: any) => p[column] === value && p[col2] === val2
+                  ),
                   error: null,
                 }),
               }),
@@ -91,7 +93,8 @@ const createMockSupabase = () => {
                   current_period_start: data.current_period_start,
                   current_period_end: data.current_period_end,
                   soft_token_limit_monthly: data.soft_token_limit_monthly,
-                  soft_playbook_run_limit_monthly: data.soft_playbook_run_limit_monthly,
+                  soft_playbook_run_limit_monthly:
+                    data.soft_playbook_run_limit_monthly,
                   soft_seat_limit: data.soft_seat_limit,
                   created_at: new Date().toISOString(),
                   updated_at: new Date().toISOString(),
@@ -107,7 +110,10 @@ const createMockSupabase = () => {
                 single: async () => {
                   if (mockData.orgBillingState[value]) {
                     Object.assign(mockData.orgBillingState[value], data);
-                    return { data: mockData.orgBillingState[value], error: null };
+                    return {
+                      data: mockData.orgBillingState[value],
+                      error: null,
+                    };
                   }
                   return { data: null, error: { message: 'Not found' } };
                 },
@@ -125,7 +131,10 @@ const createMockSupabase = () => {
                 eq: (col3: string, val3: any) => ({
                   single: async () => {
                     const key = `${value}-${val2}-${val3}`;
-                    return { data: mockData.usageRecords[key] || null, error: null };
+                    return {
+                      data: mockData.usageRecords[key] || null,
+                      error: null,
+                    };
                   },
                 }),
               }),
@@ -154,8 +163,8 @@ const createMockSupabase = () => {
             eq: (column: string, value: any) => ({
               async single() {
                 // For simplicity in tests, update first matching record
-                const key = Object.keys(mockData.usageRecords).find((k) =>
-                  mockData.usageRecords[k]?.id === value
+                const key = Object.keys(mockData.usageRecords).find(
+                  (k) => mockData.usageRecords[k]?.id === value
                 );
                 if (key) {
                   Object.assign(mockData.usageRecords[key], data);
@@ -318,7 +327,9 @@ describe('BillingService', () => {
     it('should increment playbook run counter', async () => {
       await billingService.getOrgBillingState('org-1');
 
-      await billingService.updateUsageCounters('org-1', { playbookRunDelta: 1 });
+      await billingService.updateUsageCounters('org-1', {
+        playbookRunDelta: 1,
+      });
 
       const summary = await billingService.buildOrgBillingSummary('org-1');
       expect(summary?.playbookRuns).toBeGreaterThanOrEqual(1);

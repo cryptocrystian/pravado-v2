@@ -23,7 +23,10 @@ interface OverageBreakdownProps {
   };
 }
 
-export function OverageBreakdown({ overages, overageRates }: OverageBreakdownProps) {
+export function OverageBreakdown({
+  overages,
+  overageRates,
+}: OverageBreakdownProps) {
   if (overages.estimatedCost === 0) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -50,7 +53,8 @@ export function OverageBreakdown({ overages, overageRates }: OverageBreakdownPro
             <div>
               <p className="text-sm font-medium text-gray-900">Tokens</p>
               <p className="text-xs text-gray-500">
-                {overages.tokens.toLocaleString()} @ {formatCurrency(overageRates.tokens / 1000)}/token
+                {overages.tokens.toLocaleString()} @{' '}
+                {formatCurrency(overageRates.tokens / 1000)}/token
               </p>
             </div>
             <p className="text-sm font-semibold text-gray-900">
@@ -64,7 +68,8 @@ export function OverageBreakdown({ overages, overageRates }: OverageBreakdownPro
             <div>
               <p className="text-sm font-medium text-gray-900">Playbook Runs</p>
               <p className="text-xs text-gray-500">
-                {overages.playbookRuns} @ {formatCurrency(overageRates.playbookRuns)}/run
+                {overages.playbookRuns} @{' '}
+                {formatCurrency(overageRates.playbookRuns)}/run
               </p>
             </div>
             <p className="text-sm font-semibold text-gray-900">
@@ -76,7 +81,9 @@ export function OverageBreakdown({ overages, overageRates }: OverageBreakdownPro
         {overages.seats > 0 && (
           <div className="px-4 py-3 flex justify-between items-center">
             <div>
-              <p className="text-sm font-medium text-gray-900">Additional Seats</p>
+              <p className="text-sm font-medium text-gray-900">
+                Additional Seats
+              </p>
               <p className="text-xs text-gray-500">
                 {overages.seats} @ {formatCurrency(overageRates.seats)}/seat
               </p>

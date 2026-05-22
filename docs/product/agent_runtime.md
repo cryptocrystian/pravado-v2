@@ -26,18 +26,21 @@ Each agent is defined by a structured `AgentDefinition` object:
 
 ```typescript
 interface AgentDefinition {
-  id: string;                    // Unique agent identifier (e.g., 'journalist-researcher')
-  name: string;                  // Human-readable name
-  description: string;           // What this agent does
-  category: 'pr' | 'content' | 'seo' | 'general';  // Which pillar it belongs to
-  capabilities: string[];        // List of capabilities (e.g., ['research', 'data-mining'])
-  requiredInputs: string[];      // Required input field names
-  outputSchema: Record<string, {
-    type: string;
-    items?: Record<string, string>;
-    description?: string;
-  }>;                            // Expected output structure
-  estimatedDuration?: string;    // Human-readable time estimate (e.g., '3-5 minutes')
+  id: string; // Unique agent identifier (e.g., 'journalist-researcher')
+  name: string; // Human-readable name
+  description: string; // What this agent does
+  category: 'pr' | 'content' | 'seo' | 'general'; // Which pillar it belongs to
+  capabilities: string[]; // List of capabilities (e.g., ['research', 'data-mining'])
+  requiredInputs: string[]; // Required input field names
+  outputSchema: Record<
+    string,
+    {
+      type: string;
+      items?: Record<string, string>;
+      description?: string;
+    }
+  >; // Expected output structure
+  estimatedDuration?: string; // Human-readable time estimate (e.g., '3-5 minutes')
   modelConfig?: {
     provider: 'openai' | 'anthropic';
     model: string;
@@ -140,10 +143,11 @@ A task is an instance of an agent being invoked with specific inputs:
 
 ```typescript
 interface AgentTask {
-  taskId: string;           // Unique task identifier
-  agentId: string;          // Which agent to execute
-  input: Record<string, unknown> | string;  // Task inputs
-  context?: {               // Optional context from previous tasks
+  taskId: string; // Unique task identifier
+  agentId: string; // Which agent to execute
+  input: Record<string, unknown> | string; // Task inputs
+  context?: {
+    // Optional context from previous tasks
     [key: string]: unknown;
   };
   retryPolicy?: {
@@ -193,7 +197,7 @@ interface AgentResult {
   taskId: string;
   agentId: string;
   status: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
-  output?: Record<string, unknown>;  // Agent's output data
+  output?: Record<string, unknown>; // Agent's output data
   error?: {
     code: string;
     message: string;
@@ -251,12 +255,12 @@ interface PlaybookTemplate {
   name: string;
   description: string;
   category: 'pr' | 'content' | 'seo' | 'general';
-  nodes: PlaybookNode[];         // Array of agent tasks
-  expectedOutputs: string[];     // What this playbook produces
+  nodes: PlaybookNode[]; // Array of agent tasks
+  expectedOutputs: string[]; // What this playbook produces
   estimatedDuration?: string;
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
   tags?: string[];
-  isPublic: boolean;             // Can other orgs use this template?
+  isPublic: boolean; // Can other orgs use this template?
 }
 ```
 
@@ -266,13 +270,14 @@ Each node in a playbook represents an agent task with dependency information:
 
 ```typescript
 interface PlaybookNode {
-  id: string;                    // Unique node ID within playbook
-  agentId: string;               // Which agent to execute
-  label?: string;                // Human-readable label
-  input: Record<string, unknown> | string;  // Node inputs (can reference previous outputs)
-  dependsOn?: string[];          // Array of node IDs this node depends on
-  condition?: {                  // Optional conditional execution
-    nodeId: string;              // Check result of this node
+  id: string; // Unique node ID within playbook
+  agentId: string; // Which agent to execute
+  label?: string; // Human-readable label
+  input: Record<string, unknown> | string; // Node inputs (can reference previous outputs)
+  dependsOn?: string[]; // Array of node IDs this node depends on
+  condition?: {
+    // Optional conditional execution
+    nodeId: string; // Check result of this node
     operator: 'equals' | 'notEquals' | 'contains' | 'greaterThan' | 'lessThan';
     value: unknown;
   };
@@ -446,14 +451,14 @@ interface PlaybookExecution {
   orgId: string;
   userId: string;
   status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
-  input: Record<string, unknown>;      // Runtime variables (e.g., {topic: 'AI', contentUrl: '...'})
+  input: Record<string, unknown>; // Runtime variables (e.g., {topic: 'AI', contentUrl: '...'})
   results: Record<string, AgentResult>; // Map of nodeId → AgentResult
   startTime?: string;
   endTime?: string;
   error?: {
     code: string;
     message: string;
-    nodeId?: string;  // Which node failed
+    nodeId?: string; // Which node failed
   };
 }
 ```
@@ -532,8 +537,12 @@ GET /api/v1/executions/:id
     "results": {
       "research-journalists": {
         "status": "completed",
-        "output": { /* ... */ },
-        "metrics": { /* ... */ }
+        "output": {
+          /* ... */
+        },
+        "metrics": {
+          /* ... */
+        }
       },
       "generate-pitches": {
         "status": "running"
@@ -561,7 +570,7 @@ function validatePlaybookShape(playbook: PlaybookTemplate): {
     field?: string;
     message: string;
   }>;
-}
+};
 ```
 
 ### calculateExecutionOrder()
@@ -569,7 +578,7 @@ function validatePlaybookShape(playbook: PlaybookTemplate): {
 Performs topological sort to determine node execution order.
 
 ```typescript
-function calculateExecutionOrder(nodes: PlaybookNode[]): string[]
+function calculateExecutionOrder(nodes: PlaybookNode[]): string[];
 ```
 
 **Returns**: Array of node IDs in execution order
@@ -583,7 +592,7 @@ const nodes = [
   { id: 'A', dependsOn: [] },
   { id: 'B', dependsOn: ['A'] },
   { id: 'C', dependsOn: ['A'] },
-  { id: 'D', dependsOn: ['B', 'C'] }
+  { id: 'D', dependsOn: ['B', 'C'] },
 ];
 
 calculateExecutionOrder(nodes);
@@ -596,7 +605,7 @@ calculateExecutionOrder(nodes);
 Ensures task has all required fields with defaults.
 
 ```typescript
-function normalizeAgentTask(task: Partial<AgentTask>): AgentTask
+function normalizeAgentTask(task: Partial<AgentTask>): AgentTask;
 ```
 
 **Example**:
@@ -604,7 +613,7 @@ function normalizeAgentTask(task: Partial<AgentTask>): AgentTask
 ```typescript
 const task = normalizeAgentTask({
   agentId: 'journalist-researcher',
-  input: { topic: 'AI' }
+  input: { topic: 'AI' },
 });
 // Returns: { taskId: '<uuid>', agentId: '...', input: {...}, context: {} }
 ```
@@ -617,7 +626,7 @@ Calculates estimated execution time based on agent durations and dependencies.
 function estimatePlaybookDuration(
   playbook: PlaybookTemplate,
   agents: AgentDefinition[]
-): string
+): string;
 ```
 
 **Returns**: Human-readable estimate (e.g., "15-25 minutes")
@@ -651,7 +660,7 @@ At execution, runtime variables are provided:
 ```typescript
 const execution = executePlaybook(playbook, {
   topic: 'enterprise AI',
-  contentUrl: 'https://example.com/blog/post'
+  contentUrl: 'https://example.com/blog/post',
 });
 ```
 
@@ -671,6 +680,7 @@ Nodes can reference outputs from previous nodes:
 ```
 
 The runtime:
+
 1. Waits for `research-journalists` to complete
 2. Extracts `output.journalists` from its result
 3. Injects it into `generate-pitches` input
@@ -729,7 +739,7 @@ async function executeJournalistResearcher(
   const llmResponse = await openai.chat.completions.create({
     model: definition.modelConfig.model,
     messages: [{ role: 'system', content: prompt }],
-    temperature: definition.modelConfig.temperature
+    temperature: definition.modelConfig.temperature,
   });
 
   // 3. Parse and validate output
@@ -746,8 +756,8 @@ async function executeJournalistResearcher(
       endTime: new Date().toISOString(),
       durationMs: Date.now() - startTime.getTime(),
       tokensUsed: llmResponse.usage.total_tokens,
-      cost: calculateCost(llmResponse.usage)
-    }
+      cost: calculateCost(llmResponse.usage),
+    },
   };
 }
 ```
@@ -817,6 +827,7 @@ Nodes B and C execute in parallel after A completes.
 ### Caching
 
 Cache agent results for:
+
 - Identical inputs within same execution
 - Frequently requested data (journalist lists, keyword research)
 - Time-based TTL (e.g., SERP data valid for 24 hours)
@@ -824,6 +835,7 @@ Cache agent results for:
 ### Streaming Outputs
 
 For long-running agents:
+
 - Stream partial results as they become available
 - Update UI in real-time
 - Allow cancellation mid-execution
@@ -857,6 +869,7 @@ For long-running agents:
 ### Execution Metrics
 
 Track for each execution:
+
 - Total duration
 - Per-node duration
 - Token usage

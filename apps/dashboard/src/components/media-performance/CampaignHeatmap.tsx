@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-
 interface HeatmapDataPoint {
   date: Date;
   value: number; // mentions/activity
@@ -39,11 +38,17 @@ export function CampaignHeatmap({
 
     // Get date range
     const endDate = new Date();
-    const startDate = new Date(endDate.getTime() - weeks * 7 * 24 * 60 * 60 * 1000);
+    const startDate = new Date(
+      endDate.getTime() - weeks * 7 * 24 * 60 * 60 * 1000
+    );
 
     // Create all days in range
     const allDays: Date[] = [];
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    for (
+      let d = new Date(startDate);
+      d <= endDate;
+      d.setDate(d.getDate() + 1)
+    ) {
       allDays.push(new Date(d));
     }
 
@@ -119,13 +124,15 @@ export function CampaignHeatmap({
               {/* Day Labels */}
               <div className="flex gap-1 mb-1">
                 <div className="w-8" /> {/* Spacer for day labels */}
-                {Array.from({ length: Math.ceil(heatmapCells.length / 7) }).map((_, weekIdx) => (
-                  <div
-                    key={weekIdx}
-                    className="text-xs text-gray-500 text-center"
-                    style={{ width: cellSize }}
-                  />
-                ))}
+                {Array.from({ length: Math.ceil(heatmapCells.length / 7) }).map(
+                  (_, weekIdx) => (
+                    <div
+                      key={weekIdx}
+                      className="text-xs text-gray-500 text-center"
+                      style={{ width: cellSize }}
+                    />
+                  )
+                )}
               </div>
 
               {/* Heatmap Grid */}

@@ -7,7 +7,12 @@
 
 import React, { useState } from 'react';
 
-import { BillingPlan, formatCurrency, canDowngradeToPlan, OrgBillingSummaryEnriched } from '@/lib/billingApi';
+import {
+  BillingPlan,
+  formatCurrency,
+  canDowngradeToPlan,
+  OrgBillingSummaryEnriched,
+} from '@/lib/billingApi';
 
 import { PlanRecommendationBadge } from './PlanRecommendationBadge';
 
@@ -17,7 +22,9 @@ interface BillingPlanCardProps {
   isRecommended: boolean;
   currentSummary: OrgBillingSummaryEnriched;
   onUpgrade: (planSlug: string) => Promise<void>;
-  onDowngrade: (planSlug: string) => Promise<{ success: boolean; error?: string }>;
+  onDowngrade: (
+    planSlug: string
+  ) => Promise<{ success: boolean; error?: string }>;
   onContactSales?: () => void;
 }
 
@@ -28,7 +35,7 @@ export function BillingPlanCard({
   currentSummary,
   onUpgrade,
   onDowngrade,
-  onContactSales
+  onContactSales,
 }: BillingPlanCardProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -108,9 +115,11 @@ export function BillingPlanCard({
   };
 
   // Check if downgrade would be allowed
-  const downgradeCheck = !isCurrentPlan && plan.monthlyPriceCents < (currentSummary.plan?.monthlyPriceCents || 0)
-    ? canDowngradeToPlan(currentSummary, plan)
-    : { allowed: true };
+  const downgradeCheck =
+    !isCurrentPlan &&
+    plan.monthlyPriceCents < (currentSummary.plan?.monthlyPriceCents || 0)
+      ? canDowngradeToPlan(currentSummary, plan)
+      : { allowed: true };
 
   return (
     <div
@@ -118,8 +127,8 @@ export function BillingPlanCard({
         isCurrentPlan
           ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500'
           : isRecommended
-          ? 'border-blue-300 bg-blue-50/50'
-          : 'border-gray-200 bg-white hover:border-gray-300'
+            ? 'border-blue-300 bg-blue-50/50'
+            : 'border-gray-200 bg-white hover:border-gray-300'
       }`}
     >
       {/* Header */}
@@ -146,7 +155,9 @@ export function BillingPlanCard({
       <div className="mb-6">
         <div className="flex items-baseline">
           <span className="text-4xl font-bold text-gray-900">
-            {plan.monthlyPriceCents === 0 ? 'Free' : formatCurrency(plan.monthlyPriceCents)}
+            {plan.monthlyPriceCents === 0
+              ? 'Free'
+              : formatCurrency(plan.monthlyPriceCents)}
           </span>
           {plan.monthlyPriceCents > 0 && (
             <span className="ml-2 text-gray-500">/month</span>
@@ -156,29 +167,57 @@ export function BillingPlanCard({
 
       {/* Included Limits */}
       <div className="space-y-3 mb-6">
-        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Included</h4>
+        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+          Included
+        </h4>
         <div className="space-y-2">
           <div className="flex items-center text-sm">
-            <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            <svg
+              className="w-4 h-4 mr-2 text-green-500"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <span className="text-gray-700">
-              <strong>{plan.includedTokensMonthly.toLocaleString()}</strong> tokens/month
+              <strong>{plan.includedTokensMonthly.toLocaleString()}</strong>{' '}
+              tokens/month
             </span>
           </div>
 
           <div className="flex items-center text-sm">
-            <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            <svg
+              className="w-4 h-4 mr-2 text-green-500"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <span className="text-gray-700">
-              <strong>{plan.includedPlaybookRunsMonthly}</strong> playbook runs/month
+              <strong>{plan.includedPlaybookRunsMonthly}</strong> playbook
+              runs/month
             </span>
           </div>
 
           <div className="flex items-center text-sm">
-            <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            <svg
+              className="w-4 h-4 mr-2 text-green-500"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <span className="text-gray-700">
               <strong>{plan.includedSeats}</strong> seats
@@ -189,19 +228,24 @@ export function BillingPlanCard({
 
       {/* Overage Rates */}
       <div className="space-y-3 mb-6 pb-6 border-b border-gray-200">
-        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Overage Rates</h4>
+        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+          Overage Rates
+        </h4>
         <div className="space-y-1 text-xs text-gray-600">
-          <div>Tokens: {formatCurrency(plan.overageTokenPriceMilliCents / 1000)}/token</div>
-          <div>Runs: {formatCurrency(plan.overagePlaybookRunPriceCents)}/run</div>
+          <div>
+            Tokens: {formatCurrency(plan.overageTokenPriceMilliCents / 1000)}
+            /token
+          </div>
+          <div>
+            Runs: {formatCurrency(plan.overagePlaybookRunPriceCents)}/run
+          </div>
         </div>
       </div>
 
       {/* Downgrade Warning */}
       {!downgradeCheck.allowed && (
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-          <p className="text-xs text-yellow-800">
-            ⚠️ {downgradeCheck.reason}
-          </p>
+          <p className="text-xs text-yellow-800">⚠️ {downgradeCheck.reason}</p>
         </div>
       )}
 

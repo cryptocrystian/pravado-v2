@@ -30,12 +30,33 @@ export function EviScoreCard() {
   const direction = data?.direction ?? 'flat';
 
   // Color based on score: 70+ green, 40-69 amber, <40 red
-  const scoreColor = value >= 70 ? 'text-semantic-success' : value >= 40 ? 'text-amber-400' : 'text-semantic-danger';
-  const barColor = value >= 70 ? 'bg-semantic-success' : value >= 40 ? 'bg-amber-400' : 'bg-semantic-danger';
-  const deltaColor = direction === 'up' ? 'text-semantic-success' : direction === 'down' ? 'text-semantic-danger' : 'text-white/45';
-  const deltaArrow = direction === 'up' ? '\u2191' : direction === 'down' ? '\u2193' : '';
+  const scoreColor =
+    value >= 70
+      ? 'text-semantic-success'
+      : value >= 40
+        ? 'text-amber-400'
+        : 'text-semantic-danger';
+  const barColor =
+    value >= 70
+      ? 'bg-semantic-success'
+      : value >= 40
+        ? 'bg-amber-400'
+        : 'bg-semantic-danger';
+  const deltaColor =
+    direction === 'up'
+      ? 'text-semantic-success'
+      : direction === 'down'
+        ? 'text-semantic-danger'
+        : 'text-white/45';
+  const deltaArrow =
+    direction === 'up' ? '\u2191' : direction === 'down' ? '\u2193' : '';
 
-  const statusLabel = value >= 70 ? 'Good Standing' : value >= 40 ? 'Needs Attention' : 'Critical';
+  const statusLabel =
+    value >= 70
+      ? 'Good Standing'
+      : value >= 40
+        ? 'Needs Attention'
+        : 'Critical';
 
   // Sub-scores for the breakdown section
   const subScores = [
@@ -62,7 +83,9 @@ export function EviScoreCard() {
       {/* EVI Score block */}
       <div className="mt-4">
         <span className="text-xs text-white/45 block mb-1">EVI</span>
-        <span className={`text-4xl font-bold ${scoreColor}`}>{value.toFixed(1)}</span>
+        <span className={`text-4xl font-bold ${scoreColor}`}>
+          {value.toFixed(1)}
+        </span>
 
         {/* Score bar */}
         <div className="w-full h-1.5 rounded-full bg-white/8 mt-3">
@@ -76,7 +99,8 @@ export function EviScoreCard() {
         <div className="flex items-center justify-between mt-2">
           <span className={`text-xs ${scoreColor}`}>{statusLabel}</span>
           <span className={`text-xs ${deltaColor}`}>
-            {delta > 0 ? '+' : ''}{delta.toFixed(1)} pts this month {deltaArrow}
+            {delta > 0 ? '+' : ''}
+            {delta.toFixed(1)} pts this month {deltaArrow}
           </span>
         </div>
       </div>
@@ -92,7 +116,12 @@ export function EviScoreCard() {
 
       <div className="space-y-0">
         {subScores.map((sub) => {
-          const subColor = sub.score >= 60 ? 'text-semantic-success' : sub.score >= 30 ? 'text-amber-400' : 'text-semantic-danger';
+          const subColor =
+            sub.score >= 60
+              ? 'text-semantic-success'
+              : sub.score >= 30
+                ? 'text-amber-400'
+                : 'text-semantic-danger';
 
           return (
             <div

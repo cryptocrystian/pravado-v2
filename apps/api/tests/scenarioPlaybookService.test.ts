@@ -20,7 +20,9 @@ import type {
 const mockOrgId = 'org-test-123';
 const mockUserId = 'user-test-456';
 
-function createMockPlaybook(overrides: Partial<ScenarioPlaybook> = {}): ScenarioPlaybook {
+function createMockPlaybook(
+  overrides: Partial<ScenarioPlaybook> = {}
+): ScenarioPlaybook {
   return {
     id: 'playbook-1',
     orgId: mockOrgId,
@@ -39,7 +41,9 @@ function createMockPlaybook(overrides: Partial<ScenarioPlaybook> = {}): Scenario
   };
 }
 
-function createMockPlaybookStep(overrides: Partial<ScenarioPlaybookStep> = {}): ScenarioPlaybookStep {
+function createMockPlaybookStep(
+  overrides: Partial<ScenarioPlaybookStep> = {}
+): ScenarioPlaybookStep {
   return {
     id: 'step-1',
     playbookId: 'playbook-1',
@@ -103,7 +107,9 @@ function createMockRun(overrides: Partial<ScenarioRun> = {}): ScenarioRun {
   };
 }
 
-function createMockRunStep(overrides: Partial<ScenarioRunStep> = {}): ScenarioRunStep {
+function createMockRunStep(
+  overrides: Partial<ScenarioRunStep> = {}
+): ScenarioRunStep {
   return {
     id: 'run-step-1',
     runId: 'run-1',
@@ -198,7 +204,7 @@ describe('scenarioPlaybookService', () => {
           createMockPlaybookStep({ stepOrder: 2 }),
         ];
 
-        const orders = steps.map(s => s.stepOrder);
+        const orders = steps.map((s) => s.stepOrder);
         const isSequential = orders.every((o, i) => o === i);
 
         expect(isSequential).toBe(true);
@@ -217,10 +223,14 @@ describe('scenarioPlaybookService', () => {
         const playbook = createMockPlaybook();
         const steps = [
           createMockPlaybookStep({ playbookId: playbook.id }),
-          createMockPlaybookStep({ playbookId: playbook.id, id: 'step-2', stepOrder: 1 }),
+          createMockPlaybookStep({
+            playbookId: playbook.id,
+            id: 'step-2',
+            stepOrder: 1,
+          }),
         ];
 
-        expect(steps.every(s => s.playbookId === playbook.id)).toBe(true);
+        expect(steps.every((s) => s.playbookId === playbook.id)).toBe(true);
       });
     });
 
@@ -232,7 +242,9 @@ describe('scenarioPlaybookService', () => {
           createMockPlaybook({ id: 'pb-3', category: 'crisis_management' }),
         ];
 
-        const filtered = playbooks.filter(p => p.category === 'crisis_management');
+        const filtered = playbooks.filter(
+          (p) => p.category === 'crisis_management'
+        );
 
         expect(filtered).toHaveLength(2);
       });
@@ -244,7 +256,7 @@ describe('scenarioPlaybookService', () => {
           createMockPlaybook({ id: 'pb-3', isActive: true }),
         ];
 
-        const active = playbooks.filter(p => p.isActive);
+        const active = playbooks.filter((p) => p.isActive);
 
         expect(active).toHaveLength(2);
       });
@@ -328,7 +340,7 @@ describe('scenarioPlaybookService', () => {
           createMockScenario({ id: 's-3', scenarioType: 'crisis' }),
         ];
 
-        const crisisOnly = scenarios.filter(s => s.scenarioType === 'crisis');
+        const crisisOnly = scenarios.filter((s) => s.scenarioType === 'crisis');
 
         expect(crisisOnly).toHaveLength(2);
       });
@@ -340,7 +352,7 @@ describe('scenarioPlaybookService', () => {
           createMockScenario({ id: 's-3', status: 'completed' }),
         ];
 
-        const readyOnly = scenarios.filter(s => s.status === 'ready');
+        const readyOnly = scenarios.filter((s) => s.status === 'ready');
 
         expect(readyOnly).toHaveLength(1);
       });
@@ -353,7 +365,7 @@ describe('scenarioPlaybookService', () => {
         ];
 
         const searchTerm = 'crisis';
-        const matched = scenarios.filter(s =>
+        const matched = scenarios.filter((s) =>
           s.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
@@ -374,15 +386,34 @@ describe('scenarioPlaybookService', () => {
           confidenceScore: 0.85,
           projectedMetrics: {
             timeline: [
-              { day: 1, sentimentProjected: -0.2, coverageProjected: 5, riskLevel: 'high' },
-              { day: 7, sentimentProjected: 0.1, coverageProjected: 15, riskLevel: 'medium' },
+              {
+                day: 1,
+                sentimentProjected: -0.2,
+                coverageProjected: 5,
+                riskLevel: 'high',
+              },
+              {
+                day: 7,
+                sentimentProjected: 0.1,
+                coverageProjected: 15,
+                riskLevel: 'medium',
+              },
             ],
           },
           recommendations: [
-            { priority: 'high', action: 'Issue press release', rationale: 'Control narrative' },
+            {
+              priority: 'high',
+              action: 'Issue press release',
+              rationale: 'Control narrative',
+            },
           ],
           stepPreviews: [
-            { stepName: 'Assess', actionType: 'analyze_sentiment', riskLevel: 'medium', predictedOutcome: 'Data gathered' },
+            {
+              stepName: 'Assess',
+              actionType: 'analyze_sentiment',
+              riskLevel: 'medium',
+              predictedOutcome: 'Data gathered',
+            },
           ],
           narrativeSummary: 'Simulation indicates moderate recovery path.',
         };
@@ -395,8 +426,12 @@ describe('scenarioPlaybookService', () => {
       });
 
       it('should calculate risk score based on context', () => {
-        const highRiskScenario = createMockScenario({ baselineRiskLevel: 'critical' });
-        const lowRiskScenario = createMockScenario({ baselineRiskLevel: 'low' });
+        const highRiskScenario = createMockScenario({
+          baselineRiskLevel: 'critical',
+        });
+        const lowRiskScenario = createMockScenario({
+          baselineRiskLevel: 'low',
+        });
 
         // Risk scores should differ based on baseline
         expect(highRiskScenario.baselineRiskLevel).toBe('critical');
@@ -406,11 +441,19 @@ describe('scenarioPlaybookService', () => {
       it('should generate step previews for all playbook steps', () => {
         const steps = [
           createMockPlaybookStep({ stepOrder: 0, name: 'Step 1' }),
-          createMockPlaybookStep({ stepOrder: 1, name: 'Step 2', id: 'step-2' }),
-          createMockPlaybookStep({ stepOrder: 2, name: 'Step 3', id: 'step-3' }),
+          createMockPlaybookStep({
+            stepOrder: 1,
+            name: 'Step 2',
+            id: 'step-2',
+          }),
+          createMockPlaybookStep({
+            stepOrder: 2,
+            name: 'Step 3',
+            id: 'step-3',
+          }),
         ];
 
-        const previews = steps.map(step => ({
+        const previews = steps.map((step) => ({
           stepName: step.name,
           actionType: step.actionType,
           riskLevel: 'medium' as const,
@@ -422,16 +465,38 @@ describe('scenarioPlaybookService', () => {
 
       it('should provide timeline projections', () => {
         const timeline = [
-          { day: 1, sentimentProjected: -0.5, coverageProjected: 0, riskLevel: 'high' as const },
-          { day: 3, sentimentProjected: -0.3, coverageProjected: 10, riskLevel: 'high' as const },
-          { day: 7, sentimentProjected: 0.0, coverageProjected: 25, riskLevel: 'medium' as const },
-          { day: 14, sentimentProjected: 0.2, coverageProjected: 40, riskLevel: 'low' as const },
+          {
+            day: 1,
+            sentimentProjected: -0.5,
+            coverageProjected: 0,
+            riskLevel: 'high' as const,
+          },
+          {
+            day: 3,
+            sentimentProjected: -0.3,
+            coverageProjected: 10,
+            riskLevel: 'high' as const,
+          },
+          {
+            day: 7,
+            sentimentProjected: 0.0,
+            coverageProjected: 25,
+            riskLevel: 'medium' as const,
+          },
+          {
+            day: 14,
+            sentimentProjected: 0.2,
+            coverageProjected: 40,
+            riskLevel: 'low' as const,
+          },
         ];
 
         expect(timeline[0].riskLevel).toBe('high');
         expect(timeline[timeline.length - 1].riskLevel).toBe('low');
         // Sentiment should improve over time
-        expect(timeline[timeline.length - 1].sentimentProjected).toBeGreaterThan(timeline[0].sentimentProjected);
+        expect(
+          timeline[timeline.length - 1].sentimentProjected
+        ).toBeGreaterThan(timeline[0].sentimentProjected);
       });
     });
   });
@@ -480,7 +545,7 @@ describe('scenarioPlaybookService', () => {
       it('should set first step to awaiting_approval if approval required', () => {
         const step = createMockPlaybookStep({
           requiresApproval: true,
-          approvalRoles: ['PR Manager']
+          approvalRoles: ['PR Manager'],
         });
 
         expect(step.requiresApproval).toBe(true);
@@ -545,7 +610,7 @@ describe('scenarioPlaybookService', () => {
       it('should record cancellation reason', () => {
         const run = createMockRun({
           status: 'cancelled',
-          errorMessage: 'Cancelled by user: Priority changed'
+          errorMessage: 'Cancelled by user: Priority changed',
         });
 
         expect(run.errorMessage).toContain('Cancelled by user');
@@ -558,7 +623,7 @@ describe('scenarioPlaybookService', () => {
           createMockRunStep({ id: 'rs-3', status: 'pending' }),
         ];
 
-        const pendingSteps = steps.filter(s => s.status === 'pending');
+        const pendingSteps = steps.filter((s) => s.status === 'pending');
 
         expect(pendingSteps).toHaveLength(1);
         // All pending steps should be cancelled
@@ -679,7 +744,7 @@ describe('scenarioPlaybookService', () => {
           createMockRun({ id: 'run-3', scenarioId: 'scenario-1' }),
         ];
 
-        const filtered = runs.filter(r => r.scenarioId === 'scenario-1');
+        const filtered = runs.filter((r) => r.scenarioId === 'scenario-1');
 
         expect(filtered).toHaveLength(2);
       });
@@ -692,7 +757,7 @@ describe('scenarioPlaybookService', () => {
           createMockRun({ id: 'run-4', status: 'failed' }),
         ];
 
-        const running = runs.filter(r => r.status === 'running');
+        const running = runs.filter((r) => r.status === 'running');
 
         expect(running).toHaveLength(2);
       });
@@ -704,8 +769,9 @@ describe('scenarioPlaybookService', () => {
           createMockRun({ id: 'run-3', startedAt: '2024-01-02T10:00:00Z' }),
         ];
 
-        const sorted = [...runs].sort((a, b) =>
-          new Date(b.startedAt!).getTime() - new Date(a.startedAt!).getTime()
+        const sorted = [...runs].sort(
+          (a, b) =>
+            new Date(b.startedAt!).getTime() - new Date(a.startedAt!).getTime()
         );
 
         expect(sorted[0].id).toBe('run-2');
@@ -746,7 +812,7 @@ describe('scenarioPlaybookService', () => {
         ];
 
         const totalPlaybooks = playbooks.length;
-        const activePlaybooks = playbooks.filter(p => p.isActive).length;
+        const activePlaybooks = playbooks.filter((p) => p.isActive).length;
 
         expect(totalPlaybooks).toBe(3);
         expect(activePlaybooks).toBe(2);
@@ -761,9 +827,11 @@ describe('scenarioPlaybookService', () => {
           createMockScenario({ id: 's-5', status: 'draft' }),
         ];
 
-        const draftCount = scenarios.filter(s => s.status === 'draft').length;
-        const readyCount = scenarios.filter(s => s.status === 'ready').length;
-        const inProgressCount = scenarios.filter(s => s.status === 'in_progress').length;
+        const draftCount = scenarios.filter((s) => s.status === 'draft').length;
+        const readyCount = scenarios.filter((s) => s.status === 'ready').length;
+        const inProgressCount = scenarios.filter(
+          (s) => s.status === 'in_progress'
+        ).length;
 
         expect(draftCount).toBe(2);
         expect(readyCount).toBe(1);
@@ -779,9 +847,11 @@ describe('scenarioPlaybookService', () => {
           createMockRun({ id: 'r-5', status: 'paused' }),
         ];
 
-        const runningCount = runs.filter(r => r.status === 'running').length;
-        const completedCount = runs.filter(r => r.status === 'completed').length;
-        const failedCount = runs.filter(r => r.status === 'failed').length;
+        const runningCount = runs.filter((r) => r.status === 'running').length;
+        const completedCount = runs.filter(
+          (r) => r.status === 'completed'
+        ).length;
+        const failedCount = runs.filter((r) => r.status === 'failed').length;
 
         expect(runningCount).toBe(1);
         expect(completedCount).toBe(2);
@@ -805,10 +875,13 @@ describe('scenarioPlaybookService', () => {
           createMockScenario({ id: 's-4', scenarioType: 'monitoring' }),
         ];
 
-        const byType = scenarios.reduce((acc, s) => {
-          acc[s.scenarioType] = (acc[s.scenarioType] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
+        const byType = scenarios.reduce(
+          (acc, s) => {
+            acc[s.scenarioType] = (acc[s.scenarioType] || 0) + 1;
+            return acc;
+          },
+          {} as Record<string, number>
+        );
 
         expect(byType.crisis).toBe(2);
         expect(byType.opportunity).toBe(1);
@@ -906,12 +979,20 @@ describe('scenarioPlaybookService', () => {
 
     it('should handle concurrent runs on same scenario', () => {
       const runs = [
-        createMockRun({ id: 'run-1', scenarioId: 'scenario-1', status: 'running' }),
-        createMockRun({ id: 'run-2', scenarioId: 'scenario-1', status: 'running' }),
+        createMockRun({
+          id: 'run-1',
+          scenarioId: 'scenario-1',
+          status: 'running',
+        }),
+        createMockRun({
+          id: 'run-2',
+          scenarioId: 'scenario-1',
+          status: 'running',
+        }),
       ];
 
       const runningForScenario = runs.filter(
-        r => r.scenarioId === 'scenario-1' && r.status === 'running'
+        (r) => r.scenarioId === 'scenario-1' && r.status === 'running'
       );
 
       expect(runningForScenario).toHaveLength(2);

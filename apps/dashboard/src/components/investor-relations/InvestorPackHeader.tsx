@@ -41,7 +41,6 @@ import {
 } from '@/lib/investorRelationsApi';
 import { cn } from '@/lib/utils';
 
-
 interface InvestorPackHeaderProps {
   pack: InvestorPack;
   isGenerating?: boolean;
@@ -94,7 +93,9 @@ export function InvestorPackHeader({
             {pack.fiscalQuarter && (
               <>
                 <span>|</span>
-                <span>{formatFiscalQuarter(pack.fiscalQuarter, pack.fiscalYear)}</span>
+                <span>
+                  {formatFiscalQuarter(pack.fiscalQuarter, pack.fiscalYear)}
+                </span>
               </>
             )}
           </div>
@@ -136,11 +137,7 @@ export function InvestorPackHeader({
           )}
 
           {canPublish && (
-            <Button
-              size="sm"
-              onClick={onPublish}
-              disabled={isPublishing}
-            >
+            <Button size="sm" onClick={onPublish} disabled={isPublishing}>
               {isPublishing ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (

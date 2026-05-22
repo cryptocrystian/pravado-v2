@@ -22,7 +22,9 @@ export interface CiteMindScoringPayload {
  * Process a CiteMind scoring job.
  * Called by BullMQ worker when a job arrives on the 'citemind:score' queue.
  */
-export async function processCiteMindScore(payload: CiteMindScoringPayload): Promise<void> {
+export async function processCiteMindScore(
+  payload: CiteMindScoringPayload
+): Promise<void> {
   const { contentItemId, orgId } = payload;
   logger.info(`Scoring content ${contentItemId} for org ${orgId}`);
 
@@ -32,7 +34,7 @@ export async function processCiteMindScore(payload: CiteMindScoringPayload): Pro
     const result = await scoreAndPersist(supabase, contentItemId, orgId);
     logger.info(
       `CiteMind score complete for ${contentItemId}: ` +
-      `overall=${result.overall_score}, gate=${result.gate_status}`
+        `overall=${result.overall_score}, gate=${result.gate_status}`
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

@@ -6,12 +6,12 @@
 
 ## Quick Reference
 
-| Setting | Value |
-|---------|-------|
-| Production Site URL | `https://pravado-dashboard.vercel.app` |
-| Callback URL | `https://pravado-dashboard.vercel.app/callback` |
-| Sender Name | `Pravado` |
-| Sender Email | `noreply@pravado.io` (or your verified domain) |
+| Setting             | Value                                           |
+| ------------------- | ----------------------------------------------- |
+| Production Site URL | `https://pravado-dashboard.vercel.app`          |
+| Callback URL        | `https://pravado-dashboard.vercel.app/callback` |
+| Sender Name         | `Pravado`                                       |
+| Sender Email        | `noreply@pravado.io` (or your verified domain)  |
 
 ---
 
@@ -115,10 +115,10 @@
 
 Ensure these are set in your Vercel dashboard:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | `https://xxx.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | `eyJhbGciOiJ...` |
+| Variable                        | Description            | Example                   |
+| ------------------------------- | ---------------------- | ------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL   | `https://xxx.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | `eyJhbGciOiJ...`          |
 
 **Note**: The anon key is safe to expose client-side. Never expose the service role key.
 
@@ -162,11 +162,13 @@ After configuration, test each auth flow:
 ## Troubleshooting
 
 ### "Email link is invalid or has expired"
+
 - Check that your Site URL matches the production domain exactly
 - Ensure redirect URLs include the `/callback` path
 - Verify email templates use `{{ .ConfirmationURL }}` (not hardcoded URLs)
 
 ### OAuth redirect errors
+
 - Ensure callback URLs in provider settings match:
   ```
   https://<your-project-ref>.supabase.co/auth/v1/callback
@@ -175,11 +177,13 @@ After configuration, test each auth flow:
 - Verify the provider is enabled in Supabase dashboard
 
 ### Users not redirecting after auth
+
 - Check that `redirectTo` in the code points to production URL
 - Verify the callback page exists at `/callback`
 - Check browser console for any JavaScript errors
 
 ### Emails not sending
+
 - If using Supabase's built-in email, check rate limits
 - For custom SMTP, verify credentials are correct
 - Check spam folder for test emails

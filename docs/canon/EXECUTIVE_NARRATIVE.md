@@ -47,31 +47,34 @@ Pravado is not another point solution to add to your stack. It is a **Visibility
 
 The distinction matters:
 
-| Point Tools | Pravado |
-|-------------|---------|
-| Operate in silos | Unified data model |
-| Report separate metrics | Single North Star (EVI) |
+| Point Tools                 | Pravado                        |
+| --------------------------- | ------------------------------ |
+| Operate in silos            | Unified data model             |
+| Report separate metrics     | Single North Star (EVI)        |
 | Require manual coordination | Automatic cross-domain routing |
-| React to what happened | Propose what should happen |
-| Execute blindly | Execute with governance |
+| React to what happened      | Propose what should happen     |
+| Execute blindly             | Execute with governance        |
 
 ### The Three Pillars, Unified
 
 Pravado integrates three marketing domains that have traditionally operated in isolation:
 
 **PR Intelligence**
+
 - Media relationship management
 - Journalist trend detection
 - Coverage tracking and attribution
 - Crisis signal monitoring
 
 **Content Hub**
+
 - Strategic content planning
 - Brief generation and workflow
 - Quality scoring and optimization
 - Publishing orchestration
 
 **SEO Command**
+
 - Technical health monitoring
 - Keyword and topic tracking
 - AI ingestibility optimization
@@ -97,11 +100,13 @@ SAGE (Signal-Authority-Growth-Exposure) is the intelligence layer that makes Pra
 SAGE solves the "what should we do next?" problem that plagues marketing leadership.
 
 Without SAGE:
+
 - Priorities are set by the loudest voice or latest fire
 - Cross-pillar effects are invisible and often counterproductive
 - Strategy is reactive, responding to competitor moves after the fact
 
 With SAGE:
+
 - Priorities are calculated based on opportunity size, confidence, and cross-pillar impact
 - Every proposed action shows its expected effect across all domains
 - Strategy is proactive, identifying opportunities before competitors act
@@ -129,6 +134,7 @@ The **Earned Visibility Index (EVI)** is Pravado's answer to metric proliferatio
 > "How visible is this brand in the places where decisions are made?"
 
 EVI synthesizes three drivers:
+
 - **Visibility (40%)**: Where you appear—AI citations, search rankings, press coverage
 - **Authority (35%)**: Why you're trusted—citation quality, domain strength, structured data
 - **Momentum (25%)**: Where you're heading—velocity relative to competitors
@@ -145,11 +151,13 @@ EVI specifically measures **earned** visibility—presence that cannot be direct
 ### What EVI Replaces
 
 Before EVI, executives asked questions that required assembly:
+
 - "How are we doing on SEO?" (separate SEO tool)
 - "How's our media coverage?" (separate PR tool)
 - "Are we showing up in AI answers?" (often not tracked at all)
 
 With EVI, the question becomes:
+
 - "What's our EVI?" (single number)
 - "What's driving it?" (three expandable drivers)
 - "What will move it?" (connected action proposals)
@@ -171,16 +179,19 @@ The reality: most automation is dumb automation. It executes rules without under
 Common failure modes:
 
 **1. Automation That Creates Noise**
+
 - Auto-posting without strategic timing
 - Auto-outreach without relevance matching
 - Auto-optimization without quality gates
 
 **2. Automation That Misses Context**
+
 - Acting on signals that expired
 - Ignoring cross-pillar dependencies
 - Missing crisis indicators
 
 **3. Automation That Can't Explain Itself**
+
 - "It ran because it was scheduled"
 - "It used the default template"
 - "It matched a keyword"
@@ -189,13 +200,13 @@ Common failure modes:
 
 Pravado's CRAFT layer is not just automation—it is **execution governance**. The difference:
 
-| Dumb Automation | CRAFT |
-|-----------------|----------|
-| Binary: on/off | Graduated: Manual → Copilot → Autopilot |
-| Executes on schedule | Executes on confidence and risk assessment |
-| No guardrails | Plan-tier limits, cost caps, approval chains |
-| No trace | Full audit trail with causal attribution |
-| All or nothing | Progressive trust based on track record |
+| Dumb Automation      | CRAFT                                        |
+| -------------------- | -------------------------------------------- |
+| Binary: on/off       | Graduated: Manual → Copilot → Autopilot      |
+| Executes on schedule | Executes on confidence and risk assessment   |
+| No guardrails        | Plan-tier limits, cost caps, approval chains |
+| No trace             | Full audit trail with causal attribution     |
+| All or nothing       | Progressive trust based on track record      |
 
 ### The Trust Ladder
 
@@ -253,21 +264,25 @@ Operating systems enable applications that couldn't exist otherwise:
 Pravado's competitive moat has multiple layers:
 
 **1. Data Moat**
+
 - Unified cross-domain data creates insights impossible in fragmented systems
 - Each customer deployment expands pattern recognition
 - Network effects as industry benchmarks emerge
 
 **2. Intelligence Moat**
+
 - SAGE operating model is patentable
 - EVI calculation methodology is trade secret
 - Reinforcement coefficients are empirically derived and proprietary
 
 **3. Integration Moat**
+
 - Deep workflow integration increases switching costs
 - Cross-pillar automation creates dependency
 - Historical data and pattern learning are non-portable
 
 **4. Trust Moat**
+
 - Earned automation authority takes time to build
 - Competitors would start at zero trust
 - Incumbent advantage compounds
@@ -332,4 +347,4 @@ The result: marketing leaders who see what's happening, understand what it means
 
 ---
 
-*For questions about this narrative or requests for customized versions, contact [strategic-communications@pravado.com].*
+_For questions about this narrative or requests for customized versions, contact [strategic-communications@pravado.com]._

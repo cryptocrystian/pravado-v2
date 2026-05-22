@@ -64,6 +64,7 @@ Build a system-wide audit logging infrastructure to capture all critical events 
 **File:** `apps/api/src/services/auditService.ts`
 
 Core service with:
+
 - `logEvent()` - Synchronous logging with result
 - `logEventAsync()` - Fire-and-forget logging
 - `queryAuditLog()` - Filtered, paginated queries
@@ -73,6 +74,7 @@ Core service with:
 - `getEventCategories()` - Category listing
 
 Utilities:
+
 - `createScopedAuditLogger()` - Scoped logger factory
 - `createAuditContext()` - Context builder helper
 - Singleton pattern for application-wide access
@@ -82,12 +84,14 @@ Utilities:
 **File:** `apps/api/src/routes/audit/index.ts`
 
 Endpoints:
+
 - `GET /api/v1/audit` - List audit logs with filters
 - `GET /api/v1/audit/events` - List event types and categories
 - `GET /api/v1/audit/stats` - Get audit statistics
 - `GET /api/v1/audit/:id` - Get single audit entry
 
 Features:
+
 - Query parameter validation
 - Multi-value filter support (comma-separated)
 - Cursor-based pagination
@@ -103,6 +107,7 @@ Features:
 - `getAuditStats()` - Get statistics
 
 Helper functions:
+
 - `formatRelativeTime()` - Human-readable timestamps
 - `getSeverityColor()` - Severity-based coloring
 - `getCategoryIcon()` - Category icons
@@ -114,6 +119,7 @@ Helper functions:
 **File:** `apps/dashboard/src/app/app/audit/page.tsx`
 
 Features:
+
 - Statistics cards (total events, errors, warnings, critical)
 - Filterable audit log table
 - Search functionality
@@ -141,6 +147,7 @@ Added `ENABLE_AUDIT_LOGGING: true` flag for controlling the feature.
 **File:** `apps/api/tests/auditService.test.ts`
 
 Test coverage:
+
 - `logEvent()` - Success, default severity, error handling
 - `logEventAsync()` - Fire-and-forget behavior
 - `queryAuditLog()` - Filters, pagination, search
@@ -155,6 +162,7 @@ Test coverage:
 **File:** `docs/product/audit_logging_v1.md`
 
 Comprehensive documentation covering:
+
 - System overview and features
 - Architecture and schema design
 - Event type taxonomy
@@ -167,18 +175,18 @@ Comprehensive documentation covering:
 
 The audit system captures 50+ event types across 10 categories:
 
-| Category | Events |
-|----------|--------|
-| auth | 5 events (login, logout, password_reset, etc.) |
-| user | 5 events (invite_sent, role_changed, etc.) |
-| billing | 16 events (plan changes, payments, overages, etc.) |
-| llm | 6 events (calls, failures, rate limits, etc.) |
-| playbook | 10 events (execution lifecycle, retries, etc.) |
-| pr | 6 events (list management, contacts, etc.) |
-| seo | 4 events (audits, analysis, opportunities) |
-| content | 6 events (CRUD, briefs, quality, etc.) |
-| system | 5 events (migrations, backups, maintenance) |
-| admin | 5 events (impersonation, config, exports) |
+| Category | Events                                             |
+| -------- | -------------------------------------------------- |
+| auth     | 5 events (login, logout, password_reset, etc.)     |
+| user     | 5 events (invite_sent, role_changed, etc.)         |
+| billing  | 16 events (plan changes, payments, overages, etc.) |
+| llm      | 6 events (calls, failures, rate limits, etc.)      |
+| playbook | 10 events (execution lifecycle, retries, etc.)     |
+| pr       | 6 events (list management, contacts, etc.)         |
+| seo      | 4 events (audits, analysis, opportunities)         |
+| content  | 6 events (CRUD, briefs, quality, etc.)             |
+| system   | 5 events (migrations, backups, maintenance)        |
+| admin    | 5 events (impersonation, config, exports)          |
 
 ## Technical Highlights
 
@@ -194,6 +202,7 @@ The audit system captures 50+ event types across 10 categories:
 ## Files Created/Modified
 
 ### New Files
+
 - `apps/api/supabase/migrations/40_create_audit_log.sql`
 - `packages/types/src/audit.ts`
 - `packages/validators/src/audit.ts`
@@ -205,6 +214,7 @@ The audit system captures 50+ event types across 10 categories:
 - `docs/product/audit_logging_v1.md`
 
 ### Modified Files
+
 - `packages/types/src/index.ts` - Added audit export
 - `packages/validators/src/index.ts` - Added audit export
 - `packages/feature-flags/src/flags.ts` - Added ENABLE_AUDIT_LOGGING

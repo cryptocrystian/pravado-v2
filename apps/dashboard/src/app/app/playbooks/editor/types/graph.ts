@@ -127,7 +127,11 @@ export interface ApiNodeConfig {
 /**
  * Union type for all node configs
  */
-export type NodeConfig = AgentNodeConfig | DataNodeConfig | BranchNodeConfig | ApiNodeConfig;
+export type NodeConfig =
+  | AgentNodeConfig
+  | DataNodeConfig
+  | BranchNodeConfig
+  | ApiNodeConfig;
 
 /**
  * Editor state

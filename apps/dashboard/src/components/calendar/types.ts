@@ -7,7 +7,12 @@
  * @see /docs/canon/ORCHESTRATION_CALENDAR_CONTRACT.md
  */
 
-export type { CalendarItem, CalendarStatus, CalendarItemDetails, CalendarItemLinked } from '../command-center/types';
+export type {
+  CalendarItem,
+  CalendarStatus,
+  CalendarItemDetails,
+  CalendarItemLinked,
+} from '../command-center/types';
 export type { Pillar, Mode } from '../command-center/types';
 
 export type CalendarViewMode = 'day' | 'week' | 'month';
@@ -35,14 +40,16 @@ export const STATUS_CONFIG: Record<string, StatusConfig> = {
   },
   drafting: {
     label: 'Drafting',
-    indicatorClass: 'bg-brand-iris animate-pulse shadow-[0_0_6px_rgba(168,85,247,0.5)]',
+    indicatorClass:
+      'bg-brand-iris animate-pulse shadow-[0_0_6px_rgba(168,85,247,0.5)]',
     badgeClass: 'bg-brand-iris/10 text-brand-iris border-brand-iris/30',
     urgent: false,
   },
   awaiting_approval: {
     label: 'Awaiting Approval',
     indicatorClass: 'bg-semantic-warning shadow-[0_0_6px_rgba(234,179,8,0.5)]',
-    badgeClass: 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
+    badgeClass:
+      'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
     urgent: true,
   },
   scheduled: {
@@ -54,13 +61,15 @@ export const STATUS_CONFIG: Record<string, StatusConfig> = {
   published: {
     label: 'Published',
     indicatorClass: 'bg-semantic-success',
-    badgeClass: 'bg-semantic-success/10 text-semantic-success border-semantic-success/20',
+    badgeClass:
+      'bg-semantic-success/10 text-semantic-success border-semantic-success/20',
     urgent: false,
   },
   failed: {
     label: 'Failed',
     indicatorClass: 'bg-semantic-danger',
-    badgeClass: 'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
+    badgeClass:
+      'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
     urgent: true,
   },
 };
@@ -85,7 +94,8 @@ export const MODE_CONFIG: Record<string, ModeConfig> = {
   },
   autopilot: {
     label: 'Auto',
-    badgeClass: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30 shadow-[0_0_8px_rgba(0,217,255,0.15)]',
+    badgeClass:
+      'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30 shadow-[0_0_8px_rgba(0,217,255,0.15)]',
   },
 };
 
@@ -102,7 +112,8 @@ export interface PillarConfig {
 export const PILLAR_CONFIG: Record<string, PillarConfig> = {
   pr: {
     label: 'PR',
-    badgeClass: 'bg-brand-magenta/10 text-brand-magenta border-brand-magenta/30',
+    badgeClass:
+      'bg-brand-magenta/10 text-brand-magenta border-brand-magenta/30',
     dotClass: 'bg-brand-magenta',
   },
   content: {
@@ -121,11 +132,18 @@ export const PILLAR_CONFIG: Record<string, PillarConfig> = {
 // RISK VISUAL CONFIG (§7.1)
 // ============================================
 
-export const RISK_CONFIG: Record<string, { label: string; dotClass: string }> = {
-  low: { label: 'Low', dotClass: '' },
-  med: { label: 'Medium', dotClass: 'bg-semantic-warning shadow-[0_0_4px_rgba(234,179,8,0.4)]' },
-  high: { label: 'High', dotClass: 'bg-semantic-danger shadow-[0_0_4px_rgba(239,68,68,0.4)]' },
-};
+export const RISK_CONFIG: Record<string, { label: string; dotClass: string }> =
+  {
+    low: { label: 'Low', dotClass: '' },
+    med: {
+      label: 'Medium',
+      dotClass: 'bg-semantic-warning shadow-[0_0_4px_rgba(234,179,8,0.4)]',
+    },
+    high: {
+      label: 'High',
+      dotClass: 'bg-semantic-danger shadow-[0_0_4px_rgba(239,68,68,0.4)]',
+    },
+  };
 
 // ============================================
 // TIME GROUP CONFIG (Day view §9.1)

@@ -1,4 +1,5 @@
 # PR WIRING SPRINT — CLAUDE CODE HANDOFF BRIEF
+
 **Date:** 2026-02-26
 **Sprint Goal:** Wire the PR pillar frontend to real API/database data. Replace all mock data imports with live API calls. No UI redesign — preserve existing component structure exactly.
 
@@ -15,12 +16,14 @@ The PR pillar frontend is fully built with mock data. The backend is also fully 
 ## WHAT EXISTS (DO NOT CHANGE)
 
 ### Frontend pages (all currently use mock data):
+
 - `apps/dashboard/src/app/app/pr/journalists/page.tsx` — imports `mockJournalists`, `mockSageJournalists`
 - `apps/dashboard/src/app/app/pr/pitches/page.tsx` — imports `mockPitches`
 - `apps/dashboard/src/app/app/pr/coverage/page.tsx` — imports `mockCoverage`
 - `apps/dashboard/src/app/app/pr/page.tsx` — imports `mockActions`
 
 ### Backend (fully built, do not modify):
+
 - `apps/dashboard/src/app/api/pr/journalists/route.ts` — GET/POST, hits `journalist_profiles` table
 - `apps/dashboard/src/app/api/pr/journalists/[id]/route.ts` — GET/PATCH/DELETE
 - `apps/dashboard/src/app/api/pr/pitches/sequences/route.ts` — GET/POST
@@ -31,6 +34,7 @@ The PR pillar frontend is fully built with mock data. The backend is also fully 
 - `apps/dashboard/src/server/pr/prAuth.ts` — auth helpers
 
 ### Mock data file (keep it — SAGE tab still uses it):
+
 - `apps/dashboard/src/components/pr/pr-mock-data.ts`
 
 ---
@@ -40,16 +44,30 @@ The PR pillar frontend is fully built with mock data. The backend is also fully 
 The API returns `JournalistProfile` (from `prService.ts`). The UI components expect `Journalist` (from `pr-mock-data.ts`). These are different shapes. You need an adapter.
 
 **JournalistProfile (API shape):**
+
 ```typescript
 {
-  id, orgId, fullName, primaryEmail, secondaryEmails,
-  primaryOutlet, beat, twitterHandle, linkedinUrl,
-  engagementScore, responsivenessScore, relevanceScore,
-  lastActivityAt, metadata, createdAt, updatedAt
+  (id,
+    orgId,
+    fullName,
+    primaryEmail,
+    secondaryEmails,
+    primaryOutlet,
+    beat,
+    twitterHandle,
+    linkedinUrl,
+    engagementScore,
+    responsivenessScore,
+    relevanceScore,
+    lastActivityAt,
+    metadata,
+    createdAt,
+    updatedAt);
 }
 ```
 
 **Journalist (UI shape):**
+
 ```typescript
 {
   id, name, initials, email, publication, jobTitle,
@@ -99,13 +117,18 @@ This file needs:
 Replace the mock data import and static state with a live fetch.
 
 **Current:**
+
 ```typescript
-import { mockJournalists, mockSageJournalists } from '@/components/pr/pr-mock-data';
+import {
+  mockJournalists,
+  mockSageJournalists,
+} from '@/components/pr/pr-mock-data';
 // ...
 const [contacts, setContacts] = useState<Journalist[]>(mockJournalists);
 ```
 
 **Target behavior:**
+
 - On mount, fetch from API via `fetchJournalists()` from `prJournalistApi.ts`
 - Map results through `adaptProfileToJournalist()`
 - Show loading state while fetching (simple: dim the list, show a subtle spinner or skeleton — do not build a complex skeleton system)
@@ -117,6 +140,7 @@ const [contacts, setContacts] = useState<Journalist[]>(mockJournalists);
 - `selectedId` default: if API returns results, default to first result's id. If empty, null.
 
 **State shape needed:**
+
 ```typescript
 const [contacts, setContacts] = useState<Journalist[]>([]);
 const [isLoading, setIsLoading] = useState(true);
@@ -134,16 +158,30 @@ First read this file to understand its current structure.
 Replace mock pitch data with live sequence data from `/api/pr/pitches/sequences`.
 
 The API returns `PitchSequence[]` with shape:
+
 ```typescript
-{ id, orgId, userId, name, status, defaultSubject, defaultPreviewText, settings, createdAt, updatedAt }
+{
+  (id,
+    orgId,
+    userId,
+    name,
+    status,
+    defaultSubject,
+    defaultPreviewText,
+    settings,
+    createdAt,
+    updatedAt);
+}
 ```
 
 The UI `PitchItem` shape is:
+
 ```typescript
 { id, title, journalistName, publication, priority, aeoTarget, created, stage, beats? }
 ```
 
 **Adapter `adaptSequenceToPitchItem(seq: PitchSequence): PitchItem`:**
+
 - `title` ← `name`
 - `journalistName` ← `metadata.journalistName ?? 'Unassigned'`
 - `publication` ← `metadata.publication ?? '—'`
@@ -168,18 +206,20 @@ Coverage data lives in the `earned_mentions` table. There is likely no existing 
 **If route doesn't exist, create:** `apps/dashboard/src/app/api/pr/coverage/route.ts`
 
 Use the same auth pattern as the journalists route (`authenticatePRRequest`, `createPRService` pattern). Query:
+
 ```typescript
 this.client
   .from('earned_mentions')
   .select('*')
   .eq('org_id', this.orgId)
   .order('published_at', { ascending: false })
-  .limit(50)
+  .limit(50);
 ```
 
 Add a `listCoverage()` method to `PRService` if needed following the existing pattern.
 
 Map `earned_mentions` columns to `CoverageRow` UI type:
+
 - `id` ← `id`
 - `headline` ← `headline ?? title ?? 'Untitled'`
 - `publication` ← `outlet_name ?? source_domain ?? 'Unknown'`
@@ -203,6 +243,7 @@ Replace `mockActions` with live inbox items from `/api/pr/inbox`.
 The inbox API returns items shaped as `InboxItem[]` (defined in `prService.ts`). The UI expects `PRActionItem[]`.
 
 **Adapter `adaptInboxToPRAction(item: InboxItem): PRActionItem`:**
+
 - `id` ← `id`
 - `priority` ← `priority`
 - `iconName` ← map `type`: `'inquiry'→'EnvelopeOpen'`, `'follow_up_due'→'Bell'`, `'coverage_triage'→'Newspaper'`, `'relationship_decay'→'ChartBar'`, `'approval_queue'→'FileText'`, `'data_hygiene'→'Lightning'`
@@ -252,7 +293,9 @@ useEffect(() => {
   }
 
   load();
-  return () => { cancelled = true; };
+  return () => {
+    cancelled = true;
+  };
 }, []);
 ```
 

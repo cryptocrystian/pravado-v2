@@ -17,14 +17,19 @@ import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   getInsightCategoryColor,
   getInsightCategoryBgColor,
   updateInsight,
 } from '@/lib/competitorIntelligenceApi';
 import { cn } from '@/lib/utils';
-
 
 interface CompetitorInsightPanelProps {
   insight: CompetitorInsight;
@@ -101,7 +106,11 @@ export function CompetitorInsightPanel({
             <div>
               <Badge
                 variant="outline"
-                className={cn(categoryColor, 'border-0 capitalize', categoryBgColor)}
+                className={cn(
+                  categoryColor,
+                  'border-0 capitalize',
+                  categoryBgColor
+                )}
               >
                 {insight.category.replace('_', ' ')}
               </Badge>
@@ -133,22 +142,27 @@ export function CompetitorInsightPanel({
             {insight.recommendation && (
               <div className="rounded-md bg-muted p-3">
                 <p className="text-sm font-medium">Recommendation</p>
-                <p className="mt-1 text-sm text-white/50">{insight.recommendation}</p>
+                <p className="mt-1 text-sm text-white/50">
+                  {insight.recommendation}
+                </p>
               </div>
             )}
 
-            {insight.supportingMetrics && Object.keys(insight.supportingMetrics).length > 0 && (
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                {Object.entries(insight.supportingMetrics).map(([key, value]) => (
-                  <div key={key} className="rounded bg-muted/50 p-2">
-                    <span className="text-white/50 capitalize">
-                      {key.replace(/_/g, ' ')}:
-                    </span>{' '}
-                    <span className="font-medium">{String(value)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+            {insight.supportingMetrics &&
+              Object.keys(insight.supportingMetrics).length > 0 && (
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {Object.entries(insight.supportingMetrics).map(
+                    ([key, value]) => (
+                      <div key={key} className="rounded bg-muted/50 p-2">
+                        <span className="text-white/50 capitalize">
+                          {key.replace(/_/g, ' ')}:
+                        </span>{' '}
+                        <span className="font-medium">{String(value)}</span>
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
           </>
         )}
 
@@ -227,7 +241,9 @@ export function CompetitorInsightList({
     // Unread first, then by impact score
     if (!a.isRead && b.isRead) return -1;
     if (a.isRead && !b.isRead) return 1;
-    return (b.priorityScore || b.impactScore) - (a.priorityScore || a.impactScore);
+    return (
+      (b.priorityScore || b.impactScore) - (a.priorityScore || a.impactScore)
+    );
   });
 
   if (sortedInsights.length === 0) {

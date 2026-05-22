@@ -15,10 +15,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import {
-  buttonStyles,
-  glowEffects,
-} from '../prWorkSurfaceStyles';
+import { buttonStyles, glowEffects } from '../prWorkSurfaceStyles';
 import type { AutomationMode, AutomationCeiling, PRGuardrails } from '../types';
 
 // ============================================
@@ -47,16 +44,30 @@ function Toast({
   if (!isVisible) return null;
 
   const variantStyles = {
-    success: 'bg-semantic-success/15 border-semantic-success/30 text-semantic-success',
+    success:
+      'bg-semantic-success/15 border-semantic-success/30 text-semantic-success',
     info: 'bg-brand-cyan/15 border-brand-cyan/30 text-brand-cyan',
-    warning: 'bg-semantic-warning/15 border-semantic-warning/30 text-semantic-warning',
+    warning:
+      'bg-semantic-warning/15 border-semantic-warning/30 text-semantic-warning',
   };
 
   return (
     <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-4 fade-in duration-200">
-      <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-elev-3 ${variantStyles[variant]}`}>
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+      <div
+        className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-elev-3 ${variantStyles[variant]}`}
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
         </svg>
         <span className="text-sm font-medium">{message}</span>
         <button
@@ -64,8 +75,18 @@ function Toast({
           onClick={onClose}
           className="p-1 hover:bg-white/10 rounded transition-colors"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -145,33 +166,39 @@ interface CeilingGroup {
 const CEILING_GROUPS: CeilingGroup[] = [
   {
     title: 'Relationship Actions',
-    description: 'Actions that involve direct contact with journalists, influencers, or media.',
+    description:
+      'Actions that involve direct contact with journalists, influencers, or media.',
     isSystemEnforced: true,
-    systemReason: 'Relationship risk is too high for full automation. These ceilings protect your professional reputation and the quality of your media relationships.',
+    systemReason:
+      'Relationship risk is too high for full automation. These ceilings protect your professional reputation and the quality of your media relationships.',
     ceilings: [
       {
         action: 'send_pitch',
         modeCeiling: 'manual',
-        rationale: 'Each pitch represents your brand to a journalist. Automation risks damaging relationships.',
+        rationale:
+          'Each pitch represents your brand to a journalist. Automation risks damaging relationships.',
         overridable: false,
       },
       {
         action: 'send_followup',
         modeCeiling: 'copilot',
-        rationale: 'Copilot can draft follow-ups, but a human must review tone and timing.',
+        rationale:
+          'Copilot can draft follow-ups, but a human must review tone and timing.',
         overridable: false,
       },
       {
         action: 'citemind_audio',
         modeCeiling: 'manual',
-        rationale: 'V1 limitation: Audio content creation requires explicit human approval.',
+        rationale:
+          'V1 limitation: Audio content creation requires explicit human approval.',
         overridable: false,
       },
     ],
   },
   {
     title: 'Technical Optimization',
-    description: 'Backend SEO and indexing operations with no external relationship risk.',
+    description:
+      'Backend SEO and indexing operations with no external relationship risk.',
     isSystemEnforced: false,
     ceilings: [
       {
@@ -202,7 +229,8 @@ const CEILING_GROUPS: CeilingGroup[] = [
       {
         action: 'contact_enrichment',
         modeCeiling: 'copilot',
-        rationale: 'Data quality should be reviewed before updating contact records.',
+        rationale:
+          'Data quality should be reviewed before updating contact records.',
         overridable: true,
       },
     ],
@@ -224,7 +252,13 @@ const DEFAULT_GUARDRAILS: PRGuardrails = {
 // MODE BADGE COMPONENT
 // ============================================
 
-function ModeBadge({ mode, size = 'md' }: { mode: AutomationMode; size?: 'sm' | 'md' }) {
+function ModeBadge({
+  mode,
+  size = 'md',
+}: {
+  mode: AutomationMode;
+  size?: 'sm' | 'md';
+}) {
   const config = {
     manual: {
       bg: 'bg-semantic-danger/15',
@@ -254,7 +288,9 @@ function ModeBadge({ mode, size = 'md' }: { mode: AutomationMode; size?: 'sm' | 
 
   const { bg, text, border, icon, label, shortLabel } = config[mode];
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[13px] font-semibold rounded border ${bg} ${text} ${border}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[13px] font-semibold rounded border ${bg} ${text} ${border}`}
+    >
       <span>{icon}</span>
       <span>{size === 'sm' ? shortLabel : label}</span>
     </span>
@@ -270,13 +306,25 @@ function SystemEnforcedBanner({ reason }: { reason: string }) {
     <div className="p-4 rounded-xl bg-semantic-danger/5 border border-semantic-danger/30 mb-4">
       <div className="flex items-start gap-3">
         <div className="p-2 rounded-lg bg-semantic-danger/15">
-          <svg className="w-5 h-5 text-semantic-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <svg
+            className="w-5 h-5 text-semantic-danger"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
           </svg>
         </div>
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h4 className="text-sm font-semibold text-semantic-danger">SYSTEM ENFORCED</h4>
+            <h4 className="text-sm font-semibold text-semantic-danger">
+              SYSTEM ENFORCED
+            </h4>
             <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30">
               CANNOT OVERRIDE
             </span>
@@ -296,11 +344,25 @@ function ConfigurableBanner() {
   return (
     <div className="p-3 rounded-lg bg-semantic-success/10 border border-semantic-success/30 mb-4">
       <div className="flex items-center gap-2">
-        <svg className="w-4 h-4 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <svg
+          className="w-4 h-4 text-semantic-success"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
         </svg>
-        <span className="text-sm font-medium text-semantic-success">USER CONFIGURABLE</span>
-        <span className="text-xs text-white/55">You can adjust these ceilings based on your needs</span>
+        <span className="text-sm font-medium text-semantic-success">
+          USER CONFIGURABLE
+        </span>
+        <span className="text-xs text-white/55">
+          You can adjust these ceilings based on your needs
+        </span>
       </div>
     </div>
   );
@@ -314,11 +376,13 @@ function CeilingGroupPanel({ group }: { group: CeilingGroup }) {
   const [expanded, setExpanded] = useState(true);
 
   return (
-    <div className={`rounded-xl border overflow-hidden ${
-      group.isSystemEnforced
-        ? 'bg-gradient-to-br from-semantic-danger/5 to-transparent border-semantic-danger/20'
-        : 'bg-panel border-border-subtle'
-    }`}>
+    <div
+      className={`rounded-xl border overflow-hidden ${
+        group.isSystemEnforced
+          ? 'bg-gradient-to-br from-semantic-danger/5 to-transparent border-semantic-danger/20'
+          : 'bg-panel border-border-subtle'
+      }`}
+    >
       {/* Group Header */}
       <button
         type="button"
@@ -327,7 +391,9 @@ function CeilingGroupPanel({ group }: { group: CeilingGroup }) {
       >
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h4 className="text-base font-semibold text-white/95">{group.title}</h4>
+            <h4 className="text-base font-semibold text-white/95">
+              {group.title}
+            </h4>
             {group.isSystemEnforced && (
               <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30">
                 LOCKED
@@ -342,7 +408,12 @@ function CeilingGroupPanel({ group }: { group: CeilingGroup }) {
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -379,10 +450,22 @@ function CeilingGroupPanel({ group }: { group: CeilingGroup }) {
                       className="group/lock shrink-0 flex items-center gap-1.5 px-2 py-1 rounded bg-semantic-danger/10 border border-semantic-danger/20 cursor-help hover:bg-semantic-danger/15 hover:border-semantic-danger/30 transition-all duration-200"
                       title="This setting is system-enforced and cannot be changed"
                     >
-                      <svg className="w-3.5 h-3.5 text-semantic-danger group-hover/lock:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      <svg
+                        className="w-3.5 h-3.5 text-semantic-danger group-hover/lock:scale-110 transition-transform duration-200"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
                       </svg>
-                      <span className="text-[13px] font-medium text-semantic-danger">Locked</span>
+                      <span className="text-[13px] font-medium text-semantic-danger">
+                        Locked
+                      </span>
                     </div>
                   ) : (
                     <div className="shrink-0">
@@ -412,46 +495,71 @@ function CeilingGroupPanel({ group }: { group: CeilingGroup }) {
 
 function PhilosophyExplainer() {
   return (
-    <div className={`p-6 rounded-2xl bg-gradient-to-br from-brand-iris/10 to-brand-cyan/5 border border-brand-iris/20 ${glowEffects.content}`}>
+    <div
+      className={`p-6 rounded-2xl bg-gradient-to-br from-brand-iris/10 to-brand-cyan/5 border border-brand-iris/20 ${glowEffects.content}`}
+    >
       <div className="flex items-start gap-4">
         <div className="p-3 rounded-xl bg-brand-iris/15">
-          <svg className="w-6 h-6 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          <svg
+            className="w-6 h-6 text-brand-iris"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+            />
           </svg>
         </div>
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-white/95 mb-2">The PRAVADO Philosophy</h3>
+          <h3 className="text-lg font-semibold text-white/95 mb-2">
+            The PRAVADO Philosophy
+          </h3>
           <p className="text-sm text-white/55 mb-4">
-            PRAVADO uses a three-tier automation model: <strong className="text-white/90">Manual</strong>,{' '}
-            <strong className="text-white/90">Copilot</strong>, and <strong className="text-white/90">Autopilot</strong>.
-            Not all actions can reach all tiers — and that&apos;s by design.
+            PRAVADO uses a three-tier automation model:{' '}
+            <strong className="text-white/90">Manual</strong>,{' '}
+            <strong className="text-white/90">Copilot</strong>, and{' '}
+            <strong className="text-white/90">Autopilot</strong>. Not all
+            actions can reach all tiers — and that&apos;s by design.
           </p>
           <div className="grid grid-cols-3 gap-4">
             <div className="p-3 rounded-lg bg-slate-2 border border-border-subtle">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">🔒</span>
-                <span className="text-sm font-semibold text-semantic-danger">Manual</span>
+                <span className="text-sm font-semibold text-semantic-danger">
+                  Manual
+                </span>
               </div>
               <p className="text-xs text-white/55">
-                Human does the action. AI may provide context but takes no action.
+                Human does the action. AI may provide context but takes no
+                action.
               </p>
             </div>
             <div className="p-3 rounded-lg bg-slate-2 border border-border-subtle">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">🤝</span>
-                <span className="text-sm font-semibold text-brand-iris">Copilot</span>
+                <span className="text-sm font-semibold text-brand-iris">
+                  Copilot
+                </span>
               </div>
               <p className="text-xs text-white/55">
-                AI drafts, proposes, or prepares. Human reviews and approves before execution.
+                AI drafts, proposes, or prepares. Human reviews and approves
+                before execution.
               </p>
             </div>
             <div className="p-3 rounded-lg bg-slate-2 border border-border-subtle">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">🤖</span>
-                <span className="text-sm font-semibold text-semantic-success">Autopilot</span>
+                <span className="text-sm font-semibold text-semantic-success">
+                  Autopilot
+                </span>
               </div>
               <p className="text-xs text-white/55">
-                AI executes autonomously within defined parameters. Human monitors outcomes.
+                AI executes autonomously within defined parameters. Human
+                monitors outcomes.
               </p>
             </div>
           </div>
@@ -490,38 +598,56 @@ function GuardrailsPanel({
         {/* Personalization Minimum */}
         <div className="p-4 rounded-xl bg-panel border border-border-subtle">
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-white/90">Personalization Minimum</label>
-            <span className="text-sm font-mono text-brand-cyan">{guardrails.personalizationMinimum}%</span>
+            <label className="text-sm font-medium text-white/90">
+              Personalization Minimum
+            </label>
+            <span className="text-sm font-mono text-brand-cyan">
+              {guardrails.personalizationMinimum}%
+            </span>
           </div>
           <RangeSlider
             value={guardrails.personalizationMinimum}
             min={0}
             max={100}
-            onChange={(v) => onChange({ ...guardrails, personalizationMinimum: v })}
+            onChange={(v) =>
+              onChange({ ...guardrails, personalizationMinimum: v })
+            }
             accentColor="cyan"
           />
-          <p className="text-xs text-white/50 mt-3">Pitches below this score will show a warning before sending</p>
+          <p className="text-xs text-white/50 mt-3">
+            Pitches below this score will show a warning before sending
+          </p>
         </div>
 
         {/* Follow-up Limit */}
         <div className="p-4 rounded-xl bg-panel border border-border-subtle">
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-white/90">Weekly Follow-up Limit</label>
-            <span className="text-sm font-mono text-brand-cyan">{guardrails.followUpLimitPerWeek}</span>
+            <label className="text-sm font-medium text-white/90">
+              Weekly Follow-up Limit
+            </label>
+            <span className="text-sm font-mono text-brand-cyan">
+              {guardrails.followUpLimitPerWeek}
+            </span>
           </div>
           <RangeSlider
             value={guardrails.followUpLimitPerWeek}
             min={1}
             max={2} // Contract ceiling: PR_PITCH_PIPELINE_CONTRACT V1.1 §4.2
-            onChange={(v) => onChange({ ...guardrails, followUpLimitPerWeek: v })}
+            onChange={(v) =>
+              onChange({ ...guardrails, followUpLimitPerWeek: v })
+            }
             accentColor="cyan"
           />
-          <p className="text-[13px] text-white/50 mt-3">Maximum follow-ups per contact per week (contract ceiling: 2)</p>
+          <p className="text-[13px] text-white/50 mt-3">
+            Maximum follow-ups per contact per week (contract ceiling: 2)
+          </p>
         </div>
 
         {/* Daily Pitch Caps */}
         <div className="p-4 rounded-xl bg-panel border border-border-subtle md:col-span-2">
-          <label className="text-sm font-medium text-white/90 mb-3 block">Daily Pitch Caps by Relationship Stage</label>
+          <label className="text-sm font-medium text-white/90 mb-3 block">
+            Daily Pitch Caps by Relationship Stage
+          </label>
           <div className="grid grid-cols-3 gap-4">
             {(['cold', 'warm', 'engaged'] as const).map((stage) => {
               const colors = {
@@ -537,8 +663,14 @@ function GuardrailsPanel({
               return (
                 <div key={stage}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className={`text-xs font-medium capitalize ${colors[stage]}`}>{stage}</span>
-                    <span className="text-xs font-mono text-brand-cyan">{guardrails.dailyPitchCap[stage]}</span>
+                    <span
+                      className={`text-xs font-medium capitalize ${colors[stage]}`}
+                    >
+                      {stage}
+                    </span>
+                    <span className="text-xs font-mono text-brand-cyan">
+                      {guardrails.dailyPitchCap[stage]}
+                    </span>
                   </div>
                   <RangeSlider
                     value={guardrails.dailyPitchCap[stage]}
@@ -547,7 +679,10 @@ function GuardrailsPanel({
                     onChange={(v) =>
                       onChange({
                         ...guardrails,
-                        dailyPitchCap: { ...guardrails.dailyPitchCap, [stage]: v },
+                        dailyPitchCap: {
+                          ...guardrails.dailyPitchCap,
+                          [stage]: v,
+                        },
                       })
                     }
                     accentColor={accents[stage]}
@@ -556,24 +691,33 @@ function GuardrailsPanel({
               );
             })}
           </div>
-          <p className="text-xs text-white/50 mt-3">Maximum pitches per day for each relationship stage</p>
+          <p className="text-xs text-white/50 mt-3">
+            Maximum pitches per day for each relationship stage
+          </p>
         </div>
 
         {/* New Contact Rate Warning */}
         <div className="p-4 rounded-xl bg-panel border border-border-subtle md:col-span-2">
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-white/90">New Contact Rate Warning</label>
-            <span className="text-sm font-mono text-brand-cyan">{guardrails.newContactRateWarning}%</span>
+            <label className="text-sm font-medium text-white/90">
+              New Contact Rate Warning
+            </label>
+            <span className="text-sm font-mono text-brand-cyan">
+              {guardrails.newContactRateWarning}%
+            </span>
           </div>
           <RangeSlider
             value={guardrails.newContactRateWarning}
             min={5}
             max={50}
-            onChange={(v) => onChange({ ...guardrails, newContactRateWarning: v })}
+            onChange={(v) =>
+              onChange({ ...guardrails, newContactRateWarning: v })
+            }
             accentColor="cyan"
           />
           <p className="text-xs text-white/50 mt-3">
-            Show warning if more than this percentage of daily pitches go to new/cold contacts
+            Show warning if more than this percentage of daily pitches go to
+            new/cold contacts
           </p>
         </div>
       </div>
@@ -586,7 +730,8 @@ function GuardrailsPanel({
 // ============================================
 
 export function PRSettings() {
-  const [guardrails, setGuardrails] = useState<PRGuardrails>(DEFAULT_GUARDRAILS);
+  const [guardrails, setGuardrails] =
+    useState<PRGuardrails>(DEFAULT_GUARDRAILS);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -612,8 +757,12 @@ export function PRSettings() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-white/95">Automation & Guardrails</h2>
-          <p className="text-xs text-white/40 mt-0.5">Control what AI can do on your behalf</p>
+          <h2 className="text-base font-semibold text-white/95">
+            Automation & Guardrails
+          </h2>
+          <p className="text-xs text-white/40 mt-0.5">
+            Control what AI can do on your behalf
+          </p>
         </div>
       </div>
 
@@ -623,7 +772,9 @@ export function PRSettings() {
       {/* Automation Ceilings */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-semibold text-white/95">Automation Ceilings</h3>
+          <h3 className="text-base font-semibold text-white/95">
+            Automation Ceilings
+          </h3>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-xs text-white/55">
               <div className="w-3 h-3 rounded bg-semantic-danger/30 border border-semantic-danger/50" />
@@ -637,7 +788,8 @@ export function PRSettings() {
         </div>
 
         <p className="text-sm text-white/55">
-          Each action has a maximum automation level it can reach. Some ceilings are system-enforced and cannot be changed.
+          Each action has a maximum automation level it can reach. Some ceilings
+          are system-enforced and cannot be changed.
         </p>
 
         <div className="space-y-4">
@@ -672,24 +824,55 @@ export function PRSettings() {
       <div className="p-5 rounded-xl bg-semantic-danger/5 border border-semantic-danger/20">
         <div className="flex items-start gap-4">
           <div className="p-2 rounded-lg bg-semantic-danger/15">
-            <svg className="w-5 h-5 text-semantic-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              className="w-5 h-5 text-semantic-danger"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-semantic-danger mb-1">Critical Constraints</h4>
+            <h4 className="text-sm font-semibold text-semantic-danger mb-1">
+              Critical Constraints
+            </h4>
             <ul className="text-xs text-white/55 space-y-1">
-              <li>• <strong className="text-white/90">Pitch sending</strong> will always require manual action — no exceptions</li>
-              <li>• <strong className="text-white/90">Follow-up sending</strong> requires human review even in Copilot mode</li>
-              <li>• <strong className="text-white/90">CiteMind audio generation</strong> is manual-only in V1</li>
-              <li>• These constraints are enforced at the platform level and cannot be bypassed</li>
+              <li>
+                • <strong className="text-white/90">Pitch sending</strong> will
+                always require manual action — no exceptions
+              </li>
+              <li>
+                • <strong className="text-white/90">Follow-up sending</strong>{' '}
+                requires human review even in Copilot mode
+              </li>
+              <li>
+                •{' '}
+                <strong className="text-white/90">
+                  CiteMind audio generation
+                </strong>{' '}
+                is manual-only in V1
+              </li>
+              <li>
+                • These constraints are enforced at the platform level and
+                cannot be bypassed
+              </li>
             </ul>
           </div>
         </div>
       </div>
 
       {/* Toast notification */}
-      <Toast message={toastMessage} isVisible={toastVisible} onClose={hideToast} />
+      <Toast
+        message={toastMessage}
+        isVisible={toastVisible}
+        onClose={hideToast}
+      />
     </div>
   );
 }

@@ -73,7 +73,13 @@ export interface MediaList {
 
 export interface InboxItem {
   id: string;
-  type: 'inquiry' | 'follow_up_due' | 'coverage_triage' | 'relationship_decay' | 'approval_queue' | 'data_hygiene';
+  type:
+    | 'inquiry'
+    | 'follow_up_due'
+    | 'coverage_triage'
+    | 'relationship_decay'
+    | 'approval_queue'
+    | 'data_hygiene';
   priority: 'critical' | 'high' | 'medium' | 'low';
   title: string;
   description: string;
@@ -125,7 +131,9 @@ export class PRService {
       .eq('org_id', this.orgId);
 
     if (options?.q) {
-      query = query.or(`full_name.ilike.%${options.q}%,primary_email.ilike.%${options.q}%,primary_outlet.ilike.%${options.q}%`);
+      query = query.or(
+        `full_name.ilike.%${options.q}%,primary_email.ilike.%${options.q}%,primary_outlet.ilike.%${options.q}%`
+      );
     }
     if (options?.outlet) {
       query = query.ilike('primary_outlet', `%${options.outlet}%`);
@@ -148,7 +156,10 @@ export class PRService {
       query = query.limit(options.limit);
     }
     if (options?.offset) {
-      query = query.range(options.offset, options.offset + (options.limit || 20) - 1);
+      query = query.range(
+        options.offset,
+        options.offset + (options.limit || 20) - 1
+      );
     }
 
     const { data, error, count } = await query;
@@ -213,28 +224,38 @@ export class PRService {
     return this.mapJournalistFromDb(data);
   }
 
-  async updateJournalist(id: string, input: Partial<{
-    fullName: string;
-    primaryEmail: string;
-    primaryOutlet: string;
-    beat: string;
-    twitterHandle: string;
-    linkedinUrl: string;
-    engagementScore: number;
-    responsivenessScore: number;
-    relevanceScore: number;
-    metadata: Record<string, unknown>;
-  }>): Promise<JournalistProfile> {
+  async updateJournalist(
+    id: string,
+    input: Partial<{
+      fullName: string;
+      primaryEmail: string;
+      primaryOutlet: string;
+      beat: string;
+      twitterHandle: string;
+      linkedinUrl: string;
+      engagementScore: number;
+      responsivenessScore: number;
+      relevanceScore: number;
+      metadata: Record<string, unknown>;
+    }>
+  ): Promise<JournalistProfile> {
     const updates: Record<string, unknown> = {};
     if (input.fullName !== undefined) updates.full_name = input.fullName;
-    if (input.primaryEmail !== undefined) updates.primary_email = input.primaryEmail;
-    if (input.primaryOutlet !== undefined) updates.primary_outlet = input.primaryOutlet;
+    if (input.primaryEmail !== undefined)
+      updates.primary_email = input.primaryEmail;
+    if (input.primaryOutlet !== undefined)
+      updates.primary_outlet = input.primaryOutlet;
     if (input.beat !== undefined) updates.beat = input.beat;
-    if (input.twitterHandle !== undefined) updates.twitter_handle = input.twitterHandle;
-    if (input.linkedinUrl !== undefined) updates.linkedin_url = input.linkedinUrl;
-    if (input.engagementScore !== undefined) updates.engagement_score = input.engagementScore;
-    if (input.responsivenessScore !== undefined) updates.responsiveness_score = input.responsivenessScore;
-    if (input.relevanceScore !== undefined) updates.relevance_score = input.relevanceScore;
+    if (input.twitterHandle !== undefined)
+      updates.twitter_handle = input.twitterHandle;
+    if (input.linkedinUrl !== undefined)
+      updates.linkedin_url = input.linkedinUrl;
+    if (input.engagementScore !== undefined)
+      updates.engagement_score = input.engagementScore;
+    if (input.responsivenessScore !== undefined)
+      updates.responsiveness_score = input.responsivenessScore;
+    if (input.relevanceScore !== undefined)
+      updates.relevance_score = input.relevanceScore;
     if (input.metadata !== undefined) updates.metadata = input.metadata;
 
     const { data, error } = await this.client
@@ -284,7 +305,10 @@ export class PRService {
       query = query.limit(options.limit);
     }
     if (options?.offset) {
-      query = query.range(options.offset, options.offset + (options.limit || 20) - 1);
+      query = query.range(
+        options.offset,
+        options.offset + (options.limit || 20) - 1
+      );
     }
 
     const { data, error, count } = await query;
@@ -299,12 +323,15 @@ export class PRService {
     };
   }
 
-  async createPitchSequence(userId: string, input: {
-    name: string;
-    defaultSubject?: string;
-    defaultPreviewText?: string;
-    settings?: Record<string, unknown>;
-  }): Promise<PitchSequence> {
+  async createPitchSequence(
+    userId: string,
+    input: {
+      name: string;
+      defaultSubject?: string;
+      defaultPreviewText?: string;
+      settings?: Record<string, unknown>;
+    }
+  ): Promise<PitchSequence> {
     const { data, error } = await this.client
       .from('pr_pitch_sequences')
       .insert({
@@ -315,7 +342,11 @@ export class PRService {
         default_subject: input.defaultSubject || null,
         default_preview_text: input.defaultPreviewText || null,
         settings: input.settings || {
-          sendWindow: { startHour: 9, endHour: 17, timezone: 'America/New_York' },
+          sendWindow: {
+            startHour: 9,
+            endHour: 17,
+            timezone: 'America/New_York',
+          },
           followUpDelayDays: 3,
           maxAttempts: 3,
           excludeWeekends: true,
@@ -347,18 +378,23 @@ export class PRService {
     return this.mapSequenceFromDb(data);
   }
 
-  async updatePitchSequence(id: string, input: Partial<{
-    name: string;
-    status: 'draft' | 'active' | 'paused' | 'completed' | 'archived';
-    defaultSubject: string;
-    defaultPreviewText: string;
-    settings: Record<string, unknown>;
-  }>): Promise<PitchSequence> {
+  async updatePitchSequence(
+    id: string,
+    input: Partial<{
+      name: string;
+      status: 'draft' | 'active' | 'paused' | 'completed' | 'archived';
+      defaultSubject: string;
+      defaultPreviewText: string;
+      settings: Record<string, unknown>;
+    }>
+  ): Promise<PitchSequence> {
     const updates: Record<string, unknown> = {};
     if (input.name !== undefined) updates.name = input.name;
     if (input.status !== undefined) updates.status = input.status;
-    if (input.defaultSubject !== undefined) updates.default_subject = input.defaultSubject;
-    if (input.defaultPreviewText !== undefined) updates.default_preview_text = input.defaultPreviewText;
+    if (input.defaultSubject !== undefined)
+      updates.default_subject = input.defaultSubject;
+    if (input.defaultPreviewText !== undefined)
+      updates.default_preview_text = input.defaultPreviewText;
     if (input.settings !== undefined) updates.settings = input.settings;
 
     const { data, error } = await this.client
@@ -420,7 +456,10 @@ export class PRService {
       query = query.limit(options.limit);
     }
     if (options?.offset) {
-      query = query.range(options.offset, options.offset + (options.limit || 20) - 1);
+      query = query.range(
+        options.offset,
+        options.offset + (options.limit || 20) - 1
+      );
     }
 
     const { data, error, count } = await query;
@@ -439,14 +478,20 @@ export class PRService {
   // INBOX (Computed from DB entities)
   // --------------------------------------------
 
-  async getInboxItems(): Promise<{ items: InboxItem[]; total: number; byType: Record<string, number> }> {
+  async getInboxItems(): Promise<{
+    items: InboxItem[];
+    total: number;
+    byType: Record<string, number>;
+  }> {
     const items: InboxItem[] = [];
     const now = new Date();
 
     // 1. Get journalists with low engagement (relationship decay)
     const { data: lowEngagementJournalists } = await this.client
       .from('journalist_profiles')
-      .select('id, full_name, primary_outlet, engagement_score, last_activity_at')
+      .select(
+        'id, full_name, primary_outlet, engagement_score, last_activity_at'
+      )
       .eq('org_id', this.orgId)
       .lt('engagement_score', 0.4)
       .order('engagement_score', { ascending: true })
@@ -455,7 +500,10 @@ export class PRService {
     if (lowEngagementJournalists) {
       for (const profile of lowEngagementJournalists) {
         const daysSinceActivity = profile.last_activity_at
-          ? Math.floor((now.getTime() - new Date(profile.last_activity_at).getTime()) / (24 * 60 * 60 * 1000))
+          ? Math.floor(
+              (now.getTime() - new Date(profile.last_activity_at).getTime()) /
+                (24 * 60 * 60 * 1000)
+            )
           : 90;
 
         if (daysSinceActivity > 30) {
@@ -473,7 +521,9 @@ export class PRService {
               targetRoute: `/app/pr?tab=database&contactId=${profile.id}&section=ledger`,
             },
             modeCeiling: 'manual',
-            createdAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
+            createdAt: new Date(
+              now.getTime() - 24 * 60 * 60 * 1000
+            ).toISOString(),
           });
         }
       }
@@ -489,7 +539,8 @@ export class PRService {
     if (activeSequences) {
       for (const sequence of activeSequences) {
         const daysSinceCreated = Math.floor(
-          (now.getTime() - new Date(sequence.created_at).getTime()) / (24 * 60 * 60 * 1000)
+          (now.getTime() - new Date(sequence.created_at).getTime()) /
+            (24 * 60 * 60 * 1000)
         );
 
         // Follow-up window: 5-7 days after initial pitch
@@ -633,7 +684,9 @@ export class PRService {
     }
 
     if (contact.status !== 'queued' && contact.status !== 'sent') {
-      throw new Error(`Cannot send pitch to contact in ${contact.status} status`);
+      throw new Error(
+        `Cannot send pitch to contact in ${contact.status} status`
+      );
     }
 
     const timestamp = new Date().toISOString();
@@ -644,7 +697,8 @@ export class PRService {
       driver: 'visibility' as const,
       direction: 'positive' as const,
       delta: 0.5, // Estimated visibility impact per pitch
-      explanation: 'Manual pitch sent - direct media outreach contributes to visibility',
+      explanation:
+        'Manual pitch sent - direct media outreach contributes to visibility',
       timestamp,
       entityRefs: {
         journalistId: contact.journalist_id,
@@ -684,28 +738,28 @@ export class PRService {
       .eq('org_id', this.orgId);
 
     if (updateError) {
-      throw new Error(`Failed to update contact status: ${updateError.message}`);
+      throw new Error(
+        `Failed to update contact status: ${updateError.message}`
+      );
     }
 
     // Log activity with EVI attribution metadata
-    await this.client
-      .from('journalist_activity_log')
-      .insert({
-        org_id: this.orgId,
-        journalist_id: contact.journalist_id,
-        activity_type: 'pitch_sent',
-        source_system: 'pr_pillar_manual',
-        source_id: contact.sequence_id,
-        activity_data: {
-          sequence_id: input.sequenceId,
-          contact_id: input.contactId,
-          manual: true,
-        },
-        occurred_at: timestamp,
-        metadata: {
-          evi_attribution: eviAttribution,
-        },
-      });
+    await this.client.from('journalist_activity_log').insert({
+      org_id: this.orgId,
+      journalist_id: contact.journalist_id,
+      activity_type: 'pitch_sent',
+      source_system: 'pr_pillar_manual',
+      source_id: contact.sequence_id,
+      activity_data: {
+        sequence_id: input.sequenceId,
+        contact_id: input.contactId,
+        manual: true,
+      },
+      occurred_at: timestamp,
+      metadata: {
+        evi_attribution: eviAttribution,
+      },
+    });
 
     return {
       eventId: event.id,
@@ -787,7 +841,7 @@ export class PRService {
   // --------------------------------------------
 
   private toSnakeCase(str: string): string {
-    return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+    return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
   }
 
   private mapJournalistFromDb(row: Record<string, unknown>): JournalistProfile {
@@ -849,11 +903,16 @@ export class PRService {
 // FACTORY FUNCTION
 // ============================================
 
-export function createPRService(client: SupabaseClient, orgId: string): PRService {
+export function createPRService(
+  client: SupabaseClient,
+  orgId: string
+): PRService {
   const config = getPRConfig();
 
   if (config.showBackendStatus) {
-    console.log(`[PRService] Creating service for org: ${orgId.substring(0, 8)}...`);
+    console.log(
+      `[PRService] Creating service for org: ${orgId.substring(0, 8)}...`
+    );
   }
 
   return new PRService(client, orgId);

@@ -71,10 +71,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         confidenceScore: 0.95,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/nodes', {
-        method: 'POST',
-        body: nodeData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/nodes',
+        {
+          method: 'POST',
+          body: nodeData,
+        }
+      );
 
       if (response.ok) {
         expect(response.status).toBe(201);
@@ -102,10 +105,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         },
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/nodes', {
-        method: 'POST',
-        body: nodeData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/nodes',
+        {
+          method: 'POST',
+          body: nodeData,
+        }
+      );
 
       if (response.ok) {
         expect(response.status).toBe(201);
@@ -251,10 +257,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         confidenceScore: 0.9,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/edges', {
-        method: 'POST',
-        body: edgeData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/edges',
+        {
+          method: 'POST',
+          body: edgeData,
+        }
+      );
 
       if (response.ok) {
         expect(response.status).toBe(201);
@@ -338,11 +347,14 @@ describe('Unified Intelligence Graph E2E Tests', () => {
 
       if (response.ok) {
         expect(data.edges).toBeDefined();
-        data.edges.forEach((edge: { sourceNodeId: string; targetNodeId: string }) => {
-          expect(
-            edge.sourceNodeId === createdNodeId || edge.targetNodeId === createdNodeId
-          ).toBe(true);
-        });
+        data.edges.forEach(
+          (edge: { sourceNodeId: string; targetNodeId: string }) => {
+            expect(
+              edge.sourceNodeId === createdNodeId ||
+                edge.targetNodeId === createdNodeId
+            ).toBe(true);
+          }
+        );
       }
     });
 
@@ -383,10 +395,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         limit: 50,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/query', {
-        method: 'POST',
-        body: queryData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/query',
+        {
+          method: 'POST',
+          body: queryData,
+        }
+      );
 
       if (response.ok) {
         expect(data.nodes).toBeDefined();
@@ -402,10 +417,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         limit: 100,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/query', {
-        method: 'POST',
-        body: queryData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/query',
+        {
+          method: 'POST',
+          body: queryData,
+        }
+      );
 
       if (response.ok) {
         expect(data.aggregations).toBeDefined();
@@ -427,10 +445,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         limit: 50,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/traverse', {
-        method: 'POST',
-        body: traversalData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/traverse',
+        {
+          method: 'POST',
+          body: traversalData,
+        }
+      );
 
       if (response.ok) {
         expect(data.startNode).toBeDefined();
@@ -452,10 +473,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         maxDepth: 2,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/traverse', {
-        method: 'POST',
-        body: traversalData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/traverse',
+        {
+          method: 'POST',
+          body: traversalData,
+        }
+      );
 
       if (response.ok) {
         expect(data.depth).toBe(2);
@@ -476,10 +500,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         maxDepth: 6,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/path', {
-        method: 'POST',
-        body: pathData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/path',
+        {
+          method: 'POST',
+          body: pathData,
+        }
+      );
 
       if (response.ok && data.path) {
         expect(data.path.startNodeId).toBe(createdNodeId);
@@ -503,10 +530,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         includeReasoning: true,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/explain-path', {
-        method: 'POST',
-        body: explainData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/explain-path',
+        {
+          method: 'POST',
+          body: explainData,
+        }
+      );
 
       if (response.ok && data.path) {
         expect(data.explanation).toBeDefined();
@@ -568,14 +598,20 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         preserveEdges: true,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/merge', {
-        method: 'POST',
-        body: mergeData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/merge',
+        {
+          method: 'POST',
+          body: mergeData,
+        }
+      );
 
       if (response.ok) {
         expect(data.mergedNode).toBeDefined();
-        expect(data.mergedNodeIds).toEqual([mergeSourceNode1, mergeSourceNode2]);
+        expect(data.mergedNodeIds).toEqual([
+          mergeSourceNode1,
+          mergeSourceNode2,
+        ]);
         expect(data.edgesPreserved).toBeDefined();
         expect(data.edgesRemoved).toBeDefined();
       }
@@ -588,7 +624,9 @@ describe('Unified Intelligence Graph E2E Tests', () => {
 
   describe('Metrics Operations', () => {
     it('should get current graph metrics', async () => {
-      const { response, data } = await apiRequest('/api/v1/unified-graph/metrics');
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/metrics'
+      );
 
       if (response.ok) {
         expect(data.totalNodes).toBeDefined();
@@ -607,10 +645,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         computeClusters: true,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/metrics/compute', {
-        method: 'POST',
-        body: computeData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/metrics/compute',
+        {
+          method: 'POST',
+          body: computeData,
+        }
+      );
 
       if (response.ok) {
         expect(data.metrics).toBeDefined();
@@ -626,10 +667,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         computeCentrality: true,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/metrics/compute', {
-        method: 'POST',
-        body: computeData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/metrics/compute',
+        {
+          method: 'POST',
+          body: computeData,
+        }
+      );
 
       if (response.ok) {
         expect(data.metrics).toBeDefined();
@@ -650,10 +694,13 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         computeDiff: true,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/snapshots', {
-        method: 'POST',
-        body: snapshotData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/snapshots',
+        {
+          method: 'POST',
+          body: snapshotData,
+        }
+      );
 
       if (response.ok) {
         expect(response.status).toBe(201);
@@ -779,7 +826,9 @@ describe('Unified Intelligence Graph E2E Tests', () => {
 
   describe('Statistics Operations', () => {
     it('should get graph statistics', async () => {
-      const { response, data } = await apiRequest('/api/v1/unified-graph/stats');
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/stats'
+      );
 
       if (response.ok) {
         expect(data.totalNodes).toBeDefined();
@@ -807,16 +856,21 @@ describe('Unified Intelligence Graph E2E Tests', () => {
         limit: 20,
       };
 
-      const { response, data } = await apiRequest('/api/v1/unified-graph/search', {
-        method: 'POST',
-        body: searchData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/unified-graph/search',
+        {
+          method: 'POST',
+          body: searchData,
+        }
+      );
 
       if (response.ok) {
         expect(data.results).toBeDefined();
         expect(Array.isArray(data.results)).toBe(true);
         data.results.forEach((result: { similarity: number }) => {
-          expect(result.similarity).toBeGreaterThanOrEqual(searchData.threshold);
+          expect(result.similarity).toBeGreaterThanOrEqual(
+            searchData.threshold
+          );
         });
       }
     });

@@ -133,7 +133,10 @@ export function InvestorPackSectionCard({
           </CardTitle>
 
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className={cn('text-xs', getStatusColor())}>
+            <Badge
+              variant="secondary"
+              className={cn('text-xs', getStatusColor())}
+            >
               {section.status}
             </Badge>
 
@@ -199,11 +202,7 @@ export function InvestorPackSectionCard({
                 <X className="h-4 w-4 mr-1" />
                 Cancel
               </Button>
-              <Button
-                size="sm"
-                onClick={handleSave}
-                disabled={isSaving}
-              >
+              <Button size="sm" onClick={handleSave} disabled={isSaving}>
                 {isSaving ? (
                   <Loader2 className="h-4 w-4 mr-1 animate-spin" />
                 ) : (

@@ -11,7 +11,11 @@ import { MSWProvider } from '@/mocks/MSWProvider';
 
 export const dynamic = 'force-dynamic';
 
-export default async function CalendarLayout({ children }: { children: React.ReactNode }) {
+export default async function CalendarLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getCurrentUser();
 
   return (
@@ -21,9 +25,7 @@ export default async function CalendarLayout({ children }: { children: React.Rea
       userEmail={session?.user.email || undefined}
       userAvatarUrl={session?.user.avatarUrl || undefined}
     >
-      <MSWProvider>
-        {children}
-      </MSWProvider>
+      <MSWProvider>{children}</MSWProvider>
     </CalendarShell>
   );
 }

@@ -5,16 +5,25 @@
 
 'use client';
 
-import { TrendingUp, TrendingDown, Minus, AlertTriangle, Shield, Activity } from 'lucide-react';
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  AlertTriangle,
+  Shield,
+  Activity,
+} from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { GovernanceRiskScore, GovernanceScoreTrend } from '@/lib/governanceApi';
+import type {
+  GovernanceRiskScore,
+  GovernanceScoreTrend,
+} from '@/lib/governanceApi';
 import { getEntityTypeLabel, getTrendColor } from '@/lib/governanceApi';
 import { cn } from '@/lib/utils';
 
 import { SeverityBadge } from './SeverityBadge';
-
 
 interface RiskScoreCardProps {
   riskScore: GovernanceRiskScore;
@@ -49,7 +58,12 @@ function getScoreBgColor(score: number): string {
   return 'bg-green-100';
 }
 
-export function RiskScoreCard({ riskScore, compact, onClick, className }: RiskScoreCardProps) {
+export function RiskScoreCard({
+  riskScore,
+  compact,
+  onClick,
+  className,
+}: RiskScoreCardProps) {
   const trendColor = getTrendColor(riskScore.scoreTrend ?? 'stable');
   const scoreColor = getScoreColor(riskScore.overallScore);
   const scoreBgColor = getScoreBgColor(riskScore.overallScore);
@@ -62,17 +76,33 @@ export function RiskScoreCard({ riskScore, compact, onClick, className }: RiskSc
 
   const riskDimensions = [
     { key: 'contentRisk', label: 'Content', value: riskScore.contentRisk },
-    { key: 'reputationRisk', label: 'Reputation', value: riskScore.reputationRisk },
+    {
+      key: 'reputationRisk',
+      label: 'Reputation',
+      value: riskScore.reputationRisk,
+    },
     { key: 'crisisRisk', label: 'Crisis', value: riskScore.crisisRisk },
     { key: 'legalRisk', label: 'Legal', value: riskScore.legalRisk },
-    { key: 'relationshipRisk', label: 'Relationship', value: riskScore.relationshipRisk },
-    { key: 'competitiveRisk', label: 'Competitive', value: riskScore.competitiveRisk },
+    {
+      key: 'relationshipRisk',
+      label: 'Relationship',
+      value: riskScore.relationshipRisk,
+    },
+    {
+      key: 'competitiveRisk',
+      label: 'Competitive',
+      value: riskScore.competitiveRisk,
+    },
   ].filter((d) => d.value !== null && d.value !== undefined);
 
   if (compact) {
     return (
       <Card
-        className={cn('hover:shadow-md transition-shadow', onClick && 'cursor-pointer', className)}
+        className={cn(
+          'hover:shadow-md transition-shadow',
+          onClick && 'cursor-pointer',
+          className
+        )}
         onClick={onClick}
       >
         <CardContent className="p-4">
@@ -109,14 +139,20 @@ export function RiskScoreCard({ riskScore, compact, onClick, className }: RiskSc
 
   return (
     <Card
-      className={cn('hover:shadow-md transition-shadow', onClick && 'cursor-pointer', className)}
+      className={cn(
+        'hover:shadow-md transition-shadow',
+        onClick && 'cursor-pointer',
+        className
+      )}
       onClick={onClick}
     >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Shield className={cn('h-5 w-5', scoreColor)} />
-            <CardTitle className="text-sm font-medium text-gray-600">Risk Score</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Risk Score
+            </CardTitle>
           </div>
           <SeverityBadge severity={riskScore.riskLevel} />
         </div>
@@ -128,7 +164,9 @@ export function RiskScoreCard({ riskScore, compact, onClick, className }: RiskSc
           <div className="text-lg font-semibold text-gray-900">
             {riskScore.entityName || riskScore.entityId}
           </div>
-          <div className="text-xs text-gray-500">{getEntityTypeLabel(riskScore.entityType)}</div>
+          <div className="text-xs text-gray-500">
+            {getEntityTypeLabel(riskScore.entityType)}
+          </div>
         </div>
 
         {/* Overall Score */}
@@ -137,27 +175,38 @@ export function RiskScoreCard({ riskScore, compact, onClick, className }: RiskSc
             {riskScore.overallScore.toFixed(0)}
           </div>
           <span className="text-sm text-gray-500">/ 100</span>
-          {riskScore.previousScore !== null && riskScore.previousScore !== undefined && (
-            <div className="flex items-center gap-1">
-              <span className={trendColorClasses[trendColor]}>
-                {getTrendIcon(riskScore.scoreTrend)}
-              </span>
-              <span className={cn('text-sm font-medium', trendColorClasses[trendColor])}>
-                {riskScore.scoreTrend === 'improving' && 'Improving'}
-                {riskScore.scoreTrend === 'worsening' && 'Worsening'}
-                {riskScore.scoreTrend === 'stable' && 'Stable'}
-              </span>
-            </div>
-          )}
+          {riskScore.previousScore !== null &&
+            riskScore.previousScore !== undefined && (
+              <div className="flex items-center gap-1">
+                <span className={trendColorClasses[trendColor]}>
+                  {getTrendIcon(riskScore.scoreTrend)}
+                </span>
+                <span
+                  className={cn(
+                    'text-sm font-medium',
+                    trendColorClasses[trendColor]
+                  )}
+                >
+                  {riskScore.scoreTrend === 'improving' && 'Improving'}
+                  {riskScore.scoreTrend === 'worsening' && 'Worsening'}
+                  {riskScore.scoreTrend === 'stable' && 'Stable'}
+                </span>
+              </div>
+            )}
         </div>
 
         {/* Risk Dimensions */}
         {riskDimensions.length > 0 && (
           <div className="space-y-2 pt-2 border-t">
-            <div className="text-xs font-medium text-gray-500 uppercase">Risk Breakdown</div>
+            <div className="text-xs font-medium text-gray-500 uppercase">
+              Risk Breakdown
+            </div>
             <div className="grid grid-cols-2 gap-2">
               {riskDimensions.map((dimension) => (
-                <div key={dimension.key} className="flex items-center justify-between text-sm">
+                <div
+                  key={dimension.key}
+                  className="flex items-center justify-between text-sm"
+                >
                   <span className="text-gray-600">{dimension.label}</span>
                   <span
                     className={cn(
@@ -174,28 +223,39 @@ export function RiskScoreCard({ riskScore, compact, onClick, className }: RiskSc
         )}
 
         {/* Contributing Factors */}
-        {riskScore.contributingFactors && riskScore.contributingFactors.length > 0 && (
-          <div className="space-y-2 pt-2 border-t">
-            <div className="text-xs font-medium text-gray-500 uppercase">Top Factors</div>
-            <div className="space-y-1">
-              {riskScore.contributingFactors.slice(0, 3).map((factor, index) => (
-                <div key={index} className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 truncate max-w-[70%]">{factor.factor}</span>
-                  <Badge variant="outline" className="text-xs">
-                    +{factor.contribution.toFixed(0)}
-                  </Badge>
-                </div>
-              ))}
+        {riskScore.contributingFactors &&
+          riskScore.contributingFactors.length > 0 && (
+            <div className="space-y-2 pt-2 border-t">
+              <div className="text-xs font-medium text-gray-500 uppercase">
+                Top Factors
+              </div>
+              <div className="space-y-1">
+                {riskScore.contributingFactors
+                  .slice(0, 3)
+                  .map((factor, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="text-gray-600 truncate max-w-[70%]">
+                        {factor.factor}
+                      </span>
+                      <Badge variant="outline" className="text-xs">
+                        +{factor.contribution.toFixed(0)}
+                      </Badge>
+                    </div>
+                  ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Active Findings */}
         {riskScore.activeFindingsCount > 0 && (
           <div className="flex items-center gap-2 pt-2 border-t text-sm">
             <AlertTriangle className="h-4 w-4 text-orange-500" />
             <span className="text-gray-600">
-              {riskScore.activeFindingsCount} active finding{riskScore.activeFindingsCount !== 1 ? 's' : ''}
+              {riskScore.activeFindingsCount} active finding
+              {riskScore.activeFindingsCount !== 1 ? 's' : ''}
             </span>
           </div>
         )}

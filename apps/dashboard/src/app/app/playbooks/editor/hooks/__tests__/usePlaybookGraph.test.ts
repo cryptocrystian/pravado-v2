@@ -404,7 +404,9 @@ describe('usePlaybookGraph', () => {
         connectedNodes.add(edge.target);
       }
 
-      const orphanedNodes = graph.nodes.filter((n) => !connectedNodes.has(n.id));
+      const orphanedNodes = graph.nodes.filter(
+        (n) => !connectedNodes.has(n.id)
+      );
 
       expect(orphanedNodes).toHaveLength(1);
       expect(orphanedNodes[0].id).toBe('orphan');

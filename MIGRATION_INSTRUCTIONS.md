@@ -64,6 +64,7 @@ psql "postgresql://..." -c "SELECT table_name FROM information_schema.tables WHE
 ```
 
 You should see these tables:
+
 - orgs
 - users
 - org_members
@@ -72,6 +73,7 @@ You should see these tables:
 ## Next Steps
 
 After migrations are applied, the API and dashboard should be fully functional with:
+
 - User authentication
 - Organization management
 - Member invitations

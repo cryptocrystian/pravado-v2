@@ -45,7 +45,9 @@ export function ContactFormModal({
   onSave,
 }: ContactFormModalProps) {
   const [formData, setFormData] = useState<ContactFormData>(INITIAL_FORM_DATA);
-  const [errors, setErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ContactFormData, string>>
+  >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -85,11 +87,17 @@ export function ContactFormModal({
     }
 
     // Optional but validate format if provided
-    if (formData.twitterHandle && !formData.twitterHandle.match(/^@?[a-zA-Z0-9_]{1,15}$/)) {
+    if (
+      formData.twitterHandle &&
+      !formData.twitterHandle.match(/^@?[a-zA-Z0-9_]{1,15}$/)
+    ) {
       newErrors.twitterHandle = 'Invalid Twitter handle format';
     }
 
-    if (formData.linkedinUrl && !formData.linkedinUrl.includes('linkedin.com/')) {
+    if (
+      formData.linkedinUrl &&
+      !formData.linkedinUrl.includes('linkedin.com/')
+    ) {
       newErrors.linkedinUrl = 'Invalid LinkedIn URL';
     }
 
@@ -111,7 +119,9 @@ export function ContactFormModal({
       await onSave(formData, initialData?.id);
       onClose();
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Failed to save contact');
+      setSubmitError(
+        err instanceof Error ? err.message : 'Failed to save contact'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -145,8 +155,18 @@ export function ContactFormModal({
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-white/5 transition-colors"
           >
-            <svg className="w-5 h-5 text-white/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5 text-white/55"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -164,11 +184,15 @@ export function ContactFormModal({
               onChange={(e) => handleChange('fullName', e.target.value)}
               placeholder="e.g., Sarah Chen"
               className={`w-full px-4 py-2.5 bg-slate-2 border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
-                errors.fullName ? 'border-semantic-danger focus:ring-semantic-danger/30' : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
+                errors.fullName
+                  ? 'border-semantic-danger focus:ring-semantic-danger/30'
+                  : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
               }`}
             />
             {errors.fullName && (
-              <p className="mt-1 text-[13px] text-semantic-danger">{errors.fullName}</p>
+              <p className="mt-1 text-[13px] text-semantic-danger">
+                {errors.fullName}
+              </p>
             )}
           </div>
 
@@ -183,11 +207,15 @@ export function ContactFormModal({
               onChange={(e) => handleChange('primaryEmail', e.target.value)}
               placeholder="e.g., sarah@techcrunch.com"
               className={`w-full px-4 py-2.5 bg-slate-2 border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
-                errors.primaryEmail ? 'border-semantic-danger focus:ring-semantic-danger/30' : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
+                errors.primaryEmail
+                  ? 'border-semantic-danger focus:ring-semantic-danger/30'
+                  : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
               }`}
             />
             {errors.primaryEmail && (
-              <p className="mt-1 text-[13px] text-semantic-danger">{errors.primaryEmail}</p>
+              <p className="mt-1 text-[13px] text-semantic-danger">
+                {errors.primaryEmail}
+              </p>
             )}
           </div>
 
@@ -202,11 +230,15 @@ export function ContactFormModal({
               onChange={(e) => handleChange('primaryOutlet', e.target.value)}
               placeholder="e.g., TechCrunch"
               className={`w-full px-4 py-2.5 bg-slate-2 border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
-                errors.primaryOutlet ? 'border-semantic-danger focus:ring-semantic-danger/30' : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
+                errors.primaryOutlet
+                  ? 'border-semantic-danger focus:ring-semantic-danger/30'
+                  : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
               }`}
             />
             {errors.primaryOutlet && (
-              <p className="mt-1 text-[13px] text-semantic-danger">{errors.primaryOutlet}</p>
+              <p className="mt-1 text-[13px] text-semantic-danger">
+                {errors.primaryOutlet}
+              </p>
             )}
           </div>
 
@@ -236,11 +268,15 @@ export function ContactFormModal({
                 onChange={(e) => handleChange('twitterHandle', e.target.value)}
                 placeholder="@handle"
                 className={`w-full px-4 py-2.5 bg-slate-2 border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
-                  errors.twitterHandle ? 'border-semantic-danger focus:ring-semantic-danger/30' : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
+                  errors.twitterHandle
+                    ? 'border-semantic-danger focus:ring-semantic-danger/30'
+                    : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
                 }`}
               />
               {errors.twitterHandle && (
-                <p className="mt-1 text-[13px] text-semantic-danger">{errors.twitterHandle}</p>
+                <p className="mt-1 text-[13px] text-semantic-danger">
+                  {errors.twitterHandle}
+                </p>
               )}
             </div>
             <div>
@@ -253,11 +289,15 @@ export function ContactFormModal({
                 onChange={(e) => handleChange('linkedinUrl', e.target.value)}
                 placeholder="linkedin.com/in/..."
                 className={`w-full px-4 py-2.5 bg-slate-2 border rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-colors ${
-                  errors.linkedinUrl ? 'border-semantic-danger focus:ring-semantic-danger/30' : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
+                  errors.linkedinUrl
+                    ? 'border-semantic-danger focus:ring-semantic-danger/30'
+                    : 'border-border-subtle focus:ring-brand-magenta/30 focus:border-brand-magenta'
                 }`}
               />
               {errors.linkedinUrl && (
-                <p className="mt-1 text-[13px] text-semantic-danger">{errors.linkedinUrl}</p>
+                <p className="mt-1 text-[13px] text-semantic-danger">
+                  {errors.linkedinUrl}
+                </p>
               )}
             </div>
           </div>
@@ -286,14 +326,31 @@ export function ContactFormModal({
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  <svg
+                    className="w-4 h-4 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
                   </svg>
                   Saving...
                 </span>
+              ) : mode === 'create' ? (
+                'Add Contact'
               ) : (
-                mode === 'create' ? 'Add Contact' : 'Save Changes'
+                'Save Changes'
               )}
             </button>
           </div>

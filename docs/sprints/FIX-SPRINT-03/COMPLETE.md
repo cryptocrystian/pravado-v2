@@ -24,6 +24,7 @@ The previous implementation called `unregister()` without awaiting/chaining the 
 **File**: `apps/api/src/routes/health.ts`
 
 **Change**: Replaced the static `configured` status with a real Redis liveness check:
+
 - Dynamically imports `ioredis` and creates a short-lived connection
 - Calls `ping()` with a 2-second timeout via `Promise.race`
 - Returns `ok` if ping returns `PONG`
@@ -37,22 +38,22 @@ The previous implementation called `unregister()` without awaiting/chaining the 
 
 Created 4 documents in `docs/evals/`:
 
-| File | Purpose |
-|------|---------|
-| `README.md` | Framework overview — two tracks (QA functional vs Intelligence quality), how to run each, what "passing" means |
-| `CITEMIND_BENCHMARK.md` | 10-URL benchmark dataset with expected scores and gate statuses, scoring rubric (6 factors, thresholds: >=75 pass, >=55 warn, <55 block), tolerance and failure protocol |
-| `SAGE_EVAL_RUBRIC.md` | Human evaluation rubric with 4 dimensions (Relevance, Specificity, Prioritization, Novelty), each rated 1-5 with clear definitions, weekly log table template |
-| `EVI_BASELINE_PROTOCOL.md` | Baseline establishment at org creation, 2-week measurement cadence, meaningful change thresholds, 5 recalibration triggers with fix protocols |
+| File                       | Purpose                                                                                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `README.md`                | Framework overview — two tracks (QA functional vs Intelligence quality), how to run each, what "passing" means                                                           |
+| `CITEMIND_BENCHMARK.md`    | 10-URL benchmark dataset with expected scores and gate statuses, scoring rubric (6 factors, thresholds: >=75 pass, >=55 warn, <55 block), tolerance and failure protocol |
+| `SAGE_EVAL_RUBRIC.md`      | Human evaluation rubric with 4 dimensions (Relevance, Specificity, Prioritization, Novelty), each rated 1-5 with clear definitions, weekly log table template            |
+| `EVI_BASELINE_PROTOCOL.md` | Baseline establishment at org creation, 2-week measurement cadence, meaningful change thresholds, 5 recalibration triggers with fix protocols                            |
 
 ---
 
 ## Exit Criteria Verification
 
-| # | Criterion | Status |
-|---|-----------|--------|
-| 1 | `tsc --noEmit` — zero errors | Verified (dashboard + API) |
-| 2 | MSWProvider unregisters stale workers when MSW disabled | Updated with `.then()` chain |
-| 3 | `GET /health` returns `redis: "ok"` when Redis ping succeeds | Implemented with ioredis ping + 2s timeout |
-| 4 | `GET /health` overall `healthy` only when both checks pass | `allOk` logic unchanged — requires all checks `ok` or `not_configured` |
-| 5 | All 4 eval docs created in `docs/evals/` | Created: README, CITEMIND_BENCHMARK, SAGE_EVAL_RUBRIC, EVI_BASELINE_PROTOCOL |
-| 6 | Sprint summary written | This file |
+| #   | Criterion                                                    | Status                                                                       |
+| --- | ------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| 1   | `tsc --noEmit` — zero errors                                 | Verified (dashboard + API)                                                   |
+| 2   | MSWProvider unregisters stale workers when MSW disabled      | Updated with `.then()` chain                                                 |
+| 3   | `GET /health` returns `redis: "ok"` when Redis ping succeeds | Implemented with ioredis ping + 2s timeout                                   |
+| 4   | `GET /health` overall `healthy` only when both checks pass   | `allOk` logic unchanged — requires all checks `ok` or `not_configured`       |
+| 5   | All 4 eval docs created in `docs/evals/`                     | Created: README, CITEMIND_BENCHMARK, SAGE_EVAL_RUBRIC, EVI_BASELINE_PROTOCOL |
+| 6   | Sprint summary written                                       | This file                                                                    |

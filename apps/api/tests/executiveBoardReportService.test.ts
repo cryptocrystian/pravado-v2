@@ -27,15 +27,22 @@ function createMockSupabaseClient() {
   };
 
   const createChainMock = (tableName: string) => {
-    return createMockQuery({ data: mockData[tableName][0] || null, error: null });
+    return createMockQuery({
+      data: mockData[tableName][0] || null,
+      error: null,
+    });
   };
 
   return {
     from: vi.fn((tableName: string) => createChainMock(tableName)),
     storage: {
       from: vi.fn().mockReturnValue({
-        upload: vi.fn().mockResolvedValue({ data: { path: 'test/path' }, error: null }),
-        getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: 'https://example.com/test' } }),
+        upload: vi
+          .fn()
+          .mockResolvedValue({ data: { path: 'test/path' }, error: null }),
+        getPublicUrl: vi
+          .fn()
+          .mockReturnValue({ data: { publicUrl: 'https://example.com/test' } }),
       }),
     },
   } as unknown as SupabaseClient;
@@ -82,20 +89,28 @@ describe('ExecutiveBoardReportService', () => {
         format: 'board_meeting' as const,
         periodStart: '2025-01-01',
         periodEnd: '2025-03-31',
-        sectionTypes: ['executive_summary', 'kpi_dashboard', 'action_items'] as const,
+        sectionTypes: [
+          'executive_summary',
+          'kpi_dashboard',
+          'action_items',
+        ] as const,
       };
 
       const result = await service.createReport(testOrgId, testUserId, input);
 
       expect(result).toBeDefined();
-      expect(mockSupabase.from).toHaveBeenCalledWith('exec_board_report_sections');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'exec_board_report_sections'
+      );
     });
   });
 
   describe('getReport', () => {
     it('should return null for non-existent report', async () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValueOnce(createMockQuery({ data: null, error: null }));
+      mockFrom.mockReturnValueOnce(
+        createMockQuery({ data: null, error: null })
+      );
 
       const result = await service.getReport(testOrgId, 'non-existent-id');
 
@@ -161,11 +176,18 @@ describe('ExecutiveBoardReportService', () => {
       };
 
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue(createMockQuery({ data: mockReport, error: null }));
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: mockReport, error: null })
+      );
 
-      const result = await service.updateReport(testOrgId, 'test-report-123', testUserId, {
-        title: 'Updated Report',
-      });
+      const result = await service.updateReport(
+        testOrgId,
+        'test-report-123',
+        testUserId,
+        {
+          title: 'Updated Report',
+        }
+      );
 
       expect(result).toBeDefined();
       expect(result?.title).toBe('Updated Report');
@@ -182,11 +204,18 @@ describe('ExecutiveBoardReportService', () => {
       };
 
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue(createMockQuery({ data: mockReport, error: null }));
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: mockReport, error: null })
+      );
 
-      const result = await service.updateReport(testOrgId, 'test-report-123', testUserId, {
-        isArchived: true,
-      });
+      const result = await service.updateReport(
+        testOrgId,
+        'test-report-123',
+        testUserId,
+        {
+          isArchived: true,
+        }
+      );
 
       expect(result?.isArchived).toBe(true);
     });
@@ -195,9 +224,16 @@ describe('ExecutiveBoardReportService', () => {
   describe('deleteReport', () => {
     it('should soft delete (archive) by default', async () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue(createMockQuery({ data: { is_archived: true }, error: null }));
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: { is_archived: true }, error: null })
+      );
 
-      const result = await service.deleteReport(testOrgId, 'test-report-123', testUserId, false);
+      const result = await service.deleteReport(
+        testOrgId,
+        'test-report-123',
+        testUserId,
+        false
+      );
 
       expect(result.archived).toBe(true);
       expect(result.deleted).toBe(false);
@@ -207,7 +243,12 @@ describe('ExecutiveBoardReportService', () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
       mockFrom.mockReturnValue(createMockQuery({ error: null }));
 
-      const result = await service.deleteReport(testOrgId, 'test-report-123', testUserId, true);
+      const result = await service.deleteReport(
+        testOrgId,
+        'test-report-123',
+        testUserId,
+        true
+      );
 
       expect(result.deleted).toBe(true);
       expect(result.archived).toBe(false);
@@ -231,14 +272,21 @@ describe('ExecutiveBoardReportService', () => {
       };
 
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue(createMockQuery({ data: mockMember, error: null }));
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: mockMember, error: null })
+      );
 
-      const result = await service.addAudienceMember(testOrgId, 'test-report-123', testUserId, {
-        email: 'ceo@company.com',
-        name: 'John CEO',
-        role: 'CEO',
-        accessLevel: 'approve',
-      });
+      const result = await service.addAudienceMember(
+        testOrgId,
+        'test-report-123',
+        testUserId,
+        {
+          email: 'ceo@company.com',
+          name: 'John CEO',
+          role: 'CEO',
+          accessLevel: 'approve',
+        }
+      );
 
       expect(result).toBeDefined();
       expect(result.email).toBe('ceo@company.com');
@@ -263,7 +311,9 @@ describe('ExecutiveBoardReportService', () => {
       };
 
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue(createMockQuery({ data: mockMember, error: null }));
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: mockMember, error: null })
+      );
 
       const result = await service.updateAudienceMember(
         testOrgId,
@@ -284,17 +334,26 @@ describe('ExecutiveBoardReportService', () => {
       mockFrom.mockReturnValue(createMockQuery({ error: null }));
 
       await expect(
-        service.removeAudienceMember(testOrgId, 'test-report-123', 'test-member-123', testUserId)
+        service.removeAudienceMember(
+          testOrgId,
+          'test-report-123',
+          'test-member-123',
+          testUserId
+        )
       ).resolves.not.toThrow();
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('exec_board_report_audience');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'exec_board_report_audience'
+      );
     });
   });
 
   describe('getReportStats', () => {
     it('should return statistics for organization', async () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue(createMockQuery({ data: [], error: null, count: 0 }));
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: [], error: null, count: 0 })
+      );
 
       const result = await service.getReportStats(testOrgId);
 
@@ -337,7 +396,10 @@ describe('ExecutiveBoardReportService', () => {
         return createMockQuery({ data: [], error: null, count: 0 });
       });
 
-      const result = await service.listReports(testOrgId, { limit: 10, offset: 0 });
+      const result = await service.listReports(testOrgId, {
+        limit: 10,
+        offset: 0,
+      });
 
       expect(result.reports).toBeDefined();
       expect(result.total).toBe(1);
@@ -345,7 +407,9 @@ describe('ExecutiveBoardReportService', () => {
 
     it('should filter reports by format', async () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue(createMockQuery({ data: [], error: null, count: 0 }));
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: [], error: null, count: 0 })
+      );
 
       await service.listReports(testOrgId, { format: 'quarterly' });
 

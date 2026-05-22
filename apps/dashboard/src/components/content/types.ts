@@ -15,17 +15,32 @@
  * Content lifecycle status - visible, simple states
  * Every content item clearly shows its state
  */
-export type ContentStatus = 'draft' | 'needs_review' | 'ready' | 'published' | 'archived';
+export type ContentStatus =
+  | 'draft'
+  | 'needs_review'
+  | 'ready'
+  | 'published'
+  | 'archived';
 
 /**
  * Content types used across existing components and mock data
  */
-export type ContentType = 'article' | 'email' | 'social_post' | 'landing_page' | 'campaign';
+export type ContentType =
+  | 'article'
+  | 'email'
+  | 'social_post'
+  | 'landing_page'
+  | 'campaign';
 
 /**
  * Content types for the creation overlay (new creation flow)
  */
-export type CreationContentType = 'blog_post' | 'long_form_article' | 'newsletter' | 'social_series' | 'press_release';
+export type CreationContentType =
+  | 'blog_post'
+  | 'long_form_article'
+  | 'newsletter'
+  | 'social_series'
+  | 'press_release';
 
 /**
  * Entry path for content creation (SAGE brief or manual)
@@ -43,7 +58,10 @@ export interface CreationTypeConfig {
   crossPillarNote?: string;
 }
 
-export const CREATION_TYPE_CONFIG: Record<CreationContentType, CreationTypeConfig> = {
+export const CREATION_TYPE_CONFIG: Record<
+  CreationContentType,
+  CreationTypeConfig
+> = {
   blog_post: {
     label: 'Blog Post',
     iconName: 'Article',
@@ -91,23 +109,41 @@ export interface OutlineSection {
  * Maps old types to new creation types
  */
 export const LEGACY_CONTENT_TYPE_MAP: Record<string, CreationContentType> = {
-  'article': 'long_form_article',
-  'email': 'newsletter',
-  'social_post': 'social_series',
-  'landing_page': 'blog_post',
-  'campaign': 'blog_post',
-  'blog_post': 'blog_post',
-  'long_form': 'long_form_article',
-  'guide': 'long_form_article',
-  'case_study': 'long_form_article',
+  article: 'long_form_article',
+  email: 'newsletter',
+  social_post: 'social_series',
+  landing_page: 'blog_post',
+  campaign: 'blog_post',
+  blog_post: 'blog_post',
+  long_form: 'long_form_article',
+  guide: 'long_form_article',
+  case_study: 'long_form_article',
 };
 
-export type CiteMindStatus = 'pending' | 'analyzing' | 'passed' | 'warning' | 'blocked';
-export type DerivativeType = 'pr_pitch_excerpt' | 'aeo_snippet' | 'ai_summary' | 'social_fragment';
-export type SearchIntent = 'informational' | 'navigational' | 'commercial' | 'transactional';
+export type CiteMindStatus =
+  | 'pending'
+  | 'analyzing'
+  | 'passed'
+  | 'warning'
+  | 'blocked';
+export type DerivativeType =
+  | 'pr_pitch_excerpt'
+  | 'aeo_snippet'
+  | 'ai_summary'
+  | 'social_fragment';
+export type SearchIntent =
+  | 'informational'
+  | 'navigational'
+  | 'commercial'
+  | 'transactional';
 export type AutomationMode = 'manual' | 'copilot' | 'autopilot';
 export type DensityLevel = 'comfortable' | 'standard' | 'compact';
-export type ContentView = 'work-queue' | 'library' | 'calendar' | 'insights' | 'editor';
+export type ContentView =
+  | 'work-queue'
+  | 'library'
+  | 'calendar'
+  | 'insights'
+  | 'editor';
 
 /**
  * Data passed from creation flow (Stage 3) to the editor view (Stage 4).
@@ -169,7 +205,10 @@ export const CONTENT_TYPE_CONFIG: Record<ContentType, ContentTypeConfig> = {
 /**
  * Content status labels for display
  */
-export const CONTENT_STATUS_CONFIG: Record<ContentStatus, { label: string; color: string }> = {
+export const CONTENT_STATUS_CONFIG: Record<
+  ContentStatus,
+  { label: string; color: string }
+> = {
   draft: { label: 'Draft', color: 'text-white/50' },
   needs_review: { label: 'Needs Review', color: 'text-amber-400' },
   ready: { label: 'Ready', color: 'text-brand-cyan' },
@@ -363,7 +402,11 @@ export interface QualityAnalysis {
 }
 
 export interface CiteMindIssue {
-  type: 'unverified_claim' | 'missing_citation' | 'orphan_assertion' | 'repetition';
+  type:
+    | 'unverified_claim'
+    | 'missing_citation'
+    | 'orphan_assertion'
+    | 'repetition';
   section?: string;
   message: string;
   severity: 'error' | 'warning';
@@ -547,7 +590,13 @@ export interface AuditLedgerEntry {
   /** Who performed the action: system (AUTOMATE) or user */
   actor: 'system' | 'user';
   /** Type of action performed */
-  actionType: 'brief_execution' | 'derivative_generation' | 'citemind_check' | 'cross_pillar_sync' | 'scheduling' | 'status_change';
+  actionType:
+    | 'brief_execution'
+    | 'derivative_generation'
+    | 'citemind_check'
+    | 'cross_pillar_sync'
+    | 'scheduling'
+    | 'status_change';
   /** Human-readable summary of the action */
   summary: string;
   /** Outcome of the action */

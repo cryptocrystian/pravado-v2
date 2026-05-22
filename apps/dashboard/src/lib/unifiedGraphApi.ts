@@ -71,7 +71,9 @@ async function apiFetch<T>(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+    const error = await response
+      .json()
+      .catch(() => ({ error: 'Unknown error' }));
     throw new Error(error.error || `API error: ${response.status}`);
   }
 
@@ -86,7 +88,9 @@ async function apiFetch<T>(
 // NODE OPERATIONS
 // ============================================================================
 
-export async function createNode(input: CreateNodeInput): Promise<IntelligenceNode> {
+export async function createNode(
+  input: CreateNodeInput
+): Promise<IntelligenceNode> {
   return apiFetch<IntelligenceNode>('/nodes', {
     method: 'POST',
     body: JSON.stringify(input),
@@ -120,12 +124,15 @@ export async function listNodes(
 
   if (input.limit) params.set('limit', String(input.limit));
   if (input.offset) params.set('offset', String(input.offset));
-  if (input.nodeTypes?.length) params.set('nodeTypes', input.nodeTypes.join(','));
+  if (input.nodeTypes?.length)
+    params.set('nodeTypes', input.nodeTypes.join(','));
   if (input.tags?.length) params.set('tags', input.tags.join(','));
-  if (input.categories?.length) params.set('categories', input.categories.join(','));
+  if (input.categories?.length)
+    params.set('categories', input.categories.join(','));
   if (input.search) params.set('search', input.search);
   if (input.sourceSystem) params.set('sourceSystem', input.sourceSystem);
-  if (input.isActive !== undefined) params.set('isActive', String(input.isActive));
+  if (input.isActive !== undefined)
+    params.set('isActive', String(input.isActive));
   if (input.sortBy) params.set('sortBy', input.sortBy);
   if (input.sortOrder) params.set('sortOrder', input.sortOrder);
   if (input.clusterId) params.set('clusterId', input.clusterId);
@@ -144,7 +151,11 @@ export async function getNodeWithConnections(
 export async function getNodeNeighbors(
   nodeId: string,
   input: { direction?: 'outgoing' | 'incoming' | 'both'; limit?: number } = {}
-): Promise<{ node: IntelligenceNode; neighbors: IntelligenceNode[]; edges: IntelligenceEdge[] }> {
+): Promise<{
+  node: IntelligenceNode;
+  neighbors: IntelligenceNode[];
+  edges: IntelligenceEdge[];
+}> {
   const params = new URLSearchParams();
   if (input.direction) params.set('direction', input.direction);
   if (input.limit) params.set('limit', String(input.limit));
@@ -157,7 +168,9 @@ export async function getNodeNeighbors(
 // EDGE OPERATIONS
 // ============================================================================
 
-export async function createEdge(input: CreateEdgeInput): Promise<IntelligenceEdge> {
+export async function createEdge(
+  input: CreateEdgeInput
+): Promise<IntelligenceEdge> {
   return apiFetch<IntelligenceEdge>('/edges', {
     method: 'POST',
     body: JSON.stringify(input),
@@ -191,14 +204,19 @@ export async function listEdges(
 
   if (input.limit) params.set('limit', String(input.limit));
   if (input.offset) params.set('offset', String(input.offset));
-  if (input.edgeTypes?.length) params.set('edgeTypes', input.edgeTypes.join(','));
+  if (input.edgeTypes?.length)
+    params.set('edgeTypes', input.edgeTypes.join(','));
   if (input.sourceNodeId) params.set('sourceNodeId', input.sourceNodeId);
   if (input.targetNodeId) params.set('targetNodeId', input.targetNodeId);
   if (input.nodeId) params.set('nodeId', input.nodeId);
-  if (input.minWeight !== undefined) params.set('minWeight', String(input.minWeight));
-  if (input.maxWeight !== undefined) params.set('maxWeight', String(input.maxWeight));
-  if (input.isActive !== undefined) params.set('isActive', String(input.isActive));
-  if (input.isBidirectional !== undefined) params.set('isBidirectional', String(input.isBidirectional));
+  if (input.minWeight !== undefined)
+    params.set('minWeight', String(input.minWeight));
+  if (input.maxWeight !== undefined)
+    params.set('maxWeight', String(input.maxWeight));
+  if (input.isActive !== undefined)
+    params.set('isActive', String(input.isActive));
+  if (input.isBidirectional !== undefined)
+    params.set('isBidirectional', String(input.isBidirectional));
   if (input.sortBy) params.set('sortBy', input.sortBy);
   if (input.sortOrder) params.set('sortOrder', input.sortOrder);
 
@@ -214,7 +232,9 @@ export async function getEdgeWithNodes(edgeId: string): Promise<EdgeWithNodes> {
 // MERGE OPERATIONS
 // ============================================================================
 
-export async function mergeNodes(input: MergeNodesInput): Promise<MergeNodesResponse> {
+export async function mergeNodes(
+  input: MergeNodesInput
+): Promise<MergeNodesResponse> {
   return apiFetch<MergeNodesResponse>('/merge', {
     method: 'POST',
     body: JSON.stringify(input),
@@ -225,7 +245,9 @@ export async function mergeNodes(input: MergeNodesInput): Promise<MergeNodesResp
 // QUERY & TRAVERSAL
 // ============================================================================
 
-export async function queryGraph(input: GraphQueryInput): Promise<GraphQueryResponse> {
+export async function queryGraph(
+  input: GraphQueryInput
+): Promise<GraphQueryResponse> {
   return apiFetch<GraphQueryResponse>('/query', {
     method: 'POST',
     body: JSON.stringify(input),
@@ -264,7 +286,9 @@ export async function findShortestPath(
   }
 }
 
-export async function explainPath(input: ExplainPathInput): Promise<PathExplanation | null> {
+export async function explainPath(
+  input: ExplainPathInput
+): Promise<PathExplanation | null> {
   try {
     return await apiFetch<PathExplanation>('/explain-path', {
       method: 'POST',
@@ -333,15 +357,19 @@ export async function createSnapshot(
   });
 }
 
-export async function getSnapshot(snapshotId: string): Promise<IntelligenceGraphSnapshot> {
+export async function getSnapshot(
+  snapshotId: string
+): Promise<IntelligenceGraphSnapshot> {
   return apiFetch<IntelligenceGraphSnapshot>(`/snapshots/${snapshotId}`);
 }
 
-export async function listSnapshots(input: {
-  limit?: number;
-  offset?: number;
-  status?: GraphSnapshotStatus;
-} = {}): Promise<ListSnapshotsResponse> {
+export async function listSnapshots(
+  input: {
+    limit?: number;
+    offset?: number;
+    status?: GraphSnapshotStatus;
+  } = {}
+): Promise<ListSnapshotsResponse> {
   const params = new URLSearchParams();
 
   if (input.limit) params.set('limit', String(input.limit));
@@ -349,28 +377,35 @@ export async function listSnapshots(input: {
   if (input.status) params.set('status', input.status);
 
   const query = params.toString();
-  return apiFetch<ListSnapshotsResponse>(`/snapshots${query ? `?${query}` : ''}`);
+  return apiFetch<ListSnapshotsResponse>(
+    `/snapshots${query ? `?${query}` : ''}`
+  );
 }
 
 export async function regenerateSnapshot(
   snapshotId: string
 ): Promise<IntelligenceGraphSnapshot> {
-  return apiFetch<IntelligenceGraphSnapshot>(`/snapshots/${snapshotId}/regenerate`, {
-    method: 'POST',
-  });
+  return apiFetch<IntelligenceGraphSnapshot>(
+    `/snapshots/${snapshotId}/regenerate`,
+    {
+      method: 'POST',
+    }
+  );
 }
 
 // ============================================================================
 // AUDIT LOGS
 // ============================================================================
 
-export async function listAuditLogs(input: {
-  limit?: number;
-  offset?: number;
-  eventType?: GraphEventType;
-  nodeId?: string;
-  edgeId?: string;
-} = {}): Promise<ListAuditLogsResponse> {
+export async function listAuditLogs(
+  input: {
+    limit?: number;
+    offset?: number;
+    eventType?: GraphEventType;
+    nodeId?: string;
+    edgeId?: string;
+  } = {}
+): Promise<ListAuditLogsResponse> {
   const params = new URLSearchParams();
 
   if (input.limit) params.set('limit', String(input.limit));

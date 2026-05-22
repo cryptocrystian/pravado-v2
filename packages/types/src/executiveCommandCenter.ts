@@ -62,7 +62,12 @@ export type ExecKpiTrendDirection = 'up' | 'down' | 'flat';
 /**
  * Insight severity levels
  */
-export type ExecInsightSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info';
+export type ExecInsightSeverity =
+  | 'critical'
+  | 'high'
+  | 'medium'
+  | 'low'
+  | 'info';
 
 // ============================================================================
 // CORE ENTITIES
@@ -630,7 +635,10 @@ export interface ExecStandardKpiDef {
 /**
  * Mapping of source systems to labels
  */
-export const EXEC_SOURCE_SYSTEM_LABELS: Record<ExecInsightSourceSystem, string> = {
+export const EXEC_SOURCE_SYSTEM_LABELS: Record<
+  ExecInsightSourceSystem,
+  string
+> = {
   risk_radar: 'Risk Radar',
   crisis: 'Crisis Response',
   reputation: 'Brand Reputation',
@@ -650,17 +658,21 @@ export const EXEC_SOURCE_SYSTEM_LABELS: Record<ExecInsightSourceSystem, string> 
 /**
  * Mapping of time windows to display labels
  */
-export const EXEC_TIME_WINDOW_LABELS: Record<ExecDashboardTimeWindow, string> = {
-  '24h': 'Last 24 Hours',
-  '7d': 'Last 7 Days',
-  '30d': 'Last 30 Days',
-  '90d': 'Last 90 Days',
-};
+export const EXEC_TIME_WINDOW_LABELS: Record<ExecDashboardTimeWindow, string> =
+  {
+    '24h': 'Last 24 Hours',
+    '7d': 'Last 7 Days',
+    '30d': 'Last 30 Days',
+    '90d': 'Last 90 Days',
+  };
 
 /**
  * Mapping of primary focus to display labels
  */
-export const EXEC_PRIMARY_FOCUS_LABELS: Record<ExecDashboardPrimaryFocus, string> = {
+export const EXEC_PRIMARY_FOCUS_LABELS: Record<
+  ExecDashboardPrimaryFocus,
+  string
+> = {
   risk: 'Risk Management',
   reputation: 'Brand Reputation',
   growth: 'Growth & Opportunities',

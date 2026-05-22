@@ -101,19 +101,28 @@ export async function getAuditLogs(
   const params = new URLSearchParams();
 
   if (filters.eventType) {
-    params.set('eventType', Array.isArray(filters.eventType)
-      ? filters.eventType.join(',')
-      : filters.eventType);
+    params.set(
+      'eventType',
+      Array.isArray(filters.eventType)
+        ? filters.eventType.join(',')
+        : filters.eventType
+    );
   }
   if (filters.severity) {
-    params.set('severity', Array.isArray(filters.severity)
-      ? filters.severity.join(',')
-      : filters.severity);
+    params.set(
+      'severity',
+      Array.isArray(filters.severity)
+        ? filters.severity.join(',')
+        : filters.severity
+    );
   }
   if (filters.actorType) {
-    params.set('actorType', Array.isArray(filters.actorType)
-      ? filters.actorType.join(',')
-      : filters.actorType);
+    params.set(
+      'actorType',
+      Array.isArray(filters.actorType)
+        ? filters.actorType.join(',')
+        : filters.actorType
+    );
   }
   if (filters.userId) params.set('userId', filters.userId);
   if (filters.startDate) params.set('startDate', filters.startDate);
@@ -206,11 +215,16 @@ export function formatRelativeTime(dateString: string): string {
  */
 export function getSeverityColor(severity: AuditSeverity): string {
   switch (severity) {
-    case 'info': return 'blue';
-    case 'warning': return 'yellow';
-    case 'error': return 'red';
-    case 'critical': return 'purple';
-    default: return 'gray';
+    case 'info':
+      return 'blue';
+    case 'warning':
+      return 'yellow';
+    case 'error':
+      return 'red';
+    case 'critical':
+      return 'purple';
+    default:
+      return 'gray';
   }
 }
 
@@ -251,10 +265,14 @@ export function formatEventType(eventType: string): string {
  */
 export function getActorTypeDisplay(actorType: ActorType): string {
   switch (actorType) {
-    case 'user': return 'User';
-    case 'system': return 'System';
-    case 'agent': return 'AI Agent';
-    default: return actorType;
+    case 'user':
+      return 'User';
+    case 'system':
+      return 'System';
+    case 'agent':
+      return 'AI Agent';
+    default:
+      return actorType;
   }
 }
 
@@ -298,10 +316,13 @@ export interface ListExportsResponse {
 export async function createAuditExport(
   filters: AuditQueryFilters = {}
 ): Promise<CreateExportResponse> {
-  const response = await apiRequest<CreateExportResponse>('/api/v1/audit/export', {
-    method: 'POST',
-    body: JSON.stringify({ filters }),
-  });
+  const response = await apiRequest<CreateExportResponse>(
+    '/api/v1/audit/export',
+    {
+      method: 'POST',
+      body: JSON.stringify({ filters }),
+    }
+  );
 
   if (!response.success || !response.data) {
     throw new Error(response.error?.message || 'Failed to create export job');
@@ -313,7 +334,9 @@ export async function createAuditExport(
 /**
  * Get export job status
  */
-export async function getExportStatus(jobId: string): Promise<ExportStatusResponse> {
+export async function getExportStatus(
+  jobId: string
+): Promise<ExportStatusResponse> {
   const response = await apiRequest<ExportStatusResponse>(
     `/api/v1/audit/export/${jobId}`
   );
@@ -328,7 +351,9 @@ export async function getExportStatus(jobId: string): Promise<ExportStatusRespon
 /**
  * List export jobs
  */
-export async function listAuditExports(limit: number = 20): Promise<AuditExportJob[]> {
+export async function listAuditExports(
+  limit: number = 20
+): Promise<AuditExportJob[]> {
   const response = await apiRequest<ListExportsResponse>(
     `/api/v1/audit/exports?limit=${limit}`
   );
@@ -352,11 +377,16 @@ export function getExportDownloadUrl(jobId: string): string {
  */
 export function getExportStatusColor(status: AuditExportStatus): string {
   switch (status) {
-    case 'queued': return 'gray';
-    case 'processing': return 'blue';
-    case 'success': return 'green';
-    case 'failed': return 'red';
-    default: return 'gray';
+    case 'queued':
+      return 'gray';
+    case 'processing':
+      return 'blue';
+    case 'success':
+      return 'green';
+    case 'failed':
+      return 'red';
+    default:
+      return 'gray';
   }
 }
 

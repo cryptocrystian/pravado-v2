@@ -7,7 +7,12 @@
 // STATUS TYPES
 // ========================================
 
-export type PRPitchSequenceStatus = 'draft' | 'active' | 'paused' | 'completed' | 'archived';
+export type PRPitchSequenceStatus =
+  | 'draft'
+  | 'active'
+  | 'paused'
+  | 'completed'
+  | 'archived';
 
 export type PRPitchContactStatus =
   | 'queued'
@@ -354,7 +359,9 @@ export interface PRPitchContactListResponse {
 // TRANSFORMER FUNCTIONS
 // ========================================
 
-export function transformPRPitchSequenceRecord(record: PRPitchSequenceRecord): PRPitchSequence {
+export function transformPRPitchSequenceRecord(
+  record: PRPitchSequenceRecord
+): PRPitchSequence {
   return {
     id: record.id,
     orgId: record.org_id,
@@ -370,7 +377,9 @@ export function transformPRPitchSequenceRecord(record: PRPitchSequenceRecord): P
   };
 }
 
-export function transformPRPitchStepRecord(record: PRPitchStepRecord): PRPitchStep {
+export function transformPRPitchStepRecord(
+  record: PRPitchStepRecord
+): PRPitchStep {
   return {
     id: record.id,
     orgId: record.org_id,
@@ -385,7 +394,9 @@ export function transformPRPitchStepRecord(record: PRPitchStepRecord): PRPitchSt
   };
 }
 
-export function transformPRPitchContactRecord(record: PRPitchContactRecord): PRPitchContact {
+export function transformPRPitchContactRecord(
+  record: PRPitchContactRecord
+): PRPitchContact {
   return {
     id: record.id,
     orgId: record.org_id,
@@ -400,7 +411,9 @@ export function transformPRPitchContactRecord(record: PRPitchContactRecord): PRP
   };
 }
 
-export function transformPRPitchEventRecord(record: PRPitchEventRecord): PRPitchEvent {
+export function transformPRPitchEventRecord(
+  record: PRPitchEventRecord
+): PRPitchEvent {
   return {
     id: record.id,
     orgId: record.org_id,

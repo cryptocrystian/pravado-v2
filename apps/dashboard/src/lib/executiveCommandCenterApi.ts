@@ -264,10 +264,13 @@ export async function refreshDashboard(
   dashboardId: string,
   input: RefreshDashboardInput = {}
 ): Promise<ApiResponse<RefreshDashboardResponse>> {
-  return fetchApi<RefreshDashboardResponse>(`${API_BASE}/${dashboardId}/refresh`, {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  return fetchApi<RefreshDashboardResponse>(
+    `${API_BASE}/${dashboardId}/refresh`,
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
 }
 
 /**
@@ -278,7 +281,9 @@ export async function listInsights(
   params: ListInsightsParams = {}
 ): Promise<ApiResponse<ListInsightsResponse>> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  return fetchApi<ListInsightsResponse>(`${API_BASE}/${dashboardId}/insights${queryString}`);
+  return fetchApi<ListInsightsResponse>(
+    `${API_BASE}/${dashboardId}/insights${queryString}`
+  );
 }
 
 /**
@@ -289,7 +294,9 @@ export async function listKpis(
   params: ListKpisParams = {}
 ): Promise<ApiResponse<ListKpisResponse>> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  return fetchApi<ListKpisResponse>(`${API_BASE}/${dashboardId}/kpis${queryString}`);
+  return fetchApi<ListKpisResponse>(
+    `${API_BASE}/${dashboardId}/kpis${queryString}`
+  );
 }
 
 /**
@@ -300,7 +307,9 @@ export async function listNarratives(
   params: ListNarrativesParams = {}
 ): Promise<ApiResponse<ListNarrativesResponse>> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  return fetchApi<ListNarrativesResponse>(`${API_BASE}/${dashboardId}/narratives${queryString}`);
+  return fetchApi<ListNarrativesResponse>(
+    `${API_BASE}/${dashboardId}/narratives${queryString}`
+  );
 }
 
 // ============================================================================
@@ -333,7 +342,9 @@ export function getSourceSystemLabel(source: ExecInsightSourceSystem): string {
 /**
  * Get display label for time window
  */
-export function getTimeWindowLabel(timeWindow: ExecDashboardTimeWindow): string {
+export function getTimeWindowLabel(
+  timeWindow: ExecDashboardTimeWindow
+): string {
   const labels: Record<ExecDashboardTimeWindow, string> = {
     '24h': 'Last 24 Hours',
     '7d': 'Last 7 Days',

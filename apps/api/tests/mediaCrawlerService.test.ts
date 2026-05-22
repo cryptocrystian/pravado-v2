@@ -5,7 +5,10 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { MediaCrawlerService, createMediaCrawlerService } from '../src/services/mediaCrawlerService';
+import {
+  MediaCrawlerService,
+  createMediaCrawlerService,
+} from '../src/services/mediaCrawlerService';
 
 // Mock Supabase
 const createMockSupabase = () => {
@@ -14,7 +17,8 @@ const createMockSupabase = () => {
 
   const chainMethods: any = {
     // Make chainMethods promise-like so it can be awaited
-    then: (resolve: (value: any) => void) => Promise.resolve(mockData).then(resolve),
+    then: (resolve: (value: any) => void) =>
+      Promise.resolve(mockData).then(resolve),
   };
 
   const mockSelect = vi.fn(() => chainMethods);
@@ -48,7 +52,14 @@ const createMockSupabase = () => {
   return {
     from: mockFrom,
     rpc: mockRpc,
-    _mocks: { select: mockSelect, insert: mockInsert, update: mockUpdate, single: mockSingle, rpc: mockRpc, setMockData },
+    _mocks: {
+      select: mockSelect,
+      insert: mockInsert,
+      update: mockUpdate,
+      single: mockSingle,
+      rpc: mockRpc,
+      setMockData,
+    },
   };
 };
 
@@ -95,7 +106,10 @@ describe('MediaCrawlerService', () => {
         error: null,
       });
 
-      const feed = await service.addRSSFeed('org-1', { url: 'https://example.com/feed.xml', title: 'Test Feed' });
+      const feed = await service.addRSSFeed('org-1', {
+        url: 'https://example.com/feed.xml',
+        title: 'Test Feed',
+      });
 
       expect(feed).toBeDefined();
       expect(feed.url).toBe('https://example.com/feed.xml');
@@ -103,7 +117,14 @@ describe('MediaCrawlerService', () => {
 
     it('should list RSS feeds', async () => {
       mockSupabase._mocks.setMockData({
-        data: [{ id: 'feed-1', org_id: 'org-1', url: 'https://example.com/feed.xml', created_at: new Date().toISOString() }],
+        data: [
+          {
+            id: 'feed-1',
+            org_id: 'org-1',
+            url: 'https://example.com/feed.xml',
+            created_at: new Date().toISOString(),
+          },
+        ],
         error: null,
         count: 1,
       });
@@ -115,7 +136,9 @@ describe('MediaCrawlerService', () => {
 
     it('should deactivate RSS feed', async () => {
       mockSupabase._mocks.setMockData({ data: null, error: null });
-      await expect(service.deactivateRSSFeed('org-1', 'feed-1')).resolves.not.toThrow();
+      await expect(
+        service.deactivateRSSFeed('org-1', 'feed-1')
+      ).resolves.not.toThrow();
       expect(mockSupabase._mocks.update).toHaveBeenCalled();
     });
   });
@@ -134,7 +157,10 @@ describe('MediaCrawlerService', () => {
   describe('Crawl Job Management', () => {
     it('should create crawl job', async () => {
       // First call checks for existing job (returns not found)
-      mockSupabase._mocks.setMockData({ data: null, error: { code: 'PGRST116' } });
+      mockSupabase._mocks.setMockData({
+        data: null,
+        error: { code: 'PGRST116' },
+      });
 
       // Note: createCrawlJob will make 2 queries - first to check existing, then to insert
       // Since we can't easily sequence mocks, we'll set the success data and the service will handle it
@@ -149,7 +175,9 @@ describe('MediaCrawlerService', () => {
         error: null,
       });
 
-      const job = await service.createCrawlJob('org-1', { url: 'https://example.com/article' });
+      const job = await service.createCrawlJob('org-1', {
+        url: 'https://example.com/article',
+      });
 
       expect(job).toBeDefined();
       expect(job.status).toBe('queued');
@@ -157,7 +185,15 @@ describe('MediaCrawlerService', () => {
 
     it('should list crawl jobs', async () => {
       mockSupabase._mocks.setMockData({
-        data: [{ id: 'job-1', org_id: 'org-1', url: 'https://example.com/article', status: 'queued', created_at: new Date().toISOString() }],
+        data: [
+          {
+            id: 'job-1',
+            org_id: 'org-1',
+            url: 'https://example.com/article',
+            status: 'queued',
+            created_at: new Date().toISOString(),
+          },
+        ],
         error: null,
         count: 1,
       });
@@ -200,7 +236,9 @@ describe('MediaCrawlerService', () => {
         error: null,
       });
 
-      mockMonitoringService.ingestArticle.mockRejectedValueOnce(new Error('Ingestion failed'));
+      mockMonitoringService.ingestArticle.mockRejectedValueOnce(
+        new Error('Ingestion failed')
+      );
 
       const result = await service.executeCrawlJob('org-1', 'job-1');
 

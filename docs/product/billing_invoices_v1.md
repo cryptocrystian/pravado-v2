@@ -89,6 +89,7 @@ CREATE INDEX idx_org_invoice_cache_org_period ON org_invoice_cache(org_id, perio
 ```
 
 **Row Level Security (RLS):**
+
 - Org isolation enforced via `user_organizations` join
 - Users can only access invoices for their organization
 
@@ -101,12 +102,14 @@ Returns invoice history summary with aggregate metrics for the last 12 months.
 **Authentication:** Required (JWT)
 
 **Request:**
+
 ```bash
 GET /api/v1/billing/org/invoices
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -137,6 +140,7 @@ Authorization: Bearer <token>
 ```
 
 **Aggregate Metrics:**
+
 - `totalPaid12Mo` - Sum of `amount_paid` for all paid invoices in last 12 months
 - `highestInvoice` - Maximum `amount_due` across all invoices
 - `averageMonthlyCost` - Average of `amount_paid` for paid invoices
@@ -149,12 +153,14 @@ Returns detailed invoice breakdown with line items, usage snapshot, and related 
 **Authentication:** Required (JWT)
 
 **Request:**
+
 ```bash
 GET /api/v1/billing/org/invoices/inv-cache-123
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -220,6 +226,7 @@ Authorization: Bearer <token>
 ```
 
 **Line Item Types:**
+
 - `plan` - Base subscription charges
 - `overage` - Usage overage charges (tokens, playbook runs)
 - `discount` - Promotional discounts or credits
@@ -229,6 +236,7 @@ Authorization: Bearer <token>
 
 **Usage Snapshot:**
 Aggregates usage data from `org_usage_tracking` for the invoice billing period:
+
 - `tokens` - Total LLM tokens used during period
 - `playbookRuns` - Total playbook runs during period
 - `seats` - Maximum concurrent seats used during period
@@ -241,12 +249,14 @@ Manually sync invoices from Stripe to local cache (admin feature).
 **Feature Flag:** `ENABLE_ADMIN_INVOICE_SYNC` must be `true`
 
 **Request:**
+
 ```bash
 POST /api/v1/billing/org/invoices/sync
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -258,6 +268,7 @@ Authorization: Bearer <token>
 ```
 
 **Error Response (Feature Disabled):**
+
 ```json
 {
   "success": false,
@@ -316,6 +327,7 @@ console.log(`Synced ${syncedCount} invoices`);
 Returns invoice history with aggregate metrics and overage identification.
 
 **Implementation:**
+
 1. Query `org_invoice_cache` for last 12 invoices, sorted by `period_start DESC`
 2. Calculate aggregate metrics:
    - `totalPaid12Mo` = sum of `amount_paid` where `status = 'paid'`
@@ -333,6 +345,7 @@ const summary = await billingService.getBillingHistorySummary('org-123');
 Returns detailed invoice breakdown with categorized line items, usage snapshot, and alerts.
 
 **Implementation:**
+
 1. Query `org_invoice_cache` for specific invoice
 2. Parse and categorize line items from metadata:
    - Plan charges: description contains "subscription" or "plan"
@@ -344,7 +357,10 @@ Returns detailed invoice breakdown with categorized line items, usage snapshot, 
 6. Return complete invoice details
 
 ```typescript
-const details = await billingService.getInvoiceWithBreakdown('org-123', 'inv-cache-456');
+const details = await billingService.getInvoiceWithBreakdown(
+  'org-123',
+  'inv-cache-456'
+);
 ```
 
 ## Frontend Implementation
@@ -354,6 +370,7 @@ const details = await billingService.getInvoiceWithBreakdown('org-123', 'inv-cac
 **Route:** `/app/billing/history`
 
 **Features:**
+
 - Summary cards: Total Paid (12 Mo), Average Monthly Cost, Highest Invoice
 - Sortable invoice table (by date, amount, status)
 - Status badges with color coding
@@ -362,12 +379,15 @@ const details = await billingService.getInvoiceWithBreakdown('org-123', 'inv-cac
 - Manual sync button (if feature flag enabled)
 
 **Key Components:**
+
 ```typescript
 // apps/dashboard/src/app/app/billing/history/page.tsx
 
 export default function BillingHistoryPage() {
   const [summary, setSummary] = useState<BillingHistorySummary | null>(null);
-  const [sortField, setSortField] = useState<'date' | 'amount' | 'status'>('date');
+  const [sortField, setSortField] = useState<'date' | 'amount' | 'status'>(
+    'date'
+  );
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   // Load billing history
@@ -384,6 +404,7 @@ export default function BillingHistoryPage() {
 **Route:** `/app/billing/invoice/[id]`
 
 **Features:**
+
 - Invoice summary card (status, period, total, PDF/Stripe links)
 - Cost breakdown (plan charges, overages, discounts, tax)
 - Line items table with type badges
@@ -391,6 +412,7 @@ export default function BillingHistoryPage() {
 - Related alerts from same period
 
 **Key Components:**
+
 ```typescript
 // apps/dashboard/src/app/app/billing/invoice/[id]/page.tsx
 
@@ -415,14 +437,24 @@ export default function InvoiceDetailsPage() {
 **File:** `apps/dashboard/src/lib/billingApi.ts`
 
 **New Methods:**
+
 ```typescript
 export async function getBillingHistory(): Promise<BillingHistorySummary | null>;
-export async function getInvoiceDetails(invoiceId: string): Promise<InvoiceDetails | null>;
-export async function syncInvoices(): Promise<ApiResponse<{message: string, syncedCount: number}>>;
+export async function getInvoiceDetails(
+  invoiceId: string
+): Promise<InvoiceDetails | null>;
+export async function syncInvoices(): Promise<
+  ApiResponse<{ message: string; syncedCount: number }>
+>;
 
 // Helper functions
-export function getInvoiceStatusColor(status: string): 'green' | 'yellow' | 'red' | 'gray';
-export function formatInvoicePeriod(periodStart: string, periodEnd: string): string;
+export function getInvoiceStatusColor(
+  status: string
+): 'green' | 'yellow' | 'red' | 'gray';
+export function formatInvoicePeriod(
+  periodStart: string,
+  periodEnd: string
+): string;
 ```
 
 ## Invoice Sync Strategy
@@ -432,12 +464,14 @@ export function formatInvoicePeriod(periodStart: string, periodEnd: string): str
 Use Stripe webhooks to automatically sync invoices when created or updated:
 
 **Webhook Events to Listen For:**
+
 - `invoice.created`
 - `invoice.updated`
 - `invoice.payment_succeeded`
 - `invoice.payment_failed`
 
 **Webhook Handler:**
+
 ```typescript
 // In Stripe webhook handler
 if (event.type === 'invoice.created' || event.type === 'invoice.updated') {
@@ -455,6 +489,7 @@ For one-time bulk sync or troubleshooting:
 3. Syncs last 12 invoices from Stripe
 
 **Use Cases:**
+
 - Initial setup/migration
 - Recovering from webhook failures
 - Admin troubleshooting
@@ -500,20 +535,22 @@ function categorizeLineItem(lineItem: Stripe.InvoiceLineItem): LineItemType {
 Invoice breakdown automatically identifies and aggregates overage costs:
 
 **Overage Detection:**
+
 1. Parse line items from invoice metadata
 2. Identify items with "overage" or "usage" in description
 3. Categorize by type (token overage vs. run overage)
 4. Sum overage costs per invoice
 
 **Example:**
+
 ```json
 {
   "overageCostsPerInvoice": {
-    "in_1234567890": 600  // $6.00 in overages for this invoice
+    "in_1234567890": 600 // $6.00 in overages for this invoice
   },
   "breakdown": {
-    "tokenOverages": 500,   // $5.00 token overages
-    "runOverages": 100      // $1.00 run overages
+    "tokenOverages": 500, // $5.00 token overages
+    "runOverages": 100 // $1.00 run overages
   }
 }
 ```
@@ -523,6 +560,7 @@ Invoice breakdown automatically identifies and aggregates overage costs:
 Invoice details page displays related billing alerts from the same period:
 
 **Alert Linking:**
+
 1. Query `billing_usage_alerts` for alerts where `created_at` is between invoice `period_start` and `period_end`
 2. Display alerts in context with invoice
 3. Show severity (info, warning, critical)
@@ -536,12 +574,14 @@ If a user exceeded token limits during a billing period, the related "usage_hard
 ### Invoice Caching Benefits
 
 **Without Caching:**
+
 - Every invoice list/details request → Stripe API call
 - Stripe rate limits: 100 requests/second (burst)
 - Latency: ~200-500ms per API call
 - Cost: Increased Stripe API usage
 
 **With Caching (`org_invoice_cache`):**
+
 - Invoice list: Single DB query, sorted by index
 - Invoice details: Single DB query by primary key
 - Latency: ~10-50ms per request
@@ -580,6 +620,7 @@ const { data: invoices } = await supabase
 **File:** `apps/api/__tests__/billingInvoices.test.ts`
 
 **Coverage:**
+
 - ✅ Invoice history summary retrieval
 - ✅ Aggregate metrics calculation
 - ✅ Overage cost identification
@@ -590,6 +631,7 @@ const { data: invoices } = await supabase
 - ✅ Error handling (non-existent invoices)
 
 **Run Tests:**
+
 ```bash
 cd apps/api
 pnpm test billingInvoices.test.ts
@@ -598,10 +640,12 @@ pnpm test billingInvoices.test.ts
 ### E2E Tests
 
 **Files:**
+
 - `apps/dashboard/tests/billing/invoice-history.spec.ts`
 - `apps/dashboard/tests/billing/invoice-details.spec.ts`
 
 **Coverage:**
+
 - ✅ Invoice history page display
 - ✅ Summary cards rendering
 - ✅ Invoice table with sorting
@@ -612,6 +656,7 @@ pnpm test billingInvoices.test.ts
 - ✅ Usage snapshot display
 
 **Run Tests:**
+
 ```bash
 cd apps/dashboard
 pnpm test:e2e invoice-history
@@ -634,6 +679,7 @@ export const FLAGS = {
 **Purpose:** Controls access to POST `/api/v1/billing/org/invoices/sync` endpoint
 
 **Recommendation:**
+
 - Set `true` for development/staging
 - Set `false` for production (rely on webhooks)
 - Enable temporarily for one-time migrations
@@ -656,6 +702,7 @@ CREATE POLICY org_invoice_cache_org_isolation ON org_invoice_cache
 ```
 
 **Protection:**
+
 - Users can only access invoices for their organization
 - Enforced at database level
 - Prevents cross-org data leaks
@@ -663,6 +710,7 @@ CREATE POLICY org_invoice_cache_org_isolation ON org_invoice_cache
 ### API Authentication
 
 All endpoints require valid JWT:
+
 - Authenticated via `requireUser` pre-handler
 - User → Org mapping via `getUserOrgId()`
 - Stripe operations scoped to org's customer ID
@@ -670,16 +718,19 @@ All endpoints require valid JWT:
 ### Sensitive Data Handling
 
 **Stored in Cache:**
+
 - Invoice metadata (line items, totals)
 - Hosted invoice URLs (Stripe-authenticated)
 - PDF URLs (Stripe-authenticated)
 
 **NOT Stored:**
+
 - Payment method details
 - Credit card numbers
 - Stripe customer secrets
 
 **Access Control:**
+
 - Invoice PDFs require Stripe authentication
 - Hosted invoice URLs are time-limited
 - No PCI compliance concerns (no card data)
@@ -706,24 +757,25 @@ All endpoints require valid JWT:
 ### Logging
 
 **Important Events to Log:**
+
 ```typescript
 // Invoice sync events
 logger.info('Invoice synced to cache', {
   stripeInvoiceId,
   orgId,
-  amount: invoice.amount_due
+  amount: invoice.amount_due,
 });
 
 // Manual sync events
 logger.info('Manual invoice sync requested', {
   orgId,
-  syncedCount
+  syncedCount,
 });
 
 // Error events
 logger.error('Failed to sync invoice', {
   stripeInvoiceId,
-  error: err.message
+  error: err.message,
 });
 ```
 
@@ -732,11 +784,13 @@ logger.error('Failed to sync invoice', {
 ### Issue: Invoices Not Appearing
 
 **Possible Causes:**
+
 1. Stripe webhooks not configured
 2. Invoice not synced to cache yet
 3. RLS policy blocking access
 
 **Solution:**
+
 ```bash
 # Check if webhooks are configured
 stripe webhooks list
@@ -752,10 +806,12 @@ psql> SELECT * FROM org_invoice_cache WHERE org_id = '<org-id>';
 ### Issue: Overage Costs Not Detected
 
 **Possible Causes:**
+
 1. Line item descriptions don't match patterns
 2. Metadata not properly synced from Stripe
 
 **Solution:**
+
 ```typescript
 // Check invoice metadata structure
 const invoice = await supabase
@@ -773,10 +829,12 @@ console.log('Line items:', invoice.data.metadata.lines);
 ### Issue: Usage Snapshot Missing
 
 **Possible Causes:**
+
 1. No usage data for invoice period
 2. Period dates don't align
 
 **Solution:**
+
 ```sql
 -- Check usage data for period
 SELECT * FROM org_usage_tracking
@@ -829,6 +887,7 @@ AND period_end <= '<invoice-period-end>';
 ## Changelog
 
 ### v1.0.0 (Sprint S34) - 2024-03-15
+
 - ✅ Initial implementation
 - ✅ Invoice caching system
 - ✅ Billing history summary

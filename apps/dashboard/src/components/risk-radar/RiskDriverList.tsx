@@ -27,8 +27,6 @@ import { cn } from '@/lib/utils';
 
 import { RiskLevelBadge } from './RiskLevelBadge';
 
-
-
 interface RiskDriverListProps {
   drivers: RiskRadarDriver[];
   loading?: boolean;
@@ -95,7 +93,9 @@ export function RiskDriverList({
   }
 
   // Sort by impact score descending
-  const sortedDrivers = [...drivers].sort((a, b) => b.impactScore - a.impactScore);
+  const sortedDrivers = [...drivers].sort(
+    (a, b) => b.impactScore - a.impactScore
+  );
   const primaryDrivers = sortedDrivers.slice(0, 3);
   const secondaryDrivers = sortedDrivers.slice(3);
 
@@ -113,44 +113,67 @@ export function RiskDriverList({
       <CardContent className="space-y-4">
         {/* Primary Drivers */}
         <div className="space-y-2">
-          <div className="text-xs font-medium text-gray-500 uppercase">Primary Drivers</div>
+          <div className="text-xs font-medium text-gray-500 uppercase">
+            Primary Drivers
+          </div>
           {primaryDrivers.map((driver) => (
             <div
               key={driver.id}
               className={cn(
                 'p-3 rounded-lg border transition-all',
-                driver.urgency === 'critical' ? 'border-red-200 bg-red-50' :
-                driver.urgency === 'high' ? 'border-orange-200 bg-orange-50' :
-                'border-gray-200 bg-gray-50',
+                driver.urgency === 'critical'
+                  ? 'border-red-200 bg-red-50'
+                  : driver.urgency === 'high'
+                    ? 'border-orange-200 bg-orange-50'
+                    : 'border-gray-200 bg-gray-50',
                 onDriverClick && 'cursor-pointer hover:shadow-md'
               )}
               onClick={() => onDriverClick?.(driver)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
-                  <div className={cn(
-                    'p-2 rounded-full',
-                    driver.urgency === 'critical' ? 'bg-red-100' :
-                    driver.urgency === 'high' ? 'bg-orange-100' : 'bg-gray-100'
-                  )}>
-                    {categoryIcons[driver.category] || <AlertTriangle className="h-4 w-4" />}
+                  <div
+                    className={cn(
+                      'p-2 rounded-full',
+                      driver.urgency === 'critical'
+                        ? 'bg-red-100'
+                        : driver.urgency === 'high'
+                          ? 'bg-orange-100'
+                          : 'bg-gray-100'
+                    )}
+                  >
+                    {categoryIcons[driver.category] || (
+                      <AlertTriangle className="h-4 w-4" />
+                    )}
                   </div>
                   <div>
-                    <div className="font-medium text-gray-900">{driver.name}</div>
-                    <div className="text-xs text-gray-500">{getDriverCategoryLabel(driver.category)}</div>
+                    <div className="font-medium text-gray-900">
+                      {driver.name}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {getDriverCategoryLabel(driver.category)}
+                    </div>
                     {driver.description && (
-                      <div className="text-sm text-gray-600 mt-1">{driver.description}</div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        {driver.description}
+                      </div>
                     )}
                     <div className="flex items-center gap-2 mt-2">
                       <RiskLevelBadge level={driver.urgency} size="sm" />
                       {driver.isEmerging && (
-                        <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 text-xs">
+                        <Badge
+                          variant="outline"
+                          className="bg-purple-50 text-purple-700 border-purple-200 text-xs"
+                        >
                           <TrendingUp className="h-3 w-3 mr-1" />
                           Emerging
                         </Badge>
                       )}
                       {driver.isTurningPoint && (
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                        <Badge
+                          variant="outline"
+                          className="bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                        >
                           <Zap className="h-3 w-3 mr-1" />
                           Turning Point
                         </Badge>
@@ -159,10 +182,12 @@ export function RiskDriverList({
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={cn(
-                    'text-lg font-bold px-2 py-1 rounded',
-                    getImpactColor(driver.impactScore)
-                  )}>
+                  <div
+                    className={cn(
+                      'text-lg font-bold px-2 py-1 rounded',
+                      getImpactColor(driver.impactScore)
+                    )}
+                  >
                     {driver.impactScore}
                   </div>
                   {driver.contributionPercentage !== undefined && (
@@ -184,7 +209,9 @@ export function RiskDriverList({
         {/* Secondary Drivers */}
         {secondaryDrivers.length > 0 && (
           <div className="space-y-2">
-            <div className="text-xs font-medium text-gray-500 uppercase">Secondary Drivers</div>
+            <div className="text-xs font-medium text-gray-500 uppercase">
+              Secondary Drivers
+            </div>
             <div className="space-y-1">
               {secondaryDrivers.map((driver) => (
                 <div
@@ -196,17 +223,23 @@ export function RiskDriverList({
                   onClick={() => onDriverClick?.(driver)}
                 >
                   <div className="flex items-center gap-2">
-                    {categoryIcons[driver.category] || <AlertTriangle className="h-4 w-4 text-gray-400" />}
+                    {categoryIcons[driver.category] || (
+                      <AlertTriangle className="h-4 w-4 text-gray-400" />
+                    )}
                     <span className="text-sm text-gray-700">{driver.name}</span>
                     {driver.isEmerging && (
-                      <Badge variant="outline" className="text-xs px-1">New</Badge>
+                      <Badge variant="outline" className="text-xs px-1">
+                        New
+                      </Badge>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={cn(
-                      'text-sm font-medium px-1.5 py-0.5 rounded',
-                      getImpactColor(driver.impactScore)
-                    )}>
+                    <span
+                      className={cn(
+                        'text-sm font-medium px-1.5 py-0.5 rounded',
+                        getImpactColor(driver.impactScore)
+                      )}
+                    >
                       {driver.impactScore}
                     </span>
                     <ChevronRight className="h-4 w-4 text-gray-400" />

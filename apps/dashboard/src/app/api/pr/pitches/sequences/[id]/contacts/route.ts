@@ -21,7 +21,7 @@ export async function GET(
 
     // Forward query params
     const status = searchParams.getAll('status');
-    status.forEach(s => queryParams.append('status', s));
+    status.forEach((s) => queryParams.append('status', s));
 
     const search = searchParams.get('search');
     const limit = searchParams.get('limit');
@@ -42,7 +42,11 @@ export async function GET(
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/pitches/sequences/[id]/contacts] GET Error:', { status, message, code });
+    console.error('[API /api/pr/pitches/sequences/[id]/contacts] GET Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }
@@ -54,14 +58,21 @@ export async function POST(
   try {
     const { id } = await params;
     const body = await request.json();
-    const data = await prBackendFetch(`/api/v1/pr/pitches/sequences/${id}/contacts`, {
-      method: 'POST',
-      body: JSON.stringify(body),
-    });
+    const data = await prBackendFetch(
+      `/api/v1/pr/pitches/sequences/${id}/contacts`,
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }
+    );
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/pitches/sequences/[id]/contacts] POST Error:', { status, message, code });
+    console.error('[API /api/pr/pitches/sequences/[id]/contacts] POST Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

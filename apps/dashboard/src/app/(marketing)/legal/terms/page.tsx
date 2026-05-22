@@ -19,8 +19,8 @@ export default function TermsPage() {
         &quot;User&quot;) and Saipien Labs LLC (&quot;Pravado&quot;,
         &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;), governing your
         access to and use of the Pravado platform available at{' '}
-        <LegalLink href="https://app.pravado.io">app.pravado.io</LegalLink>{' '}
-        and all associated services, APIs, and documentation (collectively, the
+        <LegalLink href="https://app.pravado.io">app.pravado.io</LegalLink> and
+        all associated services, APIs, and documentation (collectively, the
         &quot;Service&quot;).
       </P>
 
@@ -31,11 +31,11 @@ export default function TermsPage() {
       <P>
         By creating an account, accessing, or using the Service, you acknowledge
         that you have read, understood, and agree to be bound by these Terms and
-        our{' '}
-        <LegalLink href="/legal/privacy">Privacy Policy</LegalLink>. If you are
-        using the Service on behalf of an organization, you represent and warrant
-        that you have authority to bind that organization to these Terms, and
-        &quot;you&quot; refers to both you individually and that organization.
+        our <LegalLink href="/legal/privacy">Privacy Policy</LegalLink>. If you
+        are using the Service on behalf of an organization, you represent and
+        warrant that you have authority to bind that organization to these
+        Terms, and &quot;you&quot; refers to both you individually and that
+        organization.
       </P>
       <P>
         If you do not agree to these Terms, you must not access or use the
@@ -73,13 +73,13 @@ export default function TermsPage() {
         <li>
           <strong className="text-white">CiteMind</strong> -- A citation
           intelligence engine that monitors how AI models reference your brand,
-          qualifies content for citability, and tracks your Share of Model across
-          large language models.
+          qualifies content for citability, and tracks your Share of Model
+          across large language models.
         </li>
       </UL>
       <P>
-        The Service is designed for businesses and marketing professionals. It is
-        not intended for personal, non-commercial use.
+        The Service is designed for businesses and marketing professionals. It
+        is not intended for personal, non-commercial use.
       </P>
 
       <HR />
@@ -93,8 +93,8 @@ export default function TermsPage() {
       </P>
       <UL>
         <li>
-          Access to Beta features is by invitation only and may be revoked at any
-          time.
+          Access to Beta features is by invitation only and may be revoked at
+          any time.
         </li>
         <li>
           Beta features are provided &quot;as is&quot; and may contain bugs,
@@ -137,7 +137,8 @@ export default function TermsPage() {
           account.
         </li>
         <li>
-          Accept responsibility for all activities that occur under your account.
+          Accept responsibility for all activities that occur under your
+          account.
         </li>
       </UL>
       <P>
@@ -163,8 +164,8 @@ export default function TermsPage() {
       <P>
         All payments are processed securely through Stripe. By subscribing to a
         paid plan, you authorize us to charge the payment method on file for all
-        applicable fees. You represent and warrant that you are authorized to use
-        the designated payment method.
+        applicable fees. You represent and warrant that you are authorized to
+        use the designated payment method.
       </P>
 
       <H3>5.3 Auto-Renewal</H3>
@@ -196,29 +197,27 @@ export default function TermsPage() {
       <H3>5.6 Taxes</H3>
       <P>
         All fees are exclusive of applicable taxes. You are responsible for all
-        taxes, levies, or duties imposed by taxing authorities in connection with
-        your subscription, excluding taxes based on our net income.
+        taxes, levies, or duties imposed by taxing authorities in connection
+        with your subscription, excluding taxes based on our net income.
       </P>
 
       <HR />
 
       {/* 6 */}
       <H2>6. Acceptable Use</H2>
-      <P>
-        You agree not to use the Service to, or in any manner that would:
-      </P>
+      <P>You agree not to use the Service to, or in any manner that would:</P>
       <UL>
         <li>
-          Send unsolicited messages, spam, or bulk communications to journalists,
-          media contacts, or any other individuals.
+          Send unsolicited messages, spam, or bulk communications to
+          journalists, media contacts, or any other individuals.
         </li>
         <li>
           Scrape, crawl, or use automated means to extract data from the Service
           beyond the APIs and interfaces we provide.
         </li>
         <li>
-          Use any content, data, or outputs from the Service to train, fine-tune,
-          or develop competing AI or machine learning models.
+          Use any content, data, or outputs from the Service to train,
+          fine-tune, or develop competing AI or machine learning models.
         </li>
         <li>
           Reverse engineer, decompile, disassemble, or otherwise attempt to
@@ -266,9 +265,9 @@ export default function TermsPage() {
       <H3>7.1 Your Content</H3>
       <P>
         You retain all ownership rights in and to the content, data, and
-        materials you upload, create, or submit through the Service
-        (&quot;Your Content&quot;). Nothing in these Terms transfers ownership of
-        Your Content to us.
+        materials you upload, create, or submit through the Service (&quot;Your
+        Content&quot;). Nothing in these Terms transfers ownership of Your
+        Content to us.
       </P>
 
       <H3>7.2 License to Process</H3>
@@ -281,19 +280,19 @@ export default function TermsPage() {
 
       <H3>7.3 No AI Training on Your Data</H3>
       <P>
-        We do not use Your Content to train, fine-tune, or improve general-purpose
-        AI or machine learning models. Your data is used exclusively to deliver
-        the Service to you. AI features within the Service (such as SAGE
-        recommendations and CiteMind analysis) process your data in real time
-        and do not retain it for model training purposes.
+        We do not use Your Content to train, fine-tune, or improve
+        general-purpose AI or machine learning models. Your data is used
+        exclusively to deliver the Service to you. AI features within the
+        Service (such as SAGE recommendations and CiteMind analysis) process
+        your data in real time and do not retain it for model training purposes.
       </P>
 
       <H3>7.4 Aggregate Data</H3>
       <P>
-        We may create anonymized, aggregated, and de-identified data derived from
-        your use of the Service (&quot;Aggregate Data&quot;). Aggregate Data does
-        not identify you or any individual and may be used by us for any
-        purpose, including product improvement, research, and benchmarking.
+        We may create anonymized, aggregated, and de-identified data derived
+        from your use of the Service (&quot;Aggregate Data&quot;). Aggregate
+        Data does not identify you or any individual and may be used by us for
+        any purpose, including product improvement, research, and benchmarking.
       </P>
 
       <HR />
@@ -324,8 +323,8 @@ export default function TermsPage() {
           purpose.
         </li>
         <li>
-          AI model behavior may change over time as underlying models are updated
-          by their providers.
+          AI model behavior may change over time as underlying models are
+          updated by their providers.
         </li>
       </UL>
 
@@ -338,10 +337,10 @@ export default function TermsPage() {
       <P>
         The Service, including all software, algorithms, user interfaces,
         designs, documentation, and proprietary systems -- including but not
-        limited to EVI, SAGE, CiteMind, and CRAFT -- are the exclusive
-        property of Saipien Labs LLC and are protected by intellectual property
-        laws. Nothing in these Terms grants you any right, title, or interest in
-        our intellectual property except the limited right to use the Service as
+        limited to EVI, SAGE, CiteMind, and CRAFT -- are the exclusive property
+        of Saipien Labs LLC and are protected by intellectual property laws.
+        Nothing in these Terms grants you any right, title, or interest in our
+        intellectual property except the limited right to use the Service as
         expressly permitted.
       </P>
 
@@ -353,10 +352,10 @@ export default function TermsPage() {
         formula, component weights, and calculation methodology; (b) the
         CiteMind content quality scoring algorithm, factor weights, and
         citation-pattern analysis logic; (c) the SAGE signal scoring,
-        opportunity ranking, and proposal generation systems; and (d) any
-        other proprietary methodologies, algorithms, or data models underlying
-        the Service. You agree not to attempt to discover, derive, reconstruct,
-        or reproduce any such trade secrets through reverse engineering,
+        opportunity ranking, and proposal generation systems; and (d) any other
+        proprietary methodologies, algorithms, or data models underlying the
+        Service. You agree not to attempt to discover, derive, reconstruct, or
+        reproduce any such trade secrets through reverse engineering,
         benchmarking, systematic querying, or any other means. Any outputs
         returned by the Service (scores, recommendations, reports) are provided
         for your business use only and may not be used to build competing
@@ -366,9 +365,9 @@ export default function TermsPage() {
       <H3>9.3 Trademark</H3>
       <P>
         &quot;Pravado,&quot; &quot;Earned Visibility Index,&quot;
-        &quot;EVI,&quot; &quot;CiteMind,&quot; &quot;SAGE,&quot; and the
-        Pravado logo are trademarks or pending trademarks of Saipien Labs LLC.
-        You may not use these marks without our prior written consent.
+        &quot;EVI,&quot; &quot;CiteMind,&quot; &quot;SAGE,&quot; and the Pravado
+        logo are trademarks or pending trademarks of Saipien Labs LLC. You may
+        not use these marks without our prior written consent.
       </P>
 
       <H3>9.4 Feedback</H3>
@@ -409,15 +408,15 @@ export default function TermsPage() {
       <P>
         <strong className="text-white">
           THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot;
-          WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR
-          OTHERWISE. TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, WE
+          WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY,
+          OR OTHERWISE. TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, WE
           DISCLAIM ALL WARRANTIES, INCLUDING BUT NOT LIMITED TO IMPLIED
           WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
           NON-INFRINGEMENT, AND QUIET ENJOYMENT. WE DO NOT WARRANT THAT THE
-          SERVICE WILL BE UNINTERRUPTED, ERROR-FREE, SECURE, OR THAT ANY
-          DEFECTS WILL BE CORRECTED. WE MAKE NO WARRANTY REGARDING THE
-          ACCURACY, RELIABILITY, OR COMPLETENESS OF ANY CONTENT OR INFORMATION
-          PROVIDED THROUGH THE SERVICE, INCLUDING AI-GENERATED OUTPUTS.
+          SERVICE WILL BE UNINTERRUPTED, ERROR-FREE, SECURE, OR THAT ANY DEFECTS
+          WILL BE CORRECTED. WE MAKE NO WARRANTY REGARDING THE ACCURACY,
+          RELIABILITY, OR COMPLETENESS OF ANY CONTENT OR INFORMATION PROVIDED
+          THROUGH THE SERVICE, INCLUDING AI-GENERATED OUTPUTS.
         </strong>
       </P>
 
@@ -432,10 +431,10 @@ export default function TermsPage() {
           AGENTS, OR LICENSORS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
           CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS
           OF PROFITS, DATA, BUSINESS OPPORTUNITIES, GOODWILL, OR OTHER
-          INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF
-          OR INABILITY TO USE THE SERVICE, REGARDLESS OF THE THEORY OF
-          LIABILITY (CONTRACT, TORT, STRICT LIABILITY, OR OTHERWISE), EVEN IF
-          ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+          INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF OR
+          INABILITY TO USE THE SERVICE, REGARDLESS OF THE THEORY OF LIABILITY
+          (CONTRACT, TORT, STRICT LIABILITY, OR OTHERWISE), EVEN IF ADVISED OF
+          THE POSSIBILITY OF SUCH DAMAGES.
         </strong>
       </P>
       <P>
@@ -443,8 +442,8 @@ export default function TermsPage() {
           OUR TOTAL AGGREGATE LIABILITY ARISING OUT OF OR RELATING TO THESE
           TERMS OR THE SERVICE SHALL NOT EXCEED THE GREATER OF (A) THE TOTAL
           FEES PAID BY YOU TO US DURING THE TWELVE (12) MONTHS IMMEDIATELY
-          PRECEDING THE EVENT GIVING RISE TO THE CLAIM, OR (B) ONE HUNDRED
-          U.S. DOLLARS ($100).
+          PRECEDING THE EVENT GIVING RISE TO THE CLAIM, OR (B) ONE HUNDRED U.S.
+          DOLLARS ($100).
         </strong>
       </P>
 
@@ -544,11 +543,11 @@ export default function TermsPage() {
       <H2>16. Governing Law</H2>
       <P>
         These Terms shall be governed by and construed in accordance with the
-        laws of the State of Texas, United States, without regard to its conflict
-        of law principles. To the extent that any lawsuit or court proceeding is
-        permitted hereunder, you and Saipien Labs LLC agree to submit to the
-        personal and exclusive jurisdiction of the state and federal courts
-        located in Travis County, Texas.
+        laws of the State of Texas, United States, without regard to its
+        conflict of law principles. To the extent that any lawsuit or court
+        proceeding is permitted hereunder, you and Saipien Labs LLC agree to
+        submit to the personal and exclusive jurisdiction of the state and
+        federal courts located in Travis County, Texas.
       </P>
 
       <HR />
@@ -598,9 +597,7 @@ export default function TermsPage() {
       </P>
 
       <H3>17.6 Contact</H3>
-      <P>
-        If you have questions about these Terms, please contact us at:
-      </P>
+      <P>If you have questions about these Terms, please contact us at:</P>
       <P>
         Saipien Labs LLC
         <br />

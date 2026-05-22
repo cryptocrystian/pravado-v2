@@ -4,7 +4,11 @@ import type {
   User,
   Org,
 } from '@pravado/types';
-import { validateEnv, apiEnvSchema, sessionRequestSchema } from '@pravado/validators';
+import {
+  validateEnv,
+  apiEnvSchema,
+  sessionRequestSchema,
+} from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
@@ -52,7 +56,6 @@ function buildWelcomeEmailHtml(dashboardUrl: string): string {
 </table></td></tr></table></body></html>`;
 }
 
-
 export async function authRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
   const supabase = createClient(
@@ -60,57 +63,54 @@ export async function authRoutes(server: FastifyInstance) {
     env.SUPABASE_SERVICE_ROLE_KEY
   );
 
-  server.post<{ Body: SessionRequest }>(
-    '/session',
-    async (request, reply) => {
-      // Validate request body
-      const validation = sessionRequestSchema.safeParse(request.body);
-      if (!validation.success) {
-        return reply.code(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Invalid request body',
-          },
-        });
-      }
-
-      const { accessToken } = validation.data;
-
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser(accessToken);
-
-      if (error || !user) {
-        return reply.code(401).send({
-          success: false,
-          error: {
-            code: 'INVALID_TOKEN',
-            message: 'Invalid access token',
-          },
-        });
-      }
-
-      reply.setCookie('sb-access-token', accessToken, {
-        httpOnly: true,
-        secure: env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-        path: '/',
-      });
-
-      return {
-        success: true,
-        data: {
-          user: {
-            id: user.id,
-            email: user.email!,
-          },
+  server.post<{ Body: SessionRequest }>('/session', async (request, reply) => {
+    // Validate request body
+    const validation = sessionRequestSchema.safeParse(request.body);
+    if (!validation.success) {
+      return reply.code(400).send({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid request body',
         },
-      };
+      });
     }
-  );
+
+    const { accessToken } = validation.data;
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(accessToken);
+
+    if (error || !user) {
+      return reply.code(401).send({
+        success: false,
+        error: {
+          code: 'INVALID_TOKEN',
+          message: 'Invalid access token',
+        },
+      });
+    }
+
+    reply.setCookie('sb-access-token', accessToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    });
+
+    return {
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          email: user.email!,
+        },
+      },
+    };
+  });
 
   server.get<{ Reply: UserSessionResponse }>(
     '/me',
@@ -185,7 +185,10 @@ export async function authRoutes(server: FastifyInstance) {
       const userEmail = request.user!.email;
 
       // Get user from Supabase auth to check created_at and metadata
-      const { data: { user: authUser }, error: authErr } = await supabase.auth.admin.getUserById(userId);
+      const {
+        data: { user: authUser },
+        error: authErr,
+      } = await supabase.auth.admin.getUserById(userId);
       if (authErr || !authUser) {
         return reply.code(404).send({
           success: false,
@@ -195,14 +198,20 @@ export async function authRoutes(server: FastifyInstance) {
 
       // Idempotency: skip if already sent
       if (authUser.user_metadata?.welcome_email_sent) {
-        return reply.send({ success: true, data: { sent: false, reason: 'already_sent' } });
+        return reply.send({
+          success: true,
+          data: { sent: false, reason: 'already_sent' },
+        });
       }
 
       // Only send to users created within the last 5 minutes
       const createdAt = new Date(authUser.created_at);
       const ageMs = Date.now() - createdAt.getTime();
       if (ageMs > 5 * 60 * 1000) {
-        return reply.send({ success: true, data: { sent: false, reason: 'not_new_user' } });
+        return reply.send({
+          success: true,
+          data: { sent: false, reason: 'not_new_user' },
+        });
       }
 
       // Send the welcome email
@@ -213,21 +222,33 @@ export async function authRoutes(server: FastifyInstance) {
           from: 'christian@pravado.io',
           subject: "Welcome to Pravado \u2014 you're in",
           html: buildWelcomeEmailHtml(dashboardUrl),
-          text: "Welcome to Pravado! Your AI Visibility OS is ready. Open your dashboard: " + dashboardUrl + "/app/command-center",
+          text:
+            'Welcome to Pravado! Your AI Visibility OS is ready. Open your dashboard: ' +
+            dashboardUrl +
+            '/app/command-center',
         });
 
         // Mark as sent in user metadata
         await supabase.auth.admin.updateUserById(userId, {
-          user_metadata: { ...authUser.user_metadata, welcome_email_sent: true },
+          user_metadata: {
+            ...authUser.user_metadata,
+            welcome_email_sent: true,
+          },
         });
 
         console.log(`[Auth] Welcome email sent to ${userEmail}`);
         return reply.send({ success: true, data: { sent: true } });
       } catch (emailErr) {
-        console.error(`[Auth] Failed to send welcome email to ${userEmail}:`, emailErr);
+        console.error(
+          `[Auth] Failed to send welcome email to ${userEmail}:`,
+          emailErr
+        );
         return reply.code(500).send({
           success: false,
-          error: { code: 'EMAIL_FAILED', message: 'Failed to send welcome email' },
+          error: {
+            code: 'EMAIL_FAILED',
+            message: 'Failed to send welcome email',
+          },
         });
       }
     }

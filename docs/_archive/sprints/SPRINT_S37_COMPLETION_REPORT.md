@@ -12,42 +12,42 @@ Sprint S37 delivers a complete Audit Replay Engine that reconstructs past system
 
 ### Backend (apps/api)
 
-| Deliverable | Status | File |
-|-------------|--------|------|
+| Deliverable                                 | Status   | File                                                  |
+| ------------------------------------------- | -------- | ----------------------------------------------------- |
 | Migration 42: audit_replay_runs & snapshots | Complete | `supabase/migrations/42_create_audit_replay_runs.sql` |
-| AuditReplayService | Complete | `src/services/auditReplayService.ts` |
-| Replay Routes (RBAC protected) | Complete | `src/routes/auditReplay/index.ts` |
-| SSE Streaming Support | Complete | `src/services/auditReplayService.ts` |
-| Backend Tests | Complete | `tests/auditReplay.test.ts` |
+| AuditReplayService                          | Complete | `src/services/auditReplayService.ts`                  |
+| Replay Routes (RBAC protected)              | Complete | `src/routes/auditReplay/index.ts`                     |
+| SSE Streaming Support                       | Complete | `src/services/auditReplayService.ts`                  |
+| Backend Tests                               | Complete | `tests/auditReplay.test.ts`                           |
 
 ### Dashboard (apps/dashboard)
 
-| Deliverable | Status | File |
-|-------------|--------|------|
-| ReplayConfigurator | Complete | `src/components/audit-replay/ReplayConfigurator.tsx` |
-| ReplayRunCard | Complete | `src/components/audit-replay/ReplayRunCard.tsx` |
-| ReplayTimeline | Complete | `src/components/audit-replay/ReplayTimeline.tsx` |
+| Deliverable         | Status   | File                                                  |
+| ------------------- | -------- | ----------------------------------------------------- |
+| ReplayConfigurator  | Complete | `src/components/audit-replay/ReplayConfigurator.tsx`  |
+| ReplayRunCard       | Complete | `src/components/audit-replay/ReplayRunCard.tsx`       |
+| ReplayTimeline      | Complete | `src/components/audit-replay/ReplayTimeline.tsx`      |
 | ReplayDiffInspector | Complete | `src/components/audit-replay/ReplayDiffInspector.tsx` |
-| ReplayStatusModal | Complete | `src/components/audit-replay/ReplayStatusModal.tsx` |
-| Component Index | Complete | `src/components/audit-replay/index.ts` |
-| Replay API Helper | Complete | `src/lib/auditReplayApi.ts` |
-| Replay Page | Complete | `src/app/app/audit/replay/page.tsx` |
-| E2E Tests | Complete | `tests/audit/replay-page.spec.ts` |
+| ReplayStatusModal   | Complete | `src/components/audit-replay/ReplayStatusModal.tsx`   |
+| Component Index     | Complete | `src/components/audit-replay/index.ts`                |
+| Replay API Helper   | Complete | `src/lib/auditReplayApi.ts`                           |
+| Replay Page         | Complete | `src/app/app/audit/replay/page.tsx`                   |
+| E2E Tests           | Complete | `tests/audit/replay-page.spec.ts`                     |
 
 ### Packages
 
-| Deliverable | Status | File |
-|-------------|--------|------|
-| Audit Replay Types | Complete | `packages/types/src/audit.ts` |
-| Feature Flag | Complete | `packages/feature-flags/src/flags.ts` |
-| Server Registration | Complete | `apps/api/src/server.ts` |
+| Deliverable         | Status   | File                                  |
+| ------------------- | -------- | ------------------------------------- |
+| Audit Replay Types  | Complete | `packages/types/src/audit.ts`         |
+| Feature Flag        | Complete | `packages/feature-flags/src/flags.ts` |
+| Server Registration | Complete | `apps/api/src/server.ts`              |
 
 ### Documentation
 
-| Deliverable | Status | File |
-|-------------|--------|------|
+| Deliverable           | Status   | File                                     |
+| --------------------- | -------- | ---------------------------------------- |
 | Product Specification | Complete | `docs/product/audit_replay_engine_v1.md` |
-| Sprint Report | Complete | `docs/SPRINT_S37_COMPLETION_REPORT.md` |
+| Sprint Report         | Complete | `docs/SPRINT_S37_COMPLETION_REPORT.md`   |
 
 ## Technical Implementation
 
@@ -89,13 +89,13 @@ CREATE TABLE audit_replay_snapshots (
 
 ### API Endpoints
 
-| Method | Endpoint | Description | RBAC |
-|--------|----------|-------------|------|
-| POST | `/api/v1/audit/replay` | Create replay job | Admin only |
-| GET | `/api/v1/audit/replay/:id` | Get status + timeline | All roles |
-| GET | `/api/v1/audit/replay/:id/stream` | SSE stream | All roles |
-| GET | `/api/v1/audit/replay/:id/snapshots/:index` | Get snapshot | All roles |
-| GET | `/api/v1/audit/replays` | List replay jobs | All roles |
+| Method | Endpoint                                    | Description           | RBAC       |
+| ------ | ------------------------------------------- | --------------------- | ---------- |
+| POST   | `/api/v1/audit/replay`                      | Create replay job     | Admin only |
+| GET    | `/api/v1/audit/replay/:id`                  | Get status + timeline | All roles  |
+| GET    | `/api/v1/audit/replay/:id/stream`           | SSE stream            | All roles  |
+| GET    | `/api/v1/audit/replay/:id/snapshots/:index` | Get snapshot          | All roles  |
+| GET    | `/api/v1/audit/replays`                     | List replay jobs      | All roles  |
 
 ### State Reconstruction
 
@@ -192,24 +192,26 @@ Audit Replay Page
 
 ## Code Metrics
 
-| Metric | Value |
-|--------|-------|
-| New TypeScript lines | ~2,500 |
-| New SQL lines | ~90 |
-| Backend service lines | ~750 |
-| Frontend component lines | ~800 |
-| Test lines | ~650 |
-| Documentation lines | ~400 |
+| Metric                   | Value  |
+| ------------------------ | ------ |
+| New TypeScript lines     | ~2,500 |
+| New SQL lines            | ~90    |
+| Backend service lines    | ~750   |
+| Frontend component lines | ~800   |
+| Test lines               | ~650   |
+| Documentation lines      | ~400   |
 
 ## Files Created
 
 ### Backend
+
 - `apps/api/supabase/migrations/42_create_audit_replay_runs.sql`
 - `apps/api/src/services/auditReplayService.ts`
 - `apps/api/src/routes/auditReplay/index.ts`
 - `apps/api/tests/auditReplay.test.ts`
 
 ### Dashboard
+
 - `apps/dashboard/src/lib/auditReplayApi.ts`
 - `apps/dashboard/src/components/audit-replay/ReplayConfigurator.tsx`
 - `apps/dashboard/src/components/audit-replay/ReplayRunCard.tsx`
@@ -221,10 +223,12 @@ Audit Replay Page
 - `apps/dashboard/tests/audit/replay-page.spec.ts`
 
 ### Packages
+
 - `packages/types/src/audit.ts` (extended)
 - `packages/feature-flags/src/flags.ts` (extended)
 
 ### Documentation
+
 - `docs/product/audit_replay_engine_v1.md`
 - `docs/SPRINT_S37_COMPLETION_REPORT.md`
 
@@ -237,7 +241,7 @@ Audit Replay Page
 ### Feature Flag
 
 ```typescript
-ENABLE_AUDIT_REPLAY: true
+ENABLE_AUDIT_REPLAY: true;
 ```
 
 ## Security Considerations
@@ -282,6 +286,7 @@ ENABLE_AUDIT_REPLAY: true
 **Sprint S38 - Audit Analytics Dashboard**
 
 Suggested features:
+
 1. Trend visualization charts for audit events
 2. Anomaly detection alerts
 3. Custom dashboards and saved views

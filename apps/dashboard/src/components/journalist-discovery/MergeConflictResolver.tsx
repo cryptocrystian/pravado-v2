@@ -16,7 +16,12 @@ export interface MergeConflictResolverProps {
   discoveryId: string;
   targetJournalistId: string;
   onCancel: () => void;
-  onConfirm: (resolutions: Record<string, 'keep_existing' | 'use_discovery' | 'merge_both'>) => void;
+  onConfirm: (
+    resolutions: Record<
+      string,
+      'keep_existing' | 'use_discovery' | 'merge_both'
+    >
+  ) => void;
 }
 
 export function MergeConflictResolver({
@@ -106,7 +111,9 @@ export function MergeConflictResolver({
   if (loading) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="text-center py-8 text-gray-500">Loading merge preview...</div>
+        <div className="text-center py-8 text-gray-500">
+          Loading merge preview...
+        </div>
       </div>
     );
   }
@@ -114,7 +121,9 @@ export function MergeConflictResolver({
   if (!preview) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="text-center py-8 text-red-500">Failed to load merge preview</div>
+        <div className="text-center py-8 text-red-500">
+          Failed to load merge preview
+        </div>
       </div>
     );
   }
@@ -123,7 +132,9 @@ export function MergeConflictResolver({
     <div className="bg-white rounded-lg border border-gray-200">
       {/* Header */}
       <div className="p-6 border-b bg-gray-50">
-        <h3 className="text-lg font-semibold mb-1">Merge Conflict Resolution</h3>
+        <h3 className="text-lg font-semibold mb-1">
+          Merge Conflict Resolution
+        </h3>
         <p className="text-sm text-gray-600">
           {preview.conflicts.length === 0 ? (
             <span className="text-green-600 font-medium">
@@ -131,7 +142,8 @@ export function MergeConflictResolver({
             </span>
           ) : preview.autoResolvable ? (
             <span className="text-blue-600 font-medium">
-              {preview.conflicts.length} conflict(s) with automatic resolution recommendations
+              {preview.conflicts.length} conflict(s) with automatic resolution
+              recommendations
             </span>
           ) : (
             <span className="text-orange-600 font-medium">
@@ -184,7 +196,9 @@ export function MergeConflictResolver({
                     type="radio"
                     name={`conflict-${idx}`}
                     checked={resolutions[conflict.field] === 'keep_existing'}
-                    onChange={() => handleResolutionChange(conflict.field, 'keep_existing')}
+                    onChange={() =>
+                      handleResolutionChange(conflict.field, 'keep_existing')
+                    }
                     className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="text-sm">Keep existing value</span>
@@ -194,17 +208,23 @@ export function MergeConflictResolver({
                     type="radio"
                     name={`conflict-${idx}`}
                     checked={resolutions[conflict.field] === 'use_discovery'}
-                    onChange={() => handleResolutionChange(conflict.field, 'use_discovery')}
+                    onChange={() =>
+                      handleResolutionChange(conflict.field, 'use_discovery')
+                    }
                     className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-sm">Use discovery value (overwrite)</span>
+                  <span className="text-sm">
+                    Use discovery value (overwrite)
+                  </span>
                 </label>
                 <label className="flex items-center">
                   <input
                     type="radio"
                     name={`conflict-${idx}`}
                     checked={resolutions[conflict.field] === 'merge_both'}
-                    onChange={() => handleResolutionChange(conflict.field, 'merge_both')}
+                    onChange={() =>
+                      handleResolutionChange(conflict.field, 'merge_both')
+                    }
                     className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="text-sm">Merge both values (combine)</span>
@@ -223,7 +243,8 @@ export function MergeConflictResolver({
               Ready to Merge
             </div>
             <div className="text-sm text-green-600">
-              All fields are compatible. The merge can proceed without conflicts.
+              All fields are compatible. The merge can proceed without
+              conflicts.
             </div>
           </div>
         </div>

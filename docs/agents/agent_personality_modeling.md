@@ -77,6 +77,7 @@ Analyze agent behavioral data from multiple sources to generate a personality pr
 #### Purpose
 
 Create a comprehensive personality configuration based on:
+
 - Agent settings (baseline configuration)
 - Memory summaries (long-term communication patterns)
 - Collaboration logs (escalation/delegation behavior)
@@ -106,13 +107,13 @@ async generateAgentPersona(
 interface AgentPersona {
   agentId: string;
   organizationId: string;
-  tone: PersonalityTone;              // formal, casual, witty, assertive, etc.
-  decisionStyle: DecisionStyle;        // cautious, confident, exploratory, etc.
+  tone: PersonalityTone; // formal, casual, witty, assertive, etc.
+  decisionStyle: DecisionStyle; // cautious, confident, exploratory, etc.
   collaborationStyle: CollaborationStyle; // independent, team-oriented, etc.
-  memoryStyle: MemoryStyle;            // short-term, long-term, balanced
-  userAlignment: UserAlignment;        // analytical, empathetic, persuasive
-  biases?: CognitiveBias[];           // Detected cognitive biases
-  confidenceScore?: number;            // Confidence in this profile (0-1)
+  memoryStyle: MemoryStyle; // short-term, long-term, balanced
+  userAlignment: UserAlignment; // analytical, empathetic, persuasive
+  biases?: CognitiveBias[]; // Detected cognitive biases
+  confidenceScore?: number; // Confidence in this profile (0-1)
   metadata?: {
     generatedAt: Date;
     dataSourcesUsed: string[];
@@ -133,7 +134,7 @@ const persona = await agentPersonalityEngine.generateAgentPersona(
   {
     analysisPeriodDays: 30,
     forceRegenerate: false,
-    saveProfile: true
+    saveProfile: true,
   }
 );
 
@@ -180,6 +181,7 @@ Apply personality traits to modify prompts with appropriate tone and style.
 #### Purpose
 
 Transform prompts to reflect agent personality by:
+
 - Injecting tone modifiers (formal, casual, witty, etc.)
 - Adding style guidance (decision approach, collaboration preferences)
 - Including bias reminders (cognitive awareness)
@@ -224,7 +226,10 @@ interface ApplyPersonalityResult {
 const basePrompt = `You are a helpful PR agent. Create a press release for the user's product.`;
 
 // Generate persona
-const persona = await agentPersonalityEngine.generateAgentPersona('agent-xyz', 'org-123');
+const persona = await agentPersonalityEngine.generateAgentPersona(
+  'agent-xyz',
+  'org-123'
+);
 
 // Apply personality
 const result = agentPersonalityEngine.applyPersonalityToPrompt(
@@ -234,7 +239,7 @@ const result = agentPersonalityEngine.applyPersonalityToPrompt(
     includeTone: true,
     includeStyle: true,
     includeBiases: false,
-    templateType: 'system'
+    templateType: 'system',
   }
 );
 
@@ -266,13 +271,13 @@ You are a helpful PR agent. Create a press release for the user's product.`,
 
 In addition to system prompt injection, you can use placeholders in your prompts:
 
-| Placeholder | Replacement |
-|------------|-------------|
-| `{{tone}}` | Agent's communication tone |
-| `{{decisionStyle}}` | Agent's decision-making approach |
+| Placeholder              | Replacement                      |
+| ------------------------ | -------------------------------- |
+| `{{tone}}`               | Agent's communication tone       |
+| `{{decisionStyle}}`      | Agent's decision-making approach |
 | `{{collaborationStyle}}` | Agent's collaboration preference |
-| `{{memoryStyle}}` | Agent's memory orientation |
-| `{{userAlignment}}` | Agent's user interaction style |
+| `{{memoryStyle}}`        | Agent's memory orientation       |
+| `{{userAlignment}}`      | Agent's user interaction style   |
 
 ---
 
@@ -283,6 +288,7 @@ Analyze behavioral patterns to extract personality analytics.
 #### Purpose
 
 Provide deep insights into agent behavior including:
+
 - Tone usage frequency
 - Collaboration patterns (escalation/delegation rates)
 - Decision-making metrics (latency, confidence)
@@ -360,7 +366,10 @@ const analytics = await agentPersonalityEngine.getPersonaTraits(
 
 console.log('Tone Usage:', analytics.toneUsage);
 console.log('Escalation Rate:', analytics.collaborationPatterns.escalationRate);
-console.log('Avg Decision Latency:', analytics.decisionMetrics.avgDecisionLatencyMs);
+console.log(
+  'Avg Decision Latency:',
+  analytics.decisionMetrics.avgDecisionLatencyMs
+);
 console.log('Detected Biases:', analytics.detectedBiases);
 console.log('Behavioral Trends:', analytics.behavioralTrends);
 ```
@@ -378,6 +387,7 @@ All endpoints are available under `/api/agent-personality/`
 Generate agent persona from behavioral data.
 
 **Request Body:**
+
 ```json
 {
   "agentId": "agent-xyz",
@@ -392,6 +402,7 @@ Generate agent persona from behavioral data.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -418,6 +429,7 @@ Generate agent persona from behavioral data.
 Apply personality to prompt.
 
 **Request Body:**
+
 ```json
 {
   "prompt": "You are a helpful assistant.",
@@ -438,6 +450,7 @@ Apply personality to prompt.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -461,6 +474,7 @@ Apply personality to prompt.
 Get persona traits analytics.
 
 **Request Body:**
+
 ```json
 {
   "agentId": "agent-xyz",
@@ -470,19 +484,20 @@ Get persona traits analytics.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "analytics": {
     "agentId": "agent-xyz",
     "toneUsage": [
-      {"tone": "professional", "frequency": 45, "percentage": 45},
-      {"tone": "friendly", "frequency": 30, "percentage": 30}
+      { "tone": "professional", "frequency": 45, "percentage": 45 },
+      { "tone": "friendly", "frequency": 30, "percentage": 30 }
     ],
     "collaborationPatterns": {
       "escalationRate": 0.15,
       "delegationRate": 0.25,
-      "independentTaskRate": 0.60,
+      "independentTaskRate": 0.6,
       "avgCollaboratorsPerTask": 1.5
     },
     "decisionMetrics": {
@@ -499,6 +514,7 @@ Get persona traits analytics.
 Get active personality profile.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -521,9 +537,11 @@ Get active personality profile.
 Get personality evolution timeline.
 
 **Query Parameters:**
+
 - `limit` (optional): Max results (default: 10)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -552,9 +570,11 @@ Get personality evolution timeline.
 Find agents with specific tone.
 
 **Query Parameters:**
+
 - `limit` (optional): Max results (default: 10)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -576,18 +596,19 @@ Find agents with specific tone.
 Get personality trait distribution across organization.
 
 **Response:**
+
 ```json
 {
   "success": true,
   "distribution": {
     "tone": [
-      {"value": "professional", "count": 25, "percentage": 50},
-      {"value": "casual", "count": 15, "percentage": 30},
-      {"value": "friendly", "count": 10, "percentage": 20}
+      { "value": "professional", "count": 25, "percentage": 50 },
+      { "value": "casual", "count": 15, "percentage": 30 },
+      { "value": "friendly", "count": 10, "percentage": 20 }
     ],
     "decision_style": [
-      {"value": "analytical", "count": 30, "percentage": 60},
-      {"value": "confident", "count": 20, "percentage": 40}
+      { "value": "analytical", "count": 30, "percentage": 60 },
+      { "value": "confident", "count": 20, "percentage": 40 }
     ]
   },
   "totalTraitTypes": 2
@@ -599,6 +620,7 @@ Get personality trait distribution across organization.
 Compare personalities of two agents.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -631,6 +653,7 @@ Compare personalities of two agents.
 Activate a specific personality profile.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -759,7 +782,7 @@ async function executePersonalizedTask(agentId: string, taskPrompt: string) {
     'org-123',
     {
       forceRegenerate: false, // Use cached if recent
-      saveProfile: true
+      saveProfile: true,
     }
   );
 
@@ -773,15 +796,12 @@ User Alignment: {{userAlignment}}
 ${taskPrompt}`;
 
   // 3. Apply personality
-  const { prompt: personalizedPrompt } = agentPersonalityEngine.applyPersonalityToPrompt(
-    systemPrompt,
-    persona,
-    {
+  const { prompt: personalizedPrompt } =
+    agentPersonalityEngine.applyPersonalityToPrompt(systemPrompt, persona, {
       includeTone: true,
       includeStyle: true,
-      templateType: 'system'
-    }
-  );
+      templateType: 'system',
+    });
 
   // 4. Send to LLM
   const response = await callLLM(personalizedPrompt);
@@ -823,8 +843,14 @@ async function runPersonalityABTest(agentId: string) {
   // Apply to same prompt
   const basePrompt = 'Help the user with their PR campaign';
 
-  const resultA = agentPersonalityEngine.applyPersonalityToPrompt(basePrompt, variantA);
-  const resultB = agentPersonalityEngine.applyPersonalityToPrompt(basePrompt, variantB);
+  const resultA = agentPersonalityEngine.applyPersonalityToPrompt(
+    basePrompt,
+    variantA
+  );
+  const resultB = agentPersonalityEngine.applyPersonalityToPrompt(
+    basePrompt,
+    variantB
+  );
 
   // Track which variant performs better
   return {
@@ -876,11 +902,12 @@ function calculateStabilityScore(evolution: any[]): number {
 
   let changes = 0;
   for (let i = 1; i < evolution.length; i++) {
-    if (evolution[i].tone !== evolution[i-1].tone) changes++;
-    if (evolution[i].decision_style !== evolution[i-1].decision_style) changes++;
+    if (evolution[i].tone !== evolution[i - 1].tone) changes++;
+    if (evolution[i].decision_style !== evolution[i - 1].decision_style)
+      changes++;
   }
 
-  return 1 - (changes / (evolution.length * 2));
+  return 1 - changes / (evolution.length * 2);
 }
 ```
 
@@ -924,7 +951,9 @@ function calculateDiversityScore(distribution: Record<string, any[]>): number {
   Object.values(distribution).forEach((traits) => {
     const percentages = traits.map((t) => t.percentage);
     const mean = percentages.reduce((a, b) => a + b, 0) / percentages.length;
-    const variance = percentages.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) / percentages.length;
+    const variance =
+      percentages.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) /
+      percentages.length;
     totalVariance += variance;
     traitCount++;
   });
@@ -940,12 +969,14 @@ function calculateDiversityScore(distribution: Record<string, any[]>): number {
 ### 1. Persona Generation
 
 **Do:**
+
 - ✅ Generate personas periodically (weekly/monthly) to capture evolving behavior
 - ✅ Use sufficient analysis period (30+ days for stable profiles)
 - ✅ Allow profile caching to reduce database queries
 - ✅ Monitor confidence scores and regenerate if below threshold (< 0.6)
 
 **Don't:**
+
 - ❌ Generate personas on every request (expensive and creates profile churn)
 - ❌ Use very short analysis periods (< 7 days) - leads to volatile profiles
 - ❌ Ignore confidence scores - low confidence = unreliable persona
@@ -953,12 +984,14 @@ function calculateDiversityScore(distribution: Record<string, any[]>): number {
 ### 2. Personality Application
 
 **Do:**
+
 - ✅ Apply personality consistently across all agent interactions
 - ✅ Use appropriate template types (system vs user vs assistant)
 - ✅ Monitor token usage to avoid context overflow
 - ✅ Test different personalities with A/B testing
 
 **Don't:**
+
 - ❌ Apply conflicting personalities within the same conversation
 - ❌ Overload prompts with excessive personality modifiers
 - ❌ Apply personality to user messages (only system/assistant)
@@ -966,12 +999,14 @@ function calculateDiversityScore(distribution: Record<string, any[]>): number {
 ### 3. Analytics & Monitoring
 
 **Do:**
+
 - ✅ Track personality evolution over time
 - ✅ Monitor behavioral trends for sudden changes
 - ✅ Use analytics to identify successful personality configurations
 - ✅ Compare agent personalities for team optimization
 
 **Don't:**
+
 - ❌ Ignore sudden personality shifts (may indicate issues)
 - ❌ Make personality changes without analyzing impact
 - ❌ Rely solely on automated persona generation for critical agents
@@ -988,6 +1023,7 @@ node verify-sprint44-phase3.5.4.js
 ```
 
 **Expected Output:**
+
 ```
 ✓ All checks passed! Sprint 44 Phase 3.5.4 implementation is complete.
 Passed: 112/112 (100%)
@@ -998,21 +1034,27 @@ Passed: 112/112 (100%)
 ## Files Created
 
 ### TypeScript Types
+
 - `packages/shared-types/src/agent-personality.ts` - Type definitions for personality system
 
 ### Database
+
 - `apps/api/src/database/migrations/20251104_create_agent_personality_profiles.sql` - Migration for personality profiles
 
 ### Services
+
 - `apps/api/src/services/agentPersonalityEngine.ts` - Core personality engine service
 
 ### API Routes
+
 - `apps/api/src/routes/agent-personality.ts` - REST API endpoints
 
 ### Verification
+
 - `apps/api/verify-sprint44-phase3.5.4.js` - Implementation verification script
 
 ### Documentation
+
 - `docs/agent_personality_modeling.md` - This document
 
 ---
@@ -1020,12 +1062,14 @@ Passed: 112/112 (100%)
 ## Next Steps
 
 1. **Deploy Database Migration**
+
    ```bash
    psql -d pravado -f apps/api/src/database/migrations/20251104_create_agent_personality_profiles.sql
    ```
 
 2. **Register Routes**
    Add to your Express app:
+
    ```typescript
    import agentPersonalityRoutes from './routes/agent-personality';
    app.use('/api/agent-personality', agentPersonalityRoutes);

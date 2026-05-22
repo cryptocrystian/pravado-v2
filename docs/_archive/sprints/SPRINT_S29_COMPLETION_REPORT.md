@@ -21,6 +21,7 @@ Sprint S29 successfully implemented hard quota enforcement on top of Sprint S28'
 ### 1. Core Type System (`packages/types/src/billing.ts`)
 
 **BillingQuotaErrorDetails Interface**:
+
 ```typescript
 export interface BillingQuotaErrorDetails {
   type: 'quota_exceeded';
@@ -36,6 +37,7 @@ export interface BillingQuotaErrorDetails {
 ```
 
 **BillingQuotaError Class**:
+
 - Extends Error with structured details
 - HTTP 402 (Payment Required) status
 - Discriminated type for type-safe error handling
@@ -44,8 +46,9 @@ export interface BillingQuotaErrorDetails {
 ### 2. Feature Flag (`packages/feature-flags/src/flags.ts`)
 
 Added:
+
 ```typescript
-ENABLE_BILLING_HARD_LIMITS: true  // S29: Hard quota enforcement
+ENABLE_BILLING_HARD_LIMITS: true; // S29: Hard quota enforcement
 ```
 
 Enables gradual rollout and A/B testing of enforcement behavior.
@@ -53,6 +56,7 @@ Enables gradual rollout and A/B testing of enforcement behavior.
 ### 3. BillingService Enhancement (`apps/api/src/services/billingService.ts`)
 
 **enforceOrgQuotaOrThrow Method**:
+
 - Checks token, playbook run, and seat quotas
 - Throws `BillingQuotaError` when limits exceeded
 - Feature flag gated (`ENABLE_BILLING_HARD_LIMITS`)
@@ -60,6 +64,7 @@ Enables gradual rollout and A/B testing of enforcement behavior.
 - Comprehensive logging
 
 **Token Enforcement Logic**:
+
 ```typescript
 if (summary.softLimits.tokens && projectedTokens > summary.softLimits.tokens) {
   throw new BillingQuotaError({
@@ -76,12 +81,14 @@ if (summary.softLimits.tokens && projectedTokens > summary.softLimits.tokens) {
 ### 4. LLM Router Integration (`packages/utils/src/llmRouter.ts`)
 
 **Callback Pattern for Dependency Injection**:
+
 ```typescript
 // Added to LlmRouterConfig
 billingEnforcer?: (orgId: string, tokensToConsume: number) => Promise<void>;
 ```
 
 **Token Estimation Before LLM Calls**:
+
 - System prompt tokens: `Math.ceil(length / 4)`
 - User prompt tokens: `Math.ceil(length / 4)`
 - Max completion tokens: from request or config
@@ -90,6 +97,7 @@ billingEnforcer?: (orgId: string, tokensToConsume: number) => Promise<void>;
 ### 5. Playbook Execution Engine V2 (`apps/api/src/services/playbookExecutionEngineV2.ts`)
 
 **Run Count Enforcement**:
+
 ```typescript
 // Sprint S29: Enforce billing quota before creating playbook run
 await this.billingService.enforceOrgQuotaOrThrow(orgId, {
@@ -103,6 +111,7 @@ await this.billingService.enforceOrgQuotaOrThrow(orgId, {
 ### 6. Brief Generator Service (`apps/api/src/services/briefGeneratorService.ts`)
 
 **Fixed 10K Token Enforcement**:
+
 ```typescript
 // Sprint S29: Enforce billing quota before generating brief
 // Estimate: Brief generation typically uses ~10,000 tokens
@@ -117,6 +126,7 @@ await this.billingService.enforceOrgQuotaOrThrow(orgId, {
 ### 7. Content Rewrite Service (`apps/api/src/services/contentRewriteService.ts`)
 
 **Fixed 8K Token Enforcement**:
+
 ```typescript
 // Sprint S29: Enforce billing quota before rewriting content
 // Estimate: Content rewriting typically uses ~8,000 tokens
@@ -133,21 +143,25 @@ await this.billingService.enforceOrgQuotaOrThrow(orgId, {
 Updated all route files to create and wire `BillingService`:
 
 **apps/api/src/routes/playbooks/index.ts**:
+
 - Created `BillingService` instance
 - Wired to `LlmRouter` via `billingEnforcer` callback
 - Wired to `PlaybookExecutionEngineV2` via constructor
 
 **apps/api/src/routes/contentBriefGenerator/index.ts**:
+
 - Created `BillingService` instance
 - Wired to `BriefGeneratorService` constructor
 
 **apps/api/src/routes/contentRewrite/index.ts**:
+
 - Created `BillingService` instance
 - Wired to `ContentRewriteService` constructor
 
 ### 9. Test Fixes
 
 **ContentRewriteService Tests** (`tests/contentRewriteService.test.ts`):
+
 ```typescript
 mockBillingService = {
   enforceOrgQuotaOrThrow: vi.fn().mockResolvedValue(undefined),
@@ -157,16 +171,19 @@ mockBillingService = {
 };
 service = new ContentRewriteService(mockSupabase, mockBillingService);
 ```
+
 - Added BillingService mock
 - All 44 tests passing ✅
 
 **BriefGeneratorService Tests** (`tests/briefGeneratorService.test.ts`):
+
 - Added BillingService mock (same pattern as above)
 - 6 tests passing, 3 failures remaining (see Known Issues)
 
 ### 10. Documentation (`docs/product/billing_hard_enforcement_v1.md`)
 
 Comprehensive documentation created covering:
+
 - Architecture and design decisions
 - Enforcement points and mechanisms
 - Token estimation strategies
@@ -180,17 +197,20 @@ Comprehensive documentation created covering:
 ## Pipeline Status
 
 ### ✅ Lint
+
 - **Status**: PASSED
 - **Errors**: 0
 - **Warnings**: 233 (all pre-existing)
 - **Fixed**: 7 import order errors from S29 changes
 
 ### ✅ Typecheck
+
 - **Status**: PASSED
 - **Errors**: 0
 - **All Packages**: Clean compilation
 
 ### ⚠️ Tests
+
 - **Total**: 302 tests (21 test files)
 - **Passed**: 282 tests (263 in @pravado/api)
 - **Failed**: 20 tests
@@ -198,10 +218,12 @@ Comprehensive documentation created covering:
   - 17 failures: Pre-existing in other services
 
 **S29-Specific Test Status**:
+
 - ✅ ContentRewriteService: 44/44 passed
 - ⚠️ BriefGeneratorService: 6/9 passed (3 failures)
 
 **Pre-Existing Failures** (not S29-related):
+
 - playbookGraphService.test.ts: 3 failures
 - contentService.test.ts: 5 failures
 - prMediaService.test.ts: 4 failures
@@ -210,6 +232,7 @@ Comprehensive documentation created covering:
 - workerPool.test.ts: 1 failure
 
 ### ⏸️ Build
+
 - **Status**: Not run (blocked by test failures)
 
 ---
@@ -220,6 +243,7 @@ Comprehensive documentation created covering:
 
 **Issue**: Mock setup for `generateBrief` tests not fully working
 **Tests Failing**:
+
 - `should generate a brief with stub outputs`
 - `should use personality override when provided`
 - `should include content item when contentItemId is provided`
@@ -247,6 +271,7 @@ Comprehensive documentation created covering:
 **Current Behavior**: Errors propagate to Fastify's generic error handler (500 response)
 
 **Required Enhancement**:
+
 ```typescript
 // Example for playbooks/index.ts
 catch (error) {
@@ -273,6 +298,7 @@ catch (error) {
 **Gap**: Dashboard has no UI components for displaying quota exceeded states
 
 **Required Components**:
+
 - Quota exceeded banner/alert
 - Upgrade CTA when limits hit
 - Real-time quota usage indicators
@@ -286,6 +312,7 @@ catch (error) {
 **Gap**: No dedicated tests for enforcement scenarios
 
 **Required Test Coverage**:
+
 - Token limit enforcement
 - Playbook run limit enforcement
 - Seat limit enforcement
@@ -334,6 +361,7 @@ catch (error) {
 **Decision**: Use `billingEnforcer` callback instead of tight coupling
 
 **Rationale**:
+
 - LLM Router is in `packages/utils` (shared package)
 - BillingService is in `apps/api` (application-specific)
 - Callback prevents circular dependency and maintains clean architecture
@@ -345,6 +373,7 @@ catch (error) {
 **Decision**: Fixed estimates (10K for briefs, 8K for rewrites) instead of dynamic calculation
 
 **Rationale**:
+
 - Prevents under-estimation edge cases
 - Simpler implementation and debugging
 - Better UX (users prefer being blocked early vs mid-operation failure)
@@ -356,6 +385,7 @@ catch (error) {
 **Decision**: Log and continue if enforcement check itself fails
 
 **Rationale**:
+
 - Database/network issues shouldn't block all operations
 - S28 soft limits still provide observability
 - Prevents cascading failures
@@ -367,6 +397,7 @@ catch (error) {
 **Decision**: `ENABLE_BILLING_HARD_LIMITS: true` by default
 
 **Rationale**:
+
 - S29 goal is production-ready enforcement
 - Easier to disable if issues arise than to remember to enable
 - Aligns with "ship fast" philosophy
@@ -396,6 +427,7 @@ catch (error) {
 ### Enforcement Overhead
 
 **Per-Operation Cost**:
+
 - Database query: 1 additional query to `buildOrgBillingSummary`
 - Computation: Simple arithmetic comparisons
 - Network: No additional external calls
@@ -424,6 +456,7 @@ catch (error) {
 ### Error Information Disclosure
 
 **BillingQuotaError Details Include**:
+
 - Current usage numbers
 - Quota limits
 - Plan information
@@ -459,6 +492,7 @@ catch (error) {
 ## Files Modified
 
 ### Core Implementation
+
 - `packages/feature-flags/src/flags.ts` - Added ENABLE_BILLING_HARD_LIMITS
 - `packages/types/src/billing.ts` - Added BillingQuotaError class
 - `apps/api/src/services/billingService.ts` - Added enforceOrgQuotaOrThrow
@@ -468,15 +502,18 @@ catch (error) {
 - `apps/api/src/services/contentRewriteService.ts` - Added enforcement
 
 ### Service Instantiations
+
 - `apps/api/src/routes/playbooks/index.ts` - Wired BillingService
 - `apps/api/src/routes/contentBriefGenerator/index.ts` - Wired BillingService
 - `apps/api/src/routes/contentRewrite/index.ts` - Wired BillingService
 
 ### Tests
+
 - `apps/api/tests/briefGeneratorService.test.ts` - Added BillingService mock
 - `apps/api/tests/contentRewriteService.test.ts` - Added BillingService mock
 
 ### Documentation
+
 - `docs/product/billing_hard_enforcement_v1.md` - Comprehensive design doc
 
 ---
@@ -484,6 +521,7 @@ catch (error) {
 ## Acknowledgments
 
 Sprint S29 builds directly on Sprint S28 (Billing & Quota Kernel V1):
+
 - Org billing state schema
 - Usage counters
 - Soft limits infrastructure

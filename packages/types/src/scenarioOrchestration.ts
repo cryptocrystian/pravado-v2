@@ -6,7 +6,11 @@
  * Extends S71 AI Scenario Simulation Engine.
  */
 
-import type { AIScenarioRiskLevel, AIScenarioSimulation, AIScenarioRun } from './aiScenarioSimulation';
+import type {
+  AIScenarioRiskLevel,
+  AIScenarioSimulation,
+  AIScenarioRun,
+} from './aiScenarioSimulation';
 
 // ============================================================================
 // ENUMS / LITERAL TYPES
@@ -32,23 +36,25 @@ export const SCENARIO_SUITE_STATUSES: ScenarioSuiteStatus[] = [
   'archived',
 ];
 
-export const SCENARIO_SUITE_STATUS_LABELS: Record<ScenarioSuiteStatus, string> = {
-  draft: 'Draft',
-  configured: 'Configured',
-  running: 'Running',
-  completed: 'Completed',
-  failed: 'Failed',
-  archived: 'Archived',
-};
+export const SCENARIO_SUITE_STATUS_LABELS: Record<ScenarioSuiteStatus, string> =
+  {
+    draft: 'Draft',
+    configured: 'Configured',
+    running: 'Running',
+    completed: 'Completed',
+    failed: 'Failed',
+    archived: 'Archived',
+  };
 
-export const SCENARIO_SUITE_STATUS_COLORS: Record<ScenarioSuiteStatus, string> = {
-  draft: 'gray',
-  configured: 'blue',
-  running: 'yellow',
-  completed: 'green',
-  failed: 'red',
-  archived: 'gray',
-};
+export const SCENARIO_SUITE_STATUS_COLORS: Record<ScenarioSuiteStatus, string> =
+  {
+    draft: 'gray',
+    configured: 'blue',
+    running: 'yellow',
+    completed: 'green',
+    failed: 'red',
+    archived: 'gray',
+  };
 
 /**
  * Suite run status
@@ -72,7 +78,10 @@ export const SCENARIO_SUITE_RUN_STATUSES: ScenarioSuiteRunStatus[] = [
   'aborted',
 ];
 
-export const SCENARIO_SUITE_RUN_STATUS_LABELS: Record<ScenarioSuiteRunStatus, string> = {
+export const SCENARIO_SUITE_RUN_STATUS_LABELS: Record<
+  ScenarioSuiteRunStatus,
+  string
+> = {
   starting: 'Starting',
   in_progress: 'In Progress',
   running: 'Running',
@@ -82,7 +91,10 @@ export const SCENARIO_SUITE_RUN_STATUS_LABELS: Record<ScenarioSuiteRunStatus, st
   aborted: 'Aborted',
 };
 
-export const SCENARIO_SUITE_RUN_STATUS_COLORS: Record<ScenarioSuiteRunStatus, string> = {
+export const SCENARIO_SUITE_RUN_STATUS_COLORS: Record<
+  ScenarioSuiteRunStatus,
+  string
+> = {
   starting: 'gray',
   in_progress: 'blue',
   running: 'blue',
@@ -114,7 +126,10 @@ export const SCENARIO_SUITE_ITEM_STATUSES: ScenarioSuiteItemStatus[] = [
   'skipped',
 ];
 
-export const SCENARIO_SUITE_ITEM_STATUS_LABELS: Record<ScenarioSuiteItemStatus, string> = {
+export const SCENARIO_SUITE_ITEM_STATUS_LABELS: Record<
+  ScenarioSuiteItemStatus,
+  string
+> = {
   pending: 'Pending',
   condition_met: 'Condition Met',
   condition_unmet: 'Condition Not Met',
@@ -124,7 +139,10 @@ export const SCENARIO_SUITE_ITEM_STATUS_LABELS: Record<ScenarioSuiteItemStatus, 
   skipped: 'Skipped',
 };
 
-export const SCENARIO_SUITE_ITEM_STATUS_COLORS: Record<ScenarioSuiteItemStatus, string> = {
+export const SCENARIO_SUITE_ITEM_STATUS_COLORS: Record<
+  ScenarioSuiteItemStatus,
+  string
+> = {
   pending: 'gray',
   condition_met: 'blue',
   condition_unmet: 'yellow',
@@ -156,7 +174,10 @@ export const TRIGGER_CONDITION_TYPES: TriggerConditionType[] = [
   'custom_expression',
 ];
 
-export const TRIGGER_CONDITION_TYPE_LABELS: Record<TriggerConditionType, string> = {
+export const TRIGGER_CONDITION_TYPE_LABELS: Record<
+  TriggerConditionType,
+  string
+> = {
   always: 'Always Execute',
   risk_threshold: 'Risk Threshold',
   sentiment_shift: 'Sentiment Shift',
@@ -166,7 +187,10 @@ export const TRIGGER_CONDITION_TYPE_LABELS: Record<TriggerConditionType, string>
   custom_expression: 'Custom Expression',
 };
 
-export const TRIGGER_CONDITION_TYPE_DESCRIPTIONS: Record<TriggerConditionType, string> = {
+export const TRIGGER_CONDITION_TYPE_DESCRIPTIONS: Record<
+  TriggerConditionType,
+  string
+> = {
   always: 'Execute this simulation sequentially without conditions',
   risk_threshold: 'Trigger when a previous run exceeds a risk level threshold',
   sentiment_shift: 'Trigger when sentiment shifts in a specific direction',
@@ -783,7 +807,10 @@ export const SCENARIO_SUITE_AUDIT_EVENT_TYPES: ScenarioSuiteAuditEventType[] = [
   'risk_map_generated',
 ];
 
-export const SCENARIO_SUITE_AUDIT_EVENT_TYPE_LABELS: Record<ScenarioSuiteAuditEventType, string> = {
+export const SCENARIO_SUITE_AUDIT_EVENT_TYPE_LABELS: Record<
+  ScenarioSuiteAuditEventType,
+  string
+> = {
   suite_created: 'Suite Created',
   suite_updated: 'Suite Updated',
   suite_archived: 'Suite Archived',

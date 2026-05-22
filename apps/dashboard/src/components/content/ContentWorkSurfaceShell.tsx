@@ -35,15 +35,26 @@ import {
   ClockCounterClockwise,
   TrendUp,
 } from '@phosphor-icons/react';
-import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from 'react';
 
 import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
 
 import { ContentCreationOverlay } from './creation/ContentCreationOverlay';
 import { modeTokens } from './tokens';
-import type { ContentView, AutomationMode, ContentType, CreationContentType, OutlineSection, EditorInitData } from './types';
-
-
+import type {
+  ContentView,
+  AutomationMode,
+  ContentType,
+  CreationContentType,
+  OutlineSection,
+  EditorInitData,
+} from './types';
 
 // ============================================
 // TYPES
@@ -81,7 +92,13 @@ export interface ContentWorkSurfaceShellProps {
   /** Registers a callback that the parent can invoke to open the creation overlay.
    *  stage=2 (default): pre-filled brief form from a SAGE proposal.
    *  stage=1: fresh overlay, no pre-fill (manual create path). */
-  registerOpenCreation?: (fn: (briefData: Record<string, string>, contentType?: CreationContentType, stage?: 1 | 2) => void) => void;
+  registerOpenCreation?: (
+    fn: (
+      briefData: Record<string, string>,
+      contentType?: CreationContentType,
+      stage?: 1 | 2
+    ) => void
+  ) => void;
 }
 
 // ============================================
@@ -102,36 +119,28 @@ const VIEW_TABS: ViewTabConfig[] = [
     label: 'Content',
     description: 'Create and manage your content',
     modeCeiling: 'copilot',
-    icon: (
-      <ClipboardText className="w-4 h-4" weight="regular" />
-    ),
+    icon: <ClipboardText className="w-4 h-4" weight="regular" />,
   },
   {
     key: 'library',
     label: 'Library',
     description: 'Content assets and derivatives',
     modeCeiling: 'copilot',
-    icon: (
-      <Archive className="w-4 h-4" weight="regular" />
-    ),
+    icon: <Archive className="w-4 h-4" weight="regular" />,
   },
   {
     key: 'calendar',
     label: 'Calendar',
     description: 'Publication schedule and deadlines',
     modeCeiling: 'copilot',
-    icon: (
-      <CalendarBlank className="w-4 h-4" weight="regular" />
-    ),
+    icon: <CalendarBlank className="w-4 h-4" weight="regular" />,
   },
   {
     key: 'insights',
     label: 'Insights',
     description: 'Performance and recommendations',
     modeCeiling: 'copilot',
-    icon: (
-      <ChartBar className="w-4 h-4" weight="regular" />
-    ),
+    icon: <ChartBar className="w-4 h-4" weight="regular" />,
   },
 ];
 
@@ -139,21 +148,23 @@ const VIEW_TABS: ViewTabConfig[] = [
 // PAGE CONTEXT FOR EXPLAIN DRAWER
 // ============================================
 
-const PAGE_CONTEXT: Record<ContentView, { purpose: string; aiCapabilities: string[]; manualRequired: string[] }> = {
+const PAGE_CONTEXT: Record<
+  ContentView,
+  { purpose: string; aiCapabilities: string[]; manualRequired: string[] }
+> = {
   'work-queue': {
-    purpose: 'Create, edit, and manage your content. Write articles, manage status, and track progress.',
+    purpose:
+      'Create, edit, and manage your content. Write articles, manage status, and track progress.',
     aiCapabilities: [
       'Suggest content improvements',
       'Propose next best content action',
       'Generate derivative content',
     ],
-    manualRequired: [
-      'Approving proposed actions',
-      'Publishing content',
-    ],
+    manualRequired: ['Approving proposed actions', 'Publishing content'],
   },
   library: {
-    purpose: 'Browse, filter, and manage your content assets. Track derivatives and lifecycle status.',
+    purpose:
+      'Browse, filter, and manage your content assets. Track derivatives and lifecycle status.',
     aiCapabilities: [
       'Run CiteMind quality checks',
       'Generate derivative content',
@@ -166,39 +177,34 @@ const PAGE_CONTEXT: Record<ContentView, { purpose: string; aiCapabilities: strin
     ],
   },
   calendar: {
-    purpose: 'Plan and schedule content publication. Visualize deadlines and coordinate with campaigns.',
+    purpose:
+      'Plan and schedule content publication. Visualize deadlines and coordinate with campaigns.',
     aiCapabilities: [
       'Suggest optimal publish windows',
       'Detect scheduling conflicts',
       'Forecast content velocity',
     ],
-    manualRequired: [
-      'Setting publication dates',
-      'Creating calendar entries',
-    ],
+    manualRequired: ['Setting publication dates', 'Creating calendar entries'],
   },
   insights: {
-    purpose: 'Deep dive into content performance. Understand what drives authority and visibility.',
+    purpose:
+      'Deep dive into content performance. Understand what drives authority and visibility.',
     aiCapabilities: [
       'Analyze content patterns',
       'Generate recommendations',
       'Calculate EVI impact',
     ],
-    manualRequired: [
-      'Acting on recommendations routes to Library or Briefs',
-    ],
+    manualRequired: ['Acting on recommendations routes to Library or Briefs'],
   },
   editor: {
-    purpose: 'Write and refine your content with CiteMind governance and inline AI assistance.',
+    purpose:
+      'Write and refine your content with CiteMind governance and inline AI assistance.',
     aiCapabilities: [
       'Suggest improvements inline',
       'Run CiteMind quality checks',
       'Generate derivative content',
     ],
-    manualRequired: [
-      'Writing and editing content',
-      'Publishing final version',
-    ],
+    manualRequired: ['Writing and editing content', 'Publishing final version'],
   },
 };
 
@@ -208,18 +214,12 @@ const PAGE_CONTEXT: Record<ContentView, { purpose: string; aiCapabilities: strin
 
 function ModeIcon({ mode }: { mode: AutomationMode }) {
   if (mode === 'manual') {
-    return (
-      <Lock className="w-3.5 h-3.5" weight="regular" />
-    );
+    return <Lock className="w-3.5 h-3.5" weight="regular" />;
   }
   if (mode === 'copilot') {
-    return (
-      <User className="w-3.5 h-3.5" weight="regular" />
-    );
+    return <User className="w-3.5 h-3.5" weight="regular" />;
   }
-  return (
-    <Lightning className="w-3.5 h-3.5" weight="regular" />
-  );
+  return <Lightning className="w-3.5 h-3.5" weight="regular" />;
 }
 
 // ============================================
@@ -257,7 +257,9 @@ function ExplainDrawer({ isOpen, onClose, view }: ExplainDrawerProps) {
               <Info className="w-5 h-5 text-brand-iris" weight="regular" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-white/95">Page Guide</h3>
+              <h3 className="text-sm font-semibold text-white/95">
+                Page Guide
+              </h3>
               <p className="text-xs text-white/50">{viewConfig?.label}</p>
             </div>
           </div>
@@ -273,28 +275,48 @@ function ExplainDrawer({ isOpen, onClose, view }: ExplainDrawerProps) {
         <div className="p-6 space-y-6">
           {/* Purpose */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">What This Page Is For</h4>
-            <p className="text-sm text-white/85 leading-relaxed">{context.purpose}</p>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
+              What This Page Is For
+            </h4>
+            <p className="text-sm text-white/85 leading-relaxed">
+              {context.purpose}
+            </p>
           </div>
 
           {/* Mode Ceiling */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">Automation Mode</h4>
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${modeConfig.bg} ${modeConfig.border}`}>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
+              Automation Mode
+            </h4>
+            <div
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${modeConfig.bg} ${modeConfig.border}`}
+            >
               <ModeIcon mode={viewConfig?.modeCeiling || 'manual'} />
-              <span className={`text-sm font-medium ${modeConfig.text}`}>{modeConfig.label}</span>
-              <span className="text-xs text-white/50 ml-auto">{modeConfig.description}</span>
+              <span className={`text-sm font-medium ${modeConfig.text}`}>
+                {modeConfig.label}
+              </span>
+              <span className="text-xs text-white/50 ml-auto">
+                {modeConfig.description}
+              </span>
             </div>
           </div>
 
           {/* AI Capabilities */}
           {context.aiCapabilities.length > 0 && (
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">What AI Can Do Here</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
+                What AI Can Do Here
+              </h4>
               <ul className="space-y-2">
                 {context.aiCapabilities.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-white/70">
-                    <CheckCircle className="w-4 h-4 text-brand-cyan shrink-0 mt-0.5" weight="regular" />
+                  <li
+                    key={i}
+                    className="flex items-start gap-2 text-sm text-white/70"
+                  >
+                    <CheckCircle
+                      className="w-4 h-4 text-brand-cyan shrink-0 mt-0.5"
+                      weight="regular"
+                    />
                     {item}
                   </li>
                 ))}
@@ -304,11 +326,19 @@ function ExplainDrawer({ isOpen, onClose, view }: ExplainDrawerProps) {
 
           {/* Manual Required */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">What Requires Your Approval</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
+              What Requires Your Approval
+            </h4>
             <ul className="space-y-2">
               {context.manualRequired.map((item, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-white/70">
-                  <Lock className="w-4 h-4 text-white/40 shrink-0 mt-0.5" weight="regular" />
+                <li
+                  key={i}
+                  className="flex items-start gap-2 text-sm text-white/70"
+                >
+                  <Lock
+                    className="w-4 h-4 text-white/40 shrink-0 mt-0.5"
+                    weight="regular"
+                  />
                   {item}
                 </li>
               ))}
@@ -345,8 +375,8 @@ export function ContentWorkSurfaceShell({
 
   useEffect(() => {
     fetch('/api/command-center/strategy-panel')
-      .then(r => r.json())
-      .then(d => {
+      .then((r) => r.json())
+      .then((d) => {
         if (d.success !== false && d.evi) {
           setEvi({ score: d.evi.score, delta: d.evi.delta_7d });
         }
@@ -362,10 +392,17 @@ export function ContentWorkSurfaceShell({
   // Creation overlay state
   const [isCreationOverlayOpen, setIsCreationOverlayOpen] = useState(false);
   const [creationStage, setCreationStage] = useState<1 | 2 | 3>(1);
-  const [selectedContentType, setSelectedContentType] = useState<CreationContentType | null>(null);
-  const [selectedSageBriefId, setSelectedSageBriefId] = useState<string | null>(null);
-  const [briefFormData, setBriefFormData] = useState<Record<string, string>>({});
-  const [generatedOutline, setGeneratedOutline] = useState<OutlineSection[] | null>(null);
+  const [selectedContentType, setSelectedContentType] =
+    useState<CreationContentType | null>(null);
+  const [selectedSageBriefId, setSelectedSageBriefId] = useState<string | null>(
+    null
+  );
+  const [briefFormData, setBriefFormData] = useState<Record<string, string>>(
+    {}
+  );
+  const [generatedOutline, setGeneratedOutline] = useState<
+    OutlineSection[] | null
+  >(null);
 
   // Register imperative opener for parent to trigger creation overlay pre-filled
   useEffect(() => {
@@ -387,7 +424,8 @@ export function ContentWorkSurfaceShell({
   }, [mode, activeView]);
 
   const isTabActive = (tabKey: string) => {
-    if (mode === 'autopilot' && tabKey === 'work-queue') return activeView === 'work-queue' && !isActivityLogActive;
+    if (mode === 'autopilot' && tabKey === 'work-queue')
+      return activeView === 'work-queue' && !isActivityLogActive;
     if (tabKey === 'activity-log') return isActivityLogActive;
     return activeView === tabKey;
   };
@@ -405,7 +443,10 @@ export function ContentWorkSurfaceShell({
   // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (modeDropdownRef.current && !modeDropdownRef.current.contains(event.target as Node)) {
+      if (
+        modeDropdownRef.current &&
+        !modeDropdownRef.current.contains(event.target as Node)
+      ) {
         setIsModeDropdownOpen(false);
       }
     }
@@ -443,11 +484,12 @@ export function ContentWorkSurfaceShell({
     [selectedContentType, closeCreationOverlay, onEditorLaunch]
   );
 
-  const createButtonClass = effectiveMode === 'manual'
-    ? "flex items-center gap-2 px-4 py-1.5 bg-brand-iris text-white/95 text-sm font-semibold rounded-lg hover:bg-brand-iris/90 transition-colors shadow-[0_0_16px_rgba(168,85,247,0.25)]"
-    : effectiveMode === 'copilot'
-    ? "flex items-center gap-2 px-3 py-1.5 border border-white/15 text-white/60 text-sm font-medium rounded-lg hover:text-white/80 hover:border-white/25 hover:bg-white/5 transition-all"
-    : "flex items-center gap-2 px-3 py-1.5 text-white/50 text-sm font-medium rounded-lg hover:text-white/70 hover:bg-white/5 transition-all";
+  const createButtonClass =
+    effectiveMode === 'manual'
+      ? 'flex items-center gap-2 px-4 py-1.5 bg-brand-iris text-white/95 text-sm font-semibold rounded-lg hover:bg-brand-iris/90 transition-colors shadow-[0_0_16px_rgba(168,85,247,0.25)]'
+      : effectiveMode === 'copilot'
+        ? 'flex items-center gap-2 px-3 py-1.5 border border-white/15 text-white/60 text-sm font-medium rounded-lg hover:text-white/80 hover:border-white/25 hover:bg-white/5 transition-all'
+        : 'flex items-center gap-2 px-3 py-1.5 text-white/50 text-sm font-medium rounded-lg hover:text-white/70 hover:bg-white/5 transition-all';
 
   // DS v3 palette tokens (per DS_v3_1_EXPRESSION.md)
   // dark-bg: #0A0A0F (slate-0), dark-card: #13131A (slate-2), dark-border: #1F1F28
@@ -466,13 +508,17 @@ export function ContentWorkSurfaceShell({
             {creationStage > 1 && (
               <button
                 type="button"
-                onClick={() => setCreationStage((creationStage - 1) as 1 | 2 | 3)}
+                onClick={() =>
+                  setCreationStage((creationStage - 1) as 1 | 2 | 3)
+                }
                 className="p-1.5 rounded hover:bg-white/5 text-white/50 hover:text-white/80 transition-colors mr-2"
               >
                 <CaretLeft className="w-4 h-4" weight="regular" />
               </button>
             )}
-            <span className="text-sm font-semibold text-white/90 shrink-0">New Content</span>
+            <span className="text-sm font-semibold text-white/90 shrink-0">
+              New Content
+            </span>
             <div className="w-px h-4 bg-white/10 mx-3 shrink-0" />
 
             {/* Center: step pills */}
@@ -553,63 +599,39 @@ export function ContentWorkSurfaceShell({
             {/* Left cluster: pillar indicator + SAGE tag + divider + tabs */}
             <div className="flex items-center gap-2 shrink-0">
               <div className="w-1.5 h-1.5 rounded-full bg-brand-iris" />
-              <span className="text-[12px] font-bold uppercase tracking-widest text-white/40">Content</span>
+              <span className="text-[12px] font-bold uppercase tracking-widest text-white/40">
+                Content
+              </span>
             </div>
             <div className="w-px h-3.5 bg-white/10 mx-3 shrink-0" />
             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-brand-iris/8 border border-brand-iris/15 shrink-0">
               <Lightning className="w-3 h-3 text-brand-iris/70" weight="fill" />
-              <span className="text-[11px] font-semibold text-brand-iris/80 tracking-wide">SAGE&trade; ACTIVE</span>
+              <span className="text-[11px] font-semibold text-brand-iris/80 tracking-wide">
+                SAGE&trade; ACTIVE
+              </span>
             </div>
             <div className="w-px h-4 bg-white/10 mx-3 shrink-0" />
 
             {/* Tabs — mode-aware per MODE_UX_ARCHITECTURE §5B */}
-            {VIEW_TABS
-              .filter((tab) => {
-                if (mode === 'autopilot' && tab.key === 'insights') return false;
-                if (mode === 'autopilot' && tab.key === 'library') return false;
-                return true;
-              })
-              .map((tab) => {
-                const label = mode === 'autopilot' && tab.key === 'work-queue'
+            {VIEW_TABS.filter((tab) => {
+              if (mode === 'autopilot' && tab.key === 'insights') return false;
+              if (mode === 'autopilot' && tab.key === 'library') return false;
+              return true;
+            }).map((tab) => {
+              const label =
+                mode === 'autopilot' && tab.key === 'work-queue'
                   ? 'Exceptions'
                   : tab.label;
-                const active = isTabActive(tab.key);
+              const active = isTabActive(tab.key);
 
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleTabClick(tab.key);
-                    }}
-                    className={`group flex items-center gap-1.5 px-3 h-full text-sm font-medium transition-all relative cursor-pointer ${
-                      active
-                        ? 'text-white/95'
-                        : 'text-white/50 hover:text-white/80'
-                    }`}
-                  >
-                    <span className={active ? 'text-brand-iris' : 'text-white/40 group-hover:text-white/60'}>
-                      {tab.icon}
-                    </span>
-                    {label}
-                    {active && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-iris rounded-t shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
-                    )}
-                  </button>
-                );
-              })}
-            {/* Activity Log tab — Autopilot mode only */}
-            {mode === 'autopilot' && (() => {
-              const active = isTabActive('activity-log');
               return (
                 <button
+                  key={tab.key}
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    handleTabClick('activity-log');
+                    handleTabClick(tab.key);
                   }}
                   className={`group flex items-center gap-1.5 px-3 h-full text-sm font-medium transition-all relative cursor-pointer ${
                     active
@@ -617,16 +639,59 @@ export function ContentWorkSurfaceShell({
                       : 'text-white/50 hover:text-white/80'
                   }`}
                 >
-                  <span className={active ? 'text-brand-iris' : 'text-white/40 group-hover:text-white/60'}>
-                    <ClockCounterClockwise className="w-4 h-4" weight="regular" />
+                  <span
+                    className={
+                      active
+                        ? 'text-brand-iris'
+                        : 'text-white/40 group-hover:text-white/60'
+                    }
+                  >
+                    {tab.icon}
                   </span>
-                  Activity Log
+                  {label}
                   {active && (
                     <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-iris rounded-t shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
                   )}
                 </button>
               );
-            })()}
+            })}
+            {/* Activity Log tab — Autopilot mode only */}
+            {mode === 'autopilot' &&
+              (() => {
+                const active = isTabActive('activity-log');
+                return (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleTabClick('activity-log');
+                    }}
+                    className={`group flex items-center gap-1.5 px-3 h-full text-sm font-medium transition-all relative cursor-pointer ${
+                      active
+                        ? 'text-white/95'
+                        : 'text-white/50 hover:text-white/80'
+                    }`}
+                  >
+                    <span
+                      className={
+                        active
+                          ? 'text-brand-iris'
+                          : 'text-white/40 group-hover:text-white/60'
+                      }
+                    >
+                      <ClockCounterClockwise
+                        className="w-4 h-4"
+                        weight="regular"
+                      />
+                    </span>
+                    Activity Log
+                    {active && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-iris rounded-t shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                    )}
+                  </button>
+                );
+              })()}
 
             {/* Spacer */}
             <div className="flex-1" />
@@ -635,7 +700,10 @@ export function ContentWorkSurfaceShell({
             <div className="flex items-center gap-2 shrink-0">
               {/* SAGE tag */}
               <div className="flex items-center gap-1.5">
-                <Lightning className="w-3.5 h-3.5 text-brand-iris shrink-0" weight="fill" />
+                <Lightning
+                  className="w-3.5 h-3.5 text-brand-iris shrink-0"
+                  weight="fill"
+                />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-iris max-w-[200px] truncate">
                   Content authority gap: AI citation coverage
                 </span>
@@ -644,11 +712,18 @@ export function ContentWorkSurfaceShell({
 
               {/* EVI indicator */}
               <div className="flex items-center gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mr-1">EVI</span>
-                <span className="text-sm font-bold tabular-nums text-brand-cyan">{(evi?.score ?? 0).toFixed(1)}</span>
-                <span className={`text-xs flex items-center gap-0.5 ${(evi?.delta ?? 0) >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mr-1">
+                  EVI
+                </span>
+                <span className="text-sm font-bold tabular-nums text-brand-cyan">
+                  {(evi?.score ?? 0).toFixed(1)}
+                </span>
+                <span
+                  className={`text-xs flex items-center gap-0.5 ${(evi?.delta ?? 0) >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}
+                >
                   <TrendUp className="w-3 h-3" weight="bold" />
-                  {(evi?.delta ?? 0) >= 0 ? '+' : ''}{(evi?.delta ?? 0).toFixed(1)}
+                  {(evi?.delta ?? 0) >= 0 ? '+' : ''}
+                  {(evi?.delta ?? 0).toFixed(1)}
                 </span>
               </div>
               <div className="w-px h-4 bg-white/10" />
@@ -668,7 +743,9 @@ export function ContentWorkSurfaceShell({
                 {/* Mode dropdown — opens leftward (right-0) */}
                 {isModeDropdownOpen && (
                   <div className="absolute right-0 top-full mt-1 w-48 bg-slate-2 border border-slate-4 rounded-lg shadow-elev-3 py-1 z-[200]">
-                    {(['manual', 'copilot', 'autopilot'] as AutomationMode[]).map((m) => {
+                    {(
+                      ['manual', 'copilot', 'autopilot'] as AutomationMode[]
+                    ).map((m) => {
                       const tokens = modeTokens[m];
                       return (
                         <button
@@ -685,7 +762,10 @@ export function ContentWorkSurfaceShell({
                           <ModeIcon mode={m} />
                           <span className="font-medium">{tokens.label}</span>
                           {m === effectiveMode && (
-                            <CheckCircle className="w-4 h-4 ml-auto" weight="fill" />
+                            <CheckCircle
+                              className="w-4 h-4 ml-auto"
+                              weight="fill"
+                            />
                           )}
                         </button>
                       );
@@ -704,7 +784,9 @@ export function ContentWorkSurfaceShell({
               </button>
 
               {/* Create button — hidden in copilot work-queue (moved to SAGE queue header) */}
-              {!(effectiveMode === 'copilot' && activeView === 'work-queue') && (
+              {!(
+                effectiveMode === 'copilot' && activeView === 'work-queue'
+              ) && (
                 <button
                   type="button"
                   onClick={() => setIsCreationOverlayOpen(true)}
@@ -761,8 +843,13 @@ export function ContentWorkSurfaceShell({
                 aria-label="Expand Details Panel"
               >
                 <div className="flex flex-col items-center gap-3">
-                  <CaretLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" weight="regular" />
-                  <span className="text-[11px] font-medium uppercase tracking-wider [writing-mode:vertical-lr]">Details</span>
+                  <CaretLeft
+                    className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform"
+                    weight="regular"
+                  />
+                  <span className="text-[11px] font-medium uppercase tracking-wider [writing-mode:vertical-lr]">
+                    Details
+                  </span>
                 </div>
               </button>
             ) : (
@@ -770,7 +857,9 @@ export function ContentWorkSurfaceShell({
                 <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-gradient-to-r from-slate-1 to-slate-0">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-brand-iris/50" />
-                    <h2 className="text-sm font-semibold text-white tracking-tight">Asset Details</h2>
+                    <h2 className="text-sm font-semibold text-white tracking-tight">
+                      Asset Details
+                    </h2>
                   </div>
                   <button
                     onClick={() => setRightRailCollapsed(true)}
@@ -780,9 +869,7 @@ export function ContentWorkSurfaceShell({
                     <CaretRight className="w-4 h-4" weight="regular" />
                   </button>
                 </div>
-                <div className="flex-1 overflow-y-auto">
-                  {rightRailContent}
-                </div>
+                <div className="flex-1 overflow-y-auto">{rightRailContent}</div>
               </>
             )}
           </div>

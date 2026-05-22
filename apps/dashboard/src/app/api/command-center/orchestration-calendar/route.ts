@@ -26,7 +26,13 @@ export async function GET(request: Request) {
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/command-center/orchestration-calendar] Proxy error:', { status, message, code });
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    console.error(
+      '[API /api/command-center/orchestration-calendar] Proxy error:',
+      { status, message, code }
+    );
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

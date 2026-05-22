@@ -61,6 +61,7 @@ The main orchestration service with four core methods:
 Selects the most relevant playbook using GPT-4 analysis.
 
 **Signature:**
+
 ```typescript
 async selectRelevantPlaybook(
   request: PlaybookSelectionRequest
@@ -68,12 +69,13 @@ async selectRelevantPlaybook(
 ```
 
 **Request:**
+
 ```typescript
 interface PlaybookSelectionRequest {
   context: AgentContext;
-  availablePlaybooks?: Playbook[];  // Optional, otherwise fetches all
-  minConfidence?: number;           // Default: 0.6
-  logDecision?: boolean;            // Default: true
+  availablePlaybooks?: Playbook[]; // Optional, otherwise fetches all
+  minConfidence?: number; // Default: 0.6
+  logDecision?: boolean; // Default: true
 }
 
 interface AgentContext {
@@ -97,6 +99,7 @@ interface AgentContext {
 ```
 
 **Response:**
+
 ```typescript
 interface PlaybookSelectionResponse {
   playbook: Playbook | null;
@@ -126,6 +129,7 @@ interface PlaybookSelectionResponse {
 7. Returns selected playbook
 
 **GPT-4 System Prompt:**
+
 ```
 You are an AI agent trying to solve a task using available playbooks (workflows).
 
@@ -144,6 +148,7 @@ Rules:
 ```
 
 **Example:**
+
 ```typescript
 const response = await agentPlaybookOrchestrator.selectRelevantPlaybook({
   context: {
@@ -152,10 +157,14 @@ const response = await agentPlaybookOrchestrator.selectRelevantPlaybook({
     userPrompt: 'Send a personalized email to our top 10 customers',
     currentGoal: 'Customer retention campaign',
     relevantMemories: [
-      { content: 'Customer segmentation complete', relevance: 0.9, source: 'memory-1' }
-    ]
+      {
+        content: 'Customer segmentation complete',
+        relevance: 0.9,
+        source: 'memory-1',
+      },
+    ],
   },
-  minConfidence: 0.7
+  minConfidence: 0.7,
 });
 
 // Returns:
@@ -177,6 +186,7 @@ const response = await agentPlaybookOrchestrator.selectRelevantPlaybook({
 Executes multiple playbooks in sequence with automatic input/output mapping.
 
 **Signature:**
+
 ```typescript
 async chainPlaybookExecutions(
   chainConfig: PlaybookChainConfig
@@ -184,13 +194,14 @@ async chainPlaybookExecutions(
 ```
 
 **Config:**
+
 ```typescript
 interface PlaybookChainConfig {
   chainId?: string;
   playbooks: Array<{
     playbookId: string;
-    inputMapping?: Record<string, string>;  // Map from previous output
-    continueOnFailure?: boolean;            // Default: false
+    inputMapping?: Record<string, string>; // Map from previous output
+    continueOnFailure?: boolean; // Default: false
     timeoutMs?: number;
   }>;
   initialInput?: Record<string, any>;
@@ -200,6 +211,7 @@ interface PlaybookChainConfig {
 ```
 
 **Input Mapping Examples:**
+
 ```typescript
 // Simple field mapping
 inputMapping: {
@@ -221,6 +233,7 @@ inputMapping: {
 ```
 
 **Example:**
+
 ```typescript
 const result = await agentPlaybookOrchestrator.chainPlaybookExecutions({
   playbooks: [
@@ -231,22 +244,22 @@ const result = await agentPlaybookOrchestrator.chainPlaybookExecutions({
     {
       playbookId: 'segment-customers',
       inputMapping: {
-        'customers': '$previous_output.customerList'
-      }
+        customers: '$previous_output.customerList',
+      },
     },
     {
       playbookId: 'send-emails',
       inputMapping: {
-        'recipients': '$previous_output.topSegment',
-        'template': 'premium_offer'
+        recipients: '$previous_output.topSegment',
+        template: 'premium_offer',
       },
-      continueOnFailure: false  // Stop chain if this fails
-    }
+      continueOnFailure: false, // Stop chain if this fails
+    },
   ],
   initialInput: {
     limit: 100,
-    status: 'active'
-  }
+    status: 'active',
+  },
 });
 
 // Returns:
@@ -277,6 +290,7 @@ const result = await agentPlaybookOrchestrator.chainPlaybookExecutions({
 Combines selection and execution in one operation.
 
 **Signature:**
+
 ```typescript
 async triggerPlaybookForAgent(
   request: TriggerPlaybookRequest
@@ -284,18 +298,20 @@ async triggerPlaybookForAgent(
 ```
 
 **Request:**
+
 ```typescript
 interface TriggerPlaybookRequest {
   agentId: string;
   userPrompt: string;
   additionalContext?: Partial<AgentContext>;
-  playbookId?: string;              // Skip selection if provided
+  playbookId?: string; // Skip selection if provided
   input?: Record<string, any>;
-  logDecision?: boolean;            // Default: true
+  logDecision?: boolean; // Default: true
 }
 ```
 
 **Example:**
+
 ```typescript
 // Auto-select and trigger
 const result = await agentPlaybookOrchestrator.triggerPlaybookForAgent({
@@ -303,8 +319,8 @@ const result = await agentPlaybookOrchestrator.triggerPlaybookForAgent({
   userPrompt: 'Analyze our Q4 sales performance',
   additionalContext: {
     organizationId: 'org-456',
-    currentGoal: 'Quarterly business review'
-  }
+    currentGoal: 'Quarterly business review',
+  },
 });
 
 // Or skip selection and trigger specific playbook
@@ -314,8 +330,8 @@ const result = await agentPlaybookOrchestrator.triggerPlaybookForAgent({
   playbookId: 'sales-analysis-playbook',
   input: {
     quarter: 'Q4',
-    year: 2024
-  }
+    year: 2024,
+  },
 });
 ```
 
@@ -326,6 +342,7 @@ const result = await agentPlaybookOrchestrator.triggerPlaybookForAgent({
 Logs playbook selection decisions to the database.
 
 **Signature:**
+
 ```typescript
 async logAgentPlaybookDecision(
   decision: Omit<AgentPlaybookDecisionLog, 'id' | 'timestamp'>
@@ -333,14 +350,15 @@ async logAgentPlaybookDecision(
 ```
 
 **Decision Log:**
+
 ```typescript
 interface AgentPlaybookDecisionLog {
-  id: string;                      // Auto-generated
+  id: string; // Auto-generated
   agentId: string;
   organizationId: string;
   userPrompt: string;
   agentContext: AgentContext;
-  reasoning: string;               // GPT-4 explanation
+  reasoning: string; // GPT-4 explanation
   selectedPlaybookId: string | null;
   selectedPlaybookName?: string;
   alternativesConsidered: Array<{
@@ -349,10 +367,10 @@ interface AgentPlaybookDecisionLog {
     reason: string;
     score?: number;
   }>;
-  confidenceScore: number;         // 0.0 to 1.0
+  confidenceScore: number; // 0.0 to 1.0
   playbookFound: boolean;
   executionId?: string;
-  timestamp: Date;                 // Auto-generated
+  timestamp: Date; // Auto-generated
   metadata?: Record<string, any>;
 }
 ```
@@ -399,6 +417,7 @@ CREATE TABLE agent_playbook_logs (
 ```
 
 **Indexes:**
+
 - `idx_agent_playbook_logs_agent_id` - Query by agent
 - `idx_agent_playbook_logs_organization_id` - Query by organization
 - `idx_agent_playbook_logs_playbook_id` - Query by playbook
@@ -408,6 +427,7 @@ CREATE TABLE agent_playbook_logs (
 - GIN indexes on JSONB columns for efficient querying
 
 **RLS Policies:**
+
 - Multi-tenant isolation using `organization_id`
 - Policies for SELECT, INSERT, UPDATE, DELETE
 
@@ -428,6 +448,7 @@ SELECT * FROM get_agent_playbook_stats(
 ```
 
 **Returns:**
+
 ```
 total_decisions | successful_selections | failed_selections | avg_confidence | most_selected_playbook_id | selection_count
 100            | 85                    | 15                | 0.78           | pb-1                      | 45
@@ -456,6 +477,7 @@ SELECT * FROM get_playbook_selection_trends(
 ```
 
 **Returns:**
+
 ```
 playbook_id | playbook_name       | selection_count | avg_confidence | success_rate
 pb-1        | Email Campaign      | 45              | 0.82           | 0.95
@@ -468,6 +490,7 @@ pb-3        | Customer Segmenting | 25              | 0.79           | 0.92
 ## API Reference
 
 ### Base URL
+
 ```
 /api/agent-playbooks
 ```
@@ -479,6 +502,7 @@ pb-3        | Customer Segmenting | 25              | 0.79           | 0.92
 Select the most relevant playbook for an agent context.
 
 **Request:**
+
 ```json
 {
   "context": {
@@ -487,10 +511,18 @@ Select the most relevant playbook for an agent context.
     "userPrompt": "Send personalized emails to top customers",
     "currentGoal": "Customer retention",
     "conversationHistory": [
-      { "role": "user", "content": "Who are our top customers?", "timestamp": "2025-01-02T10:00:00Z" }
+      {
+        "role": "user",
+        "content": "Who are our top customers?",
+        "timestamp": "2025-01-02T10:00:00Z"
+      }
     ],
     "relevantMemories": [
-      { "content": "Completed customer segmentation", "relevance": 0.9, "source": "memory-1" }
+      {
+        "content": "Completed customer segmentation",
+        "relevance": 0.9,
+        "source": "memory-1"
+      }
     ]
   },
   "minConfidence": 0.7,
@@ -499,6 +531,7 @@ Select the most relevant playbook for an agent context.
 ```
 
 **Response (200):**
+
 ```json
 {
   "playbook": {
@@ -527,6 +560,7 @@ Select the most relevant playbook for an agent context.
 Auto-select and trigger a playbook for an agent.
 
 **Request:**
+
 ```json
 {
   "agentId": "agent-123",
@@ -544,6 +578,7 @@ Auto-select and trigger a playbook for an agent.
 ```
 
 **Response (200):**
+
 ```json
 {
   "executionId": "exec-123",
@@ -574,6 +609,7 @@ Auto-select and trigger a playbook for an agent.
 Execute multiple playbooks in sequence.
 
 **Request:**
+
 ```json
 {
   "playbooks": [
@@ -606,6 +642,7 @@ Execute multiple playbooks in sequence.
 ```
 
 **Response (200):**
+
 ```json
 {
   "executionId": "chain-123",
@@ -634,10 +671,12 @@ Execute multiple playbooks in sequence.
 Get decision logs for an agent.
 
 **Query Parameters:**
+
 - `limit` (default: 50) - Number of logs to return
 - `offset` (default: 0) - Pagination offset
 
 **Response (200):**
+
 ```json
 {
   "logs": [
@@ -668,9 +707,11 @@ Get decision logs for an agent.
 Get playbook selection statistics for an agent.
 
 **Query Parameters:**
+
 - `days` (default: 30) - Number of days to analyze
 
 **Response (200):**
+
 ```json
 {
   "total_decisions": 100,
@@ -690,9 +731,11 @@ Get playbook selection statistics for an agent.
 Get playbook selection trends for an organization.
 
 **Query Parameters:**
+
 - `days` (default: 30) - Number of days to analyze
 
 **Response (200):**
+
 ```json
 {
   "trends": [
@@ -729,7 +772,7 @@ Get playbook selection trends for an organization.
 import { agentPlaybookOrchestrator } from './services/agentPlaybookOrchestrator';
 
 // Agent receives user request
-const userPrompt = "Send a newsletter to all active subscribers";
+const userPrompt = 'Send a newsletter to all active subscribers';
 
 // Trigger playbook (auto-selects best match)
 const result = await agentPlaybookOrchestrator.triggerPlaybookForAgent({
@@ -737,8 +780,8 @@ const result = await agentPlaybookOrchestrator.triggerPlaybookForAgent({
   userPrompt,
   additionalContext: {
     organizationId: 'acme-corp',
-    currentGoal: 'Monthly newsletter campaign'
-  }
+    currentGoal: 'Monthly newsletter campaign',
+  },
 });
 
 if (result.status === 'success') {
@@ -758,35 +801,35 @@ const chainResult = await agentPlaybookOrchestrator.chainPlaybookExecutions({
   playbooks: [
     {
       playbookId: 'fetch-sales-data',
-      timeoutMs: 60000
+      timeoutMs: 60000,
     },
     {
       playbookId: 'analyze-trends',
       inputMapping: {
-        'salesData': '$previous_output.rawData',
-        'period': '$previous_output.dateRange'
-      }
+        salesData: '$previous_output.rawData',
+        period: '$previous_output.dateRange',
+      },
     },
     {
       playbookId: 'generate-report',
       inputMapping: {
-        'analysis': '$previous_output.trendAnalysis',
-        'template': 'executive_summary'
-      }
+        analysis: '$previous_output.trendAnalysis',
+        template: 'executive_summary',
+      },
     },
     {
       playbookId: 'send-slack-notification',
       inputMapping: {
-        'channel': '#executives',
-        'reportUrl': '$previous_output.reportUrl'
+        channel: '#executives',
+        reportUrl: '$previous_output.reportUrl',
       },
-      continueOnFailure: true  // Don't fail chain if Slack fails
-    }
+      continueOnFailure: true, // Don't fail chain if Slack fails
+    },
   ],
   initialInput: {
     startDate: '2025-01-01',
-    endDate: '2025-01-31'
-  }
+    endDate: '2025-01-31',
+  },
 });
 
 console.log(`Chain completed in ${chainResult.durationMs}ms`);
@@ -799,39 +842,40 @@ console.log(`Final output:`, chainResult.output);
 
 ```typescript
 // Agent has conversation history and memories
-const selectionResponse = await agentPlaybookOrchestrator.selectRelevantPlaybook({
-  context: {
-    agentId: 'sales-agent-2',
-    organizationId: 'acme-corp',
-    userPrompt: 'Follow up with leads from last week',
-    currentGoal: 'Convert Q1 pipeline',
-    conversationHistory: [
-      {
-        role: 'user',
-        content: 'How many leads do we have?',
-        timestamp: new Date('2025-01-02T09:00:00Z')
-      },
-      {
-        role: 'assistant',
-        content: 'We have 45 qualified leads from last week',
-        timestamp: new Date('2025-01-02T09:01:00Z')
-      }
-    ],
-    relevantMemories: [
-      {
-        content: 'Lead scoring model updated with new criteria',
-        relevance: 0.85,
-        source: 'knowledge-base'
-      },
-      {
-        content: 'Email templates for lead nurturing approved',
-        relevance: 0.90,
-        source: 'recent-actions'
-      }
-    ]
-  },
-  minConfidence: 0.75
-});
+const selectionResponse =
+  await agentPlaybookOrchestrator.selectRelevantPlaybook({
+    context: {
+      agentId: 'sales-agent-2',
+      organizationId: 'acme-corp',
+      userPrompt: 'Follow up with leads from last week',
+      currentGoal: 'Convert Q1 pipeline',
+      conversationHistory: [
+        {
+          role: 'user',
+          content: 'How many leads do we have?',
+          timestamp: new Date('2025-01-02T09:00:00Z'),
+        },
+        {
+          role: 'assistant',
+          content: 'We have 45 qualified leads from last week',
+          timestamp: new Date('2025-01-02T09:01:00Z'),
+        },
+      ],
+      relevantMemories: [
+        {
+          content: 'Lead scoring model updated with new criteria',
+          relevance: 0.85,
+          source: 'knowledge-base',
+        },
+        {
+          content: 'Email templates for lead nurturing approved',
+          relevance: 0.9,
+          source: 'recent-actions',
+        },
+      ],
+    },
+    minConfidence: 0.75,
+  });
 
 if (selectionResponse.playbook) {
   console.log(`Selected: ${selectionResponse.playbook.name}`);
@@ -876,7 +920,7 @@ const context: AgentContext = {
   // Include related memories
   relevantMemories: await memoryService.search({
     query: 'customer feedback analysis',
-    limit: 5
+    limit: 5,
   }),
 
   // Specify current goal
@@ -888,8 +932,8 @@ const context: AgentContext = {
   // Add custom metadata
   metadata: {
     department: 'customer_success',
-    urgency: 'high'
-  }
+    urgency: 'high',
+  },
 };
 ```
 
@@ -902,17 +946,17 @@ const chainConfig: PlaybookChainConfig = {
   playbooks: [
     {
       playbookId: 'critical-step-1',
-      continueOnFailure: false  // Stop chain if this fails
+      continueOnFailure: false, // Stop chain if this fails
     },
     {
       playbookId: 'critical-step-2',
-      continueOnFailure: false
+      continueOnFailure: false,
     },
     {
       playbookId: 'optional-notification',
-      continueOnFailure: true   // Continue even if notification fails
-    }
-  ]
+      continueOnFailure: true, // Continue even if notification fails
+    },
+  ],
 };
 ```
 
@@ -924,7 +968,7 @@ Always log important decisions for audit trail and debugging:
 const result = await agentPlaybookOrchestrator.triggerPlaybookForAgent({
   agentId: 'agent-1',
   userPrompt: 'Process refund for order #12345',
-  logDecision: true  // Always log financial operations
+  logDecision: true, // Always log financial operations
 });
 
 // Later, review the decision
@@ -944,7 +988,9 @@ if (stats.avg_confidence < 0.7) {
 }
 
 if (stats.failed_selections > stats.total_decisions * 0.2) {
-  console.warn('High failure rate - add more playbooks or improve descriptions');
+  console.warn(
+    'High failure rate - add more playbooks or improve descriptions'
+  );
 }
 ```
 
@@ -979,6 +1025,7 @@ if (stats.failed_selections > stats.total_decisions * 0.2) {
 **Symptoms:** All playbooks returning confidence < 0.6
 
 **Solutions:**
+
 1. Improve playbook descriptions with more detail
 2. Add relevant tags and categories
 3. Enrich agent context with more memories
@@ -989,6 +1036,7 @@ if (stats.failed_selections > stats.total_decisions * 0.2) {
 **Symptoms:** Correct playbook exists but different one selected
 
 **Solutions:**
+
 1. Review decision log reasoning
 2. Improve target playbook description
 3. Add distinguishing tags/categories
@@ -999,6 +1047,7 @@ if (stats.failed_selections > stats.total_decisions * 0.2) {
 **Symptoms:** Chains stopping at specific steps
 
 **Solutions:**
+
 1. Check input mapping expressions
 2. Verify field names match output schema
 3. Add error handling with `continueOnFailure`
@@ -1009,36 +1058,42 @@ if (stats.failed_selections > stats.total_decisions * 0.2) {
 ## Files Created
 
 ### TypeScript Types (250+ LOC)
+
 ```
 packages/shared-types/src/
 └── agent-playbook.ts
 ```
 
 ### Database Migration (260+ LOC)
+
 ```
 apps/api/src/database/migrations/
 └── 20251102230047_create_agent_playbook_logs.sql
 ```
 
 ### Orchestrator Service (550+ LOC)
+
 ```
 apps/api/src/services/
 └── agentPlaybookOrchestrator.ts
 ```
 
 ### API Routes (290+ LOC)
+
 ```
 apps/api/src/routes/
 └── agent-playbooks.ts
 ```
 
 ### Verification Script (450+ LOC)
+
 ```
 apps/api/
 └── verify-sprint43-phase3.5.1.js
 ```
 
 ### Documentation
+
 ```
 docs/
 └── agent_playbook_orchestration.md (this file)
@@ -1051,6 +1106,7 @@ docs/
 Sprint 43 Phase 3.5.1 successfully delivered agent-driven playbook orchestration:
 
 ✅ **Core Features**
+
 - GPT-4 powered playbook selection
 - Intelligent context analysis
 - Sequential playbook chaining
@@ -1059,6 +1115,7 @@ Sprint 43 Phase 3.5.1 successfully delivered agent-driven playbook orchestration
 - Comprehensive decision logging
 
 ✅ **Quality**
+
 - 44/44 verification checks passed (100%)
 - Full TypeScript type safety
 - Multi-tenant security with RLS
@@ -1066,6 +1123,7 @@ Sprint 43 Phase 3.5.1 successfully delivered agent-driven playbook orchestration
 - Performance optimizations
 
 ✅ **Integration**
+
 - Works with existing playbook system
 - Integrates with Sprint 41 execution engine
 - Reuses existing types and services

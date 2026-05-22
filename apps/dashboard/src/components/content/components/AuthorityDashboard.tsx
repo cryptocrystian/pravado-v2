@@ -62,7 +62,13 @@ interface MetricCardProps {
   isLoading?: boolean;
 }
 
-function MetricCard({ label, value, description, isDelta = false, isLoading = false }: MetricCardProps) {
+function MetricCard({
+  label,
+  value,
+  description,
+  isDelta = false,
+  isLoading = false,
+}: MetricCardProps) {
   if (isLoading) {
     return (
       <div className="bg-slate-2 border border-slate-4 rounded-lg p-4 animate-pulse">
@@ -78,17 +84,18 @@ function MetricCard({ label, value, description, isDelta = false, isLoading = fa
 
   return (
     <div className="bg-slate-2 border border-slate-4 rounded-lg p-4 hover:border-slate-5 transition-colors">
-      <div className="text-xs text-white/40 uppercase tracking-wider mb-2">{label}</div>
+      <div className="text-xs text-white/40 uppercase tracking-wider mb-2">
+        {label}
+      </div>
       <div className="flex items-baseline gap-1">
         {isDelta && (
           <span className={`text-lg ${colorClass}`}>{getDeltaIcon(value)}</span>
         )}
         <span className={`text-2xl font-bold ${colorClass}`}>
-          {isDelta && value > 0 ? '+' : ''}{displayValue}
+          {isDelta && value > 0 ? '+' : ''}
+          {displayValue}
         </span>
-        {!isDelta && (
-          <span className="text-xs text-white/30">/100</span>
-        )}
+        {!isDelta && <span className="text-xs text-white/30">/100</span>}
       </div>
       {!isDelta && (
         <div className="mt-2 h-1.5 bg-slate-4 rounded-full overflow-hidden">
@@ -109,7 +116,10 @@ function MetricCard({ label, value, description, isDelta = false, isLoading = fa
 // MAIN DASHBOARD COMPONENT
 // ============================================
 
-export function AuthorityDashboard({ signals, isLoading = false }: AuthorityDashboardProps) {
+export function AuthorityDashboard({
+  signals,
+  isLoading = false,
+}: AuthorityDashboardProps) {
   return (
     <div className="space-y-4">
       {/* Primary Metric - Authority Contribution Score */}
@@ -129,7 +139,9 @@ export function AuthorityDashboard({ signals, isLoading = false }: AuthorityDash
         ) : (
           <>
             <div className="flex items-baseline gap-2">
-              <span className={`text-4xl font-bold ${getScoreColor(signals.authorityContributionScore)}`}>
+              <span
+                className={`text-4xl font-bold ${getScoreColor(signals.authorityContributionScore)}`}
+              >
                 {signals.authorityContributionScore}
               </span>
               <span className="text-sm text-white/30">/100</span>
@@ -179,7 +191,8 @@ export function AuthorityDashboard({ signals, isLoading = false }: AuthorityDash
       {/* Measurement timestamp */}
       {!isLoading && signals.measuredAt && (
         <div className="text-xs text-white/30 text-center">
-          Last measured: {new Date(signals.measuredAt).toLocaleDateString('en-US', {
+          Last measured:{' '}
+          {new Date(signals.measuredAt).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             hour: '2-digit',
@@ -200,11 +213,16 @@ interface AuthorityStripProps {
   compact?: boolean;
 }
 
-export function AuthorityStrip({ signals, compact = false }: AuthorityStripProps) {
+export function AuthorityStrip({
+  signals,
+  compact = false,
+}: AuthorityStripProps) {
   if (compact) {
     return (
       <div className="flex items-center gap-3">
-        <span className={`text-sm font-bold ${getScoreColor(signals.authorityContributionScore)}`}>
+        <span
+          className={`text-sm font-bold ${getScoreColor(signals.authorityContributionScore)}`}
+        >
           {signals.authorityContributionScore}
         </span>
         <span className="text-xs text-white/40">Authority</span>
@@ -215,29 +233,38 @@ export function AuthorityStrip({ signals, compact = false }: AuthorityStripProps
   return (
     <div className="flex items-center gap-4 p-3 bg-slate-2 border border-slate-4 rounded-lg">
       <div className="text-center">
-        <div className={`text-lg font-bold ${getScoreColor(signals.authorityContributionScore)}`}>
+        <div
+          className={`text-lg font-bold ${getScoreColor(signals.authorityContributionScore)}`}
+        >
           {signals.authorityContributionScore}
         </div>
         <div className="text-xs text-white/40 uppercase">Authority</div>
       </div>
       <div className="w-px h-8 bg-slate-4" />
       <div className="text-center">
-        <div className={`text-lg font-bold ${getScoreColor(signals.citationEligibilityScore)}`}>
+        <div
+          className={`text-lg font-bold ${getScoreColor(signals.citationEligibilityScore)}`}
+        >
           {signals.citationEligibilityScore}
         </div>
         <div className="text-xs text-white/40 uppercase">Citation</div>
       </div>
       <div className="w-px h-8 bg-slate-4" />
       <div className="text-center">
-        <div className={`text-lg font-bold ${getScoreColor(signals.aiIngestionLikelihood)}`}>
+        <div
+          className={`text-lg font-bold ${getScoreColor(signals.aiIngestionLikelihood)}`}
+        >
           {signals.aiIngestionLikelihood}
         </div>
         <div className="text-xs text-white/40 uppercase">AI Ready</div>
       </div>
       <div className="w-px h-8 bg-slate-4" />
       <div className="text-center">
-        <div className={`text-sm font-bold ${getDeltaColor(signals.competitiveAuthorityDelta)}`}>
-          {getDeltaIcon(signals.competitiveAuthorityDelta)}{Math.abs(signals.competitiveAuthorityDelta)}
+        <div
+          className={`text-sm font-bold ${getDeltaColor(signals.competitiveAuthorityDelta)}`}
+        >
+          {getDeltaIcon(signals.competitiveAuthorityDelta)}
+          {Math.abs(signals.competitiveAuthorityDelta)}
         </div>
         <div className="text-xs text-white/40 uppercase">vs Comp</div>
       </div>

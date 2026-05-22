@@ -12,7 +12,14 @@
  * @see /docs/canon/ANALYTICS_CONTRACT.md
  */
 
-import { Lightning, TrendUp, Info, Lock, User, CaretDown } from '@phosphor-icons/react';
+import {
+  Lightning,
+  TrendUp,
+  Info,
+  Lock,
+  User,
+  CaretDown,
+} from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
@@ -25,24 +32,27 @@ import { useAnalyticsMode, type AnalyticsMode } from './AnalyticsModeContext';
 // ============================================
 
 const TABS = [
-  { label: 'Overview',  href: '/app/analytics' },
-  { label: 'Content',   href: '/app/analytics/content' },
-  { label: 'PR',        href: '/app/analytics/pr' },
-  { label: 'SEO',       href: '/app/analytics/seo' },
-  { label: 'Reports',   href: '/app/analytics/reports' },
+  { label: 'Overview', href: '/app/analytics' },
+  { label: 'Content', href: '/app/analytics/content' },
+  { label: 'PR', href: '/app/analytics/pr' },
+  { label: 'SEO', href: '/app/analytics/seo' },
+  { label: 'Reports', href: '/app/analytics/reports' },
 ];
 
 // ============================================
 // MODE CONFIG
 // ============================================
 
-const MODE_CONFIG: Record<AnalyticsMode, {
-  label: string;
-  description: string;
-  icon: React.ReactNode;
-  pill: string;
-  dot: string;
-}> = {
+const MODE_CONFIG: Record<
+  AnalyticsMode,
+  {
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+    pill: string;
+    dot: string;
+  }
+> = {
   manual: {
     label: 'Manual',
     description: 'Pull reports yourself',
@@ -100,29 +110,43 @@ function ModeSwitcher() {
 
       {open && (
         <div className="absolute right-0 top-full mt-1.5 w-[240px] bg-slate-2 border border-slate-4 rounded-xl shadow-elev-3 z-50 overflow-hidden">
-          {(Object.entries(MODE_CONFIG) as [AnalyticsMode, typeof MODE_CONFIG[AnalyticsMode]][]).map(
-            ([key, cfg]) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => { setMode(key); setOpen(false); }}
-                className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-3 transition-colors ${
-                  mode === key ? 'bg-slate-3' : ''
-                }`}
+          {(
+            Object.entries(MODE_CONFIG) as [
+              AnalyticsMode,
+              (typeof MODE_CONFIG)[AnalyticsMode],
+            ][]
+          ).map(([key, cfg]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => {
+                setMode(key);
+                setOpen(false);
+              }}
+              className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-3 transition-colors ${
+                mode === key ? 'bg-slate-3' : ''
+              }`}
+            >
+              <div
+                className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border ${cfg.pill}`}
               >
-                <div className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border ${cfg.pill}`}>
-                  {cfg.icon}
+                {cfg.icon}
+              </div>
+              <div>
+                <div className="text-[13px] font-semibold text-white/90">
+                  {cfg.label}
                 </div>
-                <div>
-                  <div className="text-[13px] font-semibold text-white/90">{cfg.label}</div>
-                  <div className="text-[12px] text-white/50 mt-0.5">{cfg.description}</div>
+                <div className="text-[12px] text-white/50 mt-0.5">
+                  {cfg.description}
                 </div>
-                {mode === key && (
-                  <div className={`ml-auto mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`} />
-                )}
-              </button>
-            )
-          )}
+              </div>
+              {mode === key && (
+                <div
+                  className={`ml-auto mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`}
+                />
+              )}
+            </button>
+          ))}
         </div>
       )}
     </div>
@@ -135,13 +159,14 @@ function ModeSwitcher() {
 
 export function AnalyticsChromeBar() {
   const pathname = usePathname();
-  const { range, setRange, comparisonEnabled, setComparisonEnabled } = useAnalyticsDate();
+  const { range, setRange, comparisonEnabled, setComparisonEnabled } =
+    useAnalyticsDate();
   const [evi, setEvi] = useState<{ score: number; delta: number } | null>(null);
 
   useEffect(() => {
     fetch('/api/command-center/strategy-panel')
-      .then(r => r.json())
-      .then(d => {
+      .then((r) => r.json())
+      .then((d) => {
         if (d.success !== false && d.evi) {
           setEvi({ score: d.evi.score, delta: d.evi.delta_7d });
         }
@@ -157,10 +182,8 @@ export function AnalyticsChromeBar() {
 
   return (
     <div className="border-b border-slate-4 bg-slate-0 shrink-0">
-
       {/* ── Row 1: Chrome bar ─────────────────────── */}
       <div className="flex items-center justify-between px-8 h-12 border-b border-slate-4/60">
-
         {/* Left: Pillar indicator + SAGE tag */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -181,11 +204,20 @@ export function AnalyticsChromeBar() {
         {/* Center: EVI metric */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/35">EVI</span>
-            <span className="text-[15px] font-bold text-white/90">{(evi?.score ?? 0).toFixed(1)}</span>
-            <div className={`flex items-center gap-1 ${(evi?.delta ?? 0) >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/35">
+              EVI
+            </span>
+            <span className="text-[15px] font-bold text-white/90">
+              {(evi?.score ?? 0).toFixed(1)}
+            </span>
+            <div
+              className={`flex items-center gap-1 ${(evi?.delta ?? 0) >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}
+            >
               <TrendUp className="w-3 h-3" weight="bold" />
-              <span className="text-[12px] font-semibold">{(evi?.delta ?? 0) >= 0 ? '+' : ''}{(evi?.delta ?? 0).toFixed(1)}</span>
+              <span className="text-[12px] font-semibold">
+                {(evi?.delta ?? 0) >= 0 ? '+' : ''}
+                {(evi?.delta ?? 0).toFixed(1)}
+              </span>
             </div>
           </div>
           <button
@@ -193,7 +225,10 @@ export function AnalyticsChromeBar() {
             className="p-1.5 rounded-lg hover:bg-slate-3 transition-colors"
             title="About Analytics"
           >
-            <Info className="w-4 h-4 text-white/35 hover:text-white/60 transition-colors" weight="regular" />
+            <Info
+              className="w-4 h-4 text-white/35 hover:text-white/60 transition-colors"
+              weight="regular"
+            />
           </button>
         </div>
 

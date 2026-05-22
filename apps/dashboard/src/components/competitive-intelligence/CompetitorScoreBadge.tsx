@@ -3,7 +3,11 @@
 import type { CompetitorTier } from '@pravado/types';
 
 import { Badge } from '@/components/ui/badge';
-import { getTierLabel, getTierColor, getTierBgColor } from '@/lib/competitorIntelligenceApi';
+import {
+  getTierLabel,
+  getTierColor,
+  getTierBgColor,
+} from '@/lib/competitorIntelligenceApi';
 import { cn } from '@/lib/utils';
 
 interface CompetitorScoreBadgeProps {
@@ -35,7 +39,12 @@ export function CompetitorScoreBadge({
     <div className={cn('inline-flex items-center gap-2', className)}>
       <Badge
         variant="outline"
-        className={cn(tierBgColor, tierColor, 'border-0 font-medium', sizeClasses[size])}
+        className={cn(
+          tierBgColor,
+          tierColor,
+          'border-0 font-medium',
+          sizeClasses[size]
+        )}
       >
         {tierLabel}
       </Badge>
@@ -43,7 +52,11 @@ export function CompetitorScoreBadge({
         <span
           className={cn(
             'font-semibold',
-            score >= 70 ? 'text-green-600' : score >= 40 ? 'text-yellow-600' : 'text-red-600'
+            score >= 70
+              ? 'text-green-600'
+              : score >= 40
+                ? 'text-yellow-600'
+                : 'text-red-600'
           )}
         >
           {score.toFixed(0)}
@@ -59,7 +72,11 @@ interface CompetitorEVIBadgeProps {
   className?: string;
 }
 
-export function CompetitorEVIBadge({ eviScore, size = 'md', className }: CompetitorEVIBadgeProps) {
+export function CompetitorEVIBadge({
+  eviScore,
+  size = 'md',
+  className,
+}: CompetitorEVIBadgeProps) {
   if (eviScore === null || eviScore === undefined) {
     return (
       <Badge variant="outline" className={cn('text-gray-500', className)}>
@@ -89,7 +106,10 @@ export function CompetitorEVIBadge({ eviScore, size = 'md', className }: Competi
   };
 
   return (
-    <Badge variant={getEVIVariant(eviScore)} className={cn(sizeClasses[size], className)}>
+    <Badge
+      variant={getEVIVariant(eviScore)}
+      className={cn(sizeClasses[size], className)}
+    >
       EVI: {eviScore.toFixed(0)} ({getEVILabel(eviScore)})
     </Badge>
   );
@@ -133,7 +153,10 @@ export function CompetitorSentimentBadge({
   };
 
   return (
-    <Badge variant={getSentimentVariant(sentiment)} className={cn(sizeClasses[size], className)}>
+    <Badge
+      variant={getSentimentVariant(sentiment)}
+      className={cn(sizeClasses[size], className)}
+    >
       {getSentimentLabel(sentiment)} ({(sentiment * 100).toFixed(0)}%)
     </Badge>
   );

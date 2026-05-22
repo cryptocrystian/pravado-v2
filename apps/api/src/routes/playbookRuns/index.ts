@@ -14,7 +14,10 @@ import { requireUser } from '../../middleware/requireUser';
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: any
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -27,7 +30,10 @@ async function getUserOrgId(userId: string, supabase: any): Promise<string | nul
 
 export async function playbookRunsRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   /**
    * GET /api/v1/playbook-runs/:id
@@ -35,85 +41,84 @@ export async function playbookRunsRoutes(server: FastifyInstance) {
    */
   server.get<{
     Params: { id: string };
-  }>(
-    '/:id',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        const orgId = await getUserOrgId(request.user!.id!, supabase);
-        if (!orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'NO_ORG_ACCESS',
-              message: 'User is not a member of any organization',
-            },
-          });
-        }
-
-        // Fetch run
-        const { data: run, error: runError } = await supabase
-          .from('playbook_runs')
-          .select('*')
-          .eq('id', request.params.id)
-          .eq('org_id', orgId)
-          .single();
-
-        if (runError || !run) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Playbook run not found',
-            },
-          });
-        }
-
-        // Fetch playbook details
-        const { data: playbook } = await supabase
-          .from('playbooks')
-          .select('name, version')
-          .eq('id', run.playbook_id)
-          .single();
-
-        // Fetch all step runs
-        const { data: stepRuns, error: stepsError } = await supabase
-          .from('playbook_step_runs')
-          .select('*')
-          .eq('run_id', request.params.id)
-          .order('created_at', { ascending: true });
-
-        if (stepsError) {
-          throw new Error(`Failed to fetch step runs: ${stepsError.message}`);
-        }
-
-        // Fetch step details for each step run
-        const stepIds = stepRuns?.map((sr) => sr.step_id) || [];
-        const { data: steps } = await supabase
-          .from('playbook_steps')
-          .select('id, key, name, type, config')
-          .in('id', stepIds);
-
-        const stepMap = new Map(steps?.map((s) => [s.id, s]) || []);
-
-        // Fetch episodic traces for this run
-        const { data: episodicTraces } = await supabase
-          .from('episodic_traces')
-          .select('*')
-          .eq('run_id', request.params.id);
-
-        const tracesByStepKey = new Map<string, any[]>();
-        episodicTraces?.forEach((trace) => {
-          const existing = tracesByStepKey.get(trace.step_key) || [];
-          existing.push(trace);
-          tracesByStepKey.set(trace.step_key, existing);
+  }>('/:id', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      const orgId = await getUserOrgId(request.user!.id!, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG_ACCESS',
+            message: 'User is not a member of any organization',
+          },
         });
+      }
 
-        // Fetch personality assignments for AGENT steps
-        const agentStepIds = steps?.filter((s) => s.type === 'AGENT').map((s) => s.id) || [];
-        const { data: personalities } = await supabase
-          .from('personality_assignments')
-          .select(`
+      // Fetch run
+      const { data: run, error: runError } = await supabase
+        .from('playbook_runs')
+        .select('*')
+        .eq('id', request.params.id)
+        .eq('org_id', orgId)
+        .single();
+
+      if (runError || !run) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Playbook run not found',
+          },
+        });
+      }
+
+      // Fetch playbook details
+      const { data: playbook } = await supabase
+        .from('playbooks')
+        .select('name, version')
+        .eq('id', run.playbook_id)
+        .single();
+
+      // Fetch all step runs
+      const { data: stepRuns, error: stepsError } = await supabase
+        .from('playbook_step_runs')
+        .select('*')
+        .eq('run_id', request.params.id)
+        .order('created_at', { ascending: true });
+
+      if (stepsError) {
+        throw new Error(`Failed to fetch step runs: ${stepsError.message}`);
+      }
+
+      // Fetch step details for each step run
+      const stepIds = stepRuns?.map((sr) => sr.step_id) || [];
+      const { data: steps } = await supabase
+        .from('playbook_steps')
+        .select('id, key, name, type, config')
+        .in('id', stepIds);
+
+      const stepMap = new Map(steps?.map((s) => [s.id, s]) || []);
+
+      // Fetch episodic traces for this run
+      const { data: episodicTraces } = await supabase
+        .from('episodic_traces')
+        .select('*')
+        .eq('run_id', request.params.id);
+
+      const tracesByStepKey = new Map<string, any[]>();
+      episodicTraces?.forEach((trace) => {
+        const existing = tracesByStepKey.get(trace.step_key) || [];
+        existing.push(trace);
+        tracesByStepKey.set(trace.step_key, existing);
+      });
+
+      // Fetch personality assignments for AGENT steps
+      const agentStepIds =
+        steps?.filter((s) => s.type === 'AGENT').map((s) => s.id) || [];
+      const { data: personalities } = await supabase
+        .from('personality_assignments')
+        .select(
+          `
             agent_id,
             personality:agent_personalities!inner (
               id,
@@ -122,91 +127,92 @@ export async function playbookRunsRoutes(server: FastifyInstance) {
               description,
               configuration
             )
-          `)
-          .in('agent_id', agentStepIds);
+          `
+        )
+        .in('agent_id', agentStepIds);
 
-        const personalityMap = new Map(
-          personalities?.map((p: any) => [
-            p.agent_id,
-            Array.isArray(p.personality) ? p.personality[0] : p.personality
-          ]) || []
-        );
+      const personalityMap = new Map(
+        personalities?.map((p: any) => [
+          p.agent_id,
+          Array.isArray(p.personality) ? p.personality[0] : p.personality,
+        ]) || []
+      );
 
-        // Build enriched step runs
-        const enrichedSteps: StepRunView[] = (stepRuns || []).map((stepRun) => {
-          const step = stepMap.get(stepRun.step_id);
-          const traces = tracesByStepKey.get(stepRun.step_key) || [];
-          const personality = step?.type === 'AGENT' ? personalityMap.get(step.id) : null;
-
-          return {
-            id: stepRun.id,
-            key: stepRun.step_key,
-            name: step?.name || stepRun.step_key,
-            type: step?.type || 'AGENT',
-            state: stepRun.state || 'queued',
-            status: stepRun.status,
-            attempt: stepRun.attempt || 0,
-            maxAttempts: stepRun.max_attempts || 3,
-            input: stepRun.input,
-            output: stepRun.output,
-            error: stepRun.error,
-            logs: stepRun.logs || [],
-            workerInfo: stepRun.worker_info || null,
-            collaborationContext: stepRun.collaboration_context || null,
-            episodicTraces: traces,
-            personality: personality || null,
-            startedAt: stepRun.started_at,
-            completedAt: stepRun.completed_at,
-            createdAt: stepRun.created_at,
-          };
-        });
-
-        // Build run view
-        const runView: PlaybookRunView = {
-          id: run.id,
-          playbookId: run.playbook_id,
-          playbookName: playbook?.name || 'Unknown Playbook',
-          playbookVersion: playbook?.version || 1,
-          orgId: run.org_id,
-          state: run.state || 'queued',
-          status: run.status,
-          triggeredBy: run.triggered_by,
-          input: run.input,
-          output: run.output,
-          error: run.error,
-          webhookUrl: run.webhook_url,
-          workerInfo: run.worker_info || null,
-          startedAt: run.started_at,
-          completedAt: run.completed_at,
-          createdAt: run.created_at,
-          updatedAt: run.updated_at,
-          steps: enrichedSteps,
-          progress: {
-            total: enrichedSteps.length,
-            completed: enrichedSteps.filter((s) => s.state === 'success').length,
-            failed: enrichedSteps.filter((s) => s.state === 'failed').length,
-            running: enrichedSteps.filter((s) => s.state === 'running').length,
-            pending: enrichedSteps.filter((s) =>
-              ['queued', 'waiting_for_dependencies'].includes(s.state || '')
-            ).length,
-          },
-        };
+      // Build enriched step runs
+      const enrichedSteps: StepRunView[] = (stepRuns || []).map((stepRun) => {
+        const step = stepMap.get(stepRun.step_id);
+        const traces = tracesByStepKey.get(stepRun.step_key) || [];
+        const personality =
+          step?.type === 'AGENT' ? personalityMap.get(step.id) : null;
 
         return {
-          success: true,
-          data: runView,
+          id: stepRun.id,
+          key: stepRun.step_key,
+          name: step?.name || stepRun.step_key,
+          type: step?.type || 'AGENT',
+          state: stepRun.state || 'queued',
+          status: stepRun.status,
+          attempt: stepRun.attempt || 0,
+          maxAttempts: stepRun.max_attempts || 3,
+          input: stepRun.input,
+          output: stepRun.output,
+          error: stepRun.error,
+          logs: stepRun.logs || [],
+          workerInfo: stepRun.worker_info || null,
+          collaborationContext: stepRun.collaboration_context || null,
+          episodicTraces: traces,
+          personality: personality || null,
+          startedAt: stepRun.started_at,
+          completedAt: stepRun.completed_at,
+          createdAt: stepRun.created_at,
         };
-      } catch (error: any) {
-        return reply.code(500).send({
-          success: false,
-          error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to fetch playbook run',
-          },
-        });
-      }
+      });
+
+      // Build run view
+      const runView: PlaybookRunView = {
+        id: run.id,
+        playbookId: run.playbook_id,
+        playbookName: playbook?.name || 'Unknown Playbook',
+        playbookVersion: playbook?.version || 1,
+        orgId: run.org_id,
+        state: run.state || 'queued',
+        status: run.status,
+        triggeredBy: run.triggered_by,
+        input: run.input,
+        output: run.output,
+        error: run.error,
+        webhookUrl: run.webhook_url,
+        workerInfo: run.worker_info || null,
+        startedAt: run.started_at,
+        completedAt: run.completed_at,
+        createdAt: run.created_at,
+        updatedAt: run.updated_at,
+        steps: enrichedSteps,
+        progress: {
+          total: enrichedSteps.length,
+          completed: enrichedSteps.filter((s) => s.state === 'success').length,
+          failed: enrichedSteps.filter((s) => s.state === 'failed').length,
+          running: enrichedSteps.filter((s) => s.state === 'running').length,
+          pending: enrichedSteps.filter((s) =>
+            ['queued', 'waiting_for_dependencies'].includes(s.state || '')
+          ).length,
+        },
+      };
+
+      return {
+        success: true,
+        data: runView,
+      };
+    } catch (error: any) {
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to fetch playbook run',
+        },
+      });
     }
-  );
+  });
 
   /**
    * GET /api/v1/playbook-runs/:id/steps/:stepKey
@@ -284,7 +290,8 @@ export async function playbookRunsRoutes(server: FastifyInstance) {
         if (step?.type === 'AGENT') {
           const { data: personalityAssignment } = await supabase
             .from('personality_assignments')
-            .select(`
+            .select(
+              `
               personality:agent_personalities!inner (
                 id,
                 slug,
@@ -292,7 +299,8 @@ export async function playbookRunsRoutes(server: FastifyInstance) {
                 description,
                 configuration
               )
-            `)
+            `
+            )
             .eq('agent_id', step.id)
             .single();
 
@@ -347,14 +355,11 @@ export async function playbookRunsRoutes(server: FastifyInstance) {
    */
   server.get<{
     Params: { id: string };
-  }>(
-    '/:id/stream',
-    async (request, reply) => {
-      const runId = request.params.id;
+  }>('/:id/stream', async (request, reply) => {
+    const runId = request.params.id;
 
-      // Stub: Redirect to main run view endpoint
-      // In Sprint S21, this will become a real-time SSE/WebSocket endpoint
-      return reply.redirect(303, `/api/v1/playbook-runs/${runId}`);
-    }
-  );
+    // Stub: Redirect to main run view endpoint
+    // In Sprint S21, this will become a real-time SSE/WebSocket endpoint
+    return reply.redirect(303, `/api/v1/playbook-runs/${runId}`);
+  });
 }

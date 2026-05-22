@@ -26,6 +26,4 @@ export {
   AutopilotDraftPreview,
 } from './LivingCanvasEditor';
 
-export {
-  ExplainabilityDrawer,
-} from './ExplainabilityDrawer';
+export { ExplainabilityDrawer } from './ExplainabilityDrawer';

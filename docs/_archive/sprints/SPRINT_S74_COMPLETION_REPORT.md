@@ -1,4 +1,5 @@
 # Sprint S74 — Autonomous Insight Conflict Resolution Engine V1
+
 ## Completion Report
 
 **Sprint**: S74
@@ -13,6 +14,7 @@
 Sprint S74 delivers a comprehensive **Autonomous Insight Conflict Resolution Engine** that detects, analyzes, and resolves contradictions, divergences, and inconsistencies across Pravado's upstream intelligence systems (S66 Unified Graph, S70 Unified Narrative, S73 Reality Maps).
 
 ### Core Capabilities
+
 - AI-driven conflict detection via vector similarity and LLM analysis
 - Root cause analysis and severity computation
 - Conflict graph visualization with relationship mapping
@@ -30,9 +32,11 @@ Sprint S74 delivers a comprehensive **Autonomous Insight Conflict Resolution Eng
 ## Deliverables Summary
 
 ### 1. Database Schema ✅ COMPLETE
+
 **File**: `apps/api/supabase/migrations/76_create_insight_conflict_schema.sql`
 
 **Tables Created** (7):
+
 1. `insight_conflicts` - Core conflict records with type, severity, status
 2. `conflict_items` - Individual conflicting data items
 3. `conflict_resolutions` - AI/manual resolution records
@@ -44,12 +48,14 @@ Sprint S74 delivers a comprehensive **Autonomous Insight Conflict Resolution Eng
 **Indexes**: 40+ total for optimal query performance
 
 **SQL Functions**:
+
 - `calculate_conflict_severity()` - Auto-compute severity from impact
 - `get_conflict_stats()` - Org-wide statistics aggregation
 - `get_conflict_graph()` - Build visualization data structure
 - `calculate_cluster_dominance()` - Determine dominant type/severity
 
 **Triggers**:
+
 - Auto-update timestamps
 - Auto-compute severity on impact change
 - Auto-log state transitions to audit log
@@ -59,9 +65,11 @@ Sprint S74 delivers a comprehensive **Autonomous Insight Conflict Resolution Eng
 ---
 
 ### 2. Type System ✅ COMPLETE
+
 **File**: `packages/types/src/insightConflict.ts`
 
 **Enums** (10):
+
 - `ConflictType`: contradiction, divergence, ambiguity, missing_data, inconsistency
 - `ConflictSeverity`: low, medium, high, critical
 - `ConflictStatus`: detected, analyzing, resolved, dismissed
@@ -75,6 +83,7 @@ Sprint S74 delivers a comprehensive **Autonomous Insight Conflict Resolution Eng
 - `ConflictAuditEventType`: created, updated, analyzed, resolved, dismissed, reviewed, resolution_accepted, resolution_rejected, clustered, graph_edge_created
 
 **Core Interfaces** (12):
+
 - `InsightConflict` - Main conflict record
 - `ConflictItem` - Individual conflicting data item
 - `ConflictResolution` - Resolution with AI reasoning
@@ -89,6 +98,7 @@ Sprint S74 delivers a comprehensive **Autonomous Insight Conflict Resolution Eng
 - `BatchOperationResult` - Batch operation response
 
 **API Types** (20+):
+
 - Create/Update/Filter inputs for all entities
 - List response types with pagination
 - Detection/Analysis/Resolution request/response types
@@ -96,9 +106,11 @@ Sprint S74 delivers a comprehensive **Autonomous Insight Conflict Resolution Eng
 ---
 
 ### 3. Validators ✅ COMPLETE
+
 **File**: `packages/validators/src/insightConflict.ts`
 
 **Zod Schemas** (25+):
+
 - Core entity schemas with full validation
 - API request/response schemas
 - Filter and pagination schemas
@@ -110,23 +122,25 @@ Sprint S74 delivers a comprehensive **Autonomous Insight Conflict Resolution Eng
 ---
 
 ### 4. Backend Service ✅ COMPLETE
+
 **File**: `apps/api/src/services/insightConflictService.ts`
 
 **Service Methods** (25+):
 
-| Category | Methods |
-|----------|---------|
-| CRUD | `create`, `getById`, `update`, `delete`, `list` |
-| Items | `addItem`, `getItems`, `updateItem`, `removeItem` |
-| Analysis | `analyze`, `detectConflicts` |
-| Resolution | `resolve`, `dismiss`, `reviewResolution` |
-| Clusters | `createCluster`, `addToCluster`, `listClusters` |
-| Graph | `getGraph`, `createGraphEdge`, `getGraphEdges` |
-| Audit | `getAuditLog`, `logEvent` |
-| Stats | `getStats` |
-| Batch | `batchAnalyze`, `batchResolve`, `batchDismiss` |
+| Category   | Methods                                           |
+| ---------- | ------------------------------------------------- |
+| CRUD       | `create`, `getById`, `update`, `delete`, `list`   |
+| Items      | `addItem`, `getItems`, `updateItem`, `removeItem` |
+| Analysis   | `analyze`, `detectConflicts`                      |
+| Resolution | `resolve`, `dismiss`, `reviewResolution`          |
+| Clusters   | `createCluster`, `addToCluster`, `listClusters`   |
+| Graph      | `getGraph`, `createGraphEdge`, `getGraphEdges`    |
+| Audit      | `getAuditLog`, `logEvent`                         |
+| Stats      | `getStats`                                        |
+| Batch      | `batchAnalyze`, `batchResolve`, `batchDismiss`    |
 
 **Key Features**:
+
 - LLM integration for AI analysis and resolution
 - Vector similarity detection
 - Automatic audit logging
@@ -136,50 +150,54 @@ Sprint S74 delivers a comprehensive **Autonomous Insight Conflict Resolution Eng
 ---
 
 ### 5. API Routes ✅ COMPLETE
+
 **File**: `apps/api/src/routes/insightConflicts/index.ts`
 
 **Endpoints** (20+):
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/insight-conflicts` | List conflicts |
-| POST | `/insight-conflicts` | Create conflict |
-| GET | `/insight-conflicts/stats` | Get statistics |
-| POST | `/insight-conflicts/detect` | Run detection |
-| POST | `/insight-conflicts/batch/analyze` | Batch analyze |
-| POST | `/insight-conflicts/batch/resolve` | Batch resolve |
-| POST | `/insight-conflicts/batch/dismiss` | Batch dismiss |
-| GET | `/insight-conflicts/clusters` | List clusters |
-| POST | `/insight-conflicts/clusters` | Create cluster |
-| POST | `/insight-conflicts/graph/edges` | Create edge |
-| GET | `/insight-conflicts/:id` | Get conflict |
-| PATCH | `/insight-conflicts/:id` | Update conflict |
-| DELETE | `/insight-conflicts/:id` | Delete conflict |
-| GET | `/insight-conflicts/:id/items` | Get items |
-| GET | `/insight-conflicts/:id/graph` | Get graph |
-| GET | `/insight-conflicts/:id/audit-log` | Get audit |
-| POST | `/insight-conflicts/:id/analyze` | Analyze |
-| POST | `/insight-conflicts/:id/resolve` | Resolve |
-| POST | `/insight-conflicts/:id/dismiss` | Dismiss |
-| POST | `/insight-conflicts/:id/review` | Review |
+| Method | Path                               | Description     |
+| ------ | ---------------------------------- | --------------- |
+| GET    | `/insight-conflicts`               | List conflicts  |
+| POST   | `/insight-conflicts`               | Create conflict |
+| GET    | `/insight-conflicts/stats`         | Get statistics  |
+| POST   | `/insight-conflicts/detect`        | Run detection   |
+| POST   | `/insight-conflicts/batch/analyze` | Batch analyze   |
+| POST   | `/insight-conflicts/batch/resolve` | Batch resolve   |
+| POST   | `/insight-conflicts/batch/dismiss` | Batch dismiss   |
+| GET    | `/insight-conflicts/clusters`      | List clusters   |
+| POST   | `/insight-conflicts/clusters`      | Create cluster  |
+| POST   | `/insight-conflicts/graph/edges`   | Create edge     |
+| GET    | `/insight-conflicts/:id`           | Get conflict    |
+| PATCH  | `/insight-conflicts/:id`           | Update conflict |
+| DELETE | `/insight-conflicts/:id`           | Delete conflict |
+| GET    | `/insight-conflicts/:id/items`     | Get items       |
+| GET    | `/insight-conflicts/:id/graph`     | Get graph       |
+| GET    | `/insight-conflicts/:id/audit-log` | Get audit       |
+| POST   | `/insight-conflicts/:id/analyze`   | Analyze         |
+| POST   | `/insight-conflicts/:id/resolve`   | Resolve         |
+| POST   | `/insight-conflicts/:id/dismiss`   | Dismiss         |
+| POST   | `/insight-conflicts/:id/review`    | Review          |
 
 **Registration**: Routes registered in `apps/api/src/server.ts` at `/api/v1/insight-conflicts`
 
 ---
 
 ### 6. Feature Flag ✅ COMPLETE
+
 **File**: `packages/feature-flags/src/flags.ts`
 
 ```typescript
-ENABLE_INSIGHT_CONFLICTS: true
+ENABLE_INSIGHT_CONFLICTS: true;
 ```
 
 ---
 
 ### 7. Frontend API Helper ✅ COMPLETE
+
 **File**: `apps/dashboard/src/lib/insightConflictApi.ts`
 
 **API Functions** (20+):
+
 - `listConflicts`, `getConflict`, `createConflict`, `updateConflict`, `deleteConflict`
 - `analyzeConflict`, `resolveConflict`, `dismissConflict`, `reviewResolution`
 - `getConflictItems`, `getConflictGraph`, `getConflictAuditLog`
@@ -189,6 +207,7 @@ ENABLE_INSIGHT_CONFLICTS: true
 - `createGraphEdge`
 
 **Helper Functions** (15+):
+
 - `getConflictTypeLabel`, `getConflictTypeColor`
 - `getConflictSeverityLabel`, `getConflictSeverityColor`
 - `getConflictStatusLabel`, `getConflictStatusBadgeColor`
@@ -199,29 +218,32 @@ ENABLE_INSIGHT_CONFLICTS: true
 ---
 
 ### 8. UI Components ✅ COMPLETE
+
 **Directory**: `apps/dashboard/src/components/insight-conflicts/`
 
 **Components** (9):
 
-| Component | Purpose | Lines |
-|-----------|---------|-------|
-| `ConflictCard.tsx` | Individual conflict summary card | ~180 |
-| `ConflictList.tsx` | List with selection and pagination | ~150 |
-| `ConflictFilterBar.tsx` | Search and filter controls | ~200 |
-| `ConflictStatsCard.tsx` | Statistics dashboard widget | ~180 |
-| `ConflictDetail.tsx` | Detailed conflict view | ~350 |
-| `ConflictAnalysisPanel.tsx` | Analysis results display | ~200 |
-| `ConflictResolutionPanel.tsx` | Resolution workflow controls | ~280 |
-| `ConflictGraph.tsx` | SVG-based relationship visualization | ~230 |
-| `ConflictAuditLog.tsx` | Timeline audit event display | ~220 |
-| `index.ts` | Component exports | ~16 |
+| Component                     | Purpose                              | Lines |
+| ----------------------------- | ------------------------------------ | ----- |
+| `ConflictCard.tsx`            | Individual conflict summary card     | ~180  |
+| `ConflictList.tsx`            | List with selection and pagination   | ~150  |
+| `ConflictFilterBar.tsx`       | Search and filter controls           | ~200  |
+| `ConflictStatsCard.tsx`       | Statistics dashboard widget          | ~180  |
+| `ConflictDetail.tsx`          | Detailed conflict view               | ~350  |
+| `ConflictAnalysisPanel.tsx`   | Analysis results display             | ~200  |
+| `ConflictResolutionPanel.tsx` | Resolution workflow controls         | ~280  |
+| `ConflictGraph.tsx`           | SVG-based relationship visualization | ~230  |
+| `ConflictAuditLog.tsx`        | Timeline audit event display         | ~220  |
+| `index.ts`                    | Component exports                    | ~16   |
 
 ---
 
 ### 9. Dashboard Page ✅ COMPLETE
+
 **File**: `apps/dashboard/src/app/app/insight-conflicts/page.tsx`
 
 **Features**:
+
 - Statistics overview with real-time counts
 - Filter bar with search, status/severity/type filters
 - Detection trigger button
@@ -239,9 +261,11 @@ ENABLE_INSIGHT_CONFLICTS: true
 ---
 
 ### 10. Backend Tests ✅ COMPLETE
+
 **File**: `apps/api/tests/insightConflictService.test.ts`
 
 **Test Suites** (12):
+
 - CRUD Operations
 - Conflict Items
 - Conflict Resolution
@@ -260,9 +284,11 @@ ENABLE_INSIGHT_CONFLICTS: true
 ---
 
 ### 11. E2E Tests ✅ COMPLETE
+
 **File**: `apps/dashboard/tests/e2e/insightConflicts.e2e.test.ts`
 
 **Test Suites** (18):
+
 - List Conflicts
 - View Conflict Details
 - Analyze Conflict
@@ -287,7 +313,9 @@ ENABLE_INSIGHT_CONFLICTS: true
 ---
 
 ### 12. Documentation ✅ COMPLETE
+
 **Files**:
+
 - `docs/product/insight_conflict_resolution_v1.md` - Product specification
 - `docs/SPRINT_S74_COMPLETION_REPORT.md` - This completion report
 
@@ -295,26 +323,27 @@ ENABLE_INSIGHT_CONFLICTS: true
 
 ## File Summary
 
-| Category | File | Lines |
-|----------|------|-------|
-| Migration | `migrations/76_create_insight_conflict_schema.sql` | ~800 |
-| Types | `packages/types/src/insightConflict.ts` | ~550 |
-| Validators | `packages/validators/src/insightConflict.ts` | ~400 |
-| Service | `apps/api/src/services/insightConflictService.ts` | ~800 |
-| Routes | `apps/api/src/routes/insightConflicts/index.ts` | ~500 |
-| API Helper | `apps/dashboard/src/lib/insightConflictApi.ts` | ~700 |
-| Components | `apps/dashboard/src/components/insight-conflicts/*` | ~1800 |
-| Page | `apps/dashboard/src/app/app/insight-conflicts/page.tsx` | ~500 |
-| Backend Tests | `apps/api/tests/insightConflictService.test.ts` | ~600 |
-| E2E Tests | `apps/dashboard/tests/e2e/insightConflicts.e2e.test.ts` | ~900 |
-| Product Doc | `docs/product/insight_conflict_resolution_v1.md` | ~400 |
-| **Total** | | **~8000** |
+| Category      | File                                                    | Lines     |
+| ------------- | ------------------------------------------------------- | --------- |
+| Migration     | `migrations/76_create_insight_conflict_schema.sql`      | ~800      |
+| Types         | `packages/types/src/insightConflict.ts`                 | ~550      |
+| Validators    | `packages/validators/src/insightConflict.ts`            | ~400      |
+| Service       | `apps/api/src/services/insightConflictService.ts`       | ~800      |
+| Routes        | `apps/api/src/routes/insightConflicts/index.ts`         | ~500      |
+| API Helper    | `apps/dashboard/src/lib/insightConflictApi.ts`          | ~700      |
+| Components    | `apps/dashboard/src/components/insight-conflicts/*`     | ~1800     |
+| Page          | `apps/dashboard/src/app/app/insight-conflicts/page.tsx` | ~500      |
+| Backend Tests | `apps/api/tests/insightConflictService.test.ts`         | ~600      |
+| E2E Tests     | `apps/dashboard/tests/e2e/insightConflicts.e2e.test.ts` | ~900      |
+| Product Doc   | `docs/product/insight_conflict_resolution_v1.md`        | ~400      |
+| **Total**     |                                                         | **~8000** |
 
 ---
 
 ## Integration Points
 
 ### Upstream Systems (Data Sources)
+
 - **S66 Unified Intelligence Graph**: Entity conflicts, relationship inconsistencies
 - **S70 Unified Narrative Engine**: Theme contradictions, insight divergence
 - **S73 Reality Maps Engine**: Probability conflicts, outcome ambiguity
@@ -323,6 +352,7 @@ ENABLE_INSIGHT_CONFLICTS: true
 - **Media Monitoring**: Mention contradictions
 
 ### Detection Methods
+
 1. Vector similarity comparison for semantic contradictions
 2. Cross-system correlation for data divergence
 3. LLM-based analysis for logical inconsistencies
@@ -333,6 +363,7 @@ ENABLE_INSIGHT_CONFLICTS: true
 ## Architecture Decisions
 
 ### Conflict Lifecycle
+
 ```
 Detection → Analysis → Resolution → Review → Accepted/Rejected
     ↓           ↓           ↓          ↓
@@ -342,6 +373,7 @@ Detection → Analysis → Resolution → Review → Accepted/Rejected
 ```
 
 ### Resolution Strategies
+
 - **AI Consensus**: Weighted average with AI reasoning (default)
 - **Source Priority**: Authoritative source preference
 - **Weighted Truth**: Confidence-based weighting
@@ -349,6 +381,7 @@ Detection → Analysis → Resolution → Review → Accepted/Rejected
 - **Manual**: Human override
 
 ### Audit Compliance
+
 - All state changes logged automatically
 - Actor types tracked (user/system/ai)
 - Previous/new state captured
@@ -360,12 +393,14 @@ Detection → Analysis → Resolution → Review → Accepted/Rejected
 ## Testing Strategy
 
 ### Unit Tests (Backend)
+
 - Service method isolation
 - Mock Supabase and LLM calls
 - Error condition handling
 - Edge case coverage
 
 ### E2E Tests (Frontend)
+
 - API response validation
 - UI component rendering
 - User workflow simulation
@@ -376,18 +411,23 @@ Detection → Analysis → Resolution → Review → Accepted/Rejected
 ## Deployment Notes
 
 ### Feature Flag
+
 Enable in production by setting:
+
 ```typescript
-ENABLE_INSIGHT_CONFLICTS: true
+ENABLE_INSIGHT_CONFLICTS: true;
 ```
 
 ### Database Migration
+
 Run migration 76 to create schema:
+
 ```bash
 pnpm --filter @pravado/api run migrate
 ```
 
 ### Dependencies
+
 - Requires S66, S70, S73 for full functionality
 - Falls back gracefully if upstream systems unavailable
 
@@ -409,6 +449,7 @@ pnpm --filter @pravado/api run migrate
 ## Conclusion
 
 Sprint S74 delivers a complete autonomous insight conflict resolution system with:
+
 - Full detection pipeline across 6 source systems
 - AI-powered analysis and resolution
 - Human review workflow

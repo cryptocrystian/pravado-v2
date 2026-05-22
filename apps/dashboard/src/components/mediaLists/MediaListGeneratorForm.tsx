@@ -13,7 +13,10 @@ interface MediaListGeneratorFormProps {
   isGenerating?: boolean;
 }
 
-export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: MediaListGeneratorFormProps) {
+export function MediaListGeneratorForm({
+  onGenerate,
+  isGenerating = false,
+}: MediaListGeneratorFormProps) {
   const [topic, setTopic] = useState('');
   const [keywords, setKeywords] = useState('');
   const [market, setMarket] = useState('');
@@ -37,7 +40,10 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
 
     const input: MediaListGenerationInput = {
       topic: topic.trim(),
-      keywords: keywords.split(',').map(k => k.trim()).filter(k => k.length > 0),
+      keywords: keywords
+        .split(',')
+        .map((k) => k.trim())
+        .filter((k) => k.length > 0),
       market: market.trim() || undefined,
       geography: geography.trim() || undefined,
       product: product.trim() || undefined,
@@ -50,7 +56,10 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white border border-gray-200 rounded-lg shadow-sm p-6"
+    >
       <h2 className="text-xl font-semibold text-gray-900 mb-6">
         Generate AI Media List
       </h2>
@@ -58,7 +67,10 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
       <div className="space-y-4">
         {/* Topic */}
         <div>
-          <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="topic"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Topic <span className="text-red-500">*</span>
           </label>
           <input
@@ -77,7 +89,10 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
 
         {/* Keywords */}
         <div>
-          <label htmlFor="keywords" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="keywords"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Keywords
           </label>
           <input
@@ -96,7 +111,10 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
         {/* Market & Geography Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="market" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="market"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Market
             </label>
             <input
@@ -110,7 +128,10 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
           </div>
 
           <div>
-            <label htmlFor="geography" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="geography"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Geography
             </label>
             <input
@@ -126,7 +147,10 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
 
         {/* Product */}
         <div>
-          <label htmlFor="product" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="product"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Product/Company
           </label>
           <input
@@ -142,7 +166,10 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
         {/* Target Count & Min Fit Score */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="targetCount" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="targetCount"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Target Count
             </label>
             <input
@@ -154,11 +181,16 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
               max="200"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
             />
-            <p className="mt-1 text-xs text-gray-500">Maximum number of journalists (1-200)</p>
+            <p className="mt-1 text-xs text-gray-500">
+              Maximum number of journalists (1-200)
+            </p>
           </div>
 
           <div>
-            <label htmlFor="minFitScore" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="minFitScore"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Min Fit Score
             </label>
             <input
@@ -171,7 +203,9 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
               step="0.05"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
             />
-            <p className="mt-1 text-xs text-gray-500">Minimum fit score threshold (0-1)</p>
+            <p className="mt-1 text-xs text-gray-500">
+              Minimum fit score threshold (0-1)
+            </p>
           </div>
         </div>
 
@@ -186,7 +220,12 @@ export function MediaListGeneratorForm({ onGenerate, isGenerating = false }: Med
                 <input
                   type="checkbox"
                   checked={includeTiers[tier]}
-                  onChange={(e) => setIncludeTiers({ ...includeTiers, [tier]: e.target.checked })}
+                  onChange={(e) =>
+                    setIncludeTiers({
+                      ...includeTiers,
+                      [tier]: e.target.checked,
+                    })
+                  }
                   className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                 />
                 <span className="ml-2 text-sm text-gray-700">{tier}-Tier</span>

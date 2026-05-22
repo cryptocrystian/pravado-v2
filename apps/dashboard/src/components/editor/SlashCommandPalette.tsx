@@ -73,13 +73,17 @@ export function SlashCommandPalette({
       (cmd) =>
         cmd.name.toLowerCase().includes(lower) ||
         cmd.description.toLowerCase().includes(lower) ||
-        cmd.category.toLowerCase().includes(lower),
+        cmd.category.toLowerCase().includes(lower)
     );
   }, [filter]);
 
   // Group by category
   const grouped = useMemo(() => {
-    const groups: { category: string; label: string; commands: SlashCommand[] }[] = [];
+    const groups: {
+      category: string;
+      label: string;
+      commands: SlashCommand[];
+    }[] = [];
     for (const cat of slashCommandCategories) {
       const cmds = filteredCommands.filter((c) => c.category === cat.id);
       if (cmds.length > 0) {
@@ -92,7 +96,7 @@ export function SlashCommandPalette({
   // Flatten for keyboard navigation
   const flatCommands = useMemo(
     () => grouped.flatMap((g) => g.commands),
-    [grouped],
+    [grouped]
   );
 
   useEffect(() => {
@@ -107,7 +111,7 @@ export function SlashCommandPalette({
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSelectedIndex(
-          (i) => (i - 1 + flatCommands.length) % flatCommands.length,
+          (i) => (i - 1 + flatCommands.length) % flatCommands.length
         );
       } else if (e.key === 'Enter') {
         e.preventDefault();
@@ -171,7 +175,9 @@ export function SlashCommandPalette({
               >
                 <Icon size={16} className="text-white/45 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm text-white/90 block">{cmd.name}</span>
+                  <span className="text-sm text-white/90 block">
+                    {cmd.name}
+                  </span>
                   <span className="text-xs text-white/30 block truncate">
                     {cmd.description}
                   </span>

@@ -21,6 +21,7 @@ This document contains all the GitHub issues for Sprint S0. Copy these to create
 Set up the foundational monorepo structure using Turborepo and pnpm workspaces.
 
 **Tasks:**
+
 - [ ] Initialize pnpm workspace configuration
 - [ ] Create `turbo.json` with pipeline configuration
 - [ ] Set up root `package.json` with workspace references
@@ -29,12 +30,14 @@ Set up the foundational monorepo structure using Turborepo and pnpm workspaces.
 - [ ] Verify Turborepo caching is working
 
 **Acceptance Criteria:**
+
 - `pnpm install` completes successfully
 - `pnpm build` builds all packages in correct order
 - Turborepo caching reduces subsequent build times
 - All workspace packages can reference each other
 
 **Related Files:**
+
 - `package.json`
 - `pnpm-workspace.yaml`
 - `turbo.json`
@@ -50,6 +53,7 @@ Set up the foundational monorepo structure using Turborepo and pnpm workspaces.
 Set up shared TypeScript configuration, ESLint, Prettier, and Vitest for the monorepo.
 
 **Tasks:**
+
 - [ ] Create base `tsconfig.json` with strict mode
 - [ ] Configure ESLint with TypeScript support
 - [ ] Set up Prettier with consistent formatting
@@ -58,6 +62,7 @@ Set up shared TypeScript configuration, ESLint, Prettier, and Vitest for the mon
 - [ ] Test linting, formatting, and type checking
 
 **Acceptance Criteria:**
+
 - All packages use strict TypeScript mode
 - `pnpm lint` runs successfully
 - `pnpm format` formats all code consistently
@@ -65,6 +70,7 @@ Set up shared TypeScript configuration, ESLint, Prettier, and Vitest for the mon
 - VS Code shows proper IntelliSense and errors
 
 **Related Files:**
+
 - `tsconfig.json`
 - `.eslintrc.js`
 - `.prettierrc`
@@ -83,6 +89,7 @@ Set up shared TypeScript configuration, ESLint, Prettier, and Vitest for the mon
 Create the `@pravado/types` package with shared TypeScript type definitions.
 
 **Tasks:**
+
 - [ ] Initialize package with `package.json` and `tsconfig.json`
 - [ ] Create `common.ts` with base types (UUID, Timestamp, BaseEntity, etc.)
 - [ ] Create `api.ts` with API-related types
@@ -91,12 +98,14 @@ Create the `@pravado/types` package with shared TypeScript type definitions.
 - [ ] Add to workspace references
 
 **Acceptance Criteria:**
+
 - Package builds successfully
 - Types are exported correctly
 - Other packages can import types
 - TypeScript IntelliSense works
 
 **Related Files:**
+
 - `packages/types/package.json`
 - `packages/types/src/index.ts`
 - `packages/types/src/common.ts`
@@ -114,6 +123,7 @@ Create the `@pravado/types` package with shared TypeScript type definitions.
 Create the `@pravado/validators` package with Zod validation schemas.
 
 **Tasks:**
+
 - [ ] Initialize package with dependencies (Zod)
 - [ ] Create environment variable schemas (API, Dashboard, Mobile)
 - [ ] Create API validation schemas (pagination, UUID, etc.)
@@ -123,6 +133,7 @@ Create the `@pravado/validators` package with Zod validation schemas.
 - [ ] Build and verify exports
 
 **Acceptance Criteria:**
+
 - Package builds successfully
 - Environment validation works correctly
 - Validation schemas enforce correct types
@@ -130,6 +141,7 @@ Create the `@pravado/validators` package with Zod validation schemas.
 - Other packages can use validators
 
 **Related Files:**
+
 - `packages/validators/package.json`
 - `packages/validators/src/env.ts`
 - `packages/validators/src/api.ts`
@@ -146,6 +158,7 @@ Create the `@pravado/validators` package with Zod validation schemas.
 Create the `@pravado/utils` package with shared utility functions.
 
 **Tasks:**
+
 - [ ] Initialize package
 - [ ] Create Logger class with structured logging
 - [ ] Create formatting utilities (timestamps, string conversions)
@@ -154,6 +167,7 @@ Create the `@pravado/utils` package with shared utility functions.
 - [ ] Build and verify exports
 
 **Acceptance Criteria:**
+
 - Package builds successfully
 - Logger works with different log levels
 - Formatting utilities handle edge cases
@@ -162,6 +176,7 @@ Create the `@pravado/utils` package with shared utility functions.
 - Other packages can use utilities
 
 **Related Files:**
+
 - `packages/utils/package.json`
 - `packages/utils/src/logger.ts`
 - `packages/utils/src/formatting.ts`
@@ -178,6 +193,7 @@ Create the `@pravado/utils` package with shared utility functions.
 Create the `@pravado/feature-flags` package for type-safe feature flag management.
 
 **Tasks:**
+
 - [ ] Initialize package
 - [ ] Define initial feature flags with defaults
 - [ ] Create FeatureFlagProvider class
@@ -187,6 +203,7 @@ Create the `@pravado/feature-flags` package for type-safe feature flag managemen
 - [ ] Build and verify exports
 
 **Acceptance Criteria:**
+
 - Package builds successfully
 - Flags are type-safe (no magic strings)
 - Environment variables override defaults
@@ -195,6 +212,7 @@ Create the `@pravado/feature-flags` package for type-safe feature flag managemen
 - Other packages can use feature flags
 
 **Related Files:**
+
 - `packages/feature-flags/package.json`
 - `packages/feature-flags/src/flags.ts`
 - `packages/feature-flags/src/provider.ts`
@@ -210,6 +228,7 @@ Create the `@pravado/feature-flags` package for type-safe feature flag managemen
 Create the Fastify backend API application with basic setup.
 
 **Tasks:**
+
 - [ ] Initialize Fastify app with TypeScript
 - [ ] Set up server configuration (CORS, logging, error handling)
 - [ ] Create health check endpoints (/health, /ready, /live)
@@ -219,6 +238,7 @@ Create the Fastify backend API application with basic setup.
 - [ ] Test API starts correctly on port 3001
 
 **Acceptance Criteria:**
+
 - API starts on port 3001
 - Health check returns 200 with correct response
 - CORS is configured correctly
@@ -228,6 +248,7 @@ Create the Fastify backend API application with basic setup.
 - Error handling returns proper responses
 
 **Related Files:**
+
 - `apps/api/package.json`
 - `apps/api/src/index.ts`
 - `apps/api/src/server.ts`
@@ -244,6 +265,7 @@ Create the Fastify backend API application with basic setup.
 Create the Next.js 14 dashboard application with App Router and Tailwind CSS.
 
 **Tasks:**
+
 - [ ] Initialize Next.js 14 with App Router
 - [ ] Configure TypeScript and transpile packages
 - [ ] Set up Tailwind CSS
@@ -253,6 +275,7 @@ Create the Next.js 14 dashboard application with App Router and Tailwind CSS.
 - [ ] Verify hot reload works
 
 **Acceptance Criteria:**
+
 - Dashboard starts on port 3000
 - Home page renders correctly
 - Tailwind CSS styling works
@@ -262,6 +285,7 @@ Create the Next.js 14 dashboard application with App Router and Tailwind CSS.
 - Build succeeds
 
 **Related Files:**
+
 - `apps/dashboard/package.json`
 - `apps/dashboard/next.config.js`
 - `apps/dashboard/tailwind.config.ts`
@@ -279,6 +303,7 @@ Create the Next.js 14 dashboard application with App Router and Tailwind CSS.
 Create a minimal Expo React Native application stub for future mobile development.
 
 **Tasks:**
+
 - [ ] Initialize Expo project with Expo Router
 - [ ] Configure TypeScript
 - [ ] Create basic home screen
@@ -287,6 +312,7 @@ Create a minimal Expo React Native application stub for future mobile developmen
 - [ ] Add README with instructions
 
 **Acceptance Criteria:**
+
 - Expo app runs on iOS simulator / Android emulator
 - Basic navigation works
 - TypeScript compilation works
@@ -294,6 +320,7 @@ Create a minimal Expo React Native application stub for future mobile developmen
 - Shared packages can be referenced (even if not used yet)
 
 **Related Files:**
+
 - `apps/mobile/package.json`
 - `apps/mobile/app.json`
 - `apps/mobile/app/_layout.tsx`
@@ -310,6 +337,7 @@ Create a minimal Expo React Native application stub for future mobile developmen
 Create GitHub Actions workflow for automated CI/CD.
 
 **Tasks:**
+
 - [ ] Create `.github/workflows/ci.yml`
 - [ ] Add lint job
 - [ ] Add type check job
@@ -320,6 +348,7 @@ Create GitHub Actions workflow for automated CI/CD.
 - [ ] Test workflow runs on push and PR
 
 **Acceptance Criteria:**
+
 - CI runs on push to main
 - CI runs on pull requests
 - All jobs pass (lint, typecheck, test, build)
@@ -328,6 +357,7 @@ Create GitHub Actions workflow for automated CI/CD.
 - Failed checks block PRs
 
 **Related Files:**
+
 - `.github/workflows/ci.yml`
 
 ---
@@ -341,6 +371,7 @@ Create GitHub Actions workflow for automated CI/CD.
 Create comprehensive documentation for the monorepo.
 
 **Tasks:**
+
 - [ ] Write `docs/ARCHITECTURE.md` - system architecture overview
 - [ ] Write `docs/DEVELOPMENT.md` - development guide and workflows
 - [ ] Write `docs/FEATURE_FLAGS.md` - feature flag usage guide
@@ -349,6 +380,7 @@ Create comprehensive documentation for the monorepo.
 - [ ] Create `SPRINT_S0_PLAN.md` with sprint details
 
 **Acceptance Criteria:**
+
 - All documentation is complete and accurate
 - Code examples work correctly
 - Architecture diagrams are clear
@@ -357,6 +389,7 @@ Create comprehensive documentation for the monorepo.
 - Documentation is well-formatted
 
 **Related Files:**
+
 - `docs/ARCHITECTURE.md`
 - `docs/DEVELOPMENT.md`
 - `docs/FEATURE_FLAGS.md`
@@ -375,18 +408,21 @@ Create comprehensive documentation for the monorepo.
 Create instructions for tagging the v0.0.0-s0 release.
 
 **Tasks:**
+
 - [ ] Document git tagging process
 - [ ] List all Sprint S0 deliverables
 - [ ] Create verification checklist
 - [ ] Write release notes template
 
 **Acceptance Criteria:**
+
 - Tagging instructions are clear
 - All deliverables are listed
 - Verification checklist is complete
 - Release notes template is ready
 
 **Related Files:**
+
 - `TAGGING_v0.0.0-s0.md`
 
 ---
@@ -401,6 +437,7 @@ A clear description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. See error
@@ -409,6 +446,7 @@ Steps to reproduce the behavior:
 What you expected to happen.
 
 **Environment:**
+
 - OS: [e.g., macOS 14.0]
 - Node version: [e.g., 20.11.0]
 - pnpm version: [e.g., 9.0.0]

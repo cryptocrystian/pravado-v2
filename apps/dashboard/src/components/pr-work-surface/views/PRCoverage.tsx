@@ -19,10 +19,7 @@
 
 import { useState, useMemo } from 'react';
 
-import {
-  buttonStyles,
-  glowEffects,
-} from '../prWorkSurfaceStyles';
+import { buttonStyles, glowEffects } from '../prWorkSurfaceStyles';
 import type { Coverage, OutletTier, Sentiment } from '../types';
 
 // ============================================
@@ -52,14 +49,16 @@ const MOCK_COVERAGE: Coverage[] = [
   {
     id: 'cov-1',
     url: 'https://techcrunch.com/2024/01/15/ai-pr-platform-launch',
-    headline: 'New AI-Powered PR Platform Promises to Transform Media Relations',
+    headline:
+      'New AI-Powered PR Platform Promises to Transform Media Relations',
     outlet: 'TechCrunch',
     tier: 't1',
     sentiment: 'positive',
     publishedAt: new Date(Date.now() - 2 * 86400000).toISOString(),
     citationDetected: true,
     attributedPitchId: 'p1',
-    summary: 'Comprehensive coverage of the platform launch with quotes from CEO.',
+    summary:
+      'Comprehensive coverage of the platform launch with quotes from CEO.',
   },
   {
     id: 'cov-2',
@@ -70,7 +69,8 @@ const MOCK_COVERAGE: Coverage[] = [
     sentiment: 'neutral',
     publishedAt: new Date(Date.now() - 5 * 86400000).toISOString(),
     citationDetected: true,
-    summary: 'Industry roundup mentioning Pravado among other AI marketing tools.',
+    summary:
+      'Industry roundup mentioning Pravado among other AI marketing tools.',
   },
   {
     id: 'cov-3',
@@ -153,7 +153,8 @@ function TierBadge({ tier }: { tier: OutletTier }) {
       label: 'Tier 3',
     },
     trade: {
-      color: 'bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
+      color:
+        'bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30',
       label: 'Trade',
     },
     niche: {
@@ -164,13 +165,21 @@ function TierBadge({ tier }: { tier: OutletTier }) {
 
   const { color, label } = config[tier];
   return (
-    <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${color}`}>
+    <span
+      className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${color}`}
+    >
       {label}
     </span>
   );
 }
 
-function SentimentBadge({ sentiment, compact = false }: { sentiment: Sentiment; compact?: boolean }) {
+function SentimentBadge({
+  sentiment,
+  compact = false,
+}: {
+  sentiment: Sentiment;
+  compact?: boolean;
+}) {
   const config = {
     positive: {
       color: 'text-semantic-success',
@@ -207,7 +216,9 @@ function SentimentBadge({ sentiment, compact = false }: { sentiment: Sentiment; 
   }
 
   return (
-    <span className={`flex items-center gap-1 px-2 py-0.5 text-[13px] font-medium rounded ${bg} ${color}`}>
+    <span
+      className={`flex items-center gap-1 px-2 py-0.5 text-[13px] font-medium rounded ${bg} ${color}`}
+    >
       <span>{icon}</span>
       {label}
     </span>
@@ -217,8 +228,18 @@ function SentimentBadge({ sentiment, compact = false }: { sentiment: Sentiment; 
 function AICitationBadge() {
   return (
     <span className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30">
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      <svg
+        className="w-3 h-3"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M13 10V3L4 14h7v7l9-11h-7z"
+        />
       </svg>
       AI Citation
     </span>
@@ -278,7 +299,9 @@ function StatCard({
         <div>
           <div className={`text-2xl font-bold ${style.value}`}>{value}</div>
           <div className="text-xs text-white/55 mt-1">{label}</div>
-          {subtext && <div className="text-[13px] text-white/40 mt-0.5">{subtext}</div>}
+          {subtext && (
+            <div className="text-[13px] text-white/40 mt-0.5">{subtext}</div>
+          )}
         </div>
         {icon && <div className="text-white/30">{icon}</div>}
       </div>
@@ -323,7 +346,9 @@ function TierDistributionBar({ coverage }: { coverage: Coverage[] }) {
         <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">
           Tier Distribution
         </span>
-        <span className="text-[13px] text-white/50">{coverage.length} placements</span>
+        <span className="text-[13px] text-white/50">
+          {coverage.length} placements
+        </span>
       </div>
 
       {/* Stacked bar */}
@@ -351,7 +376,8 @@ function TierDistributionBar({ coverage }: { coverage: Coverage[] }) {
             <div key={tier.key} className="flex items-center gap-1.5">
               <div className={`w-2 h-2 rounded-sm ${tier.color}`} />
               <span className="text-[13px] text-white/60">
-                {tier.label} <span className="text-white/40">({data.count})</span>
+                {tier.label}{' '}
+                <span className="text-white/40">({data.count})</span>
               </span>
             </div>
           );
@@ -374,9 +400,15 @@ function SentimentSummary({ coverage }: { coverage: Coverage[] }) {
     };
     const total = coverage.length || 1;
     return {
-      positive: { count: counts.positive, pct: (counts.positive / total) * 100 },
+      positive: {
+        count: counts.positive,
+        pct: (counts.positive / total) * 100,
+      },
       neutral: { count: counts.neutral, pct: (counts.neutral / total) * 100 },
-      negative: { count: counts.negative, pct: (counts.negative / total) * 100 },
+      negative: {
+        count: counts.negative,
+        pct: (counts.negative / total) * 100,
+      },
     };
   }, [coverage]);
 
@@ -391,7 +423,9 @@ function SentimentSummary({ coverage }: { coverage: Coverage[] }) {
       <div className="space-y-2">
         {/* Positive */}
         <div className="flex items-center gap-3">
-          <span className="w-16 text-[13px] text-semantic-success font-medium">Positive</span>
+          <span className="w-16 text-[13px] text-semantic-success font-medium">
+            Positive
+          </span>
           <div className="flex-1 h-2 rounded-full bg-slate-4 overflow-hidden">
             <div
               className="h-full bg-semantic-success transition-all duration-300"
@@ -405,7 +439,9 @@ function SentimentSummary({ coverage }: { coverage: Coverage[] }) {
 
         {/* Neutral */}
         <div className="flex items-center gap-3">
-          <span className="w-16 text-[13px] text-white/60 font-medium">Neutral</span>
+          <span className="w-16 text-[13px] text-white/60 font-medium">
+            Neutral
+          </span>
           <div className="flex-1 h-2 rounded-full bg-slate-4 overflow-hidden">
             <div
               className="h-full bg-white/40 transition-all duration-300"
@@ -419,7 +455,9 @@ function SentimentSummary({ coverage }: { coverage: Coverage[] }) {
 
         {/* Negative */}
         <div className="flex items-center gap-3">
-          <span className="w-16 text-[13px] text-semantic-danger font-medium">Negative</span>
+          <span className="w-16 text-[13px] text-semantic-danger font-medium">
+            Negative
+          </span>
           <div className="flex-1 h-2 rounded-full bg-slate-4 overflow-hidden">
             <div
               className="h-full bg-semantic-danger transition-all duration-300"
@@ -447,32 +485,67 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
   };
 
   const driftConfig = {
-    low: { color: 'text-semantic-success', bg: 'bg-semantic-success/10', label: 'Low' },
-    medium: { color: 'text-semantic-warning', bg: 'bg-semantic-warning/10', label: 'Medium' },
-    high: { color: 'text-semantic-danger', bg: 'bg-semantic-danger/10', label: 'High' },
+    low: {
+      color: 'text-semantic-success',
+      bg: 'bg-semantic-success/10',
+      label: 'Low',
+    },
+    medium: {
+      color: 'text-semantic-warning',
+      bg: 'bg-semantic-warning/10',
+      label: 'Medium',
+    },
+    high: {
+      color: 'text-semantic-danger',
+      bg: 'bg-semantic-danger/10',
+      label: 'High',
+    },
   };
 
   const trend = trendConfig[pulse.trend];
   const drift = driftConfig[pulse.narrativeDriftRisk];
-  const totalAICitations = Object.values(pulse.aiCitations).reduce((a, b) => a + b, 0);
+  const totalAICitations = Object.values(pulse.aiCitations).reduce(
+    (a, b) => a + b,
+    0
+  );
 
   return (
-    <div className={`p-5 rounded-xl bg-panel border border-brand-cyan/20 ${glowEffects.seo}`}>
+    <div
+      className={`p-5 rounded-xl bg-panel border border-brand-cyan/20 ${glowEffects.seo}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-brand-cyan/15 flex items-center justify-center">
-            <svg className="w-4 h-4 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              className="w-4 h-4 text-brand-cyan"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
           </div>
           <div>
-            <span className="text-sm font-semibold text-white/95">CiteMind Pulse</span>
-            <span className="text-[13px] text-white/40 ml-2">AI Visibility Health</span>
+            <span className="text-sm font-semibold text-white/95">
+              CiteMind Pulse
+            </span>
+            <span className="text-[13px] text-white/40 ml-2">
+              AI Visibility Health
+            </span>
           </div>
         </div>
         <span className="text-[13px] text-white/40">
-          Last scan: {new Date(pulse.lastScan).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          Last scan:{' '}
+          {new Date(pulse.lastScan).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
         </span>
       </div>
 
@@ -496,7 +569,9 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-xl font-bold text-brand-cyan">{pulse.score}</span>
+            <span className="text-xl font-bold text-brand-cyan">
+              {pulse.score}
+            </span>
             <span className="text-[13px] text-white/40">/ 100</span>
           </div>
         </div>
@@ -505,7 +580,9 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
           {/* Trend */}
           <div className="flex items-center justify-between">
             <span className="text-[13px] text-white/55">Trend</span>
-            <span className={`flex items-center gap-1 text-[13px] font-medium ${trend.color}`}>
+            <span
+              className={`flex items-center gap-1 text-[13px] font-medium ${trend.color}`}
+            >
               {trend.icon} {trend.label}
             </span>
           </div>
@@ -519,7 +596,9 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
           {/* Drift Risk */}
           <div className="flex items-center justify-between">
             <span className="text-[13px] text-white/55">Drift Risk</span>
-            <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${drift.bg} ${drift.color}`}>
+            <span
+              className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${drift.bg} ${drift.color}`}
+            >
               {drift.label}
             </span>
           </div>
@@ -532,7 +611,9 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
           <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
             AI Citations by Model
           </span>
-          <span className="text-[13px] text-brand-cyan font-medium">{totalAICitations} total</span>
+          <span className="text-[13px] text-brand-cyan font-medium">
+            {totalAICitations} total
+          </span>
         </div>
         <div className="grid grid-cols-5 gap-2">
           {[
@@ -546,7 +627,9 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
               <div className="text-sm font-semibold text-white/90">
                 {pulse.aiCitations[model.key as keyof typeof pulse.aiCitations]}
               </div>
-              <div className="text-[13px] text-white/40 truncate">{model.label}</div>
+              <div className="text-[13px] text-white/40 truncate">
+                {model.label}
+              </div>
             </div>
           ))}
         </div>
@@ -561,7 +644,11 @@ function CiteMindPulseCard({ pulse }: { pulse: CiteMindPulse }) {
 
 function CoverageTimeline({ coverage }: { coverage: Coverage[] }) {
   const sortedCoverage = useMemo(
-    () => [...coverage].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()),
+    () =>
+      [...coverage].sort(
+        (a, b) =>
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      ),
     [coverage]
   );
 
@@ -584,7 +671,9 @@ function CoverageTimeline({ coverage }: { coverage: Coverage[] }) {
           {recentCoverage.map((item, idx) => {
             const isLatest = idx === 0;
             const date = new Date(item.publishedAt);
-            const daysDiff = Math.floor((Date.now() - date.getTime()) / 86400000);
+            const daysDiff = Math.floor(
+              (Date.now() - date.getTime()) / 86400000
+            );
 
             return (
               <div key={item.id} className="relative pl-8">
@@ -605,11 +694,19 @@ function CoverageTimeline({ coverage }: { coverage: Coverage[] }) {
                       <TierBadge tier={item.tier} />
                       {item.citationDetected && <AICitationBadge />}
                     </div>
-                    <p className="text-sm text-white/85 truncate">{item.headline}</p>
+                    <p className="text-sm text-white/85 truncate">
+                      {item.headline}
+                    </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[13px] text-brand-cyan">{item.outlet}</span>
+                      <span className="text-[13px] text-brand-cyan">
+                        {item.outlet}
+                      </span>
                       <span className="text-[13px] text-white/40">
-                        {daysDiff === 0 ? 'Today' : daysDiff === 1 ? 'Yesterday' : `${daysDiff}d ago`}
+                        {daysDiff === 0
+                          ? 'Today'
+                          : daysDiff === 1
+                            ? 'Yesterday'
+                            : `${daysDiff}d ago`}
                       </span>
                     </div>
                   </div>
@@ -632,8 +729,15 @@ function CoverageTimeline({ coverage }: { coverage: Coverage[] }) {
 
 function CoverageTableRow({ item }: { item: Coverage }) {
   const [isHovered, setIsHovered] = useState(false);
-  const daysDiff = Math.floor((Date.now() - new Date(item.publishedAt).getTime()) / 86400000);
-  const dateLabel = daysDiff === 0 ? 'Today' : daysDiff === 1 ? 'Yesterday' : `${daysDiff}d ago`;
+  const daysDiff = Math.floor(
+    (Date.now() - new Date(item.publishedAt).getTime()) / 86400000
+  );
+  const dateLabel =
+    daysDiff === 0
+      ? 'Today'
+      : daysDiff === 1
+        ? 'Yesterday'
+        : `${daysDiff}d ago`;
 
   return (
     <div
@@ -653,7 +757,9 @@ function CoverageTableRow({ item }: { item: Coverage }) {
 
       {/* Outlet */}
       <div className="w-28 shrink-0">
-        <span className="text-sm font-medium text-brand-cyan truncate">{item.outlet}</span>
+        <span className="text-sm font-medium text-brand-cyan truncate">
+          {item.outlet}
+        </span>
       </div>
 
       {/* Headline */}
@@ -665,8 +771,18 @@ function CoverageTableRow({ item }: { item: Coverage }) {
       <div className="w-24 shrink-0 flex justify-center">
         {item.citationDetected ? (
           <span className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded bg-brand-cyan/15 text-brand-cyan">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              className="w-3 h-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
             Cited
           </span>
@@ -693,8 +809,18 @@ function CoverageTableRow({ item }: { item: Coverage }) {
           }`}
         >
           View article
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            />
           </svg>
         </a>
       </div>
@@ -736,12 +862,24 @@ function EmptyState() {
   return (
     <div className="p-12 text-center rounded-xl border border-dashed border-slate-5 bg-panel/50">
       <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-slate-2 flex items-center justify-center">
-        <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+        <svg
+          className="w-6 h-6 text-white/40"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+          />
         </svg>
       </div>
       <p className="text-sm text-white/55">No coverage matching this filter</p>
-      <p className="text-xs text-white/40 mt-1">Try adjusting your filter criteria</p>
+      <p className="text-xs text-white/40 mt-1">
+        Try adjusting your filter criteria
+      </p>
     </div>
   );
 }
@@ -764,27 +902,41 @@ export function PRCoverage() {
   }, [coverage, filter]);
 
   // Stats
-  const stats = useMemo(() => ({
-    total: coverage.length,
-    aiCitations: coverage.filter((c) => c.citationDetected).length,
-    t1: coverage.filter((c) => c.tier === 't1').length,
-    positive: coverage.filter((c) => c.sentiment === 'positive').length,
-  }), [coverage]);
+  const stats = useMemo(
+    () => ({
+      total: coverage.length,
+      aiCitations: coverage.filter((c) => c.citationDetected).length,
+      t1: coverage.filter((c) => c.tier === 't1').length,
+      positive: coverage.filter((c) => c.sentiment === 'positive').length,
+    }),
+    [coverage]
+  );
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-white/95">Coverage Tracking</h2>
-          <p className="text-xs text-white/40 mt-0.5">See the impact of your media efforts</p>
+          <h2 className="text-base font-semibold text-white/95">
+            Coverage Tracking
+          </h2>
+          <p className="text-xs text-white/40 mt-0.5">
+            See the impact of your media efforts
+          </p>
         </div>
-        <button
-          type="button"
-          className={buttonStyles.primary}
-        >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        <button type="button" className={buttonStyles.primary}>
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
           </svg>
           Add Coverage
         </button>
@@ -797,8 +949,18 @@ export function PRCoverage() {
           value={stats.total}
           subtext="All placements"
           icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+              />
             </svg>
           }
         />
@@ -808,8 +970,18 @@ export function PRCoverage() {
           subtext="CiteMind detected"
           accent="cyan"
           icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
           }
         />
@@ -819,8 +991,18 @@ export function PRCoverage() {
           subtext="Premium outlets"
           accent="iris"
           icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+              />
             </svg>
           }
         />
@@ -830,8 +1012,18 @@ export function PRCoverage() {
           subtext={`${Math.round((stats.positive / stats.total) * 100)}% of coverage`}
           accent="success"
           icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           }
         />
@@ -872,11 +1064,13 @@ export function PRCoverage() {
             }`}
           >
             {tab.label}
-            <span className={`text-[13px] px-1.5 py-0.5 rounded ${
-              filter === tab.id
-                ? 'bg-brand-magenta/15 text-brand-magenta'
-                : 'bg-white/10 text-white/50'
-            }`}>
+            <span
+              className={`text-[13px] px-1.5 py-0.5 rounded ${
+                filter === tab.id
+                  ? 'bg-brand-magenta/15 text-brand-magenta'
+                  : 'bg-white/10 text-white/50'
+              }`}
+            >
               {tab.count}
             </span>
             {filter === tab.id && (

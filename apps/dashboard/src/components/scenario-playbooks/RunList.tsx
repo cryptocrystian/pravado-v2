@@ -52,7 +52,9 @@ export function RunList({
         offset: page * limit,
         ...(scenarioId && { scenarioId }),
         ...(playbookId && { playbookId }),
-        ...(statusFilter && { status: statusFilter as ListScenarioRunsQuery['status'] }),
+        ...(statusFilter && {
+          status: statusFilter as ListScenarioRunsQuery['status'],
+        }),
         sortBy: 'started_at',
         sortOrder: 'desc',
       };
@@ -115,9 +117,13 @@ export function RunList({
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Statuses</option>
-            {Object.entries(SCENARIO_RUN_STATUS_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
+            {Object.entries(SCENARIO_RUN_STATUS_LABELS).map(
+              ([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              )
+            )}
           </select>
 
           <button
@@ -140,7 +146,10 @@ export function RunList({
       {loading ? (
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse">
+            <div
+              key={i}
+              className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse"
+            >
               <div className="h-6 bg-gray-200 rounded w-1/4 mb-2" />
               <div className="h-4 bg-gray-100 rounded w-3/4" />
             </div>
@@ -167,7 +176,9 @@ export function RunList({
               d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No runs found</h3>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            No runs found
+          </h3>
           <p className="mt-1 text-sm text-gray-500">
             Start a scenario to see runs here
           </p>
@@ -191,7 +202,8 @@ export function RunList({
           {!maxItems && totalPages > 1 && (
             <div className="flex items-center justify-between pt-4">
               <p className="text-sm text-gray-600">
-                Showing {page * limit + 1} - {Math.min((page + 1) * limit, total)} of {total}
+                Showing {page * limit + 1} -{' '}
+                {Math.min((page + 1) * limit, total)} of {total}
               </p>
               <div className="flex items-center gap-2">
                 <button

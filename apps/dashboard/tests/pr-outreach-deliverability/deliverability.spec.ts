@@ -13,8 +13,12 @@ test.describe('Deliverability Dashboard', () => {
 
   test.describe('Page Structure', () => {
     test('should display page title and description', async ({ page }) => {
-      await expect(page.locator('h1')).toContainText('Email Deliverability & Engagement');
-      await expect(page.locator('text=Track email delivery, opens, clicks')).toBeVisible();
+      await expect(page.locator('h1')).toContainText(
+        'Email Deliverability & Engagement'
+      );
+      await expect(
+        page.locator('text=Track email delivery, opens, clicks')
+      ).toBeVisible();
     });
 
     test('should display tab navigation', async ({ page }) => {
@@ -48,7 +52,9 @@ test.describe('Deliverability Dashboard', () => {
     test('should display top engaged journalists table', async ({ page }) => {
       await expect(page.locator('text=Top Engaged Journalists')).toBeVisible();
       await expect(page.locator('th:has-text("Journalist")')).toBeVisible();
-      await expect(page.locator('th:has-text("Engagement Score")')).toBeVisible();
+      await expect(
+        page.locator('th:has-text("Engagement Score")')
+      ).toBeVisible();
       await expect(page.locator('th:has-text("Open Rate")')).toBeVisible();
       await expect(page.locator('th:has-text("Click Rate")')).toBeVisible();
     });
@@ -82,7 +88,9 @@ test.describe('Deliverability Dashboard', () => {
     test('should display message count footer', async ({ page }) => {
       await page.click('button:has-text("Email Messages")');
 
-      await expect(page.locator('text=/Showing \\d+ of \\d+ messages/')).toBeVisible();
+      await expect(
+        page.locator('text=/Showing \\d+ of \\d+ messages/')
+      ).toBeVisible();
     });
 
     test('should display status badges with colors', async ({ page }) => {
@@ -98,14 +106,18 @@ test.describe('Deliverability Dashboard', () => {
     test('should switch to engagement tab when clicked', async ({ page }) => {
       await page.click('button:has-text("Engagement Metrics")');
 
-      const engagementTab = page.locator('button:has-text("Engagement Metrics")');
+      const engagementTab = page.locator(
+        'button:has-text("Engagement Metrics")'
+      );
       await expect(engagementTab).toHaveClass(/border-blue-500/);
     });
 
     test('should display engagement metrics table', async ({ page }) => {
       await page.click('button:has-text("Engagement Metrics")');
 
-      await expect(page.locator('text=Journalist Engagement Metrics')).toBeVisible();
+      await expect(
+        page.locator('text=Journalist Engagement Metrics')
+      ).toBeVisible();
       await expect(page.locator('th:has-text("Journalist")')).toBeVisible();
       await expect(page.locator('th:has-text("Score")')).toBeVisible();
       await expect(page.locator('th:has-text("Sent")')).toBeVisible();
@@ -118,10 +130,14 @@ test.describe('Deliverability Dashboard', () => {
     test('should display journalist count footer', async ({ page }) => {
       await page.click('button:has-text("Engagement Metrics")');
 
-      await expect(page.locator('text=/Showing \\d+ of \\d+ journalists/')).toBeVisible();
+      await expect(
+        page.locator('text=/Showing \\d+ of \\d+ journalists/')
+      ).toBeVisible();
     });
 
-    test('should display engagement scores as percentages', async ({ page }) => {
+    test('should display engagement scores as percentages', async ({
+      page,
+    }) => {
       await page.click('button:has-text("Engagement Metrics")');
 
       // Check for score percentages in blue color
@@ -131,7 +147,9 @@ test.describe('Deliverability Dashboard', () => {
   });
 
   test.describe('Tab Switching', () => {
-    test('should maintain tab state when switching between tabs', async ({ page }) => {
+    test('should maintain tab state when switching between tabs', async ({
+      page,
+    }) => {
       // Switch to messages
       await page.click('button:has-text("Email Messages")');
       await expect(page.locator('th:has-text("Subject")')).toBeVisible();
@@ -147,12 +165,17 @@ test.describe('Deliverability Dashboard', () => {
   });
 
   test.describe('Error Handling', () => {
-    test('should display error message when data fails to load', async ({ page }) => {
+    test('should display error message when data fails to load', async ({
+      page,
+    }) => {
       // Mock API failure
       await page.route('**/api/v1/pr-outreach-deliverability/**', (route) => {
         route.fulfill({
           status: 500,
-          body: JSON.stringify({ success: false, error: { message: 'Server error' } }),
+          body: JSON.stringify({
+            success: false,
+            error: { message: 'Server error' },
+          }),
         });
       });
 
@@ -167,7 +190,10 @@ test.describe('Deliverability Dashboard', () => {
       await page.route('**/api/v1/pr-outreach-deliverability/**', (route) => {
         route.fulfill({
           status: 500,
-          body: JSON.stringify({ success: false, error: { message: 'Server error' } }),
+          body: JSON.stringify({
+            success: false,
+            error: { message: 'Server error' },
+          }),
         });
       });
 
@@ -193,7 +219,9 @@ test.describe('Deliverability Dashboard', () => {
 
       await page.goto('/app/pr/deliverability');
 
-      await expect(page.locator('text=Loading deliverability data')).toBeVisible();
+      await expect(
+        page.locator('text=Loading deliverability data')
+      ).toBeVisible();
     });
   });
 
@@ -206,7 +234,9 @@ test.describe('Deliverability Dashboard', () => {
       await expect(page.locator('text=Delivery Rate')).toBeVisible();
     });
 
-    test('should display tables in mobile view with scroll', async ({ page }) => {
+    test('should display tables in mobile view with scroll', async ({
+      page,
+    }) => {
       await page.setViewportSize({ width: 375, height: 667 });
 
       await page.click('button:has-text("Email Messages")');
@@ -221,10 +251,13 @@ test.describe('Deliverability Dashboard', () => {
     test('should auto-refresh data every 30 seconds', async ({ page }) => {
       let requestCount = 0;
 
-      await page.route('**/api/v1/pr-outreach-deliverability/stats/**', (route) => {
-        requestCount++;
-        route.continue();
-      });
+      await page.route(
+        '**/api/v1/pr-outreach-deliverability/stats/**',
+        (route) => {
+          requestCount++;
+          route.continue();
+        }
+      );
 
       // Wait for initial load
       await page.waitForTimeout(1000);

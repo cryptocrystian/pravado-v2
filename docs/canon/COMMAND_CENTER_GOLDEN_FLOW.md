@@ -25,6 +25,7 @@ Every feature, every component, every interaction in Command Center exists to su
 SAGE generates a proposal and it appears in the Action Stream.
 
 **User Sees:**
+
 - Action card with pillar badge (PR/Content/SEO)
 - Priority indicator (Critical/High/Medium/Low)
 - Confidence and Impact meters
@@ -32,9 +33,11 @@ SAGE generates a proposal and it appears in the Action Stream.
 - Primary CTA (Execute, Review, Send, etc.)
 
 **User Question Answered:**
+
 > "What should I do next?"
 
 **Contract Requirements:**
+
 - Cards sorted by priority (Critical → High → Medium → Low)
 - Within priority: sorted by confidence descending
 - Comfortable mode is default for ≤8 cards
@@ -48,6 +51,7 @@ SAGE generates a proposal and it appears in the Action Stream.
 User hovers over an action card to understand context before deciding.
 
 **User Sees:**
+
 - Anchored HoverCard popover (left-positioned within Action Stream)
 - "Why Now" section explaining strategic rationale
 - "Next Step" section showing recommended action
@@ -56,9 +60,11 @@ User hovers over an action card to understand context before deciding.
 - "Click card to review full details" hint
 
 **User Question Answered:**
+
 > "Why should I do this now, and what will happen?"
 
 **Contract Requirements:**
+
 - Hover delay: ~200ms open, ~250ms close
 - Non-hovered cards dim to 40% opacity
 - HoverCard stays open when cursor moves into it
@@ -72,6 +78,7 @@ User hovers over an action card to understand context before deciding.
 While hovering, the Entity Map highlights the entities and relationships affected by this action.
 
 **User Sees:**
+
 - Affected entities glow with pillar color
 - Non-affected entities dim to 40% opacity
 - Affected edges illuminate
@@ -79,9 +86,11 @@ While hovering, the Entity Map highlights the entities and relationships affecte
 - Impact badges show expected change magnitude
 
 **User Question Answered:**
+
 > "What influence gap is this action closing?"
 
 **Contract Requirements:**
+
 - Highlight/dim transition: 150ms
 - Driver node clearly identified
 - Impact visible on affected nodes
@@ -95,19 +104,23 @@ While hovering, the Entity Map highlights the entities and relationships affecte
 User clicks the Primary CTA to execute the action.
 
 **User Sees:**
+
 - Button enters loading state
 - If ready state (confidence ≥0.8, no gate): executes immediately
 - If not ready: opens confirmation or Action Modal
 
 **User Actions:**
+
 - Click Primary CTA to execute
 - Click Secondary CTA to review details first
 - Click card body to open Action Modal for investigation
 
 **User Question Answered:**
+
 > "How do I make this happen?"
 
 **Contract Requirements:**
+
 - Primary CTA always visible on card
 - Ready state uses success styling (green glow)
 - Non-ready uses pillar color
@@ -121,15 +134,18 @@ User clicks the Primary CTA to execute the action.
 After execution, the system provides visual feedback across components.
 
 **User Sees:**
+
 - **Action Stream**: Card shows "Executed" state, then removes or moves to completed
 - **Entity Map**: Ripple pulse propagates from driver entity through affected nodes
 - **Strategy Panel**: EVI updates to reflect impact (if significant)
 - **Calendar**: Item moves to "scheduled" or "published" status
 
 **User Question Answered:**
+
 > "Did it work, and what changed?"
 
 **Contract Requirements:**
+
 - Entity Map pulse: 800ms animation
 - Cards transition smoothly (not jarring removal)
 - Audit trail created
@@ -141,17 +157,18 @@ After execution, the system provides visual feedback across components.
 
 ### End-to-End Timing
 
-| Phase | Duration | Cumulative |
-|-------|----------|------------|
-| Action Appears | Instant (on load) | 0ms |
-| Hover Intent | 200ms delay | 200ms |
-| Entity Map Highlight | 150ms transition | 350ms |
-| User Decision | Variable (human) | - |
-| Execute Click | 50ms button feedback | 50ms |
-| System Response | 800ms animation | 850ms |
-| Confirmation | 2s total | 2.5s |
+| Phase                | Duration             | Cumulative |
+| -------------------- | -------------------- | ---------- |
+| Action Appears       | Instant (on load)    | 0ms        |
+| Hover Intent         | 200ms delay          | 200ms      |
+| Entity Map Highlight | 150ms transition     | 350ms      |
+| User Decision        | Variable (human)     | -          |
+| Execute Click        | 50ms button feedback | 50ms       |
+| System Response      | 800ms animation      | 850ms      |
+| Confirmation         | 2s total             | 2.5s       |
 
 ### Total Flow Time (excluding human decision)
+
 **~2.5 seconds** from hover to confirmed execution.
 
 ---
@@ -160,48 +177,48 @@ After execution, the system provides visual feedback across components.
 
 ### 4.1 Action Stream
 
-| Responsibility | Behavior |
-|----------------|----------|
-| Display proposals | Prioritized, density-adaptive cards |
-| Enable hover | Trigger HoverCard with context |
-| Broadcast hover state | `hoveredActionId` prop to Entity Map |
-| Handle execution | Primary CTA triggers action |
+| Responsibility          | Behavior                               |
+| ----------------------- | -------------------------------------- |
+| Display proposals       | Prioritized, density-adaptive cards    |
+| Enable hover            | Trigger HoverCard with context         |
+| Broadcast hover state   | `hoveredActionId` prop to Entity Map   |
+| Handle execution        | Primary CTA triggers action            |
 | Broadcast execute state | `executingActionId` prop to Entity Map |
 
 ### 4.2 Entity Map
 
-| Responsibility | Behavior |
-|----------------|----------|
-| Receive hover state | Highlight affected entities |
-| Receive execute state | Trigger pulse animation |
-| Show gaps | Visualize weak/missing relationships |
-| Answer "what gap" | Impact badges on hover |
+| Responsibility        | Behavior                             |
+| --------------------- | ------------------------------------ |
+| Receive hover state   | Highlight affected entities          |
+| Receive execute state | Trigger pulse animation              |
+| Show gaps             | Visualize weak/missing relationships |
+| Answer "what gap"     | Impact badges on hover               |
 
 ### 4.3 HoverCard (Micro-Brief)
 
-| Responsibility | Behavior |
-|----------------|----------|
-| Explain "why now" | Strategic context |
-| Show next step | Clear recommendation |
-| Display signals | Key metrics with tone |
+| Responsibility     | Behavior                |
+| ------------------ | ----------------------- |
+| Explain "why now"  | Strategic context       |
+| Show next step     | Clear recommendation    |
+| Display signals    | Key metrics with tone   |
 | Warn on guardrails | Approval/limit warnings |
 
 ### 4.4 Strategy Panel
 
-| Responsibility | Behavior |
-|----------------|----------|
-| Display EVI | North Star KPI |
+| Responsibility  | Behavior                                |
+| --------------- | --------------------------------------- |
+| Display EVI     | North Star KPI                          |
 | Explain drivers | Visibility/Authority/Momentum breakdown |
-| Show impact | Delta after actions |
-| NO actions | Diagnostic only |
+| Show impact     | Delta after actions                     |
+| NO actions      | Diagnostic only                         |
 
 ### 4.5 Calendar
 
-| Responsibility | Behavior |
-|----------------|----------|
-| Show timeline | When things will happen |
-| Indicate mode | Autopilot/Copilot/Manual |
-| Status updates | After execution |
+| Responsibility | Behavior                 |
+| -------------- | ------------------------ |
+| Show timeline  | When things will happen  |
+| Indicate mode  | Autopilot/Copilot/Manual |
+| Status updates | After execution          |
 
 ---
 
@@ -274,11 +291,11 @@ const [executingActionId, setExecutingActionId] = useState<string | null>(null);
 ```typescript
 // Maps action IDs to affected entities
 const actionImpacts: Record<string, ActionImpactMap> = {
-  "act_123": {
-    driver_node: "brand_001",
-    impacted_nodes: ["journalist_001", "topic_002"],
-    impacted_edges: ["edge_001", "edge_002"],
-  }
+  act_123: {
+    driver_node: 'brand_001',
+    impacted_nodes: ['journalist_001', 'topic_002'],
+    impacted_edges: ['edge_001', 'edge_002'],
+  },
 };
 ```
 
@@ -288,45 +305,45 @@ const actionImpacts: Record<string, ActionImpactMap> = {
 
 ### 7.1 No Hover Support (Touch Devices)
 
-| Scenario | Fallback |
-|----------|----------|
-| Touch screen | Tap opens Action Modal directly |
-| No hover | Skip Step 2, Entity Map shows impact on tap |
+| Scenario     | Fallback                                    |
+| ------------ | ------------------------------------------- |
+| Touch screen | Tap opens Action Modal directly             |
+| No hover     | Skip Step 2, Entity Map shows impact on tap |
 
 ### 7.2 Entity Map Not Visible (Mobile)
 
-| Scenario | Fallback |
-|----------|----------|
-| Single-column layout | Entity Map hidden, HoverCard still works |
-| Small screen | Action Stream + HoverCard is complete flow |
+| Scenario             | Fallback                                   |
+| -------------------- | ------------------------------------------ |
+| Single-column layout | Entity Map hidden, HoverCard still works   |
+| Small screen         | Action Stream + HoverCard is complete flow |
 
 ### 7.3 Slow Network
 
-| Scenario | Fallback |
-|----------|----------|
-| Action takes >2s | Show progress indicator |
-| Timeout | Show error with retry option |
+| Scenario         | Fallback                     |
+| ---------------- | ---------------------------- |
+| Action takes >2s | Show progress indicator      |
+| Timeout          | Show error with retry option |
 
 ### 7.4 Action Fails
 
-| Scenario | Fallback |
-|----------|----------|
-| Execution error | Card shows error state |
-| Entity Map | Red flash instead of pulse |
-| Retry available | Retry button appears |
+| Scenario        | Fallback                   |
+| --------------- | -------------------------- |
+| Execution error | Card shows error state     |
+| Entity Map      | Red flash instead of pulse |
+| Retry available | Retry button appears       |
 
 ---
 
 ## 8. Anti-Patterns (FORBIDDEN)
 
-| Anti-Pattern | Why It Breaks Flow | Alternative |
-|--------------|--------------------|-------------|
-| **Multiple modals open** | Confuses user about state | One modal at a time |
-| **Hover opens new page** | Breaks investigate-then-act | Hover shows popover |
-| **Execute navigates away** | Loses context | Stay on Command Center |
-| **Entity Map as primary nav** | Not its purpose | Entity Map is visualization |
-| **Strategy Panel has buttons** | Breaks diagnostic-only rule | Actions in Action Stream |
-| **Calendar inline editing** | Not a planner | Calendar shows timeline |
+| Anti-Pattern                   | Why It Breaks Flow          | Alternative                 |
+| ------------------------------ | --------------------------- | --------------------------- |
+| **Multiple modals open**       | Confuses user about state   | One modal at a time         |
+| **Hover opens new page**       | Breaks investigate-then-act | Hover shows popover         |
+| **Execute navigates away**     | Loses context               | Stay on Command Center      |
+| **Entity Map as primary nav**  | Not its purpose             | Entity Map is visualization |
+| **Strategy Panel has buttons** | Breaks diagnostic-only rule | Actions in Action Stream    |
+| **Calendar inline editing**    | Not a planner               | Calendar shows timeline     |
 
 ---
 
@@ -334,19 +351,19 @@ const actionImpacts: Record<string, ActionImpactMap> = {
 
 ### 9.1 Flow Completion
 
-| Metric | Target |
-|--------|--------|
-| Hover → Execute rate | >40% of hovers lead to action |
-| Time to first action | <30 seconds after page load |
-| Error rate on execute | <1% of executions fail |
+| Metric                | Target                        |
+| --------------------- | ----------------------------- |
+| Hover → Execute rate  | >40% of hovers lead to action |
+| Time to first action  | <30 seconds after page load   |
+| Error rate on execute | <1% of executions fail        |
 
 ### 9.2 User Understanding
 
-| Metric | Target |
-|--------|--------|
-| Hover to understand | >80% hover before executing |
-| Use of HoverCard | >50% of actions previewed via hover |
-| Entity Map engagement | >30% notice Entity Map changes |
+| Metric                | Target                              |
+| --------------------- | ----------------------------------- |
+| Hover to understand   | >80% hover before executing         |
+| Use of HoverCard      | >50% of actions previewed via hover |
+| Entity Map engagement | >30% notice Entity Map changes      |
 
 ---
 
@@ -405,6 +422,7 @@ SAGE detects a high-fit journalist in the pipeline who hasn't been pitched. A pr
 ```
 
 **Card displays:**
+
 - PR pillar badge (magenta accent)
 - "Manual" mode badge (user-initiated only)
 - "Send Pitch" primary CTA
@@ -429,14 +447,19 @@ User hovers to understand context:
 #### Step 3: Entity Map Visualizes Gap
 
 Entity Map highlights:
+
 - **Driver node**: `brand_pravado` (your brand)
 - **Impacted nodes**: `journalist_sarah_chen`, `outlet_techcrunch`, `topic_enterprise_ai`
 - **Gap shown**: No edge between brand and journalist (opportunity)
 
 ```typescript
-actionImpacts["act_pr_001"] = {
-  driver_node: "brand_pravado",
-  impacted_nodes: ["journalist_sarah_chen", "outlet_techcrunch", "topic_enterprise_ai"],
+actionImpacts['act_pr_001'] = {
+  driver_node: 'brand_pravado',
+  impacted_nodes: [
+    'journalist_sarah_chen',
+    'outlet_techcrunch',
+    'topic_enterprise_ai',
+  ],
   impacted_edges: [], // No existing edge — this action creates one
 };
 ```
@@ -444,6 +467,7 @@ actionImpacts["act_pr_001"] = {
 #### Step 4: User Executes
 
 User clicks **"Send Pitch"**:
+
 1. Deep link opens PR Work Surface at pitch editor
 2. User customizes pitch (SAGE draft pre-filled)
 3. User clicks **"Manual Send"** in PR Work Surface
@@ -482,6 +506,7 @@ Backend returns with EVI attribution:
 ```
 
 **Visual feedback:**
+
 - **Action Stream**: Card shows "Executed ✓", fades to completed section
 - **Entity Map**: Pulse animation from brand → journalist → outlet
 - **Strategy Panel**: EVI "Visibility" driver shows +2.3 movement
@@ -503,31 +528,30 @@ PR actions emit EVI attribution events that flow to the Strategy Panel:
 
 ### 12.3 PR Action Types and Their EVI Drivers
 
-| PR Action | Mode | EVI Driver | Typical Delta |
-|-----------|------|------------|---------------|
-| Send pitch to tier-1 outlet | Manual | Visibility | +2.0–3.0 |
-| Send pitch to tier-2 outlet | Manual | Visibility | +1.0–1.5 |
-| Send follow-up | Copilot | Momentum | +0.5–1.0 |
-| Log coverage mention | Manual | Authority | +3.0–5.0 |
-| Add journalist to list | Manual | N/A (setup) | 0 |
+| PR Action                   | Mode    | EVI Driver  | Typical Delta |
+| --------------------------- | ------- | ----------- | ------------- |
+| Send pitch to tier-1 outlet | Manual  | Visibility  | +2.0–3.0      |
+| Send pitch to tier-2 outlet | Manual  | Visibility  | +1.0–1.5      |
+| Send follow-up              | Copilot | Momentum    | +0.5–1.0      |
+| Log coverage mention        | Manual  | Authority   | +3.0–5.0      |
+| Add journalist to list      | Manual  | N/A (setup) | 0             |
 
 ### 12.4 Deep Link Integration
 
 PR actions in Command Center link directly to PR Work Surface views:
 
-| Action Type | Deep Link Pattern |
-|-------------|-------------------|
-| Send pitch | `/app/pr?view=pipeline&sequenceId={id}&contactId={id}` |
-| Review journalist | `/app/pr?view=database&contactId={id}` |
-| View coverage | `/app/pr?view=database&tab=inbox` |
-| Create sequence | `/app/pr?view=pipeline&action=new-sequence` |
+| Action Type       | Deep Link Pattern                                      |
+| ----------------- | ------------------------------------------------------ |
+| Send pitch        | `/app/pr?view=pipeline&sequenceId={id}&contactId={id}` |
+| Review journalist | `/app/pr?view=database&contactId={id}`                 |
+| View coverage     | `/app/pr?view=database&tab=inbox`                      |
+| Create sequence   | `/app/pr?view=pipeline&action=new-sequence`            |
 
 ---
 
 ## 13. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-01-21 | 1.1 | Added PR Golden Flow examples (Section 12) |
-| 2026-01-13 | 1.0 | V1 Golden Flow lock — frozen for release |
-
+| Date       | Version | Change                                     |
+| ---------- | ------- | ------------------------------------------ |
+| 2026-01-21 | 1.1     | Added PR Golden Flow examples (Section 12) |
+| 2026-01-13 | 1.0     | V1 Golden Flow lock — frozen for release   |

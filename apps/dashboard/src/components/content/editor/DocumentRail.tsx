@@ -58,7 +58,11 @@ export function DocumentRail({
 }: DocumentRailProps) {
   // Sort by updatedAt descending
   const sorted = useMemo(
-    () => [...documents].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
+    () =>
+      [...documents].sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      ),
     [documents]
   );
 
@@ -94,11 +98,23 @@ export function DocumentRail({
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="text-center">
             <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-brand-iris/10 flex items-center justify-center">
-              <svg className="w-5 h-5 text-brand-iris/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="w-5 h-5 text-brand-iris/50"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
             </div>
-            <p className="text-sm font-medium text-white/70">No documents yet</p>
+            <p className="text-sm font-medium text-white/70">
+              No documents yet
+            </p>
             <button
               onClick={onCreateNew}
               className="mt-3 px-4 py-2 text-sm font-semibold text-white bg-brand-iris hover:bg-brand-iris/90 rounded-lg transition-colors"
@@ -108,7 +124,10 @@ export function DocumentRail({
           </div>
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto p-1.5 space-y-0.5" role="listbox">
+        <div
+          className="flex-1 overflow-y-auto p-1.5 space-y-0.5"
+          role="listbox"
+        >
           {sorted.map((doc) => {
             const isSelected = selectedId === doc.id;
             const statusConf = CONTENT_STATUS_CONFIG[doc.status];
@@ -124,22 +143,27 @@ export function DocumentRail({
                   w-full text-left px-3 py-2.5 rounded-lg cursor-pointer
                   transition-all duration-100 border-l-2
                   focus:outline-none focus-visible:ring-1 focus-visible:ring-brand-iris/50
-                  ${isSelected
-                    ? 'bg-brand-iris/10 border-l-brand-iris'
-                    : 'bg-transparent border-l-transparent hover:bg-slate-3'
+                  ${
+                    isSelected
+                      ? 'bg-brand-iris/10 border-l-brand-iris'
+                      : 'bg-transparent border-l-transparent hover:bg-slate-3'
                   }
                 `}
               >
                 {/* Title */}
-                <span className={`block text-sm font-medium leading-snug line-clamp-2 ${
-                  isSelected ? 'text-white' : 'text-white/85'
-                }`}>
+                <span
+                  className={`block text-sm font-medium leading-snug line-clamp-2 ${
+                    isSelected ? 'text-white' : 'text-white/85'
+                  }`}
+                >
                   {doc.title || 'Untitled'}
                 </span>
 
                 {/* Status + timestamp */}
                 <div className="flex items-center gap-2 mt-1.5">
-                  <span className={`px-1.5 py-0.5 text-xs font-medium rounded bg-white/5 ${statusConf.color}`}>
+                  <span
+                    className={`px-1.5 py-0.5 text-xs font-medium rounded bg-white/5 ${statusConf.color}`}
+                  >
                     {statusConf.label}
                   </span>
                   <span className="text-xs text-white/30">

@@ -60,20 +60,30 @@ async function fetchApi<T>(
 // Alert Rule API Functions
 // ============================================================================
 
-export async function createAlertRule(input: CreateMediaAlertRuleInput): Promise<MediaAlertRule> {
-  const data = await fetchApi<{ rule: MediaAlertRule }>('/api/v1/media-alerts/rules', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+export async function createAlertRule(
+  input: CreateMediaAlertRuleInput
+): Promise<MediaAlertRule> {
+  const data = await fetchApi<{ rule: MediaAlertRule }>(
+    '/api/v1/media-alerts/rules',
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
   return data.rule;
 }
 
-export async function listAlertRules(params?: ListMediaAlertRulesQuery): Promise<MediaAlertRuleListResponse> {
+export async function listAlertRules(
+  params?: ListMediaAlertRulesQuery
+): Promise<MediaAlertRuleListResponse> {
   const queryParams = new URLSearchParams();
   if (params?.alertType) queryParams.set('alertType', params.alertType);
-  if (params?.isActive !== undefined) queryParams.set('isActive', String(params.isActive));
-  if (params?.limit !== undefined) queryParams.set('limit', String(params.limit));
-  if (params?.offset !== undefined) queryParams.set('offset', String(params.offset));
+  if (params?.isActive !== undefined)
+    queryParams.set('isActive', String(params.isActive));
+  if (params?.limit !== undefined)
+    queryParams.set('limit', String(params.limit));
+  if (params?.offset !== undefined)
+    queryParams.set('offset', String(params.offset));
   if (params?.sortBy) queryParams.set('sortBy', params.sortBy);
   if (params?.sortOrder) queryParams.set('sortOrder', params.sortOrder);
 
@@ -82,15 +92,23 @@ export async function listAlertRules(params?: ListMediaAlertRulesQuery): Promise
 }
 
 export async function getAlertRule(id: string): Promise<MediaAlertRule> {
-  const data = await fetchApi<{ rule: MediaAlertRule }>(`/api/v1/media-alerts/rules/${id}`);
+  const data = await fetchApi<{ rule: MediaAlertRule }>(
+    `/api/v1/media-alerts/rules/${id}`
+  );
   return data.rule;
 }
 
-export async function updateAlertRule(id: string, input: UpdateMediaAlertRuleInput): Promise<MediaAlertRule> {
-  const data = await fetchApi<{ rule: MediaAlertRule }>(`/api/v1/media-alerts/rules/${id}`, {
-    method: 'PATCH',
-    body: JSON.stringify(input),
-  });
+export async function updateAlertRule(
+  id: string,
+  input: UpdateMediaAlertRuleInput
+): Promise<MediaAlertRule> {
+  const data = await fetchApi<{ rule: MediaAlertRule }>(
+    `/api/v1/media-alerts/rules/${id}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(input),
+    }
+  );
   return data.rule;
 }
 
@@ -104,16 +122,21 @@ export async function deleteAlertRule(id: string): Promise<void> {
 // Alert Event API Functions
 // ============================================================================
 
-export async function listAlertEvents(params?: ListMediaAlertEventsQuery): Promise<MediaAlertEventListResponse> {
+export async function listAlertEvents(
+  params?: ListMediaAlertEventsQuery
+): Promise<MediaAlertEventListResponse> {
   const queryParams = new URLSearchParams();
   if (params?.ruleId) queryParams.set('ruleId', params.ruleId);
   if (params?.alertType) queryParams.set('alertType', params.alertType);
   if (params?.severity) queryParams.set('severity', params.severity);
-  if (params?.isRead !== undefined) queryParams.set('isRead', String(params.isRead));
+  if (params?.isRead !== undefined)
+    queryParams.set('isRead', String(params.isRead));
   if (params?.startDate) queryParams.set('startDate', params.startDate);
   if (params?.endDate) queryParams.set('endDate', params.endDate);
-  if (params?.limit !== undefined) queryParams.set('limit', String(params.limit));
-  if (params?.offset !== undefined) queryParams.set('offset', String(params.offset));
+  if (params?.limit !== undefined)
+    queryParams.set('limit', String(params.limit));
+  if (params?.offset !== undefined)
+    queryParams.set('offset', String(params.offset));
   if (params?.sortBy) queryParams.set('sortBy', params.sortBy);
   if (params?.sortOrder) queryParams.set('sortOrder', params.sortOrder);
 
@@ -122,15 +145,22 @@ export async function listAlertEvents(params?: ListMediaAlertEventsQuery): Promi
 }
 
 export async function getAlertEvent(id: string): Promise<MediaAlertEvent> {
-  const data = await fetchApi<{ event: MediaAlertEvent }>(`/api/v1/media-alerts/events/${id}`);
+  const data = await fetchApi<{ event: MediaAlertEvent }>(
+    `/api/v1/media-alerts/events/${id}`
+  );
   return data.event;
 }
 
-export async function markAlertEventsRead(input: MarkAlertEventsReadInput): Promise<number> {
-  const data = await fetchApi<{ updatedCount: number }>('/api/v1/media-alerts/events/mark-read', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+export async function markAlertEventsRead(
+  input: MarkAlertEventsReadInput
+): Promise<number> {
+  const data = await fetchApi<{ updatedCount: number }>(
+    '/api/v1/media-alerts/events/mark-read',
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
   return data.updatedCount;
 }
 
@@ -142,8 +172,14 @@ export async function getSignalsOverview(): Promise<MediaAlertSignalsOverview> {
   return fetchApi<MediaAlertSignalsOverview>('/api/v1/media-alerts/signals');
 }
 
-export async function manualEvaluateAlerts(): Promise<{ eventsCreated: number; events: MediaAlertEvent[] }> {
-  return fetchApi<{ eventsCreated: number; events: MediaAlertEvent[] }>('/api/v1/media-alerts/evaluate', {
-    method: 'POST',
-  });
+export async function manualEvaluateAlerts(): Promise<{
+  eventsCreated: number;
+  events: MediaAlertEvent[];
+}> {
+  return fetchApi<{ eventsCreated: number; events: MediaAlertEvent[] }>(
+    '/api/v1/media-alerts/evaluate',
+    {
+      method: 'POST',
+    }
+  );
 }

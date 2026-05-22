@@ -238,11 +238,11 @@ const DEFAULT_INDICATOR_WEIGHTS: IndicatorWeight[] = [
   { type: 'sentiment', weight: 0.15 },
   { type: 'velocity', weight: 0.12 },
   { type: 'alerts', weight: 0.15 },
-  { type: 'competitive', weight: 0.10 },
+  { type: 'competitive', weight: 0.1 },
   { type: 'governance', weight: 0.12 },
   { type: 'persona', weight: 0.08 },
-  { type: 'media_coverage', weight: 0.10 },
-  { type: 'crisis_history', weight: 0.10 },
+  { type: 'media_coverage', weight: 0.1 },
+  { type: 'crisis_history', weight: 0.1 },
   { type: 'reputation', weight: 0.08 },
 ];
 
@@ -267,7 +267,8 @@ export class RiskRadarService {
     const snapshotDate = new Date();
 
     // Collect signals from integrated systems if not provided
-    const signalMatrix = input.signalMatrix || await this.collectSignalMatrix(orgId);
+    const signalMatrix =
+      input.signalMatrix || (await this.collectSignalMatrix(orgId));
 
     // Compute component scores from signal matrix
     const componentScores = this.computeComponentScores(signalMatrix);
@@ -278,8 +279,14 @@ export class RiskRadarService {
 
     // Identify concerns and emerging risks
     const keyConcerns = this.identifyKeyConcerns(signalMatrix, componentScores);
-    const emergingRisks = this.identifyEmergingRisks(signalMatrix, componentScores);
-    const positiveFactors = this.identifyPositiveFactors(signalMatrix, componentScores);
+    const emergingRisks = this.identifyEmergingRisks(
+      signalMatrix,
+      componentScores
+    );
+    const positiveFactors = this.identifyPositiveFactors(
+      signalMatrix,
+      componentScores
+    );
 
     const computationDurationMs = Date.now() - startTime;
 
@@ -331,17 +338,32 @@ export class RiskRadarService {
       .eq('is_active', true);
 
     // Log audit entry
-    await this.logAudit(orgId, 'create_snapshot', 'snapshot', snapshotId, userId, {
+    await this.logAudit(
+      orgId,
+      'create_snapshot',
+      'snapshot',
+      snapshotId,
+      userId,
+      {
+        riskLevel,
+        overallRiskIndex,
+        computationDurationMs,
+      }
+    );
+
+    logger.info('Snapshot created', {
+      orgId,
+      snapshotId,
       riskLevel,
       overallRiskIndex,
-      computationDurationMs,
     });
-
-    logger.info('Snapshot created', { orgId, snapshotId, riskLevel, overallRiskIndex });
     return this.mapSnapshotRecord(data);
   }
 
-  async getSnapshot(orgId: string, snapshotId: string): Promise<RiskRadarSnapshot | null> {
+  async getSnapshot(
+    orgId: string,
+    snapshotId: string
+  ): Promise<RiskRadarSnapshot | null> {
     const { data, error } = await this.supabase
       .from('risk_radar_snapshots')
       .select('*')
@@ -365,12 +387,13 @@ export class RiskRadarService {
     const snapshot = await this.getSnapshot(orgId, snapshotId);
     if (!snapshot) return null;
 
-    const [indicatorsResult, driversResult, forecastsResult, notesResult] = await Promise.all([
-      this.listIndicators(orgId, snapshotId, { limit: 100 }),
-      this.listDrivers(orgId, snapshotId, { limit: 20 }),
-      this.listForecasts(orgId, snapshotId, { isCurrent: true, limit: 1 }),
-      this.listNotes(orgId, snapshotId, { limit: 10 }),
-    ]);
+    const [indicatorsResult, driversResult, forecastsResult, notesResult] =
+      await Promise.all([
+        this.listIndicators(orgId, snapshotId, { limit: 100 }),
+        this.listDrivers(orgId, snapshotId, { limit: 20 }),
+        this.listForecasts(orgId, snapshotId, { isCurrent: true, limit: 1 }),
+        this.listNotes(orgId, snapshotId, { limit: 10 }),
+      ]);
 
     return {
       snapshot,
@@ -436,8 +459,12 @@ export class RiskRadarService {
       dbQuery = dbQuery.lte('overall_risk_index', maxRiskIndex);
     }
 
-    const sortColumn = sortBy === 'overall_risk_index' ? 'overall_risk_index' :
-                       sortBy === 'created_at' ? 'created_at' : 'snapshot_date';
+    const sortColumn =
+      sortBy === 'overall_risk_index'
+        ? 'overall_risk_index'
+        : sortBy === 'created_at'
+          ? 'created_at'
+          : 'snapshot_date';
     dbQuery = dbQuery.order(sortColumn, { ascending: sortOrder === 'asc' });
     dbQuery = dbQuery.range(offset, offset + limit - 1);
 
@@ -492,14 +519,30 @@ export class RiskRadarService {
       throw new Error(`Failed to update snapshot: ${error.message}`);
     }
 
-    await this.logAudit(orgId, 'update_snapshot', 'snapshot', snapshotId, userId, { updates });
+    await this.logAudit(
+      orgId,
+      'update_snapshot',
+      'snapshot',
+      snapshotId,
+      userId,
+      { updates }
+    );
 
     logger.info('Snapshot updated', { orgId, snapshotId });
     return this.mapSnapshotRecord(data);
   }
 
-  async archiveSnapshot(orgId: string, snapshotId: string, userId?: string): Promise<void> {
-    await this.updateSnapshot(orgId, snapshotId, { isArchived: true, isActive: false }, userId);
+  async archiveSnapshot(
+    orgId: string,
+    snapshotId: string,
+    userId?: string
+  ): Promise<void> {
+    await this.updateSnapshot(
+      orgId,
+      snapshotId,
+      { isArchived: true, isActive: false },
+      userId
+    );
     logger.info('Snapshot archived', { orgId, snapshotId });
   }
 
@@ -533,8 +576,14 @@ export class RiskRadarService {
     input: CreateRiskRadarIndicatorInput
   ): Promise<RiskRadarIndicator> {
     // Get previous indicator of same type for delta calculation
-    const previousIndicator = await this.getPreviousIndicator(orgId, snapshotId, input.indicatorType);
-    const scoreDelta = previousIndicator ? input.score - previousIndicator.score : null;
+    const previousIndicator = await this.getPreviousIndicator(
+      orgId,
+      snapshotId,
+      input.indicatorType
+    );
+    const scoreDelta = previousIndicator
+      ? input.score - previousIndicator.score
+      : null;
     const trendDirection = this.calculateTrendDirection(scoreDelta);
 
     const record: Omit<IndicatorRecord, 'created_at' | 'updated_at'> = {
@@ -571,7 +620,11 @@ export class RiskRadarService {
       throw new Error(`Failed to create indicator: ${error.message}`);
     }
 
-    logger.info('Indicator created', { orgId, snapshotId, indicatorType: input.indicatorType });
+    logger.info('Indicator created', {
+      orgId,
+      snapshotId,
+      indicatorType: input.indicatorType,
+    });
     return this.mapIndicatorRecord(data);
   }
 
@@ -622,8 +675,12 @@ export class RiskRadarService {
       dbQuery = dbQuery.eq('trend_direction', trendDirection);
     }
 
-    const sortColumn = sortBy === 'created_at' ? 'created_at' :
-                       sortBy === 'indicator_type' ? 'indicator_type' : 'score';
+    const sortColumn =
+      sortBy === 'created_at'
+        ? 'created_at'
+        : sortBy === 'indicator_type'
+          ? 'indicator_type'
+          : 'score';
     dbQuery = dbQuery.order(sortColumn, { ascending: sortOrder === 'asc' });
     dbQuery = dbQuery.range(offset, offset + limit - 1);
 
@@ -662,7 +719,11 @@ export class RiskRadarService {
       .eq('snapshot_id', snapshotId);
 
     // Create new indicators from signal matrix
-    const indicators = await this.createIndicatorsFromSignals(orgId, snapshotId, signalMatrix);
+    const indicators = await this.createIndicatorsFromSignals(
+      orgId,
+      snapshotId,
+      signalMatrix
+    );
 
     // Recompute snapshot scores
     const componentScores = this.computeComponentScores(signalMatrix);
@@ -689,14 +750,25 @@ export class RiskRadarService {
 
     const durationMs = Date.now() - startTime;
 
-    await this.logAudit(orgId, 'rebuild_indicators', 'snapshot', snapshotId, userId, {
-      indicatorsCreated: indicators.length,
-      newRiskIndex,
-      newRiskLevel,
-      durationMs,
-    });
+    await this.logAudit(
+      orgId,
+      'rebuild_indicators',
+      'snapshot',
+      snapshotId,
+      userId,
+      {
+        indicatorsCreated: indicators.length,
+        newRiskIndex,
+        newRiskLevel,
+        durationMs,
+      }
+    );
 
-    logger.info('Indicators rebuilt', { orgId, snapshotId, count: indicators.length });
+    logger.info('Indicators rebuilt', {
+      orgId,
+      snapshotId,
+      count: indicators.length,
+    });
 
     return {
       indicatorsCreated: indicators.length,
@@ -725,8 +797,12 @@ export class RiskRadarService {
       throw new Error('Snapshot not found');
     }
 
-    const { indicators } = await this.listIndicators(orgId, snapshotId, { limit: 100 });
-    const { drivers } = await this.listDrivers(orgId, snapshotId, { limit: 20 });
+    const { indicators } = await this.listIndicators(orgId, snapshotId, {
+      limit: 100,
+    });
+    const { drivers } = await this.listDrivers(orgId, snapshotId, {
+      limit: 20,
+    });
 
     // Calculate target date based on horizon
     const forecastDate = new Date();
@@ -741,9 +817,14 @@ export class RiskRadarService {
     );
 
     // Calculate predicted values
-    const predictedRiskIndex = projectionCurve[projectionCurve.length - 1]?.value ?? snapshot.overallRiskIndex;
+    const predictedRiskIndex =
+      projectionCurve[projectionCurve.length - 1]?.value ??
+      snapshot.overallRiskIndex;
     const predictedRiskLevel = this.classifyRiskLevel(predictedRiskIndex);
-    const probabilityOfCrisis = this.calculateCrisisProbability(projectionCurve, drivers);
+    const probabilityOfCrisis = this.calculateCrisisProbability(
+      projectionCurve,
+      drivers
+    );
 
     // Generate narrative (with LLM if requested)
     let narrative: RiskRadarForecastNarrative | null = null;
@@ -756,11 +837,20 @@ export class RiskRadarService {
         drivers,
         horizon: input.horizon,
       };
-      const narrativeResult = await this.generateNarrative(narrativeContext, input.llmModel, input.customPrompt);
+      const narrativeResult = await this.generateNarrative(
+        narrativeContext,
+        input.llmModel,
+        input.customPrompt
+      );
       narrative = narrativeResult.narrative;
       tokensUsed = narrativeResult.tokensUsed;
     } else {
-      narrative = this.generateBasicNarrative(snapshot, indicators, drivers, input.horizon);
+      narrative = this.generateBasicNarrative(
+        snapshot,
+        indicators,
+        drivers,
+        input.horizon
+      );
     }
 
     // Mark previous forecasts as superseded
@@ -815,16 +905,30 @@ export class RiskRadarService {
       throw new Error(`Failed to create forecast: ${error.message}`);
     }
 
-    await this.logAudit(orgId, 'create_forecast', 'forecast', forecastId, userId, {
-      horizon: input.horizon,
-      predictedRiskIndex,
-      predictedRiskLevel,
-      probabilityOfCrisis,
-      tokensUsed,
-      generationDurationMs,
-    }, input.llmModel, tokensUsed);
+    await this.logAudit(
+      orgId,
+      'create_forecast',
+      'forecast',
+      forecastId,
+      userId,
+      {
+        horizon: input.horizon,
+        predictedRiskIndex,
+        predictedRiskLevel,
+        probabilityOfCrisis,
+        tokensUsed,
+        generationDurationMs,
+      },
+      input.llmModel,
+      tokensUsed
+    );
 
-    logger.info('Forecast created', { orgId, snapshotId, forecastId, horizon: input.horizon });
+    logger.info('Forecast created', {
+      orgId,
+      snapshotId,
+      forecastId,
+      horizon: input.horizon,
+    });
 
     return {
       forecast: this.mapForecastRecord(data),
@@ -833,7 +937,10 @@ export class RiskRadarService {
     };
   }
 
-  async getForecast(orgId: string, forecastId: string): Promise<RiskRadarForecast | null> {
+  async getForecast(
+    orgId: string,
+    forecastId: string
+  ): Promise<RiskRadarForecast | null> {
     const { data, error } = await this.supabase
       .from('risk_radar_forecasts')
       .select('*')
@@ -892,8 +999,12 @@ export class RiskRadarService {
       dbQuery = dbQuery.lte('probability_of_crisis', maxProbability);
     }
 
-    const sortColumn = sortBy === 'predicted_risk_index' ? 'predicted_risk_index' :
-                       sortBy === 'probability_of_crisis' ? 'probability_of_crisis' : 'forecast_date';
+    const sortColumn =
+      sortBy === 'predicted_risk_index'
+        ? 'predicted_risk_index'
+        : sortBy === 'probability_of_crisis'
+          ? 'probability_of_crisis'
+          : 'forecast_date';
     dbQuery = dbQuery.order(sortColumn, { ascending: sortOrder === 'asc' });
     dbQuery = dbQuery.range(offset, offset + limit - 1);
 
@@ -989,7 +1100,12 @@ export class RiskRadarService {
       throw new Error(`Failed to create driver: ${error.message}`);
     }
 
-    logger.info('Driver created', { orgId, snapshotId, driverId: data.id, category: input.category });
+    logger.info('Driver created', {
+      orgId,
+      snapshotId,
+      driverId: data.id,
+      category: input.category,
+    });
     return this.mapDriverRecord(data);
   }
 
@@ -1044,8 +1160,12 @@ export class RiskRadarService {
       dbQuery = dbQuery.gte('impact_score', minImpactScore);
     }
 
-    const sortColumn = sortBy === 'contribution_percentage' ? 'contribution_percentage' :
-                       sortBy === 'created_at' ? 'created_at' : 'impact_score';
+    const sortColumn =
+      sortBy === 'contribution_percentage'
+        ? 'contribution_percentage'
+        : sortBy === 'created_at'
+          ? 'created_at'
+          : 'impact_score';
     dbQuery = dbQuery.order(sortColumn, { ascending: sortOrder === 'asc' });
     dbQuery = dbQuery.range(offset, offset + limit - 1);
 
@@ -1070,7 +1190,9 @@ export class RiskRadarService {
     orgId: string,
     snapshotId: string
   ): Promise<RiskRadarDriver[]> {
-    const { indicators } = await this.listIndicators(orgId, snapshotId, { limit: 100 });
+    const { indicators } = await this.listIndicators(orgId, snapshotId, {
+      limit: 100,
+    });
 
     const drivers: RiskRadarDriver[] = [];
 
@@ -1078,12 +1200,19 @@ export class RiskRadarService {
       // Identify high-impact indicators as drivers
       if (indicator.score >= 70) {
         const driver = await this.createDriver(orgId, snapshotId, {
-          category: this.mapIndicatorTypeToDriverCategory(indicator.indicatorType),
+          category: this.mapIndicatorTypeToDriverCategory(
+            indicator.indicatorType
+          ),
           name: `High ${indicator.name}`,
           description: `${indicator.name} score is elevated at ${indicator.score}`,
           impactScore: indicator.score,
           contributionPercentage: indicator.weight * 100,
-          urgency: indicator.score >= 85 ? 'critical' : indicator.score >= 70 ? 'high' : 'medium',
+          urgency:
+            indicator.score >= 85
+              ? 'critical'
+              : indicator.score >= 70
+                ? 'high'
+                : 'medium',
           sourceSystem: indicator.sourceSystem,
           sourceReferenceId: indicator.sourceReferenceId || undefined,
           isEmerging: indicator.trendDirection === 'worsening',
@@ -1094,12 +1223,18 @@ export class RiskRadarService {
       }
 
       // Identify rapidly changing indicators
-      if (indicator.trendDirection === 'worsening' && (indicator.scoreDelta ?? 0) > 15) {
+      if (
+        indicator.trendDirection === 'worsening' &&
+        (indicator.scoreDelta ?? 0) > 15
+      ) {
         const driver = await this.createDriver(orgId, snapshotId, {
           category: 'velocity_spike',
           name: `Rapid ${indicator.name} Change`,
           description: `${indicator.name} increased by ${indicator.scoreDelta} points`,
-          impactScore: Math.min(100, indicator.score + (indicator.scoreDelta ?? 0)),
+          impactScore: Math.min(
+            100,
+            indicator.score + (indicator.scoreDelta ?? 0)
+          ),
           urgency: 'high',
           sourceSystem: indicator.sourceSystem,
           isEmerging: true,
@@ -1109,7 +1244,11 @@ export class RiskRadarService {
       }
     }
 
-    logger.info('Drivers identified', { orgId, snapshotId, count: drivers.length });
+    logger.info('Drivers identified', {
+      orgId,
+      snapshotId,
+      count: drivers.length,
+    });
     return drivers;
   }
 
@@ -1304,7 +1443,7 @@ export class RiskRadarService {
       .gte('snapshot_date', startDate.toISOString())
       .order('snapshot_date', { ascending: true });
 
-    const riskTrend: RiskRadarTrendPoint[] = (trendData || []).map(d => ({
+    const riskTrend: RiskRadarTrendPoint[] = (trendData || []).map((d) => ({
       date: new Date(d.snapshot_date),
       riskIndex: d.overall_risk_index,
       riskLevel: d.risk_level as RiskRadarLevel,
@@ -1333,10 +1472,14 @@ export class RiskRadarService {
     // Get current forecast
     let currentForecast: RiskRadarForecast | undefined;
     if (currentSnapshot && includeForecasts) {
-      const { forecasts } = await this.listForecasts(orgId, currentSnapshot.id, {
-        isCurrent: true,
-        limit: 1,
-      });
+      const { forecasts } = await this.listForecasts(
+        orgId,
+        currentSnapshot.id,
+        {
+          isCurrent: true,
+          limit: 1,
+        }
+      );
       currentForecast = forecasts[0];
     }
 
@@ -1357,13 +1500,12 @@ export class RiskRadarService {
       .select('*', { count: 'exact', head: true })
       .eq('org_id', orgId);
 
-    const riskValues = (trendData || []).map(d => d.overall_risk_index);
-    const avgRiskIndex = riskValues.length > 0
-      ? riskValues.reduce((a, b) => a + b, 0) / riskValues.length
-      : 0;
-    const peakRiskIndex = riskValues.length > 0
-      ? Math.max(...riskValues)
-      : 0;
+    const riskValues = (trendData || []).map((d) => d.overall_risk_index);
+    const avgRiskIndex =
+      riskValues.length > 0
+        ? riskValues.reduce((a, b) => a + b, 0) / riskValues.length
+        : 0;
+    const peakRiskIndex = riskValues.length > 0 ? Math.max(...riskValues) : 0;
 
     return {
       currentSnapshot: currentSnapshot || undefined,
@@ -1425,7 +1567,10 @@ export class RiskRadarService {
       signalMatrix.reputationTrend = reputationSignals.trend;
       signalMatrix.sentimentShift = reputationSignals.sentimentShift;
     } catch (err) {
-      logger.warn('Failed to collect reputation signals', { orgId, error: err });
+      logger.warn('Failed to collect reputation signals', {
+        orgId,
+        error: err,
+      });
     }
 
     try {
@@ -1435,7 +1580,10 @@ export class RiskRadarService {
       signalMatrix.marketShareChange = competitiveSignals.marketShareChange;
       signalMatrix.competitorMentions = competitiveSignals.competitorMentions;
     } catch (err) {
-      logger.warn('Failed to collect competitive signals', { orgId, error: err });
+      logger.warn('Failed to collect competitive signals', {
+        orgId,
+        error: err,
+      });
     }
 
     try {
@@ -1445,7 +1593,10 @@ export class RiskRadarService {
       signalMatrix.findingSeverity = governanceSignals.findingSeverity;
       signalMatrix.complianceScore = governanceSignals.complianceScore;
     } catch (err) {
-      logger.warn('Failed to collect governance signals', { orgId, error: err });
+      logger.warn('Failed to collect governance signals', {
+        orgId,
+        error: err,
+      });
     }
 
     try {
@@ -1463,7 +1614,10 @@ export class RiskRadarService {
       signalMatrix.performanceScore = performanceSignals.score;
       signalMatrix.coverageQuality = performanceSignals.coverageQuality;
     } catch (err) {
-      logger.warn('Failed to collect performance signals', { orgId, error: err });
+      logger.warn('Failed to collect performance signals', {
+        orgId,
+        error: err,
+      });
     }
 
     return signalMatrix;
@@ -1481,7 +1635,10 @@ export class RiskRadarService {
       .from('media_mentions')
       .select('sentiment_score, reach')
       .eq('org_id', orgId)
-      .gte('published_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+      .gte(
+        'published_at',
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+      );
 
     const { count: alertCount } = await this.supabase
       .from('media_alerts')
@@ -1490,10 +1647,18 @@ export class RiskRadarService {
       .eq('status', 'active');
 
     if (!mentions || mentions.length === 0) {
-      return { volume: 0, sentiment: 50, reach: 0, alertCount: alertCount || 0, alertSeverity: 0 };
+      return {
+        volume: 0,
+        sentiment: 50,
+        reach: 0,
+        alertCount: alertCount || 0,
+        alertSeverity: 0,
+      };
     }
 
-    const avgSentiment = mentions.reduce((sum, m) => sum + (m.sentiment_score || 50), 0) / mentions.length;
+    const avgSentiment =
+      mentions.reduce((sum, m) => sum + (m.sentiment_score || 50), 0) /
+      mentions.length;
     const totalReach = mentions.reduce((sum, m) => sum + (m.reach || 0), 0);
 
     return {
@@ -1501,7 +1666,8 @@ export class RiskRadarService {
       sentiment: avgSentiment,
       reach: totalReach,
       alertCount: alertCount || 0,
-      alertSeverity: alertCount && alertCount > 5 ? 80 : alertCount ? alertCount * 15 : 0,
+      alertSeverity:
+        alertCount && alertCount > 5 ? 80 : alertCount ? alertCount * 15 : 0,
     };
   }
 
@@ -1521,11 +1687,16 @@ export class RiskRadarService {
       .select('*', { count: 'exact', head: true })
       .eq('org_id', orgId)
       .eq('is_escalated', true)
-      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+      .gte(
+        'created_at',
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+      );
 
     return {
       activeCrisisCount: activeCrisis || 0,
-      crisisSeverity: activeCrisis ? Math.min(100, (activeCrisis || 0) * 25) : 0,
+      crisisSeverity: activeCrisis
+        ? Math.min(100, (activeCrisis || 0) * 25)
+        : 0,
       escalationCount: escalations || 0,
     };
   }
@@ -1551,8 +1722,12 @@ export class RiskRadarService {
 
     return {
       score: current.overall_score || 50,
-      trend: previous ? (current.overall_score || 50) - (previous.overall_score || 50) : 0,
-      sentimentShift: previous ? (current.sentiment_score || 50) - (previous.sentiment_score || 50) : 0,
+      trend: previous
+        ? (current.overall_score || 50) - (previous.overall_score || 50)
+        : 0,
+      sentimentShift: previous
+        ? (current.sentiment_score || 50) - (previous.sentiment_score || 50)
+        : 0,
     };
   }
 
@@ -1572,10 +1747,17 @@ export class RiskRadarService {
       .from('competitive_mentions')
       .select('*', { count: 'exact', head: true })
       .eq('org_id', orgId)
-      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+      .gte(
+        'created_at',
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+      );
 
     if (!competitiveData || competitiveData.length === 0) {
-      return { pressure: 50, marketShareChange: 0, competitorMentions: competitorMentions || 0 };
+      return {
+        pressure: 50,
+        marketShareChange: 0,
+        competitorMentions: competitorMentions || 0,
+      };
     }
 
     return {
@@ -1613,7 +1795,9 @@ export class RiskRadarService {
 
     return {
       openFindings: openFindings || 0,
-      findingSeverity: highSeverity?.length ? Math.min(100, (highSeverity.length || 0) * 20) : 0,
+      findingSeverity: highSeverity?.length
+        ? Math.min(100, (highSeverity.length || 0) * 20)
+        : 0,
       complianceScore: riskScores?.[0]?.overall_score || 50,
     };
   }
@@ -1632,8 +1816,12 @@ export class RiskRadarService {
       return { sensitivity: 50, audienceRisk: 50 };
     }
 
-    const avgSensitivity = personaData.reduce((sum, p) => sum + (p.risk_sensitivity || 50), 0) / personaData.length;
-    const avgRisk = personaData.reduce((sum, p) => sum + (p.engagement_risk || 50), 0) / personaData.length;
+    const avgSensitivity =
+      personaData.reduce((sum, p) => sum + (p.risk_sensitivity || 50), 0) /
+      personaData.length;
+    const avgRisk =
+      personaData.reduce((sum, p) => sum + (p.engagement_risk || 50), 0) /
+      personaData.length;
 
     return {
       sensitivity: avgSensitivity,
@@ -1675,22 +1863,29 @@ export class RiskRadarService {
     personaScore?: number;
   } {
     return {
-      sentimentScore: signalMatrix.mediaSentiment !== undefined
-        ? 100 - signalMatrix.mediaSentiment // Invert: lower sentiment = higher risk
-        : undefined,
+      sentimentScore:
+        signalMatrix.mediaSentiment !== undefined
+          ? 100 - signalMatrix.mediaSentiment // Invert: lower sentiment = higher risk
+          : undefined,
       velocityScore: signalMatrix.alertSeverity,
-      alertScore: signalMatrix.alertCount !== undefined
-        ? Math.min(100, (signalMatrix.alertCount || 0) * 10)
-        : undefined,
+      alertScore:
+        signalMatrix.alertCount !== undefined
+          ? Math.min(100, (signalMatrix.alertCount || 0) * 10)
+          : undefined,
       competitiveScore: signalMatrix.competitivePressure,
-      governanceScore: signalMatrix.findingSeverity !== undefined
-        ? signalMatrix.findingSeverity
-        : (signalMatrix.complianceScore !== undefined ? 100 - signalMatrix.complianceScore : undefined),
+      governanceScore:
+        signalMatrix.findingSeverity !== undefined
+          ? signalMatrix.findingSeverity
+          : signalMatrix.complianceScore !== undefined
+            ? 100 - signalMatrix.complianceScore
+            : undefined,
       personaScore: signalMatrix.personaSensitivity,
     };
   }
 
-  private computeOverallRiskIndex(componentScores: Record<string, number | undefined>): number {
+  private computeOverallRiskIndex(
+    componentScores: Record<string, number | undefined>
+  ): number {
     let totalWeight = 0;
     let weightedSum = 0;
 
@@ -1748,7 +1943,7 @@ export class RiskRadarService {
       signalMatrix.performanceScore,
     ];
 
-    const availableSignals = signals.filter(s => s !== undefined).length;
+    const availableSignals = signals.filter((s) => s !== undefined).length;
     return availableSignals / signals.length;
   }
 
@@ -1759,7 +1954,10 @@ export class RiskRadarService {
     const concerns: RiskRadarConcern[] = [];
 
     // High sentiment risk
-    if (componentScores.sentimentScore && componentScores.sentimentScore >= 70) {
+    if (
+      componentScores.sentimentScore &&
+      componentScores.sentimentScore >= 70
+    ) {
       concerns.push({
         id: uuidv4(),
         title: 'Negative Sentiment Elevated',
@@ -1822,7 +2020,8 @@ export class RiskRadarService {
         name: 'Sentiment Deterioration',
         description: 'Rapid decline in media sentiment detected',
         probability: Math.min(1, Math.abs(signalMatrix.sentimentShift) / 30),
-        potentialImpact: Math.abs(signalMatrix.sentimentShift) > 20 ? 'critical' : 'high',
+        potentialImpact:
+          Math.abs(signalMatrix.sentimentShift) > 20 ? 'critical' : 'high',
         firstDetected: new Date(),
         velocity: Math.abs(signalMatrix.sentimentShift),
         indicators: ['sentiment', 'media_coverage'],
@@ -1830,7 +2029,10 @@ export class RiskRadarService {
     }
 
     // Competitive pressure increase
-    if (signalMatrix.competitivePressure && signalMatrix.competitivePressure >= 70) {
+    if (
+      signalMatrix.competitivePressure &&
+      signalMatrix.competitivePressure >= 70
+    ) {
       emergingRisks.push({
         id: uuidv4(),
         name: 'Competitive Pressure',
@@ -1838,7 +2040,9 @@ export class RiskRadarService {
         probability: signalMatrix.competitivePressure / 100,
         potentialImpact: 'medium',
         firstDetected: new Date(),
-        velocity: signalMatrix.marketShareChange ? Math.abs(signalMatrix.marketShareChange) : 0,
+        velocity: signalMatrix.marketShareChange
+          ? Math.abs(signalMatrix.marketShareChange)
+          : 0,
         indicators: ['competitive'],
       });
     }
@@ -1892,7 +2096,10 @@ export class RiskRadarService {
   // Forecast Computation Methods
   // ========================================
 
-  private calculateTargetDate(forecastDate: Date, horizon: RiskRadarForecastHorizon): Date {
+  private calculateTargetDate(
+    forecastDate: Date,
+    horizon: RiskRadarForecastHorizon
+  ): Date {
     const target = new Date(forecastDate);
     switch (horizon) {
       case '24h':
@@ -1923,15 +2130,19 @@ export class RiskRadarService {
     const points: RiskRadarProjectionPoint[] = [];
     const now = new Date();
     const targetDate = this.calculateTargetDate(now, horizon);
-    const hoursToTarget = (targetDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    const hoursToTarget =
+      (targetDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
     // Calculate trend velocity from indicators
-    const avgVelocity = indicators.reduce((sum, i) => sum + (i.velocity || 0), 0) / (indicators.length || 1);
+    const avgVelocity =
+      indicators.reduce((sum, i) => sum + (i.velocity || 0), 0) /
+      (indicators.length || 1);
 
     // Calculate driver impact
-    const driverImpact = drivers.reduce((sum, d) => {
-      return sum + (d.isEmerging ? d.impactScore * 0.2 : d.impactScore * 0.1);
-    }, 0) / (drivers.length || 1);
+    const driverImpact =
+      drivers.reduce((sum, d) => {
+        return sum + (d.isEmerging ? d.impactScore * 0.2 : d.impactScore * 0.1);
+      }, 0) / (drivers.length || 1);
 
     // Generate hourly/daily points based on horizon
     const interval = hoursToTarget <= 72 ? 6 : 24; // 6 hours for short term, daily for longer
@@ -1946,12 +2157,16 @@ export class RiskRadarService {
       const driverEffect = driverImpact * progress * 0.3;
       const randomVariance = (Math.random() - 0.5) * 5;
 
-      const projectedValue = Math.max(0, Math.min(100,
-        currentRiskIndex + trendEffect + driverEffect + randomVariance
-      ));
+      const projectedValue = Math.max(
+        0,
+        Math.min(
+          100,
+          currentRiskIndex + trendEffect + driverEffect + randomVariance
+        )
+      );
 
       // Confidence decreases with time
-      const confidence = 1 - (progress * 0.4);
+      const confidence = 1 - progress * 0.4;
 
       points.push({
         timestamp,
@@ -1974,11 +2189,13 @@ export class RiskRadarService {
     let baseProbability = finalValue / 100;
 
     // Adjust for emerging drivers
-    const emergingCount = drivers.filter(d => d.isEmerging).length;
+    const emergingCount = drivers.filter((d) => d.isEmerging).length;
     baseProbability += emergingCount * 0.05;
 
     // Adjust for critical drivers
-    const criticalCount = drivers.filter(d => d.urgency === 'critical').length;
+    const criticalCount = drivers.filter(
+      (d) => d.urgency === 'critical'
+    ).length;
     baseProbability += criticalCount * 0.1;
 
     return Math.min(1, Math.max(0, baseProbability));
@@ -1991,13 +2208,28 @@ export class RiskRadarService {
     horizon: RiskRadarForecastHorizon
   ): RiskRadarForecastNarrative {
     const horizonLabel = this.getHorizonLabel(horizon);
-    const riskTrend = indicators.some(i => i.trendDirection === 'worsening') ? 'increasing' : 'stable';
+    const riskTrend = indicators.some((i) => i.trendDirection === 'worsening')
+      ? 'increasing'
+      : 'stable';
 
-    const executiveSummary = `Risk outlook for the next ${horizonLabel}: The overall risk index is ${snapshot.overallRiskIndex}/100 (${snapshot.riskLevel} level). ` +
-      `${drivers.length > 0 ? `Key drivers include ${drivers.slice(0, 3).map(d => d.name).join(', ')}.` : ''} ` +
+    const executiveSummary =
+      `Risk outlook for the next ${horizonLabel}: The overall risk index is ${snapshot.overallRiskIndex}/100 (${snapshot.riskLevel} level). ` +
+      `${
+        drivers.length > 0
+          ? `Key drivers include ${drivers
+              .slice(0, 3)
+              .map((d) => d.name)
+              .join(', ')}.`
+          : ''
+      } ` +
       `Risk trajectory is ${riskTrend}.`;
 
-    const detailedAnalysis = this.generateDetailedAnalysis(snapshot, indicators, drivers, horizonLabel);
+    const detailedAnalysis = this.generateDetailedAnalysis(
+      snapshot,
+      indicators,
+      drivers,
+      horizonLabel
+    );
 
     const keyAssumptions: RiskRadarForecastAssumption[] = [
       {
@@ -2021,7 +2253,9 @@ export class RiskRadarService {
       });
     }
 
-    for (const driver of drivers.filter(d => d.urgency === 'critical').slice(0, 3)) {
+    for (const driver of drivers
+      .filter((d) => d.urgency === 'critical')
+      .slice(0, 3)) {
       recommendedActions.push({
         action: `Address ${driver.name} driver`,
         priority: 'high',
@@ -2030,9 +2264,9 @@ export class RiskRadarService {
     }
 
     const watchItems: RiskRadarWatchItem[] = drivers
-      .filter(d => d.isEmerging)
+      .filter((d) => d.isEmerging)
       .slice(0, 5)
-      .map(d => ({
+      .map((d) => ({
         item: d.name,
         reason: 'Emerging driver - trajectory uncertain',
         currentValue: d.impactScore,
@@ -2074,7 +2308,9 @@ export class RiskRadarService {
       }
     }
 
-    const worseningIndicators = indicators.filter(i => i.trendDirection === 'worsening');
+    const worseningIndicators = indicators.filter(
+      (i) => i.trendDirection === 'worsening'
+    );
     if (worseningIndicators.length > 0) {
       analysis += `\n\n### Deteriorating Indicators\n`;
       for (const ind of worseningIndicators.slice(0, 5)) {
@@ -2145,7 +2381,10 @@ export class RiskRadarService {
         name: 'Alert Severity',
         score: signalMatrix.alertSeverity,
         sourceSystem: 'media_alerts',
-        sourceData: { alertCount: signalMatrix.alertCount, alertSeverity: signalMatrix.alertSeverity },
+        sourceData: {
+          alertCount: signalMatrix.alertCount,
+          alertSeverity: signalMatrix.alertSeverity,
+        },
       });
       indicators.push(indicator);
     }
@@ -2167,7 +2406,10 @@ export class RiskRadarService {
         name: 'Governance Findings',
         score: signalMatrix.findingSeverity,
         sourceSystem: 'governance',
-        sourceData: { openFindings: signalMatrix.openFindings, findingSeverity: signalMatrix.findingSeverity },
+        sourceData: {
+          openFindings: signalMatrix.openFindings,
+          findingSeverity: signalMatrix.findingSeverity,
+        },
       });
       indicators.push(indicator);
     }
@@ -2189,7 +2431,10 @@ export class RiskRadarService {
         name: 'Crisis Activity',
         score: signalMatrix.crisisSeverity,
         sourceSystem: 'crisis',
-        sourceData: { activeCrisisCount: signalMatrix.activeCrisisCount, crisisSeverity: signalMatrix.crisisSeverity },
+        sourceData: {
+          activeCrisisCount: signalMatrix.activeCrisisCount,
+          crisisSeverity: signalMatrix.crisisSeverity,
+        },
       });
       indicators.push(indicator);
     }
@@ -2235,7 +2480,9 @@ export class RiskRadarService {
     return this.mapIndicatorRecord(indicator);
   }
 
-  private calculateTrendDirection(scoreDelta: number | null): RiskRadarTrendDirection | null {
+  private calculateTrendDirection(
+    scoreDelta: number | null
+  ): RiskRadarTrendDirection | null {
     if (scoreDelta === null) return null;
     if (scoreDelta > 10) return 'worsening';
     if (scoreDelta < -10) return 'improving';
@@ -2253,7 +2500,9 @@ export class RiskRadarService {
   }
 
   private getDefaultWeight(indicatorType: RiskRadarIndicatorType): number {
-    const weight = DEFAULT_INDICATOR_WEIGHTS.find(w => w.type === indicatorType);
+    const weight = DEFAULT_INDICATOR_WEIGHTS.find(
+      (w) => w.type === indicatorType
+    );
     return weight?.weight ?? 0.1;
   }
 
@@ -2297,7 +2546,9 @@ export class RiskRadarService {
     return distribution;
   }
 
-  private getComponentSummaries(snapshot: RiskRadarSnapshot): RiskRadarComponentSummary[] {
+  private getComponentSummaries(
+    snapshot: RiskRadarSnapshot
+  ): RiskRadarComponentSummary[] {
     const summaries: RiskRadarComponentSummary[] = [];
 
     if (snapshot.sentimentScore !== undefined) {
@@ -2395,7 +2646,11 @@ export class RiskRadarService {
 
       await this.supabase.from('risk_radar_audit_log').insert(record);
     } catch (err) {
-      logger.warn('Failed to log audit entry', { operation, entityType, error: err });
+      logger.warn('Failed to log audit entry', {
+        operation,
+        entityType,
+        error: err,
+      });
     }
   }
 
@@ -2421,7 +2676,8 @@ export class RiskRadarService {
     signalMatrix: record.signal_matrix as RiskRadarSignalMatrix,
     keyConcerns: (record.key_concerns || []) as RiskRadarConcern[],
     emergingRisks: (record.emerging_risks || []) as RiskRadarEmergingRisk[],
-    positiveFactors: (record.positive_factors || []) as RiskRadarPositiveFactor[],
+    positiveFactors: (record.positive_factors ||
+      []) as RiskRadarPositiveFactor[],
     isActive: record.is_active,
     isArchived: record.is_archived,
     computationMethod: record.computation_method,
@@ -2433,7 +2689,9 @@ export class RiskRadarService {
     updatedAt: new Date(record.updated_at),
   });
 
-  private mapIndicatorRecord = (record: IndicatorRecord): RiskRadarIndicator => ({
+  private mapIndicatorRecord = (
+    record: IndicatorRecord
+  ): RiskRadarIndicator => ({
     id: record.id,
     orgId: record.org_id,
     snapshotId: record.snapshot_id,
@@ -2445,13 +2703,18 @@ export class RiskRadarService {
     normalizedScore: record.normalized_score ?? undefined,
     previousScore: record.previous_score ?? undefined,
     scoreDelta: record.score_delta ?? undefined,
-    trendDirection: (record.trend_direction as RiskRadarTrendDirection) ?? undefined,
+    trendDirection:
+      (record.trend_direction as RiskRadarTrendDirection) ?? undefined,
     velocity: record.velocity ?? undefined,
     sourceSystem: record.source_system,
     sourceReferenceId: record.source_reference_id ?? undefined,
     sourceData: record.source_data,
-    measurementStart: record.measurement_start ? new Date(record.measurement_start) : undefined,
-    measurementEnd: record.measurement_end ? new Date(record.measurement_end) : undefined,
+    measurementStart: record.measurement_start
+      ? new Date(record.measurement_start)
+      : undefined,
+    measurementEnd: record.measurement_end
+      ? new Date(record.measurement_end)
+      : undefined,
     metadata: record.metadata,
     tags: record.tags || [],
     createdAt: new Date(record.created_at),
@@ -2470,11 +2733,14 @@ export class RiskRadarService {
     confidenceIntervalLow: record.confidence_interval_low ?? undefined,
     confidenceIntervalHigh: record.confidence_interval_high ?? undefined,
     probabilityOfCrisis: record.probability_of_crisis ?? undefined,
-    projectionCurve: (record.projection_curve || []) as RiskRadarProjectionPoint[],
+    projectionCurve: (record.projection_curve ||
+      []) as RiskRadarProjectionPoint[],
     executiveSummary: record.executive_summary ?? undefined,
     detailedAnalysis: record.detailed_analysis ?? undefined,
-    keyAssumptions: (record.key_assumptions || []) as RiskRadarForecastAssumption[],
-    recommendedActions: (record.recommended_actions || []) as RiskRadarRecommendedAction[],
+    keyAssumptions: (record.key_assumptions ||
+      []) as RiskRadarForecastAssumption[],
+    recommendedActions: (record.recommended_actions ||
+      []) as RiskRadarRecommendedAction[],
     watchItems: (record.watch_items || []) as RiskRadarWatchItem[],
     modelName: record.model_name ?? undefined,
     modelVersion: record.model_version ?? undefined,
@@ -2504,9 +2770,12 @@ export class RiskRadarService {
     sourceData: record.source_data,
     isEmerging: record.is_emerging,
     isTurningPoint: record.is_turning_point,
-    firstDetectedAt: record.first_detected_at ? new Date(record.first_detected_at) : undefined,
+    firstDetectedAt: record.first_detected_at
+      ? new Date(record.first_detected_at)
+      : undefined,
     trendVelocity: record.trend_velocity ?? undefined,
-    affectedEntities: (record.affected_entities || []) as RiskRadarAffectedEntity[],
+    affectedEntities: (record.affected_entities ||
+      []) as RiskRadarAffectedEntity[],
     relatedIndicatorIds: record.related_indicator_ids || [],
     metadata: record.metadata,
     tags: record.tags || [],
@@ -2539,6 +2808,8 @@ export class RiskRadarService {
 // Factory Function
 // ========================================
 
-export function createRiskRadarService(supabase: SupabaseClient): RiskRadarService {
+export function createRiskRadarService(
+  supabase: SupabaseClient
+): RiskRadarService {
   return new RiskRadarService(supabase);
 }

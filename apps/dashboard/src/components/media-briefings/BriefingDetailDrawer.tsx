@@ -57,7 +57,10 @@ interface BriefingDetailDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdateBriefing?: (data: Partial<MediaBriefing>) => Promise<void>;
-  onRegenerateSection?: (sectionId: string, customInstructions?: string) => Promise<void>;
+  onRegenerateSection?: (
+    sectionId: string,
+    customInstructions?: string
+  ) => Promise<void>;
   onUpdateSection?: (sectionId: string, content: string) => Promise<void>;
   onApproveTalkingPoint?: (id: string) => Promise<void>;
   onDeleteTalkingPoint?: (id: string) => Promise<void>;
@@ -127,7 +130,9 @@ export default function BriefingDetailDrawer({
 
   if (!briefing) return null;
 
-  const sheetSize = isExpanded ? 'w-[95vw] max-w-[1600px]' : 'w-[800px] max-w-[90vw]';
+  const sheetSize = isExpanded
+    ? 'w-[95vw] max-w-[1600px]'
+    : 'w-[800px] max-w-[90vw]';
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -137,18 +142,28 @@ export default function BriefingDetailDrawer({
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">{getFormatIcon(briefing.format)}</span>
-                <SheetTitle className="text-lg truncate">{briefing.title}</SheetTitle>
+                <span className="text-lg">
+                  {getFormatIcon(briefing.format)}
+                </span>
+                <SheetTitle className="text-lg truncate">
+                  {briefing.title}
+                </SheetTitle>
               </div>
               {briefing.subtitle && (
-                <SheetDescription className="truncate">{briefing.subtitle}</SheetDescription>
+                <SheetDescription className="truncate">
+                  {briefing.subtitle}
+                </SheetDescription>
               )}
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
               <Badge
                 variant="outline"
-                className={cn('text-sm', getStatusBgColor(briefing.status), getStatusColor(briefing.status))}
+                className={cn(
+                  'text-sm',
+                  getStatusBgColor(briefing.status),
+                  getStatusColor(briefing.status)
+                )}
               >
                 {getStatusLabel(briefing.status)}
               </Badge>
@@ -174,7 +189,11 @@ export default function BriefingDetailDrawer({
               )}
 
               {/* Expand/Collapse */}
-              <Button variant="ghost" size="icon" onClick={() => setIsExpanded(!isExpanded)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
                 {isExpanded ? (
                   <Minimize2 className="h-4 w-4" />
                 ) : (
@@ -204,7 +223,12 @@ export default function BriefingDetailDrawer({
         {/* Main Content */}
         <div className="flex-1 flex overflow-hidden">
           {/* Editor Area */}
-          <ScrollArea className={cn('flex-1', showInsights && isExpanded ? 'max-w-[calc(100%-320px)]' : '')}>
+          <ScrollArea
+            className={cn(
+              'flex-1',
+              showInsights && isExpanded ? 'max-w-[calc(100%-320px)]' : ''
+            )}
+          >
             <div className="p-6">
               <BriefingEditor
                 briefing={briefing}
@@ -323,7 +347,12 @@ export default function BriefingDetailDrawer({
                   onClick={onGenerateBriefing}
                   disabled={isGenerating}
                 >
-                  <RefreshCw className={cn('h-4 w-4 mr-1', isGenerating && 'animate-spin')} />
+                  <RefreshCw
+                    className={cn(
+                      'h-4 w-4 mr-1',
+                      isGenerating && 'animate-spin'
+                    )}
+                  />
                   Regenerate
                 </Button>
               )}

@@ -49,22 +49,24 @@ The editor uses React Flow's custom node system to render four distinct node typ
 
 ```typescript
 export const nodeTypes = {
-  AGENT: AgentNode,     // 🤖 AI agent execution
-  DATA: DataNode,       // ⚙️ Data transformation
-  BRANCH: BranchNode,   // ◆ Conditional branching
-  API: ApiNode,         // 🌐 External API calls
+  AGENT: AgentNode, // 🤖 AI agent execution
+  DATA: DataNode, // ⚙️ Data transformation
+  BRANCH: BranchNode, // ◆ Conditional branching
+  API: ApiNode, // 🌐 External API calls
 };
 ```
 
 ### Node Components
 
 Each node component:
+
 - Displays an icon and label
 - Shows validation errors as red badges
 - Provides connection handles (input/output)
 - Highlights when selected
 
 **Branch Nodes** have special dual outputs:
+
 - Top handle: True path
 - Bottom handle: False path
 
@@ -94,11 +96,13 @@ const editor = usePlaybookEditor({
 **Purpose**: Execute an AI agent with a specific prompt
 
 **Configuration**:
+
 - `agentId` (string): Identifier for the agent (e.g., "content-strategist")
 - `prompt` (string): The instruction/prompt for the agent
 - `outputKey` (string): Context key where agent response is stored
 
 **Example**:
+
 ```json
 {
   "type": "AGENT",
@@ -115,11 +119,13 @@ const editor = usePlaybookEditor({
 **Purpose**: Transform or manipulate data from context
 
 **Configuration**:
+
 - `operation` (enum): "pluck" | "map" | "merge" | "filter" | "transform"
 - `sourceKey` (string): Context key to read from
 - `outputKey` (string): Context key to write to
 
 **Example**:
+
 ```json
 {
   "type": "DATA",
@@ -136,11 +142,13 @@ const editor = usePlaybookEditor({
 **Purpose**: Conditional execution path
 
 **Configuration**:
+
 - `condition` (string): JavaScript expression to evaluate
 - `trueStep` (string): Node ID for true path (set via edge)
 - `falseStep` (string): Node ID for false path (set via edge)
 
 **Example**:
+
 ```json
 {
   "type": "BRANCH",
@@ -159,11 +167,13 @@ const editor = usePlaybookEditor({
 **Purpose**: Call external REST APIs
 
 **Configuration**:
+
 - `method` (enum): "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
 - `url` (string): API endpoint URL
 - `outputKey` (string): Context key for response data
 
 **Example**:
+
 ```json
 {
   "type": "API",
@@ -188,7 +198,7 @@ function playbookToGraph(playbook: PlaybookDefinitionDTO): EditorGraph {
     id: step.key,
     type: step.type,
     position: {
-      x: 100 + (index % 3) * 300,  // Grid layout
+      x: 100 + (index % 3) * 300, // Grid layout
       y: 100 + Math.floor(index / 3) * 200,
     },
     data: {
@@ -233,8 +243,12 @@ function graphToSteps(graph: EditorGraph): PlaybookStep[] {
   return nodes.map((node, index) => {
     if (node.type === 'BRANCH') {
       // BRANCH: Extract true/false from edges
-      const trueEdge = edges.find(e => e.source === node.id && e.label === 'true');
-      const falseEdge = edges.find(e => e.source === node.id && e.label === 'false');
+      const trueEdge = edges.find(
+        (e) => e.source === node.id && e.label === 'true'
+      );
+      const falseEdge = edges.find(
+        (e) => e.source === node.id && e.label === 'false'
+      );
 
       return {
         key: node.id,
@@ -251,7 +265,7 @@ function graphToSteps(graph: EditorGraph): PlaybookStep[] {
     }
 
     // Other nodes: Use first outgoing edge
-    const nextEdge = edges.find(e => e.source === node.id);
+    const nextEdge = edges.find((e) => e.source === node.id);
     return {
       key: node.id,
       name: node.data.label,
@@ -267,6 +281,7 @@ function graphToSteps(graph: EditorGraph): PlaybookStep[] {
 ### Round-Trip Consistency
 
 The mapping is designed to be lossless:
+
 - PlaybookDefinition → Graph → PlaybookDefinition should be identical
 - Node positions are added for visual layout (not stored in backend)
 - All config data is preserved during conversion
@@ -298,18 +313,22 @@ The `validateGraph` function checks:
 Each node type has specific validation rules:
 
 **AGENT Node**:
+
 - Required: `agentId`, `outputKey`
 - Optional: `prompt` (can be empty string)
 
 **DATA Node**:
+
 - Required: `operation`, `sourceKey`, `outputKey`
 - Valid operations: pluck, map, merge, filter, transform
 
 **BRANCH Node**:
+
 - Required: `condition`
 - Must have exactly 2 outgoing edges (true/false)
 
 **API Node**:
+
 - Required: `method`, `url`, `outputKey`
 - Valid methods: GET, POST, PUT, DELETE, PATCH
 - URL must be valid format
@@ -317,6 +336,7 @@ Each node type has specific validation rules:
 ### Visual Error Indicators
 
 Invalid nodes display:
+
 - Red border highlighting
 - Red badge with error count
 - Error list in Inspector panel
@@ -328,11 +348,13 @@ Invalid nodes display:
 1. **User Clicks Save** → `editor.save()`
 
 2. **Convert Graph to Steps**
+
    ```typescript
    const steps = convertToSteps(editor.getGraph());
    ```
 
 3. **Call Backend API**
+
    ```typescript
    PUT /api/v1/playbooks/:id
    {
@@ -362,12 +384,14 @@ useEffect(() => {
 ```
 
 **Indicators**:
+
 - Save button highlighted when dirty
 - Browser warning on page leave (future enhancement)
 
 ### Auto-Save (Future)
 
 V1 requires manual save. Future versions may include:
+
 - Auto-save every 30 seconds when dirty
 - Conflict resolution for concurrent edits
 - Version history
@@ -387,11 +411,13 @@ Step 4: Generate Content (AGENT)
 ```
 
 **Current Implementation** (V1):
+
 - Simple ordered list of nodes
 - Shows node labels and types
 - Does not show branching logic
 
 **Future Enhancement** (S18+):
+
 - Actual DAG execution plan from S7 runtime
 - Show branching paths visually
 - Estimated execution time
@@ -423,6 +449,7 @@ Response:
 **Purpose**: Get graph representation for visual editor
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -448,6 +475,7 @@ Response:
 **Modified Behavior**: Now accepts steps from graph conversion
 
 **Request**:
+
 ```json
 {
   "name": "My Playbook",
@@ -469,30 +497,35 @@ Response:
 ## Future Enhancements
 
 ### S18: Enhanced Node Configuration
+
 - Visual formula builder for DATA nodes
 - LLM prompt templates for AGENT nodes
 - API request/response preview for API nodes
 - Branch condition syntax validation
 
 ### S19: Real-Time Validation
+
 - Server-side validation on every change
 - Live DAG cycle detection
 - Context variable type checking
 - LLM prompt feasibility validation
 
 ### S20: Collaboration Features
+
 - Real-time cursor presence
 - Multiplayer editing with conflict resolution
 - Change history with rollback
 - Comments and annotations on nodes
 
 ### S21: AI-Assisted Editing
+
 - Natural language playbook generation
 - "Add a step that..." voice commands
 - Auto-layout optimization
 - Smart edge routing
 
 ### S22: Advanced Features
+
 - Subgraphs and playbook composition
 - Loop nodes for iteration
 - Parallel execution branches
@@ -504,11 +537,13 @@ Response:
 ### Performance
 
 **Current Limits**:
+
 - Tested with up to 50 nodes
 - React Flow handles 100+ nodes efficiently
 - No virtualization needed for V1
 
 **Future Optimizations**:
+
 - Virtual rendering for 500+ node graphs
 - Lazy loading of node configurations
 - WebWorker for graph validation
@@ -523,11 +558,13 @@ Response:
 ### Accessibility
 
 **Current Support**:
+
 - Keyboard navigation for toolbar
 - Focus indicators on nodes
 - ARIA labels on buttons
 
 **Future Improvements**:
+
 - Keyboard-only graph editing
 - Screen reader support for graph structure
 - High contrast mode
@@ -537,11 +574,13 @@ Response:
 ### Frontend Tests
 
 **Unit Tests**:
+
 - `usePlaybookGraph.test.ts`: Conversion functions
 - `validateGraph.test.ts`: Validation logic
 - Component tests for node types
 
 **Integration Tests**:
+
 - Full editor workflow: load → edit → save
 - Validation error display
 - Execution preview modal
@@ -549,11 +588,13 @@ Response:
 ### Backend Tests
 
 **Unit Tests**:
+
 - `playbookGraphService.test.ts`: Round-trip conversion
 - Validation rules
 - Normalization logic
 
 **API Tests**:
+
 - GET /:id/graph endpoint
 - Error handling for invalid playbooks
 
@@ -574,6 +615,7 @@ Response:
 ### Environment Variables
 
 None required for V1. Future versions may need:
+
 - `REACT_FLOW_LICENSE_KEY` (if upgrading to Pro)
 
 ### Build Process
@@ -601,6 +643,7 @@ pnpm build
 ## Conclusion
 
 Visual Playbook Editor V1 provides a solid foundation for visual playbook creation with:
+
 - Intuitive drag-and-drop interface
 - Full compatibility with existing schema
 - Real-time validation feedback
@@ -615,6 +658,7 @@ Future sprints (S18–S22) will build on this foundation to create a world-class
 ### Overview
 
 Sprint S23 adds Git-like version control to the visual editor:
+
 - **Branches:** Create feature branches, switch between branches
 - **Commits:** Save graph snapshots with commit messages
 - **Merge:** Merge branches with automatic conflict detection
@@ -625,23 +669,27 @@ See [playbook_version_control_v1.md](./playbook_version_control_v1.md) for full 
 ### UI Components
 
 **Branch Selector (Toolbar):**
+
 - Dropdown showing all branches for current playbook
 - Current branch highlighted
 - Protected branches (e.g., "main") show lock icon
 - "Create Branch" button opens modal for new branch creation
 
 **Commit Button (Toolbar):**
+
 - Purple "Commit" button (enabled only when graph has unsaved changes)
 - Opens CommitModal for entering commit message
 - Disabled on protected branches (must merge instead)
 
 **Version Graph Button (Toolbar):**
+
 - Opens VersionGraph component showing commit DAG
 - Nodes represent commits (branch, message, version, timestamp)
 - Edges show parent relationships
 - Merge commits highlighted with dashed edges
 
 **Merge Button (Toolbar):**
+
 - Opens MergeModal for merging branches
 - Shows source branch selector and conflict resolution UI
 - If conflicts detected, user must resolve before merge
@@ -649,6 +697,7 @@ See [playbook_version_control_v1.md](./playbook_version_control_v1.md) for full 
 ### Workflow Example
 
 **Feature Branch Development:**
+
 1. User on "main" clicks "Create Branch" → names it "feature-seo-step"
 2. Editor switches to new branch (inherits main's latest commit)
 3. User adds/modifies nodes → clicks "Commit" → enters message
@@ -659,6 +708,7 @@ See [playbook_version_control_v1.md](./playbook_version_control_v1.md) for full 
 ### Collaboration Integration
 
 When a user switches branches or commits:
+
 - Editor broadcasts `graph.replace` event to collaborators (S22)
 - Remote users see branch switch notification
 - Prevents conflicts by forcing merge workflow on protected main branch
@@ -673,6 +723,7 @@ When a user switches branches or commits:
 ### Version Graph Visualization
 
 **VersionGraph.tsx:**
+
 - SVG-based DAG rendering
 - Layout: Horizontal (chronological), Vertical (branch lanes)
 - Interactive: Click commit to view diff
@@ -681,16 +732,19 @@ When a user switches branches or commits:
 ### Data Model
 
 **Branches:**
+
 - Stored in `playbook_branches` table
 - Each playbook can have multiple branches
 - Current branch tracked in `playbooks.current_branch_id`
 
 **Commits:**
+
 - Stored in `playbook_commits` table
 - Each commit stores: graph snapshot, playbook JSON, message, version
 - Commits form DAG via `parent_commit_id` and `merge_parent_commit_id`
 
 **Merge:**
+
 - 3-way merge algorithm: base (ancestor), ours (target), theirs (source)
 - Automatic conflict detection for nodes/edges modified in both branches
 - UI allows resolution: "Keep Ours" vs "Keep Theirs"

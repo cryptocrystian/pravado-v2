@@ -26,7 +26,9 @@ function getApiBaseUrl(): string {
   if (!apiUrl) {
     // In production, this is a critical misconfiguration
     console.error('[prDataServer] CRITICAL: NEXT_PUBLIC_API_URL is not set');
-    throw new Error('API_URL_MISSING: NEXT_PUBLIC_API_URL environment variable is not configured');
+    throw new Error(
+      'API_URL_MISSING: NEXT_PUBLIC_API_URL environment variable is not configured'
+    );
   }
   return apiUrl;
 }
@@ -41,7 +43,10 @@ const DEBUG_AUTH = process.env.NEXT_PUBLIC_DEBUG_AUTH === 'true';
 
 function debugLog(message: string, data?: Record<string, unknown>) {
   if (DEBUG_AUTH) {
-    console.log(`[prDataServer] ${message}`, data ? JSON.stringify(data, null, 2) : '');
+    console.log(
+      `[prDataServer] ${message}`,
+      data ? JSON.stringify(data, null, 2) : ''
+    );
   }
 }
 
@@ -58,7 +63,7 @@ async function createRequestScopedSupabaseClient() {
 
   debugLog('Creating request-scoped Supabase client', {
     cookieCount: cookieStore.getAll().length,
-    hasSbCookies: cookieStore.getAll().some(c => c.name.includes('sb-')),
+    hasSbCookies: cookieStore.getAll().some((c) => c.name.includes('sb-')),
   });
 
   return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -79,7 +84,10 @@ async function createRequestScopedSupabaseClient() {
  */
 export async function getServerAccessToken(): Promise<string> {
   const supabase = await createRequestScopedSupabaseClient();
-  const { data: { session }, error } = await supabase.auth.getSession();
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
 
   debugLog('Session check', {
     hasSession: !!session,
@@ -95,7 +103,9 @@ export async function getServerAccessToken(): Promise<string> {
 
   if (!session?.access_token) {
     console.error('[prDataServer] No access token in session');
-    throw new Error('AUTH_MISSING: No Supabase access token available in server request context');
+    throw new Error(
+      'AUTH_MISSING: No Supabase access token available in server request context'
+    );
   }
 
   return session.access_token;
@@ -140,7 +150,7 @@ export async function authedApiFetch<T>(
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     ...(init.headers as Record<string, string>),
   };
 
@@ -157,8 +167,14 @@ export async function authedApiFetch<T>(
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}));
-    const errorMessage = errorBody?.error?.message || `HTTP ${response.status}: ${response.statusText}`;
-    console.error('[prDataServer] API request failed:', { url, status: response.status, error: errorMessage });
+    const errorMessage =
+      errorBody?.error?.message ||
+      `HTTP ${response.status}: ${response.statusText}`;
+    console.error('[prDataServer] API request failed:', {
+      url,
+      status: response.status,
+      error: errorMessage,
+    });
     throw new Error(`API_ERROR: ${errorMessage}`);
   }
 
@@ -166,7 +182,10 @@ export async function authedApiFetch<T>(
 
   if (!result.success) {
     const errorMessage = result.error?.message || 'Unknown API error';
-    console.error('[prDataServer] API returned error:', { url, error: result.error });
+    console.error('[prDataServer] API returned error:', {
+      url,
+      error: result.error,
+    });
     throw new Error(`API_ERROR: ${errorMessage}`);
   }
 
@@ -223,7 +242,8 @@ export async function fetchJournalistProfiles(
   if (params.q) query.set('q', params.q);
   if (params.outlet) query.set('outlet', params.outlet);
   if (params.beat) query.set('beat', params.beat);
-  if (params.minEngagementScore !== undefined) query.set('minEngagementScore', String(params.minEngagementScore));
+  if (params.minEngagementScore !== undefined)
+    query.set('minEngagementScore', String(params.minEngagementScore));
   if (params.sortBy) query.set('sortBy', params.sortBy);
   if (params.sortOrder) query.set('sortOrder', params.sortOrder);
   if (params.limit !== undefined) query.set('limit', String(params.limit));
@@ -235,7 +255,9 @@ export async function fetchJournalistProfiles(
   return authedApiFetch<JournalistProfilesResponse>(path);
 }
 
-export async function fetchJournalistProfile(id: string): Promise<JournalistProfile> {
+export async function fetchJournalistProfile(
+  id: string
+): Promise<JournalistProfile> {
   const response = await authedApiFetch<{ profile: JournalistProfile }>(
     `/api/v1/journalist-graph/profiles/${id}`
   );
@@ -265,7 +287,9 @@ export interface PressReleasesResponse {
   offset: number;
 }
 
-export async function fetchPressReleases(params: { limit?: number; offset?: number } = {}): Promise<PressReleasesResponse> {
+export async function fetchPressReleases(
+  params: { limit?: number; offset?: number } = {}
+): Promise<PressReleasesResponse> {
   const query = new URLSearchParams();
   if (params.limit !== undefined) query.set('limit', String(params.limit));
   if (params.offset !== undefined) query.set('offset', String(params.offset));
@@ -276,7 +300,9 @@ export async function fetchPressReleases(params: { limit?: number; offset?: numb
   return authedApiFetch<PressReleasesResponse>(path);
 }
 
-export async function fetchPressRelease(id: string): Promise<{ release: PressRelease }> {
+export async function fetchPressRelease(
+  id: string
+): Promise<{ release: PressRelease }> {
   return authedApiFetch<{ release: PressRelease }>(`/api/v1/pr/releases/${id}`);
 }
 
@@ -336,32 +362,46 @@ export interface EngagementMetricsResponse {
 }
 
 export async function fetchDeliverabilitySummary(): Promise<DeliverabilitySummary> {
-  return authedApiFetch<DeliverabilitySummary>('/api/v1/pr-outreach-deliverability/stats/deliverability');
+  return authedApiFetch<DeliverabilitySummary>(
+    '/api/v1/pr-outreach-deliverability/stats/deliverability'
+  );
 }
 
-export async function fetchEmailMessages(params: { limit?: number; offset?: number } = {}): Promise<EmailMessagesResponse> {
+export async function fetchEmailMessages(
+  params: { limit?: number; offset?: number } = {}
+): Promise<EmailMessagesResponse> {
   const query = new URLSearchParams();
   if (params.limit !== undefined) query.set('limit', String(params.limit));
   if (params.offset !== undefined) query.set('offset', String(params.offset));
 
   const queryString = query.toString();
-  return authedApiFetch<EmailMessagesResponse>(`/api/v1/pr-outreach-deliverability/messages${queryString ? `?${queryString}` : ''}`);
+  return authedApiFetch<EmailMessagesResponse>(
+    `/api/v1/pr-outreach-deliverability/messages${queryString ? `?${queryString}` : ''}`
+  );
 }
 
-export async function fetchEngagementMetrics(params: { limit?: number; offset?: number } = {}): Promise<EngagementMetricsResponse> {
+export async function fetchEngagementMetrics(
+  params: { limit?: number; offset?: number } = {}
+): Promise<EngagementMetricsResponse> {
   const query = new URLSearchParams();
   if (params.limit !== undefined) query.set('limit', String(params.limit));
   if (params.offset !== undefined) query.set('offset', String(params.offset));
 
   const queryString = query.toString();
-  return authedApiFetch<EngagementMetricsResponse>(`/api/v1/pr-outreach-deliverability/engagement${queryString ? `?${queryString}` : ''}`);
+  return authedApiFetch<EngagementMetricsResponse>(
+    `/api/v1/pr-outreach-deliverability/engagement${queryString ? `?${queryString}` : ''}`
+  );
 }
 
-export async function fetchTopEngagedJournalists(limit: number = 10): Promise<JournalistEngagement[]> {
+export async function fetchTopEngagedJournalists(
+  limit: number = 10
+): Promise<JournalistEngagement[]> {
   const query = new URLSearchParams();
   query.set('limit', String(limit));
 
-  return authedApiFetch<JournalistEngagement[]>(`/api/v1/pr-outreach-deliverability/stats/top-engaged?${query.toString()}`);
+  return authedApiFetch<JournalistEngagement[]>(
+    `/api/v1/pr-outreach-deliverability/stats/top-engaged?${query.toString()}`
+  );
 }
 
 // --- Outreach Sequences ---
@@ -389,19 +429,27 @@ export interface OutreachSequencesResponse {
   total: number;
 }
 
-export async function fetchOutreachSequences(params: { limit?: number; offset?: number } = {}): Promise<OutreachSequencesResponse> {
+export async function fetchOutreachSequences(
+  params: { limit?: number; offset?: number } = {}
+): Promise<OutreachSequencesResponse> {
   const query = new URLSearchParams();
   if (params.limit !== undefined) query.set('limit', String(params.limit));
   if (params.offset !== undefined) query.set('offset', String(params.offset));
 
   const queryString = query.toString();
-  return authedApiFetch<OutreachSequencesResponse>(`/api/v1/pr-outreach/sequences${queryString ? `?${queryString}` : ''}`);
+  return authedApiFetch<OutreachSequencesResponse>(
+    `/api/v1/pr-outreach/sequences${queryString ? `?${queryString}` : ''}`
+  );
 }
 
-export async function fetchOutreachStats(sequenceId?: string): Promise<Record<string, unknown>> {
+export async function fetchOutreachStats(
+  sequenceId?: string
+): Promise<Record<string, unknown>> {
   const query = new URLSearchParams();
   if (sequenceId) query.set('sequenceId', sequenceId);
 
   const queryString = query.toString();
-  return authedApiFetch<Record<string, unknown>>(`/api/v1/pr-outreach/stats${queryString ? `?${queryString}` : ''}`);
+  return authedApiFetch<Record<string, unknown>>(
+    `/api/v1/pr-outreach/stats${queryString ? `?${queryString}` : ''}`
+  );
 }

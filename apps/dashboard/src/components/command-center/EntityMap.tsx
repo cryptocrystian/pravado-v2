@@ -24,7 +24,12 @@ import {
 } from 'd3-force';
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 
-import type { EntityNode, EntityEdge, SessionCitationEvent, ActionImpactMap } from './types';
+import type {
+  EntityNode,
+  EntityEdge,
+  SessionCitationEvent,
+  ActionImpactMap,
+} from './types';
 
 // ── Color Map ──────────────────────────────────────────────
 
@@ -56,23 +61,33 @@ function getColor(node: EntityNode): string {
 
 function getNodeWidth(node: EntityNode): number {
   switch (node.kind) {
-    case 'brand': return 140;
-    case 'ai_engine': return 88;
+    case 'brand':
+      return 140;
+    case 'ai_engine':
+      return 88;
     case 'journalist':
-    case 'publication': return 96;
-    case 'topic_cluster': return 130;
-    default: return 80;
+    case 'publication':
+      return 96;
+    case 'topic_cluster':
+      return 130;
+    default:
+      return 80;
   }
 }
 
 function getNodeHeight(node: EntityNode): number {
   switch (node.kind) {
-    case 'brand': return 68;
-    case 'ai_engine': return 52;
+    case 'brand':
+      return 68;
+    case 'ai_engine':
+      return 52;
     case 'journalist':
-    case 'publication': return 52;
-    case 'topic_cluster': return 48;
-    default: return 48;
+    case 'publication':
+      return 52;
+    case 'topic_cluster':
+      return 48;
+    default:
+      return 48;
   }
 }
 
@@ -126,11 +141,15 @@ export function EntityMap({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const simRef = useRef<ReturnType<typeof forceSimulation<SimNode>> | null>(null);
+  const simRef = useRef<ReturnType<typeof forceSimulation<SimNode>> | null>(
+    null
+  );
   const particlesRef = useRef<Particle[]>([]);
   const rafRef = useRef<number>(0);
   const simLinksRef = useRef<SimLink[]>([]);
-  const starsRef = useRef<Array<{ x: number; y: number; o: number; r: number }>>([]);
+  const starsRef = useRef<
+    Array<{ x: number; y: number; o: number; r: number }>
+  >([]);
   const isDraggingCanvas = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const panStart = useRef({ x: 0, y: 0 });
@@ -144,7 +163,7 @@ export function EntityMap({
     if (rect.width > 0 && rect.height > 0) {
       setDimensions({ width: rect.width, height: rect.height });
     }
-    const ro = new ResizeObserver(entries => {
+    const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         if (width > 0 && height > 0) setDimensions({ width, height });
@@ -156,7 +175,7 @@ export function EntityMap({
 
   // Build simulation data
   const { simNodes, simLinks } = useMemo(() => {
-    const sn: SimNode[] = nodes.map(n => ({
+    const sn: SimNode[] = nodes.map((n) => ({
       id: n.id,
       entity: n,
       w: getNodeWidth(n),
@@ -167,15 +186,18 @@ export function EntityMap({
       y: n.kind === 'brand' ? dimensions.height / 2 : undefined,
     }));
 
-    const nodeMap = new Map(sn.map(n => [n.id, n]));
+    const nodeMap = new Map(sn.map((n) => [n.id, n]));
     const sl: SimLink[] = edges
-      .filter(e => nodeMap.has(e.from) && nodeMap.has(e.to))
-      .map(e => ({
+      .filter((e) => nodeMap.has(e.from) && nodeMap.has(e.to))
+      .map((e) => ({
         source: e.from,
         target: e.to,
         id: e.id,
         edge: e,
-        color: e.state === 'gap' ? 'rgba(255,255,255,0.12)' : (PILLAR_COLORS[e.pillar] ?? '#00D9FF'),
+        color:
+          e.state === 'gap'
+            ? 'rgba(255,255,255,0.12)'
+            : (PILLAR_COLORS[e.pillar] ?? '#00D9FF'),
       }));
 
     return { simNodes: sn, simLinks: sl };
@@ -230,10 +252,19 @@ export function EntityMap({
     const h = dimensions.height;
 
     const sim = forceSimulation<SimNode>(simNodes)
-      .force('link', forceLink<SimNode, SimLink>(simLinks).id(d => d.id).distance(120).strength(0.3))
+      .force(
+        'link',
+        forceLink<SimNode, SimLink>(simLinks)
+          .id((d) => d.id)
+          .distance(120)
+          .strength(0.3)
+      )
       .force('charge', forceManyBody<SimNode>().strength(-200))
       .force('center', forceCenter(w / 2, h / 2))
-      .force('collision', forceCollide<SimNode>().radius(d => Math.max(d.w, d.h) / 2 + 12))
+      .force(
+        'collision',
+        forceCollide<SimNode>().radius((d) => Math.max(d.w, d.h) / 2 + 12)
+      )
       .alphaDecay(0.015)
       .velocityDecay(0.3)
       .on('tick', () => {
@@ -248,7 +279,9 @@ export function EntityMap({
 
     simRef.current = sim;
 
-    return () => { sim.stop(); };
+    return () => {
+      sim.stop();
+    };
   }, [simNodes, simLinks, dimensions.width, dimensions.height]);
 
   // Canvas render loop (edges + particles + stars)
@@ -346,13 +379,19 @@ export function EntityMap({
   }, [dimensions.width, dimensions.height]);
 
   // ── Pan + zoom handlers ──
-  const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'CANVAS') {
-      isDraggingCanvas.current = true;
-      dragStart.current = { x: e.clientX, y: e.clientY };
-      panStart.current = { x: pan.x, y: pan.y };
-    }
-  }, [pan]);
+  const handleCanvasMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (
+        e.target === e.currentTarget ||
+        (e.target as HTMLElement).tagName === 'CANVAS'
+      ) {
+        isDraggingCanvas.current = true;
+        dragStart.current = { x: e.clientX, y: e.clientY };
+        panStart.current = { x: pan.x, y: pan.y };
+      }
+    },
+    [pan]
+  );
 
   const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDraggingCanvas.current) return;
@@ -367,32 +406,40 @@ export function EntityMap({
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
-    setViewScale(s => Math.max(0.4, Math.min(2.5, s - e.deltaY * 0.001)));
+    setViewScale((s) => Math.max(0.4, Math.min(2.5, s - e.deltaY * 0.001)));
   }, []);
 
   const handleNodeClick = useCallback(
     (nodeId: string) => {
-      setSelectedNodeId(prev => (prev === nodeId ? null : nodeId));
+      setSelectedNodeId((prev) => (prev === nodeId ? null : nodeId));
       onNodeClick?.(nodeId);
     },
-    [onNodeClick],
+    [onNodeClick]
   );
 
   const selectedEntity = selectedNodeId
-    ? nodes.find(n => n.id === selectedNodeId)
+    ? nodes.find((n) => n.id === selectedNodeId)
     : null;
 
   return (
     <div
       ref={containerRef}
       className="entity-map-v6 relative overflow-hidden"
-      style={{ width: '100%', height: '100%', minHeight: 300, cursor: isDraggingCanvas.current ? 'grabbing' : 'grab' }}
+      style={{
+        width: '100%',
+        height: '100%',
+        minHeight: 300,
+        cursor: isDraggingCanvas.current ? 'grabbing' : 'grab',
+      }}
       onMouseDown={handleCanvasMouseDown}
       onMouseMove={handleCanvasMouseMove}
       onMouseUp={handleCanvasMouseUp}
       onMouseLeave={handleCanvasMouseUp}
       onWheel={handleWheel}
-      onDoubleClick={() => { setPan({ x: 0, y: 0 }); setViewScale(1); }}
+      onDoubleClick={() => {
+        setPan({ x: 0, y: 0 });
+        setViewScale(1);
+      }}
     >
       {/* Gradient mesh — gives glassmorphism cards something to blur over */}
       <div
@@ -420,129 +467,185 @@ export function EntityMap({
         {/* Canvas layer — edges + particles + stars */}
         <canvas
           ref={canvasRef}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'auto' }}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'auto',
+          }}
         />
 
         {/* Node overlay — glassmorphism cards */}
-        {nodePositions.map(node => {
-        const x = (node.x ?? 0) - node.w / 2;
-        const y = (node.y ?? 0) - node.h / 2;
-        const isBrand = node.entity.kind === 'brand';
-        const isSelected = node.id === selectedNodeId;
-        const isHovered = node.id === hoveredNodeId;
-        const color = node.color;
-        const glowIntensity = isSelected ? 0.5 : isHovered ? 0.35 : 0.2;
+        {nodePositions.map((node) => {
+          const x = (node.x ?? 0) - node.w / 2;
+          const y = (node.y ?? 0) - node.h / 2;
+          const isBrand = node.entity.kind === 'brand';
+          const isSelected = node.id === selectedNodeId;
+          const isHovered = node.id === hoveredNodeId;
+          const color = node.color;
+          const glowIntensity = isSelected ? 0.5 : isHovered ? 0.35 : 0.2;
 
-        return (
-          <div
-            key={node.id}
-            className="absolute cursor-pointer select-none transition-shadow duration-200"
-            style={{
-              left: x,
-              top: y,
-              width: node.w,
-              height: node.h,
-              pointerEvents: 'auto',
-              background: 'rgba(8, 8, 18, 0.72)',
-              backdropFilter: 'blur(20px) saturate(200%)',
-              WebkitBackdropFilter: 'blur(20px) saturate(200%)',
-              border: `1px solid rgba(${hexToRgb(color)}, 0.35)`,
-              borderRadius: KIND_RADIUS[node.entity.kind] ?? '8px',
-              boxShadow: `0 0 ${isSelected ? 32 : 24}px rgba(${hexToRgb(color)}, ${glowIntensity}), 0 8px 32px rgba(0,0,0,0.4)`,
-              zIndex: isSelected ? 20 : isBrand ? 10 : 1,
-            }}
-            onClick={() => handleNodeClick(node.id)}
-            onMouseEnter={() => setHoveredNodeId(node.id)}
-            onMouseLeave={() => setHoveredNodeId(null)}
-          >
-            {/* Frosted highlight — inner top edge */}
-            <div className="absolute inset-x-0 top-0 h-px"
-              style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)' }}
-            />
+          return (
+            <div
+              key={node.id}
+              className="absolute cursor-pointer select-none transition-shadow duration-200"
+              style={{
+                left: x,
+                top: y,
+                width: node.w,
+                height: node.h,
+                pointerEvents: 'auto',
+                background: 'rgba(8, 8, 18, 0.72)',
+                backdropFilter: 'blur(20px) saturate(200%)',
+                WebkitBackdropFilter: 'blur(20px) saturate(200%)',
+                border: `1px solid rgba(${hexToRgb(color)}, 0.35)`,
+                borderRadius: KIND_RADIUS[node.entity.kind] ?? '8px',
+                boxShadow: `0 0 ${isSelected ? 32 : 24}px rgba(${hexToRgb(color)}, ${glowIntensity}), 0 8px 32px rgba(0,0,0,0.4)`,
+                zIndex: isSelected ? 20 : isBrand ? 10 : 1,
+              }}
+              onClick={() => handleNodeClick(node.id)}
+              onMouseEnter={() => setHoveredNodeId(node.id)}
+              onMouseLeave={() => setHoveredNodeId(null)}
+            >
+              {/* Frosted highlight — inner top edge */}
+              <div
+                className="absolute inset-x-0 top-0 h-px"
+                style={{
+                  background:
+                    'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                }}
+              />
 
-            {/* Content */}
-            <div className="relative w-full h-full flex flex-col justify-center px-3 py-2 overflow-hidden">
-              {/* Entity type label */}
-              <span style={{
-                fontFamily: 'monospace', fontSize: 9,
-                letterSpacing: '0.15em', textTransform: 'uppercase' as const,
-                color: `rgba(${hexToRgb(color)}, 0.7)`,
-                lineHeight: 1,
-              }}>
-                {node.entity.kind.replace('_', ' ')}
-              </span>
+              {/* Content */}
+              <div className="relative w-full h-full flex flex-col justify-center px-3 py-2 overflow-hidden">
+                {/* Entity type label */}
+                <span
+                  style={{
+                    fontFamily: 'monospace',
+                    fontSize: 9,
+                    letterSpacing: '0.15em',
+                    textTransform: 'uppercase' as const,
+                    color: `rgba(${hexToRgb(color)}, 0.7)`,
+                    lineHeight: 1,
+                  }}
+                >
+                  {node.entity.kind.replace('_', ' ')}
+                </span>
 
-              {/* Primary label */}
-              <span style={{
-                fontFamily: 'monospace',
-                fontSize: isBrand ? 14 : 12,
-                fontWeight: isBrand ? 700 : 600,
-                color: '#ffffff',
-                letterSpacing: '0.02em',
-                lineHeight: 1.2,
-                marginTop: 3,
-              }}>
-                {node.entity.label}
-              </span>
+                {/* Primary label */}
+                <span
+                  style={{
+                    fontFamily: 'monospace',
+                    fontSize: isBrand ? 14 : 12,
+                    fontWeight: isBrand ? 700 : 600,
+                    color: '#ffffff',
+                    letterSpacing: '0.02em',
+                    lineHeight: 1.2,
+                    marginTop: 3,
+                  }}
+                >
+                  {node.entity.label}
+                </span>
 
-              {/* Metric pill for non-brand */}
-              {!isBrand && (
-                <div className="flex items-center gap-1" style={{ marginTop: 5 }}>
-                  <div style={{
-                    width: `${node.entity.affinity_score}%`,
-                    maxWidth: '70%',
-                    height: 2,
-                    borderRadius: 1,
-                    background: `linear-gradient(90deg, ${color}, ${color}88)`,
-                  }} />
-                  <span style={{ fontSize: 9, color: `rgba(${hexToRgb(color)}, 0.6)`, fontFamily: 'monospace' }}>
-                    {node.entity.affinity_score}
-                  </span>
-                </div>
-              )}
+                {/* Metric pill for non-brand */}
+                {!isBrand && (
+                  <div
+                    className="flex items-center gap-1"
+                    style={{ marginTop: 5 }}
+                  >
+                    <div
+                      style={{
+                        width: `${node.entity.affinity_score}%`,
+                        maxWidth: '70%',
+                        height: 2,
+                        borderRadius: 1,
+                        background: `linear-gradient(90deg, ${color}, ${color}88)`,
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: 9,
+                        color: `rgba(${hexToRgb(color)}, 0.6)`,
+                        fontFamily: 'monospace',
+                      }}
+                    >
+                      {node.entity.affinity_score}
+                    </span>
+                  </div>
+                )}
 
-              {/* Brand: pillar indicators */}
+                {/* Brand: pillar indicators */}
+                {isBrand && (
+                  <div
+                    className="flex items-center gap-2"
+                    style={{ marginTop: 6 }}
+                  >
+                    {['PR', 'SEO', 'AEO'].map((p) => (
+                      <span
+                        key={p}
+                        style={{
+                          fontSize: 9,
+                          fontFamily: 'monospace',
+                          color: PILLAR_COLORS[p],
+                          letterSpacing: '0.1em',
+                        }}
+                      >
+                        {p}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Brand: triple pulse rings */}
               {isBrand && (
-                <div className="flex items-center gap-2" style={{ marginTop: 6 }}>
-                  {['PR', 'SEO', 'AEO'].map(p => (
-                    <span key={p} style={{
-                      fontSize: 9, fontFamily: 'monospace',
-                      color: PILLAR_COLORS[p], letterSpacing: '0.1em',
-                    }}>{p}</span>
-                  ))}
-                </div>
+                <>
+                  <div
+                    className="absolute pointer-events-none"
+                    style={{
+                      inset: -8,
+                      borderRadius: 22,
+                      border: '1px solid rgba(168,85,247,0.5)',
+                      animation: 'entity-pulse-ring 2s ease-in-out infinite',
+                    }}
+                  />
+                  <div
+                    className="absolute pointer-events-none"
+                    style={{
+                      inset: -16,
+                      borderRadius: 26,
+                      border: '1px solid rgba(168,85,247,0.25)',
+                      animation:
+                        'entity-pulse-ring 2s ease-in-out 0.66s infinite',
+                    }}
+                  />
+                  <div
+                    className="absolute pointer-events-none"
+                    style={{
+                      inset: -26,
+                      borderRadius: 32,
+                      border: '1px solid rgba(168,85,247,0.1)',
+                      animation:
+                        'entity-pulse-ring 2s ease-in-out 1.33s infinite',
+                    }}
+                  />
+                  {/* Corner accent glow */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: 16,
+                      background:
+                        'radial-gradient(ellipse at 30% 30%, rgba(168,85,247,0.15), transparent 60%)',
+                    }}
+                  />
+                </>
               )}
             </div>
-
-            {/* Brand: triple pulse rings */}
-            {isBrand && (
-              <>
-                <div className="absolute pointer-events-none" style={{
-                  inset: -8, borderRadius: 22,
-                  border: '1px solid rgba(168,85,247,0.5)',
-                  animation: 'entity-pulse-ring 2s ease-in-out infinite',
-                }} />
-                <div className="absolute pointer-events-none" style={{
-                  inset: -16, borderRadius: 26,
-                  border: '1px solid rgba(168,85,247,0.25)',
-                  animation: 'entity-pulse-ring 2s ease-in-out 0.66s infinite',
-                }} />
-                <div className="absolute pointer-events-none" style={{
-                  inset: -26, borderRadius: 32,
-                  border: '1px solid rgba(168,85,247,0.1)',
-                  animation: 'entity-pulse-ring 2s ease-in-out 1.33s infinite',
-                }} />
-                {/* Corner accent glow */}
-                <div className="absolute inset-0 pointer-events-none" style={{
-                  borderRadius: 16,
-                  background: 'radial-gradient(ellipse at 30% 30%, rgba(168,85,247,0.15), transparent 60%)',
-                }} />
-              </>
-            )}
-          </div>
-        );
-      })}
-      </div>{/* close pannable content layer */}
+          );
+        })}
+      </div>
+      {/* close pannable content layer */}
 
       {/* ── Progressive Disclosure Panel ── */}
       {selectedEntity && (
@@ -561,39 +664,63 @@ export function EntityMap({
               >
                 {selectedEntity.kind.replace('_', ' ')}
               </span>
-              <span className="text-sm font-semibold text-white/90 truncate">{selectedEntity.label}</span>
+              <span className="text-sm font-semibold text-white/90 truncate">
+                {selectedEntity.label}
+              </span>
             </div>
             <button
               onClick={() => setSelectedNodeId(null)}
               className="shrink-0 text-white/40 hover:text-white/70 transition-colors"
               aria-label="Close panel"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
 
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div>
-              <span className="text-[10px] text-white/40 uppercase tracking-wide">Affinity</span>
-              <p className="text-sm font-bold text-white/90 font-mono">{selectedEntity.affinity_score}</p>
+              <span className="text-[10px] text-white/40 uppercase tracking-wide">
+                Affinity
+              </span>
+              <p className="text-sm font-bold text-white/90 font-mono">
+                {selectedEntity.affinity_score}
+              </p>
             </div>
             <div>
-              <span className="text-[10px] text-white/40 uppercase tracking-wide">Authority</span>
-              <p className="text-sm font-bold text-white/90 font-mono">{selectedEntity.authority_weight}</p>
+              <span className="text-[10px] text-white/40 uppercase tracking-wide">
+                Authority
+              </span>
+              <p className="text-sm font-bold text-white/90 font-mono">
+                {selectedEntity.authority_weight}
+              </p>
             </div>
           </div>
 
           <div className="mb-3">
-            <span className="text-[10px] text-white/40 uppercase tracking-wide">Connection</span>
+            <span className="text-[10px] text-white/40 uppercase tracking-wide">
+              Connection
+            </span>
             <p className="text-xs text-white/70 mt-0.5 capitalize">
               {selectedEntity.connection_status.replaceAll('_', ' ')}
             </p>
           </div>
 
           <div className="mb-3">
-            <span className="text-[10px] text-white/40 uppercase tracking-wide">Intelligence</span>
+            <span className="text-[10px] text-white/40 uppercase tracking-wide">
+              Intelligence
+            </span>
             <p className="text-xs text-white/70 mt-0.5 leading-relaxed">
               {selectedEntity.entity_insight}
             </p>
@@ -601,7 +728,9 @@ export function EntityMap({
 
           {selectedEntity.impact_pillars.length > 0 && (
             <div className="mb-3">
-              <span className="text-[10px] text-white/40 uppercase tracking-wide">Pillar Impact</span>
+              <span className="text-[10px] text-white/40 uppercase tracking-wide">
+                Pillar Impact
+              </span>
               <div className="flex items-center gap-1.5 mt-1">
                 {selectedEntity.impact_pillars.map((p) => (
                   <span
@@ -629,16 +758,35 @@ export function EntityMap({
 
       <style jsx>{`
         @keyframes entity-pulse-ring {
-          0%, 100% { opacity: 0.3; transform: scale(1); }
-          50% { opacity: 0.08; transform: scale(1.08); }
+          0%,
+          100% {
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.08;
+            transform: scale(1.08);
+          }
         }
         @keyframes mesh-drift {
-          0% { opacity: 0.8; transform: scale(1) translate(0, 0); }
-          100% { opacity: 1; transform: scale(1.05) translate(-10px, 5px); }
+          0% {
+            opacity: 0.8;
+            transform: scale(1) translate(0, 0);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1.05) translate(-10px, 5px);
+          }
         }
         @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(12px); }
-          to { opacity: 1; transform: translateX(0); }
+          from {
+            opacity: 0;
+            transform: translateX(12px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
         }
       `}</style>
     </div>

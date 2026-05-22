@@ -16,8 +16,7 @@ export class FeatureFlagProvider {
     // Load default flags
     Object.entries(FLAGS).forEach(([name, defaultValue]) => {
       const envValue = process.env[name];
-      const value =
-        envValue !== undefined ? envValue === 'true' : defaultValue;
+      const value = envValue !== undefined ? envValue === 'true' : defaultValue;
       this.flags.set(name as FlagName, value);
     });
   }

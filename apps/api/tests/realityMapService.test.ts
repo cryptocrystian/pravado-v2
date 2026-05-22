@@ -157,7 +157,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.createRealityMap(mockOrgId, mockUserId, input);
+      const result = await realityMapService.createRealityMap(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result).toBeDefined();
       expect(result.id).toBe(mockMapId);
@@ -199,7 +203,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.createRealityMap(mockOrgId, mockUserId, input);
+      const result = await realityMapService.createRealityMap(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.parameters.maxDepth).toBe(7);
       expect(result.parameters.narrativeStyle).toBe('technical');
@@ -231,7 +239,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.createRealityMap(mockOrgId, mockUserId, input);
+      const result = await realityMapService.createRealityMap(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.suiteId).toBe('suite-123');
     });
@@ -271,7 +283,10 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.getRealityMap(mockOrgId, mockMapId);
+      const result = await realityMapService.getRealityMap(
+        mockOrgId,
+        mockMapId
+      );
 
       expect(result).toBeDefined();
       expect(result.id).toBe(mockMapId);
@@ -285,7 +300,10 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.getRealityMap(mockOrgId, 'non-existent');
+      const result = await realityMapService.getRealityMap(
+        mockOrgId,
+        'non-existent'
+      );
 
       expect(result).toBeNull();
     });
@@ -355,7 +373,9 @@ describe('realityMapService', () => {
         count: 0,
       });
 
-      await realityMapService.listRealityMaps(mockOrgId, { status: 'completed' });
+      await realityMapService.listRealityMaps(mockOrgId, {
+        status: 'completed',
+      });
 
       expect(mockEq).toHaveBeenCalled();
     });
@@ -419,7 +439,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.updateRealityMap(mockOrgId, mockMapId, updates);
+      const result = await realityMapService.updateRealityMap(
+        mockOrgId,
+        mockMapId,
+        updates
+      );
 
       expect(result.name).toBe('Updated Map Name');
       expect(result.description).toBe('Updated description');
@@ -451,7 +475,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.updateRealityMap(mockOrgId, mockMapId, updates);
+      const result = await realityMapService.updateRealityMap(
+        mockOrgId,
+        mockMapId,
+        updates
+      );
 
       expect(result.parameters.maxDepth).toBe(8);
     });
@@ -678,7 +706,11 @@ describe('realityMapService', () => {
         count: 2,
       });
 
-      const result = await realityMapService.listAuditEvents(mockOrgId, mockMapId, {});
+      const result = await realityMapService.listAuditEvents(
+        mockOrgId,
+        mockMapId,
+        {}
+      );
 
       expect(result.events).toHaveLength(2);
       expect(result.total).toBe(2);
@@ -691,7 +723,9 @@ describe('realityMapService', () => {
         count: 0,
       });
 
-      await realityMapService.listAuditEvents(mockOrgId, mockMapId, { eventType: 'generated' });
+      await realityMapService.listAuditEvents(mockOrgId, mockMapId, {
+        eventType: 'generated',
+      });
 
       expect(mockEq).toHaveBeenCalled();
     });
@@ -743,7 +777,10 @@ describe('realityMapService', () => {
         org_id: mockOrgId,
         name: input.name,
         status: 'draft',
-        parameters: { ...defaultParameters, probabilityModel: 'weighted_average' },
+        parameters: {
+          ...defaultParameters,
+          probabilityModel: 'weighted_average',
+        },
         total_nodes: 0,
         total_paths: 0,
         max_depth_reached: 0,
@@ -757,7 +794,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.createRealityMap(mockOrgId, mockUserId, input);
+      const result = await realityMapService.createRealityMap(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.parameters.probabilityModel).toBe('weighted_average');
     });
@@ -789,7 +830,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.createRealityMap(mockOrgId, mockUserId, input);
+      const result = await realityMapService.createRealityMap(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.parameters.probabilityModel).toBe('bayesian');
     });
@@ -827,7 +872,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.createRealityMap(mockOrgId, mockUserId, input);
+      const result = await realityMapService.createRealityMap(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.parameters.narrativeStyle).toBe('executive');
     });
@@ -859,7 +908,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.createRealityMap(mockOrgId, mockUserId, input);
+      const result = await realityMapService.createRealityMap(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.parameters.narrativeStyle).toBe('technical');
     });
@@ -896,7 +949,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.createRealityMap(mockOrgId, mockUserId, input);
+      const result = await realityMapService.createRealityMap(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.suiteId).toBe('empty-suite');
     });
@@ -928,7 +985,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.createRealityMap(mockOrgId, mockUserId, input);
+      const result = await realityMapService.createRealityMap(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.parameters.maxDepth).toBe(10);
     });
@@ -960,7 +1021,11 @@ describe('realityMapService', () => {
         error: null,
       });
 
-      const result = await realityMapService.createRealityMap(mockOrgId, mockUserId, input);
+      const result = await realityMapService.createRealityMap(
+        mockOrgId,
+        mockUserId,
+        input
+      );
 
       expect(result.parameters.minProbability).toBe(0.5);
     });

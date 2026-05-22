@@ -9,7 +9,12 @@
  * - 5 top movers (mix of positive and negative)
  */
 
-import type { EVIDataPoint, SoMCluster, CoverageEvent, TopMover } from './types';
+import type {
+  EVIDataPoint,
+  SoMCluster,
+  CoverageEvent,
+  TopMover,
+} from './types';
 
 // ============================================
 // HELPERS
@@ -51,7 +56,9 @@ function generateEVITimeSeries(): EVIDataPoint[] {
     // Add a dip around day 270-300 (late Dec / early Jan)
     const dipCenter = 290;
     const dipWidth = 25;
-    const dipStrength = Math.exp(-Math.pow((dayIndex - dipCenter) / dipWidth, 2));
+    const dipStrength = Math.exp(
+      -Math.pow((dayIndex - dipCenter) / dipWidth, 2)
+    );
 
     // Visibility: mild dip (-5), strong recovery
     const visDip = -5 * dipStrength;
@@ -61,7 +68,9 @@ function generateEVITimeSeries(): EVIDataPoint[] {
     const momDip = -15 * dipStrength;
 
     // Add realistic noise
-    const noise = (seed: number) => Math.sin(dayIndex * 0.3 + seed) * 2 + Math.cos(dayIndex * 0.7 + seed) * 1.5;
+    const noise = (seed: number) =>
+      Math.sin(dayIndex * 0.3 + seed) * 2 +
+      Math.cos(dayIndex * 0.7 + seed) * 1.5;
 
     const visibility = Math.max(0, Math.min(100, visBase + visDip + noise(1)));
     const authority = Math.max(0, Math.min(100, authBase + authDip + noise(2)));
@@ -182,7 +191,8 @@ export const MOCK_COVERAGE_EVENTS: CoverageEvent[] = [
 export const MOCK_TOP_MOVERS: TopMover[] = [
   {
     id: 'mov-1',
-    description: 'TechCrunch feature drove 3x citation rate increase in AI Marketing cluster',
+    description:
+      'TechCrunch feature drove 3x citation rate increase in AI Marketing cluster',
     pillar: 'pr',
     delta: 3.2,
     period: 'Last 7 days',
@@ -196,21 +206,24 @@ export const MOCK_TOP_MOVERS: TopMover[] = [
   },
   {
     id: 'mov-3',
-    description: 'Competitor Ahrefs published 12 articles on SEO Intelligence cluster',
+    description:
+      'Competitor Ahrefs published 12 articles on SEO Intelligence cluster',
     pillar: 'seo',
     delta: -1.8,
     period: 'Last 30 days',
   },
   {
     id: 'mov-4',
-    description: 'Schema markup improvements increased structured data coverage to 94%',
+    description:
+      'Schema markup improvements increased structured data coverage to 94%',
     pillar: 'seo',
     delta: 1.4,
     period: 'Last 14 days',
   },
   {
     id: 'mov-5',
-    description: 'PR outreach pause during holiday period reduced citation velocity',
+    description:
+      'PR outreach pause during holiday period reduced citation velocity',
     pillar: 'pr',
     delta: -2.3,
     period: 'Last 30 days',

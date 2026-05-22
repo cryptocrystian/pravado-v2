@@ -46,41 +46,41 @@ An AI-powered narrative synthesis engine that:
 
 Seven specialized narrative types for different strategic needs:
 
-| Type | Purpose | Primary Audience |
-|------|---------|------------------|
-| `executive` | High-level strategic overview | C-Suite, Board |
-| `strategy` | Strategic planning and initiatives | Strategy Team |
-| `investor` | Financial and growth narratives | Investors, Analysts |
-| `crisis` | Risk response and mitigation | Crisis Team |
-| `competitive` | Market positioning and competition | Product, Marketing |
-| `reputation` | Brand perception and sentiment | Communications |
-| `quarterly` | Period summary and outlook | All Stakeholders |
+| Type          | Purpose                            | Primary Audience    |
+| ------------- | ---------------------------------- | ------------------- |
+| `executive`   | High-level strategic overview      | C-Suite, Board      |
+| `strategy`    | Strategic planning and initiatives | Strategy Team       |
+| `investor`    | Financial and growth narratives    | Investors, Analysts |
+| `crisis`      | Risk response and mitigation       | Crisis Team         |
+| `competitive` | Market positioning and competition | Product, Marketing  |
+| `reputation`  | Brand perception and sentiment     | Communications      |
+| `quarterly`   | Period summary and outlook         | All Stakeholders    |
 
 ### Output Formats
 
 Five document formats optimized for different use cases:
 
-| Format | Description |
-|--------|-------------|
-| `executive_brief` | Concise 1-2 page summary |
-| `deep_dive` | Comprehensive analysis with appendices |
-| `presentation` | Slide-ready content with visuals |
-| `memo` | Internal communication format |
-| `report` | Formal structured report |
+| Format            | Description                            |
+| ----------------- | -------------------------------------- |
+| `executive_brief` | Concise 1-2 page summary               |
+| `deep_dive`       | Comprehensive analysis with appendices |
+| `presentation`    | Slide-ready content with visuals       |
+| `memo`            | Internal communication format          |
+| `report`          | Formal structured report               |
 
 ### Source Systems
 
 The engine synthesizes data from 30+ source systems:
 
-| Category | Systems |
-|----------|---------|
-| Content | `content_quality`, `content_briefs`, `content_rewrites` |
-| Media | `media_monitoring`, `media_alerts`, `media_performance` |
-| PR | `press_releases`, `pitches`, `outreach`, `deliverability` |
-| Journalists | `journalist_graph`, `discovery`, `enrichment`, `timeline` |
-| Intelligence | `competitive_intel`, `brand_reputation`, `risk_radar` |
-| Executive | `executive_command`, `board_reports`, `investor_relations` |
-| Strategic | `strategic_intelligence`, `unified_graph`, `scenarios` |
+| Category     | Systems                                                    |
+| ------------ | ---------------------------------------------------------- |
+| Content      | `content_quality`, `content_briefs`, `content_rewrites`    |
+| Media        | `media_monitoring`, `media_alerts`, `media_performance`    |
+| PR           | `press_releases`, `pitches`, `outreach`, `deliverability`  |
+| Journalists  | `journalist_graph`, `discovery`, `enrichment`, `timeline`  |
+| Intelligence | `competitive_intel`, `brand_reputation`, `risk_radar`      |
+| Executive    | `executive_command`, `board_reports`, `investor_relations` |
+| Strategic    | `strategic_intelligence`, `unified_graph`, `scenarios`     |
 
 ### Narrative Sections
 
@@ -98,12 +98,12 @@ Each narrative contains structured sections:
 
 The engine extracts four types of cross-domain insights:
 
-| Type | Description |
-|------|-------------|
-| `correlation` | Positive relationships between systems |
+| Type            | Description                             |
+| --------------- | --------------------------------------- |
+| `correlation`   | Positive relationships between systems  |
 | `contradiction` | Conflicting signals requiring attention |
-| `pattern` | Recurring themes across domains |
-| `risk_cluster` | Multiple risk indicators converging |
+| `pattern`       | Recurring themes across domains         |
+| `risk_cluster`  | Multiple risk indicators converging     |
 
 ### Supplementary Artifacts
 
@@ -138,40 +138,40 @@ Narratives progress through a defined lifecycle:
 draft → generating → review → approved → published → archived
 ```
 
-| State | Description |
-|-------|-------------|
-| `draft` | Initial creation, can be edited |
-| `generating` | AI synthesis in progress |
-| `review` | Ready for stakeholder review |
-| `approved` | Approved for publication |
-| `published` | Available to target audience |
-| `archived` | Historical record |
+| State        | Description                     |
+| ------------ | ------------------------------- |
+| `draft`      | Initial creation, can be edited |
+| `generating` | AI synthesis in progress        |
+| `review`     | Ready for stakeholder review    |
+| `approved`   | Approved for publication        |
+| `published`  | Available to target audience    |
+| `archived`   | Historical record               |
 
 ### API Endpoints
 
 All endpoints under `/api/v1/unified-narratives`:
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | / | Create narrative |
-| GET | /:id | Get narrative |
-| PATCH | /:id | Update narrative |
-| DELETE | /:id | Delete narrative |
-| GET | / | List narratives |
-| POST | /:id/generate | Generate narrative content |
-| POST | /:id/regenerate | Regenerate from sources |
-| GET | /:id/sections | List sections |
-| PATCH | /:id/sections/:sectionId | Update section |
-| POST | /:id/sections/:sectionId/regenerate | Regenerate section |
-| GET | /:id/insights | List cross-system insights |
-| POST | /:id/insights | Add insight |
-| POST | /:id/delta | Compute period delta |
-| POST | /:id/approve | Approve narrative |
-| POST | /:id/publish | Publish narrative |
-| POST | /:id/archive | Archive narrative |
-| POST | /:id/export | Export to format |
-| GET | /stats | Get statistics |
-| GET | /audit | List audit logs |
+| Method | Endpoint                            | Description                |
+| ------ | ----------------------------------- | -------------------------- |
+| POST   | /                                   | Create narrative           |
+| GET    | /:id                                | Get narrative              |
+| PATCH  | /:id                                | Update narrative           |
+| DELETE | /:id                                | Delete narrative           |
+| GET    | /                                   | List narratives            |
+| POST   | /:id/generate                       | Generate narrative content |
+| POST   | /:id/regenerate                     | Regenerate from sources    |
+| GET    | /:id/sections                       | List sections              |
+| PATCH  | /:id/sections/:sectionId            | Update section             |
+| POST   | /:id/sections/:sectionId/regenerate | Regenerate section         |
+| GET    | /:id/insights                       | List cross-system insights |
+| POST   | /:id/insights                       | Add insight                |
+| POST   | /:id/delta                          | Compute period delta       |
+| POST   | /:id/approve                        | Approve narrative          |
+| POST   | /:id/publish                        | Publish narrative          |
+| POST   | /:id/archive                        | Archive narrative          |
+| POST   | /:id/export                         | Export to format           |
+| GET    | /stats                              | Get statistics             |
+| GET    | /audit                              | List audit logs            |
 
 ## Key Features
 
@@ -294,15 +294,15 @@ Three-panel layout with cards, filters, and detail drawer:
 
 ### Components
 
-| Component | Purpose |
-|-----------|---------|
-| `NarrativeCard` | Compact narrative summary card |
-| `NarrativeFiltersBar` | Search and filter controls |
-| `NarrativeGeneratorForm` | Create/configure new narratives |
-| `NarrativeDetailDrawer` | Full narrative viewer/editor |
-| `NarrativeSectionEditor` | Section content editing |
-| `NarrativeInsightsList` | Cross-system insights display |
-| `NarrativeWorkflowActions` | Approve/publish/export buttons |
+| Component                  | Purpose                         |
+| -------------------------- | ------------------------------- |
+| `NarrativeCard`            | Compact narrative summary card  |
+| `NarrativeFiltersBar`      | Search and filter controls      |
+| `NarrativeGeneratorForm`   | Create/configure new narratives |
+| `NarrativeDetailDrawer`    | Full narrative viewer/editor    |
+| `NarrativeSectionEditor`   | Section content editing         |
+| `NarrativeInsightsList`    | Cross-system insights display   |
+| `NarrativeWorkflowActions` | Approve/publish/export buttons  |
 
 ### Form Fields
 
@@ -451,7 +451,7 @@ OPENAI_API_KEY          - Required for narrative generation
 ### Feature Flag
 
 ```typescript
-ENABLE_UNIFIED_NARRATIVES: true
+ENABLE_UNIFIED_NARRATIVES: true;
 ```
 
 ## API Examples
@@ -506,7 +506,7 @@ await fetch(`/api/v1/unified-narratives/${id}/publish`, {
 const { url } = await fetch(`/api/v1/unified-narratives/${id}/export`, {
   method: 'POST',
   body: JSON.stringify({ format: 'pdf' }),
-}).then(r => r.json());
+}).then((r) => r.json());
 ```
 
 ## Future Enhancements

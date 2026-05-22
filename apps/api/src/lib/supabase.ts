@@ -7,7 +7,8 @@ import { validateEnv, apiEnvSchema } from '@pravado/validators';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 let supabaseClient: SupabaseClient | null = null;
-let cachedEnv: ReturnType<typeof validateEnv<typeof apiEnvSchema>> | null = null;
+let cachedEnv: ReturnType<typeof validateEnv<typeof apiEnvSchema>> | null =
+  null;
 
 function getEnv() {
   if (!cachedEnv) {
@@ -23,7 +24,10 @@ function getEnv() {
 export function getSupabaseClient(): SupabaseClient {
   if (!supabaseClient) {
     const env = getEnv();
-    supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+    supabaseClient = createClient(
+      env.SUPABASE_URL,
+      env.SUPABASE_SERVICE_ROLE_KEY
+    );
   }
   return supabaseClient;
 }

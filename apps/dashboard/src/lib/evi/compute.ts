@@ -26,7 +26,9 @@ function getTrend(delta: number): Trend {
 /**
  * Determine EVI status band from score
  */
-function getStatus(score: number): 'at_risk' | 'emerging' | 'competitive' | 'dominant' {
+function getStatus(
+  score: number
+): 'at_risk' | 'emerging' | 'competitive' | 'dominant' {
   if (score <= EVI_BANDS.at_risk.max) return 'at_risk';
   if (score <= EVI_BANDS.emerging.max) return 'emerging';
   if (score <= EVI_BANDS.competitive.max) return 'competitive';
@@ -81,9 +83,18 @@ export function computeEVI(snapshot: EVIInputSnapshot): ComputedEVI {
   }
 
   // Compute driver contributions
-  const visibility = computeDriverContribution(snapshot.visibility, EVI_WEIGHTS.visibility);
-  const authority = computeDriverContribution(snapshot.authority, EVI_WEIGHTS.authority);
-  const momentum = computeDriverContribution(snapshot.momentum, EVI_WEIGHTS.momentum);
+  const visibility = computeDriverContribution(
+    snapshot.visibility,
+    EVI_WEIGHTS.visibility
+  );
+  const authority = computeDriverContribution(
+    snapshot.authority,
+    EVI_WEIGHTS.authority
+  );
+  const momentum = computeDriverContribution(
+    snapshot.momentum,
+    EVI_WEIGHTS.momentum
+  );
 
   // Compute total EVI score
   const score = round(
@@ -110,9 +121,8 @@ export function computeEVI(snapshot: EVIInputSnapshot): ComputedEVI {
   }
 
   // Generate sparkline from historical data
-  const sparkline = historical.length >= 2
-    ? historical.slice(-7).map(h => h.score)
-    : [score];
+  const sparkline =
+    historical.length >= 2 ? historical.slice(-7).map((h) => h.score) : [score];
 
   // Ensure sparkline has at least 7 points
   while (sparkline.length < 7) {
@@ -122,8 +132,8 @@ export function computeEVI(snapshot: EVIInputSnapshot): ComputedEVI {
   // Compute overall confidence (weighted average of driver confidences)
   const confidence = round(
     snapshot.visibility.confidence * EVI_WEIGHTS.visibility +
-    snapshot.authority.confidence * EVI_WEIGHTS.authority +
-    snapshot.momentum.confidence * EVI_WEIGHTS.momentum,
+      snapshot.authority.confidence * EVI_WEIGHTS.authority +
+      snapshot.momentum.confidence * EVI_WEIGHTS.momentum,
     2
   );
 
@@ -160,7 +170,8 @@ export function validateEVIFormula(): {
   bands: typeof EVI_BANDS;
 } {
   // Check weights sum to 1
-  const weightSum = EVI_WEIGHTS.visibility + EVI_WEIGHTS.authority + EVI_WEIGHTS.momentum;
+  const weightSum =
+    EVI_WEIGHTS.visibility + EVI_WEIGHTS.authority + EVI_WEIGHTS.momentum;
   const weightsValid = Math.abs(weightSum - 1.0) < 0.001;
 
   // Check bands are contiguous
@@ -182,10 +193,14 @@ export function validateEVIFormula(): {
  */
 export function computeEVIForecast(
   currentEVI: ComputedEVI,
-  activeScenarios: Array<{ delta_visibility?: number; delta_authority?: number; delta_momentum?: number }>
+  activeScenarios: Array<{
+    delta_visibility?: number;
+    delta_authority?: number;
+    delta_momentum?: number;
+  }>
 ): { low: number; expected: number; high: number } {
   // Baseline forecast assumes current trajectory continues
-  const baseExpected = currentEVI.score + (currentEVI.delta_7d * 4); // 4 weeks
+  const baseExpected = currentEVI.score + currentEVI.delta_7d * 4; // 4 weeks
   const baseVariance = 3; // +/- 3 points baseline variance
 
   // Apply scenario deltas

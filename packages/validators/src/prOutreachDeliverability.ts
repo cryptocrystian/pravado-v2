@@ -23,7 +23,12 @@ export const emailMessageStatusSchema = z.enum([
 /**
  * Email provider types
  */
-export const emailProviderSchema = z.enum(['sendgrid', 'mailgun', 'ses', 'stub']);
+export const emailProviderSchema = z.enum([
+  'sendgrid',
+  'mailgun',
+  'ses',
+  'stub',
+]);
 
 /**
  * Provider event types
@@ -368,17 +373,37 @@ export type DeliverabilitySummary = z.infer<typeof deliverabilitySummarySchema>;
 export type JournalistEngagement = z.infer<typeof journalistEngagementSchema>;
 export type ProviderEventPayload = z.infer<typeof providerEventPayloadSchema>;
 export type WebhookPayload = z.infer<typeof webhookPayloadSchema>;
-export type CreateEmailMessageInput = z.infer<typeof createEmailMessageInputSchema>;
-export type UpdateEmailMessageInput = z.infer<typeof updateEmailMessageInputSchema>;
-export type UpdateEngagementMetricsInput = z.infer<typeof updateEngagementMetricsInputSchema>;
+export type CreateEmailMessageInput = z.infer<
+  typeof createEmailMessageInputSchema
+>;
+export type UpdateEmailMessageInput = z.infer<
+  typeof updateEmailMessageInputSchema
+>;
+export type UpdateEngagementMetricsInput = z.infer<
+  typeof updateEngagementMetricsInputSchema
+>;
 export type SendEmailRequest = z.infer<typeof sendEmailRequestSchema>;
 export type ProviderConfig = z.infer<typeof providerConfigSchema>;
-export type ListEmailMessagesQuery = z.infer<typeof listEmailMessagesQuerySchema>;
-export type ListEngagementMetricsQuery = z.infer<typeof listEngagementMetricsQuerySchema>;
-export type EmailMessageListResponse = z.infer<typeof emailMessageListResponseSchema>;
-export type EngagementMetricsListResponse = z.infer<typeof engagementMetricsListResponseSchema>;
+export type ListEmailMessagesQuery = z.infer<
+  typeof listEmailMessagesQuerySchema
+>;
+export type ListEngagementMetricsQuery = z.infer<
+  typeof listEngagementMetricsQuerySchema
+>;
+export type EmailMessageListResponse = z.infer<
+  typeof emailMessageListResponseSchema
+>;
+export type EngagementMetricsListResponse = z.infer<
+  typeof engagementMetricsListResponseSchema
+>;
 export type SendEmailResponse = z.infer<typeof sendEmailResponseSchema>;
 export type EngagementScoreResult = z.infer<typeof engagementScoreResultSchema>;
-export type UpdateEngagementMetricResult = z.infer<typeof updateEngagementMetricResultSchema>;
-export type ProcessWebhookEventInput = z.infer<typeof processWebhookEventInputSchema>;
-export type ProcessWebhookEventResponse = z.infer<typeof processWebhookEventResponseSchema>;
+export type UpdateEngagementMetricResult = z.infer<
+  typeof updateEngagementMetricResultSchema
+>;
+export type ProcessWebhookEventInput = z.infer<
+  typeof processWebhookEventInputSchema
+>;
+export type ProcessWebhookEventResponse = z.infer<
+  typeof processWebhookEventResponseSchema
+>;

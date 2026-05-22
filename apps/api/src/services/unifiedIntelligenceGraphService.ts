@@ -224,7 +224,7 @@ function mapDbSnapshot(row: DbSnapshot): IntelligenceGraphSnapshot {
     nodeCount: row.node_count,
     edgeCount: row.edge_count,
     clusterCount: row.cluster_count,
-    metricsJson: (row.metrics_json as unknown) as GraphMetrics,
+    metricsJson: row.metrics_json as unknown as GraphMetrics,
     nodesJson: row.nodes_json as IntelligenceNode[] | null,
     edgesJson: row.edges_json as IntelligenceEdge[] | null,
     clustersJson: row.clusters_json as ClusterInfo[] | null,
@@ -383,13 +383,16 @@ export async function updateNode(
   };
 
   if (input.label !== undefined) updateData.label = input.label;
-  if (input.description !== undefined) updateData.description = input.description;
-  if (input.propertiesJson !== undefined) updateData.properties_json = input.propertiesJson;
+  if (input.description !== undefined)
+    updateData.description = input.description;
+  if (input.propertiesJson !== undefined)
+    updateData.properties_json = input.propertiesJson;
   if (input.tags !== undefined) updateData.tags = input.tags;
   if (input.categories !== undefined) updateData.categories = input.categories;
   if (input.validFrom !== undefined) updateData.valid_from = input.validFrom;
   if (input.validTo !== undefined) updateData.valid_to = input.validTo;
-  if (input.confidenceScore !== undefined) updateData.confidence_score = input.confidenceScore;
+  if (input.confidenceScore !== undefined)
+    updateData.confidence_score = input.confidenceScore;
   if (input.isActive !== undefined) updateData.is_active = input.isActive;
 
   const { data, error } = await ctx.supabase
@@ -412,7 +415,10 @@ export async function updateNode(
   return node;
 }
 
-export async function deleteNode(ctx: ServiceContext, nodeId: string): Promise<void> {
+export async function deleteNode(
+  ctx: ServiceContext,
+  nodeId: string
+): Promise<void> {
   const { error } = await ctx.supabase
     .from('intelligence_nodes')
     .delete()
@@ -430,7 +436,9 @@ export async function listNodes(
   ctx: ServiceContext,
   input: ListNodesInput
 ): Promise<ListNodesResponse> {
-  let query = ctx.supabase.from('intelligence_nodes').select('*', { count: 'exact' });
+  let query = ctx.supabase
+    .from('intelligence_nodes')
+    .select('*', { count: 'exact' });
 
   query = query.eq('org_id', ctx.orgId);
 
@@ -444,7 +452,9 @@ export async function listNodes(
     query = query.overlaps('categories', input.categories);
   }
   if (input.search) {
-    query = query.or(`label.ilike.%${input.search}%,description.ilike.%${input.search}%`);
+    query = query.or(
+      `label.ilike.%${input.search}%,description.ilike.%${input.search}%`
+    );
   }
   if (input.sourceSystem) {
     query = query.eq('source_system', input.sourceSystem);
@@ -613,13 +623,17 @@ export async function updateEdge(
   const updateData: Record<string, unknown> = {};
 
   if (input.label !== undefined) updateData.label = input.label;
-  if (input.description !== undefined) updateData.description = input.description;
-  if (input.propertiesJson !== undefined) updateData.properties_json = input.propertiesJson;
+  if (input.description !== undefined)
+    updateData.description = input.description;
+  if (input.propertiesJson !== undefined)
+    updateData.properties_json = input.propertiesJson;
   if (input.weight !== undefined) updateData.weight = input.weight;
-  if (input.isBidirectional !== undefined) updateData.is_bidirectional = input.isBidirectional;
+  if (input.isBidirectional !== undefined)
+    updateData.is_bidirectional = input.isBidirectional;
   if (input.validFrom !== undefined) updateData.valid_from = input.validFrom;
   if (input.validTo !== undefined) updateData.valid_to = input.validTo;
-  if (input.confidenceScore !== undefined) updateData.confidence_score = input.confidenceScore;
+  if (input.confidenceScore !== undefined)
+    updateData.confidence_score = input.confidenceScore;
   if (input.isActive !== undefined) updateData.is_active = input.isActive;
 
   const { data, error } = await ctx.supabase
@@ -642,7 +656,10 @@ export async function updateEdge(
   return edge;
 }
 
-export async function deleteEdge(ctx: ServiceContext, edgeId: string): Promise<void> {
+export async function deleteEdge(
+  ctx: ServiceContext,
+  edgeId: string
+): Promise<void> {
   const { error } = await ctx.supabase
     .from('intelligence_edges')
     .delete()
@@ -660,7 +677,9 @@ export async function listEdges(
   ctx: ServiceContext,
   input: ListEdgesInput
 ): Promise<ListEdgesResponse> {
-  let query = ctx.supabase.from('intelligence_edges').select('*', { count: 'exact' });
+  let query = ctx.supabase
+    .from('intelligence_edges')
+    .select('*', { count: 'exact' });
 
   query = query.eq('org_id', ctx.orgId);
 
@@ -674,7 +693,9 @@ export async function listEdges(
     query = query.eq('target_node_id', input.targetNodeId);
   }
   if (input.nodeId) {
-    query = query.or(`source_node_id.eq.${input.nodeId},target_node_id.eq.${input.nodeId}`);
+    query = query.or(
+      `source_node_id.eq.${input.nodeId},target_node_id.eq.${input.nodeId}`
+    );
   }
   if (input.minWeight !== undefined) {
     query = query.gte('weight', input.minWeight);
@@ -766,7 +787,9 @@ export async function mergeNodes(
     );
 
     const mergedTags = [...new Set(sourceNodes.flatMap((n) => n.tags || []))];
-    const mergedCategories = [...new Set(sourceNodes.flatMap((n) => n.categories || []))];
+    const mergedCategories = [
+      ...new Set(sourceNodes.flatMap((n) => n.categories || [])),
+    ];
 
     const { data: newNode, error } = await ctx.supabase
       .from('intelligence_nodes')
@@ -784,7 +807,8 @@ export async function mergeNodes(
       .select()
       .single();
 
-    if (error) throw new Error(`Failed to create merged node: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to create merged node: ${error.message}`);
 
     mergedNode = mapDbNode(newNode);
   } else {
@@ -814,7 +838,8 @@ export async function mergeNodes(
       .select()
       .single();
 
-    if (error) throw new Error(`Failed to update target node: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to update target node: ${error.message}`);
 
     mergedNode = mapDbNode(updatedNode);
   }
@@ -824,7 +849,9 @@ export async function mergeNodes(
 
   if (input.preserveEdges) {
     // Redirect edges to merged node
-    const nodesToRemove = input.sourceNodeIds.filter((id) => id !== mergedNode.id);
+    const nodesToRemove = input.sourceNodeIds.filter(
+      (id) => id !== mergedNode.id
+    );
 
     for (const nodeId of nodesToRemove) {
       // Update incoming edges
@@ -852,7 +879,9 @@ export async function mergeNodes(
   }
 
   // Delete source nodes (except the merged one)
-  const nodesToDelete = input.sourceNodeIds.filter((id) => id !== mergedNode.id);
+  const nodesToDelete = input.sourceNodeIds.filter(
+    (id) => id !== mergedNode.id
+  );
   if (nodesToDelete.length > 0) {
     // Count edges that will be deleted
     const { count: deletedEdgesCount } = await ctx.supabase
@@ -860,7 +889,9 @@ export async function mergeNodes(
       .select('*', { count: 'exact', head: true })
       .eq('org_id', ctx.orgId)
       .or(
-        nodesToDelete.map((id) => `source_node_id.eq.${id},target_node_id.eq.${id}`).join(',')
+        nodesToDelete
+          .map((id) => `source_node_id.eq.${id},target_node_id.eq.${id}`)
+          .join(',')
       );
 
     edgesRemoved = deletedEdgesCount || 0;
@@ -961,7 +992,10 @@ export async function queryGraph(
       }
     }
 
-    query = query.range(input.offset || 0, (input.offset || 0) + (input.limit || 100) - 1);
+    query = query.range(
+      input.offset || 0,
+      (input.offset || 0) + (input.limit || 100) - 1
+    );
 
     const { data } = await query;
     nodes.push(...(data || []).map(mapDbNode));
@@ -975,11 +1009,14 @@ export async function queryGraph(
       .select('*')
       .eq('org_id', ctx.orgId)
       .eq('is_active', true)
-      .or(`source_node_id.in.(${nodeIds.join(',')}),target_node_id.in.(${nodeIds.join(',')})`);
+      .or(
+        `source_node_id.in.(${nodeIds.join(',')}),target_node_id.in.(${nodeIds.join(',')})`
+      );
 
     // Filter edges where both endpoints are in our node set
     const filteredEdges = (edgeData || []).filter(
-      (e) => nodeIds.includes(e.source_node_id) && nodeIds.includes(e.target_node_id)
+      (e) =>
+        nodeIds.includes(e.source_node_id) && nodeIds.includes(e.target_node_id)
     );
 
     edges.push(...filteredEdges.map(mapDbEdge));
@@ -989,7 +1026,9 @@ export async function queryGraph(
   if (input.groupBy) {
     const field = input.groupBy === 'node_type' ? 'nodeType' : input.groupBy;
     for (const node of nodes) {
-      const key = String((node as unknown as Record<string, unknown>)[field] || 'unknown');
+      const key = String(
+        (node as unknown as Record<string, unknown>)[field] || 'unknown'
+      );
       aggregations[key] = (aggregations[key] || 0) + 1;
     }
   }
@@ -1006,7 +1045,8 @@ export async function queryGraph(
     nodes,
     edges,
     paths: paths.length > 0 ? paths : undefined,
-    aggregations: Object.keys(aggregations).length > 0 ? aggregations : undefined,
+    aggregations:
+      Object.keys(aggregations).length > 0 ? aggregations : undefined,
     total: nodes.length,
     executionTimeMs,
   };
@@ -1029,12 +1069,19 @@ export async function traverseGraph(
     throw new Error('Start node not found');
   }
 
-  const visited = new Map<string, { node: IntelligenceNode; depth: number; path: string[] }>();
+  const visited = new Map<
+    string,
+    { node: IntelligenceNode; depth: number; path: string[] }
+  >();
   const queue: Array<{ nodeId: string; depth: number; path: string[] }> = [
     { nodeId: input.startNodeId, depth: 0, path: [input.startNodeId] },
   ];
 
-  visited.set(input.startNodeId, { node: startNode, depth: 0, path: [input.startNodeId] });
+  visited.set(input.startNodeId, {
+    node: startNode,
+    depth: 0,
+    path: [input.startNodeId],
+  });
 
   const maxDepth = input.maxDepth || 3;
   const limit = input.limit || 100;
@@ -1070,7 +1117,9 @@ export async function traverseGraph(
 
     for (const edge of edges || []) {
       const nextNodeId =
-        edge.source_node_id === current.nodeId ? edge.target_node_id : edge.source_node_id;
+        edge.source_node_id === current.nodeId
+          ? edge.target_node_id
+          : edge.source_node_id;
 
       if (visited.has(nextNodeId)) continue;
 
@@ -1091,8 +1140,16 @@ export async function traverseGraph(
       }
 
       const newPath = [...current.path, nextNodeId];
-      visited.set(nextNodeId, { node: nextNode, depth: current.depth + 1, path: newPath });
-      queue.push({ nodeId: nextNodeId, depth: current.depth + 1, path: newPath });
+      visited.set(nextNodeId, {
+        node: nextNode,
+        depth: current.depth + 1,
+        path: newPath,
+      });
+      queue.push({
+        nodeId: nextNodeId,
+        depth: current.depth + 1,
+        path: newPath,
+      });
     }
   }
 
@@ -1134,7 +1191,10 @@ export async function findShortestPath(
   maxDepth: number = 6
 ): Promise<GraphPath | null> {
   // BFS for shortest path
-  const visited = new Map<string, { prevNodeId: string | null; edge: IntelligenceEdge | null }>();
+  const visited = new Map<
+    string,
+    { prevNodeId: string | null; edge: IntelligenceEdge | null }
+  >();
   const queue: string[] = [startNodeId];
   visited.set(startNodeId, { prevNodeId: null, edge: null });
 
@@ -1188,7 +1248,8 @@ export async function findShortestPath(
 
     for (const edgeRow of edgeData || []) {
       const edge = mapDbEdge(edgeRow);
-      const nextId = edge.sourceNodeId === currentId ? edge.targetNodeId : edge.sourceNodeId;
+      const nextId =
+        edge.sourceNodeId === currentId ? edge.targetNodeId : edge.sourceNodeId;
 
       if (!visited.has(nextId)) {
         visited.set(nextId, { prevNodeId: currentId, edge });
@@ -1201,7 +1262,10 @@ export async function findShortestPath(
 }
 
 function getPathLength(
-  visited: Map<string, { prevNodeId: string | null; edge: IntelligenceEdge | null }>,
+  visited: Map<
+    string,
+    { prevNodeId: string | null; edge: IntelligenceEdge | null }
+  >,
   nodeId: string
 ): number {
   let length = 0;
@@ -1225,7 +1289,12 @@ export async function explainPath(
   ctx: ServiceContext,
   input: ExplainPathInput
 ): Promise<PathExplanation | null> {
-  const path = await findShortestPath(ctx, input.startNodeId, input.endNodeId, input.maxDepth);
+  const path = await findShortestPath(
+    ctx,
+    input.startNodeId,
+    input.endNodeId,
+    input.maxDepth
+  );
   if (!path) return null;
 
   if (!input.includeReasoning) {
@@ -1347,7 +1416,10 @@ export async function generateEmbeddings(
     for (const node of nodes || []) {
       try {
         const contextText = `${node.label}. ${node.description || ''} Tags: ${(node.tags || []).join(', ')}`;
-        const contextHash = crypto.createHash('sha256').update(contextText).digest('hex');
+        const contextHash = crypto
+          .createHash('sha256')
+          .update(contextText)
+          .digest('hex');
 
         // Check if embedding exists and is current
         if (!input.forceRegenerate) {
@@ -1408,7 +1480,10 @@ export async function generateEmbeddings(
     for (const edge of edges || []) {
       try {
         const contextText = `Relationship: ${edge.edge_type}. ${edge.label || ''} ${edge.description || ''}`;
-        const contextHash = crypto.createHash('sha256').update(contextText).digest('hex');
+        const contextHash = crypto
+          .createHash('sha256')
+          .update(contextText)
+          .digest('hex');
 
         if (!input.forceRegenerate) {
           const { data: existing } = await ctx.supabase
@@ -1493,13 +1568,16 @@ export async function semanticSearch(
   }
 
   // Search using cosine similarity (using pgvector)
-  const { data: results } = await ctx.supabase.rpc('search_nodes_by_embedding', {
-    query_embedding: `[${queryEmbedding.join(',')}]`,
-    match_threshold: input.threshold || 0.7,
-    match_count: input.limit || 20,
-    p_org_id: ctx.orgId,
-    p_node_types: input.nodeTypes || null,
-  });
+  const { data: results } = await ctx.supabase.rpc(
+    'search_nodes_by_embedding',
+    {
+      query_embedding: `[${queryEmbedding.join(',')}]`,
+      match_threshold: input.threshold || 0.7,
+      match_count: input.limit || 20,
+      p_org_id: ctx.orgId,
+      p_node_types: input.nodeTypes || null,
+    }
+  );
 
   if (!results) return [];
 
@@ -1556,7 +1634,10 @@ export async function computeMetrics(
     edgeQuery = edgeQuery.in('edge_type', input.edgeTypes);
   }
 
-  const [{ data: nodes }, { data: edges }] = await Promise.all([nodeQuery, edgeQuery]);
+  const [{ data: nodes }, { data: edges }] = await Promise.all([
+    nodeQuery,
+    edgeQuery,
+  ]);
 
   const nodeList = (nodes || []).map(mapDbNode);
   const edgeList = (edges || []).map(mapDbEdge);
@@ -1579,13 +1660,16 @@ export async function computeMetrics(
     // Compute degree centrality
     const maxDegree = Math.max(
       ...nodeList.map(
-        (n) => (outgoing.get(n.id)?.length || 0) + (incoming.get(n.id)?.length || 0)
+        (n) =>
+          (outgoing.get(n.id)?.length || 0) + (incoming.get(n.id)?.length || 0)
       ),
       1
     );
 
     for (const node of nodeList) {
-      const degree = (outgoing.get(node.id)?.length || 0) + (incoming.get(node.id)?.length || 0);
+      const degree =
+        (outgoing.get(node.id)?.length || 0) +
+        (incoming.get(node.id)?.length || 0);
       const degreeCentrality = degree / maxDegree;
 
       // Simplified PageRank (just using degree for now)
@@ -1660,8 +1744,11 @@ export async function computeMetrics(
   }
 
   const density =
-    nodeList.length > 1 ? edgeList.length / (nodeList.length * (nodeList.length - 1)) : 0;
-  const avgDegree = nodeList.length > 0 ? (edgeList.length * 2) / nodeList.length : 0;
+    nodeList.length > 1
+      ? edgeList.length / (nodeList.length * (nodeList.length - 1))
+      : 0;
+  const avgDegree =
+    nodeList.length > 0 ? (edgeList.length * 2) / nodeList.length : 0;
 
   const metrics: GraphMetrics = {
     totalNodes: nodeList.length,
@@ -1880,17 +1967,25 @@ async function generateSnapshotAsync(
         .single();
 
       if (prevSnapshot) {
-        const prevNodes = new Set<string>((prevSnapshot.nodes_json || []).map((n: { id: string }) => n.id));
+        const prevNodes = new Set<string>(
+          (prevSnapshot.nodes_json || []).map((n: { id: string }) => n.id)
+        );
         const currentNodes = new Set<string>(nodeList.map((n) => n.id));
-        const prevEdges = new Set<string>((prevSnapshot.edges_json || []).map((e: { id: string }) => e.id));
+        const prevEdges = new Set<string>(
+          (prevSnapshot.edges_json || []).map((e: { id: string }) => e.id)
+        );
         const currentEdges = new Set<string>(edgeList.map((e) => e.id));
 
         diffJson = {
-          nodesAdded: [...currentNodes].filter((id) => !prevNodes.has(id)).length,
-          nodesRemoved: [...prevNodes].filter((id) => !currentNodes.has(id)).length,
+          nodesAdded: [...currentNodes].filter((id) => !prevNodes.has(id))
+            .length,
+          nodesRemoved: [...prevNodes].filter((id) => !currentNodes.has(id))
+            .length,
           nodesModified: 0,
-          edgesAdded: [...currentEdges].filter((id) => !prevEdges.has(id)).length,
-          edgesRemoved: [...prevEdges].filter((id) => !currentEdges.has(id)).length,
+          edgesAdded: [...currentEdges].filter((id) => !prevEdges.has(id))
+            .length,
+          edgesRemoved: [...prevEdges].filter((id) => !currentEdges.has(id))
+            .length,
           edgesModified: 0,
           metricsChanges: {},
           addedNodeIds: [...currentNodes].filter((id) => !prevNodes.has(id)),
@@ -2006,7 +2101,10 @@ export async function regenerateSnapshot(
   generateSnapshotAsync(ctx, snapshotId, {
     name: snapshot.name,
     description: snapshot.description || undefined,
-    snapshotType: snapshot.snapshotType as 'full' | 'incremental' | 'metrics_only',
+    snapshotType: snapshot.snapshotType as
+      | 'full'
+      | 'incremental'
+      | 'metrics_only',
     computeDiff: true,
   }).catch(console.error);
 

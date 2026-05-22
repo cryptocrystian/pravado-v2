@@ -12,42 +12,42 @@ Sprint S36 delivers enterprise-grade audit governance capabilities with a compre
 
 ### Backend (apps/api)
 
-| Deliverable | Status | File |
-|-------------|--------|------|
+| Deliverable                       | Status   | File                                              |
+| --------------------------------- | -------- | ------------------------------------------------- |
 | Migration 41: audit_exports table | Complete | `supabase/migrations/41_create_audit_exports.sql` |
-| AuditExportService | Complete | `src/services/auditExportService.ts` |
-| Export Routes (RBAC protected) | Complete | `src/routes/audit/index.ts` |
-| Backend Tests | Complete | `tests/auditExports.test.ts` |
+| AuditExportService                | Complete | `src/services/auditExportService.ts`              |
+| Export Routes (RBAC protected)    | Complete | `src/routes/audit/index.ts`                       |
+| Backend Tests                     | Complete | `tests/auditExports.test.ts`                      |
 
 ### Dashboard (apps/dashboard)
 
-| Deliverable | Status | File |
-|-------------|--------|------|
-| AuditSeverityBadge | Complete | `src/components/audit/AuditSeverityBadge.tsx` |
-| AuditEventTypeBadge | Complete | `src/components/audit/AuditEventTypeBadge.tsx` |
-| AuditFilters | Complete | `src/components/audit/AuditFilters.tsx` |
-| AuditTable | Complete | `src/components/audit/AuditTable.tsx` |
-| AuditExportButton | Complete | `src/components/audit/AuditExportButton.tsx` |
+| Deliverable            | Status   | File                                              |
+| ---------------------- | -------- | ------------------------------------------------- |
+| AuditSeverityBadge     | Complete | `src/components/audit/AuditSeverityBadge.tsx`     |
+| AuditEventTypeBadge    | Complete | `src/components/audit/AuditEventTypeBadge.tsx`    |
+| AuditFilters           | Complete | `src/components/audit/AuditFilters.tsx`           |
+| AuditTable             | Complete | `src/components/audit/AuditTable.tsx`             |
+| AuditExportButton      | Complete | `src/components/audit/AuditExportButton.tsx`      |
 | AuditExportStatusModal | Complete | `src/components/audit/AuditExportStatusModal.tsx` |
-| Component Index | Complete | `src/components/audit/index.ts` |
-| Audit API Helper | Complete | `src/lib/auditApi.ts` |
-| Audit Page Updates | Complete | `src/app/app/audit/page.tsx` |
-| E2E Tests | Complete | `tests/audit/audit-page.spec.ts` |
+| Component Index        | Complete | `src/components/audit/index.ts`                   |
+| Audit API Helper       | Complete | `src/lib/auditApi.ts`                             |
+| Audit Page Updates     | Complete | `src/app/app/audit/page.tsx`                      |
+| E2E Tests              | Complete | `tests/audit/audit-page.spec.ts`                  |
 
 ### Packages
 
-| Deliverable | Status | File |
-|-------------|--------|------|
-| Audit Export Types | Complete | `packages/types/src/audit.ts` |
-| Feature Flag | Complete | `packages/feature-flags/src/flags.ts` |
-| Environment Variable | Complete | `packages/validators/src/env.ts` |
+| Deliverable          | Status   | File                                  |
+| -------------------- | -------- | ------------------------------------- |
+| Audit Export Types   | Complete | `packages/types/src/audit.ts`         |
+| Feature Flag         | Complete | `packages/feature-flags/src/flags.ts` |
+| Environment Variable | Complete | `packages/validators/src/env.ts`      |
 
 ### Documentation
 
-| Deliverable | Status | File |
-|-------------|--------|------|
+| Deliverable           | Status   | File                                         |
+| --------------------- | -------- | -------------------------------------------- |
 | Product Specification | Complete | `docs/product/audit_governance_export_v1.md` |
-| Sprint Report | Complete | `docs/SPRINT_S36_COMPLETION_REPORT.md` |
+| Sprint Report         | Complete | `docs/SPRINT_S36_COMPLETION_REPORT.md`       |
 
 ## Technical Implementation
 
@@ -75,15 +75,15 @@ CREATE TABLE audit_exports (
 
 ### API Endpoints
 
-| Method | Endpoint | Description | RBAC |
-|--------|----------|-------------|------|
-| GET | `/api/v1/audit` | Query audit logs | All roles |
-| GET | `/api/v1/audit/:id` | Get single entry | All roles |
-| GET | `/api/v1/audit/stats` | Get severity stats | All roles |
-| POST | `/api/v1/audit/export` | Create export job | Admin only |
-| GET | `/api/v1/audit/export/:id` | Get export status | Admin only |
-| GET | `/api/v1/audit/export/:id/download` | Download CSV | Admin only |
-| GET | `/api/v1/audit/exports` | List export jobs | Admin only |
+| Method | Endpoint                            | Description        | RBAC       |
+| ------ | ----------------------------------- | ------------------ | ---------- |
+| GET    | `/api/v1/audit`                     | Query audit logs   | All roles  |
+| GET    | `/api/v1/audit/:id`                 | Get single entry   | All roles  |
+| GET    | `/api/v1/audit/stats`               | Get severity stats | All roles  |
+| POST   | `/api/v1/audit/export`              | Create export job  | Admin only |
+| GET    | `/api/v1/audit/export/:id`          | Get export status  | Admin only |
+| GET    | `/api/v1/audit/export/:id/download` | Download CSV       | Admin only |
+| GET    | `/api/v1/audit/exports`             | List export jobs   | Admin only |
 
 ### RBAC Implementation
 
@@ -184,7 +184,7 @@ AUDIT_EXPORT_STORAGE_DIR=/tmp/audit_exports  # Default value
 
 ```typescript
 // packages/feature-flags/src/flags.ts
-ENABLE_AUDIT_EXPORTS: true
+ENABLE_AUDIT_EXPORTS: true;
 ```
 
 ## Security Considerations

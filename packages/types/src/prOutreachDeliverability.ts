@@ -6,7 +6,12 @@
 /**
  * Email send status
  */
-export type EmailMessageStatus = 'pending' | 'sent' | 'bounced' | 'complained' | 'failed';
+export type EmailMessageStatus =
+  | 'pending'
+  | 'sent'
+  | 'bounced'
+  | 'complained'
+  | 'failed';
 
 /**
  * Email provider types

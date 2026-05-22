@@ -21,9 +21,22 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from 'react';
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  type ReactNode,
+} from 'react';
 
-import { motion, citeMindStatus as citeMindTokens, surface, border, label as labelClass } from '../tokens';
+import {
+  motion,
+  citeMindStatus as citeMindTokens,
+  surface,
+  border,
+  label as labelClass,
+} from '../tokens';
 import type { AutomationMode, CiteMindStatus } from '../types';
 import { ModeSelector, ModeBehaviorBanner } from './ModeSelector';
 import {
@@ -31,7 +44,10 @@ import {
   deriveAIPerceptualState,
   AI_PERCEPTUAL_SIGNALS,
 } from '../ai-perception';
-import { AmbientAIIndicator, AIProgressIndicator } from '../components/AIStateIndicator';
+import {
+  AmbientAIIndicator,
+  AIProgressIndicator,
+} from '../components/AIStateIndicator';
 
 // ============================================
 // MICRO-INTERACTION HOOKS (Phase 6A.6)
@@ -70,14 +86,16 @@ function useSaveFlash() {
  * Hook for tracking entity state changes for animations.
  */
 function useEntityStateTransitions(items: EntityChecklistItem[]) {
-  const [recentlyChanged, setRecentlyChanged] = useState<Set<string>>(new Set());
+  const [recentlyChanged, setRecentlyChanged] = useState<Set<string>>(
+    new Set()
+  );
   const prevItemsRef = useRef<EntityChecklistItem[]>(items);
 
   useEffect(() => {
     const newlyChanged = new Set<string>();
 
     items.forEach((item) => {
-      const prevItem = prevItemsRef.current.find(p => p.id === item.id);
+      const prevItem = prevItemsRef.current.find((p) => p.id === item.id);
       if (prevItem && prevItem.state !== item.state) {
         newlyChanged.add(item.id);
       }
@@ -135,7 +153,10 @@ function useModeChangePulse(currentMode: AutomationMode) {
 export interface TriggerAction {
   id: string;
   title: string;
-  type: 'content_execution' | 'derivative_generation' | 'authority_optimization';
+  type:
+    | 'content_execution'
+    | 'derivative_generation'
+    | 'authority_optimization';
   sourceContext: {
     contentId?: string;
     contentTitle?: string;
@@ -220,20 +241,50 @@ function getActionTypeIcon(type: TriggerAction['type']): ReactNode {
   switch (type) {
     case 'content_execution':
       return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
         </svg>
       );
     case 'derivative_generation':
       return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+          />
         </svg>
       );
     case 'authority_optimization':
       return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+          />
         </svg>
       );
     default:
@@ -244,20 +295,43 @@ function getActionTypeIcon(type: TriggerAction['type']): ReactNode {
 function getPriorityTokens(priority: TriggerAction['priority']) {
   switch (priority) {
     case 'urgent':
-      return { bg: 'bg-semantic-danger/10', text: 'text-semantic-danger', border: 'border-semantic-danger/20', label: 'Urgent' };
+      return {
+        bg: 'bg-semantic-danger/10',
+        text: 'text-semantic-danger',
+        border: 'border-semantic-danger/20',
+        label: 'Urgent',
+      };
     case 'high':
-      return { bg: 'bg-semantic-warning/10', text: 'text-semantic-warning', border: 'border-semantic-warning/20', label: 'High' };
+      return {
+        bg: 'bg-semantic-warning/10',
+        text: 'text-semantic-warning',
+        border: 'border-semantic-warning/20',
+        label: 'High',
+      };
     default:
-      return { bg: 'bg-slate-4', text: 'text-white/50', border: 'border-slate-5', label: 'Normal' };
+      return {
+        bg: 'bg-slate-4',
+        text: 'text-white/50',
+        border: 'border-slate-5',
+        label: 'Normal',
+      };
   }
 }
 
 function getEntityStateTokens(state: EntityChecklistItem['state']) {
   switch (state) {
     case 'satisfied':
-      return { bg: 'bg-semantic-success/10', text: 'text-semantic-success', icon: '✓' };
+      return {
+        bg: 'bg-semantic-success/10',
+        text: 'text-semantic-success',
+        icon: '✓',
+      };
     case 'mentioned':
-      return { bg: 'bg-semantic-warning/10', text: 'text-semantic-warning', icon: '○' };
+      return {
+        bg: 'bg-semantic-warning/10',
+        text: 'text-semantic-warning',
+        icon: '○',
+      };
     default:
       return { bg: 'bg-slate-4', text: 'text-white/40', icon: '—' };
   }
@@ -273,7 +347,6 @@ function getProfileStatusTokens(status: TargetAIProfile['status']) {
       return { bg: 'bg-semantic-danger/10', text: 'text-semantic-danger' };
   }
 }
-
 
 // ============================================
 // TRIGGER CARD COMPONENT
@@ -295,18 +368,26 @@ function TriggerCard({ action }: TriggerCardProps) {
           <div className="p-1.5 rounded-lg bg-brand-iris/10">
             {getActionTypeIcon(action.type)}
           </div>
-          <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${priorityConfig.bg} ${priorityConfig.text}`}>
+          <span
+            className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${priorityConfig.bg} ${priorityConfig.text}`}
+          >
             {priorityConfig.label}
           </span>
         </div>
-        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded ${citeMindConfig.bg}`}>
+        <div
+          className={`flex items-center gap-1.5 px-2 py-0.5 rounded ${citeMindConfig.bg}`}
+        >
           <span className={`w-1.5 h-1.5 rounded-full ${citeMindConfig.dot}`} />
-          <span className={`text-xs font-medium ${citeMindConfig.text}`}>{action.citeMindStatus}</span>
+          <span className={`text-xs font-medium ${citeMindConfig.text}`}>
+            {action.citeMindStatus}
+          </span>
         </div>
       </div>
 
       {/* Title */}
-      <p className="text-xs font-medium text-white mb-2 line-clamp-2">{action.title}</p>
+      <p className="text-xs font-medium text-white mb-2 line-clamp-2">
+        {action.title}
+      </p>
 
       {/* Context Details */}
       <div className="space-y-1">
@@ -315,7 +396,8 @@ function TriggerCard({ action }: TriggerCardProps) {
         </p>
         {action.sourceContext.keyword && (
           <p className="text-xs text-white/50">
-            <span className="text-white/30">Target:</span> {action.sourceContext.keyword}
+            <span className="text-white/30">Target:</span>{' '}
+            {action.sourceContext.keyword}
           </p>
         )}
       </div>
@@ -336,7 +418,7 @@ function EntityChecklist({ items }: EntityChecklistProps) {
 
   if (items.length === 0) return null;
 
-  const satisfiedCount = items.filter(i => i.state === 'satisfied').length;
+  const satisfiedCount = items.filter((i) => i.state === 'satisfied').length;
   const progress = Math.round((satisfiedCount / items.length) * 100);
 
   return (
@@ -350,7 +432,10 @@ function EntityChecklist({ items }: EntityChecklistProps) {
       <div className="h-1 bg-slate-4 rounded-full overflow-hidden mb-3">
         <div
           className={`h-full bg-brand-iris rounded-full ${motion.transition.base}`}
-          style={{ width: `${progress}%`, transition: 'width 300ms cubic-bezier(0.16, 1, 0.3, 1)' }}
+          style={{
+            width: `${progress}%`,
+            transition: 'width 300ms cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
         />
       </div>
 
@@ -367,22 +452,29 @@ function EntityChecklist({ items }: EntityChecklistProps) {
                 ${isJustChanged ? 'ring-2 ring-brand-iris/40 animate-[pulse_0.6s_ease-out]' : ''}
               `}
               style={{
-                transition: 'background-color 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1)',
+                transition:
+                  'background-color 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1)',
               }}
             >
               <div className="flex items-center gap-2">
                 <span
                   className={`text-xs ${stateTokens.text} ${isJustChanged ? 'scale-125' : ''}`}
-                  style={{ transition: 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1)' }}
+                  style={{
+                    transition: 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+                  }}
                 >
                   {stateTokens.icon}
                 </span>
-                <span className={`text-xs ${item.state === 'satisfied' ? 'text-white/80' : 'text-white/50'}`}>
+                <span
+                  className={`text-xs ${item.state === 'satisfied' ? 'text-white/80' : 'text-white/50'}`}
+                >
                   {item.entity}
                 </span>
               </div>
               {item.requiredMentions && (
-                <span className={`text-xs ${isJustChanged ? 'text-brand-iris' : 'text-white/30'}`}>
+                <span
+                  className={`text-xs ${isJustChanged ? 'text-brand-iris' : 'text-white/30'}`}
+                >
                   {item.currentMentions ?? 0}/{item.requiredMentions}
                 </span>
               )}
@@ -450,7 +542,8 @@ function SchemaPreview({ schema }: SchemaPreviewProps) {
       </div>
       <div className="bg-slate-1 rounded p-2 max-h-32 overflow-y-auto">
         <pre className="text-xs text-white/50 font-mono whitespace-pre-wrap">
-          {schema || '{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "...\n}'}
+          {schema ||
+            '{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "...\n}'}
         </pre>
       </div>
     </div>
@@ -466,21 +559,31 @@ interface CiteMindStatusPanelProps {
   issues?: Array<{ type: string; message: string }>;
 }
 
-function CiteMindStatusPanel({ status, issues = [] }: CiteMindStatusPanelProps) {
+function CiteMindStatusPanel({
+  status,
+  issues = [],
+}: CiteMindStatusPanelProps) {
   const config = citeMindTokens[status];
 
   return (
     <div className={`${surface.panel} border ${border.subtle} rounded-lg p-3`}>
       <h4 className={`${labelClass} mb-2`}>CiteMind Status</h4>
-      <div className={`flex items-center gap-2 px-2.5 py-2 rounded-lg ${config.bg} border ${config.border}`}>
+      <div
+        className={`flex items-center gap-2 px-2.5 py-2 rounded-lg ${config.bg} border ${config.border}`}
+      >
         <span className={`w-2 h-2 rounded-full ${config.dot}`} />
-        <span className={`text-xs font-medium ${config.text} capitalize`}>{status}</span>
+        <span className={`text-xs font-medium ${config.text} capitalize`}>
+          {status}
+        </span>
       </div>
 
       {issues.length > 0 && (
         <div className="mt-2 space-y-1">
           {issues.slice(0, 3).map((issue, i) => (
-            <p key={i} className="text-xs text-semantic-warning/80 flex items-start gap-1.5">
+            <p
+              key={i}
+              className="text-xs text-semantic-warning/80 flex items-start gap-1.5"
+            >
               <span>⚠</span>
               <span>{issue.message}</span>
             </p>
@@ -527,10 +630,22 @@ export function OrchestrationEditorShell({
       isActionReady: action.citeMindStatus === 'passed',
       isExecuting: isCompleting,
       isSaving,
-      priority: action.priority === 'urgent' ? 'critical' : action.priority === 'high' ? 'high' : 'medium',
+      priority:
+        action.priority === 'urgent'
+          ? 'critical'
+          : action.priority === 'high'
+            ? 'high'
+            : 'medium',
       mode: currentMode,
     });
-  }, [isLoading, action.citeMindStatus, action.priority, isCompleting, isSaving, currentMode]);
+  }, [
+    isLoading,
+    action.citeMindStatus,
+    action.priority,
+    isCompleting,
+    isSaving,
+    currentMode,
+  ]);
 
   // Handle mode change (only if handler provided)
   const handleModeChange = (newMode: AutomationMode) => {
@@ -587,14 +702,34 @@ export function OrchestrationEditorShell({
                   className={`p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/5 ${motion.transition.fast}`}
                   aria-label="Back to Content"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    />
                   </svg>
                 </button>
 
                 <div className="p-2 rounded-xl bg-brand-iris/10 ring-1 ring-brand-iris/20">
-                  <svg className="w-5 h-5 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  <svg
+                    className="w-5 h-5 text-brand-iris"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
                   </svg>
                 </div>
 
@@ -609,7 +744,9 @@ export function OrchestrationEditorShell({
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-white/50 truncate max-w-md">{action.title}</p>
+                  <p className="text-xs text-white/50 truncate max-w-md">
+                    {action.title}
+                  </p>
                 </div>
               </div>
 
@@ -619,7 +756,9 @@ export function OrchestrationEditorShell({
                 <AmbientAIIndicator state={aiState} size="md" showLabel />
 
                 {/* Mode Selector (with ceiling enforcement + pulse effect) */}
-                <div className={`relative ${showModePulse ? 'animate-[pulse_0.5s_ease-out]' : ''}`}>
+                <div
+                  className={`relative ${showModePulse ? 'animate-[pulse_0.5s_ease-out]' : ''}`}
+                >
                   <ModeSelector
                     currentMode={currentMode}
                     modeCeiling={action.modeCeiling}
@@ -640,8 +779,18 @@ export function OrchestrationEditorShell({
                   onClick={onExplainToggle}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-xs text-white/50 hover:text-white hover:bg-white/5 rounded-lg ${motion.transition.fast}`}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   Explain
                 </button>
@@ -659,8 +808,18 @@ export function OrchestrationEditorShell({
                 >
                   {showFlash ? (
                     <span className="flex items-center gap-1.5">
-                      <svg className="w-3 h-3 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="w-3 h-3 text-semantic-success"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                       Saved
                     </span>
@@ -702,8 +861,18 @@ export function OrchestrationEditorShell({
               className="w-full h-full flex items-center justify-center text-white/40 hover:text-brand-iris"
               aria-label="Expand Strategic Anchor"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </button>
           ) : (
@@ -716,8 +885,18 @@ export function OrchestrationEditorShell({
                   className="p-1 text-white/30 hover:text-white/60 rounded"
                   aria-label="Collapse"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
                   </svg>
                 </button>
               </div>
@@ -751,12 +930,16 @@ export function OrchestrationEditorShell({
               {/* AI state label for evaluating/executing */}
               {(aiState === 'evaluating' || aiState === 'executing') && (
                 <div className="flex items-center gap-2">
-                  <span className={`
+                  <span
+                    className={`
                     w-2 h-2 rounded-full
                     ${AI_PERCEPTUAL_SIGNALS[aiState].indicator}
                     ${AI_PERCEPTUAL_SIGNALS[aiState].motion}
-                  `} />
-                  <span className={`text-xs ${AI_PERCEPTUAL_SIGNALS[aiState].text}`}>
+                  `}
+                  />
+                  <span
+                    className={`text-xs ${AI_PERCEPTUAL_SIGNALS[aiState].text}`}
+                  >
                     {aiState === 'evaluating' ? 'AI analyzing...' : 'Saving...'}
                   </span>
                 </div>
@@ -777,12 +960,24 @@ export function OrchestrationEditorShell({
               <div className="h-full flex items-center justify-center">
                 <div className="text-center">
                   <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-brand-iris/10 border border-brand-iris/20 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    <svg
+                      className="w-6 h-6 text-brand-iris"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                      />
                     </svg>
                   </div>
                   <p className="text-sm text-white/60">Editor content area</p>
-                  <p className="text-xs text-white/30 mt-1">Phase 6A.4: Minimal editor implementation</p>
+                  <p className="text-xs text-white/30 mt-1">
+                    Phase 6A.4: Minimal editor implementation
+                  </p>
                 </div>
               </div>
             )}
@@ -803,8 +998,18 @@ export function OrchestrationEditorShell({
               className="w-full h-full flex items-center justify-center text-white/40 hover:text-brand-iris"
               aria-label="Expand AEO Audit"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </button>
           ) : (
@@ -817,8 +1022,18 @@ export function OrchestrationEditorShell({
                   className="p-1 text-white/30 hover:text-white/60 rounded"
                   aria-label="Collapse"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               </div>
@@ -827,12 +1042,20 @@ export function OrchestrationEditorShell({
               {targetProfiles.length > 0 ? (
                 <AEOProfiles profiles={targetProfiles} />
               ) : (
-                <div className={`${surface.panel} border ${border.subtle} rounded-lg p-3`}>
+                <div
+                  className={`${surface.panel} border ${border.subtle} rounded-lg p-3`}
+                >
                   <h4 className={`${labelClass} mb-2`}>Target AI Profiles</h4>
                   <div className="flex gap-2 flex-wrap">
-                    <span className="px-2 py-1 text-xs bg-slate-4 text-white/50 rounded">ChatGPT</span>
-                    <span className="px-2 py-1 text-xs bg-slate-4 text-white/50 rounded">Gemini</span>
-                    <span className="px-2 py-1 text-xs bg-slate-4 text-white/50 rounded">Perplexity</span>
+                    <span className="px-2 py-1 text-xs bg-slate-4 text-white/50 rounded">
+                      ChatGPT
+                    </span>
+                    <span className="px-2 py-1 text-xs bg-slate-4 text-white/50 rounded">
+                      Gemini
+                    </span>
+                    <span className="px-2 py-1 text-xs bg-slate-4 text-white/50 rounded">
+                      Perplexity
+                    </span>
                   </div>
                 </div>
               )}

@@ -3,7 +3,7 @@
  * Maps step types to their execution handlers
  */
 
-import type { StepExecutionContext , PlaybookStepType } from '@pravado/types';
+import type { StepExecutionContext, PlaybookStepType } from '@pravado/types';
 
 /**
  * Step handler interface
@@ -54,7 +54,8 @@ const dataHandler: StepHandler = {
     if (config.operation === 'extract') {
       // Extract specific fields from input
       const source = config.source || 'input';
-      const data = source === 'input' ? context.input : context.previousOutputs[source];
+      const data =
+        source === 'input' ? context.input : context.previousOutputs[source];
       return data;
     }
 
@@ -178,11 +179,16 @@ const apiHandler: StepHandler = {
         'Content-Type': 'application/json',
         ...headers,
       },
-      body: method !== 'GET' && requestBody ? JSON.stringify(requestBody) : undefined,
+      body:
+        method !== 'GET' && requestBody
+          ? JSON.stringify(requestBody)
+          : undefined,
     });
 
     if (!response.ok) {
-      throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `API call failed: ${response.status} ${response.statusText}`
+      );
     }
 
     const contentType = response.headers.get('content-type');

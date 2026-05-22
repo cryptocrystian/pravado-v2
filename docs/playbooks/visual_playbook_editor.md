@@ -58,6 +58,7 @@ The editor uses a custom hook `usePlaybookEditor` for centralized state manageme
 **Purpose:** Main container component that orchestrates the editor
 
 **Key Features:**
+
 - Integration with playbook APIs (usePlaybookWithSteps, useUpdatePlaybook)
 - Toolbar with Save, Activate, Add Step, Auto-Layout actions
 - Add Step dropdown menu with all step types
@@ -65,6 +66,7 @@ The editor uses a custom hook `usePlaybookEditor` for centralized state manageme
 - Status bar showing step count and zoom level
 
 **Usage:**
+
 ```tsx
 <Route path="/playbooks/:playbookId/editor" element={<PlaybookEditorPage />} />
 ```
@@ -76,6 +78,7 @@ The editor uses a custom hook `usePlaybookEditor` for centralized state manageme
 **Purpose:** Interactive canvas for visual workflow editing
 
 **Key Features:**
+
 - ✅ Grid background (20px spacing)
 - ✅ Drag and drop with grid snapping
 - ✅ Zoom (0.5x to 2x)
@@ -85,6 +88,7 @@ The editor uses a custom hook `usePlaybookEditor` for centralized state manageme
 - ✅ Connection preview
 
 **Keyboard Shortcuts:**
+
 - `+` / `=` - Zoom in
 - `-` / `_` - Zoom out
 - `0` - Reset zoom and pan
@@ -92,6 +96,7 @@ The editor uses a custom hook `usePlaybookEditor` for centralized state manageme
 - `Ctrl` + Scroll - Zoom
 
 **Props:**
+
 ```typescript
 interface PlaybookEditorCanvasProps {
   steps: PlaybookStep[];
@@ -103,7 +108,11 @@ interface PlaybookEditorCanvasProps {
   panOffset: { x: number; y: number };
   onStepSelect: (stepId: string | null) => void;
   onStepPositionChange: (stepId: string, x: number, y: number) => void;
-  onConnectSteps: (fromId: string, toId: string, type: 'success' | 'failure') => void;
+  onConnectSteps: (
+    fromId: string,
+    toId: string,
+    type: 'success' | 'failure'
+  ) => void;
   onZoomChange: (zoom: number) => void;
   onPanOffsetChange: (x: number, y: number) => void;
 }
@@ -116,6 +125,7 @@ interface PlaybookEditorCanvasProps {
 **Purpose:** Visual representation of a workflow step
 
 **Key Features:**
+
 - ✅ Step type icon and name
 - ✅ Step order and timeout display
 - ✅ Optional step badge
@@ -126,6 +136,7 @@ interface PlaybookEditorCanvasProps {
 - ✅ Accessibility attributes (aria-label, role, tabIndex)
 
 **Visual States:**
+
 - **Default:** Gray border, white background
 - **Selected:** Primary blue border with ring
 - **Error:** Red border
@@ -133,6 +144,7 @@ interface PlaybookEditorCanvasProps {
 - **Dragging:** Semi-transparent with grabbing cursor
 
 **Connection Points:**
+
 - **Right side (green):** Success connection
 - **Left side (blue):** Incoming connection
 - **Bottom buttons:** Success and Failure clickable areas
@@ -144,6 +156,7 @@ interface PlaybookEditorCanvasProps {
 **Purpose:** Renders SVG arrows connecting steps
 
 **Key Features:**
+
 - ✅ Curved bezier paths
 - ✅ Arrowheads with markers
 - ✅ Color coding (green for success, red for failure)
@@ -151,6 +164,7 @@ interface PlaybookEditorCanvasProps {
 - ✅ Connection type labels when selected
 
 **Path Calculation:**
+
 ```typescript
 // Start from right side of source node
 const startX = fromPosition.x + nodeWidth;
@@ -172,6 +186,7 @@ const pathData = `M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${
 **Purpose:** Sidebar panel for configuring selected step
 
 **Key Features:**
+
 - ✅ Dynamic form based on step type
 - ✅ Basic info (name, description)
 - ✅ Step-specific configuration
@@ -183,26 +198,32 @@ const pathData = `M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${
 Each step type has a custom configuration form:
 
 **AGENT_EXECUTION:**
+
 - Agent ID
 - Prompt template
 
 **API_CALL:**
+
 - URL
 - HTTP Method (GET, POST, PUT, PATCH, DELETE)
 
 **DATA_TRANSFORM:**
+
 - Transformation Type (map, filter, transform)
 
 **CONDITIONAL_BRANCH:**
+
 - Condition Field
 - Operator (equals, notEquals, greaterThan, etc.)
 - Comparison Value
 
 **MEMORY_SEARCH:**
+
 - Search Query
 - Result Limit
 
 **PROMPT_TEMPLATE:**
+
 - Template with {variable} syntax
 
 ---
@@ -212,6 +233,7 @@ Each step type has a custom configuration form:
 **Purpose:** Centralized state management for the editor
 
 **State:**
+
 ```typescript
 interface PlaybookEditorState {
   steps: PlaybookStep[];
@@ -225,6 +247,7 @@ interface PlaybookEditorState {
 ```
 
 **Actions:**
+
 ```typescript
 // Step Management
 addStep(stepType: PlaybookStepType): void
@@ -264,6 +287,7 @@ interface ValidationIssue {
 ```
 
 **Validation Checks:**
+
 - ✅ Unpositioned steps
 - ✅ Disconnected steps (no incoming/outgoing connections)
 - ✅ Empty configuration
@@ -285,11 +309,13 @@ interface ValidationIssue {
 ### Connecting Steps
 
 **Method 1: Connection Buttons**
+
 1. Click "Success" or "Failure" button on source step
 2. Click on target step
 3. Connection is created
 
 **Method 2: Connection Handles**
+
 1. Click green dot on right side of source step
 2. Click on target step
 3. Success connection is created
@@ -313,15 +339,18 @@ interface ValidationIssue {
 ### Canvas Navigation
 
 **Zoom:**
+
 - Use zoom controls in bottom-right corner
 - Or use `+`/`-` keyboard shortcuts
 - Or `Ctrl` + scroll wheel
 
 **Pan:**
+
 - Middle-click and drag
 - Or hold `Space` and drag
 
 **Reset:**
+
 - Click "Reset" button
 - Or press `0` key
 
@@ -343,10 +372,12 @@ Each step type has a unique color from STEP_TYPE_CONFIGS:
 - **CUSTOM_FUNCTION:** Teal ⚙️
 
 **Connections:**
+
 - **Success:** Green (#10b981)
 - **Failure:** Red (#ef4444)
 
 **Validation:**
+
 - **Error:** Red border (#ef4444)
 - **Warning:** Yellow border (#eab308)
 
@@ -372,6 +403,7 @@ Each step type has a unique color from STEP_TYPE_CONFIGS:
 ### Screen Reader Support
 
 All step nodes include:
+
 ```typescript
 role="button"
 aria-label="{stepName} - {stepType}"
@@ -397,14 +429,14 @@ const { data: playbook } = usePlaybookWithSteps(playbookId);
 const updateMutation = useUpdatePlaybook();
 await updateMutation.mutateAsync({
   id: playbookId,
-  input: { status: PlaybookStatus.ACTIVE }
+  input: { status: PlaybookStatus.ACTIVE },
 });
 
 // Create new playbook
 const createMutation = useCreatePlaybook();
 await createMutation.mutateAsync({
-  name: "New Workflow",
-  description: "Description"
+  name: 'New Workflow',
+  description: 'Description',
 });
 ```
 
@@ -461,10 +493,7 @@ const handleSave = async () => {
 const StepNodeMemo = React.memo(PlaybookStepNode);
 
 // Debounce validation
-const debouncedValidate = useMemo(
-  () => debounce(validateSteps, 500),
-  []
-);
+const debouncedValidate = useMemo(() => debounce(validateSteps, 500), []);
 
 // Use intersection observer for viewport culling
 const isInViewport = useIntersectionObserver(nodeRef);
@@ -562,6 +591,7 @@ describe('PlaybookEditorPage', () => {
 ## Files Created
 
 ### Frontend Components (1,850+ LOC)
+
 ```
 apps/dashboard/src/
 ├── hooks/
@@ -576,6 +606,7 @@ apps/dashboard/src/
 ```
 
 ### Verification & Documentation
+
 ```
 apps/api/
 └── verify-sprint42-visual-editor.js            (450+ LOC)
@@ -591,6 +622,7 @@ docs/
 Sprint 42 Phase 3.5 successfully delivered a production-ready visual playbook editor with:
 
 ✅ **Core Features**
+
 - Drag-and-drop canvas with grid snapping
 - Visual step nodes with validation
 - SVG connector arrows
@@ -601,6 +633,7 @@ Sprint 42 Phase 3.5 successfully delivered a production-ready visual playbook ed
 - Accessibility support
 
 ✅ **Quality**
+
 - 43/43 verification checks passed (100%)
 - Full TypeScript type safety
 - Responsive design
@@ -608,6 +641,7 @@ Sprint 42 Phase 3.5 successfully delivered a production-ready visual playbook ed
 - Comprehensive validation
 
 ✅ **Integration**
+
 - Works with existing playbook APIs
 - Reuses Sprint 41 types and configs
 - Follows Pravado design system

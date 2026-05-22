@@ -13,7 +13,8 @@ const createMockSupabase = () => {
   let mockData: any = { data: null, error: null };
 
   const chainMethods: any = {
-    then: (resolve: (value: any) => void) => Promise.resolve(mockData).then(resolve),
+    then: (resolve: (value: any) => void) =>
+      Promise.resolve(mockData).then(resolve),
   };
 
   const mockSelect = vi.fn(() => chainMethods);

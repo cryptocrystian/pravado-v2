@@ -23,12 +23,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import type { AggregatedStrategicInsights } from '@/lib/strategicIntelligenceApi';
 
-
 interface StrategicInsightsPanelProps {
   insights: AggregatedStrategicInsights;
 }
 
-export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps) {
+export function StrategicInsightsPanel({
+  insights,
+}: StrategicInsightsPanelProps) {
   return (
     <div className="space-y-6">
       {/* Media Performance */}
@@ -62,11 +63,13 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
             <div className="mt-4">
               <p className="text-xs text-white/50 mb-2">Top Outlets</p>
               <div className="flex flex-wrap gap-2">
-                {insights.mediaPerformance.topMentions.slice(0, 5).map((m, i) => (
-                  <Badge key={i} variant="secondary">
-                    {m.outlet} ({m.count})
-                  </Badge>
-                ))}
+                {insights.mediaPerformance.topMentions
+                  .slice(0, 5)
+                  .map((m, i) => (
+                    <Badge key={i} variant="secondary">
+                      {m.outlet} ({m.count})
+                    </Badge>
+                  ))}
               </div>
             </div>
           )}
@@ -90,27 +93,33 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
           {insights.competitiveIntel.topCompetitors.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs text-white/50">Share of Voice</p>
-              {insights.competitiveIntel.topCompetitors.slice(0, 4).map((c, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <span className="text-sm min-w-[100px] truncate">{c.name}</span>
-                  <Progress value={c.shareOfVoice} className="flex-1" />
-                  <span className="text-xs text-white/50 w-10 text-right">
-                    {c.shareOfVoice}%
-                  </span>
-                </div>
-              ))}
+              {insights.competitiveIntel.topCompetitors
+                .slice(0, 4)
+                .map((c, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <span className="text-sm min-w-[100px] truncate">
+                      {c.name}
+                    </span>
+                    <Progress value={c.shareOfVoice} className="flex-1" />
+                    <span className="text-xs text-white/50 w-10 text-right">
+                      {c.shareOfVoice}%
+                    </span>
+                  </div>
+                ))}
             </div>
           )}
           {insights.competitiveIntel.strengthsVsCompetitors.length > 0 && (
             <div className="mt-4">
               <p className="text-xs text-white/50 mb-2">Strengths</p>
               <ul className="text-sm space-y-1">
-                {insights.competitiveIntel.strengthsVsCompetitors.slice(0, 3).map((s, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <TrendingUp className="h-4 w-4 text-green-500 mt-0.5" />
-                    <span>{s}</span>
-                  </li>
-                ))}
+                {insights.competitiveIntel.strengthsVsCompetitors
+                  .slice(0, 3)
+                  .map((s, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <TrendingUp className="h-4 w-4 text-green-500 mt-0.5" />
+                      <span>{s}</span>
+                    </li>
+                  ))}
               </ul>
             </div>
           )}
@@ -153,11 +162,7 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
 
       {/* Brand Health */}
       {insights.brandHealth && (
-        <InsightCard
-          icon={Heart}
-          title="Brand Health"
-          iconColor="text-red-500"
-        >
+        <InsightCard icon={Heart} title="Brand Health" iconColor="text-red-500">
           <div className="grid grid-cols-2 gap-4 mb-4">
             <MetricItem
               label="Overall Score"
@@ -178,12 +183,14 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
             <div>
               <p className="text-xs text-white/50 mb-2">Reputation Risks</p>
               <ul className="text-sm space-y-1">
-                {insights.brandHealth.reputationRisks.slice(0, 3).map((r, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
-                    <span>{r}</span>
-                  </li>
-                ))}
+                {insights.brandHealth.reputationRisks
+                  .slice(0, 3)
+                  .map((r, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
+                      <span>{r}</span>
+                    </li>
+                  ))}
               </ul>
             </div>
           )}
@@ -218,12 +225,16 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
             <div className="mt-4">
               <p className="text-xs text-white/50 mb-2">Upcoming Deadlines</p>
               <ul className="text-sm space-y-1">
-                {insights.governance.upcomingDeadlines.slice(0, 3).map((d, i) => (
-                  <li key={i} className="flex items-center justify-between">
-                    <span>{d.item}</span>
-                    <Badge variant="outline">{new Date(d.date).toLocaleDateString()}</Badge>
-                  </li>
-                ))}
+                {insights.governance.upcomingDeadlines
+                  .slice(0, 3)
+                  .map((d, i) => (
+                    <li key={i} className="flex items-center justify-between">
+                      <span>{d.item}</span>
+                      <Badge variant="outline">
+                        {new Date(d.date).toLocaleDateString()}
+                      </Badge>
+                    </li>
+                  ))}
               </ul>
             </div>
           )}
@@ -255,11 +266,13 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
               </span>
               <Badge
                 variant={
-                  insights.investorSentiment.recentEarnings.sentiment === 'positive'
+                  insights.investorSentiment.recentEarnings.sentiment ===
+                  'positive'
                     ? 'default'
-                    : insights.investorSentiment.recentEarnings.sentiment === 'negative'
-                    ? 'destructive'
-                    : 'secondary'
+                    : insights.investorSentiment.recentEarnings.sentiment ===
+                        'negative'
+                      ? 'destructive'
+                      : 'secondary'
                 }
               >
                 {insights.investorSentiment.recentEarnings.sentiment}
@@ -300,7 +313,9 @@ export function StrategicInsightsPanel({ insights }: StrategicInsightsPanelProps
         <Card>
           <CardContent className="py-8 text-center text-white/50">
             <p>No insights available yet.</p>
-            <p className="text-sm">Generate the report to aggregate insights from all systems.</p>
+            <p className="text-sm">
+              Generate the report to aggregate insights from all systems.
+            </p>
           </CardContent>
         </Card>
       )}
@@ -315,7 +330,12 @@ interface InsightCardProps {
   children: React.ReactNode;
 }
 
-function InsightCard({ icon: Icon, title, iconColor, children }: InsightCardProps) {
+function InsightCard({
+  icon: Icon,
+  title,
+  iconColor,
+  children,
+}: InsightCardProps) {
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -344,12 +364,14 @@ function MetricItem({ label, value, isScore, warning }: MetricItemProps) {
     return 'text-red-600';
   };
 
-  const displayValue = typeof value === 'number' && isScore ? Math.round(value) : value;
-  const colorClass = isScore && typeof value === 'number'
-    ? getScoreColor(value)
-    : warning
-    ? 'text-orange-600'
-    : '';
+  const displayValue =
+    typeof value === 'number' && isScore ? Math.round(value) : value;
+  const colorClass =
+    isScore && typeof value === 'number'
+      ? getScoreColor(value)
+      : warning
+        ? 'text-orange-600'
+        : '';
 
   return (
     <div>

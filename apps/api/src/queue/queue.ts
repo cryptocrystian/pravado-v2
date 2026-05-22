@@ -115,7 +115,8 @@ export class JobQueue {
 
     // Calculate backoff delay
     const delay = Math.min(
-      this.config.retryDelayMs * Math.pow(this.config.retryBackoffMultiplier, job.attempt - 1),
+      this.config.retryDelayMs *
+        Math.pow(this.config.retryBackoffMultiplier, job.attempt - 1),
       this.config.maxRetryDelayMs
     );
 
@@ -180,7 +181,8 @@ export class JobQueue {
     };
 
     readyJobs.sort((a, b) => {
-      const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
+      const priorityDiff =
+        priorityOrder[a.priority] - priorityOrder[b.priority];
       if (priorityDiff !== 0) return priorityDiff;
 
       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -308,7 +310,9 @@ export class JobQueue {
 
     for (const [id, job] of this.jobs.entries()) {
       if (
-        (job.status === 'completed' || job.status === 'failed' || job.status === 'canceled') &&
+        (job.status === 'completed' ||
+          job.status === 'failed' ||
+          job.status === 'canceled') &&
         job.completedAt &&
         new Date(job.completedAt).getTime() < cutoff
       ) {

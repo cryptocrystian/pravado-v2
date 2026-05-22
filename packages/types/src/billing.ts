@@ -367,7 +367,8 @@ export interface OrgBillingUsageMonthlyExtended extends OrgBillingUsageMonthly {
  * Enhanced Org Billing Summary with Overages (S31)
  * Extends S30 summary with overage totals
  */
-export interface OrgBillingSummaryWithOverages extends OrgBillingSummaryWithStripe {
+export interface OrgBillingSummaryWithOverages
+  extends OrgBillingSummaryWithStripe {
   overages?: {
     tokens: number; // Total overage tokens this period
     playbookRuns: number; // Total overage runs this period
@@ -455,7 +456,8 @@ export interface BillingAlertSummary {
  * Enhanced Org Billing Summary with Alerts (S32)
  * Extends S31 summary with alert information
  */
-export interface OrgBillingSummaryWithAlerts extends OrgBillingSummaryWithOverages {
+export interface OrgBillingSummaryWithAlerts
+  extends OrgBillingSummaryWithOverages {
   alerts?: {
     unacknowledged: number;
     critical: number;

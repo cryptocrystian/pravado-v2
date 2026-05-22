@@ -158,7 +158,9 @@ export const addExecDigestRecipientSchema = z.object({
   includeInlineSummary: z.boolean().optional(),
 });
 
-export type AddExecDigestRecipientInput = z.infer<typeof addExecDigestRecipientSchema>;
+export type AddExecDigestRecipientInput = z.infer<
+  typeof addExecDigestRecipientSchema
+>;
 
 /**
  * Update recipient schema
@@ -171,7 +173,9 @@ export const updateExecDigestRecipientSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export type UpdateExecDigestRecipientInput = z.infer<typeof updateExecDigestRecipientSchema>;
+export type UpdateExecDigestRecipientInput = z.infer<
+  typeof updateExecDigestRecipientSchema
+>;
 
 /**
  * Section order update schema
@@ -213,7 +217,9 @@ export const listExecDigestRecipientsSchema = z.object({
   offset: z.coerce.number().int().min(0).optional(),
 });
 
-export type ListExecDigestRecipientsQuery = z.infer<typeof listExecDigestRecipientsSchema>;
+export type ListExecDigestRecipientsQuery = z.infer<
+  typeof listExecDigestRecipientsSchema
+>;
 
 /**
  * List delivery logs query schema
@@ -224,7 +230,9 @@ export const listExecDigestDeliveryLogsSchema = z.object({
   offset: z.coerce.number().int().min(0).optional(),
 });
 
-export type ListExecDigestDeliveryLogsQuery = z.infer<typeof listExecDigestDeliveryLogsSchema>;
+export type ListExecDigestDeliveryLogsQuery = z.infer<
+  typeof listExecDigestDeliveryLogsSchema
+>;
 
 /**
  * List sections query schema
@@ -234,7 +242,9 @@ export const listExecDigestSectionsSchema = z.object({
   isVisible: z.coerce.boolean().optional(),
 });
 
-export type ListExecDigestSectionsQuery = z.infer<typeof listExecDigestSectionsSchema>;
+export type ListExecDigestSectionsQuery = z.infer<
+  typeof listExecDigestSectionsSchema
+>;
 
 // ============================================================================
 // Parameter Schemas
@@ -257,7 +267,9 @@ export const execDigestRecipientIdParamSchema = z.object({
   recipientId: z.string().uuid(),
 });
 
-export type ExecDigestRecipientIdParam = z.infer<typeof execDigestRecipientIdParamSchema>;
+export type ExecDigestRecipientIdParam = z.infer<
+  typeof execDigestRecipientIdParamSchema
+>;
 
 // ============================================================================
 // Data Schemas
@@ -297,7 +309,9 @@ export const execDigestInsightSnapshotSchema = z.object({
   category: z.string().optional(),
 });
 
-export type ExecDigestInsightSnapshot = z.infer<typeof execDigestInsightSnapshotSchema>;
+export type ExecDigestInsightSnapshot = z.infer<
+  typeof execDigestInsightSnapshotSchema
+>;
 
 /**
  * Summary schema
@@ -329,7 +343,9 @@ export const execDigestRecipientResultSchema = z.object({
   sentAt: z.string().optional(),
 });
 
-export type ExecDigestRecipientResult = z.infer<typeof execDigestRecipientResultSchema>;
+export type ExecDigestRecipientResult = z.infer<
+  typeof execDigestRecipientResultSchema
+>;
 
 // ============================================================================
 // Full Entity Schemas (for response validation)

@@ -17,9 +17,22 @@
       ],
       "guardrails": [],
       "evidence": [
-        { "type": "citation", "label": "Recent article", "value": "\"AI Marketing Tools Are Finally Delivering\" - Dec 28", "url": "https://techcrunch.com/ai-marketing-tools" },
-        { "type": "metric", "label": "Coverage history", "value": "4 AI marketing pieces in 30 days" },
-        { "type": "metric", "label": "Avg engagement", "value": "12.4K shares per article" }
+        {
+          "type": "citation",
+          "label": "Recent article",
+          "value": "\"AI Marketing Tools Are Finally Delivering\" - Dec 28",
+          "url": "https://techcrunch.com/ai-marketing-tools"
+        },
+        {
+          "type": "metric",
+          "label": "Coverage history",
+          "value": "4 AI marketing pieces in 30 days"
+        },
+        {
+          "type": "metric",
+          "label": "Avg engagement",
+          "value": "12.4K shares per article"
+        }
       ],
       "deep_link": {
         "label": "Open in PR Pitches",
@@ -57,8 +70,17 @@
       ],
       "guardrails": ["AI content generation requires Pro plan"],
       "evidence": [
-        { "type": "url", "label": "Clearbit article", "value": "How to Optimize for AI Citations", "url": "https://clearbit.com/blog/ai-citations" },
-        { "type": "metric", "label": "Search volume", "value": "12,400/mo (up from 2,800)" }
+        {
+          "type": "url",
+          "label": "Clearbit article",
+          "value": "How to Optimize for AI Citations",
+          "url": "https://clearbit.com/blog/ai-citations"
+        },
+        {
+          "type": "metric",
+          "label": "Search volume",
+          "value": "12,400/mo (up from 2,800)"
+        }
       ],
       "deep_link": {
         "label": "Open in Content Hub",
@@ -97,7 +119,11 @@
       "evidence": [
         { "type": "metric", "label": "Current avg position", "value": "6.2" },
         { "type": "metric", "label": "Target avg position", "value": "2.8" },
-        { "type": "diff", "label": "Content delta", "value": "Avg 320 words needed per page" }
+        {
+          "type": "diff",
+          "label": "Content delta",
+          "value": "Avg 320 words needed per page"
+        }
       ],
       "deep_link": {
         "label": "Open in SEO Command",
@@ -135,8 +161,17 @@
       ],
       "guardrails": ["Requires legal review before public statement"],
       "evidence": [
-        { "type": "url", "label": "Source tweet", "value": "@TechWatchdog thread (42K impressions)", "url": "https://twitter.com/techwatchdog/status/123" },
-        { "type": "metric", "label": "Sentiment delta", "value": "-67% in 2 hours" }
+        {
+          "type": "url",
+          "label": "Source tweet",
+          "value": "@TechWatchdog thread (42K impressions)",
+          "url": "https://twitter.com/techwatchdog/status/123"
+        },
+        {
+          "type": "metric",
+          "label": "Sentiment delta",
+          "value": "-67% in 2 hours"
+        }
       ],
       "deep_link": {
         "label": "Open Crisis Hub",
@@ -212,8 +247,17 @@
       ],
       "guardrails": ["Competitive analysis requires Growth plan"],
       "evidence": [
-        { "type": "url", "label": "HubSpot page", "value": "Marketing Ops Platform Comparison", "url": "https://hubspot.com/marketing-ops" },
-        { "type": "metric", "label": "Your page age", "value": "4 months since update" }
+        {
+          "type": "url",
+          "label": "HubSpot page",
+          "value": "Marketing Ops Platform Comparison",
+          "url": "https://hubspot.com/marketing-ops"
+        },
+        {
+          "type": "metric",
+          "label": "Your page age",
+          "value": "4 months since update"
+        }
       ],
       "deep_link": {
         "label": "Open in SEO Command",
@@ -250,8 +294,16 @@
         { "label": "Reach", "value": "8K avg", "tone": "positive" }
       ],
       "evidence": [
-        { "type": "metric", "label": "Interviewer focus", "value": "AI ethics, responsible tech" },
-        { "type": "citation", "label": "Recent piece", "value": "\"The AI Transparency Imperative\" - Jan 2" }
+        {
+          "type": "metric",
+          "label": "Interviewer focus",
+          "value": "AI ethics, responsible tech"
+        },
+        {
+          "type": "citation",
+          "label": "Recent piece",
+          "value": "\"The AI Transparency Imperative\" - Jan 2"
+        }
       ],
       "deep_link": {
         "label": "Open in PR Interviews",
@@ -289,8 +341,16 @@
       ],
       "guardrails": ["AI citation tracking requires Enterprise plan"],
       "evidence": [
-        { "type": "citation", "label": "Claude response", "value": "\"According to HubSpot's EVI framework...\"" },
-        { "type": "metric", "label": "AI query volume", "value": "~2,400/mo for EVI-related terms" }
+        {
+          "type": "citation",
+          "label": "Claude response",
+          "value": "\"According to HubSpot's EVI framework...\""
+        },
+        {
+          "type": "metric",
+          "label": "AI query volume",
+          "value": "~2,400/mo for EVI-related terms"
+        }
       ],
       "deep_link": {
         "label": "Open in Content Hub",
@@ -328,9 +388,17 @@
       ],
       "guardrails": [],
       "evidence": [
-        { "type": "metric", "label": "SoM before", "value": "23.4% (14 days ago)" },
+        {
+          "type": "metric",
+          "label": "SoM before",
+          "value": "23.4% (14 days ago)"
+        },
         { "type": "metric", "label": "SoM now", "value": "11.2% (current)" },
-        { "type": "citation", "label": "Lost citation", "value": "Perplexity now cites Clearbit for 'AI marketing tools' queries" }
+        {
+          "type": "citation",
+          "label": "Lost citation",
+          "value": "Perplexity now cites Clearbit for 'AI marketing tools' queries"
+        }
       ],
       "deep_link": {
         "label": "Open in SEO Command",

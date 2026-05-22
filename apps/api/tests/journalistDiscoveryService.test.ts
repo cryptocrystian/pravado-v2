@@ -98,7 +98,10 @@ describe('JournalistDiscoveryService', () => {
       mockSupabase.rpc.mockResolvedValue({ data: [], error: null });
 
       const profilesChain = createChainableMock({ data: [], error: null });
-      const insertChain = createChainableMock({ data: mockDiscovery, error: null });
+      const insertChain = createChainableMock({
+        data: mockDiscovery,
+        error: null,
+      });
 
       mockSupabase.from.mockImplementation((table: string) => {
         if (table === 'journalist_profiles') return profilesChain;
@@ -154,7 +157,10 @@ describe('JournalistDiscoveryService', () => {
       mockSupabase.rpc.mockResolvedValue({ data: [], error: null });
 
       const profilesChain = createChainableMock({ data: [], error: null });
-      const insertChain = createChainableMock({ data: mockDiscovery, error: null });
+      const insertChain = createChainableMock({
+        data: mockDiscovery,
+        error: null,
+      });
 
       mockSupabase.from.mockImplementation((table: string) => {
         if (table === 'journalist_profiles') return profilesChain;
@@ -203,7 +209,10 @@ describe('JournalistDiscoveryService', () => {
       mockSupabase.rpc.mockResolvedValue({ data: [], error: null });
 
       const profilesChain = createChainableMock({ data: [], error: null });
-      const insertChain = createChainableMock({ data: mockDiscovery, error: null });
+      const insertChain = createChainableMock({
+        data: mockDiscovery,
+        error: null,
+      });
 
       mockSupabase.from.mockImplementation((table: string) => {
         if (table === 'journalist_profiles') return profilesChain;
@@ -337,7 +346,10 @@ describe('JournalistDiscoveryService', () => {
         },
       ];
 
-      const profilesChain = createChainableMock({ data: mockProfiles, error: null });
+      const profilesChain = createChainableMock({
+        data: mockProfiles,
+        error: null,
+      });
       mockSupabase.from.mockReturnValue(profilesChain);
 
       const result = await service.checkDuplication('org-123', {
@@ -362,7 +374,10 @@ describe('JournalistDiscoveryService', () => {
         },
       ];
 
-      const profilesChain = createChainableMock({ data: mockProfiles, error: null });
+      const profilesChain = createChainableMock({
+        data: mockProfiles,
+        error: null,
+      });
       mockSupabase.from.mockReturnValue(profilesChain);
 
       const result = await service.checkDuplication('org-123', {
@@ -433,7 +448,10 @@ describe('JournalistDiscoveryService', () => {
         error: null,
       });
 
-      const updateChain = createChainableMock({ data: mockDiscovery, error: null });
+      const updateChain = createChainableMock({
+        data: mockDiscovery,
+        error: null,
+      });
 
       let callCount = 0;
       mockSupabase.from.mockImplementation(() => {
@@ -494,7 +512,10 @@ describe('JournalistDiscoveryService', () => {
         error: null,
       });
 
-      const updateChain = createChainableMock({ data: mockDiscovery, error: null });
+      const updateChain = createChainableMock({
+        data: mockDiscovery,
+        error: null,
+      });
 
       let callCount = 0;
       mockSupabase.from.mockImplementation(() => {
@@ -580,7 +601,10 @@ describe('JournalistDiscoveryService', () => {
       mockSupabase.rpc.mockResolvedValue({ data: [], error: null });
 
       const profilesChain = createChainableMock({ data: [], error: null });
-      const insertChain = createChainableMock({ data: mockDiscovery, error: null });
+      const insertChain = createChainableMock({
+        data: mockDiscovery,
+        error: null,
+      });
 
       mockSupabase.from.mockImplementation((table: string) => {
         if (table === 'journalist_profiles') return profilesChain;
@@ -648,7 +672,9 @@ describe('JournalistDiscoveryService', () => {
 
       const result = await service.processArticleBatch('org-123', articles);
 
-      expect(result.created + result.merged + result.skipped).toBeGreaterThan(0);
+      expect(result.created + result.merged + result.skipped).toBeGreaterThan(
+        0
+      );
       expect(result.errors).toHaveLength(0);
     });
   });

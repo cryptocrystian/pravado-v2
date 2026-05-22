@@ -37,7 +37,9 @@ export function SimulationResultsPanel({
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white/95">Simulation Results</h3>
+            <h3 className="text-lg font-semibold text-white/95">
+              Simulation Results
+            </h3>
             <p className="text-sm text-blue-100">
               Simulated at {new Date(result.simulatedAt).toLocaleString()}
             </p>
@@ -47,8 +49,18 @@ export function SimulationResultsPanel({
               onClick={onClose}
               className="text-white/80 hover:text-white"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           )}
@@ -65,7 +77,9 @@ export function SimulationResultsPanel({
         </div>
         <div className="text-center">
           <p className="text-sm text-gray-500 mb-1">Opportunity Score</p>
-          <p className={`text-3xl font-bold ${getOpportunityColor(result.opportunityScore)}`}>
+          <p
+            className={`text-3xl font-bold ${getOpportunityColor(result.opportunityScore)}`}
+          >
             {result.opportunityScore.toFixed(0)}
           </p>
         </div>
@@ -80,7 +94,9 @@ export function SimulationResultsPanel({
       {/* Narrative Summary */}
       {result.narrativeSummary && (
         <div className="p-6 border-b border-gray-200">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">Narrative Summary</h4>
+          <h4 className="text-sm font-medium text-gray-900 mb-2">
+            Narrative Summary
+          </h4>
           <p className="text-sm text-gray-600 whitespace-pre-line">
             {result.narrativeSummary}
           </p>
@@ -88,50 +104,75 @@ export function SimulationResultsPanel({
       )}
 
       {/* Projected Metrics Timeline */}
-      {result.projectedMetrics?.timeline && result.projectedMetrics.timeline.length > 0 && (
-        <div className="p-6 border-b border-gray-200">
-          <h4 className="text-sm font-medium text-gray-900 mb-3">Projected Metrics</h4>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-500 border-b border-gray-200">
-                  <th className="pb-2 pr-4">Day</th>
-                  <th className="pb-2 pr-4">Sentiment</th>
-                  <th className="pb-2 pr-4">Coverage</th>
-                  <th className="pb-2">Risk Level</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.projectedMetrics.timeline.map((point, i) => (
-                  <tr key={i} className="border-b border-gray-100">
-                    <td className="py-2 pr-4 text-gray-900 font-medium">{point.day}</td>
-                    <td className="py-2 pr-4">
-                      <span className={point.sentimentProjected >= 0 ? 'text-green-600' : 'text-red-600'}>
-                        {point.sentimentProjected >= 0 ? '+' : ''}{point.sentimentProjected.toFixed(1)}
-                      </span>
-                    </td>
-                    <td className="py-2 pr-4">
-                      <span className={point.coverageProjected >= 0 ? 'text-blue-600' : 'text-red-600'}>
-                        {point.coverageProjected >= 0 ? '+' : ''}{point.coverageProjected.toFixed(1)}%
-                      </span>
-                    </td>
-                    <td className="py-2">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs ${RISK_LEVEL_COLORS[point.riskLevel as ScenarioRiskLevel] || 'bg-gray-100'}`}>
-                        {SCENARIO_RISK_LEVEL_LABELS[point.riskLevel as ScenarioRiskLevel] || point.riskLevel}
-                      </span>
-                    </td>
+      {result.projectedMetrics?.timeline &&
+        result.projectedMetrics.timeline.length > 0 && (
+          <div className="p-6 border-b border-gray-200">
+            <h4 className="text-sm font-medium text-gray-900 mb-3">
+              Projected Metrics
+            </h4>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="text-left text-gray-500 border-b border-gray-200">
+                    <th className="pb-2 pr-4">Day</th>
+                    <th className="pb-2 pr-4">Sentiment</th>
+                    <th className="pb-2 pr-4">Coverage</th>
+                    <th className="pb-2">Risk Level</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {result.projectedMetrics.timeline.map((point, i) => (
+                    <tr key={i} className="border-b border-gray-100">
+                      <td className="py-2 pr-4 text-gray-900 font-medium">
+                        {point.day}
+                      </td>
+                      <td className="py-2 pr-4">
+                        <span
+                          className={
+                            point.sentimentProjected >= 0
+                              ? 'text-green-600'
+                              : 'text-red-600'
+                          }
+                        >
+                          {point.sentimentProjected >= 0 ? '+' : ''}
+                          {point.sentimentProjected.toFixed(1)}
+                        </span>
+                      </td>
+                      <td className="py-2 pr-4">
+                        <span
+                          className={
+                            point.coverageProjected >= 0
+                              ? 'text-blue-600'
+                              : 'text-red-600'
+                          }
+                        >
+                          {point.coverageProjected >= 0 ? '+' : ''}
+                          {point.coverageProjected.toFixed(1)}%
+                        </span>
+                      </td>
+                      <td className="py-2">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-xs ${RISK_LEVEL_COLORS[point.riskLevel as ScenarioRiskLevel] || 'bg-gray-100'}`}
+                        >
+                          {SCENARIO_RISK_LEVEL_LABELS[
+                            point.riskLevel as ScenarioRiskLevel
+                          ] || point.riskLevel}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Recommendations */}
       {result.recommendations && result.recommendations.length > 0 && (
         <div className="p-6 border-b border-gray-200">
-          <h4 className="text-sm font-medium text-gray-900 mb-3">Recommendations</h4>
+          <h4 className="text-sm font-medium text-gray-900 mb-3">
+            Recommendations
+          </h4>
           <div className="space-y-3">
             {result.recommendations.map((rec, i) => (
               <div
@@ -157,11 +198,16 @@ export function SimulationResultsPanel({
                     {rec.priority}
                   </span>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{rec.action}</p>
-                    <p className="text-xs text-gray-600 mt-1">{rec.rationale}</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {rec.action}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {rec.rationale}
+                    </p>
                     {rec.expectedImpact && (
                       <p className="text-xs text-blue-600 mt-1">
-                        Expected impact: {typeof rec.expectedImpact === 'string'
+                        Expected impact:{' '}
+                        {typeof rec.expectedImpact === 'string'
                           ? rec.expectedImpact
                           : `Risk: ${rec.expectedImpact.riskScoreChange ?? 0}, Reach: ${rec.expectedImpact.expectedReach ?? 0}`}
                       </p>
@@ -177,22 +223,37 @@ export function SimulationResultsPanel({
       {/* Step Previews */}
       {result.stepPreviews && result.stepPreviews.length > 0 && (
         <div className="p-6 border-b border-gray-200">
-          <h4 className="text-sm font-medium text-gray-900 mb-3">Step Previews</h4>
+          <h4 className="text-sm font-medium text-gray-900 mb-3">
+            Step Previews
+          </h4>
           <div className="space-y-2">
             {result.stepPreviews.map((step, i) => (
-              <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+              <div
+                key={i}
+                className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
+              >
                 <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full text-xs font-medium">
                   {i + 1}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-900 truncate">{step.stepName}</p>
-                    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs ${RISK_LEVEL_COLORS[step.riskLevel as ScenarioRiskLevel] || 'bg-gray-100'}`}>
-                      {SCENARIO_RISK_LEVEL_LABELS[step.riskLevel as ScenarioRiskLevel] || step.riskLevel}
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {step.stepName}
+                    </p>
+                    <span
+                      className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs ${RISK_LEVEL_COLORS[step.riskLevel as ScenarioRiskLevel] || 'bg-gray-100'}`}
+                    >
+                      {SCENARIO_RISK_LEVEL_LABELS[
+                        step.riskLevel as ScenarioRiskLevel
+                      ] || step.riskLevel}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5">{step.actionType}</p>
-                  <p className="text-xs text-gray-600 mt-1">{step.predictedOutcome}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {step.actionType}
+                  </p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {step.predictedOutcome}
+                  </p>
                 </div>
               </div>
             ))}

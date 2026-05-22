@@ -6,7 +6,11 @@
 
 'use client';
 
-import type { NarrativeType, NarrativeSourceSystem, NarrativeFormatType } from '@pravado/types';
+import type {
+  NarrativeType,
+  NarrativeSourceSystem,
+  NarrativeFormatType,
+} from '@pravado/types';
 import {
   NARRATIVE_TYPE_LABELS,
   NARRATIVE_SOURCE_SYSTEM_LABELS,
@@ -84,7 +88,11 @@ export default function NarrativeGeneratorForm({
       .toISOString()
       .split('T')[0],
     periodEnd: new Date().toISOString().split('T')[0],
-    sourceSystems: ['media_monitoring', 'brand_reputation', 'competitive_intel'],
+    sourceSystems: [
+      'media_monitoring',
+      'brand_reputation',
+      'competitive_intel',
+    ],
     tags: [],
     targetAudience: '',
     generateImmediately: true,
@@ -177,11 +185,13 @@ export default function NarrativeGeneratorForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(NARRATIVE_TYPE_LABELS).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ))}
+                  {Object.entries(NARRATIVE_TYPE_LABELS).map(
+                    ([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    )
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -200,11 +210,13 @@ export default function NarrativeGeneratorForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(NARRATIVE_FORMAT_LABELS).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ))}
+                  {Object.entries(NARRATIVE_FORMAT_LABELS).map(
+                    ([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    )
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -230,7 +242,10 @@ export default function NarrativeGeneratorForm({
                 type="date"
                 value={formData.periodEnd}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, periodEnd: e.target.value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    periodEnd: e.target.value,
+                  }))
                 }
                 required
               />
@@ -244,7 +259,10 @@ export default function NarrativeGeneratorForm({
               id="targetAudience"
               value={formData.targetAudience || ''}
               onChange={(e) =>
-                setFormData((prev) => ({ ...prev, targetAudience: e.target.value }))
+                setFormData((prev) => ({
+                  ...prev,
+                  targetAudience: e.target.value,
+                }))
               }
               placeholder="e.g., Board of Directors, Investors, Executive Team"
             />
@@ -261,7 +279,9 @@ export default function NarrativeGeneratorForm({
                 <Badge
                   key={system}
                   variant={
-                    formData.sourceSystems.includes(system) ? 'default' : 'outline'
+                    formData.sourceSystems.includes(system)
+                      ? 'default'
+                      : 'outline'
                   }
                   className="cursor-pointer"
                   onClick={() => handleSystemToggle(system)}

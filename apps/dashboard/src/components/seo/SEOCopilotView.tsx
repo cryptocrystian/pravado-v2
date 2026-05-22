@@ -95,7 +95,9 @@ function ReasoningChip({ reasoning }: { reasoning: string }) {
           d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
         />
       </svg>
-      <span className={`text-[13px] leading-snug ${expanded ? '' : 'line-clamp-1'}`}>
+      <span
+        className={`text-[13px] leading-snug ${expanded ? '' : 'line-clamp-1'}`}
+      >
         {reasoning}
       </span>
     </button>
@@ -162,7 +164,8 @@ function OverviewTab({
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 rounded-full bg-brand-cyan/50" />
             <p className="text-sm text-white/60">
-              <span className="font-semibold text-brand-cyan">SAGE</span> is analyzing your domain.
+              <span className="font-semibold text-brand-cyan">SAGE</span> is
+              analyzing your domain.
             </p>
           </div>
         </div>
@@ -171,15 +174,22 @@ function OverviewTab({
       {/* Share of Model */}
       <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-white/90">Share of Model</h3>
+          <h3 className="text-sm font-semibold text-white/90">
+            Share of Model
+          </h3>
         </div>
         {gscConnected ? (
           <>
             <div className="flex items-end gap-3 mb-4">
-              <span className="text-3xl font-bold text-white/30 tabular-nums">--</span>
+              <span className="text-3xl font-bold text-white/30 tabular-nums">
+                --
+              </span>
               <span className="text-sm text-white/40 mb-1">Calculating...</span>
             </div>
-            <p className="text-[13px] text-white/50">Share of Model data is being calculated from your connected sources.</p>
+            <p className="text-[13px] text-white/50">
+              Share of Model data is being calculated from your connected
+              sources.
+            </p>
           </>
         ) : (
           <div className="flex flex-col items-center justify-center py-8">
@@ -215,13 +225,20 @@ function OverviewTab({
                 {gscConnected ? 'Pending' : 'No data'}
               </span>
             </div>
-            <h4 className="text-sm font-semibold text-white/90 mb-1">{layerDef.label}</h4>
+            <h4 className="text-sm font-semibold text-white/90 mb-1">
+              {layerDef.label}
+            </h4>
             <div className="flex items-end gap-2 mb-3">
-              <span className="text-2xl font-bold tabular-nums text-white/30">--</span>
+              <span className="text-2xl font-bold tabular-nums text-white/30">
+                --
+              </span>
               <span className="text-[13px] text-white/50 mb-0.5">/100</span>
             </div>
             <div className="w-full h-1.5 rounded-full bg-slate-5 overflow-hidden mb-3">
-              <div className="h-full rounded-full bg-brand-cyan/25 transition-all duration-300" style={{ width: '0%' }} />
+              <div
+                className="h-full rounded-full bg-brand-cyan/25 transition-all duration-300"
+                style={{ width: '0%' }}
+              />
             </div>
             <p className="text-[13px] text-white/50 leading-relaxed">
               {gscConnected
@@ -237,7 +254,9 @@ function OverviewTab({
         <div className="px-6 py-4 border-b border-border-subtle">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
-            <h3 className="text-sm font-semibold text-white/90">SAGE Priority Queue</h3>
+            <h3 className="text-sm font-semibold text-white/90">
+              SAGE Priority Queue
+            </h3>
             <span className="text-[13px] text-white/50 ml-1">
               AI-sorted by impact
             </span>
@@ -246,96 +265,104 @@ function OverviewTab({
         {proposals.length === 0 ? (
           <div className="px-6 py-10 text-center">
             <p className="text-sm text-white/50">No SEO actions yet.</p>
-            <p className="text-xs text-white/30 mt-1">SAGE will generate recommendations once your domain data has been analyzed.</p>
+            <p className="text-xs text-white/30 mt-1">
+              SAGE will generate recommendations once your domain data has been
+              analyzed.
+            </p>
           </div>
         ) : (
-        <div className="divide-y divide-border-subtle">
-          {[...proposals]
-            .sort((a, b) => b.estimatedAEOImpact + b.estimatedEVIImpact - (a.estimatedAEOImpact + a.estimatedEVIImpact))
-            .map((proposal) => {
-              const decision = decisions[proposal.id];
-              const isApproved = decision === 'approved';
-              const isRejected = decision === 'rejected';
+          <div className="divide-y divide-border-subtle">
+            {[...proposals]
+              .sort(
+                (a, b) =>
+                  b.estimatedAEOImpact +
+                  b.estimatedEVIImpact -
+                  (a.estimatedAEOImpact + a.estimatedEVIImpact)
+              )
+              .map((proposal) => {
+                const decision = decisions[proposal.id];
+                const isApproved = decision === 'approved';
+                const isRejected = decision === 'rejected';
 
-              return (
-                <div
-                  key={proposal.id}
-                  className={`px-6 py-4 transition-all duration-150 ${
-                    isRejected ? 'opacity-40' : ''
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-4 mb-3">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-white/90 mb-2">
-                        {proposal.title}
-                      </h4>
-                      <ReasoningChip reasoning={proposal.reasoning} />
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      {decision ? (
-                        isApproved ? (
-                          <span className="px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border bg-semantic-success/10 text-semantic-success border-semantic-success/20">
-                            Approved
-                          </span>
+                return (
+                  <div
+                    key={proposal.id}
+                    className={`px-6 py-4 transition-all duration-150 ${
+                      isRejected ? 'opacity-40' : ''
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-white/90 mb-2">
+                          {proposal.title}
+                        </h4>
+                        <ReasoningChip reasoning={proposal.reasoning} />
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        {decision ? (
+                          isApproved ? (
+                            <span className="px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border bg-semantic-success/10 text-semantic-success border-semantic-success/20">
+                              Approved
+                            </span>
+                          ) : (
+                            <span className="px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border bg-white/5 text-white/40 border-white/10">
+                              Rejected
+                            </span>
+                          )
                         ) : (
-                          <span className="px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border bg-white/5 text-white/40 border-white/10">
-                            Rejected
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => onApprove(proposal.id)}
+                              className="px-3 py-1.5 text-sm font-semibold bg-semantic-success text-white/90 rounded-lg hover:bg-semantic-success/90 shadow-[0_0_16px_rgba(34,197,94,0.25)] transition-all duration-150"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onReject(proposal.id)}
+                              className="px-3 py-1.5 text-sm font-medium text-white/50 bg-white/5 border border-white/10 rounded-lg hover:text-white/70 hover:border-white/20 hover:bg-white/10 transition-all duration-150"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 mt-2">
+                      <ConfidenceBar confidence={proposal.confidence} />
+                      <div className="flex items-center gap-3 text-[13px]">
+                        <span className="text-white/50">
+                          AEO{' '}
+                          <span className="font-semibold text-brand-cyan tabular-nums">
+                            +{proposal.estimatedAEOImpact}
                           </span>
-                        )
-                      ) : (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => onApprove(proposal.id)}
-                            className="px-3 py-1.5 text-sm font-semibold bg-semantic-success text-white/90 rounded-lg hover:bg-semantic-success/90 shadow-[0_0_16px_rgba(34,197,94,0.25)] transition-all duration-150"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => onReject(proposal.id)}
-                            className="px-3 py-1.5 text-sm font-medium text-white/50 bg-white/5 border border-white/10 rounded-lg hover:text-white/70 hover:border-white/20 hover:bg-white/10 transition-all duration-150"
-                          >
-                            Reject
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 mt-2">
-                    <ConfidenceBar confidence={proposal.confidence} />
-                    <div className="flex items-center gap-3 text-[13px]">
-                      <span className="text-white/50">
-                        AEO{' '}
-                        <span className="font-semibold text-brand-cyan tabular-nums">
-                          +{proposal.estimatedAEOImpact}
                         </span>
-                      </span>
-                      <span className="text-white/50">
-                        EVI{' '}
-                        <span className="font-semibold text-brand-cyan tabular-nums">
-                          +{proposal.estimatedEVIImpact.toFixed(1)}
+                        <span className="text-white/50">
+                          EVI{' '}
+                          <span className="font-semibold text-brand-cyan tabular-nums">
+                            +{proposal.estimatedEVIImpact.toFixed(1)}
+                          </span>
                         </span>
+                      </div>
+                      <span
+                        className={`ml-auto px-2 py-0.5 rounded border text-[11px] font-bold uppercase tracking-wider ${
+                          proposal.type === 'schema'
+                            ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30'
+                            : proposal.type === 'entity'
+                              ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30'
+                              : proposal.type === 'content'
+                                ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+                                : 'bg-brand-amber/10 text-brand-amber border-brand-amber/30'
+                        }`}
+                      >
+                        {proposal.type}
                       </span>
                     </div>
-                    <span
-                      className={`ml-auto px-2 py-0.5 rounded border text-[11px] font-bold uppercase tracking-wider ${
-                        proposal.type === 'schema'
-                          ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30'
-                          : proposal.type === 'entity'
-                            ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30'
-                            : proposal.type === 'content'
-                              ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
-                              : 'bg-brand-amber/10 text-brand-amber border-brand-amber/30'
-                      }`}
-                    >
-                      {proposal.type}
-                    </span>
                   </div>
-                </div>
-              );
-            })}
-        </div>
+                );
+              })}
+          </div>
         )}
       </div>
     </div>
@@ -356,10 +383,14 @@ function AEOTab({
   onReject: (id: string) => void;
 }) {
   // Sort by improvement potential (lowest AEO score first)
-  const sortedAssets = [...MOCK_SEO_ASSETS].sort((a, b) => a.aeoScore - b.aeoScore);
+  const sortedAssets = [...MOCK_SEO_ASSETS].sort(
+    (a, b) => a.aeoScore - b.aeoScore
+  );
 
   // Generate reasoning per asset based on their weaknesses
-  const getAssetReasoning = (asset: (typeof MOCK_SEO_ASSETS)[number]): string => {
+  const getAssetReasoning = (
+    asset: (typeof MOCK_SEO_ASSETS)[number]
+  ): string => {
     const weakest = Object.entries(asset.aeoBreakdown).sort(
       ([, a], [, b]) => a - b
     )[0];
@@ -372,7 +403,9 @@ function AEOTab({
     return `Lowest factor: ${labelMap[weakest[0]] || weakest[0]} at ${weakest[1]}/100. Improving this factor will have the highest marginal AEO impact for this asset.`;
   };
 
-  const getAssetConfidence = (asset: (typeof MOCK_SEO_ASSETS)[number]): number => {
+  const getAssetConfidence = (
+    asset: (typeof MOCK_SEO_ASSETS)[number]
+  ): number => {
     // Higher confidence for lower-scoring assets (more room for improvement)
     if (asset.aeoScore <= 40) return 92;
     if (asset.aeoScore <= 60) return 80;
@@ -385,7 +418,9 @@ function AEOTab({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
-          <h3 className="text-sm font-semibold text-white/90">AI-Prioritized Assets</h3>
+          <h3 className="text-sm font-semibold text-white/90">
+            AI-Prioritized Assets
+          </h3>
           <span className="text-[13px] text-white/50">
             Sorted by improvement potential
           </span>
@@ -523,9 +558,13 @@ function TechnicalTab({
   };
 
   const sortedFindings = [...MOCK_TECHNICAL_FINDINGS].sort((a, b) => {
-    const severityOrder = (SEVERITY_CONFIG[a.severity]?.order ?? 99) - (SEVERITY_CONFIG[b.severity]?.order ?? 99);
+    const severityOrder =
+      (SEVERITY_CONFIG[a.severity]?.order ?? 99) -
+      (SEVERITY_CONFIG[b.severity]?.order ?? 99);
     if (severityOrder !== 0) return severityOrder;
-    return (aeoImpactOrder[a.category] ?? 99) - (aeoImpactOrder[b.category] ?? 99);
+    return (
+      (aeoImpactOrder[a.category] ?? 99) - (aeoImpactOrder[b.category] ?? 99)
+    );
   });
 
   return (
@@ -533,18 +572,28 @@ function TechnicalTab({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
-          <h3 className="text-sm font-semibold text-white/90">AI-Prioritized Findings</h3>
+          <h3 className="text-sm font-semibold text-white/90">
+            AI-Prioritized Findings
+          </h3>
           <span className="text-[13px] text-white/50">
             Sorted by AEO impact
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[13px] text-semantic-danger font-semibold tabular-nums">
-            {MOCK_TECHNICAL_FINDINGS.filter((f) => f.severity === 'critical').length} critical
+            {
+              MOCK_TECHNICAL_FINDINGS.filter((f) => f.severity === 'critical')
+                .length
+            }{' '}
+            critical
           </span>
           <span className="text-white/30">·</span>
           <span className="text-[13px] text-semantic-warning font-semibold tabular-nums">
-            {MOCK_TECHNICAL_FINDINGS.filter((f) => f.severity === 'warning').length} warnings
+            {
+              MOCK_TECHNICAL_FINDINGS.filter((f) => f.severity === 'warning')
+                .length
+            }{' '}
+            warnings
           </span>
         </div>
       </div>
@@ -580,15 +629,16 @@ function TechnicalTab({
                       {severityConfig.label}
                     </span>
                     <span className="text-[13px] text-white/50">
-                      {finding.affectedPages} page{finding.affectedPages !== 1 ? 's' : ''}
+                      {finding.affectedPages} page
+                      {finding.affectedPages !== 1 ? 's' : ''}
                     </span>
                   </div>
                   <h4 className="text-sm font-semibold text-white/90">
                     {finding.title}
                   </h4>
                 </div>
-                {decision && (
-                  isApproved ? (
+                {decision &&
+                  (isApproved ? (
                     <span className="px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border bg-semantic-success/10 text-semantic-success border-semantic-success/20 shrink-0">
                       AI Fixing
                     </span>
@@ -596,12 +646,13 @@ function TechnicalTab({
                     <span className="px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border bg-white/5 text-white/40 border-white/10 shrink-0">
                       Assigned
                     </span>
-                  )
-                )}
+                  ))}
               </div>
 
               {/* Description */}
-              <p className="text-sm text-white/70 mb-3">{finding.description}</p>
+              <p className="text-sm text-white/70 mb-3">
+                {finding.description}
+              </p>
 
               {/* AEO Bridge */}
               <div className="bg-brand-cyan/5 border border-brand-cyan/20 rounded-lg px-4 py-3 mb-4">
@@ -648,9 +699,20 @@ function TechnicalTab({
 
 function IntelligenceTab() {
   const sentimentConfig: Record<string, { color: string; label: string }> = {
-    positive: { color: 'bg-semantic-success/10 text-semantic-success border-semantic-success/20', label: 'Positive' },
-    neutral: { color: 'bg-white/5 text-white/50 border-white/10', label: 'Neutral' },
-    negative: { color: 'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20', label: 'Negative' },
+    positive: {
+      color:
+        'bg-semantic-success/10 text-semantic-success border-semantic-success/20',
+      label: 'Positive',
+    },
+    neutral: {
+      color: 'bg-white/5 text-white/50 border-white/10',
+      label: 'Neutral',
+    },
+    negative: {
+      color:
+        'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
+      label: 'Negative',
+    },
   };
 
   return (
@@ -658,11 +720,14 @@ function IntelligenceTab() {
       {/* Citation Activity */}
       <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1">
         <div className="px-6 py-4 border-b border-border-subtle">
-          <h3 className="text-sm font-semibold text-white/90">Recent Citation Activity</h3>
+          <h3 className="text-sm font-semibold text-white/90">
+            Recent Citation Activity
+          </h3>
         </div>
         <div className="divide-y divide-border-subtle">
           {MOCK_CITATION_ACTIVITY.map((citation) => {
-            const sentiment = sentimentConfig[citation.sentiment] || sentimentConfig.neutral;
+            const sentiment =
+              sentimentConfig[citation.sentiment] || sentimentConfig.neutral;
             return (
               <div key={citation.id} className="px-6 py-4">
                 <div className="flex items-center gap-3 mb-2">
@@ -696,13 +761,17 @@ function IntelligenceTab() {
       {/* Topic Clusters */}
       <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1">
         <div className="px-6 py-4 border-b border-border-subtle">
-          <h3 className="text-sm font-semibold text-white/90">Topic Cluster Health</h3>
+          <h3 className="text-sm font-semibold text-white/90">
+            Topic Cluster Health
+          </h3>
         </div>
         <div className="divide-y divide-border-subtle">
           {MOCK_TOPIC_CLUSTERS.map((cluster) => (
             <div key={cluster.name} className="px-6 py-4">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-semibold text-white/90">{cluster.name}</h4>
+                <h4 className="text-sm font-semibold text-white/90">
+                  {cluster.name}
+                </h4>
                 <span
                   className={`text-lg font-bold tabular-nums ${getAEOBandColor(cluster.health)}`}
                 >
@@ -716,8 +785,13 @@ function IntelligenceTab() {
                 />
               </div>
               <div className="flex items-center gap-4 text-[13px] text-white/50">
-                <span>{cluster.articles} article{cluster.articles !== 1 ? 's' : ''}</span>
-                <span>{cluster.citations} citation{cluster.citations !== 1 ? 's' : ''}</span>
+                <span>
+                  {cluster.articles} article{cluster.articles !== 1 ? 's' : ''}
+                </span>
+                <span>
+                  {cluster.citations} citation
+                  {cluster.citations !== 1 ? 's' : ''}
+                </span>
               </div>
             </div>
           ))}
@@ -731,7 +805,11 @@ function IntelligenceTab() {
 // INLINE TOAST
 // ============================================
 
-interface ToastMsg { id: number; text: string; type: 'success' | 'neutral'; }
+interface ToastMsg {
+  id: number;
+  text: string;
+  type: 'success' | 'neutral';
+}
 
 function ToastStack({ toasts }: { toasts: ToastMsg[] }) {
   if (!toasts.length) return null;
@@ -758,14 +836,19 @@ function ToastStack({ toasts }: { toasts: ToastMsg[] }) {
 // ============================================
 
 export function SEOCopilotView({ activeTab }: SEOCopilotViewProps) {
-  const [decisions, setDecisions] = useState<Record<string, ProposalDecision>>({});
+  const [decisions, setDecisions] = useState<Record<string, ProposalDecision>>(
+    {}
+  );
   const [toasts, setToasts] = useState<ToastMsg[]>([]);
   let toastIdRef = 0;
 
   const showToast = useCallback((text: string, type: 'success' | 'neutral') => {
     const id = ++toastIdRef;
     setToasts((prev) => [...prev, { id, text, type }]);
-    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 2500);
+    setTimeout(
+      () => setToasts((prev) => prev.filter((t) => t.id !== id)),
+      2500
+    );
   }, []);
 
   const handleApprove = (id: string) => {
@@ -780,32 +863,32 @@ export function SEOCopilotView({ activeTab }: SEOCopilotViewProps) {
 
   return (
     <>
-    <ToastStack toasts={toasts} />
-    <div className="max-w-6xl mx-auto">
-      {activeTab === 'overview' && (
-        <OverviewTab
-          proposals={[]}
-          decisions={decisions}
-          onApprove={handleApprove}
-          onReject={handleReject}
-        />
-      )}
-      {activeTab === 'aeo' && (
-        <AEOTab
-          decisions={decisions}
-          onApprove={handleApprove}
-          onReject={handleReject}
-        />
-      )}
-      {activeTab === 'technical' && (
-        <TechnicalTab
-          decisions={decisions}
-          onApprove={handleApprove}
-          onReject={handleReject}
-        />
-      )}
-      {activeTab === 'intelligence' && <IntelligenceTab />}
-    </div>
+      <ToastStack toasts={toasts} />
+      <div className="max-w-6xl mx-auto">
+        {activeTab === 'overview' && (
+          <OverviewTab
+            proposals={[]}
+            decisions={decisions}
+            onApprove={handleApprove}
+            onReject={handleReject}
+          />
+        )}
+        {activeTab === 'aeo' && (
+          <AEOTab
+            decisions={decisions}
+            onApprove={handleApprove}
+            onReject={handleReject}
+          />
+        )}
+        {activeTab === 'technical' && (
+          <TechnicalTab
+            decisions={decisions}
+            onApprove={handleApprove}
+            onReject={handleReject}
+          />
+        )}
+        {activeTab === 'intelligence' && <IntelligenceTab />}
+      </div>
     </>
   );
 }

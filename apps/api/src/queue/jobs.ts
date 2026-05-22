@@ -11,7 +11,13 @@ export type JobPriority = 'low' | 'medium' | 'high' | 'urgent';
 /**
  * Job status in queue
  */
-export type JobStatus = 'queued' | 'running' | 'completed' | 'failed' | 'retrying' | 'canceled';
+export type JobStatus =
+  | 'queued'
+  | 'running'
+  | 'completed'
+  | 'failed'
+  | 'retrying'
+  | 'canceled';
 
 /**
  * Base job interface
@@ -99,9 +105,7 @@ export interface JobLogger {
 /**
  * Job handler function type
  */
-export type JobHandler = (
-  context: JobExecutionContext
-) => Promise<JobResult>;
+export type JobHandler = (context: JobExecutionContext) => Promise<JobResult>;
 
 /**
  * Queue configuration

@@ -7,10 +7,7 @@
 'use client';
 
 import type { NarrativeType, NarrativeStatus } from '@pravado/types';
-import {
-  NARRATIVE_TYPE_LABELS,
-  NARRATIVE_STATUS_LABELS,
-} from '@pravado/types';
+import { NARRATIVE_TYPE_LABELS, NARRATIVE_STATUS_LABELS } from '@pravado/types';
 import { Search, X } from 'lucide-react';
 import React from 'react';
 
@@ -44,9 +41,7 @@ export default function NarrativeFiltersBar({
   className = '',
 }: NarrativeFiltersBarProps) {
   const hasActiveFilters =
-    filters.search ||
-    filters.narrativeType ||
-    filters.status;
+    filters.search || filters.narrativeType || filters.status;
 
   const handleClearFilters = () => {
     onFiltersChange({
@@ -79,7 +74,8 @@ export default function NarrativeFiltersBar({
         onValueChange={(value) =>
           onFiltersChange({
             ...filters,
-            narrativeType: value === 'all' ? undefined : (value as NarrativeType),
+            narrativeType:
+              value === 'all' ? undefined : (value as NarrativeType),
           })
         }
       >
@@ -125,7 +121,7 @@ export default function NarrativeFiltersBar({
         onValueChange={(value) => {
           const [sortBy, sortOrder] = value.split('-') as [
             'created_at' | 'updated_at' | 'period_start' | 'title',
-            'asc' | 'desc'
+            'asc' | 'desc',
           ];
           onFiltersChange({ ...filters, sortBy, sortOrder });
         }}

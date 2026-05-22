@@ -82,7 +82,9 @@ function buildQueryString(params: Record<string, unknown>): string {
 /**
  * Create a new playbook
  */
-export async function createPlaybook(input: CreateScenarioPlaybookInput): Promise<PlaybookWithSteps> {
+export async function createPlaybook(
+  input: CreateScenarioPlaybookInput
+): Promise<PlaybookWithSteps> {
   const response = await fetch(`${API_BASE_URL}${BASE_PATH}/playbooks`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -96,11 +98,16 @@ export async function createPlaybook(input: CreateScenarioPlaybookInput): Promis
 /**
  * Get playbook by ID
  */
-export async function getPlaybook(playbookId: string): Promise<ScenarioPlaybook> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+export async function getPlaybook(
+  playbookId: string
+): Promise<ScenarioPlaybook> {
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<ScenarioPlaybook>(response);
 }
@@ -108,11 +115,16 @@ export async function getPlaybook(playbookId: string): Promise<ScenarioPlaybook>
 /**
  * Get playbook with steps
  */
-export async function getPlaybookWithSteps(playbookId: string): Promise<PlaybookWithSteps> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}/full`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+export async function getPlaybookWithSteps(
+  playbookId: string
+): Promise<PlaybookWithSteps> {
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}/full`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<PlaybookWithSteps>(response);
 }
@@ -124,12 +136,15 @@ export async function updatePlaybook(
   playbookId: string,
   input: UpdateScenarioPlaybookInput
 ): Promise<ScenarioPlaybook> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(input),
+    }
+  );
 
   return handleResponse<ScenarioPlaybook>(response);
 }
@@ -138,10 +153,13 @@ export async function updatePlaybook(
  * Delete playbook
  */
 export async function deletePlaybook(playbookId: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}`, {
-    method: 'DELETE',
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}`,
+    {
+      method: 'DELETE',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<void>(response);
 }
@@ -149,12 +167,19 @@ export async function deletePlaybook(playbookId: string): Promise<void> {
 /**
  * List playbooks
  */
-export async function listPlaybooks(query?: ScenarioListPlaybooksQuery): Promise<ScenarioListPlaybooksResponse> {
-  const queryString = buildQueryString((query || {}) as Record<string, unknown>);
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/playbooks${queryString}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+export async function listPlaybooks(
+  query?: ScenarioListPlaybooksQuery
+): Promise<ScenarioListPlaybooksResponse> {
+  const queryString = buildQueryString(
+    (query || {}) as Record<string, unknown>
+  );
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/playbooks${queryString}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<ScenarioListPlaybooksResponse>(response);
 }
@@ -162,11 +187,16 @@ export async function listPlaybooks(query?: ScenarioListPlaybooksQuery): Promise
 /**
  * Activate playbook
  */
-export async function activatePlaybook(playbookId: string): Promise<ScenarioPlaybook> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}/activate`, {
-    method: 'POST',
-    credentials: 'include',
-  });
+export async function activatePlaybook(
+  playbookId: string
+): Promise<ScenarioPlaybook> {
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}/activate`,
+    {
+      method: 'POST',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<ScenarioPlaybook>(response);
 }
@@ -174,11 +204,16 @@ export async function activatePlaybook(playbookId: string): Promise<ScenarioPlay
 /**
  * Archive playbook
  */
-export async function archivePlaybook(playbookId: string): Promise<ScenarioPlaybook> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}/archive`, {
-    method: 'POST',
-    credentials: 'include',
-  });
+export async function archivePlaybook(
+  playbookId: string
+): Promise<ScenarioPlaybook> {
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}/archive`,
+    {
+      method: 'POST',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<ScenarioPlaybook>(response);
 }
@@ -195,12 +230,15 @@ export async function addPlaybookStep(
   step: CreatePlaybookStepInput,
   insertAtIndex?: number
 ): Promise<ScenarioPlaybookStep> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}/steps`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ ...step, insertAtIndex }),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/playbooks/${playbookId}/steps`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ ...step, insertAtIndex }),
+    }
+  );
 
   return handleResponse<ScenarioPlaybookStep>(response);
 }
@@ -261,7 +299,9 @@ export async function reorderPlaybookSteps(
 /**
  * Create scenario
  */
-export async function createScenario(input: CreateScenarioInput): Promise<Scenario> {
+export async function createScenario(
+  input: CreateScenarioInput
+): Promise<Scenario> {
   const response = await fetch(`${API_BASE_URL}${BASE_PATH}/scenarios`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -276,10 +316,13 @@ export async function createScenario(input: CreateScenarioInput): Promise<Scenar
  * Get scenario by ID
  */
 export async function getScenario(scenarioId: string): Promise<Scenario> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/scenarios/${scenarioId}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/scenarios/${scenarioId}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<Scenario>(response);
 }
@@ -287,11 +330,16 @@ export async function getScenario(scenarioId: string): Promise<Scenario> {
 /**
  * Get scenario with playbook
  */
-export async function getScenarioWithPlaybook(scenarioId: string): Promise<ScenarioWithPlaybook> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/scenarios/${scenarioId}/full`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+export async function getScenarioWithPlaybook(
+  scenarioId: string
+): Promise<ScenarioWithPlaybook> {
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/scenarios/${scenarioId}/full`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<ScenarioWithPlaybook>(response);
 }
@@ -303,12 +351,15 @@ export async function updateScenario(
   scenarioId: string,
   input: UpdateScenarioInput
 ): Promise<Scenario> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/scenarios/${scenarioId}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/scenarios/${scenarioId}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(input),
+    }
+  );
 
   return handleResponse<Scenario>(response);
 }
@@ -317,10 +368,13 @@ export async function updateScenario(
  * Delete scenario
  */
 export async function deleteScenario(scenarioId: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/scenarios/${scenarioId}`, {
-    method: 'DELETE',
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/scenarios/${scenarioId}`,
+    {
+      method: 'DELETE',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<void>(response);
 }
@@ -328,12 +382,19 @@ export async function deleteScenario(scenarioId: string): Promise<void> {
 /**
  * List scenarios
  */
-export async function listScenarios(query?: ListScenariosQuery): Promise<ListScenariosResponse> {
-  const queryString = buildQueryString((query || {}) as Record<string, unknown>);
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/scenarios${queryString}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+export async function listScenarios(
+  query?: ListScenariosQuery
+): Promise<ListScenariosResponse> {
+  const queryString = buildQueryString(
+    (query || {}) as Record<string, unknown>
+  );
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/scenarios${queryString}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<ListScenariosResponse>(response);
 }
@@ -355,12 +416,15 @@ export async function simulateScenario(
     generateNarrative?: boolean;
   }
 ): Promise<SimulationResult> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/scenarios/${scenarioId}/simulate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(options || {}),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/scenarios/${scenarioId}/simulate`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(options || {}),
+    }
+  );
 
   return handleResponse<SimulationResult>(response);
 }
@@ -372,7 +436,9 @@ export async function simulateScenario(
 /**
  * Start scenario run
  */
-export async function startScenarioRun(input: StartScenarioRunInput): Promise<RunWithDetails> {
+export async function startScenarioRun(
+  input: StartScenarioRunInput
+): Promise<RunWithDetails> {
   const response = await fetch(`${API_BASE_URL}${BASE_PATH}/runs`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -398,11 +464,16 @@ export async function getScenarioRun(runId: string): Promise<ScenarioRun> {
 /**
  * Get run with details
  */
-export async function getRunWithDetails(runId: string): Promise<RunWithDetails> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/runs/${runId}/full`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+export async function getRunWithDetails(
+  runId: string
+): Promise<RunWithDetails> {
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/runs/${runId}/full`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<RunWithDetails>(response);
 }
@@ -413,11 +484,16 @@ export async function getRunWithDetails(runId: string): Promise<RunWithDetails> 
 export async function listScenarioRuns(
   query?: ListScenarioRunsQuery
 ): Promise<ListScenarioRunsResponse> {
-  const queryString = buildQueryString((query || {}) as Record<string, unknown>);
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/runs${queryString}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+  const queryString = buildQueryString(
+    (query || {}) as Record<string, unknown>
+  );
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/runs${queryString}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<ListScenarioRunsResponse>(response);
 }
@@ -426,10 +502,13 @@ export async function listScenarioRuns(
  * Pause run
  */
 export async function pauseScenarioRun(runId: string): Promise<ScenarioRun> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/runs/${runId}/pause`, {
-    method: 'POST',
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/runs/${runId}/pause`,
+    {
+      method: 'POST',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<ScenarioRun>(response);
 }
@@ -438,10 +517,13 @@ export async function pauseScenarioRun(runId: string): Promise<ScenarioRun> {
  * Resume run
  */
 export async function resumeScenarioRun(runId: string): Promise<ScenarioRun> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/runs/${runId}/resume`, {
-    method: 'POST',
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/runs/${runId}/resume`,
+    {
+      method: 'POST',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<ScenarioRun>(response);
 }
@@ -453,12 +535,15 @@ export async function cancelScenarioRun(
   runId: string,
   reason?: string
 ): Promise<ScenarioRun> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/runs/${runId}/cancel`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ reason }),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/runs/${runId}/cancel`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ reason }),
+    }
+  );
 
   return handleResponse<ScenarioRun>(response);
 }
@@ -475,12 +560,15 @@ export async function approveScenarioStep(
   approved: boolean,
   notes?: string
 ): Promise<ScenarioRunStep> {
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/run-steps/${stepId}/approve`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ approved, notes }),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/run-steps/${stepId}/approve`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ approved, notes }),
+    }
+  );
 
   return handleResponse<ScenarioRunStep>(response);
 }
@@ -495,11 +583,16 @@ export async function approveScenarioStep(
 export async function listScenarioAuditLogs(
   query?: ListScenarioAuditLogsQuery
 ): Promise<ListScenarioAuditLogsResponse> {
-  const queryString = buildQueryString((query || {}) as Record<string, unknown>);
-  const response = await fetch(`${API_BASE_URL}${BASE_PATH}/audit${queryString}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+  const queryString = buildQueryString(
+    (query || {}) as Record<string, unknown>
+  );
+  const response = await fetch(
+    `${API_BASE_URL}${BASE_PATH}/audit${queryString}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    }
+  );
 
   return handleResponse<ListScenarioAuditLogsResponse>(response);
 }
@@ -562,7 +655,9 @@ export interface StepFormData {
 /**
  * Convert form data to API input
  */
-export function playbookFormToInput(data: PlaybookFormData): CreateScenarioPlaybookInput {
+export function playbookFormToInput(
+  data: PlaybookFormData
+): CreateScenarioPlaybookInput {
   return {
     name: data.name,
     description: data.description,
@@ -578,7 +673,9 @@ export function playbookFormToInput(data: PlaybookFormData): CreateScenarioPlayb
 /**
  * Convert form data to API input
  */
-export function scenarioFormToInput(data: ScenarioFormData): CreateScenarioInput {
+export function scenarioFormToInput(
+  data: ScenarioFormData
+): CreateScenarioInput {
   return {
     name: data.name,
     description: data.description,

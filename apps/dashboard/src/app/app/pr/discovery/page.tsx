@@ -20,7 +20,8 @@ import * as journalistDiscoveryApi from '@/lib/journalistDiscoveryApi';
 
 export default function JournalistDiscoveryPage() {
   const [discoveries, setDiscoveries] = useState<DiscoveredJournalist[]>([]);
-  const [selectedDiscovery, setSelectedDiscovery] = useState<DiscoveredJournalist | null>(null);
+  const [selectedDiscovery, setSelectedDiscovery] =
+    useState<DiscoveredJournalist | null>(null);
   const [stats, setStats] = useState<DiscoveryStats | null>(null);
   const [filters, setFilters] = useState<DiscoveryQuery>({
     status: ['pending'],
@@ -109,7 +110,9 @@ export default function JournalistDiscoveryPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Journalist Discovery</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Journalist Discovery
+              </h1>
               <p className="text-sm text-gray-600 mt-1">
                 Review and resolve discovered journalists
               </p>
@@ -127,19 +130,27 @@ export default function JournalistDiscoveryPage() {
           {stats && (
             <div className="mt-4 grid grid-cols-5 gap-4">
               <div className="bg-gray-50 rounded-lg p-3">
-                <div className="text-2xl font-bold text-gray-900">{stats.totalDiscoveries}</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {stats.totalDiscoveries}
+                </div>
                 <div className="text-xs text-gray-600">Total</div>
               </div>
               <div className="bg-yellow-50 rounded-lg p-3">
-                <div className="text-2xl font-bold text-yellow-800">{stats.pendingCount}</div>
+                <div className="text-2xl font-bold text-yellow-800">
+                  {stats.pendingCount}
+                </div>
                 <div className="text-xs text-gray-600">Pending</div>
               </div>
               <div className="bg-blue-50 rounded-lg p-3">
-                <div className="text-2xl font-bold text-blue-800">{stats.confirmedCount}</div>
+                <div className="text-2xl font-bold text-blue-800">
+                  {stats.confirmedCount}
+                </div>
                 <div className="text-xs text-gray-600">Confirmed</div>
               </div>
               <div className="bg-green-50 rounded-lg p-3">
-                <div className="text-2xl font-bold text-green-800">{stats.mergedCount}</div>
+                <div className="text-2xl font-bold text-green-800">
+                  {stats.mergedCount}
+                </div>
                 <div className="text-xs text-gray-600">Merged</div>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
@@ -182,7 +193,8 @@ export default function JournalistDiscoveryPage() {
                   Discoveries ({discoveries.length})
                 </h2>
                 {filters.status &&
-                  ((Array.isArray(filters.status) && filters.status.length > 0) ||
+                  ((Array.isArray(filters.status) &&
+                    filters.status.length > 0) ||
                     (!Array.isArray(filters.status) && filters.status)) && (
                     <span className="text-sm text-gray-600">
                       Filtered:{' '}
@@ -215,13 +227,18 @@ export default function JournalistDiscoveryPage() {
                 selectedDiscovery.suggestedMatches.length > 0 ? (
                   <div className="space-y-3">
                     {selectedDiscovery.suggestedMatches.map((match, idx) => (
-                      <div key={idx} className="border border-gray-200 rounded-lg p-3">
+                      <div
+                        key={idx}
+                        className="border border-gray-200 rounded-lg p-3"
+                      >
                         <div className="flex justify-between items-start mb-2">
                           <div className="flex-1">
                             <div className="font-medium text-gray-900">
                               {match.journalistName}
                             </div>
-                            <div className="text-xs text-gray-600 mt-1">{match.matchReason}</div>
+                            <div className="text-xs text-gray-600 mt-1">
+                              {match.matchReason}
+                            </div>
                           </div>
                           <div className="text-sm font-semibold text-blue-600">
                             {Math.round(match.similarityScore * 100)}%
@@ -240,8 +257,8 @@ export default function JournalistDiscoveryPage() {
                   </div>
                 ) : (
                   <p className="text-sm text-gray-500">
-                    No matching journalists found in the S46 graph. This appears to be a new
-                    journalist.
+                    No matching journalists found in the S46 graph. This appears
+                    to be a new journalist.
                   </p>
                 )}
               </div>

@@ -68,9 +68,7 @@ export class ExecutionDispatcher {
     }
 
     // Create a map of step runs by step_id
-    const stepRunMap = new Map(
-      (stepRuns || []).map((sr) => [sr.step_id, sr])
-    );
+    const stepRunMap = new Map((stepRuns || []).map((sr) => [sr.step_id, sr]));
 
     // Build dependency graph
     const stepDependencies = this.buildDependencyGraph(steps);
@@ -269,7 +267,9 @@ export class ExecutionDispatcher {
         const matches = config.input.match(/\{\{steps\.([^}]+)\}\}/g);
         if (matches) {
           for (const match of matches) {
-            const stepKey = match.replace(/\{\{steps\.([^}]+)\}\}/, '$1').split('.')[0];
+            const stepKey = match
+              .replace(/\{\{steps\.([^}]+)\}\}/, '$1')
+              .split('.')[0];
             if (stepKey && !stepDeps.includes(stepKey)) {
               stepDeps.push(stepKey);
             }

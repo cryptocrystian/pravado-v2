@@ -77,7 +77,7 @@ export function EditorCanvas({
       const textBefore = state.doc.textBetween(
         Math.max(0, from - 20),
         from,
-        '\n',
+        '\n'
       );
 
       const slashMatch = textBefore.match(/\/([a-zA-Z]*)$/);
@@ -145,15 +145,12 @@ export function EditorCanvas({
       setSlashMenu(null);
       slashStartPosRef.current = null;
     },
-    [editor],
+    [editor]
   );
 
-  const handleBubbleAction = useCallback(
-    (_action: string, _value?: string) => {
-      // In production, these trigger AI processing — stub for now
-    },
-    [],
-  );
+  const handleBubbleAction = useCallback((_action: string, _value?: string) => {
+    // In production, these trigger AI processing — stub for now
+  }, []);
 
   const wordCount = editor?.storage.characterCount?.words() ?? 0;
   const charCount = editor?.storage.characterCount?.characters() ?? 0;
@@ -283,12 +280,16 @@ export function EditorCanvas({
           <FloppyDisk
             size={12}
             className={
-              autoSaveStatus === 'Saved' ? 'text-semantic-success' : 'text-white/30'
+              autoSaveStatus === 'Saved'
+                ? 'text-semantic-success'
+                : 'text-white/30'
             }
           />
           <span
             className={`text-xs ${
-              autoSaveStatus === 'Saved' ? 'text-semantic-success' : 'text-white/30'
+              autoSaveStatus === 'Saved'
+                ? 'text-semantic-success'
+                : 'text-white/30'
             }`}
           >
             {autoSaveStatus}

@@ -26,11 +26,11 @@ export const pillarAccents: Record<
     solidBg: string;
     text: string;
     border: string;
-    borderLeft: string;  // For left-accent border (action cards)
+    borderLeft: string; // For left-accent border (action cards)
     borderHover: string;
     glow: string;
     gradient: string;
-    badge: string;       // Pre-composed badge class
+    badge: string; // Pre-composed badge class
   }
 > = {
   pr: {

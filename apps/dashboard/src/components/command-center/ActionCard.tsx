@@ -51,25 +51,34 @@ import { Lock, CaretRight, Check } from '@phosphor-icons/react';
 import { ActionHoverBrief } from './ActionHoverBrief';
 import { pillarAccents } from './pillar-accents';
 import type { ActionItem, Priority } from './types';
-import { HoverCard, HoverCardContent, HoverCardTrigger, HoverCardArrow } from '../ui/hover-card';
-
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+  HoverCardArrow,
+} from '../ui/hover-card';
 
 // Priority styling
-const priorityConfig: Record<Priority, {
-  dot: string;
-  badge: string;
-  label: string;
-  urgent: boolean;
-}> = {
+const priorityConfig: Record<
+  Priority,
+  {
+    dot: string;
+    badge: string;
+    label: string;
+    urgent: boolean;
+  }
+> = {
   critical: {
     dot: 'bg-semantic-danger animate-pulse',
-    badge: 'bg-semantic-danger/15 text-semantic-danger border-semantic-danger/30',
+    badge:
+      'bg-semantic-danger/15 text-semantic-danger border-semantic-danger/30',
     label: 'Critical',
     urgent: true,
   },
   high: {
     dot: 'bg-semantic-warning',
-    badge: 'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30',
+    badge:
+      'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30',
     label: 'High',
     urgent: true,
   },
@@ -88,7 +97,8 @@ const priorityConfig: Record<Priority, {
 };
 
 // Success/ready state styling
-const successBadge = 'bg-semantic-success/15 text-semantic-success border-semantic-success/30';
+const successBadge =
+  'bg-semantic-success/15 text-semantic-success border-semantic-success/30';
 
 // v5: 3 density levels
 export type DensityLevel = 'compact' | 'standard' | 'comfortable';
@@ -149,7 +159,6 @@ function isCrisisAction(action: ActionItem): boolean {
   return action.type === 'alert';
 }
 
-
 /**
  * ActionCard v8 - Anchored HoverCard Micro-Brief (v5 Pattern)
  *
@@ -185,7 +194,9 @@ export function ActionCard({
   const isLocked = action.gate.required && !!action.gate.min_plan;
 
   // Dimmed state class for when another card's hover is open
-  const dimmedClass = isDimmed ? 'opacity-40 transition-opacity duration-200' : '';
+  const dimmedClass = isDimmed
+    ? 'opacity-40 transition-opacity duration-200'
+    : '';
 
   // Locked styling: muted background, no urgency colors, grayscale
   const lockedClass = isLocked ? 'opacity-60 grayscale-[30%]' : '';
@@ -230,26 +241,41 @@ export function ActionCard({
       >
         <div className="px-3 py-2.5 flex items-center gap-3">
           {/* Priority indicator - muted for locked */}
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isLocked ? lockedPriorityStyle.dot : priority.dot}`} />
+          <span
+            className={`w-2 h-2 rounded-full flex-shrink-0 ${isLocked ? lockedPriorityStyle.dot : priority.dot}`}
+          />
 
           {/* Lock icon for locked cards */}
           {isLocked && (
-            <Lock weight="regular" className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
+            <Lock
+              weight="regular"
+              className="w-3.5 h-3.5 text-white/40 flex-shrink-0"
+            />
           )}
 
           {/* Pillar badge */}
-          <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border flex-shrink-0 ${pillar.badge}`}>
+          <span
+            className={`px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border flex-shrink-0 ${pillar.badge}`}
+          >
             {action.pillar}
           </span>
 
           {/* Mode badge — all three modes */}
           {!isCompleted && (
-            <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border flex-shrink-0 ${
-              action.mode === 'autopilot' ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30' :
-              action.mode === 'copilot'   ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30' :
-                                            'bg-white/5 text-white/70 border-white/20'
-            }`}>
-              {action.mode === 'autopilot' ? 'Auto' : action.mode === 'copilot' ? 'Copilot' : 'Manual'}
+            <span
+              className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border flex-shrink-0 ${
+                action.mode === 'autopilot'
+                  ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30'
+                  : action.mode === 'copilot'
+                    ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30'
+                    : 'bg-white/5 text-white/70 border-white/20'
+              }`}
+            >
+              {action.mode === 'autopilot'
+                ? 'Auto'
+                : action.mode === 'copilot'
+                  ? 'Copilot'
+                  : 'Manual'}
             </span>
           )}
 
@@ -297,22 +323,38 @@ export function ActionCard({
                 transition-all duration-150 flex items-center gap-1.5
                 ${isExecuting ? 'opacity-70 cursor-wait' : ''}
                 ${action.gate.required ? 'opacity-50 cursor-not-allowed' : ''}
-                ${isCompleted
-                  ? 'bg-semantic-success/20 text-semantic-success'
-                  : crisis && action.priority === 'critical'
-                  ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90'
-                  : crisis
-                  ? 'bg-semantic-warning text-white hover:bg-semantic-warning/90'
-                  : ready
-                  ? 'bg-semantic-success text-white hover:bg-semantic-success/90'
-                  : `${pillar.solidBg} text-white hover:opacity-90`
+                ${
+                  isCompleted
+                    ? 'bg-semantic-success/20 text-semantic-success'
+                    : crisis && action.priority === 'critical'
+                      ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90'
+                      : crisis
+                        ? 'bg-semantic-warning text-white hover:bg-semantic-warning/90'
+                        : ready
+                          ? 'bg-semantic-success text-white hover:bg-semantic-success/90'
+                          : `${pillar.solidBg} text-white hover:opacity-90`
                 }
               `}
             >
               {isExecuting && (
-                <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                <svg
+                  className="w-3 h-3 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
                 </svg>
               )}
               {isCompleted ? 'Done' : action.cta.primary}
@@ -350,26 +392,36 @@ export function ActionCard({
           ${lockedClass}
         `}
       >
-        <div className={`absolute inset-0 ${pillar.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg`} />
+        <div
+          className={`absolute inset-0 ${pillar.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg`}
+        />
 
         <div className="relative p-3 h-full flex flex-col">
           {/* Row 1: Header */}
           <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-2">
               {/* Priority dot - muted for locked */}
-              <span className={`w-2 h-2 rounded-full ${isLocked ? lockedPriorityStyle.dot : priority.dot}`} />
+              <span
+                className={`w-2 h-2 rounded-full ${isLocked ? lockedPriorityStyle.dot : priority.dot}`}
+              />
               {/* Lock icon for locked cards */}
               {isLocked && (
                 <Lock weight="regular" className="w-3.5 h-3.5 text-white/40" />
               )}
-              <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border ${pillar.badge}`}>
+              <span
+                className={`px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border ${pillar.badge}`}
+              >
                 {action.pillar}
               </span>
-              <span className={`px-1.5 py-0.5 text-xs font-semibold rounded border ${isLocked ? lockedPriorityStyle.badge : priority.badge}`}>
+              <span
+                className={`px-1.5 py-0.5 text-xs font-semibold rounded border ${isLocked ? lockedPriorityStyle.badge : priority.badge}`}
+              >
                 {priority.label}
               </span>
               {ready && !isCompleted && !isLocked && (
-                <span className={`px-1.5 py-0.5 text-xs font-semibold rounded border ${successBadge}`}>
+                <span
+                  className={`px-1.5 py-0.5 text-xs font-semibold rounded border ${successBadge}`}
+                >
                   Ready
                 </span>
               )}
@@ -380,16 +432,26 @@ export function ActionCard({
               )}
               {/* Mode badge — all three modes */}
               {!isCompleted && (
-                <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${
-                  action.mode === 'autopilot' ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30' :
-                  action.mode === 'copilot'   ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30' :
-                                                'bg-white/5 text-white/70 border-white/20'
-                }`}>
-                  {action.mode === 'autopilot' ? 'Auto' : action.mode === 'copilot' ? 'Copilot' : 'Manual'}
+                <span
+                  className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${
+                    action.mode === 'autopilot'
+                      ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30'
+                      : action.mode === 'copilot'
+                        ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30'
+                        : 'bg-white/5 text-white/70 border-white/20'
+                  }`}
+                >
+                  {action.mode === 'autopilot'
+                    ? 'Auto'
+                    : action.mode === 'copilot'
+                      ? 'Copilot'
+                      : 'Manual'}
                 </span>
               )}
             </div>
-            <span className="text-xs text-white/50">{formatTimestamp(action.updated_at)}</span>
+            <span className="text-xs text-white/50">
+              {formatTimestamp(action.updated_at)}
+            </span>
           </div>
 
           {/* Row 2: Title - clickable for modal */}
@@ -409,7 +471,9 @@ export function ActionCard({
           </h3>
 
           {/* Row 3: Summary (static, no hover swap in v5) */}
-          <p className="text-xs text-white/55 line-clamp-2 mb-auto">{action.summary}</p>
+          <p className="text-xs text-white/55 line-clamp-2 mb-auto">
+            {action.summary}
+          </p>
 
           {/* Row 4: CTAs - FIXED POSITION at bottom */}
           <div className="flex items-center gap-2 mt-1.5">
@@ -440,22 +504,38 @@ export function ActionCard({
                   transition-all duration-150
                   ${isExecuting ? 'opacity-70 cursor-wait' : ''}
                   ${action.gate.required ? 'opacity-50 cursor-not-allowed' : ''}
-                  ${isCompleted
-                    ? 'bg-semantic-success/20 text-semantic-success'
-                    : crisis && action.priority === 'critical'
-                    ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90 shadow-[0_0_12px_rgba(239,68,68,0.15)]'
-                    : crisis
-                    ? 'bg-semantic-warning text-white hover:bg-semantic-warning/90 shadow-[0_0_12px_rgba(245,158,11,0.15)]'
-                    : ready
-                    ? 'bg-semantic-success text-white hover:bg-semantic-success/90 shadow-[0_0_12px_rgba(34,197,94,0.15)]'
-                    : `${pillar.bg} ${pillar.text} border ${pillar.border} hover:${pillar.bgHover}`
+                  ${
+                    isCompleted
+                      ? 'bg-semantic-success/20 text-semantic-success'
+                      : crisis && action.priority === 'critical'
+                        ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90 shadow-[0_0_12px_rgba(239,68,68,0.15)]'
+                        : crisis
+                          ? 'bg-semantic-warning text-white hover:bg-semantic-warning/90 shadow-[0_0_12px_rgba(245,158,11,0.15)]'
+                          : ready
+                            ? 'bg-semantic-success text-white hover:bg-semantic-success/90 shadow-[0_0_12px_rgba(34,197,94,0.15)]'
+                            : `${pillar.bg} ${pillar.text} border ${pillar.border} hover:${pillar.bgHover}`
                   }
                 `}
               >
                 {isExecuting && (
-                  <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  <svg
+                    className="w-3 h-3 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
                   </svg>
                 )}
                 {isCompleted ? 'Done' : action.cta.primary}
@@ -477,7 +557,10 @@ export function ActionCard({
 
             {/* Gate indicator - only show for non-locked gated items */}
             {action.gate.required && !isLocked && (
-              <span className="w-1.5 h-1.5 rounded-full bg-semantic-warning" title="Approval required" />
+              <span
+                className="w-1.5 h-1.5 rounded-full bg-semantic-warning"
+                title="Approval required"
+              />
             )}
           </div>
         </div>
@@ -492,10 +575,13 @@ export function ActionCard({
         openDelay={HOVER_OPEN_DELAY}
         closeDelay={HOVER_CLOSE_DELAY}
       >
-        <HoverCardTrigger asChild>
-          {cardContent}
-        </HoverCardTrigger>
-        <HoverCardContent side="left" align="start" sideOffset={8} className="w-[280px]">
+        <HoverCardTrigger asChild>{cardContent}</HoverCardTrigger>
+        <HoverCardContent
+          side="left"
+          align="start"
+          sideOffset={8}
+          className="w-[280px]"
+        >
           <HoverCardArrow className="fill-slate-3" />
           <ActionHoverBrief
             action={action}
@@ -527,9 +613,11 @@ export function ActionCard({
         ${dimmedClass}
         ${lockedClass}
         `}
-        >
-        {/* Hover overlay */}
-        <div className={`absolute inset-0 ${pillar.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl`} />
+    >
+      {/* Hover overlay */}
+      <div
+        className={`absolute inset-0 ${pillar.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl`}
+      />
 
       <div className="relative px-4 py-2.5 h-full flex flex-col">
         {/* Row 1: Status badges */}
@@ -537,24 +625,32 @@ export function ActionCard({
           <div className="flex items-center gap-2">
             {/* Priority with severity indicator - muted for locked */}
             <div className="flex items-center gap-1.5">
-              <span className={`w-2.5 h-2.5 rounded-full ${isLocked ? lockedPriorityStyle.dot : priority.dot}`} />
+              <span
+                className={`w-2.5 h-2.5 rounded-full ${isLocked ? lockedPriorityStyle.dot : priority.dot}`}
+              />
               {/* Lock icon for locked cards */}
               {isLocked && (
                 <Lock weight="regular" className="w-4 h-4 text-white/40" />
               )}
-              <span className={`px-2 py-1 text-[11px] font-bold uppercase rounded border ${isLocked ? lockedPriorityStyle.badge : priority.badge}`}>
+              <span
+                className={`px-2 py-1 text-[11px] font-bold uppercase rounded border ${isLocked ? lockedPriorityStyle.badge : priority.badge}`}
+              >
                 {priority.label}
               </span>
             </div>
 
             {/* Pillar badge */}
-            <span className={`px-2 py-1 text-[11px] font-bold uppercase rounded border ${pillar.badge}`}>
+            <span
+              className={`px-2 py-1 text-[11px] font-bold uppercase rounded border ${pillar.badge}`}
+            >
               {action.pillar}
             </span>
 
             {/* Ready state badge - not shown for locked */}
             {ready && !isCompleted && !isLocked && (
-              <span className={`px-2 py-1 text-[11px] font-bold uppercase rounded border ${successBadge}`}>
+              <span
+                className={`px-2 py-1 text-[11px] font-bold uppercase rounded border ${successBadge}`}
+              >
                 Ready
               </span>
             )}
@@ -574,16 +670,26 @@ export function ActionCard({
 
             {/* Mode badge — all three modes shown per MODE_UX_ARCHITECTURE.md */}
             {!isCompleted && (
-              <span className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border ${
-                action.mode === 'autopilot' ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30' :
-                action.mode === 'copilot'   ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30' :
-                                              'bg-white/5 text-white/70 border-white/20'
-              }`}>
-                {action.mode === 'autopilot' ? 'Auto' : action.mode === 'copilot' ? 'Copilot' : 'Manual'}
+              <span
+                className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border ${
+                  action.mode === 'autopilot'
+                    ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30'
+                    : action.mode === 'copilot'
+                      ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30'
+                      : 'bg-white/5 text-white/70 border-white/20'
+                }`}
+              >
+                {action.mode === 'autopilot'
+                  ? 'Auto'
+                  : action.mode === 'copilot'
+                    ? 'Copilot'
+                    : 'Manual'}
               </span>
             )}
           </div>
-          <span className="text-xs text-white/50">{formatTimestamp(action.updated_at)}</span>
+          <span className="text-xs text-white/50">
+            {formatTimestamp(action.updated_at)}
+          </span>
         </div>
 
         {/* Row 2: Title - HIGH CONTRAST, clickable for modal */}
@@ -603,7 +709,9 @@ export function ActionCard({
         </h3>
 
         {/* Row 3: Summary (static in v5, hover details in popover) */}
-        <p className="text-xs text-white/55 line-clamp-2 mb-auto">{action.summary}</p>
+        <p className="text-xs text-white/55 line-clamp-2 mb-auto">
+          {action.summary}
+        </p>
 
         {/* Row 4: CTAs - FIXED POSITION at bottom */}
         <div className="flex items-center gap-2 mt-1.5">
@@ -634,32 +742,50 @@ export function ActionCard({
                 transition-all duration-200
                 ${isExecuting ? 'opacity-70 cursor-wait' : ''}
                 ${action.gate.required ? 'opacity-50 cursor-not-allowed' : ''}
-                ${isCompleted
-                  ? 'bg-semantic-success/20 text-semantic-success cursor-default'
-                  : crisis && action.priority === 'critical'
-                  ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90 shadow-[0_0_16px_rgba(239,68,68,0.15)]'
-                  : crisis
-                  ? 'bg-semantic-warning text-white hover:bg-semantic-warning/90 shadow-[0_0_16px_rgba(245,158,11,0.15)]'
-                  : ready
-                  ? 'bg-semantic-success text-white hover:bg-semantic-success/90 shadow-[0_0_16px_rgba(34,197,94,0.15)]'
-                  : action.pillar === 'pr'
-                  ? 'bg-brand-magenta text-white hover:bg-brand-magenta/90 shadow-[0_0_16px_rgba(232,121,249,0.15)]'
-                  : action.pillar === 'content'
-                  ? 'bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.15)]'
-                  : 'bg-brand-cyan text-white hover:bg-brand-cyan/90 shadow-[0_0_16px_rgba(0,217,255,0.15)]'
+                ${
+                  isCompleted
+                    ? 'bg-semantic-success/20 text-semantic-success cursor-default'
+                    : crisis && action.priority === 'critical'
+                      ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90 shadow-[0_0_16px_rgba(239,68,68,0.15)]'
+                      : crisis
+                        ? 'bg-semantic-warning text-white hover:bg-semantic-warning/90 shadow-[0_0_16px_rgba(245,158,11,0.15)]'
+                        : ready
+                          ? 'bg-semantic-success text-white hover:bg-semantic-success/90 shadow-[0_0_16px_rgba(34,197,94,0.15)]'
+                          : action.pillar === 'pr'
+                            ? 'bg-brand-magenta text-white hover:bg-brand-magenta/90 shadow-[0_0_16px_rgba(232,121,249,0.15)]'
+                            : action.pillar === 'content'
+                              ? 'bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.15)]'
+                              : 'bg-brand-cyan text-white hover:bg-brand-cyan/90 shadow-[0_0_16px_rgba(0,217,255,0.15)]'
                 }
               `}
             >
               {isExecuting && (
-                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                <svg
+                  className="w-4 h-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
                 </svg>
               )}
-              {isCompleted && (
-                <Check weight="regular" className="w-4 h-4" />
-              )}
-              {isCompleted ? 'Completed' : isExecuting ? 'Executing...' : action.cta.primary}
+              {isCompleted && <Check weight="regular" className="w-4 h-4" />}
+              {isCompleted
+                ? 'Completed'
+                : isExecuting
+                  ? 'Executing...'
+                  : action.cta.primary}
             </button>
           )}
 
@@ -686,10 +812,13 @@ export function ActionCard({
       openDelay={HOVER_OPEN_DELAY}
       closeDelay={HOVER_CLOSE_DELAY}
     >
-      <HoverCardTrigger asChild>
-        {comfortableCardContent}
-      </HoverCardTrigger>
-      <HoverCardContent side="left" align="start" sideOffset={12} className="w-[300px]">
+      <HoverCardTrigger asChild>{comfortableCardContent}</HoverCardTrigger>
+      <HoverCardContent
+        side="left"
+        align="start"
+        sideOffset={12}
+        className="w-[300px]"
+      >
         <HoverCardArrow className="fill-slate-3" />
         <ActionHoverBrief
           action={action}

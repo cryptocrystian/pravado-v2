@@ -68,7 +68,9 @@ export function SimulationCard({
               </p>
             )}
           </div>
-          <span className={`ml-2 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
+          <span
+            className={`ml-2 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}`}
+          >
             {simulation.status}
           </span>
         </div>
@@ -76,20 +78,26 @@ export function SimulationCard({
         {/* Meta info */}
         <div className="flex flex-wrap gap-2 mb-3">
           <span className="inline-flex items-center px-2 py-1 rounded text-xs bg-purple-50 text-purple-700">
-            {OBJECTIVE_LABELS[simulation.objectiveType] || simulation.objectiveType}
+            {OBJECTIVE_LABELS[simulation.objectiveType] ||
+              simulation.objectiveType}
           </span>
           <span className="inline-flex items-center px-2 py-1 rounded text-xs bg-indigo-50 text-indigo-700">
-            {MODE_LABELS[simulation.simulationMode] || simulation.simulationMode}
+            {MODE_LABELS[simulation.simulationMode] ||
+              simulation.simulationMode}
           </span>
         </div>
 
         {/* Stats */}
         <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
           {simulation.runCount !== undefined && (
-            <span>{simulation.runCount} run{simulation.runCount !== 1 ? 's' : ''}</span>
+            <span>
+              {simulation.runCount} run{simulation.runCount !== 1 ? 's' : ''}
+            </span>
           )}
           {simulation.lastRunAt && (
-            <span>Last run: {new Date(simulation.lastRunAt).toLocaleDateString()}</span>
+            <span>
+              Last run: {new Date(simulation.lastRunAt).toLocaleDateString()}
+            </span>
           )}
         </div>
 
@@ -103,14 +111,16 @@ export function SimulationCard({
               View
             </button>
           )}
-          {onStartRun && simulation.status !== 'running' && simulation.status !== 'archived' && (
-            <button
-              onClick={() => onStartRun(simulation)}
-              className="flex-1 px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded"
-            >
-              Start Run
-            </button>
-          )}
+          {onStartRun &&
+            simulation.status !== 'running' &&
+            simulation.status !== 'archived' && (
+              <button
+                onClick={() => onStartRun(simulation)}
+                className="flex-1 px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded"
+              >
+                Start Run
+              </button>
+            )}
           {onEdit && simulation.status !== 'running' && (
             <button
               onClick={() => onEdit(simulation)}

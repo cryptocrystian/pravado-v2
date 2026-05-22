@@ -6,7 +6,15 @@ import type {
   OverlapAnalysisResponse,
   OverlapType,
 } from '@pravado/types';
-import { Loader2, TrendingUp, TrendingDown, Users, Building, AlertTriangle, Trophy } from 'lucide-react';
+import {
+  Loader2,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Building,
+  AlertTriangle,
+  Trophy,
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -33,7 +41,6 @@ import { cn } from '@/lib/utils';
 
 import { CompetitorScoreBadge } from './CompetitorScoreBadge';
 
-
 interface CompetitorComparisonDrawerProps {
   competitor: Competitor | null;
   open: boolean;
@@ -45,7 +52,8 @@ export function CompetitorComparisonDrawer({
   open,
   onOpenChange,
 }: CompetitorComparisonDrawerProps) {
-  const [analytics, setAnalytics] = useState<ComparativeAnalyticsResponse | null>(null);
+  const [analytics, setAnalytics] =
+    useState<ComparativeAnalyticsResponse | null>(null);
   const [overlap, setOverlap] = useState<OverlapAnalysisResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
@@ -112,12 +120,16 @@ export function CompetitorComparisonDrawer({
                   {/* Advantage Score */}
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-base">Overall Position</CardTitle>
+                      <CardTitle className="text-base">
+                        Overall Position
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-white/50">Advantage Score</p>
+                          <p className="text-sm text-white/50">
+                            Advantage Score
+                          </p>
                           <p
                             className={cn(
                               'text-3xl font-bold',
@@ -157,7 +169,9 @@ export function CompetitorComparisonDrawer({
                             ))}
                           </ul>
                         ) : (
-                          <p className="text-sm text-white/50">No clear advantages</p>
+                          <p className="text-sm text-white/50">
+                            No clear advantages
+                          </p>
                         )}
                       </CardContent>
                     </Card>
@@ -179,7 +193,9 @@ export function CompetitorComparisonDrawer({
                             ))}
                           </ul>
                         ) : (
-                          <p className="text-sm text-white/50">No significant threats</p>
+                          <p className="text-sm text-white/50">
+                            No significant threats
+                          </p>
                         )}
                       </CardContent>
                     </Card>
@@ -195,7 +211,9 @@ export function CompetitorComparisonDrawer({
                     <MetricComparisonRow
                       label="Mention Volume"
                       brandValue={analytics.brandMetrics.mentionVolume}
-                      competitorValue={analytics.competitorMetrics.mentionVolume}
+                      competitorValue={
+                        analytics.competitorMetrics.mentionVolume
+                      }
                       differential={analytics.differentials.mentionVolume}
                       format={formatNumber}
                     />
@@ -216,14 +234,18 @@ export function CompetitorComparisonDrawer({
                     <MetricComparisonRow
                       label="Visibility"
                       brandValue={analytics.brandMetrics.visibilityScore}
-                      competitorValue={analytics.competitorMetrics.visibilityScore}
+                      competitorValue={
+                        analytics.competitorMetrics.visibilityScore
+                      }
                       differential={analytics.differentials.visibility}
                       format={(v) => v.toFixed(0)}
                     />
                     <MetricComparisonRow
                       label="Journalists"
                       brandValue={analytics.brandMetrics.journalistCount}
-                      competitorValue={analytics.competitorMetrics.journalistCount}
+                      competitorValue={
+                        analytics.competitorMetrics.journalistCount
+                      }
                       differential={analytics.differentials.journalists}
                       format={formatNumber}
                       icon={<Users className="h-4 w-4" />}
@@ -246,7 +268,9 @@ export function CompetitorComparisonDrawer({
                 <>
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-base">Journalist Overlap</CardTitle>
+                      <CardTitle className="text-base">
+                        Journalist Overlap
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between">
@@ -274,19 +298,25 @@ export function CompetitorComparisonDrawer({
                   <div className="grid gap-4 sm:grid-cols-3">
                     <Card>
                       <CardContent className="pt-4 text-center">
-                        <p className="text-2xl font-bold text-green-600">{overlap.brandExclusiveCount}</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {overlap.brandExclusiveCount}
+                        </p>
                         <p className="text-xs text-white/50">Your Exclusive</p>
                       </CardContent>
                     </Card>
                     <Card>
                       <CardContent className="pt-4 text-center">
-                        <p className="text-2xl font-bold text-yellow-600">{overlap.sharedCount}</p>
+                        <p className="text-2xl font-bold text-yellow-600">
+                          {overlap.sharedCount}
+                        </p>
                         <p className="text-xs text-white/50">Shared</p>
                       </CardContent>
                     </Card>
                     <Card>
                       <CardContent className="pt-4 text-center">
-                        <p className="text-2xl font-bold text-red-600">{overlap.competitorExclusiveCount}</p>
+                        <p className="text-2xl font-bold text-red-600">
+                          {overlap.competitorExclusiveCount}
+                        </p>
                         <p className="text-xs text-white/50">Competitor Only</p>
                       </CardContent>
                     </Card>
@@ -296,7 +326,9 @@ export function CompetitorComparisonDrawer({
                     <Card className="bg-muted">
                       <CardContent className="pt-4">
                         <p className="text-sm font-medium">Recommendation</p>
-                        <p className="mt-1 text-sm text-white/50">{overlap.recommendation}</p>
+                        <p className="mt-1 text-sm text-white/50">
+                          {overlap.recommendation}
+                        </p>
                       </CardContent>
                     </Card>
                   )}
@@ -307,7 +339,11 @@ export function CompetitorComparisonDrawer({
         )}
 
         <div className="mt-6">
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full">
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="w-full"
+          >
             Close
           </Button>
         </div>
@@ -350,7 +386,10 @@ function MetricComparisonRow({
         <p className="text-xs text-white/50">Them</p>
       </div>
       <div className="text-right">
-        <Badge variant={isPositive ? 'success' : 'destructive'} className="text-xs">
+        <Badge
+          variant={isPositive ? 'success' : 'destructive'}
+          className="text-xs"
+        >
           {isPositive ? '+' : ''}
           {format(differential)}
         </Badge>

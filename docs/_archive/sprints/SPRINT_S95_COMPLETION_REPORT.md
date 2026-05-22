@@ -66,6 +66,7 @@ PR Intelligence → Crisis Radar
 ```
 
 **AI Reasoning Flow:**
+
 1. Signals collected from media monitoring
 2. Cross-pillar influence mapped
 3. User can drill into reasoning via AIReasoningPopover
@@ -102,6 +103,7 @@ PR Intelligence → Crisis Radar
 **Created: `/docs/S95_PR_MEDIA_DB_READINESS.md`**
 
 Key findings:
+
 - **Readiness Score: 85%** for 200k journalist contacts
 - Core tables (journalist_profiles, media_outlets, media_lists) are ready
 - Recommended indexes for search performance
@@ -115,19 +117,19 @@ Key findings:
 
 ### New Files
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `/components/pr-intelligence/PRSituationBrief.tsx` | ~520 | Situation brief component |
-| `/components/pr-intelligence/PRAIRecommendations.tsx` | ~310 | AI recommendations panel |
-| `/components/pr-intelligence/PRContinuityLinks.tsx` | ~290 | Cross-pillar links |
-| `/components/pr-intelligence/index.ts` | ~35 | Barrel exports |
-| `/docs/S95_PR_MEDIA_DB_READINESS.md` | ~250 | DB readiness assessment |
-| `/docs/SPRINT_S95_COMPLETION_REPORT.md` | This file | Sprint report |
+| File                                                  | Lines     | Purpose                   |
+| ----------------------------------------------------- | --------- | ------------------------- |
+| `/components/pr-intelligence/PRSituationBrief.tsx`    | ~520      | Situation brief component |
+| `/components/pr-intelligence/PRAIRecommendations.tsx` | ~310      | AI recommendations panel  |
+| `/components/pr-intelligence/PRContinuityLinks.tsx`   | ~290      | Cross-pillar links        |
+| `/components/pr-intelligence/index.ts`                | ~35       | Barrel exports            |
+| `/docs/S95_PR_MEDIA_DB_READINESS.md`                  | ~250      | DB readiness assessment   |
+| `/docs/SPRINT_S95_COMPLETION_REPORT.md`               | This file | Sprint report             |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
+| File                   | Changes                                |
+| ---------------------- | -------------------------------------- |
 | `/app/app/pr/page.tsx` | Complete rebuild with tabbed interface |
 
 ---
@@ -136,28 +138,28 @@ Key findings:
 
 ```typescript
 // From PRSituationBrief
-export type { PRSituationBriefData, PRChange, PRSignal, PRAttentionItem }
+export type { PRSituationBriefData, PRChange, PRSignal, PRAttentionItem };
 
 // From PRAIRecommendations
-export type { PRAIRecommendationsData, PRRecommendation }
+export type { PRAIRecommendationsData, PRRecommendation };
 
 // From PRContinuityLinks
-export type { PRContinuityLinksData, PillarConnection, LinkedPillar }
+export type { PRContinuityLinksData, PillarConnection, LinkedPillar };
 ```
 
 ---
 
 ## Quality Metrics
 
-| Metric | Status |
-|--------|--------|
-| TypeScript Compilation | Pass |
-| Component Structure | DS v2 Compliant |
-| AI Transparency | Integrated (AIReasoningPopover) |
-| Cross-Pillar Orchestration | Visible |
-| Visual Hierarchy | Enhanced |
-| Spacing/Contrast | DS v2 Standard |
-| Responsive Design | Maintained |
+| Metric                     | Status                          |
+| -------------------------- | ------------------------------- |
+| TypeScript Compilation     | Pass                            |
+| Component Structure        | DS v2 Compliant                 |
+| AI Transparency            | Integrated (AIReasoningPopover) |
+| Cross-Pillar Orchestration | Visible                         |
+| Visual Hierarchy           | Enhanced                        |
+| Spacing/Contrast           | DS v2 Standard                  |
+| Responsive Design          | Maintained                      |
 
 ---
 
@@ -191,13 +193,13 @@ This sprint establishes the PR Intelligence pillar as a "command center" that:
 
 ## Exit Criteria Verification
 
-| Criteria | Status |
-|----------|--------|
-| PR user understands what changed | Situation Brief: What Changed tab |
-| PR user sees what's risky | Signals tab with Risk indicators |
-| PR user sees opportunities | Signals tab with Opportunity indicators |
-| PR user knows what actions to take | AI Recommendations panel |
-| PR connects to exec/crisis/content/seo | Continuity Links component |
+| Criteria                               | Status                                  |
+| -------------------------------------- | --------------------------------------- |
+| PR user understands what changed       | Situation Brief: What Changed tab       |
+| PR user sees what's risky              | Signals tab with Risk indicators        |
+| PR user sees opportunities             | Signals tab with Opportunity indicators |
+| PR user knows what actions to take     | AI Recommendations panel                |
+| PR connects to exec/crisis/content/seo | Continuity Links component              |
 
 **All exit criteria met.**
 
@@ -213,4 +215,4 @@ This sprint establishes the PR Intelligence pillar as a "command center" that:
 
 ---
 
-*Sprint S95 Complete*
+_Sprint S95 Complete_

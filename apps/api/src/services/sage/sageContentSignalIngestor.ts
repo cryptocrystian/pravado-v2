@@ -39,7 +39,9 @@ export async function ingestContentSignals(
   ]);
 
   signals.push(...staleDrafts, ...lowQuality, ...coverageGaps);
-  logger.info(`Content ingestor found ${signals.length} signals for org ${orgId}`);
+  logger.info(
+    `Content ingestor found ${signals.length} signals for org ${orgId}`
+  );
   return signals;
 }
 
@@ -51,7 +53,9 @@ async function findStaleDrafts(
   supabase: SupabaseClient,
   orgId: string
 ): Promise<ContentSignal[]> {
-  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+  const fourteenDaysAgo = new Date(
+    Date.now() - 14 * 24 * 60 * 60 * 1000
+  ).toISOString();
 
   const { data: staleDrafts } = await supabase
     .from('content_items')
@@ -72,7 +76,8 @@ async function findStaleDrafts(
       last_updated: item.updated_at,
       created_at: item.created_at,
       days_stale: Math.floor(
-        (Date.now() - new Date(item.updated_at).getTime()) / (24 * 60 * 60 * 1000)
+        (Date.now() - new Date(item.updated_at).getTime()) /
+          (24 * 60 * 60 * 1000)
       ),
     },
     evi_impact_estimate: 1.5,
@@ -139,12 +144,14 @@ async function findContentCoverageGaps(
   // Get all content topics for this org
   const { data: topics } = await supabase
     .from('content_topics')
-    .select(`
+    .select(
+      `
       id,
       name,
       content_item_id,
       content_items!inner (id, org_id, status)
-    `)
+    `
+    )
     .eq('content_items.org_id', orgId);
 
   if (!topics?.length) return [];

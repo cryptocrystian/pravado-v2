@@ -106,7 +106,8 @@ export function EnrichmentSuggestionsPanel({
           Merge Suggestions
         </h3>
         <span className="ml-auto text-sm text-gray-600">
-          {suggestions.length} potential {suggestions.length === 1 ? 'match' : 'matches'}
+          {suggestions.length} potential{' '}
+          {suggestions.length === 1 ? 'match' : 'matches'}
         </span>
       </div>
 
@@ -152,7 +153,9 @@ function SuggestionCard({
   return (
     <div
       className={`border-2 rounded-lg transition-all ${
-        hasConflicts ? 'border-yellow-200 bg-yellow-50' : 'border-gray-200 bg-white'
+        hasConflicts
+          ? 'border-yellow-200 bg-yellow-50'
+          : 'border-gray-200 bg-white'
       }`}
     >
       {/* Card Header */}

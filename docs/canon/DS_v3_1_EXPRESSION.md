@@ -1,4 +1,5 @@
 # PRAVADO v2 — DS v3.1 EXPRESSION
+
 Version: v2.0 (Canon — expanded from stub)
 Last Updated: 2026-02-24
 
@@ -6,15 +7,15 @@ Last Updated: 2026-02-24
 
 ## Background Palette Tokens
 
-| Token | CSS Variable | Tailwind Class | Hex | Use |
-|-------|-------------|---------------|-----|-----|
-| Page background | `--slate-0` / `--page-bg` | `bg-page` / `bg-slate-0` | `#0A0A0F` | The void. Page root. |
-| Subtle elevation | `--slate-1` | `bg-slate-1` | `#0E0E14` | Headers, sub-panels, sidebar. |
-| Card / Panel | `--slate-2` / `--panel-bg` | `bg-panel` / `bg-slate-2` | `#13131A` | Standard card and panel background. |
-| Panel elevated | `--slate-3` | `bg-slate-3` | `#19191F` | Inputs, elevated panels. |
-| Border / Active | `--slate-4` / `--dark-border` | `bg-slate-4` | `#1F1F28` | Active/hover states, default borders. |
-| Border hover | `--slate-5` | `bg-slate-5` | `#2A2A35` | Hover borders, pressed states. |
-| Muted surface | `--slate-6` | `bg-slate-6` | `#3D3D4A` | Muted surfaces, disabled states. |
+| Token            | CSS Variable                  | Tailwind Class            | Hex       | Use                                   |
+| ---------------- | ----------------------------- | ------------------------- | --------- | ------------------------------------- |
+| Page background  | `--slate-0` / `--page-bg`     | `bg-page` / `bg-slate-0`  | `#0A0A0F` | The void. Page root.                  |
+| Subtle elevation | `--slate-1`                   | `bg-slate-1`              | `#0E0E14` | Headers, sub-panels, sidebar.         |
+| Card / Panel     | `--slate-2` / `--panel-bg`    | `bg-panel` / `bg-slate-2` | `#13131A` | Standard card and panel background.   |
+| Panel elevated   | `--slate-3`                   | `bg-slate-3`              | `#19191F` | Inputs, elevated panels.              |
+| Border / Active  | `--slate-4` / `--dark-border` | `bg-slate-4`              | `#1F1F28` | Active/hover states, default borders. |
+| Border hover     | `--slate-5`                   | `bg-slate-5`              | `#2A2A35` | Hover borders, pressed states.        |
+| Muted surface    | `--slate-6`                   | `bg-slate-6`              | `#3D3D4A` | Muted surfaces, disabled states.      |
 
 **Stacking rule:** Never jump more than two steps between parent and child. Never use values between these steps (phantom values). Never go darker than `bg-page` except for the Entity Map canvas (dedicated `--canvas-bg: #050505` token).
 
@@ -22,13 +23,13 @@ Last Updated: 2026-02-24
 
 ## Brand Accent Tokens
 
-| Token | CSS Variable | Tailwind | Hex | Pillar |
-|-------|-------------|----------|-----|--------|
-| Iris / Purple | `--brand-iris` | `brand-iris` | `#A855F7` | Content |
-| Cyan | `--brand-cyan` | `brand-cyan` | `#00D9FF` | SEO / AEO |
-| Magenta | `--brand-magenta` | `brand-magenta` | `#D946EF` | PR |
-| Teal | `--brand-teal` | `brand-teal` | `#14B8A6` | Secondary accent |
-| Amber | `--brand-amber` | `brand-amber` | `#F59E0B` | Warning-adjacent |
+| Token         | CSS Variable      | Tailwind        | Hex       | Pillar           |
+| ------------- | ----------------- | --------------- | --------- | ---------------- |
+| Iris / Purple | `--brand-iris`    | `brand-iris`    | `#A855F7` | Content          |
+| Cyan          | `--brand-cyan`    | `brand-cyan`    | `#00D9FF` | SEO / AEO        |
+| Magenta       | `--brand-magenta` | `brand-magenta` | `#D946EF` | PR               |
+| Teal          | `--brand-teal`    | `brand-teal`    | `#14B8A6` | Secondary accent |
+| Amber         | `--brand-amber`   | `brand-amber`   | `#F59E0B` | Warning-adjacent |
 
 **Pillar law:** Iris is Content. Cyan is SEO/AEO. Magenta is PR. Never use a pillar color on a different pillar's elements.
 
@@ -36,12 +37,12 @@ Last Updated: 2026-02-24
 
 ## Semantic Colors
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| `semantic-success` | `#22C55E` | Success states — always with `/10` bg, `/20` border |
-| `semantic-warning` | `#EAB308` | Warning states — always with `/10` bg, `/20` border |
-| `semantic-danger` | `#EF4444` | Error/danger states — always with `/10` bg, `/20` border |
-| `semantic-info` | `#00D9FF` | Info — same as brand-cyan |
+| Token              | Hex       | Use                                                      |
+| ------------------ | --------- | -------------------------------------------------------- |
+| `semantic-success` | `#22C55E` | Success states — always with `/10` bg, `/20` border      |
+| `semantic-warning` | `#EAB308` | Warning states — always with `/10` bg, `/20` border      |
+| `semantic-danger`  | `#EF4444` | Error/danger states — always with `/10` bg, `/20` border |
+| `semantic-info`    | `#00D9FF` | Info — same as brand-cyan                                |
 
 ---
 
@@ -49,17 +50,17 @@ Last Updated: 2026-02-24
 
 **Fixed in v2.0:** The v1.0 canon used `text-lg` (18px) as the maximum heading size with `text-sm` (14px) body, creating a 4px gap invisible at normal viewing distances. The corrected scale ensures a 10px minimum gap between page titles and body text.
 
-| Level | Size | Tailwind | Weight | Opacity | Context |
-|-------|------|----------|--------|---------|---------|
-| Surface Title | 24px | `text-2xl` | 700 | `/95` | h1, one per route/surface |
-| Section Heading | 20px | `text-xl` | 600 | `/95` | Major content sections |
-| Pane / Panel Title | 18px | `text-lg` | 600 | `/90` | Tri-pane headers, modal headers |
-| Sub-section | 16px | `text-base` | 600 | `/90` | Card group labels, sub-sections |
-| Card Title | 15px | `text-[15px]` | 600 | `/90` | Individual card headings |
-| Body Primary | 14px | `text-sm` | 400 | `/85` | Main readable content |
-| Body Secondary | 13px | `text-[13px]` | 400 | `/70` | Supporting text |
-| Metadata | 12px | `text-xs` | 500 | `/55` | Must use uppercase + tracking-wide |
-| Badge / Micro | 11px | `text-[11px]` | 700 | varies | Badge labels only — uppercase required |
+| Level              | Size | Tailwind      | Weight | Opacity | Context                                |
+| ------------------ | ---- | ------------- | ------ | ------- | -------------------------------------- |
+| Surface Title      | 24px | `text-2xl`    | 700    | `/95`   | h1, one per route/surface              |
+| Section Heading    | 20px | `text-xl`     | 600    | `/95`   | Major content sections                 |
+| Pane / Panel Title | 18px | `text-lg`     | 600    | `/90`   | Tri-pane headers, modal headers        |
+| Sub-section        | 16px | `text-base`   | 600    | `/90`   | Card group labels, sub-sections        |
+| Card Title         | 15px | `text-[15px]` | 600    | `/90`   | Individual card headings               |
+| Body Primary       | 14px | `text-sm`     | 400    | `/85`   | Main readable content                  |
+| Body Secondary     | 13px | `text-[13px]` | 400    | `/70`   | Supporting text                        |
+| Metadata           | 12px | `text-xs`     | 500    | `/55`   | Must use uppercase + tracking-wide     |
+| Badge / Micro      | 11px | `text-[11px]` | 700    | varies  | Badge labels only — uppercase required |
 
 ### Hard Rules
 
@@ -80,13 +81,13 @@ Last Updated: 2026-02-24
 
 **Updated in v2.0:** Default radius reduced from 16px to 8px for enterprise authority.
 
-| Token | CSS Variable | Value | Use |
-|-------|-------------|-------|-----|
-| `rounded-xs` | `--radius-xs` | 4px | Tight elements: badges, chips |
-| `rounded-sm` | `--radius-sm` | 6px | Small buttons, compact elements |
-| `rounded-md` | `--radius-md` | 8px | **Default.** Cards, inputs, panels. |
-| `rounded-lg` | `--radius-lg` | 12px | Larger panels, drawers |
-| `rounded-2xl` | `--radius-2xl` | 16px | Modals, large overlays |
+| Token         | CSS Variable   | Value | Use                                 |
+| ------------- | -------------- | ----- | ----------------------------------- |
+| `rounded-xs`  | `--radius-xs`  | 4px   | Tight elements: badges, chips       |
+| `rounded-sm`  | `--radius-sm`  | 6px   | Small buttons, compact elements     |
+| `rounded-md`  | `--radius-md`  | 8px   | **Default.** Cards, inputs, panels. |
+| `rounded-lg`  | `--radius-lg`  | 12px  | Larger panels, drawers              |
+| `rounded-2xl` | `--radius-2xl` | 16px  | Modals, large overlays              |
 
 **Rule:** `rounded-md` (8px) is the default for all cards, inputs, buttons, and panels. 8px reads as professional precision tool. 16px reads as consumer app. Use 12px+ only for modals and large overlay containers.
 
@@ -106,13 +107,13 @@ Non-standard steps (`/8`, `/12`, `/22`, etc.) are **banned**. Tailwind may not g
 
 ## Elevation / Shadow System
 
-| Token | CSS Variable | Use |
-|-------|-------------|-----|
-| `shadow-elev-0` | `--elev-0` | Flat, no shadow |
-| `shadow-elev-1` | `--elev-1` | Standard card elevation |
-| `shadow-elev-2` | `--elev-2` | Hover state elevation |
-| `shadow-elev-3` | `--elev-3` | Drawers, modals |
-| `shadow-panel` | `--shadow-panel` | Fixed side panels |
+| Token           | CSS Variable     | Use                     |
+| --------------- | ---------------- | ----------------------- |
+| `shadow-elev-0` | `--elev-0`       | Flat, no shadow         |
+| `shadow-elev-1` | `--elev-1`       | Standard card elevation |
+| `shadow-elev-2` | `--elev-2`       | Hover state elevation   |
+| `shadow-elev-3` | `--elev-3`       | Drawers, modals         |
+| `shadow-panel`  | `--shadow-panel` | Fixed side panels       |
 
 ---
 

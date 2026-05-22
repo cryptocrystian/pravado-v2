@@ -153,12 +153,12 @@ ENABLE_MY_NEW_FEATURE=true
 
 ```typescript
 // Good
-ENABLE_PUSH_NOTIFICATIONS
-ENABLE_ADVANCED_SEARCH
+ENABLE_PUSH_NOTIFICATIONS;
+ENABLE_ADVANCED_SEARCH;
 
 // Bad
-FEATURE_1
-NEW_THING
+FEATURE_1;
+NEW_THING;
 ```
 
 ### 2. Default to Disabled
@@ -306,17 +306,19 @@ describe('Feature Flag Tests', () => {
 ### Flag Not Working
 
 1. **Check environment variable**:
+
    ```bash
    echo $ENABLE_DARK_MODE
    ```
 
 2. **Verify flag name** matches exactly:
+
    ```typescript
    // Correct
-   isEnabled('ENABLE_DARK_MODE')
+   isEnabled('ENABLE_DARK_MODE');
 
    // Wrong
-   isEnabled('enable_dark_mode')
+   isEnabled('enable_dark_mode');
    ```
 
 3. **Rebuild packages**:

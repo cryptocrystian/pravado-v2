@@ -32,7 +32,10 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
     if (!FLAGS.ENABLE_INSIGHT_CONFLICTS) {
       return reply.code(403).send({
         success: false,
-        error: { code: 'FEATURE_DISABLED', message: 'Insight Conflicts feature is not enabled' },
+        error: {
+          code: 'FEATURE_DISABLED',
+          message: 'Insight Conflicts feature is not enabled',
+        },
       });
     }
   });
@@ -63,7 +66,11 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
     const userId = (request as unknown as { userId: string }).userId;
     const input = createConflictSchema.parse(request.body);
 
-    const result = await insightConflictService.createConflict(orgId, userId, input);
+    const result = await insightConflictService.createConflict(
+      orgId,
+      userId,
+      input
+    );
 
     return reply.status(201).send(result);
   });
@@ -110,7 +117,12 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
     const { id } = request.params;
     const input = updateConflictSchema.parse(request.body);
 
-    const result = await insightConflictService.updateConflict(orgId, id, userId, input);
+    const result = await insightConflictService.updateConflict(
+      orgId,
+      id,
+      userId,
+      input
+    );
 
     return reply.send(result);
   });
@@ -124,7 +136,11 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
     const userId = (request as unknown as { userId: string }).userId;
     const { id } = request.params;
 
-    const result = await insightConflictService.deleteConflict(orgId, userId, id);
+    const result = await insightConflictService.deleteConflict(
+      orgId,
+      userId,
+      id
+    );
 
     return reply.send(result);
   });
@@ -137,16 +153,24 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
    * POST /insight-conflicts/:id/analyze
    * Analyze an insight conflict
    */
-  fastify.post<{ Params: { id: string } }>('/:id/analyze', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const userId = (request as unknown as { userId: string }).userId;
-    const { id } = request.params;
-    const input = analyzeConflictSchema.parse(request.body || {});
+  fastify.post<{ Params: { id: string } }>(
+    '/:id/analyze',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const userId = (request as unknown as { userId: string }).userId;
+      const { id } = request.params;
+      const input = analyzeConflictSchema.parse(request.body || {});
 
-    const result = await insightConflictService.analyzeConflict(orgId, id, userId, input);
+      const result = await insightConflictService.analyzeConflict(
+        orgId,
+        id,
+        userId,
+        input
+      );
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 
   // ============================================================================
   // RESOLUTION
@@ -156,31 +180,47 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
    * POST /insight-conflicts/:id/resolve
    * Resolve an insight conflict
    */
-  fastify.post<{ Params: { id: string } }>('/:id/resolve', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const userId = (request as unknown as { userId: string }).userId;
-    const { id } = request.params;
-    const input = resolveConflictSchema.parse(request.body);
+  fastify.post<{ Params: { id: string } }>(
+    '/:id/resolve',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const userId = (request as unknown as { userId: string }).userId;
+      const { id } = request.params;
+      const input = resolveConflictSchema.parse(request.body);
 
-    const result = await insightConflictService.resolveConflict(orgId, id, userId, input);
+      const result = await insightConflictService.resolveConflict(
+        orgId,
+        id,
+        userId,
+        input
+      );
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 
   /**
    * POST /insight-conflicts/:id/dismiss
    * Dismiss an insight conflict
    */
-  fastify.post<{ Params: { id: string } }>('/:id/dismiss', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const userId = (request as unknown as { userId: string }).userId;
-    const { id } = request.params;
-    const { reason } = (request.body as { reason?: string }) || {};
+  fastify.post<{ Params: { id: string } }>(
+    '/:id/dismiss',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const userId = (request as unknown as { userId: string }).userId;
+      const { id } = request.params;
+      const { reason } = (request.body as { reason?: string }) || {};
 
-    const result = await insightConflictService.dismissConflict(orgId, id, userId, reason);
+      const result = await insightConflictService.dismissConflict(
+        orgId,
+        id,
+        userId,
+        reason
+      );
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 
   // ============================================================================
   // ITEMS
@@ -190,16 +230,24 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
    * GET /insight-conflicts/:id/items
    * List conflict items
    */
-  fastify.get<{ Params: { id: string } }>('/:id/items', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const { id } = request.params;
-    const queryBase = listConflictItemsSchema.omit({ conflictId: true }).parse(request.query);
-    const query = { ...queryBase, conflictId: id };
+  fastify.get<{ Params: { id: string } }>(
+    '/:id/items',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const { id } = request.params;
+      const queryBase = listConflictItemsSchema
+        .omit({ conflictId: true })
+        .parse(request.query);
+      const query = { ...queryBase, conflictId: id };
 
-    const result = await insightConflictService.listConflictItems(orgId, query);
+      const result = await insightConflictService.listConflictItems(
+        orgId,
+        query
+      );
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 
   // ============================================================================
   // RESOLUTIONS
@@ -209,16 +257,21 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
    * GET /insight-conflicts/:id/resolutions
    * List resolutions for a conflict
    */
-  fastify.get<{ Params: { id: string } }>('/:id/resolutions', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const { id } = request.params;
-    const queryBase = listResolutionsSchema.omit({ conflictId: true }).parse(request.query);
-    const query = { ...queryBase, conflictId: id };
+  fastify.get<{ Params: { id: string } }>(
+    '/:id/resolutions',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const { id } = request.params;
+      const queryBase = listResolutionsSchema
+        .omit({ conflictId: true })
+        .parse(request.query);
+      const query = { ...queryBase, conflictId: id };
 
-    const result = await insightConflictService.listResolutions(orgId, query);
+      const result = await insightConflictService.listResolutions(orgId, query);
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 
   /**
    * POST /insight-conflicts/:id/resolutions/:resolutionId/review
@@ -252,16 +305,21 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
    * GET /insight-conflicts/:id/audit-log
    * List audit log entries for a conflict
    */
-  fastify.get<{ Params: { id: string } }>('/:id/audit-log', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const { id } = request.params;
-    const queryBase = listAuditLogSchema.omit({ conflictId: true }).parse(request.query);
-    const query = { ...queryBase, conflictId: id };
+  fastify.get<{ Params: { id: string } }>(
+    '/:id/audit-log',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const { id } = request.params;
+      const queryBase = listAuditLogSchema
+        .omit({ conflictId: true })
+        .parse(request.query);
+      const query = { ...queryBase, conflictId: id };
 
-    const result = await insightConflictService.listAuditLog(orgId, query);
+      const result = await insightConflictService.listAuditLog(orgId, query);
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 
   // ============================================================================
   // GRAPH
@@ -271,14 +329,17 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
    * GET /insight-conflicts/:id/graph
    * Get conflict graph for visualization
    */
-  fastify.get<{ Params: { id: string } }>('/:id/graph', async (request, reply) => {
-    const orgId = (request as unknown as { orgId: string }).orgId;
-    const { id } = request.params;
+  fastify.get<{ Params: { id: string } }>(
+    '/:id/graph',
+    async (request, reply) => {
+      const orgId = (request as unknown as { orgId: string }).orgId;
+      const { id } = request.params;
 
-    const result = await insightConflictService.getConflictGraph(orgId, id);
+      const result = await insightConflictService.getConflictGraph(orgId, id);
 
-    return reply.send(result);
-  });
+      return reply.send(result);
+    }
+  );
 
   /**
    * POST /insight-conflicts/graph-edges
@@ -336,7 +397,11 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
     const userId = (request as unknown as { userId: string }).userId;
     const input = runDetectionSchema.parse(request.body || {});
 
-    const result = await insightConflictService.runDetection(orgId, userId, input);
+    const result = await insightConflictService.runDetection(
+      orgId,
+      userId,
+      input
+    );
 
     return reply.send(result);
   });
@@ -354,7 +419,11 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
     const userId = (request as unknown as { userId: string }).userId;
     const input = batchAnalyzeSchema.parse(request.body);
 
-    const result = await insightConflictService.batchAnalyze(orgId, userId, input);
+    const result = await insightConflictService.batchAnalyze(
+      orgId,
+      userId,
+      input
+    );
 
     return reply.send(result);
   });
@@ -368,7 +437,11 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
     const userId = (request as unknown as { userId: string }).userId;
     const input = batchResolveSchema.parse(request.body);
 
-    const result = await insightConflictService.batchResolve(orgId, userId, input);
+    const result = await insightConflictService.batchResolve(
+      orgId,
+      userId,
+      input
+    );
 
     return reply.send(result);
   });
@@ -382,7 +455,11 @@ const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {
     const userId = (request as unknown as { userId: string }).userId;
     const input = batchDismissSchema.parse(request.body);
 
-    const result = await insightConflictService.batchDismiss(orgId, userId, input);
+    const result = await insightConflictService.batchDismiss(
+      orgId,
+      userId,
+      input
+    );
 
     return reply.send(result);
   });

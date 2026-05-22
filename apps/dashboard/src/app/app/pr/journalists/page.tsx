@@ -13,7 +13,10 @@ import { useState, useEffect, useMemo } from 'react';
 
 import { JournalistListItem } from '@/components/pr/JournalistListItem';
 import { JournalistProfile } from '@/components/pr/JournalistProfile';
-import { mockJournalists, mockSageJournalists } from '@/components/pr/pr-mock-data';
+import {
+  mockJournalists,
+  mockSageJournalists,
+} from '@/components/pr/pr-mock-data';
 import type { Journalist } from '@/components/pr/pr-mock-data';
 import { SageJournalistCard } from '@/components/pr/SageJournalistCard';
 import { fetchJournalists, adaptProfileToJournalist } from '@/lib/prApi';
@@ -60,11 +63,15 @@ export default function JournalistsPage() {
     }
 
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const selectedJournalist =
-    [...contacts, ...mockSageJournalists].find((j) => j.id === selectedId) ?? contacts[0] ?? null;
+    [...contacts, ...mockSageJournalists].find((j) => j.id === selectedId) ??
+    contacts[0] ??
+    null;
 
   const filteredContacts = useMemo(() => {
     if (!search) return contacts;
@@ -73,14 +80,14 @@ export default function JournalistsPage() {
       (j) =>
         j.name.toLowerCase().includes(q) ||
         j.publication.toLowerCase().includes(q) ||
-        j.beats.some((b) => b.toLowerCase().includes(q)),
+        j.beats.some((b) => b.toLowerCase().includes(q))
     );
   }, [contacts, search]);
 
   // "Pitched" = journalists who have been pitched (first 4 from live data)
   const pitchedIds = useMemo(
     () => new Set(contacts.slice(0, 4).map((c) => c.id)),
-    [contacts],
+    [contacts]
   );
 
   function getVisibleJournalists(): Journalist[] {
@@ -153,12 +160,16 @@ export default function JournalistsPage() {
                 type="button"
                 onClick={async () => {
                   try {
-                    const res = await fetch('/api/journalists/enrich', { method: 'POST' });
+                    const res = await fetch('/api/journalists/enrich', {
+                      method: 'POST',
+                    });
                     const json = await res.json();
                     if (json.success) {
                       handleRetry(); // Reload to show enriched data
                     }
-                  } catch { /* ignore */ }
+                  } catch {
+                    /* ignore */
+                  }
                 }}
                 className="bg-white/5 border border-white/8 rounded-xl px-3 py-1.5 text-sm text-white/70 hover:text-white transition-colors"
                 title="Enrich all journalists with Hunter.io data"
@@ -203,10 +214,14 @@ export default function JournalistsPage() {
         </div>
 
         {/* List */}
-        <div className={`flex-1 overflow-y-auto${isLoading ? ' opacity-50' : ''}`}>
+        <div
+          className={`flex-1 overflow-y-auto${isLoading ? ' opacity-50' : ''}`}
+        >
           {error ? (
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-              <p className="text-sm text-red-400 mb-3">Could not load contacts. Please try again.</p>
+              <p className="text-sm text-red-400 mb-3">
+                Could not load contacts. Please try again.
+              </p>
               <button
                 type="button"
                 onClick={handleRetry}

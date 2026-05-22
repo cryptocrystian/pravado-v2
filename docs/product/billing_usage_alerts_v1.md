@@ -12,6 +12,7 @@ The Billing Usage Alerts system provides proactive notifications for billing-rel
 ## Problem Statement
 
 Without proactive alerting:
+
 - Users hit hard quota limits unexpectedly, causing service interruptions
 - Trial accounts expire without warning
 - Overage charges surprise organizations at month-end
@@ -21,6 +22,7 @@ Without proactive alerting:
 ## Solution
 
 A comprehensive alerting system that:
+
 1. **Monitors usage thresholds** - Generates alerts at 80% (soft warning) and 100% (hard warning)
 2. **Tracks trial expiration** - Alerts when trial ends in ≤5 days
 3. **Reports overage incidents** - Notifies when usage exceeds plan limits
@@ -56,6 +58,7 @@ CREATE TABLE billing_usage_alerts (
 ```
 
 **Indexes:**
+
 - `idx_billing_usage_alerts_org_id` - Quick org lookup
 - `idx_billing_usage_alerts_type` - Filter by alert type
 - `idx_billing_usage_alerts_unacknowledged` - Find active alerts
@@ -63,15 +66,15 @@ CREATE TABLE billing_usage_alerts (
 
 ### Alert Types
 
-| Type | Severity | Trigger | Example Message |
-|------|----------|---------|----------------|
-| `usage_soft_warning` | warning | 80% of soft limit | "Token usage at 80% (400,000 of 500,000)" |
-| `usage_hard_warning` | critical | 100%+ of limit | "Token usage limit reached (500,000 tokens used)" |
-| `overage_incurred` | warning | Usage exceeds plan | "Overage incurred: 100,000 tokens beyond plan limit" |
-| `trial_expiring` | warning/critical | ≤5 days remaining | "Trial expires in 3 days" |
-| `subscription_canceled` | critical | Stripe cancellation | "Subscription canceled, access ends on 2024-02-01" |
-| `plan_upgraded` | info | Plan tier increased | "Plan upgraded from Starter to Growth" |
-| `plan_downgraded` | warning | Plan tier decreased | "Plan downgraded from Growth to Starter" |
+| Type                    | Severity         | Trigger             | Example Message                                      |
+| ----------------------- | ---------------- | ------------------- | ---------------------------------------------------- |
+| `usage_soft_warning`    | warning          | 80% of soft limit   | "Token usage at 80% (400,000 of 500,000)"            |
+| `usage_hard_warning`    | critical         | 100%+ of limit      | "Token usage limit reached (500,000 tokens used)"    |
+| `overage_incurred`      | warning          | Usage exceeds plan  | "Overage incurred: 100,000 tokens beyond plan limit" |
+| `trial_expiring`        | warning/critical | ≤5 days remaining   | "Trial expires in 3 days"                            |
+| `subscription_canceled` | critical         | Stripe cancellation | "Subscription canceled, access ends on 2024-02-01"   |
+| `plan_upgraded`         | info             | Plan tier increased | "Plan upgraded from Starter to Growth"               |
+| `plan_downgraded`       | warning          | Plan tier decreased | "Plan downgraded from Growth to Starter"             |
 
 ### Severity Levels
 
@@ -84,6 +87,7 @@ CREATE TABLE billing_usage_alerts (
 ### 1. BillingService Methods
 
 **`generateUsageAlerts(orgId: string): Promise<BillingAlertRecord[]>`**
+
 - Checks current usage against limits
 - Generates alerts for:
   - Token usage ≥80%
@@ -94,6 +98,7 @@ CREATE TABLE billing_usage_alerts (
 - Non-blocking (returns empty array on error)
 
 **`getAlertsForOrg(orgId: string, options?): Promise<BillingAlertRecord[]>`**
+
 - Retrieves all alerts for an organization
 - Supports filtering:
   - `unacknowledgedOnly` - Show only active alerts
@@ -101,11 +106,13 @@ CREATE TABLE billing_usage_alerts (
 - Returns alerts sorted by creation date (newest first)
 
 **`acknowledgeAlert(alertId: string): Promise<void>`**
+
 - Marks an alert as acknowledged
 - Sets `acknowledged_at` timestamp
 - Reduces unacknowledged count in summaries
 
 **`getAlertSummaryForOrg(orgId: string): Promise<BillingAlertSummary>`**
+
 - Returns aggregated alert counts
 - Groups by severity (info, warning, critical)
 - Groups by type (all 7 alert types)
@@ -116,6 +123,7 @@ CREATE TABLE billing_usage_alerts (
 **Location**: `apps/api/src/services/notificationService.ts`
 
 **Methods** (logging-only in S32):
+
 - `sendOrgAlertEmail(orgId, alertRecord)` - Future: Send email notification
 - `sendTrialExpiringNotice(orgId, daysRemaining, trialEndsAt)` - Future: Trial expiration email
 - `sendOverageIncurredNotice(orgId, metricType, amount, cost)` - Future: Overage notification
@@ -125,11 +133,13 @@ All methods currently log to console. Future sprints will implement actual email
 ### 3. API Endpoints
 
 **POST `/api/v1/billing/alerts/generate`**
+
 - Generates alerts for the calling user's organization
 - Requires authentication
 - Returns: `{ generatedCount, alerts }`
 
 **GET `/api/v1/billing/alerts`**
+
 - Lists alerts for the calling user's organization
 - Query params:
   - `unacknowledgedOnly` (boolean) - Filter active alerts
@@ -137,6 +147,7 @@ All methods currently log to console. Future sprints will implement actual email
 - Returns: `{ alerts, summary }`
 
 **POST `/api/v1/billing/alerts/:alertId/acknowledge`**
+
 - Acknowledges a specific alert
 - Requires authentication
 - Verifies alert belongs to user's organization
@@ -147,6 +158,7 @@ All methods currently log to console. Future sprints will implement actual email
 **Location**: `apps/dashboard/src/components/billing/AlertsPanel.tsx`
 
 **Features:**
+
 - Displays alert summary cards (Total, Info, Warning, Critical)
 - Lists all alerts with color-coded severity
 - Shows alert type, message, and creation time
@@ -156,6 +168,7 @@ All methods currently log to console. Future sprints will implement actual email
 - Responsive Tailwind CSS styling
 
 **Usage:**
+
 ```tsx
 import { AlertsPanel } from '@/components/billing/AlertsPanel';
 
@@ -174,6 +187,7 @@ function BillingPage() {
 `ENABLE_USAGE_ALERTS` (default: `true`)
 
 When disabled:
+
 - `generateUsageAlerts()` returns empty array
 - `getAlertsForOrg()` returns empty array
 - `acknowledgeAlert()` no-ops
@@ -201,12 +215,14 @@ graph TD
 ## Idempotency
 
 Alerts implement idempotency to prevent notification spam:
+
 - Before creating an alert, checks for existing unacknowledged alert of same type
 - Only generates new alert if no active alert exists
 - Users must acknowledge alerts before new ones are generated
 - Prevents duplicate notifications for same issue
 
 **Example:**
+
 ```typescript
 // First call: Generates alert for 80% token usage
 await billingService.generateUsageAlerts('org-1');
@@ -225,12 +241,14 @@ await billingService.generateUsageAlerts('org-1');
 ## Security & Permissions
 
 **Row Level Security (RLS):**
+
 - Users can SELECT alerts for orgs they're members of
 - Service role can INSERT alerts (automated generation)
 - Users can UPDATE alerts (acknowledgement) for their orgs
 - Service role can DELETE alerts (cleanup/admin)
 
 **API Security:**
+
 - All endpoints require authentication (`requireUser` middleware)
 - Alert access scoped to user's organization
 - Acknowledgement verifies alert ownership before updating
@@ -240,6 +258,7 @@ await billingService.generateUsageAlerts('org-1');
 Alerts store contextual data in the `metadata` JSONB field:
 
 **Usage Alerts:**
+
 ```json
 {
   "metric": "tokens" | "playbook_runs" | "seats",
@@ -250,6 +269,7 @@ Alerts store contextual data in the `metadata` JSONB field:
 ```
 
 **Trial Expiring:**
+
 ```json
 {
   "daysRemaining": 3,
@@ -258,6 +278,7 @@ Alerts store contextual data in the `metadata` JSONB field:
 ```
 
 **Overage Incurred:**
+
 ```json
 {
   "metric": "tokens",
@@ -271,6 +292,7 @@ Alerts store contextual data in the `metadata` JSONB field:
 **Test Suite**: `apps/api/__tests__/billingAlerts.test.ts`
 
 **Coverage:**
+
 - ✅ Alert generation at 80% usage (soft warning)
 - ✅ Alert generation at 100%+ usage (hard warning)
 - ✅ Trial expiring alerts (≤5 days)
@@ -287,18 +309,21 @@ Alerts store contextual data in the `metadata` JSONB field:
 ## Future Enhancements (Post-S32)
 
 ### Phase 1: Notification Delivery
+
 - Implement email notifications via SendGrid/AWS SES
 - Add SMS notifications for critical alerts
 - In-app notification center
 - Webhook delivery for third-party integrations
 
 ### Phase 2: Alert Configuration
+
 - User-configurable thresholds (customize 80% warning)
 - Alert preferences (email, SMS, webhook)
 - Quiet hours / notification scheduling
 - Alert muting / snoozing
 
 ### Phase 3: Advanced Features
+
 - Predictive alerts (projected usage trends)
 - Alert aggregation (daily digests)
 - Multi-channel delivery (email + SMS + webhook)
@@ -306,6 +331,7 @@ Alerts store contextual data in the `metadata` JSONB field:
 - Team-based alert routing (billing admin vs. developer)
 
 ### Phase 4: Analytics
+
 - Alert history and trends
 - Mean time to acknowledgement
 - Most common alert types
@@ -314,11 +340,13 @@ Alerts store contextual data in the `metadata` JSONB field:
 ## Monitoring & Observability
 
 **Logging:**
+
 - INFO: Alert generation triggered, alerts created
 - WARN: No billing summary available, alert generation skipped
 - ERROR: Failed to insert alert, acknowledgement failed
 
 **Metrics to Track** (future):
+
 - Alerts generated per day
 - Alert types distribution
 - Mean time to acknowledgement
@@ -328,6 +356,7 @@ Alerts store contextual data in the `metadata` JSONB field:
 ## Migration Path
 
 **From S28-S31 to S32:**
+
 1. Run migration 38 to create `billing_usage_alerts` table
 2. Deploy API with new alert methods and endpoints
 3. Deploy dashboard with AlertsPanel component
@@ -348,6 +377,7 @@ Alerts store contextual data in the `metadata` JSONB field:
 ## API Usage Examples
 
 ### Generate Alerts
+
 ```bash
 curl -X POST https://api.pravado.com/api/v1/billing/alerts/generate \
   -H "Authorization: Bearer $TOKEN" \
@@ -355,6 +385,7 @@ curl -X POST https://api.pravado.com/api/v1/billing/alerts/generate \
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -382,12 +413,14 @@ curl -X POST https://api.pravado.com/api/v1/billing/alerts/generate \
 ```
 
 ### List Alerts
+
 ```bash
 curl https://api.pravado.com/api/v1/billing/alerts?unacknowledgedOnly=true&limit=10 \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -413,12 +446,14 @@ curl https://api.pravado.com/api/v1/billing/alerts?unacknowledgedOnly=true&limit
 ```
 
 ### Acknowledge Alert
+
 ```bash
 curl -X POST https://api.pravado.com/api/v1/billing/alerts/alert-1/acknowledge \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -435,6 +470,7 @@ curl -X POST https://api.pravado.com/api/v1/billing/alerts/alert-1/acknowledge \
 No additional configuration required beyond S28-S31 billing setup.
 
 **Feature Flag:**
+
 ```typescript
 // packages/feature-flags/src/flags.ts
 export const FLAGS = {
@@ -446,18 +482,21 @@ export const FLAGS = {
 ## Troubleshooting
 
 **Issue: No alerts generated**
+
 - Check feature flag: `ENABLE_USAGE_ALERTS = true`
 - Verify billing summary exists for org
 - Check usage is actually above thresholds
 - Verify no existing unacknowledged alerts (idempotency)
 
 **Issue: Alerts not appearing in dashboard**
+
 - Check API endpoint accessibility
 - Verify user authentication
 - Check console for API errors
 - Confirm user is member of org with alerts
 
 **Issue: Cannot acknowledge alert**
+
 - Verify alert belongs to user's organization
 - Check alert hasn't already been acknowledged
 - Verify user authentication
@@ -465,6 +504,7 @@ export const FLAGS = {
 ## Summary
 
 Sprint S32 delivers a complete billing usage alerting foundation:
+
 - ✅ **7 alert types** covering all billing scenarios
 - ✅ **3 severity levels** for appropriate escalation
 - ✅ **Idempotent generation** prevents notification spam

@@ -39,9 +39,11 @@ The system is built on four core tables:
 ### Tables
 
 #### `playbooks`
+
 Stores playbook metadata and configuration.
 
 **Key Columns:**
+
 - `id` (UUID) - Primary key
 - `organization_id` (UUID) - Tenant isolation
 - `name` (VARCHAR) - Playbook name (unique per org + version)
@@ -55,9 +57,11 @@ Stores playbook metadata and configuration.
 - `agent_id` (UUID) - Optional agent association
 
 #### `playbook_steps`
+
 Defines ordered execution steps with branching.
 
 **Key Columns:**
+
 - `id` (UUID) - Primary key
 - `playbook_id` (UUID) - Foreign key to playbooks (CASCADE DELETE)
 - `step_name` (VARCHAR) - Human-readable step name
@@ -71,9 +75,11 @@ Defines ordered execution steps with branching.
 - `is_optional` (BOOLEAN) - Skip on failure if true
 
 #### `playbook_executions`
+
 Tracks execution instances.
 
 **Key Columns:**
+
 - `id` (UUID) - Primary key
 - `playbook_id` (UUID) - Foreign key to playbooks
 - `organization_id` (UUID) - Tenant isolation
@@ -89,9 +95,11 @@ Tracks execution instances.
 - `duration_ms` (INTEGER) - Auto-calculated duration
 
 #### `playbook_step_results`
+
 Stores individual step execution results.
 
 **Key Columns:**
+
 - `id` (UUID) - Primary key
 - `execution_id` (UUID) - Foreign key to playbook_executions
 - `step_id` (UUID) - Foreign key to playbook_steps
@@ -106,12 +114,14 @@ Stores individual step execution results.
 ### Enum Types
 
 #### `playbook_status`
+
 - `DRAFT` - Being created/edited
 - `ACTIVE` - Ready for execution
 - `ARCHIVED` - Stored but not in use
 - `DEPRECATED` - Outdated, should not be used
 
 #### `playbook_execution_status`
+
 - `PENDING` - Queued for execution
 - `RUNNING` - Currently executing
 - `PAUSED` - Temporarily paused
@@ -121,6 +131,7 @@ Stores individual step execution results.
 - `TIMEOUT` - Exceeded time limit
 
 #### `playbook_step_type`
+
 - `AGENT_EXECUTION` - Execute an AI agent
 - `DATA_TRANSFORM` - Transform/process data
 - `CONDITIONAL_BRANCH` - Branch based on conditions
@@ -133,6 +144,7 @@ Stores individual step execution results.
 - `CUSTOM_FUNCTION` - Execute custom JavaScript/TypeScript
 
 #### `step_result_status`
+
 - `PENDING` - Not yet started
 - `RUNNING` - Currently executing
 - `COMPLETED` - Successfully finished
@@ -145,9 +157,11 @@ Stores individual step execution results.
 ## PostgreSQL Functions
 
 ### `get_playbook_execution_summary(playbook_id UUID)`
+
 Returns execution statistics for a playbook.
 
 **Returns:**
+
 - `total_executions` - Total number of executions
 - `successful_executions` - Count of completed executions
 - `failed_executions` - Count of failed executions
@@ -157,14 +171,17 @@ Returns execution statistics for a playbook.
 - `success_rate` - Percentage of successful executions
 
 **Usage:**
+
 ```sql
 SELECT * FROM get_playbook_execution_summary('playbook-uuid-here');
 ```
 
 ### `get_active_playbooks(agent_id UUID)`
+
 Returns all active playbooks for a specific agent.
 
 **Returns:**
+
 - `id` - Playbook ID
 - `name` - Playbook name
 - `description` - Playbook description
@@ -175,14 +192,17 @@ Returns all active playbooks for a specific agent.
 - `execution_count` - Total execution count
 
 **Usage:**
+
 ```sql
 SELECT * FROM get_active_playbooks('agent-uuid-here');
 ```
 
 ### `get_execution_progress(execution_id UUID)`
+
 Returns real-time execution progress.
 
 **Returns:**
+
 - `execution_id` - Execution ID
 - `status` - Current status
 - `progress_percentage` - Completion percentage (0-100)
@@ -192,6 +212,7 @@ Returns real-time execution progress.
 - `elapsed_time_ms` - Time elapsed since start
 
 **Usage:**
+
 ```sql
 SELECT * FROM get_execution_progress('execution-uuid-here');
 ```
@@ -309,11 +330,11 @@ interface PlaybookStepResult {
 
 ```typescript
 const DEFAULT_TIMEOUTS = {
-  PLAYBOOK: 3600,  // 1 hour
-  STEP: 300,       // 5 minutes
-  AGENT_EXECUTION: 600,   // 10 minutes
-  API_CALL: 30,    // 30 seconds
-  DATABASE_QUERY: 60,     // 1 minute
+  PLAYBOOK: 3600, // 1 hour
+  STEP: 300, // 5 minutes
+  AGENT_EXECUTION: 600, // 10 minutes
+  API_CALL: 30, // 30 seconds
+  DATABASE_QUERY: 60, // 1 minute
 };
 
 const DEFAULT_RETRY_CONFIG = {
@@ -339,17 +360,19 @@ CREATE POLICY playbooks_tenant_isolation ON playbooks
 ```
 
 **Usage in Application:**
+
 ```typescript
 // Set organization context before queries
 await supabase.rpc('set_config', {
   parameter: 'app.current_organization_id',
-  value: organizationId
+  value: organizationId,
 });
 ```
 
 ### Cascade Deletes
 
 All foreign keys use `ON DELETE CASCADE` to maintain referential integrity:
+
 - Deleting a playbook deletes all its steps and executions
 - Deleting an execution deletes all its step results
 
@@ -391,6 +414,7 @@ idx_playbook_step_results_status
 **File:** `apps/api/src/database/migrations/20250102_create_playbooks_system.sql`
 
 **To Apply:**
+
 ```bash
 # Using Supabase CLI
 supabase db push
@@ -435,6 +459,7 @@ apps/api/
 **Script:** `apps/api/verify-sprint41-phase3.4.js`
 
 **Run Verification:**
+
 ```bash
 node apps/api/verify-sprint41-phase3.4.js
 ```

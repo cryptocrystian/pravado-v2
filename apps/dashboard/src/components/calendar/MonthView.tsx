@@ -42,7 +42,11 @@ function getMonthLabel(isoDate: string): string {
 function formatAgendaDate(isoDate: string): string {
   const [year, month, day] = isoDate.split('-').map(Number);
   const date = new Date(year, month - 1, day);
-  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 /** Whether a day belongs to the displayed month */
@@ -104,16 +108,36 @@ function shiftMonth(isoDate: string, delta: number): string {
 
 function ChevronLeft() {
   return (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 19l-7-7 7-7"
+      />
     </svg>
   );
 }
 
 function ChevronRight() {
   return (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 5l7 7-7 7"
+      />
     </svg>
   );
 }
@@ -128,7 +152,13 @@ const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 // COMPONENT
 // ============================================
 
-export function MonthView({ items, selectedDate, onSelectDate, onItemClick, today }: MonthViewProps) {
+export function MonthView({
+  items,
+  selectedDate,
+  onSelectDate,
+  onItemClick,
+  today,
+}: MonthViewProps) {
   const grid = useMemo(() => getMonthGrid(selectedDate), [selectedDate]);
   const monthLabel = getMonthLabel(selectedDate);
 
@@ -138,7 +168,7 @@ export function MonthView({ items, selectedDate, onSelectDate, onItemClick, toda
       items
         .filter((item) => item.date === selectedDate)
         .sort((a, b) => a.time.localeCompare(b.time)),
-    [items, selectedDate],
+    [items, selectedDate]
   );
 
   // Build a lookup: date -> pillar list for dot indicators
@@ -200,7 +230,10 @@ export function MonthView({ items, selectedDate, onSelectDate, onItemClick, toda
           {/* Date cells */}
           <div className="flex-1 grid grid-rows-6 overflow-y-auto prave-scroll">
             {grid.map((week, wi) => (
-              <div key={wi} className="grid grid-cols-7 border-b border-border-subtle last:border-b-0">
+              <div
+                key={wi}
+                className="grid grid-cols-7 border-b border-border-subtle last:border-b-0"
+              >
                 {week.map((dayDate) => {
                   const inMonth = isCurrentMonth(dayDate, selectedDate);
                   const isSelected = dayDate === selectedDate;
@@ -216,9 +249,10 @@ export function MonthView({ items, selectedDate, onSelectDate, onItemClick, toda
                       className={`
                         relative flex flex-col items-center gap-1 py-2 px-1 min-h-[56px]
                         transition-all duration-150 cursor-pointer
-                        ${isSelected
-                          ? 'bg-brand-cyan/10 border border-brand-cyan/30'
-                          : 'border border-transparent hover:bg-slate-4'
+                        ${
+                          isSelected
+                            ? 'bg-brand-cyan/10 border border-brand-cyan/30'
+                            : 'border border-transparent hover:bg-slate-4'
                         }
                         ${isToday && !isSelected ? 'ring-1 ring-brand-cyan/30' : ''}
                       `}
@@ -280,12 +314,18 @@ export function MonthView({ items, selectedDate, onSelectDate, onItemClick, toda
             {agendaItems.length > 0 ? (
               <div className="px-5 py-4 space-y-3">
                 {agendaItems.map((item) => (
-                  <CalendarItemCard key={item.id} item={item} onClick={onItemClick} />
+                  <CalendarItemCard
+                    key={item.id}
+                    item={item}
+                    onClick={onItemClick}
+                  />
                 ))}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full px-5">
-                <span className="text-sm text-white/40">No items for this date</span>
+                <span className="text-sm text-white/40">
+                  No items for this date
+                </span>
                 <span className="text-[13px] text-white/30 mt-1">
                   Select a day with pillar dots to view its items
                 </span>

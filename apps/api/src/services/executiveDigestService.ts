@@ -177,7 +177,8 @@ function mapDigestRecord(record: DigestRecord): ExecDigest {
     includeGovernance: record.include_governance,
     summary: record.summary as ExecDigestSummary,
     kpiSnapshot: record.kpi_snapshot as unknown as ExecDigestKpiSnapshot[],
-    insightsSnapshot: record.insights_snapshot as unknown as ExecDigestInsightSnapshot[],
+    insightsSnapshot:
+      record.insights_snapshot as unknown as ExecDigestInsightSnapshot[],
     pdfStoragePath: record.pdf_storage_path,
     pdfGeneratedAt: record.pdf_generated_at,
     isActive: record.is_active,
@@ -227,7 +228,9 @@ function mapRecipientRecord(record: RecipientRecord): ExecDigestRecipient {
   };
 }
 
-function mapDeliveryLogRecord(record: DeliveryLogRecord): ExecDigestDeliveryLog {
+function mapDeliveryLogRecord(
+  record: DeliveryLogRecord
+): ExecDigestDeliveryLog {
   return {
     id: record.id,
     orgId: record.org_id,
@@ -245,7 +248,8 @@ function mapDeliveryLogRecord(record: DeliveryLogRecord): ExecDigestDeliveryLog 
     pdfStoragePath: record.pdf_storage_path,
     pdfSizeBytes: record.pdf_size_bytes,
     metadata: record.metadata,
-    recipientResults: record.recipient_results as unknown as ExecDigestRecipientResult[],
+    recipientResults:
+      record.recipient_results as unknown as ExecDigestRecipientResult[],
     createdAt: record.created_at,
   };
 }
@@ -285,7 +289,11 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
         metadata: meta || {},
       });
     } catch (error) {
-      logger.warn('Failed to log digest action', { error, actionType, digestId });
+      logger.warn('Failed to log digest action', {
+        error,
+        actionType,
+        digestId,
+      });
     }
   }
 
@@ -331,10 +339,17 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
 
     const digest = mapDigestRecord(data as DigestRecord);
 
-    await logDigestAction(orgId, digest.id, userId, 'created', 'Digest created', {
-      title: digest.title,
-      deliveryPeriod: digest.deliveryPeriod,
-    });
+    await logDigestAction(
+      orgId,
+      digest.id,
+      userId,
+      'created',
+      'Digest created',
+      {
+        title: digest.title,
+        deliveryPeriod: digest.deliveryPeriod,
+      }
+    );
 
     logger.info('Digest created', { digestId: digest.id, orgId });
     return digest;
@@ -365,7 +380,9 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
       .eq('digest_id', digestId)
       .order('sort_order', { ascending: true });
 
-    const sections = (sectionsData || []).map((r) => mapSectionRecord(r as SectionRecord));
+    const sections = (sectionsData || []).map((r) =>
+      mapSectionRecord(r as SectionRecord)
+    );
 
     // Fetch recipients
     const { data: recipientsData } = await db
@@ -375,7 +392,9 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
       .eq('is_active', true)
       .order('created_at', { ascending: true });
 
-    const recipients = (recipientsData || []).map((r) => mapRecipientRecord(r as RecipientRecord));
+    const recipients = (recipientsData || []).map((r) =>
+      mapRecipientRecord(r as RecipientRecord)
+    );
 
     // Fetch recent deliveries
     const { data: deliveriesData } = await db
@@ -401,7 +420,13 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
     orgId: string,
     query: ListExecDigestsQuery
   ): Promise<ListExecDigestsResponse> {
-    const { includeArchived = false, deliveryPeriod, isActive, limit = 20, offset = 0 } = query;
+    const {
+      includeArchived = false,
+      deliveryPeriod,
+      isActive,
+      limit = 20,
+      offset = 0,
+    } = query;
 
     let dbQuery = db
       .from('exec_digests')
@@ -466,17 +491,24 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
     const updateData: Record<string, unknown> = {};
 
     if (input.title !== undefined) updateData.title = input.title;
-    if (input.description !== undefined) updateData.description = input.description;
-    if (input.deliveryPeriod !== undefined) updateData.delivery_period = input.deliveryPeriod;
-    if (input.timeWindow !== undefined) updateData.time_window = input.timeWindow;
+    if (input.description !== undefined)
+      updateData.description = input.description;
+    if (input.deliveryPeriod !== undefined)
+      updateData.delivery_period = input.deliveryPeriod;
+    if (input.timeWindow !== undefined)
+      updateData.time_window = input.timeWindow;
     if (input.scheduleDayOfWeek !== undefined)
       updateData.schedule_day_of_week = input.scheduleDayOfWeek;
-    if (input.scheduleHour !== undefined) updateData.schedule_hour = input.scheduleHour;
-    if (input.scheduleTimezone !== undefined) updateData.schedule_timezone = input.scheduleTimezone;
+    if (input.scheduleHour !== undefined)
+      updateData.schedule_hour = input.scheduleHour;
+    if (input.scheduleTimezone !== undefined)
+      updateData.schedule_timezone = input.scheduleTimezone;
     if (input.includeRecommendations !== undefined)
       updateData.include_recommendations = input.includeRecommendations;
-    if (input.includeKpis !== undefined) updateData.include_kpis = input.includeKpis;
-    if (input.includeInsights !== undefined) updateData.include_insights = input.includeInsights;
+    if (input.includeKpis !== undefined)
+      updateData.include_kpis = input.includeKpis;
+    if (input.includeInsights !== undefined)
+      updateData.include_insights = input.includeInsights;
     if (input.includeRiskSummary !== undefined)
       updateData.include_risk_summary = input.includeRiskSummary;
     if (input.includeReputationSummary !== undefined)
@@ -487,9 +519,11 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
       updateData.include_media_performance = input.includeMediaPerformance;
     if (input.includeCrisisStatus !== undefined)
       updateData.include_crisis_status = input.includeCrisisStatus;
-    if (input.includeGovernance !== undefined) updateData.include_governance = input.includeGovernance;
+    if (input.includeGovernance !== undefined)
+      updateData.include_governance = input.includeGovernance;
     if (input.isActive !== undefined) updateData.is_active = input.isActive;
-    if (input.isArchived !== undefined) updateData.is_archived = input.isArchived;
+    if (input.isArchived !== undefined)
+      updateData.is_archived = input.isArchived;
 
     updateData.updated_by = userId;
 
@@ -507,9 +541,16 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
 
     const digest = mapDigestRecord(data as DigestRecord);
 
-    await logDigestAction(orgId, digestId, userId, 'updated', 'Digest updated', {
-      updatedFields: Object.keys(input),
-    });
+    await logDigestAction(
+      orgId,
+      digestId,
+      userId,
+      'updated',
+      'Digest updated',
+      {
+        updatedFields: Object.keys(input),
+      }
+    );
 
     return digest;
   }
@@ -531,7 +572,13 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
         throw new Error(`Failed to delete digest: ${error.message}`);
       }
 
-      await logDigestAction(orgId, digestId, userId, 'deleted', 'Digest hard deleted');
+      await logDigestAction(
+        orgId,
+        digestId,
+        userId,
+        'deleted',
+        'Digest hard deleted'
+      );
       return { deleted: true, archived: false };
     }
 
@@ -546,7 +593,13 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
       throw new Error(`Failed to archive digest: ${error.message}`);
     }
 
-    await logDigestAction(orgId, digestId, userId, 'deleted', 'Digest archived');
+    await logDigestAction(
+      orgId,
+      digestId,
+      userId,
+      'deleted',
+      'Digest archived'
+    );
     return { deleted: false, archived: true };
   }
 
@@ -581,10 +634,17 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
 
     const recipient = mapRecipientRecord(data as RecipientRecord);
 
-    await logDigestAction(orgId, digestId, userId, 'recipient_added', 'Recipient added', {
-      email: recipient.email,
-      recipientId: recipient.id,
-    });
+    await logDigestAction(
+      orgId,
+      digestId,
+      userId,
+      'recipient_added',
+      'Recipient added',
+      {
+        email: recipient.email,
+        recipientId: recipient.id,
+      }
+    );
 
     return recipient;
   }
@@ -600,7 +660,8 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
 
     if (input.name !== undefined) updateData.name = input.name;
     if (input.role !== undefined) updateData.role = input.role;
-    if (input.includePdf !== undefined) updateData.include_pdf = input.includePdf;
+    if (input.includePdf !== undefined)
+      updateData.include_pdf = input.includePdf;
     if (input.includeInlineSummary !== undefined)
       updateData.include_inline_summary = input.includeInlineSummary;
     if (input.isActive !== undefined) updateData.is_active = input.isActive;
@@ -645,10 +706,17 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
       throw new Error(`Failed to remove recipient: ${error.message}`);
     }
 
-    await logDigestAction(orgId, digestId, userId, 'recipient_removed', 'Recipient removed', {
-      email: recipientData?.email,
-      recipientId,
-    });
+    await logDigestAction(
+      orgId,
+      digestId,
+      userId,
+      'recipient_removed',
+      'Recipient removed',
+      {
+        email: recipientData?.email,
+        recipientId,
+      }
+    );
 
     return true;
   }
@@ -670,7 +738,9 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
       dbQuery = dbQuery.eq('is_active', isActive);
     }
 
-    dbQuery = dbQuery.order('created_at', { ascending: true }).range(offset, offset + limit - 1);
+    dbQuery = dbQuery
+      .order('created_at', { ascending: true })
+      .range(offset, offset + limit - 1);
 
     const { data, error, count } = await dbQuery;
 
@@ -679,7 +749,9 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
     }
 
     return {
-      recipients: (data || []).map((r) => mapRecipientRecord(r as RecipientRecord)),
+      recipients: (data || []).map((r) =>
+        mapRecipientRecord(r as RecipientRecord)
+      ),
       total: count || 0,
       hasMore: (count || 0) > offset + limit,
     };
@@ -726,7 +798,13 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
         .eq('id', update.sectionId);
     }
 
-    await logDigestAction(orgId, digestId, userId, 'sections_reordered', 'Sections reordered');
+    await logDigestAction(
+      orgId,
+      digestId,
+      userId,
+      'sections_reordered',
+      'Sections reordered'
+    );
 
     // Return updated sections
     const result = await listSections(orgId, digestId);
@@ -754,7 +832,9 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
       dbQuery = dbQuery.eq('status', status);
     }
 
-    dbQuery = dbQuery.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+    dbQuery = dbQuery
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data, error, count } = await dbQuery;
 
@@ -763,7 +843,9 @@ export function createExecutiveDigestService(config: ExecDigestServiceConfig) {
     }
 
     return {
-      deliveryLogs: (data || []).map((r) => mapDeliveryLogRecord(r as DeliveryLogRecord)),
+      deliveryLogs: (data || []).map((r) =>
+        mapDeliveryLogRecord(r as DeliveryLogRecord)
+      ),
       total: count || 0,
       hasMore: (count || 0) > offset + limit,
     };
@@ -1139,19 +1221,22 @@ Format as a numbered list. Each recommendation should be specific and tied to th
     }
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${openaiApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: prompt }],
-          max_tokens: 1000,
-          temperature: 0.7,
-        }),
-      });
+      const response = await fetch(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${openaiApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: 1000,
+            temperature: 0.7,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`OpenAI API error: ${response.status}`);
@@ -1168,7 +1253,10 @@ Format as a numbered list. Each recommendation should be specific and tied to th
 
       return { content, tokensUsed, durationMs };
     } catch (error) {
-      logger.error('Failed to generate section content', { error, sectionType });
+      logger.error('Failed to generate section content', {
+        error,
+        sectionType,
+      });
       return {
         content: `Unable to generate ${EXEC_DIGEST_SECTION_TYPE_LABELS[sectionType]} content. Please try again.`,
         tokensUsed: 0,
@@ -1249,7 +1337,10 @@ Format as a numbered list. Each recommendation should be specific and tied to th
       // For KPI and insight sections, format the data directly
       if (sectionType === 'key_kpis') {
         content = aggregatedData.kpis
-          .map((k) => `- **${k.metricLabel}**: ${k.metricValue}${k.metricUnit ? ` ${k.metricUnit}` : ''}`)
+          .map(
+            (k) =>
+              `- **${k.metricLabel}**: ${k.metricValue}${k.metricUnit ? ` ${k.metricUnit}` : ''}`
+          )
           .join('\n');
       } else if (sectionType === 'key_insights') {
         content = aggregatedData.insights
@@ -1259,10 +1350,18 @@ Format as a numbered list. Each recommendation should be specific and tied to th
           )
           .join('\n');
       } else if (sectionType === 'crisis_status') {
-        const crisisIncidents = (aggregatedData.crisisData.incidents as Array<{ title: string; severity: number; status: string }>) || [];
+        const crisisIncidents =
+          (aggregatedData.crisisData.incidents as Array<{
+            title: string;
+            severity: number;
+            status: string;
+          }>) || [];
         if (crisisIncidents.length > 0) {
           content = crisisIncidents
-            .map((c) => `- **${c.title}** - Severity: ${c.severity}, Status: ${c.status}`)
+            .map(
+              (c) =>
+                `- **${c.title}** - Severity: ${c.severity}, Status: ${c.status}`
+            )
             .join('\n');
         } else {
           content = 'No active crisis incidents.';
@@ -1308,14 +1407,19 @@ Format as a numbered list. Each recommendation should be specific and tied to th
       totalKpis: aggregatedData.kpis.length,
       totalInsights: aggregatedData.insights.length,
       riskScore: aggregatedData.riskData.overallScore as number | undefined,
-      reputationScore: aggregatedData.reputationData.overallScore as number | undefined,
+      reputationScore: aggregatedData.reputationData.overallScore as
+        | number
+        | undefined,
       topRiskCount: aggregatedData.insights.filter((i) => i.isRisk).length,
-      topOpportunityCount: aggregatedData.insights.filter((i) => i.isOpportunity).length,
+      topOpportunityCount: aggregatedData.insights.filter(
+        (i) => i.isOpportunity
+      ).length,
       systemsContributing: [
         ...new Set(
-          [...aggregatedData.kpis.map((k) => k.sourceSystem), ...aggregatedData.insights.map((i) => i.sourceSystem)].filter(
-            Boolean
-          ) as string[]
+          [
+            ...aggregatedData.kpis.map((k) => k.sourceSystem),
+            ...aggregatedData.insights.map((i) => i.sourceSystem),
+          ].filter(Boolean) as string[]
         ),
       ],
     };
@@ -1333,18 +1437,31 @@ Format as a numbered list. Each recommendation should be specific and tied to th
     // Generate PDF if requested
     let pdfUrl: string | null = null;
     if (input.generatePdf) {
-      const pdfResult = await generateDigestPdf(orgId, digestId, userId, generatedSections, summary);
+      const pdfResult = await generateDigestPdf(
+        orgId,
+        digestId,
+        userId,
+        generatedSections,
+        summary
+      );
       pdfUrl = pdfResult.publicUrl;
     }
 
     const generationDurationMs = Date.now() - startTime;
 
-    await logDigestAction(orgId, digestId, userId, 'generated', 'Digest generated', {
-      sectionsCount: generatedSections.length,
-      totalTokensUsed,
-      generationDurationMs,
-      pdfGenerated: !!pdfUrl,
-    });
+    await logDigestAction(
+      orgId,
+      digestId,
+      userId,
+      'generated',
+      'Digest generated',
+      {
+        sectionsCount: generatedSections.length,
+        totalTokensUsed,
+        generationDurationMs,
+        pdfGenerated: !!pdfUrl,
+      }
+    );
 
     // Fetch updated digest
     const updatedDigestResponse = await getDigest(orgId, digestId);
@@ -1413,10 +1530,12 @@ Format as a numbered list. Each recommendation should be specific and tied to th
     const storagePath = `${orgId}/${fileName}`;
 
     // Upload to storage
-    const { error: uploadError } = await db.storage.from(storageBucket).upload(storagePath, pdfBuffer, {
-      contentType: 'application/pdf',
-      upsert: true,
-    });
+    const { error: uploadError } = await db.storage
+      .from(storageBucket)
+      .upload(storagePath, pdfBuffer, {
+        contentType: 'application/pdf',
+        upsert: true,
+      });
 
     if (uploadError) {
       logger.error('Failed to upload PDF', { error: uploadError });
@@ -1424,7 +1543,9 @@ Format as a numbered list. Each recommendation should be specific and tied to th
     }
 
     // Get public URL
-    const { data: urlData } = db.storage.from(storageBucket).getPublicUrl(storagePath);
+    const { data: urlData } = db.storage
+      .from(storageBucket)
+      .getPublicUrl(storagePath);
 
     // Update digest with PDF info
     await db
@@ -1435,10 +1556,17 @@ Format as a numbered list. Each recommendation should be specific and tied to th
       })
       .eq('id', digestId);
 
-    await logDigestAction(orgId, digestId, userId, 'pdf_generated', 'PDF generated', {
-      storagePath,
-      sizeBytes: pdfBuffer.length,
-    });
+    await logDigestAction(
+      orgId,
+      digestId,
+      userId,
+      'pdf_generated',
+      'PDF generated',
+      {
+        storagePath,
+        sizeBytes: pdfBuffer.length,
+      }
+    );
 
     return {
       storagePath,
@@ -1478,7 +1606,8 @@ Format as a numbered list. Each recommendation should be specific and tied to th
 
     // Regenerate PDF if requested or if none exists
     let pdfUrl = digest.pdfStoragePath
-      ? db.storage.from(storageBucket).getPublicUrl(digest.pdfStoragePath).data?.publicUrl
+      ? db.storage.from(storageBucket).getPublicUrl(digest.pdfStoragePath).data
+          ?.publicUrl
       : null;
 
     if (input.regeneratePdf || !pdfUrl) {
@@ -1546,7 +1675,8 @@ Format as a numbered list. Each recommendation should be specific and tied to th
           recipientId: recipient.id,
           email: recipient.email,
           status: 'error',
-          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+          errorMessage:
+            error instanceof Error ? error.message : 'Unknown error',
         });
         failCount++;
       }
@@ -1587,12 +1717,19 @@ Format as a numbered list. Each recommendation should be specific and tied to th
       .eq('id', deliveryLogId)
       .single();
 
-    await logDigestAction(orgId, digestId, userId, 'delivered', 'Digest delivered', {
-      recipientsCount: recipients.length,
-      successCount,
-      failCount,
-      testMode: input.testMode,
-    });
+    await logDigestAction(
+      orgId,
+      digestId,
+      userId,
+      'delivered',
+      'Digest delivered',
+      {
+        recipientsCount: recipients.length,
+        successCount,
+        failCount,
+        testMode: input.testMode,
+      }
+    );
 
     return {
       deliveryLog: mapDeliveryLogRecord(finalLogData as DeliveryLogRecord),
@@ -1625,19 +1762,24 @@ Format as a numbered list. Each recommendation should be specific and tied to th
   async function updateNextDeliveryTime(digestId: string): Promise<void> {
     const { data: digest } = await db
       .from('exec_digests')
-      .select('delivery_period, schedule_day_of_week, schedule_hour, schedule_timezone')
+      .select(
+        'delivery_period, schedule_day_of_week, schedule_hour, schedule_timezone'
+      )
       .eq('id', digestId)
       .single();
 
     if (!digest) return;
 
     // Calculate next delivery time using database function
-    const { data: nextDelivery } = await db.rpc('calculate_next_digest_delivery', {
-      p_delivery_period: digest.delivery_period,
-      p_schedule_day: digest.schedule_day_of_week,
-      p_schedule_hour: digest.schedule_hour,
-      p_timezone: digest.schedule_timezone,
-    });
+    const { data: nextDelivery } = await db.rpc(
+      'calculate_next_digest_delivery',
+      {
+        p_delivery_period: digest.delivery_period,
+        p_schedule_day: digest.schedule_day_of_week,
+        p_schedule_hour: digest.schedule_hour,
+        p_timezone: digest.schedule_timezone,
+      }
+    );
 
     await db
       .from('exec_digests')
@@ -1650,7 +1792,9 @@ Format as a numbered list. Each recommendation should be specific and tied to th
   // ==========================================================================
 
   async function getDigestStats(orgId: string): Promise<ExecDigestStats> {
-    const { data, error } = await db.rpc('get_exec_digest_stats', { p_org_id: orgId });
+    const { data, error } = await db.rpc('get_exec_digest_stats', {
+      p_org_id: orgId,
+    });
 
     if (error || !data) {
       return {
@@ -1713,4 +1857,6 @@ Format as a numbered list. Each recommendation should be specific and tied to th
 }
 
 // Export service type
-export type ExecutiveDigestService = ReturnType<typeof createExecutiveDigestService>;
+export type ExecutiveDigestService = ReturnType<
+  typeof createExecutiveDigestService
+>;

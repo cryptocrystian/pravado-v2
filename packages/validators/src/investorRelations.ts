@@ -136,44 +136,58 @@ export const investorEventTypeSchema = z.enum([
 /**
  * Summary JSON schema
  */
-export const investorPackSummaryJsonSchema = z.object({
-  revenue: z.number().optional(),
-  revenueGrowth: z.number().optional(),
-  ebitda: z.number().optional(),
-  sentimentScore: z.number().min(0).max(100).optional(),
-  riskScore: z.number().min(0).max(100).optional(),
-  keyMetrics: z.array(z.object({
-    name: z.string(),
-    value: z.union([z.number(), z.string()]),
-    change: z.number().optional(),
-    trend: z.enum(['up', 'down', 'stable']).optional(),
-  })).optional(),
-  highlightsCount: z.number().int().min(0).optional(),
-  lowlightsCount: z.number().int().min(0).optional(),
-}).passthrough();
+export const investorPackSummaryJsonSchema = z
+  .object({
+    revenue: z.number().optional(),
+    revenueGrowth: z.number().optional(),
+    ebitda: z.number().optional(),
+    sentimentScore: z.number().min(0).max(100).optional(),
+    riskScore: z.number().min(0).max(100).optional(),
+    keyMetrics: z
+      .array(
+        z.object({
+          name: z.string(),
+          value: z.union([z.number(), z.string()]),
+          change: z.number().optional(),
+          trend: z.enum(['up', 'down', 'stable']).optional(),
+        })
+      )
+      .optional(),
+    highlightsCount: z.number().int().min(0).optional(),
+    lowlightsCount: z.number().int().min(0).optional(),
+  })
+  .passthrough();
 
 /**
  * Raw LLM JSON schema
  */
-export const investorSectionRawLlmJsonSchema = z.object({
-  prompt: z.string().optional(),
-  response: z.string().optional(),
-  model: z.string().optional(),
-  tokensUsed: z.number().int().min(0).optional(),
-  durationMs: z.number().int().min(0).optional(),
-}).passthrough();
+export const investorSectionRawLlmJsonSchema = z
+  .object({
+    prompt: z.string().optional(),
+    response: z.string().optional(),
+    model: z.string().optional(),
+    tokensUsed: z.number().int().min(0).optional(),
+    durationMs: z.number().int().min(0).optional(),
+  })
+  .passthrough();
 
 /**
  * Q&A source summary JSON schema
  */
-export const investorQnASourceSummaryJsonSchema = z.object({
-  sources: z.array(z.object({
-    system: investorSourceSystemSchema,
-    refId: z.string(),
-    relevance: z.number().min(0).max(1),
-  })).optional(),
-  keyDataPoints: z.array(z.string()).optional(),
-}).passthrough();
+export const investorQnASourceSummaryJsonSchema = z
+  .object({
+    sources: z
+      .array(
+        z.object({
+          system: investorSourceSystemSchema,
+          refId: z.string(),
+          relevance: z.number().min(0).max(1),
+        })
+      )
+      .optional(),
+    keyDataPoints: z.array(z.string()).optional(),
+  })
+  .passthrough();
 
 // ============================================================================
 // REQUEST SCHEMAS
@@ -186,15 +200,26 @@ export const createInvestorPackSchema = z.object({
   title: z.string().min(1).max(255),
   description: z.string().max(2000).optional(),
   format: investorPackFormatSchema.optional().default('quarterly_earnings'),
-  primaryAudience: investorPrimaryAudienceSchema.optional().default('investors'),
+  primaryAudience: investorPrimaryAudienceSchema
+    .optional()
+    .default('investors'),
   periodStart: z.string().datetime({ offset: true }),
   periodEnd: z.string().datetime({ offset: true }),
-  fiscalQuarter: z.string().regex(/^Q[1-4]$/).optional(),
+  fiscalQuarter: z
+    .string()
+    .regex(/^Q[1-4]$/)
+    .optional(),
   fiscalYear: z.number().int().min(2000).max(2100).optional(),
   sectionTypes: z.array(investorSectionTypeSchema).optional(),
   llmModel: z.string().optional().default('gpt-4o'),
-  tone: z.enum(['professional', 'formal', 'executive']).optional().default('professional'),
-  targetLength: z.enum(['brief', 'standard', 'comprehensive']).optional().default('comprehensive'),
+  tone: z
+    .enum(['professional', 'formal', 'executive'])
+    .optional()
+    .default('professional'),
+  targetLength: z
+    .enum(['brief', 'standard', 'comprehensive'])
+    .optional()
+    .default('comprehensive'),
   meta: z.record(z.unknown()).optional().default({}),
 });
 
@@ -208,7 +233,10 @@ export const updateInvestorPackSchema = z.object({
   primaryAudience: investorPrimaryAudienceSchema.optional(),
   periodStart: z.string().datetime({ offset: true }).optional(),
   periodEnd: z.string().datetime({ offset: true }).optional(),
-  fiscalQuarter: z.string().regex(/^Q[1-4]$/).optional(),
+  fiscalQuarter: z
+    .string()
+    .regex(/^Q[1-4]$/)
+    .optional(),
   fiscalYear: z.number().int().min(2000).max(2100).optional(),
   sectionTypes: z.array(investorSectionTypeSchema).optional(),
   llmModel: z.string().optional(),
@@ -221,17 +249,18 @@ export const updateInvestorPackSchema = z.object({
  * List investor packs query schema
  */
 export const listInvestorPacksQuerySchema = z.object({
-  status: z.union([
-    investorPackStatusSchema,
-    z.array(investorPackStatusSchema),
-  ]).optional(),
-  format: z.union([
-    investorPackFormatSchema,
-    z.array(investorPackFormatSchema),
-  ]).optional(),
+  status: z
+    .union([investorPackStatusSchema, z.array(investorPackStatusSchema)])
+    .optional(),
+  format: z
+    .union([investorPackFormatSchema, z.array(investorPackFormatSchema)])
+    .optional(),
   primaryAudience: investorPrimaryAudienceSchema.optional(),
   fiscalYear: z.coerce.number().int().min(2000).max(2100).optional(),
-  fiscalQuarter: z.string().regex(/^Q[1-4]$/).optional(),
+  fiscalQuarter: z
+    .string()
+    .regex(/^Q[1-4]$/)
+    .optional(),
   includeArchived: z.coerce.boolean().optional().default(false),
   limit: z.coerce.number().int().min(1).max(100).optional().default(20),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -266,10 +295,14 @@ export const regenerateInvestorSectionSchema = z.object({
  * Reorder sections request schema
  */
 export const reorderInvestorSectionsSchema = z.object({
-  sectionOrder: z.array(z.object({
-    sectionId: z.string().uuid(),
-    orderIndex: z.number().int().min(0),
-  })).min(1),
+  sectionOrder: z
+    .array(
+      z.object({
+        sectionId: z.string().uuid(),
+        orderIndex: z.number().int().min(0),
+      })
+    )
+    .min(1),
 });
 
 /**
@@ -311,10 +344,9 @@ export const generateInvestorQnASchema = z.object({
  */
 export const listInvestorQnAQuerySchema = z.object({
   packId: z.string().uuid().optional(),
-  category: z.union([
-    investorQnACategorySchema,
-    z.array(investorQnACategorySchema),
-  ]).optional(),
+  category: z
+    .union([investorQnACategorySchema, z.array(investorQnACategorySchema)])
+    .optional(),
   status: z.enum(['draft', 'approved', 'archived']).optional(),
   minConfidence: z.coerce.number().int().min(0).max(100).optional(),
   searchTerm: z.string().max(200).optional(),
@@ -349,10 +381,9 @@ export const archiveInvestorPackSchema = z.object({
  */
 export const listInvestorAuditLogQuerySchema = z.object({
   packId: z.string().uuid().optional(),
-  eventType: z.union([
-    investorEventTypeSchema,
-    z.array(investorEventTypeSchema),
-  ]).optional(),
+  eventType: z
+    .union([investorEventTypeSchema, z.array(investorEventTypeSchema)])
+    .optional(),
   userId: z.string().uuid().optional(),
   startDate: z.string().datetime({ offset: true }).optional(),
   endDate: z.string().datetime({ offset: true }).optional(),
@@ -532,24 +563,38 @@ export const investorPackAuditLogRecordSchema = z.object({
 
 export type InvestorPackFormat = z.infer<typeof investorPackFormatSchema>;
 export type InvestorPackStatus = z.infer<typeof investorPackStatusSchema>;
-export type InvestorPrimaryAudience = z.infer<typeof investorPrimaryAudienceSchema>;
+export type InvestorPrimaryAudience = z.infer<
+  typeof investorPrimaryAudienceSchema
+>;
 export type InvestorSectionType = z.infer<typeof investorSectionTypeSchema>;
 export type InvestorSectionStatus = z.infer<typeof investorSectionStatusSchema>;
 export type InvestorSourceSystem = z.infer<typeof investorSourceSystemSchema>;
 export type InvestorQnACategory = z.infer<typeof investorQnACategorySchema>;
 export type InvestorEventType = z.infer<typeof investorEventTypeSchema>;
 
-export type InvestorPackSummaryJson = z.infer<typeof investorPackSummaryJsonSchema>;
-export type InvestorSectionRawLlmJson = z.infer<typeof investorSectionRawLlmJsonSchema>;
-export type InvestorQnASourceSummaryJson = z.infer<typeof investorQnASourceSummaryJsonSchema>;
+export type InvestorPackSummaryJson = z.infer<
+  typeof investorPackSummaryJsonSchema
+>;
+export type InvestorSectionRawLlmJson = z.infer<
+  typeof investorSectionRawLlmJsonSchema
+>;
+export type InvestorQnASourceSummaryJson = z.infer<
+  typeof investorQnASourceSummaryJsonSchema
+>;
 
 export type CreateInvestorPack = z.infer<typeof createInvestorPackSchema>;
 export type UpdateInvestorPack = z.infer<typeof updateInvestorPackSchema>;
-export type ListInvestorPacksQuery = z.infer<typeof listInvestorPacksQuerySchema>;
+export type ListInvestorPacksQuery = z.infer<
+  typeof listInvestorPacksQuerySchema
+>;
 export type GenerateInvestorPack = z.infer<typeof generateInvestorPackSchema>;
 export type UpdateInvestorSection = z.infer<typeof updateInvestorSectionSchema>;
-export type RegenerateInvestorSection = z.infer<typeof regenerateInvestorSectionSchema>;
-export type ReorderInvestorSections = z.infer<typeof reorderInvestorSectionsSchema>;
+export type RegenerateInvestorSection = z.infer<
+  typeof regenerateInvestorSectionSchema
+>;
+export type ReorderInvestorSections = z.infer<
+  typeof reorderInvestorSectionsSchema
+>;
 export type CreateInvestorQnA = z.infer<typeof createInvestorQnASchema>;
 export type UpdateInvestorQnA = z.infer<typeof updateInvestorQnASchema>;
 export type GenerateInvestorQnA = z.infer<typeof generateInvestorQnASchema>;
@@ -557,18 +602,30 @@ export type ListInvestorQnAQuery = z.infer<typeof listInvestorQnAQuerySchema>;
 export type ApproveInvestorPack = z.infer<typeof approveInvestorPackSchema>;
 export type PublishInvestorPack = z.infer<typeof publishInvestorPackSchema>;
 export type ArchiveInvestorPack = z.infer<typeof archiveInvestorPackSchema>;
-export type ListInvestorAuditLogQuery = z.infer<typeof listInvestorAuditLogQuerySchema>;
+export type ListInvestorAuditLogQuery = z.infer<
+  typeof listInvestorAuditLogQuerySchema
+>;
 
 export type InvestorPackIdParam = z.infer<typeof investorPackIdParamSchema>;
-export type InvestorSectionIdParam = z.infer<typeof investorSectionIdParamSchema>;
+export type InvestorSectionIdParam = z.infer<
+  typeof investorSectionIdParamSchema
+>;
 export type InvestorQnAIdParam = z.infer<typeof investorQnAIdParamSchema>;
-export type InvestorPackSectionParam = z.infer<typeof investorPackSectionParamSchema>;
+export type InvestorPackSectionParam = z.infer<
+  typeof investorPackSectionParamSchema
+>;
 
 export type InvestorPackRecord = z.infer<typeof investorPackRecordSchema>;
-export type InvestorPackSectionRecord = z.infer<typeof investorPackSectionRecordSchema>;
-export type InvestorPackSourceRecord = z.infer<typeof investorPackSourceRecordSchema>;
+export type InvestorPackSectionRecord = z.infer<
+  typeof investorPackSectionRecordSchema
+>;
+export type InvestorPackSourceRecord = z.infer<
+  typeof investorPackSourceRecordSchema
+>;
 export type InvestorQnARecord = z.infer<typeof investorQnARecordSchema>;
-export type InvestorPackAuditLogRecord = z.infer<typeof investorPackAuditLogRecordSchema>;
+export type InvestorPackAuditLogRecord = z.infer<
+  typeof investorPackAuditLogRecordSchema
+>;
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -577,7 +634,9 @@ export type InvestorPackAuditLogRecord = z.infer<typeof investorPackAuditLogReco
 /**
  * Get default sections for a format
  */
-export function getDefaultSectionsForFormat(format: InvestorPackFormat): InvestorSectionType[] {
+export function getDefaultSectionsForFormat(
+  format: InvestorPackFormat
+): InvestorSectionType[] {
   switch (format) {
     case 'quarterly_earnings':
       return [
@@ -640,12 +699,7 @@ export function getDefaultSectionsForFormat(format: InvestorPackFormat): Investo
       ];
     case 'custom':
     default:
-      return [
-        'executive_summary',
-        'highlights',
-        'lowlights',
-        'outlook',
-      ];
+      return ['executive_summary', 'highlights', 'lowlights', 'outlook'];
   }
 }
 

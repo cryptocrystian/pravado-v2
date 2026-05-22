@@ -7,7 +7,11 @@
 
 import type { PRPitchSequence, PRPitchSequenceStats } from '@pravado/types';
 
-import { formatDate, formatSequenceStatus, getStatusColor } from '@/lib/prPitchApi';
+import {
+  formatDate,
+  formatSequenceStatus,
+  getStatusColor,
+} from '@/lib/prPitchApi';
 
 interface SequenceListProps {
   sequences: (PRPitchSequence & { stats?: PRPitchSequenceStats })[];
@@ -29,7 +33,9 @@ export function SequenceList({
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-lg font-semibold text-gray-900">Pitch Sequences</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Pitch Sequences
+          </h2>
           <button
             onClick={onCreateNew}
             className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -57,12 +63,16 @@ export function SequenceList({
                 key={sequence.id}
                 onClick={() => onSelect(sequence.id)}
                 className={`w-full text-left p-4 hover:bg-gray-50 transition-colors ${
-                  selectedId === sequence.id ? 'bg-blue-50 border-l-2 border-blue-500' : ''
+                  selectedId === sequence.id
+                    ? 'bg-blue-50 border-l-2 border-blue-500'
+                    : ''
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">{sequence.name}</p>
+                    <p className="font-medium text-gray-900 truncate">
+                      {sequence.name}
+                    </p>
                     <div className="flex items-center gap-2 mt-1">
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(

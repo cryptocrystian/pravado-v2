@@ -52,7 +52,13 @@ export interface PitchSequence {
 
 export interface InboxItem {
   id: string;
-  type: 'inquiry' | 'follow_up_due' | 'coverage_triage' | 'relationship_decay' | 'approval_queue' | 'data_hygiene';
+  type:
+    | 'inquiry'
+    | 'follow_up_due'
+    | 'coverage_triage'
+    | 'relationship_decay'
+    | 'approval_queue'
+    | 'data_hygiene';
   priority: 'critical' | 'high' | 'medium' | 'low';
   title: string;
   description: string;
@@ -94,7 +100,12 @@ export async function fetchJournalists(params?: {
   beat?: string;
   limit?: number;
   offset?: number;
-}): Promise<{ profiles: JournalistProfile[]; total: number; limit: number; offset: number }> {
+}): Promise<{
+  profiles: JournalistProfile[];
+  total: number;
+  limit: number;
+  offset: number;
+}> {
   const sp = new URLSearchParams();
   if (params?.q) sp.set('q', params.q);
   if (params?.outlet) sp.set('outlet', params.outlet);
@@ -106,7 +117,9 @@ export async function fetchJournalists(params?: {
   const res = await fetch(`/api/pr/journalists${qs ? `?${qs}` : ''}`);
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Failed to fetch journalists (${res.status})`);
+    throw new Error(
+      body.error || `Failed to fetch journalists (${res.status})`
+    );
   }
   return res.json();
 }
@@ -127,21 +140,31 @@ export async function createJournalist(input: {
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Failed to create journalist (${res.status})`);
+    throw new Error(
+      body.error || `Failed to create journalist (${res.status})`
+    );
   }
   return res.json();
 }
 
-export async function fetchPitchSequences(): Promise<{ sequences: PitchSequence[]; total: number }> {
+export async function fetchPitchSequences(): Promise<{
+  sequences: PitchSequence[];
+  total: number;
+}> {
   const res = await fetch('/api/pr/pitches/sequences?limit=50');
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Failed to fetch pitch sequences (${res.status})`);
+    throw new Error(
+      body.error || `Failed to fetch pitch sequences (${res.status})`
+    );
   }
   return res.json();
 }
 
-export async function fetchCoverage(): Promise<{ rows: EarnedMention[]; total: number }> {
+export async function fetchCoverage(): Promise<{
+  rows: EarnedMention[];
+  total: number;
+}> {
   const res = await fetch('/api/pr/coverage?limit=50');
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -150,7 +173,11 @@ export async function fetchCoverage(): Promise<{ rows: EarnedMention[]; total: n
   return res.json();
 }
 
-export async function fetchInbox(): Promise<{ items: InboxItem[]; total: number; byType: Record<string, number> }> {
+export async function fetchInbox(): Promise<{
+  items: InboxItem[];
+  total: number;
+  byType: Record<string, number>;
+}> {
   const res = await fetch('/api/pr/inbox');
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -163,7 +190,9 @@ export async function fetchInbox(): Promise<{ items: InboxItem[]; total: number;
 // ADAPTERS
 // ============================================
 
-export function adaptProfileToJournalist(profile: JournalistProfile): Journalist {
+export function adaptProfileToJournalist(
+  profile: JournalistProfile
+): Journalist {
   const meta = profile.metadata || {};
 
   // Initials: first letter of each word, max 2
@@ -178,7 +207,10 @@ export function adaptProfileToJournalist(profile: JournalistProfile): Journalist
   if (Array.isArray(meta.beats)) {
     beats = meta.beats as string[];
   } else if (profile.beat) {
-    beats = profile.beat.split(',').map((b) => b.trim()).filter(Boolean);
+    beats = profile.beat
+      .split(',')
+      .map((b) => b.trim())
+      .filter(Boolean);
   }
 
   // Relationship from engagementScore
@@ -262,7 +294,9 @@ export function adaptMentionToCoverageRow(mention: EarnedMention): CoverageRow {
     publication: mention.outlet_name ?? mention.source_domain ?? 'Unknown',
     reporter: mention.author_name ?? 'Unknown',
     date: mention.published_at ? formatShortDate(mention.published_at) : '—',
-    reach: formatReach(meta.reach as string | number | undefined ?? mention.estimated_reach),
+    reach: formatReach(
+      (meta.reach as string | number | undefined) ?? mention.estimated_reach
+    ),
     sentiment: (mention.sentiment as Sentiment) ?? 'neutral',
     eviImpact: (meta.evi_impact as string) ?? 'Pending',
     isPending: !meta.evi_impact,

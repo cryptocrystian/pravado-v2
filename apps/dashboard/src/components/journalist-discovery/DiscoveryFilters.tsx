@@ -5,7 +5,11 @@
  * Filter panel for journalist discovery queries
  */
 
-import type { DiscoveryQuery, DiscoveryStatus, DiscoverySourceType } from '@pravado/types';
+import type {
+  DiscoveryQuery,
+  DiscoveryStatus,
+  DiscoverySourceType,
+} from '@pravado/types';
 
 interface DiscoveryFiltersProps {
   filters: DiscoveryQuery;
@@ -13,7 +17,12 @@ interface DiscoveryFiltersProps {
   onSearch: () => void;
 }
 
-const statusOptions: DiscoveryStatus[] = ['pending', 'confirmed', 'merged', 'rejected'];
+const statusOptions: DiscoveryStatus[] = [
+  'pending',
+  'confirmed',
+  'merged',
+  'rejected',
+];
 const sourceTypeOptions: DiscoverySourceType[] = [
   'article_author',
   'rss_feed',
@@ -33,9 +42,17 @@ const beatOptions = [
   'education',
 ];
 
-export function DiscoveryFilters({ filters, onChange, onSearch }: DiscoveryFiltersProps) {
+export function DiscoveryFilters({
+  filters,
+  onChange,
+  onSearch,
+}: DiscoveryFiltersProps) {
   const handleStatusToggle = (status: DiscoveryStatus) => {
-    const currentStatuses = Array.isArray(filters.status) ? filters.status : filters.status ? [filters.status] : [];
+    const currentStatuses = Array.isArray(filters.status)
+      ? filters.status
+      : filters.status
+        ? [filters.status]
+        : [];
     const newStatuses = currentStatuses.includes(status)
       ? currentStatuses.filter((s: DiscoveryStatus) => s !== status)
       : [...currentStatuses, status];
@@ -43,9 +60,15 @@ export function DiscoveryFilters({ filters, onChange, onSearch }: DiscoveryFilte
   };
 
   const handleSourceTypeToggle = (sourceType: DiscoverySourceType) => {
-    const currentSourceTypes = Array.isArray(filters.sourceType) ? filters.sourceType : filters.sourceType ? [filters.sourceType] : [];
+    const currentSourceTypes = Array.isArray(filters.sourceType)
+      ? filters.sourceType
+      : filters.sourceType
+        ? [filters.sourceType]
+        : [];
     const newSourceTypes = currentSourceTypes.includes(sourceType)
-      ? currentSourceTypes.filter((st: DiscoverySourceType) => st !== sourceType)
+      ? currentSourceTypes.filter(
+          (st: DiscoverySourceType) => st !== sourceType
+        )
       : [...currentSourceTypes, sourceType];
     onChange({ ...filters, sourceType: newSourceTypes });
   };
@@ -77,7 +100,9 @@ export function DiscoveryFilters({ filters, onChange, onSearch }: DiscoveryFilte
 
       {/* Search */}
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">Search</label>
+        <label className="block text-xs font-medium text-gray-700 mb-1">
+          Search
+        </label>
         <input
           type="text"
           placeholder="Search by name..."
@@ -89,13 +114,20 @@ export function DiscoveryFilters({ filters, onChange, onSearch }: DiscoveryFilte
 
       {/* Status Filter */}
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-2">Status</label>
+        <label className="block text-xs font-medium text-gray-700 mb-2">
+          Status
+        </label>
         <div className="space-y-2">
           {statusOptions.map((status) => (
             <label key={status} className="flex items-center">
               <input
                 type="checkbox"
-                checked={(Array.isArray(filters.status) && filters.status.includes(status)) || filters.status === status || false}
+                checked={
+                  (Array.isArray(filters.status) &&
+                    filters.status.includes(status)) ||
+                  filters.status === status ||
+                  false
+                }
                 onChange={() => handleStatusToggle(status)}
                 className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
@@ -107,13 +139,20 @@ export function DiscoveryFilters({ filters, onChange, onSearch }: DiscoveryFilte
 
       {/* Source Type Filter */}
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-2">Source Type</label>
+        <label className="block text-xs font-medium text-gray-700 mb-2">
+          Source Type
+        </label>
         <div className="space-y-2">
           {sourceTypeOptions.map((sourceType) => (
             <label key={sourceType} className="flex items-center">
               <input
                 type="checkbox"
-                checked={(Array.isArray(filters.sourceType) && filters.sourceType.includes(sourceType)) || filters.sourceType === sourceType || false}
+                checked={
+                  (Array.isArray(filters.sourceType) &&
+                    filters.sourceType.includes(sourceType)) ||
+                  filters.sourceType === sourceType ||
+                  false
+                }
                 onChange={() => handleSourceTypeToggle(sourceType)}
                 className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
@@ -140,7 +179,10 @@ export function DiscoveryFilters({ filters, onChange, onSearch }: DiscoveryFilte
           step="5"
           value={(filters.minConfidenceScore || 0) * 100}
           onChange={(e) =>
-            onChange({ ...filters, minConfidenceScore: parseInt(e.target.value) / 100 })
+            onChange({
+              ...filters,
+              minConfidenceScore: parseInt(e.target.value) / 100,
+            })
           }
           className="w-full"
         />
@@ -151,7 +193,9 @@ export function DiscoveryFilters({ filters, onChange, onSearch }: DiscoveryFilte
 
       {/* Beats Filter */}
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-2">Beats</label>
+        <label className="block text-xs font-medium text-gray-700 mb-2">
+          Beats
+        </label>
         <div className="space-y-2 max-h-40 overflow-y-auto">
           {beatOptions.map((beat) => (
             <label key={beat} className="flex items-center">
@@ -173,7 +217,9 @@ export function DiscoveryFilters({ filters, onChange, onSearch }: DiscoveryFilte
           <input
             type="checkbox"
             checked={filters.hasEmail || false}
-            onChange={(e) => onChange({ ...filters, hasEmail: e.target.checked || undefined })}
+            onChange={(e) =>
+              onChange({ ...filters, hasEmail: e.target.checked || undefined })
+            }
             className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
           />
           <span className="text-sm text-gray-700">Has Email</span>
@@ -183,7 +229,10 @@ export function DiscoveryFilters({ filters, onChange, onSearch }: DiscoveryFilte
             type="checkbox"
             checked={filters.hasSocialLinks || false}
             onChange={(e) =>
-              onChange({ ...filters, hasSocialLinks: e.target.checked || undefined })
+              onChange({
+                ...filters,
+                hasSocialLinks: e.target.checked || undefined,
+              })
             }
             className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
           />

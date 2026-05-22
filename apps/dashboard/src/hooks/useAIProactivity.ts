@@ -12,7 +12,12 @@
 import { useMemo, useCallback } from 'react';
 
 // Signal Types
-export type SignalCategory = 'risk' | 'opportunity' | 'milestone' | 'change' | 'alert';
+export type SignalCategory =
+  | 'risk'
+  | 'opportunity'
+  | 'milestone'
+  | 'change'
+  | 'alert';
 export type SignalUrgency = 'critical' | 'high' | 'medium' | 'low' | 'info';
 
 // Signal definition
@@ -384,7 +389,10 @@ export function isHighPrioritySignal(signal: AISignal): boolean {
 /**
  * Get recommended notification text based on signal
  */
-export function getSignalNotificationText(signal: AISignal): { title: string; body: string } {
+export function getSignalNotificationText(signal: AISignal): {
+  title: string;
+  body: string;
+} {
   const pillarLabels: Record<string, string> = {
     pr: 'PR Intelligence',
     content: 'Content Hub',

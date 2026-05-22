@@ -30,21 +30,27 @@ import { FastifyPluginAsync } from 'fastify';
 
 import * as strategicIntelligenceService from '../../services/strategicIntelligenceService';
 
-
 const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
   // Feature flag check middleware
   fastify.addHook('preHandler', async (_request, reply) => {
     if (!isEnabled('ENABLE_STRATEGIC_INTELLIGENCE')) {
       return reply.status(403).send({
         success: false,
-        error: 'Strategic Intelligence feature is not enabled for this organization',
+        error:
+          'Strategic Intelligence feature is not enabled for this organization',
       });
     }
   });
 
   // Helper to get service context from request
-  const getContext = (request: { supabase: unknown; orgId: string; userId: string; userEmail?: string }) => ({
-    supabase: request.supabase as strategicIntelligenceService.ServiceContext['supabase'],
+  const getContext = (request: {
+    supabase: unknown;
+    orgId: string;
+    userId: string;
+    userEmail?: string;
+  }) => ({
+    supabase:
+      request.supabase as strategicIntelligenceService.ServiceContext['supabase'],
     orgId: request.orgId,
     userId: request.userId,
     userEmail: request.userEmail || '',
@@ -102,7 +108,11 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
     const input = updateStrategicReportSchema.parse(request.body);
     const ctx = getContext(request as never);
 
-    const report = await strategicIntelligenceService.updateReport(ctx, reportId, input);
+    const report = await strategicIntelligenceService.updateReport(
+      ctx,
+      reportId,
+      input
+    );
 
     return reply.send({ success: true, report });
   });
@@ -133,7 +143,11 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
     const input = generateStrategicReportSchema.parse(request.body || {});
     const ctx = getContext(request as never);
 
-    const result = await strategicIntelligenceService.generateReport(ctx, reportId, input);
+    const result = await strategicIntelligenceService.generateReport(
+      ctx,
+      reportId,
+      input
+    );
 
     return reply.send({ success: true, ...result });
   });
@@ -142,15 +156,22 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
    * Refresh insights from upstream sources
    * POST /api/v1/strategic-intelligence/reports/:reportId/refresh-insights
    */
-  fastify.post('/reports/:reportId/refresh-insights', async (request, reply) => {
-    const { reportId } = strategicReportIdParamSchema.parse(request.params);
-    const input = refreshInsightsSchema.parse(request.body || {});
-    const ctx = getContext(request as never);
+  fastify.post(
+    '/reports/:reportId/refresh-insights',
+    async (request, reply) => {
+      const { reportId } = strategicReportIdParamSchema.parse(request.params);
+      const input = refreshInsightsSchema.parse(request.body || {});
+      const ctx = getContext(request as never);
 
-    const result = await strategicIntelligenceService.refreshInsights(ctx, reportId, input);
+      const result = await strategicIntelligenceService.refreshInsights(
+        ctx,
+        reportId,
+        input
+      );
 
-    return reply.send({ success: true, ...result });
-  });
+      return reply.send({ success: true, ...result });
+    }
+  );
 
   // ============================================================================
   // WORKFLOW ENDPOINTS
@@ -165,7 +186,11 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
     const input = approveStrategicReportSchema.parse(request.body || {});
     const ctx = getContext(request as never);
 
-    const report = await strategicIntelligenceService.approveReport(ctx, reportId, input);
+    const report = await strategicIntelligenceService.approveReport(
+      ctx,
+      reportId,
+      input
+    );
 
     return reply.send({ success: true, report });
   });
@@ -179,7 +204,11 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
     const input = publishStrategicReportSchema.parse(request.body || {});
     const ctx = getContext(request as never);
 
-    const result = await strategicIntelligenceService.publishReport(ctx, reportId, input);
+    const result = await strategicIntelligenceService.publishReport(
+      ctx,
+      reportId,
+      input
+    );
 
     return reply.send({ success: true, ...result });
   });
@@ -193,7 +222,11 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
     const input = archiveStrategicReportSchema.parse(request.body || {});
     const ctx = getContext(request as never);
 
-    const report = await strategicIntelligenceService.archiveReport(ctx, reportId, input);
+    const report = await strategicIntelligenceService.archiveReport(
+      ctx,
+      reportId,
+      input
+    );
 
     return reply.send({ success: true, report });
   });
@@ -206,43 +239,70 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
    * Update a report section
    * PATCH /api/v1/strategic-intelligence/reports/:reportId/sections/:sectionId
    */
-  fastify.patch('/reports/:reportId/sections/:sectionId', async (request, reply) => {
-    const { reportId, sectionId } = strategicSectionIdParamSchema.parse(request.params);
-    const input = updateStrategicSectionSchema.parse(request.body);
-    const ctx = getContext(request as never);
+  fastify.patch(
+    '/reports/:reportId/sections/:sectionId',
+    async (request, reply) => {
+      const { reportId, sectionId } = strategicSectionIdParamSchema.parse(
+        request.params
+      );
+      const input = updateStrategicSectionSchema.parse(request.body);
+      const ctx = getContext(request as never);
 
-    const section = await strategicIntelligenceService.updateSection(ctx, reportId, sectionId, input);
+      const section = await strategicIntelligenceService.updateSection(
+        ctx,
+        reportId,
+        sectionId,
+        input
+      );
 
-    return reply.send({ success: true, section });
-  });
+      return reply.send({ success: true, section });
+    }
+  );
 
   /**
    * Regenerate a specific section
    * POST /api/v1/strategic-intelligence/reports/:reportId/sections/:sectionId/regenerate
    */
-  fastify.post('/reports/:reportId/sections/:sectionId/regenerate', async (request, reply) => {
-    const { reportId, sectionId } = strategicSectionIdParamSchema.parse(request.params);
-    const input = regenerateStrategicSectionSchema.parse(request.body || {});
-    const ctx = getContext(request as never);
+  fastify.post(
+    '/reports/:reportId/sections/:sectionId/regenerate',
+    async (request, reply) => {
+      const { reportId, sectionId } = strategicSectionIdParamSchema.parse(
+        request.params
+      );
+      const input = regenerateStrategicSectionSchema.parse(request.body || {});
+      const ctx = getContext(request as never);
 
-    const section = await strategicIntelligenceService.regenerateSection(ctx, reportId, sectionId, input);
+      const section = await strategicIntelligenceService.regenerateSection(
+        ctx,
+        reportId,
+        sectionId,
+        input
+      );
 
-    return reply.send({ success: true, section });
-  });
+      return reply.send({ success: true, section });
+    }
+  );
 
   /**
    * Reorder report sections
    * POST /api/v1/strategic-intelligence/reports/:reportId/sections/reorder
    */
-  fastify.post('/reports/:reportId/sections/reorder', async (request, reply) => {
-    const { reportId } = strategicReportIdParamSchema.parse(request.params);
-    const input = reorderStrategicSectionsSchema.parse(request.body);
-    const ctx = getContext(request as never);
+  fastify.post(
+    '/reports/:reportId/sections/reorder',
+    async (request, reply) => {
+      const { reportId } = strategicReportIdParamSchema.parse(request.params);
+      const input = reorderStrategicSectionsSchema.parse(request.body);
+      const ctx = getContext(request as never);
 
-    const sections = await strategicIntelligenceService.reorderSections(ctx, reportId, input);
+      const sections = await strategicIntelligenceService.reorderSections(
+        ctx,
+        reportId,
+        input
+      );
 
-    return reply.send({ success: true, sections });
-  });
+      return reply.send({ success: true, sections });
+    }
+  );
 
   // ============================================================================
   // SOURCE ENDPOINTS
@@ -270,7 +330,11 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
     const input = addStrategicSourceSchema.parse(request.body);
     const ctx = getContext(request as never);
 
-    const source = await strategicIntelligenceService.addSource(ctx, reportId, input);
+    const source = await strategicIntelligenceService.addSource(
+      ctx,
+      reportId,
+      input
+    );
 
     return reply.status(201).send({ success: true, source });
   });
@@ -279,28 +343,43 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
    * Update a data source
    * PATCH /api/v1/strategic-intelligence/reports/:reportId/sources/:sourceId
    */
-  fastify.patch('/reports/:reportId/sources/:sourceId', async (request, reply) => {
-    const { reportId, sourceId } = strategicSourceIdParamSchema.parse(request.params);
-    const input = updateStrategicSourceSchema.parse(request.body);
-    const ctx = getContext(request as never);
+  fastify.patch(
+    '/reports/:reportId/sources/:sourceId',
+    async (request, reply) => {
+      const { reportId, sourceId } = strategicSourceIdParamSchema.parse(
+        request.params
+      );
+      const input = updateStrategicSourceSchema.parse(request.body);
+      const ctx = getContext(request as never);
 
-    const source = await strategicIntelligenceService.updateSource(ctx, reportId, sourceId, input);
+      const source = await strategicIntelligenceService.updateSource(
+        ctx,
+        reportId,
+        sourceId,
+        input
+      );
 
-    return reply.send({ success: true, source });
-  });
+      return reply.send({ success: true, source });
+    }
+  );
 
   /**
    * Delete a data source
    * DELETE /api/v1/strategic-intelligence/reports/:reportId/sources/:sourceId
    */
-  fastify.delete('/reports/:reportId/sources/:sourceId', async (request, reply) => {
-    const { reportId, sourceId } = strategicSourceIdParamSchema.parse(request.params);
-    const ctx = getContext(request as never);
+  fastify.delete(
+    '/reports/:reportId/sources/:sourceId',
+    async (request, reply) => {
+      const { reportId, sourceId } = strategicSourceIdParamSchema.parse(
+        request.params
+      );
+      const ctx = getContext(request as never);
 
-    await strategicIntelligenceService.deleteSource(ctx, reportId, sourceId);
+      await strategicIntelligenceService.deleteSource(ctx, reportId, sourceId);
 
-    return reply.status(204).send();
-  });
+      return reply.status(204).send();
+    }
+  );
 
   // ============================================================================
   // STATISTICS ENDPOINTS
@@ -329,7 +408,10 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
     const input = comparePeriodsSchema.parse(request.body);
     const ctx = getContext(request as never);
 
-    const comparison = await strategicIntelligenceService.comparePeriods(ctx, input);
+    const comparison = await strategicIntelligenceService.comparePeriods(
+      ctx,
+      input
+    );
 
     return reply.send({ success: true, comparison });
   });
@@ -347,7 +429,11 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
     const input = exportStrategicReportSchema.parse(request.body);
     const ctx = getContext(request as never);
 
-    const result = await strategicIntelligenceService.exportReport(ctx, reportId, input);
+    const result = await strategicIntelligenceService.exportReport(
+      ctx,
+      reportId,
+      input
+    );
 
     return reply.send({ success: true, ...result });
   });
@@ -378,7 +464,10 @@ const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
     const query = listStrategicAuditLogsQuerySchema.parse(request.query);
     const ctx = getContext(request as never);
 
-    const result = await strategicIntelligenceService.listAuditLogs(ctx, { ...query, reportId });
+    const result = await strategicIntelligenceService.listAuditLogs(ctx, {
+      ...query,
+      reportId,
+    });
 
     return reply.send({ success: true, ...result });
   });

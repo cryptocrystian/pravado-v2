@@ -12,10 +12,15 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const topics = searchParams.get('topics') || '';
-    const data = await backendFetch(`/api/v1/journalists/discover?topics=${encodeURIComponent(topics)}`);
+    const data = await backendFetch(
+      `/api/v1/journalists/discover?topics=${encodeURIComponent(topics)}`
+    );
     return NextResponse.json({ success: true, data });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

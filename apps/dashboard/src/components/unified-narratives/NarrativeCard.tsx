@@ -20,7 +20,10 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatNarrativePeriod, formatNarrativeDate } from '@/lib/unifiedNarrativeApi';
+import {
+  formatNarrativePeriod,
+  formatNarrativeDate,
+} from '@/lib/unifiedNarrativeApi';
 import { cn } from '@/lib/utils';
 
 import NarrativeStatusBadge from './NarrativeStatusBadge';
@@ -41,7 +44,10 @@ export default function NarrativeCard({
   isSelected = false,
   className = '',
 }: NarrativeCardProps) {
-  const periodLabel = formatNarrativePeriod(narrative.periodStart, narrative.periodEnd);
+  const periodLabel = formatNarrativePeriod(
+    narrative.periodStart,
+    narrative.periodEnd
+  );
 
   // Count sources from keyInsights
   const sourceCount = narrative.keyInsights?.length || 0;
@@ -68,14 +74,19 @@ export default function NarrativeCard({
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg truncate">{narrative.title}</CardTitle>
+            <CardTitle className="text-lg truncate">
+              {narrative.title}
+            </CardTitle>
             {narrative.subtitle && (
               <p className="text-sm text-white/50 truncate mt-1">
                 {narrative.subtitle}
               </p>
             )}
           </div>
-          <NarrativeStatusBadge status={narrative.status} className="ml-2 shrink-0" />
+          <NarrativeStatusBadge
+            status={narrative.status}
+            className="ml-2 shrink-0"
+          />
         </div>
       </CardHeader>
 
@@ -102,7 +113,10 @@ export default function NarrativeCard({
               </Badge>
             ))}
             {narrative.sourceSystems.length > 4 && (
-              <Badge variant="outline" className="text-[11px] tabular-nums px-1.5 py-0">
+              <Badge
+                variant="outline"
+                className="text-[11px] tabular-nums px-1.5 py-0"
+              >
                 +{narrative.sourceSystems.length - 4}
               </Badge>
             )}
@@ -124,7 +138,9 @@ export default function NarrativeCard({
               <span className="text-xs">Words</span>
             </div>
             <div className="text-lg font-semibold">
-              {wordCount > 1000 ? `${(wordCount / 1000).toFixed(1)}K` : wordCount}
+              {wordCount > 1000
+                ? `${(wordCount / 1000).toFixed(1)}K`
+                : wordCount}
             </div>
           </div>
           <div className="text-center">
@@ -171,18 +187,20 @@ export default function NarrativeCard({
           </div>
 
           <div className="flex gap-1">
-            {narrative.status === 'draft' && !narrative.generatedAt && onGenerate && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onGenerate(narrative);
-                }}
-              >
-                Generate
-              </Button>
-            )}
+            {narrative.status === 'draft' &&
+              !narrative.generatedAt &&
+              onGenerate && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onGenerate(narrative);
+                  }}
+                >
+                  Generate
+                </Button>
+              )}
             <Button
               variant="ghost"
               size="sm"

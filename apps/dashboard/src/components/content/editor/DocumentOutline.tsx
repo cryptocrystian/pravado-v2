@@ -57,19 +57,32 @@ export function DocumentOutline({
       {/* Header — compact */}
       <div className="px-3 py-2.5 border-b border-white/[0.04] shrink-0">
         <div className="flex items-center gap-1.5 mb-1">
-          <svg className="w-3.5 h-3.5 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 10h16M4 14h10M4 18h6" />
+          <svg
+            className="w-3.5 h-3.5 text-white/20"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M4 6h16M4 10h16M4 14h10M4 18h6"
+            />
           </svg>
           <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/25">
             Outline
           </h3>
         </div>
         {documentTitle && (
-          <p className="text-[12px] font-medium text-white/60 truncate leading-snug">{documentTitle}</p>
+          <p className="text-[12px] font-medium text-white/60 truncate leading-snug">
+            {documentTitle}
+          </p>
         )}
         {wordCount !== undefined && wordCount > 0 && (
           <p className="text-xs text-white/20 mt-0.5">
-            {wordCount.toLocaleString()} words · {Math.max(1, Math.ceil(wordCount / 238))} min
+            {wordCount.toLocaleString()} words ·{' '}
+            {Math.max(1, Math.ceil(wordCount / 238))} min
           </p>
         )}
       </div>
@@ -82,18 +95,25 @@ export function DocumentOutline({
             <div className="space-y-4">
               <div className="p-2.5 bg-white/[0.02] border border-white/[0.04] rounded-lg">
                 <p className="text-xs text-white/30 leading-relaxed">
-                  Your headings appear here as a navigable table of contents. Click any heading to jump to it.
+                  Your headings appear here as a navigable table of contents.
+                  Click any heading to jump to it.
                 </p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-white/15 mb-2">Create headings with</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-white/15 mb-2">
+                  Create headings with
+                </p>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs text-white/20">
-                    <kbd className="px-1.5 py-0.5 bg-white/[0.04] border border-white/[0.06] rounded text-xs font-mono text-white/30">/</kbd>
+                    <kbd className="px-1.5 py-0.5 bg-white/[0.04] border border-white/[0.06] rounded text-xs font-mono text-white/30">
+                      /
+                    </kbd>
                     <span>then choose H1, H2, or H3</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-white/20">
-                    <span className="w-5 text-center text-xs font-bold text-white/20 bg-white/[0.04] rounded py-0.5">H2</span>
+                    <span className="w-5 text-center text-xs font-bold text-white/20 bg-white/[0.04] rounded py-0.5">
+                      H2
+                    </span>
                     <span>from the toolbar above</span>
                   </div>
                 </div>
@@ -116,9 +136,10 @@ export function DocumentOutline({
                   className={`
                     w-full text-left py-1.5 transition-all duration-150 group relative
                     ${indent[heading.level] || 'pl-3'}
-                    ${isActive
-                      ? 'bg-brand-iris/[0.06]'
-                      : 'hover:bg-white/[0.03]'
+                    ${
+                      isActive
+                        ? 'bg-brand-iris/[0.06]'
+                        : 'hover:bg-white/[0.03]'
                     }
                   `}
                 >
@@ -135,7 +156,9 @@ export function DocumentOutline({
                     `}
                   >
                     {heading.text || (
-                      <span className="italic text-white/15">Empty heading</span>
+                      <span className="italic text-white/15">
+                        Empty heading
+                      </span>
                     )}
                   </span>
                 </button>
@@ -148,12 +171,12 @@ export function DocumentOutline({
       {/* Footer */}
       <div className="px-3 py-1.5 border-t border-white/[0.04] shrink-0">
         {headings.length > 0 ? (
-          <span className="text-xs text-white/15">
-            Click a heading to jump
-          </span>
+          <span className="text-xs text-white/15">Click a heading to jump</span>
         ) : (
           <span className="text-xs text-white/10">
-            {(wordCount ?? 0) > 0 ? `${headings.length} sections` : 'Start writing to build your outline'}
+            {(wordCount ?? 0) > 0
+              ? `${headings.length} sections`
+              : 'Start writing to build your outline'}
           </span>
         )}
       </div>

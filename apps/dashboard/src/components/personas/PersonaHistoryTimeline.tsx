@@ -21,7 +21,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-
 interface PersonaHistoryTimelineProps {
   history: AudiencePersonaHistory[];
   onSnapshotClick?: (snapshot: AudiencePersonaHistory) => void;
@@ -31,7 +30,9 @@ export function PersonaHistoryTimeline({
   history,
   onSnapshotClick,
 }: PersonaHistoryTimelineProps) {
-  const [dateFilter, setDateFilter] = useState<'all' | '7d' | '30d' | '90d'>('all');
+  const [dateFilter, setDateFilter] = useState<'all' | '7d' | '30d' | '90d'>(
+    'all'
+  );
 
   // Filter by date
   const filteredHistory = history.filter((snapshot) => {
@@ -39,7 +40,9 @@ export function PersonaHistoryTimeline({
     if (!snapshot.snapshotAt) return true;
     const snapshotDate = new Date(snapshot.snapshotAt);
     const now = new Date();
-    const daysDiff = Math.floor((now.getTime() - snapshotDate.getTime()) / 86400000);
+    const daysDiff = Math.floor(
+      (now.getTime() - snapshotDate.getTime()) / 86400000
+    );
 
     switch (dateFilter) {
       case '7d':
@@ -55,7 +58,9 @@ export function PersonaHistoryTimeline({
 
   // Sort by date descending (newest first)
   const sortedHistory = [...filteredHistory].sort(
-    (a, b) => new Date(b.snapshotAt || b.createdAt).getTime() - new Date(a.snapshotAt || a.createdAt).getTime()
+    (a, b) =>
+      new Date(b.snapshotAt || b.createdAt).getTime() -
+      new Date(a.snapshotAt || a.createdAt).getTime()
   );
 
   // Snapshot type colors
@@ -105,12 +110,22 @@ export function PersonaHistoryTimeline({
   };
 
   // Score diff indicator
-  const ScoreDiff = ({ field, before, after }: { field: string; before?: number; after?: number }) => {
-    if (before === undefined || after === undefined || before === after) return null;
+  const ScoreDiff = ({
+    field,
+    before,
+    after,
+  }: {
+    field: string;
+    before?: number;
+    after?: number;
+  }) => {
+    if (before === undefined || after === undefined || before === after)
+      return null;
 
     const diff = after - before;
     const Icon = diff > 0 ? ArrowUp : diff < 0 ? ArrowDown : ArrowRight;
-    const color = diff > 0 ? 'text-green-600' : diff < 0 ? 'text-red-600' : 'text-gray-500';
+    const color =
+      diff > 0 ? 'text-green-600' : diff < 0 ? 'text-red-600' : 'text-gray-500';
 
     return (
       <div className="flex items-center gap-2 text-xs">
@@ -141,7 +156,8 @@ export function PersonaHistoryTimeline({
       {/* Header with Date Filter */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-600">
-          <span className="font-semibold text-gray-900">{history.length}</span> snapshots
+          <span className="font-semibold text-gray-900">{history.length}</span>{' '}
+          snapshots
         </div>
         <div className="flex items-center gap-2">
           {(['all', '7d', '30d', '90d'] as const).map((filter) => (
@@ -169,7 +185,8 @@ export function PersonaHistoryTimeline({
         {/* Snapshots */}
         <div className="space-y-6">
           {sortedHistory.map((snapshot, idx) => {
-            const SnapshotIcon = snapshotTypeIcons[snapshot.snapshotType] || TrendingUp;
+            const SnapshotIcon =
+              snapshotTypeIcons[snapshot.snapshotType] || TrendingUp;
             const isFirst = idx === 0;
 
             return (
@@ -178,10 +195,17 @@ export function PersonaHistoryTimeline({
                 <div
                   className={cn(
                     'absolute left-2 top-2 h-5 w-5 rounded-full border-2 flex items-center justify-center',
-                    isFirst ? 'bg-blue-500 border-blue-500' : 'bg-white border-gray-300'
+                    isFirst
+                      ? 'bg-blue-500 border-blue-500'
+                      : 'bg-white border-gray-300'
                   )}
                 >
-                  <SnapshotIcon className={cn('h-3 w-3', isFirst ? 'text-white' : 'text-gray-500')} />
+                  <SnapshotIcon
+                    className={cn(
+                      'h-3 w-3',
+                      isFirst ? 'text-white' : 'text-gray-500'
+                    )}
+                  />
                 </div>
 
                 {/* Snapshot card */}
@@ -200,30 +224,40 @@ export function PersonaHistoryTimeline({
                         <div className="flex items-center gap-2 flex-wrap">
                           <Badge
                             variant="outline"
-                            className={cn('text-xs', snapshotTypeColors[snapshot.snapshotType])}
+                            className={cn(
+                              'text-xs',
+                              snapshotTypeColors[snapshot.snapshotType]
+                            )}
                           >
                             {snapshot.snapshotType.replace(/_/g, ' ')}
                           </Badge>
-                          {snapshot.changeMagnitude !== null && snapshot.changeMagnitude !== undefined && (
-                            <Badge
-                              variant="outline"
-                              className={cn(
-                                'text-xs',
-                                getMagnitudeColor(snapshot.changeMagnitude)
-                              )}
-                            >
-                              {getMagnitudeBadge(snapshot.changeMagnitude)} Change
-                            </Badge>
-                          )}
+                          {snapshot.changeMagnitude !== null &&
+                            snapshot.changeMagnitude !== undefined && (
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  'text-xs',
+                                  getMagnitudeColor(snapshot.changeMagnitude)
+                                )}
+                              >
+                                {getMagnitudeBadge(snapshot.changeMagnitude)}{' '}
+                                Change
+                              </Badge>
+                            )}
                           {isFirst && (
-                            <Badge variant="default" className="text-xs bg-blue-500">
+                            <Badge
+                              variant="default"
+                              className="text-xs bg-blue-500"
+                            >
                               Latest
                             </Badge>
                           )}
                         </div>
                         <div className="text-xs text-gray-500 flex items-center gap-2">
                           <Calendar className="h-3 w-3" />
-                          {formatDate(snapshot.snapshotAt || snapshot.createdAt)}
+                          {formatDate(
+                            snapshot.snapshotAt || snapshot.createdAt
+                          )}
                           {snapshot.triggeredBy && (
                             <>
                               <span className="text-gray-400">•</span>
@@ -237,7 +271,9 @@ export function PersonaHistoryTimeline({
 
                     {/* Change Description */}
                     {snapshot.changeDescription && (
-                      <p className="text-sm text-gray-700">{snapshot.changeDescription}</p>
+                      <p className="text-sm text-gray-700">
+                        {snapshot.changeDescription}
+                      </p>
                     )}
 
                     {/* Score Diffs */}
@@ -270,7 +306,8 @@ export function PersonaHistoryTimeline({
                     <div className="grid grid-cols-3 gap-2 pt-2 border-t text-xs">
                       <div className="text-center">
                         <div className="font-semibold text-gray-900">
-                          {snapshot.snapshotData.overallScore?.toFixed(0) || 'N/A'}
+                          {snapshot.snapshotData.overallScore?.toFixed(0) ||
+                            'N/A'}
                         </div>
                         <div className="text-gray-500">Overall</div>
                       </div>

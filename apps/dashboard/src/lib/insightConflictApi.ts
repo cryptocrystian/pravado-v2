@@ -256,7 +256,9 @@ export async function listResolutions(
   filters?: Omit<ListResolutionsQuery, 'conflictId'>
 ): Promise<ListResolutionsResponse> {
   const query = buildQueryString(filters || {});
-  return apiClient<ListResolutionsResponse>(`/${conflictId}/resolutions?${query}`);
+  return apiClient<ListResolutionsResponse>(
+    `/${conflictId}/resolutions?${query}`
+  );
 }
 
 // ============================================================================
@@ -498,7 +500,9 @@ export function getConflictSeverityBgColor(severity: ConflictSeverity): string {
 /**
  * Get badge color for conflict severity
  */
-export function getConflictSeverityBadgeColor(severity: ConflictSeverity): string {
+export function getConflictSeverityBadgeColor(
+  severity: ConflictSeverity
+): string {
   const colors: Record<ConflictSeverity, string> = {
     low: 'bg-green-100 text-green-800',
     medium: 'bg-yellow-100 text-yellow-800',
@@ -584,7 +588,9 @@ export function getResolutionTypeLabel(type: ConflictResolutionType): string {
 /**
  * Get description for resolution type
  */
-export function getResolutionTypeDescription(type: ConflictResolutionType): string {
+export function getResolutionTypeDescription(
+  type: ConflictResolutionType
+): string {
   const descriptions: Record<ConflictResolutionType, string> = {
     ai_consensus: 'AI synthesizes a consensus from all conflicting sources',
     weighted_truth: 'Truth is weighted by source reliability scores',
@@ -685,7 +691,9 @@ export function getItemRoleColor(role: ConflictItemRole): string {
 /**
  * Format confidence score
  */
-export function formatConfidenceScore(score: number | null | undefined): string {
+export function formatConfidenceScore(
+  score: number | null | undefined
+): string {
   if (score === null || score === undefined) return 'N/A';
   const percent = Math.round(score * 100);
   if (percent >= 80) return `${percent}% (High)`;
@@ -697,7 +705,9 @@ export function formatConfidenceScore(score: number | null | undefined): string 
 /**
  * Get color for confidence score
  */
-export function getConfidenceScoreColor(score: number | null | undefined): string {
+export function getConfidenceScoreColor(
+  score: number | null | undefined
+): string {
   if (score === null || score === undefined) return 'text-gray-600';
   if (score >= 0.8) return 'text-green-600';
   if (score >= 0.6) return 'text-blue-600';
@@ -719,7 +729,9 @@ export function formatSeverityScore(score: number | null | undefined): string {
 /**
  * Get color for severity score
  */
-export function getSeverityScoreColor(score: number | null | undefined): string {
+export function getSeverityScoreColor(
+  score: number | null | undefined
+): string {
   if (score === null || score === undefined) return 'text-gray-600';
   if (score >= 80) return 'text-red-600';
   if (score >= 60) return 'text-orange-600';
@@ -767,7 +779,9 @@ export function formatDate(date: Date | string | null | undefined): string {
 /**
  * Format short date
  */
-export function formatShortDate(date: Date | string | null | undefined): string {
+export function formatShortDate(
+  date: Date | string | null | undefined
+): string {
   if (!date) return 'N/A';
   const d = new Date(date);
   return d.toLocaleDateString('en-US', {
@@ -815,7 +829,9 @@ export function formatResolutionRate(rate: number | null | undefined): string {
 /**
  * Format average resolution time
  */
-export function formatAvgResolutionTime(hours: number | null | undefined): string {
+export function formatAvgResolutionTime(
+  hours: number | null | undefined
+): string {
   if (hours === null || hours === undefined) return 'N/A';
   if (hours < 1) return `${Math.round(hours * 60)} min`;
   if (hours < 24) return `${hours.toFixed(1)} hr`;
@@ -967,7 +983,9 @@ export function getPriorityColor(priority: 'low' | 'medium' | 'high'): string {
 /**
  * Get background color for priority
  */
-export function getPriorityBgColor(priority: 'low' | 'medium' | 'high'): string {
+export function getPriorityBgColor(
+  priority: 'low' | 'medium' | 'high'
+): string {
   const colors: Record<string, string> = {
     low: 'bg-green-50',
     medium: 'bg-yellow-50',

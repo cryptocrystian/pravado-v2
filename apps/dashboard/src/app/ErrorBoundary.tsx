@@ -26,7 +26,10 @@ interface ErrorBoundaryState {
  * Captures render errors, logs them to the API, and displays a clean fallback UI.
  * This provides runtime stability for the RC1 release.
  */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {
@@ -46,7 +49,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
     // Report to Sentry (S-INT-08)
     Sentry.captureException(error, {
-      contexts: { react: { componentStack: errorInfo.componentStack ?? undefined } },
+      contexts: {
+        react: { componentStack: errorInfo.componentStack ?? undefined },
+      },
     });
 
     // Log error to API
@@ -59,7 +64,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   /**
    * Send error details to the API logging endpoint
    */
-  private async logErrorToApi(error: Error, errorInfo: ErrorInfo): Promise<void> {
+  private async logErrorToApi(
+    error: Error,
+    errorInfo: ErrorInfo
+  ): Promise<void> {
     try {
       // Gate 1A: Use route handler, not direct backend call
       await fetch('/api/logs/client', {
@@ -72,7 +80,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           stack: error.stack,
           componentStack: errorInfo.componentStack,
           url: typeof window !== 'undefined' ? window.location.href : undefined,
-          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+          userAgent:
+            typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
           timestamp: new Date().toISOString(),
         }),
       });
@@ -129,11 +138,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                   />
                 </svg>
               </div>
-              <h1 className="text-[24px] font-bold text-white">Something went wrong</h1>
+              <h1 className="text-[24px] font-bold text-white">
+                Something went wrong
+              </h1>
             </div>
 
             <p className="text-[14px] text-white/50 mb-6 leading-relaxed">
-              An unexpected error occurred. Our team has been notified and is looking into it.
+              An unexpected error occurred. Our team has been notified and is
+              looking into it.
             </p>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
@@ -166,7 +178,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
             <p className="mt-8 text-[12px] text-white/30">
               If this problem persists, contact{' '}
-              <a href="mailto:support@pravado.com" className="text-brand-iris hover:underline">
+              <a
+                href="mailto:support@pravado.com"
+                className="text-brand-iris hover:underline"
+              >
                 support@pravado.com
               </a>
             </p>

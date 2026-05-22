@@ -11,18 +11,21 @@ The Investor Relations Pack & Earnings Narrative Engine automates the creation o
 ## Key Features
 
 ### 1. Pack Management
+
 - **Create Packs**: Define investor packs with title, format, audience, and reporting period
 - **Multiple Formats**: Support for quarterly earnings, annual review, investor day, board update, fundraising round, and custom formats
 - **Audience Targeting**: Configure content for institutional investors, board of directors, financial analysts, or internal executives
 - **Workflow States**: Draft → Generating → Review → Approved → Published → Archived
 
 ### 2. AI-Powered Content Generation
+
 - **Section Generation**: Automatically generate content sections based on pack format
 - **Data Aggregation**: Pull insights from media performance, content quality, competitor intelligence, and other upstream systems
 - **Tone Customization**: Professional, formal, or executive writing styles
 - **Length Control**: Brief, standard, or comprehensive content generation
 
 ### 3. Section Types
+
 - Executive Summary
 - Highlights / Lowlights
 - KPI Overview
@@ -40,6 +43,7 @@ The Investor Relations Pack & Earnings Narrative Engine automates the creation o
 - Custom
 
 ### 4. Q&A Engine
+
 - **Auto-Generation**: Generate anticipated investor questions with prepared answers
 - **Category Classification**: Financial, strategic, operational, market, product, competitive, risk, governance, ESG
 - **Confidence Scoring**: AI confidence level for each generated answer
@@ -47,6 +51,7 @@ The Investor Relations Pack & Earnings Narrative Engine automates the creation o
 - **Usage Tracking**: Track how often each Q&A is used
 
 ### 5. Audit Trail
+
 - Complete activity logging for all pack actions
 - Track section generation/regeneration events
 - Record token usage and generation duration
@@ -66,26 +71,26 @@ investor_packs (main pack table)
 
 ### API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/investor-relations/packs` | Create new pack |
-| GET | `/api/v1/investor-relations/packs` | List packs with filters |
-| GET | `/api/v1/investor-relations/packs/:id` | Get pack with sections and Q&As |
-| PUT | `/api/v1/investor-relations/packs/:id` | Update pack |
-| DELETE | `/api/v1/investor-relations/packs/:id` | Delete pack |
-| POST | `/api/v1/investor-relations/packs/:id/generate` | Generate pack content |
-| PUT | `/api/v1/investor-relations/packs/:id/sections/:sectionId` | Update section |
-| POST | `/api/v1/investor-relations/packs/:id/sections/:sectionId/regenerate` | Regenerate section |
-| POST | `/api/v1/investor-relations/packs/:id/qnas` | Create Q&A |
-| PUT | `/api/v1/investor-relations/packs/:id/qnas/:qnaId` | Update Q&A |
-| DELETE | `/api/v1/investor-relations/packs/:id/qnas/:qnaId` | Delete Q&A |
-| POST | `/api/v1/investor-relations/packs/:id/qnas/:qnaId/approve` | Approve Q&A |
-| POST | `/api/v1/investor-relations/packs/:id/qnas/generate` | Generate Q&As |
-| POST | `/api/v1/investor-relations/packs/:id/approve` | Approve pack |
-| POST | `/api/v1/investor-relations/packs/:id/publish` | Publish pack |
-| POST | `/api/v1/investor-relations/packs/:id/archive` | Archive pack |
-| GET | `/api/v1/investor-relations/packs/:id/audit-logs` | Get audit logs |
-| GET | `/api/v1/investor-relations/stats` | Get statistics |
+| Method | Endpoint                                                              | Description                     |
+| ------ | --------------------------------------------------------------------- | ------------------------------- |
+| POST   | `/api/v1/investor-relations/packs`                                    | Create new pack                 |
+| GET    | `/api/v1/investor-relations/packs`                                    | List packs with filters         |
+| GET    | `/api/v1/investor-relations/packs/:id`                                | Get pack with sections and Q&As |
+| PUT    | `/api/v1/investor-relations/packs/:id`                                | Update pack                     |
+| DELETE | `/api/v1/investor-relations/packs/:id`                                | Delete pack                     |
+| POST   | `/api/v1/investor-relations/packs/:id/generate`                       | Generate pack content           |
+| PUT    | `/api/v1/investor-relations/packs/:id/sections/:sectionId`            | Update section                  |
+| POST   | `/api/v1/investor-relations/packs/:id/sections/:sectionId/regenerate` | Regenerate section              |
+| POST   | `/api/v1/investor-relations/packs/:id/qnas`                           | Create Q&A                      |
+| PUT    | `/api/v1/investor-relations/packs/:id/qnas/:qnaId`                    | Update Q&A                      |
+| DELETE | `/api/v1/investor-relations/packs/:id/qnas/:qnaId`                    | Delete Q&A                      |
+| POST   | `/api/v1/investor-relations/packs/:id/qnas/:qnaId/approve`            | Approve Q&A                     |
+| POST   | `/api/v1/investor-relations/packs/:id/qnas/generate`                  | Generate Q&As                   |
+| POST   | `/api/v1/investor-relations/packs/:id/approve`                        | Approve pack                    |
+| POST   | `/api/v1/investor-relations/packs/:id/publish`                        | Publish pack                    |
+| POST   | `/api/v1/investor-relations/packs/:id/archive`                        | Archive pack                    |
+| GET    | `/api/v1/investor-relations/packs/:id/audit-logs`                     | Get audit logs                  |
+| GET    | `/api/v1/investor-relations/stats`                                    | Get statistics                  |
 
 ## Usage
 
@@ -130,15 +135,15 @@ const approved = await approveQnA(packId, qnaId);
 
 ## UI Components
 
-| Component | Description |
-|-----------|-------------|
-| `InvestorPackStatsCard` | Stats overview card |
-| `InvestorPackHeader` | Pack details and actions |
-| `InvestorPackSectionCard` | Section display with editing |
-| `InvestorQnACard` | Q&A entry with approval workflow |
-| `InvestorPackListItem` | Pack list view item |
-| `InvestorPackAuditLogComponent` | Activity trail display |
-| `CreateInvestorPackDialog` | Create pack modal |
+| Component                       | Description                      |
+| ------------------------------- | -------------------------------- |
+| `InvestorPackStatsCard`         | Stats overview card              |
+| `InvestorPackHeader`            | Pack details and actions         |
+| `InvestorPackSectionCard`       | Section display with editing     |
+| `InvestorQnACard`               | Q&A entry with approval workflow |
+| `InvestorPackListItem`          | Pack list view item              |
+| `InvestorPackAuditLogComponent` | Activity trail display           |
+| `CreateInvestorPackDialog`      | Create pack modal                |
 
 ## Dashboard Pages
 
@@ -149,21 +154,22 @@ const approved = await approveQnA(packId, qnaId);
 
 The engine aggregates data from these upstream systems:
 
-| System | Data Used |
-|--------|-----------|
-| S52: Media Performance | Mention counts, sentiment scores |
-| S53: Journalist Discovery | Media coverage insights |
-| S54: Journalist Timeline | Relationship history |
-| S55: Journalist Enrichment | Contact engagement data |
-| S56: Audience Personas | Target audience insights |
-| S57: Competitive Intelligence | Market positioning |
-| S58-S63: Various | Additional contextual data |
+| System                        | Data Used                        |
+| ----------------------------- | -------------------------------- |
+| S52: Media Performance        | Mention counts, sentiment scores |
+| S53: Journalist Discovery     | Media coverage insights          |
+| S54: Journalist Timeline      | Relationship history             |
+| S55: Journalist Enrichment    | Contact engagement data          |
+| S56: Audience Personas        | Target audience insights         |
+| S57: Competitive Intelligence | Market positioning               |
+| S58-S63: Various              | Additional contextual data       |
 
 ## Configuration
 
 ### Default Sections by Format
 
 **Quarterly Earnings**:
+
 - Executive Summary
 - Highlights
 - Lowlights
@@ -173,6 +179,7 @@ The engine aggregates data from these upstream systems:
 - Forward Guidance
 
 **Annual Review**:
+
 - Executive Summary
 - Year in Review
 - Highlights
@@ -184,6 +191,7 @@ The engine aggregates data from these upstream systems:
 - Forward Guidance
 
 **Investor Day**:
+
 - Executive Summary
 - Company Overview
 - Market Context
@@ -192,6 +200,7 @@ The engine aggregates data from these upstream systems:
 - Competitive Landscape
 
 **Board Update**:
+
 - Executive Summary
 - KPI Overview
 - Highlights
@@ -200,6 +209,7 @@ The engine aggregates data from these upstream systems:
 - Risk Factors
 
 **Fundraising Round**:
+
 - Executive Summary
 - Market Context
 - Product Roadmap

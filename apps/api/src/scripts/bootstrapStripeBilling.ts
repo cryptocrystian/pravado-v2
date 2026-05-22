@@ -99,7 +99,9 @@ async function bootstrapStripeBilling(): Promise<BootstrapResult> {
   console.log('='.repeat(60));
   console.log('Pravado Stripe Billing Bootstrap');
   console.log('='.repeat(60));
-  console.log(`Mode: ${stripeSecretKey.startsWith('sk_live_') ? 'PRODUCTION' : 'TEST'}`);
+  console.log(
+    `Mode: ${stripeSecretKey.startsWith('sk_live_') ? 'PRODUCTION' : 'TEST'}`
+  );
   console.log('');
 
   // Initialize Stripe
@@ -118,7 +120,10 @@ async function bootstrapStripeBilling(): Promise<BootstrapResult> {
 
   // Fetch existing products to check for duplicates
   console.log('\n--- Checking Existing Products ---');
-  const existingProducts = await stripe.products.list({ limit: 100, active: true });
+  const existingProducts = await stripe.products.list({
+    limit: 100,
+    active: true,
+  });
   const existingProductsBySlug = new Map<string, Stripe.Product>();
 
   for (const product of existingProducts.data) {
@@ -146,12 +151,16 @@ async function bootstrapStripeBilling(): Promise<BootstrapResult> {
       });
 
       const monthlyPrice = existingPrices.data.find(
-        (p) => p.recurring?.interval === 'month' && p.unit_amount === plan.monthlyPriceCents
+        (p) =>
+          p.recurring?.interval === 'month' &&
+          p.unit_amount === plan.monthlyPriceCents
       );
 
       if (monthlyPrice) {
         console.log(`  [SKIP] Price already exists: ${monthlyPrice.id}`);
-        result.skipped.push(`${plan.slug} (product: ${existingProduct.id}, price: ${monthlyPrice.id})`);
+        result.skipped.push(
+          `${plan.slug} (product: ${existingProduct.id}, price: ${monthlyPrice.id})`
+        );
         result.products.push({
           slug: plan.slug,
           productId: existingProduct.id,
@@ -214,22 +223,34 @@ async function bootstrapStripeBilling(): Promise<BootstrapResult> {
   const apiUrl = process.env.RENDER_EXTERNAL_URL || process.env.API_URL;
 
   if (existingWebhookSecret) {
-    console.log('[SKIP] STRIPE_WEBHOOK_SECRET already set, skipping webhook creation');
+    console.log(
+      '[SKIP] STRIPE_WEBHOOK_SECRET already set, skipping webhook creation'
+    );
   } else if (!apiUrl) {
-    console.log('[SKIP] No API URL provided (RENDER_EXTERNAL_URL or API_URL), skipping webhook creation');
-    console.log('       Set RENDER_EXTERNAL_URL to enable automatic webhook creation');
+    console.log(
+      '[SKIP] No API URL provided (RENDER_EXTERNAL_URL or API_URL), skipping webhook creation'
+    );
+    console.log(
+      '       Set RENDER_EXTERNAL_URL to enable automatic webhook creation'
+    );
   } else {
     const webhookUrl = `${apiUrl}/api/v1/billing/stripe/webhook`;
     console.log(`Creating webhook for: ${webhookUrl}`);
 
     try {
       // Check for existing webhook with same URL
-      const existingWebhooks = await stripe.webhookEndpoints.list({ limit: 100 });
-      const existingWebhook = existingWebhooks.data.find((w) => w.url === webhookUrl);
+      const existingWebhooks = await stripe.webhookEndpoints.list({
+        limit: 100,
+      });
+      const existingWebhook = existingWebhooks.data.find(
+        (w) => w.url === webhookUrl
+      );
 
       if (existingWebhook) {
         console.log(`[SKIP] Webhook already exists: ${existingWebhook.id}`);
-        console.log('       To get the secret, run: stripe webhook_endpoints retrieve <id>');
+        console.log(
+          '       To get the secret, run: stripe webhook_endpoints retrieve <id>'
+        );
       } else {
         const webhook = await stripe.webhookEndpoints.create({
           url: webhookUrl,

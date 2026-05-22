@@ -27,7 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`dark ${inter.variable}`}
+      suppressHydrationWarning
+    >
       <body className="min-h-screen font-sans antialiased bg-[#0A0A0F]">
         <PostHogProvider>
           <ErrorBoundary>{children}</ErrorBoundary>

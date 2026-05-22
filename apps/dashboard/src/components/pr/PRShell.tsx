@@ -25,7 +25,13 @@ interface PRShellProps {
   userAvatarUrl?: string;
 }
 
-export function PRShell({ children, orgName, userName, userEmail, userAvatarUrl }: PRShellProps) {
+export function PRShell({
+  children,
+  orgName,
+  userName,
+  userEmail,
+  userAvatarUrl,
+}: PRShellProps) {
   return (
     <PRModeProvider>
       <div className="min-h-screen bg-slate-0 flex flex-col">
@@ -36,9 +42,7 @@ export function PRShell({ children, orgName, userName, userEmail, userAvatarUrl 
           userAvatarUrl={userAvatarUrl}
         />
         <PRChromeBar />
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </PRModeProvider>
   );

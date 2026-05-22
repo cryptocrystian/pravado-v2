@@ -286,7 +286,10 @@ function mapDbScenarioRun(row: DbScenarioRun): ScenarioRun {
     riskScore: row.risk_score,
     opportunityScore: row.opportunity_score,
     confidenceScore: row.confidence_score,
-    projectedMetrics: (row.projected_metrics || { days: [], metrics: {} }) as unknown as ProjectedMetrics,
+    projectedMetrics: (row.projected_metrics || {
+      days: [],
+      metrics: {},
+    }) as unknown as ProjectedMetrics,
     narrativeSummary: row.narrative_summary,
     recommendations: (row.recommendations || []) as ScenarioRecommendation[],
     errorMessage: row.error_message,
@@ -313,7 +316,10 @@ function mapDbScenarioRunStep(row: DbScenarioRunStep): ScenarioRunStep {
     approvedBy: row.approved_by,
     approvalNotes: row.approval_notes,
     executionContext: (row.execution_context || {}) as ScenarioActionContext,
-    outcome: (row.outcome || { success: false, actionTaken: '' }) as unknown as ScenarioStepOutcome,
+    outcome: (row.outcome || {
+      success: false,
+      actionTaken: '',
+    }) as unknown as ScenarioStepOutcome,
     simulatedImpact: (row.simulated_impact || {}) as SimulatedImpact,
     errorMessage: row.error_message,
     retryCount: row.retry_count,
@@ -445,7 +451,8 @@ export async function createPlaybook(
       .insert(stepInserts)
       .select();
 
-    if (stepsError) throw new Error(`Failed to create playbook steps: ${stepsError.message}`);
+    if (stepsError)
+      throw new Error(`Failed to create playbook steps: ${stepsError.message}`);
 
     steps = (stepsData || []).map(mapDbPlaybookStep);
   }
@@ -510,11 +517,14 @@ export async function updatePlaybook(
   };
 
   if (input.name !== undefined) updateData.name = input.name;
-  if (input.description !== undefined) updateData.description = input.description;
+  if (input.description !== undefined)
+    updateData.description = input.description;
   if (input.category !== undefined) updateData.category = input.category;
   if (input.status !== undefined) updateData.status = input.status;
-  if (input.triggerType !== undefined) updateData.trigger_type = input.triggerType;
-  if (input.targetSystems !== undefined) updateData.target_systems = input.targetSystems;
+  if (input.triggerType !== undefined)
+    updateData.trigger_type = input.triggerType;
+  if (input.targetSystems !== undefined)
+    updateData.target_systems = input.targetSystems;
   if (input.riskLevel !== undefined) updateData.risk_level = input.riskLevel;
   if (input.tags !== undefined) updateData.tags = input.tags;
   if (input.metadata !== undefined) updateData.metadata = input.metadata;
@@ -537,7 +547,10 @@ export async function updatePlaybook(
   return mapDbPlaybook(data);
 }
 
-export async function deletePlaybook(ctx: ServiceContext, playbookId: string): Promise<void> {
+export async function deletePlaybook(
+  ctx: ServiceContext,
+  playbookId: string
+): Promise<void> {
   const { error } = await ctx.supabase
     .from('scenario_playbooks')
     .delete()
@@ -555,7 +568,9 @@ export async function listPlaybooks(
   ctx: ServiceContext,
   input: ScenarioListPlaybooksQuery
 ): Promise<ScenarioListPlaybooksResponse> {
-  let query = ctx.supabase.from('scenario_playbooks').select('*', { count: 'exact' });
+  let query = ctx.supabase
+    .from('scenario_playbooks')
+    .select('*', { count: 'exact' });
 
   query = query.eq('org_id', ctx.orgId);
 
@@ -572,7 +587,9 @@ export async function listPlaybooks(
     query = query.eq('category', input.category);
   }
   if (input.search) {
-    query = query.or(`name.ilike.%${input.search}%,description.ilike.%${input.search}%`);
+    query = query.or(
+      `name.ilike.%${input.search}%,description.ilike.%${input.search}%`
+    );
   }
   if (input.tags && input.tags.length > 0) {
     query = query.overlaps('tags', input.tags);
@@ -647,7 +664,8 @@ export async function addPlaybookStep(
     .limit(1);
 
   const maxIndex = existingSteps?.[0]?.step_index ?? -1;
-  const targetIndex = insertAtIndex !== undefined ? insertAtIndex : maxIndex + 1;
+  const targetIndex =
+    insertAtIndex !== undefined ? insertAtIndex : maxIndex + 1;
 
   // If inserting in the middle, shift existing steps
   if (insertAtIndex !== undefined && insertAtIndex <= maxIndex) {
@@ -694,20 +712,29 @@ export async function updatePlaybookStep(
   const updateData: Record<string, unknown> = {};
 
   if (input.name !== undefined) updateData.name = input.name;
-  if (input.description !== undefined) updateData.description = input.description;
+  if (input.description !== undefined)
+    updateData.description = input.description;
   if (input.actionType !== undefined) updateData.action_type = input.actionType;
-  if (input.actionPayload !== undefined) updateData.action_payload = input.actionPayload;
-  if (input.requiresApproval !== undefined) updateData.requires_approval = input.requiresApproval;
-  if (input.approvalRoles !== undefined) updateData.approval_roles = input.approvalRoles;
-  if (input.waitForSignals !== undefined) updateData.wait_for_signals = input.waitForSignals;
-  if (input.signalConditions !== undefined) updateData.signal_conditions = input.signalConditions;
+  if (input.actionPayload !== undefined)
+    updateData.action_payload = input.actionPayload;
+  if (input.requiresApproval !== undefined)
+    updateData.requires_approval = input.requiresApproval;
+  if (input.approvalRoles !== undefined)
+    updateData.approval_roles = input.approvalRoles;
+  if (input.waitForSignals !== undefined)
+    updateData.wait_for_signals = input.waitForSignals;
+  if (input.signalConditions !== undefined)
+    updateData.signal_conditions = input.signalConditions;
   if (input.waitDurationMinutes !== undefined)
     updateData.wait_duration_minutes = input.waitDurationMinutes;
-  if (input.timeoutMinutes !== undefined) updateData.timeout_minutes = input.timeoutMinutes;
+  if (input.timeoutMinutes !== undefined)
+    updateData.timeout_minutes = input.timeoutMinutes;
   if (input.conditionExpression !== undefined)
     updateData.condition_expression = input.conditionExpression;
-  if (input.skipOnFailure !== undefined) updateData.skip_on_failure = input.skipOnFailure;
-  if (input.dependsOnSteps !== undefined) updateData.depends_on_steps = input.dependsOnSteps;
+  if (input.skipOnFailure !== undefined)
+    updateData.skip_on_failure = input.skipOnFailure;
+  if (input.dependsOnSteps !== undefined)
+    updateData.depends_on_steps = input.dependsOnSteps;
   if (input.metadata !== undefined) updateData.metadata = input.metadata;
 
   const { data, error } = await ctx.supabase
@@ -718,19 +745,24 @@ export async function updatePlaybookStep(
     .select()
     .single();
 
-  if (error) throw new Error(`Failed to update playbook step: ${error.message}`);
+  if (error)
+    throw new Error(`Failed to update playbook step: ${error.message}`);
 
   return mapDbPlaybookStep(data);
 }
 
-export async function deletePlaybookStep(ctx: ServiceContext, stepId: string): Promise<void> {
+export async function deletePlaybookStep(
+  ctx: ServiceContext,
+  stepId: string
+): Promise<void> {
   const { error } = await ctx.supabase
     .from('scenario_playbook_steps')
     .delete()
     .eq('id', stepId)
     .eq('org_id', ctx.orgId);
 
-  if (error) throw new Error(`Failed to delete playbook step: ${error.message}`);
+  if (error)
+    throw new Error(`Failed to delete playbook step: ${error.message}`);
 }
 
 export async function reorderPlaybookSteps(
@@ -828,7 +860,10 @@ export async function getScenarioWithPlaybook(
 
   let defaultPlaybook: ScenarioPlaybook | null = null;
   if (scenario.defaultPlaybookId) {
-    const playbook = await getPlaybookWithSteps(ctx, scenario.defaultPlaybookId);
+    const playbook = await getPlaybookWithSteps(
+      ctx,
+      scenario.defaultPlaybookId
+    );
     if (playbook) {
       defaultPlaybook = playbook;
     }
@@ -850,11 +885,15 @@ export async function updateScenario(
   };
 
   if (input.name !== undefined) updateData.name = input.name;
-  if (input.description !== undefined) updateData.description = input.description;
-  if (input.scenarioType !== undefined) updateData.scenario_type = input.scenarioType;
-  if (input.horizonDays !== undefined) updateData.horizon_days = input.horizonDays;
+  if (input.description !== undefined)
+    updateData.description = input.description;
+  if (input.scenarioType !== undefined)
+    updateData.scenario_type = input.scenarioType;
+  if (input.horizonDays !== undefined)
+    updateData.horizon_days = input.horizonDays;
   if (input.parameters !== undefined) updateData.parameters = input.parameters;
-  if (input.constraints !== undefined) updateData.constraints = input.constraints;
+  if (input.constraints !== undefined)
+    updateData.constraints = input.constraints;
   if (input.defaultPlaybookId !== undefined)
     updateData.default_playbook_id = input.defaultPlaybookId;
   if (input.tags !== undefined) updateData.tags = input.tags;
@@ -878,7 +917,10 @@ export async function updateScenario(
   return mapDbScenario(data);
 }
 
-export async function deleteScenario(ctx: ServiceContext, scenarioId: string): Promise<void> {
+export async function deleteScenario(
+  ctx: ServiceContext,
+  scenarioId: string
+): Promise<void> {
   const { error } = await ctx.supabase
     .from('scenarios')
     .delete()
@@ -903,7 +945,9 @@ export async function listScenarios(
     query = query.eq('status', input.status);
   }
   if (input.search) {
-    query = query.or(`name.ilike.%${input.search}%,description.ilike.%${input.search}%`);
+    query = query.or(
+      `name.ilike.%${input.search}%,description.ilike.%${input.search}%`
+    );
   }
   if (input.tags && input.tags.length > 0) {
     query = query.overlaps('tags', input.tags);
@@ -941,7 +985,9 @@ export async function listScenarios(
 // SIMULATION
 // ============================================================================
 
-async function captureInitialState(ctx: ServiceContext): Promise<ScenarioInitialState> {
+async function captureInitialState(
+  ctx: ServiceContext
+): Promise<ScenarioInitialState> {
   // Try to get graph context from S66 unified intelligence graph
   try {
     const { data: graphStats } = await ctx.supabase.rpc('get_graph_summary', {
@@ -1006,15 +1052,25 @@ export async function simulateScenario(
   };
 
   // Capture current state for simulation
-  const initialState = input.includeGraphContext !== false ? await captureInitialState(ctx) : {};
+  const initialState =
+    input.includeGraphContext !== false ? await captureInitialState(ctx) : {};
 
   // Build simulation context
-  const simulationContext = buildSimulationContext(scenario, parameters, initialState);
+  const simulationContext = buildSimulationContext(
+    scenario,
+    parameters,
+    initialState
+  );
 
   // Run LLM-powered simulation
   const openai = getOpenAIClient();
 
-  const prompt = buildSimulationPrompt(scenario, playbook, parameters, simulationContext);
+  const prompt = buildSimulationPrompt(
+    scenario,
+    playbook,
+    parameters,
+    simulationContext
+  );
 
   try {
     const response = await openai.chat.completions.create({
@@ -1054,7 +1110,9 @@ export async function simulateScenario(
       initialState: scenario.initialState || {},
       simulatedImpact: {
         riskScoreChange: result.riskScore ? result.riskScore - 50 : 0,
-        reputationScoreChange: result.opportunityScore ? result.opportunityScore - 50 : 0,
+        reputationScoreChange: result.opportunityScore
+          ? result.opportunityScore - 50
+          : 0,
       },
       riskScore: result.riskScore || 0,
       opportunityScore: result.opportunityScore || 0,
@@ -1177,10 +1235,10 @@ function buildProjectedMetrics(
   }
 
   return {
-    days: timeline.map(t => t.day),
+    days: timeline.map((t) => t.day),
     metrics: {
-      sentimentScore: timeline.map(t => t.sentimentProjected),
-      coverageVolume: timeline.map(t => t.coverageProjected),
+      sentimentScore: timeline.map((t) => t.sentimentProjected),
+      coverageVolume: timeline.map((t) => t.coverageProjected),
     },
     horizonDays,
     timeline,
@@ -1203,7 +1261,8 @@ function buildStepPreviews(
       stepName: step.name,
       actionType: step.actionType,
       predictedOutcome: outcome?.predictedOutcome || 'Outcome not predicted',
-      riskLevel: (outcome?.riskLevel as ScenarioRiskLevel) || ScenarioRiskLevel.LOW,
+      riskLevel:
+        (outcome?.riskLevel as ScenarioRiskLevel) || ScenarioRiskLevel.LOW,
       estimatedImpact: outcome?.estimatedImpact || 'Impact not estimated',
     };
   });
@@ -1242,7 +1301,9 @@ export async function startScenarioRun(
       org_id: ctx.orgId,
       scenario_id: input.scenarioId,
       playbook_id: playbookId,
-      status: input.scheduledAt ? ScenarioRunStatus.PENDING : ScenarioRunStatus.INITIALIZING,
+      status: input.scheduledAt
+        ? ScenarioRunStatus.PENDING
+        : ScenarioRunStatus.INITIALIZING,
       scheduled_at: input.scheduledAt,
       started_at: input.scheduledAt ? null : new Date().toISOString(),
       initial_state: initialState,
@@ -1253,7 +1314,8 @@ export async function startScenarioRun(
     .select()
     .single();
 
-  if (runError) throw new Error(`Failed to create scenario run: ${runError.message}`);
+  if (runError)
+    throw new Error(`Failed to create scenario run: ${runError.message}`);
 
   // Create run steps from playbook steps
   const stepInserts = playbook.steps.map((step) => ({
@@ -1271,13 +1333,17 @@ export async function startScenarioRun(
     .insert(stepInserts)
     .select();
 
-  if (stepsError) throw new Error(`Failed to create run steps: ${stepsError.message}`);
+  if (stepsError)
+    throw new Error(`Failed to create run steps: ${stepsError.message}`);
 
   await logAuditEvent(ctx, ScenarioEventType.RUN_STARTED, {
     scenarioId: input.scenarioId,
     scenarioRunId: runData.id,
     playbookId,
-    payload: { stepsCount: playbook.steps.length, scheduled: !!input.scheduledAt },
+    payload: {
+      stepsCount: playbook.steps.length,
+      scheduled: !!input.scheduledAt,
+    },
   });
 
   // If not scheduled, begin execution
@@ -1323,7 +1389,9 @@ export async function getRunWithDetails(
   const scenario = await getScenario(ctx, run.scenarioId);
   if (!scenario) return null; // Can't return details without scenario
 
-  const playbook = run.playbookId ? await getPlaybookWithSteps(ctx, run.playbookId) : null;
+  const playbook = run.playbookId
+    ? await getPlaybookWithSteps(ctx, run.playbookId)
+    : null;
 
   const { data: stepsData } = await ctx.supabase
     .from('scenario_run_steps')
@@ -1345,7 +1413,9 @@ export async function listScenarioRuns(
   ctx: ServiceContext,
   input: ListScenarioRunsQuery
 ): Promise<ListScenarioRunsResponse> {
-  let query = ctx.supabase.from('scenario_runs').select('*', { count: 'exact' });
+  let query = ctx.supabase
+    .from('scenario_runs')
+    .select('*', { count: 'exact' });
 
   query = query.eq('org_id', ctx.orgId);
 
@@ -1375,7 +1445,10 @@ export async function listScenarioRuns(
           : 'started_at';
 
   query = query
-    .order(sortColumn, { ascending: input.sortOrder === 'asc', nullsFirst: false })
+    .order(sortColumn, {
+      ascending: input.sortOrder === 'asc',
+      nullsFirst: false,
+    })
     .range(input.offset || 0, (input.offset || 0) + (input.limit || 20) - 1);
 
   const { data, error, count } = await query;
@@ -1390,7 +1463,10 @@ export async function listScenarioRuns(
   };
 }
 
-export async function pauseScenarioRun(ctx: ServiceContext, runId: string): Promise<ScenarioRun> {
+export async function pauseScenarioRun(
+  ctx: ServiceContext,
+  runId: string
+): Promise<ScenarioRun> {
   const { data, error } = await ctx.supabase
     .from('scenario_runs')
     .update({ status: ScenarioRunStatus.PAUSED })
@@ -1408,7 +1484,10 @@ export async function pauseScenarioRun(ctx: ServiceContext, runId: string): Prom
   return mapDbScenarioRun(data);
 }
 
-export async function resumeScenarioRun(ctx: ServiceContext, runId: string): Promise<ScenarioRun> {
+export async function resumeScenarioRun(
+  ctx: ServiceContext,
+  runId: string
+): Promise<ScenarioRun> {
   const { data, error } = await ctx.supabase
     .from('scenario_runs')
     .update({ status: ScenarioRunStatus.RUNNING })
@@ -1469,7 +1548,11 @@ export async function cancelScenarioRun(
 
 async function advanceRun(ctx: ServiceContext, runId: string): Promise<void> {
   const run = await getScenarioRun(ctx, runId);
-  if (!run || run.status !== ScenarioRunStatus.RUNNING && run.status !== ScenarioRunStatus.INITIALIZING) {
+  if (
+    !run ||
+    (run.status !== ScenarioRunStatus.RUNNING &&
+      run.status !== ScenarioRunStatus.INITIALIZING)
+  ) {
     return;
   }
 
@@ -1491,7 +1574,9 @@ async function advanceRun(ctx: ServiceContext, runId: string): Promise<void> {
 
   const steps = stepsData || [];
   const executedStepIds = new Set(
-    steps.filter((s) => s.status === ScenarioStepStatus.EXECUTED).map((s) => s.playbook_step_id)
+    steps
+      .filter((s) => s.status === ScenarioStepStatus.EXECUTED)
+      .map((s) => s.playbook_step_id)
   );
 
   // Find next step(s) that can be executed
@@ -1503,12 +1588,17 @@ async function advanceRun(ctx: ServiceContext, runId: string): Promise<void> {
 
     // Check dependencies
     const deps = playbookStep.depends_on_steps || [];
-    const allDepsExecuted = deps.every((depId: string) => executedStepIds.has(depId));
+    const allDepsExecuted = deps.every((depId: string) =>
+      executedStepIds.has(depId)
+    );
     if (!allDepsExecuted) continue;
 
     // Check condition expression if present
     if (playbookStep.condition_expression) {
-      const conditionMet = evaluateCondition(playbookStep.condition_expression, run.currentState);
+      const conditionMet = evaluateCondition(
+        playbookStep.condition_expression,
+        run.currentState
+      );
       if (!conditionMet) {
         // Skip this step
         await ctx.supabase
@@ -1559,20 +1649,29 @@ async function advanceRun(ctx: ServiceContext, runId: string): Promise<void> {
     .select('id')
     .eq('scenario_run_id', runId)
     .eq('org_id', ctx.orgId)
-    .in('status', [ScenarioStepStatus.PENDING, ScenarioStepStatus.READY, ScenarioStepStatus.EXECUTING]);
+    .in('status', [
+      ScenarioStepStatus.PENDING,
+      ScenarioStepStatus.READY,
+      ScenarioStepStatus.EXECUTING,
+    ]);
 
   if (!remainingSteps || remainingSteps.length === 0) {
     await completeRun(ctx, runId);
   }
 }
 
-function evaluateCondition(expression: string, state: ScenarioInitialState): boolean {
+function evaluateCondition(
+  expression: string,
+  state: ScenarioInitialState
+): boolean {
   // Simple condition evaluator
   // In production, use a proper expression parser
   try {
     // Very basic: check if expression references state properties
     if (expression.includes('sentimentScore')) {
-      const threshold = parseFloat(expression.match(/[<>=]+\s*(-?\d+\.?\d*)/)?.[1] || '0');
+      const threshold = parseFloat(
+        expression.match(/[<>=]+\s*(-?\d+\.?\d*)/)?.[1] || '0'
+      );
       const value = (state.metricsSnapshot?.sentimentScore as number) || 0;
       if (expression.includes('>=')) return value >= threshold;
       if (expression.includes('<=')) return value <= threshold;
@@ -1586,7 +1685,11 @@ function evaluateCondition(expression: string, state: ScenarioInitialState): boo
   }
 }
 
-async function executeStep(ctx: ServiceContext, runId: string, stepId: string): Promise<void> {
+async function executeStep(
+  ctx: ServiceContext,
+  runId: string,
+  stepId: string
+): Promise<void> {
   // Get step with playbook step details
   const { data: stepData } = await ctx.supabase
     .from('scenario_run_steps')
@@ -1607,7 +1710,11 @@ async function executeStep(ctx: ServiceContext, runId: string, stepId: string): 
 
   try {
     // Simulate step execution based on action type
-    const outcome = await simulateStepExecution(ctx, playbookStep, stepData.execution_context);
+    const outcome = await simulateStepExecution(
+      ctx,
+      playbookStep,
+      stepData.execution_context
+    );
 
     // Mark as executed
     await ctx.supabase
@@ -1740,8 +1847,12 @@ async function completeRun(ctx: ServiceContext, runId: string): Promise<void> {
     .eq('org_id', ctx.orgId);
 
   const steps = stepsData || [];
-  const executedSteps = steps.filter((s) => s.status === ScenarioStepStatus.EXECUTED);
-  const failedSteps = steps.filter((s) => s.status === ScenarioStepStatus.FAILED);
+  const executedSteps = steps.filter(
+    (s) => s.status === ScenarioStepStatus.EXECUTED
+  );
+  const failedSteps = steps.filter(
+    (s) => s.status === ScenarioStepStatus.FAILED
+  );
 
   // Aggregate simulated impacts
   let totalSentimentDelta = 0;
@@ -1754,8 +1865,14 @@ async function completeRun(ctx: ServiceContext, runId: string): Promise<void> {
   }
 
   // Calculate scores
-  const riskScore = failedSteps.length > 0 ? 50 + failedSteps.length * 10 : Math.max(0, -totalSentimentDelta * 2);
-  const opportunityScore = Math.max(0, totalSentimentDelta * 2 + totalCoverageDelta);
+  const riskScore =
+    failedSteps.length > 0
+      ? 50 + failedSteps.length * 10
+      : Math.max(0, -totalSentimentDelta * 2);
+  const opportunityScore = Math.max(
+    0,
+    totalSentimentDelta * 2 + totalCoverageDelta
+  );
 
   // Generate narrative summary
   const openai = getOpenAIClient();
@@ -1813,7 +1930,9 @@ Provide a JSON response with:
       result_summary: {
         executedSteps: executedSteps.length,
         failedSteps: failedSteps.length,
-        skippedSteps: steps.filter((s) => s.status === ScenarioStepStatus.SKIPPED).length,
+        skippedSteps: steps.filter(
+          (s) => s.status === ScenarioStepStatus.SKIPPED
+        ).length,
         totalSentimentDelta,
         totalCoverageDelta,
       },
@@ -1920,7 +2039,9 @@ export async function listScenarioAuditLogs(
   ctx: ServiceContext,
   input: ListScenarioAuditLogsQuery
 ): Promise<ListScenarioAuditLogsResponse> {
-  let query = ctx.supabase.from('scenario_audit_log').select('*', { count: 'exact' });
+  let query = ctx.supabase
+    .from('scenario_audit_log')
+    .select('*', { count: 'exact' });
 
   query = query.eq('org_id', ctx.orgId);
 
@@ -2021,7 +2142,8 @@ export async function getScenarioPlaybookStats(ctx: ServiceContext): Promise<{
   ]);
 
   const scores = (scoreData || []).map((r) => r.risk_score as number);
-  const avgRiskScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+  const avgRiskScore =
+    scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
 
   return {
     totalPlaybooks: totalPlaybooks || 0,

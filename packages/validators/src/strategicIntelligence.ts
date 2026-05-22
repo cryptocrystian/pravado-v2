@@ -115,16 +115,21 @@ export const createStrategicReportSchema = z.object({
   periodEnd: z.string().datetime(),
   fiscalQuarter: z.string().max(10).optional(),
   fiscalYear: z.number().int().min(2000).max(2100).optional(),
-  sectionTypes: z.array(strategicSectionTypeSchema).optional().default([
-    'executive_summary',
-    'strategic_outlook',
-    'market_dynamics',
-    'competitive_positioning',
-    'risk_opportunity_matrix',
-    'key_kpis_narrative',
-  ]),
+  sectionTypes: z
+    .array(strategicSectionTypeSchema)
+    .optional()
+    .default([
+      'executive_summary',
+      'strategic_outlook',
+      'market_dynamics',
+      'competitive_positioning',
+      'risk_opportunity_matrix',
+      'key_kpis_narrative',
+    ]),
   tone: z.enum(['executive', 'formal', 'strategic']).default('executive'),
-  targetLength: z.enum(['brief', 'standard', 'comprehensive']).default('comprehensive'),
+  targetLength: z
+    .enum(['brief', 'standard', 'comprehensive'])
+    .default('comprehensive'),
   includeCharts: z.boolean().default(true),
   includeRecommendations: z.boolean().default(true),
 });
@@ -158,44 +163,81 @@ export const updateStrategicSectionSchema = z.object({
   contentMd: z.string().optional(),
   contentHtml: z.string().optional(),
   isVisible: z.boolean().optional(),
-  chartsConfig: z.array(z.object({
-    chartId: z.string(),
-    chartType: z.enum(['line', 'bar', 'pie', 'area', 'radar', 'gauge', 'heatmap']),
-    title: z.string(),
-    description: z.string().optional(),
-    dataSource: z.string(),
-    config: z.record(z.unknown()),
-    data: z.array(z.unknown()).optional(),
-  })).optional(),
-  dataTables: z.array(z.object({
-    tableId: z.string(),
-    title: z.string(),
-    description: z.string().optional(),
-    columns: z.array(z.object({
-      key: z.string(),
-      label: z.string(),
-      type: z.enum(['text', 'number', 'percent', 'date', 'currency', 'badge']),
-    })),
-    data: z.array(z.record(z.unknown())),
-  })).optional(),
-  sectionMetrics: z.object({
-    keyMetrics: z.record(z.union([z.number(), z.string()])).optional(),
-    trends: z.array(z.object({
-      metric: z.string(),
-      direction: z.enum(['up', 'down', 'stable']),
-      percentChange: z.number().optional(),
-      narrative: z.string().optional(),
-    })).optional(),
-    comparisons: z.array(z.object({
-      metric: z.string(),
-      current: z.union([z.number(), z.string()]),
-      previous: z.union([z.number(), z.string()]),
-      benchmark: z.union([z.number(), z.string()]).optional(),
-    })).optional(),
-  }).optional(),
+  chartsConfig: z
+    .array(
+      z.object({
+        chartId: z.string(),
+        chartType: z.enum([
+          'line',
+          'bar',
+          'pie',
+          'area',
+          'radar',
+          'gauge',
+          'heatmap',
+        ]),
+        title: z.string(),
+        description: z.string().optional(),
+        dataSource: z.string(),
+        config: z.record(z.unknown()),
+        data: z.array(z.unknown()).optional(),
+      })
+    )
+    .optional(),
+  dataTables: z
+    .array(
+      z.object({
+        tableId: z.string(),
+        title: z.string(),
+        description: z.string().optional(),
+        columns: z.array(
+          z.object({
+            key: z.string(),
+            label: z.string(),
+            type: z.enum([
+              'text',
+              'number',
+              'percent',
+              'date',
+              'currency',
+              'badge',
+            ]),
+          })
+        ),
+        data: z.array(z.record(z.unknown())),
+      })
+    )
+    .optional(),
+  sectionMetrics: z
+    .object({
+      keyMetrics: z.record(z.union([z.number(), z.string()])).optional(),
+      trends: z
+        .array(
+          z.object({
+            metric: z.string(),
+            direction: z.enum(['up', 'down', 'stable']),
+            percentChange: z.number().optional(),
+            narrative: z.string().optional(),
+          })
+        )
+        .optional(),
+      comparisons: z
+        .array(
+          z.object({
+            metric: z.string(),
+            current: z.union([z.number(), z.string()]),
+            previous: z.union([z.number(), z.string()]),
+            benchmark: z.union([z.number(), z.string()]).optional(),
+          })
+        )
+        .optional(),
+    })
+    .optional(),
 });
 
-export type UpdateStrategicSection = z.infer<typeof updateStrategicSectionSchema>;
+export type UpdateStrategicSection = z.infer<
+  typeof updateStrategicSectionSchema
+>;
 
 // ============================================================================
 // LIST/QUERY SCHEMAS
@@ -212,11 +254,22 @@ export const listStrategicReportsQuerySchema = z.object({
   periodStart: z.string().datetime().optional(),
   periodEnd: z.string().datetime().optional(),
   search: z.string().max(200).optional(),
-  sortBy: z.enum(['created_at', 'updated_at', 'title', 'period_start', 'overall_strategic_score']).optional().default('created_at'),
+  sortBy: z
+    .enum([
+      'created_at',
+      'updated_at',
+      'title',
+      'period_start',
+      'overall_strategic_score',
+    ])
+    .optional()
+    .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
-export type ListStrategicReportsQuery = z.infer<typeof listStrategicReportsQuerySchema>;
+export type ListStrategicReportsQuery = z.infer<
+  typeof listStrategicReportsQuerySchema
+>;
 
 export const listStrategicSourcesQuerySchema = z.object({
   reportId: z.string().uuid().optional(),
@@ -227,7 +280,9 @@ export const listStrategicSourcesQuerySchema = z.object({
   offset: z.coerce.number().int().min(0).optional().default(0),
 });
 
-export type ListStrategicSourcesQuery = z.infer<typeof listStrategicSourcesQuerySchema>;
+export type ListStrategicSourcesQuery = z.infer<
+  typeof listStrategicSourcesQuerySchema
+>;
 
 export const listStrategicAuditLogsQuerySchema = z.object({
   reportId: z.string().uuid().optional(),
@@ -241,7 +296,9 @@ export const listStrategicAuditLogsQuerySchema = z.object({
   offset: z.coerce.number().int().min(0).optional().default(0),
 });
 
-export type ListStrategicAuditLogsQuery = z.infer<typeof listStrategicAuditLogsQuerySchema>;
+export type ListStrategicAuditLogsQuery = z.infer<
+  typeof listStrategicAuditLogsQuerySchema
+>;
 
 // ============================================================================
 // GENERATION SCHEMAS
@@ -255,7 +312,9 @@ export const generateStrategicReportSchema = z.object({
   customInstructions: z.string().max(2000).optional(),
 });
 
-export type GenerateStrategicReport = z.infer<typeof generateStrategicReportSchema>;
+export type GenerateStrategicReport = z.infer<
+  typeof generateStrategicReportSchema
+>;
 
 export const regenerateStrategicSectionSchema = z.object({
   customPrompt: z.string().max(2000).optional(),
@@ -264,7 +323,9 @@ export const regenerateStrategicSectionSchema = z.object({
   maxTokens: z.number().int().min(100).max(8000).optional(),
 });
 
-export type RegenerateStrategicSection = z.infer<typeof regenerateStrategicSectionSchema>;
+export type RegenerateStrategicSection = z.infer<
+  typeof regenerateStrategicSectionSchema
+>;
 
 export const refreshInsightsSchema = z.object({
   sourceSystems: z.array(strategicSourceSystemSchema).optional(),
@@ -280,13 +341,17 @@ export type RefreshInsights = z.infer<typeof refreshInsightsSchema>;
 // ============================================================================
 
 export const reorderStrategicSectionsSchema = z.object({
-  sectionOrder: z.array(z.object({
-    sectionId: z.string().uuid(),
-    orderIndex: z.number().int().min(0),
-  })),
+  sectionOrder: z.array(
+    z.object({
+      sectionId: z.string().uuid(),
+      orderIndex: z.number().int().min(0),
+    })
+  ),
 });
 
-export type ReorderStrategicSections = z.infer<typeof reorderStrategicSectionsSchema>;
+export type ReorderStrategicSections = z.infer<
+  typeof reorderStrategicSectionsSchema
+>;
 
 // ============================================================================
 // SOURCE MANAGEMENT SCHEMAS
@@ -327,7 +392,9 @@ export const approveStrategicReportSchema = z.object({
   approvalNote: z.string().max(1000).optional(),
 });
 
-export type ApproveStrategicReport = z.infer<typeof approveStrategicReportSchema>;
+export type ApproveStrategicReport = z.infer<
+  typeof approveStrategicReportSchema
+>;
 
 export const publishStrategicReportSchema = z.object({
   generatePdf: z.boolean().optional().default(true),
@@ -336,13 +403,17 @@ export const publishStrategicReportSchema = z.object({
   publishNote: z.string().max(1000).optional(),
 });
 
-export type PublishStrategicReport = z.infer<typeof publishStrategicReportSchema>;
+export type PublishStrategicReport = z.infer<
+  typeof publishStrategicReportSchema
+>;
 
 export const archiveStrategicReportSchema = z.object({
   archiveReason: z.string().max(500).optional(),
 });
 
-export type ArchiveStrategicReport = z.infer<typeof archiveStrategicReportSchema>;
+export type ArchiveStrategicReport = z.infer<
+  typeof archiveStrategicReportSchema
+>;
 
 // ============================================================================
 // EXPORT SCHEMAS
@@ -353,11 +424,13 @@ export const exportStrategicReportSchema = z.object({
   includeSections: z.array(strategicSectionTypeSchema).optional(),
   includeCharts: z.boolean().default(true),
   includeAppendix: z.boolean().default(true),
-  brandingOptions: z.object({
-    logo: z.string().optional(),
-    primaryColor: z.string().optional(),
-    secondaryColor: z.string().optional(),
-  }).optional(),
+  brandingOptions: z
+    .object({
+      logo: z.string().optional(),
+      primaryColor: z.string().optional(),
+      secondaryColor: z.string().optional(),
+    })
+    .optional(),
 });
 
 export type ExportStrategicReport = z.infer<typeof exportStrategicReportSchema>;
@@ -382,18 +455,24 @@ export const strategicReportIdParamSchema = z.object({
   reportId: z.string().uuid(),
 });
 
-export type StrategicReportIdParam = z.infer<typeof strategicReportIdParamSchema>;
+export type StrategicReportIdParam = z.infer<
+  typeof strategicReportIdParamSchema
+>;
 
 export const strategicSectionIdParamSchema = z.object({
   reportId: z.string().uuid(),
   sectionId: z.string().uuid(),
 });
 
-export type StrategicSectionIdParam = z.infer<typeof strategicSectionIdParamSchema>;
+export type StrategicSectionIdParam = z.infer<
+  typeof strategicSectionIdParamSchema
+>;
 
 export const strategicSourceIdParamSchema = z.object({
   reportId: z.string().uuid(),
   sourceId: z.string().uuid(),
 });
 
-export type StrategicSourceIdParam = z.infer<typeof strategicSourceIdParamSchema>;
+export type StrategicSourceIdParam = z.infer<
+  typeof strategicSourceIdParamSchema
+>;

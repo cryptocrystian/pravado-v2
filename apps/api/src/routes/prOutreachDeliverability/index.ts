@@ -17,10 +17,8 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-
 import { requireUser } from '../../middleware/requireUser';
 import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
-
 
 /**
  * Get provider configuration from environment (S98)
@@ -31,14 +29,16 @@ function getProviderConfig(): ProviderConfig {
 
   // SendGrid configuration (primary for S98)
   const sendgridApiKey = process.env.SENDGRID_API_KEY;
-  const sendgridFromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@pravado.com';
+  const sendgridFromEmail =
+    process.env.SENDGRID_FROM_EMAIL || 'noreply@pravado.com';
   const sendgridFromName = process.env.SENDGRID_FROM_NAME || 'Pravado';
   const sendgridWebhookKey = process.env.SENDGRID_WEBHOOK_KEY;
 
   // Mailgun configuration (fallback)
   const mailgunApiKey = process.env.MAILGUN_API_KEY;
   const mailgunDomain = process.env.MAILGUN_DOMAIN;
-  const mailgunFromEmail = process.env.MAILGUN_FROM_EMAIL || 'noreply@pravado.com';
+  const mailgunFromEmail =
+    process.env.MAILGUN_FROM_EMAIL || 'noreply@pravado.com';
 
   // Select config based on provider
   if (provider === 'sendgrid') {
@@ -67,16 +67,23 @@ function getProviderConfig(): ProviderConfig {
   };
 }
 
-export default async function prOutreachDeliverabilityRoutes(fastify: FastifyInstance) {
+export default async function prOutreachDeliverabilityRoutes(
+  fastify: FastifyInstance
+) {
   // Check feature flag
   if (!FLAGS.ENABLE_PR_OUTREACH_DELIVERABILITY) {
-    fastify.log.info('PR outreach deliverability routes disabled by feature flag');
+    fastify.log.info(
+      'PR outreach deliverability routes disabled by feature flag'
+    );
     return;
   }
 
   // Create Supabase client
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const providerConfig = getProviderConfig();
 
   /**
@@ -118,7 +125,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
 
       const query = listEmailMessagesQuerySchema.parse(request.query);
 
-      const service = createOutreachDeliverabilityService({ supabase, providerConfig });
+      const service = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
       const result = await service.listEmailMessages(orgId, query);
 
       return reply.send({
@@ -152,7 +162,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
 
       const { id } = request.params;
 
-      const service = createOutreachDeliverabilityService({ supabase, providerConfig });
+      const service = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
       const message = await service.getEmailMessage(id, orgId);
 
       if (!message) {
@@ -194,7 +207,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
       const { id } = request.params;
       const input = updateEmailMessageInputSchema.parse(request.body);
 
-      const service = createOutreachDeliverabilityService({ supabase, providerConfig });
+      const service = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
       const message = await service.updateEmailMessage(id, orgId, input);
 
       return reply.send({
@@ -228,7 +244,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
 
       const { id } = request.params;
 
-      const service = createOutreachDeliverabilityService({ supabase, providerConfig });
+      const service = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
       await service.deleteEmailMessage(id, orgId);
 
       return reply.send({
@@ -264,7 +283,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
 
       const query = listEngagementMetricsQuerySchema.parse(request.query);
 
-      const service = createOutreachDeliverabilityService({ supabase, providerConfig });
+      const service = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
       const result = await service.listEngagementMetrics(orgId, query);
 
       return reply.send({
@@ -298,8 +320,14 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
 
       const { journalistId } = request.params;
 
-      const service = createOutreachDeliverabilityService({ supabase, providerConfig });
-      const engagement = await service.getJournalistEngagement(journalistId, orgId);
+      const service = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
+      const engagement = await service.getJournalistEngagement(
+        journalistId,
+        orgId
+      );
 
       if (!engagement) {
         return reply.status(404).send({
@@ -339,7 +367,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
 
       const { journalistId } = request.params;
 
-      const service = createOutreachDeliverabilityService({ supabase, providerConfig });
+      const service = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
       const result = await service.updateEngagementMetrics(journalistId, orgId);
 
       return reply.send({
@@ -373,7 +404,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
         });
       }
 
-      const service = createOutreachDeliverabilityService({ supabase, providerConfig });
+      const service = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
       const summary = await service.getDeliverabilitySummary(orgId);
 
       return reply.send({
@@ -406,8 +440,14 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
       const { limit } = request.query as any;
       const limitNum = limit ? parseInt(limit, 10) : 10;
 
-      const service = createOutreachDeliverabilityService({ supabase, providerConfig });
-      const topEngaged = await service.getTopEngagedJournalists(orgId, limitNum);
+      const service = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
+      const topEngaged = await service.getTopEngagedJournalists(
+        orgId,
+        limitNum
+      );
 
       return reply.send({
         success: true,
@@ -432,7 +472,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
         rawBody: true,
       },
     },
-    async (request: FastifyRequest<{ Params: { provider: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { provider: string } }>,
+      reply: FastifyReply
+    ) => {
       const { provider } = request.params;
 
       // Validate provider
@@ -440,7 +483,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
       if (!parseResult.success) {
         return reply.status(400).send({
           success: false,
-          error: { code: 'INVALID_PROVIDER', message: 'Invalid email provider' },
+          error: {
+            code: 'INVALID_PROVIDER',
+            message: 'Invalid email provider',
+          },
         });
       }
 
@@ -451,7 +497,9 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
         (request.headers['x-mailgun-signature'] as string) ||
         (request.headers['x-amz-sns-message-id'] as string);
 
-      const timestamp = request.headers['x-twilio-email-event-webhook-timestamp'] as string;
+      const timestamp = request.headers[
+        'x-twilio-email-event-webhook-timestamp'
+      ] as string;
 
       // Raw body required for HMAC signature verification. The route opts into
       // @fastify/raw-body via `config: { rawBody: true }` above; the plugin is
@@ -465,13 +513,14 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
       if (!rawBody) {
         fastify.log.error(
           { provider, hasRawBody: false },
-          'Webhook rejected: raw body unavailable. @fastify/raw-body plugin must be registered globally:false with this route opted-in via config.rawBody:true.',
+          'Webhook rejected: raw body unavailable. @fastify/raw-body plugin must be registered globally:false with this route opted-in via config.rawBody:true.'
         );
         return reply.status(500).send({
           success: false,
           error: {
             code: 'RAW_BODY_UNAVAILABLE',
-            message: 'Webhook signature validation requires raw body; plugin misconfiguration.',
+            message:
+              'Webhook signature validation requires raw body; plugin misconfiguration.',
           },
         });
       }
@@ -482,7 +531,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
 
       try {
         // Create service without specific org (we'll determine it from the message)
-        const service = createOutreachDeliverabilityService({ supabase, providerConfig });
+        const service = createOutreachDeliverabilityService({
+          supabase,
+          providerConfig,
+        });
 
         // Process the webhook with raw body for signature validation
         // Note: The service will look up the org from the message
@@ -538,7 +590,10 @@ export default async function prOutreachDeliverabilityRoutes(fastify: FastifyIns
 
       const emailRequest = sendEmailRequestSchema.parse(request.body);
 
-      const service = createOutreachDeliverabilityService({ supabase, providerConfig });
+      const service = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
       const result = await service.sendEmail(emailRequest);
 
       return reply.send({

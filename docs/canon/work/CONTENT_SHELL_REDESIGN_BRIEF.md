@@ -1,4 +1,5 @@
 # CONTENT SHELL REDESIGN BRIEF
+
 Status: ACTIVE — For Claude Code execution  
 Date: 2026-03-03  
 File: apps/dashboard/src/components/content/ContentWorkSurfaceShell.tsx ONLY  
@@ -9,10 +10,11 @@ Do not touch: Any view file, any page file, ImpactStrip component, types, mock d
 ## THE PROBLEM IN NUMBERS
 
 Current chrome stack before first data pixel:
+
 - Global topbar: 44px
-- Header block (icon + h1 + subtitle + buttons): ~72px  
-- Tab bar: ~44px  
-- ImpactStrip (separate row): ~30px  
+- Header block (icon + h1 + subtitle + buttons): ~72px
+- Tab bar: ~44px
+- ImpactStrip (separate row): ~30px
 - Total: ~190px = 24% of a 778px viewport consumed by chrome before any data
 
 Target: ~92px total (global topbar 44px + single unified bar 48px).
@@ -23,6 +25,7 @@ The PR surface achieves this. Content must match.
 ## THE REFERENCE: WHAT PR DOES RIGHT
 
 Navigate to /app/pr and observe:
+
 - Global topbar (44px)
 - Tab bar immediately below — no surface title block, no subtitle, no icon billboard
 - Data starts at ~88px
@@ -39,12 +42,14 @@ Visual layout:
 [small iris icon] [Content Hub text-sm] [divider] [Content tab][Library tab][Calendar tab][Insights tab] [flex-1 spacer] [SAGE tag] [divider] [EVI score] [divider] [Mode badge+caret] [Info icon btn] [Create btn+caret]
 
 ### Left cluster
+
 - Pillar icon: w-5 h-5 text-brand-iris, inline, NO surrounding box/ring/glow/padding
 - Surface title: text-sm font-semibold text-white/80 — NOT an h1, NOT text-2xl
 - Vertical divider: w-px h-4 bg-white/10 mx-3
 - Tabs: same active/inactive styling as current (iris underline active, text-white/50 inactive), px-3 py-0, items-center
 
 ### Right cluster (flex row, items-center gap-2)
+
 - SAGE tag: Lightning icon w-3.5 h-3.5 text-brand-iris + text-[11px] font-bold uppercase tracking-wider text-brand-iris, max-w-[200px] truncate
 - Divider: w-px h-4 bg-white/10
 - EVI indicator: "EVI" text-[11px] font-bold uppercase tracking-wider text-white/40 mr-1 + score text-sm font-bold tabular-nums text-brand-cyan + delta text-xs text-semantic-success (up arrow + number)
@@ -54,6 +59,7 @@ Visual layout:
 - Create: filled iris button, same as current — Plus icon + "Create" text + CaretDown
 
 ### Bar container
+
   <div className="flex items-center h-12 px-4 border-b border-border-subtle bg-slate-1 shrink-0 relative z-10">
 
 h-12 = 48px fixed. px-4. bg-slate-1. border-b border-border-subtle. shrink-0 so it never collapses. relative z-10 so dropdowns stack correctly. NO gradient, NO pt-6, NO mb-6, NO pb-0.
@@ -65,22 +71,24 @@ h-12 = 48px fixed. px-4. bg-slate-1. border-b border-border-subtle. shrink-0 so 
 The mode switcher badge is a button in the right cluster. It shows the current mode and opens a dropdown on click.
 
 Badge button:
-  <button className="flex items-center gap-1.5 px-2.5 py-1 rounded border text-[11px] font-bold uppercase tracking-wider transition-colors {mode-specific tokens}">
-    <ModeIcon /> {label} <CaretDown className="w-3 h-3" />
-  </button>
+<button className="flex items-center gap-1.5 px-2.5 py-1 rounded border text-[11px] font-bold uppercase tracking-wider transition-colors {mode-specific tokens}">
+<ModeIcon /> {label} <CaretDown className="w-3 h-3" />
+</button>
 
 Mode-specific tokens (from existing modeTokens object — do not hardcode):
+
 - manual: bg-white/5 text-white/70 border-white/20
-- copilot: bg-brand-iris/10 text-brand-iris border-brand-iris/30  
+- copilot: bg-brand-iris/10 text-brand-iris border-brand-iris/30
 - autopilot: bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30
 
 CRITICAL FIX — Dropdown opens LEFTWARD to prevent viewport clipping:
+
   <div className="absolute right-0 top-full mt-1 w-48 bg-slate-2 border border-slate-4 rounded-lg shadow-elev-3 py-1 z-[200]">
 
 right-0 (not left-0). z-[200] ensures it renders above all view content. The dropdown ref and click-outside handler already exist in the shell — keep them, just fix right-0 and z-[200].
 
 Add onModeChange prop to shell interface:
-  onModeChange?: (mode: AutomationMode) => void;
+onModeChange?: (mode: AutomationMode) => void;
 
 Call onModeChange?.(selectedMode) when a mode option is clicked, then close the dropdown.
 
@@ -115,24 +123,25 @@ Call onModeChange?.(selectedMode) when a mode option is clicked, then close the 
 ## CONTENT AREA — ZERO PADDING VERIFICATION
 
 The content area wrapper must be:
+
   <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
     {children}
   </div>
 
-No px-*, no py-*, no mx-* on this wrapper. Views own 100% of their internal spacing.
+No px-_, no py-_, no mx-\* on this wrapper. Views own 100% of their internal spacing.
 
 ---
 
 ## BEFORE / AFTER PIXEL COUNT
 
-Layer            | Before  | After
-Global topbar    | 44px    | 44px
-Header block     | ~72px   | eliminated
-Tab row          | ~44px   | merged into unified bar
-ImpactStrip row  | ~30px   | merged into unified bar
-Unified bar      | —       | 48px
-TOTAL            | ~190px  | ~92px
-Viewport for data| 76%     | 88%
+Layer | Before | After
+Global topbar | 44px | 44px
+Header block | ~72px | eliminated
+Tab row | ~44px | merged into unified bar
+ImpactStrip row | ~30px | merged into unified bar
+Unified bar | — | 48px
+TOTAL | ~190px | ~92px
+Viewport for data| 76% | 88%
 
 ---
 
@@ -151,7 +160,7 @@ Viewport for data| 76%     | 88%
 
 - [ ] ~92px total from viewport top to first data pixel (measure it)
 - [ ] No h1 anywhere in the shell
-- [ ] No subtitle anywhere in the shell  
+- [ ] No subtitle anywhere in the shell
 - [ ] No large icon box anywhere in the shell
 - [ ] Surface title is text-sm (never text-xl, never text-2xl)
 - [ ] Single 48px bar contains: icon, title, divider, tabs, spacer, SAGE, EVI, mode, explain, create
@@ -174,6 +183,7 @@ Viewport for data| 76%     | 88%
 ## WHEN DONE
 
 Confirm:
+
 1. Exact pixel measurement: how many px from viewport top to first data pixel
 2. Every acceptance criterion checked with pass/fail
 3. DS violations flagged if any exist

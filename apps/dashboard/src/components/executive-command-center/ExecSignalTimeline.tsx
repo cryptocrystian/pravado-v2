@@ -14,10 +14,19 @@
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
 
-import { AIReasoningPopover, type AIReasoningContext } from '@/components/AIReasoningPopover';
+import {
+  AIReasoningPopover,
+  type AIReasoningContext,
+} from '@/components/AIReasoningPopover';
 
 // Types
-export type SignalType = 'insight' | 'alert' | 'opportunity' | 'risk' | 'milestone' | 'action';
+export type SignalType =
+  | 'insight'
+  | 'alert'
+  | 'opportunity'
+  | 'risk'
+  | 'milestone'
+  | 'action';
 export type SignalSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info';
 
 export interface TimelineSignal {
@@ -48,7 +57,11 @@ interface ExecSignalTimelineProps {
 }
 
 // AI Dot component
-function AIDot({ status = 'idle' }: { status?: 'idle' | 'analyzing' | 'generating' }) {
+function AIDot({
+  status = 'idle',
+}: {
+  status?: 'idle' | 'analyzing' | 'generating';
+}) {
   const baseClasses = 'w-2 h-2 rounded-full';
   if (status === 'analyzing') {
     return <span className={`${baseClasses} bg-brand-cyan animate-pulse`} />;
@@ -60,12 +73,45 @@ function AIDot({ status = 'idle' }: { status?: 'idle' | 'analyzing' | 'generatin
 }
 
 // Pillar colors
-const pillarColors: Record<string, { bg: string; text: string; border: string; dot: string; label: string }> = {
-  pr: { bg: 'bg-brand-iris/10', text: 'text-brand-iris', border: 'border-brand-iris', dot: 'bg-brand-iris', label: 'PR Intelligence' },
-  content: { bg: 'bg-brand-cyan/10', text: 'text-brand-cyan', border: 'border-brand-cyan', dot: 'bg-brand-cyan', label: 'Content Hub' },
-  seo: { bg: 'bg-brand-magenta/10', text: 'text-brand-magenta', border: 'border-brand-magenta', dot: 'bg-brand-magenta', label: 'SEO' },
-  exec: { bg: 'bg-brand-amber/10', text: 'text-brand-amber', border: 'border-brand-amber', dot: 'bg-brand-amber', label: 'Executive' },
-  crisis: { bg: 'bg-semantic-danger/10', text: 'text-semantic-danger', border: 'border-semantic-danger', dot: 'bg-semantic-danger', label: 'Crisis' },
+const pillarColors: Record<
+  string,
+  { bg: string; text: string; border: string; dot: string; label: string }
+> = {
+  pr: {
+    bg: 'bg-brand-iris/10',
+    text: 'text-brand-iris',
+    border: 'border-brand-iris',
+    dot: 'bg-brand-iris',
+    label: 'PR Intelligence',
+  },
+  content: {
+    bg: 'bg-brand-cyan/10',
+    text: 'text-brand-cyan',
+    border: 'border-brand-cyan',
+    dot: 'bg-brand-cyan',
+    label: 'Content Hub',
+  },
+  seo: {
+    bg: 'bg-brand-magenta/10',
+    text: 'text-brand-magenta',
+    border: 'border-brand-magenta',
+    dot: 'bg-brand-magenta',
+    label: 'SEO',
+  },
+  exec: {
+    bg: 'bg-brand-amber/10',
+    text: 'text-brand-amber',
+    border: 'border-brand-amber',
+    dot: 'bg-brand-amber',
+    label: 'Executive',
+  },
+  crisis: {
+    bg: 'bg-semantic-danger/10',
+    text: 'text-semantic-danger',
+    border: 'border-semantic-danger',
+    dot: 'bg-semantic-danger',
+    label: 'Crisis',
+  },
 };
 
 // Signal type styling
@@ -104,7 +150,9 @@ function formatRelativeTime(dateStr: string): string {
 }
 
 // Group signals by date
-function groupSignalsByDate(signals: TimelineSignal[]): Map<string, TimelineSignal[]> {
+function groupSignalsByDate(
+  signals: TimelineSignal[]
+): Map<string, TimelineSignal[]> {
   const groups = new Map<string, TimelineSignal[]>();
 
   signals.forEach((signal) => {
@@ -119,7 +167,11 @@ function groupSignalsByDate(signals: TimelineSignal[]): Map<string, TimelineSign
     } else if (date.toDateString() === yesterday.toDateString()) {
       key = 'Yesterday';
     } else {
-      key = date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      key = date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+      });
     }
 
     if (!groups.has(key)) {
@@ -136,22 +188,31 @@ export function ExecSignalTimeline({
   loading,
   maxItems = 50,
 }: ExecSignalTimelineProps) {
-  const [selectedPillars, setSelectedPillars] = useState<Set<string>>(new Set(['pr', 'content', 'seo', 'exec', 'crisis']));
-  const [selectedTypes, setSelectedTypes] = useState<Set<SignalType>>(new Set(['insight', 'alert', 'opportunity', 'risk', 'milestone', 'action']));
+  const [selectedPillars, setSelectedPillars] = useState<Set<string>>(
+    new Set(['pr', 'content', 'seo', 'exec', 'crisis'])
+  );
+  const [selectedTypes, setSelectedTypes] = useState<Set<SignalType>>(
+    new Set(['insight', 'alert', 'opportunity', 'risk', 'milestone', 'action'])
+  );
   const [expandedSignal, setExpandedSignal] = useState<string | null>(null);
 
   // Build AI reasoning context
-  const buildReasoningContext = (signal: TimelineSignal): AIReasoningContext => ({
+  const buildReasoningContext = (
+    signal: TimelineSignal
+  ): AIReasoningContext => ({
     triggerSource: `${pillarColors[signal.pillar].label} Signal`,
     triggerDescription: `${signalStyles[signal.type].label} detected from ${signal.sourceSystem}`,
     sourcePillar: signal.pillar,
-    relatedPillars: signal.relatedPillars?.map(p => ({
+    relatedPillars: signal.relatedPillars?.map((p) => ({
       pillar: p,
       influence: 'affects' as const,
       description: `Signal propagates to ${pillarColors[p].label}`,
     })),
-    confidence: signal.severity === 'critical' || signal.severity === 'high' ? 90 : 75,
-    nextActions: signal.linkUrl ? [{ label: 'View Details', href: signal.linkUrl, priority: 'high' }] : [],
+    confidence:
+      signal.severity === 'critical' || signal.severity === 'high' ? 90 : 75,
+    nextActions: signal.linkUrl
+      ? [{ label: 'View Details', href: signal.linkUrl, priority: 'high' }]
+      : [],
     generatedAt: signal.timestamp,
   });
 
@@ -159,13 +220,16 @@ export function ExecSignalTimeline({
   const filteredSignals = useMemo(() => {
     if (!data) return [];
     return data.signals
-      .filter(s => selectedPillars.has(s.pillar))
-      .filter(s => selectedTypes.has(s.type))
+      .filter((s) => selectedPillars.has(s.pillar))
+      .filter((s) => selectedTypes.has(s.type))
       .slice(0, maxItems);
   }, [data, selectedPillars, selectedTypes, maxItems]);
 
   // Group by date
-  const groupedSignals = useMemo(() => groupSignalsByDate(filteredSignals), [filteredSignals]);
+  const groupedSignals = useMemo(
+    () => groupSignalsByDate(filteredSignals),
+    [filteredSignals]
+  );
 
   // Toggle filter
   const togglePillar = (pillar: string) => {
@@ -204,8 +268,18 @@ export function ExecSignalTimeline({
       <div className="bg-panel border border-border-subtle rounded-xl p-6">
         <div className="text-center py-8">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-4/50 flex items-center justify-center">
-            <svg className="w-6 h-6 text-white/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              className="w-6 h-6 text-white/55"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
           </div>
           <p className="text-white/55">No signals in this time period</p>
@@ -222,14 +296,21 @@ export function ExecSignalTimeline({
           <div className="flex items-center gap-3">
             <AIDot status="idle" />
             <div>
-              <h2 className="text-lg font-semibold text-white/95">Cross-Pillar Signal Timeline</h2>
+              <h2 className="text-lg font-semibold text-white/95">
+                Cross-Pillar Signal Timeline
+              </h2>
               <p className="text-xs text-white/55 mt-0.5">
-                {filteredSignals.length} signals from {selectedPillars.size} pillars
+                {filteredSignals.length} signals from {selectedPillars.size}{' '}
+                pillars
               </p>
             </div>
           </div>
           <span className="text-xs text-white/55">
-            {data.timeWindow === 'today' ? 'Today' : data.timeWindow === 'week' ? 'This Week' : 'This Month'}
+            {data.timeWindow === 'today'
+              ? 'Today'
+              : data.timeWindow === 'week'
+                ? 'This Week'
+                : 'This Month'}
           </span>
         </div>
 
@@ -245,7 +326,9 @@ export function ExecSignalTimeline({
                   : 'bg-slate-4/30 text-white/55 border border-transparent'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${selectedPillars.has(key) ? colors.dot : 'bg-slate-6'}`} />
+              <span
+                className={`w-2 h-2 rounded-full ${selectedPillars.has(key) ? colors.dot : 'bg-slate-6'}`}
+              />
               {colors.label}
             </button>
           ))}
@@ -285,7 +368,9 @@ export function ExecSignalTimeline({
                   {dateLabel}
                 </span>
                 <div className="flex-1 h-px bg-border-subtle" />
-                <span className="text-xs text-white/55">{signals.length} signals</span>
+                <span className="text-xs text-white/55">
+                  {signals.length} signals
+                </span>
               </div>
 
               {/* Signals */}
@@ -300,7 +385,10 @@ export function ExecSignalTimeline({
                   const isExpanded = expandedSignal === signal.id;
 
                   return (
-                    <div key={signal.id} className={`relative mb-4 last:mb-0 ${idx === 0 ? 'pt-0' : ''}`}>
+                    <div
+                      key={signal.id}
+                      className={`relative mb-4 last:mb-0 ${idx === 0 ? 'pt-0' : ''}`}
+                    >
                       {/* Timeline Dot */}
                       <div
                         className={`absolute -left-6 w-[22px] h-[22px] rounded-full flex items-center justify-center ${pillar.bg} ring-2 ${pillar.border} ring-offset-2 ring-offset-slate-2`}
@@ -316,16 +404,22 @@ export function ExecSignalTimeline({
                       >
                         <div
                           className="p-3 cursor-pointer hover:bg-slate-3/50 transition-colors"
-                          onClick={() => setExpandedSignal(isExpanded ? null : signal.id)}
+                          onClick={() =>
+                            setExpandedSignal(isExpanded ? null : signal.id)
+                          }
                         >
                           <div className="flex items-start gap-3">
                             {/* Signal Type Icon */}
-                            <span className="text-sm flex-shrink-0">{signalStyle.icon}</span>
+                            <span className="text-sm flex-shrink-0">
+                              {signalStyle.icon}
+                            </span>
 
                             <div className="flex-1 min-w-0">
                               {/* Meta Row */}
                               <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <span className={`text-xs font-medium ${pillar.text}`}>
+                                <span
+                                  className={`text-xs font-medium ${pillar.text}`}
+                                >
                                   {pillar.label}
                                 </span>
                                 <span className="text-xs text-white/55">
@@ -337,45 +431,67 @@ export function ExecSignalTimeline({
                                     AI
                                   </span>
                                 )}
-                                {signal.severity !== 'info' && signal.severity !== 'low' && (
-                                  <span className={`text-xs px-1.5 py-0.5 rounded ${severity.bg} ${
-                                    signal.severity === 'critical' ? 'text-semantic-danger' :
-                                    signal.severity === 'high' ? 'text-brand-amber' : 'text-brand-cyan'
-                                  }`}>
-                                    {signal.severity.toUpperCase()}
-                                  </span>
-                                )}
+                                {signal.severity !== 'info' &&
+                                  signal.severity !== 'low' && (
+                                    <span
+                                      className={`text-xs px-1.5 py-0.5 rounded ${severity.bg} ${
+                                        signal.severity === 'critical'
+                                          ? 'text-semantic-danger'
+                                          : signal.severity === 'high'
+                                            ? 'text-brand-amber'
+                                            : 'text-brand-cyan'
+                                      }`}
+                                    >
+                                      {signal.severity.toUpperCase()}
+                                    </span>
+                                  )}
                               </div>
 
                               {/* Title */}
-                              <h4 className="font-medium text-white/95 text-sm">{signal.title}</h4>
+                              <h4 className="font-medium text-white/95 text-sm">
+                                {signal.title}
+                              </h4>
 
                               {/* Related Pillars */}
-                              {signal.relatedPillars && signal.relatedPillars.length > 0 && (
-                                <div className="flex items-center gap-1.5 mt-2">
-                                  <span className="text-xs text-white/55">Affects:</span>
-                                  {signal.relatedPillars.map(p => {
-                                    const pc = pillarColors[p];
-                                    return (
-                                      <span key={p} className={`text-xs px-1.5 py-0.5 rounded ${pc.bg} ${pc.text}`}>
-                                        {pc.label.split(' ')[0]}
-                                      </span>
-                                    );
-                                  })}
-                                </div>
-                              )}
+                              {signal.relatedPillars &&
+                                signal.relatedPillars.length > 0 && (
+                                  <div className="flex items-center gap-1.5 mt-2">
+                                    <span className="text-xs text-white/55">
+                                      Affects:
+                                    </span>
+                                    {signal.relatedPillars.map((p) => {
+                                      const pc = pillarColors[p];
+                                      return (
+                                        <span
+                                          key={p}
+                                          className={`text-xs px-1.5 py-0.5 rounded ${pc.bg} ${pc.text}`}
+                                        >
+                                          {pc.label.split(' ')[0]}
+                                        </span>
+                                      );
+                                    })}
+                                  </div>
+                                )}
                             </div>
 
                             {/* Actions */}
                             <div className="flex items-center gap-1 flex-shrink-0">
-                              <AIReasoningPopover context={buildReasoningContext(signal)} position="left" />
+                              <AIReasoningPopover
+                                context={buildReasoningContext(signal)}
+                                position="left"
+                              />
                               <svg
                                 className={`w-4 h-4 text-white/55 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
                               >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={1.5}
+                                  d="M19 9l-7 7-7-7"
+                                />
                               </svg>
                             </div>
                           </div>
@@ -384,9 +500,13 @@ export function ExecSignalTimeline({
                         {/* Expanded Content */}
                         {isExpanded && (
                           <div className="px-4 pb-4 pt-0 border-t border-border-subtle">
-                            <p className="text-sm text-slate-11 mt-3">{signal.description}</p>
+                            <p className="text-sm text-slate-11 mt-3">
+                              {signal.description}
+                            </p>
                             <div className="flex items-center justify-between mt-3">
-                              <span className="text-xs text-white/55">Source: {signal.sourceSystem}</span>
+                              <span className="text-xs text-white/55">
+                                Source: {signal.sourceSystem}
+                              </span>
                               {signal.linkUrl && (
                                 <Link
                                   href={signal.linkUrl}

@@ -9,7 +9,11 @@ interface RunNowButtonProps {
   isRunning?: boolean;
 }
 
-export function RunNowButton({ onClick, disabled, isRunning }: RunNowButtonProps) {
+export function RunNowButton({
+  onClick,
+  disabled,
+  isRunning,
+}: RunNowButtonProps) {
   return (
     <button
       type="button"

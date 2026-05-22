@@ -39,7 +39,9 @@ describe('Playbook Run View API', () => {
           playbookName: expect.any(String),
           playbookVersion: expect.any(Number),
           orgId: expect.any(String),
-          state: expect.stringMatching(/queued|running|success|failed|waiting_for_dependencies|blocked|canceled/),
+          state: expect.stringMatching(
+            /queued|running|success|failed|waiting_for_dependencies|blocked|canceled/
+          ),
           status: expect.any(String),
           triggeredBy: expect.any(String),
           input: expect.anything(),

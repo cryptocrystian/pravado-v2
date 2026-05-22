@@ -22,12 +22,14 @@ CREATE TABLE public.orgs (
 ```
 
 **Fields**:
+
 - `id`: Unique identifier
 - `name`: Organization display name
 - `created_at`: Timestamp of creation
 - `updated_at`: Timestamp of last update
 
 **Indexes**:
+
 - Primary key on `id`
 
 #### org_members
@@ -49,6 +51,7 @@ CREATE TABLE public.org_members (
 ```
 
 **Fields**:
+
 - `id`: Unique identifier
 - `org_id`: Reference to organization
 - `user_id`: Reference to user
@@ -57,10 +60,12 @@ CREATE TABLE public.org_members (
 - `updated_at`: Timestamp of last update
 
 **Constraints**:
+
 - `unique_org_user`: Prevents duplicate memberships
 - Cascading deletes when org or user is deleted
 
 **Indexes**:
+
 - Primary key on `id`
 - Composite unique index on `(org_id, user_id)`
 - Foreign key indexes on `org_id` and `user_id`
@@ -85,6 +90,7 @@ CREATE TABLE public.org_invites (
 ```
 
 **Fields**:
+
 - `id`: Unique identifier
 - `org_id`: Organization being joined
 - `email`: Invitee's email address
@@ -97,6 +103,7 @@ CREATE TABLE public.org_invites (
 - `updated_at`: Timestamp of last update
 
 **Constraints**:
+
 - `token` must be unique
 - Cascading deletes when org or creator is deleted
 
@@ -137,6 +144,7 @@ const roleHierarchy: Record<OrgRole, number> = {
 ### orgs Table
 
 **SELECT Policy**: Users can view organizations they are members of
+
 ```sql
 CREATE POLICY "Users can view orgs they are members of"
   ON public.orgs FOR SELECT
@@ -150,6 +158,7 @@ CREATE POLICY "Users can view orgs they are members of"
 ```
 
 **INSERT Policy**: Authenticated users can create organizations
+
 ```sql
 CREATE POLICY "Authenticated users can create orgs"
   ON public.orgs FOR INSERT
@@ -157,6 +166,7 @@ CREATE POLICY "Authenticated users can create orgs"
 ```
 
 **UPDATE Policy**: Only owners can update organizations
+
 ```sql
 CREATE POLICY "Owners can update their orgs"
   ON public.orgs FOR UPDATE
@@ -171,6 +181,7 @@ CREATE POLICY "Owners can update their orgs"
 ```
 
 **DELETE Policy**: Only owners can delete organizations
+
 ```sql
 CREATE POLICY "Owners can delete their orgs"
   ON public.orgs FOR DELETE
@@ -207,6 +218,7 @@ Create a new organization. User becomes owner.
 **Auth**: Requires authenticated user
 
 **Request**:
+
 ```json
 {
   "name": "Acme Corporation"
@@ -214,6 +226,7 @@ Create a new organization. User becomes owner.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -237,6 +250,7 @@ Create a new organization. User becomes owner.
 ```
 
 **Errors**:
+
 - `401`: Not authenticated
 - `500`: Failed to create org or membership
 
@@ -247,6 +261,7 @@ Invite a user to join organization.
 **Auth**: Requires admin role or higher
 
 **Request**:
+
 ```json
 {
   "email": "newuser@example.com",
@@ -255,6 +270,7 @@ Invite a user to join organization.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -276,6 +292,7 @@ Invite a user to join organization.
 ```
 
 **Errors**:
+
 - `401`: Not authenticated
 - `403`: Not a member or insufficient role
 - `500`: Failed to create invite
@@ -289,6 +306,7 @@ Accept an invitation and join organization.
 **Auth**: Requires authenticated user
 
 **Request**:
+
 ```json
 {
   "token": "a1b2c3d4e5f6..."
@@ -296,6 +314,7 @@ Accept an invitation and join organization.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -319,6 +338,7 @@ Accept an invitation and join organization.
 ```
 
 **Errors**:
+
 - `401`: Not authenticated
 - `404`: Invite not found or already used
 - `400`: Invite expired
@@ -373,11 +393,13 @@ Accept an invitation and join organization.
 ### Member Management
 
 **Current Sprint (S1)**:
+
 - Create org (owner)
 - Invite users (admin+)
 - Join via invite (any authenticated user)
 
 **Future Sprints**:
+
 - Update member roles (owner only)
 - Remove members (admin+)
 - Transfer ownership (owner only)
@@ -413,13 +435,14 @@ CREATE POLICY "Members can access their org's resources"
 Use middleware chain for org-scoped endpoints:
 
 ```typescript
-server.post('/orgs/:id/resources',
+server.post(
+  '/orgs/:id/resources',
   {
     preHandler: [
-      requireUser,      // Ensure authenticated
-      requireOrg,       // Verify org membership
-      requireRole('admin')  // Check minimum role
-    ]
+      requireUser, // Ensure authenticated
+      requireOrg, // Verify org membership
+      requireRole('admin'), // Check minimum role
+    ],
   },
   async (request, reply) => {
     // request.orgId is set by requireOrg
@@ -451,7 +474,8 @@ server.get('/orgs/:id/data', async (request) => {
 });
 
 // ✅ Good
-server.get('/orgs/:id/data',
+server.get(
+  '/orgs/:id/data',
   { preHandler: [requireUser, requireOrg] },
   async (request) => {
     // Membership already verified
@@ -475,7 +499,8 @@ server.post('/orgs/:id/sensitive', async (request) => {
 });
 
 // ✅ Good
-server.post('/orgs/:id/sensitive',
+server.post(
+  '/orgs/:id/sensitive',
   { preHandler: [requireUser, requireOrg, requireRole('owner')] },
   async (request) => {
     // Role already verified

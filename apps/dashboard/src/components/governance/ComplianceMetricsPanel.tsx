@@ -36,14 +36,23 @@ interface MetricCardProps {
   colorClass?: string;
 }
 
-function MetricCard({ title, value, format, change, icon, colorClass }: MetricCardProps) {
+function MetricCard({
+  title,
+  value,
+  format,
+  change,
+  icon,
+  colorClass,
+}: MetricCardProps) {
   const formattedValue = (() => {
     if (typeof value === 'string') return value;
     switch (format) {
       case 'percentage':
         return `${value.toFixed(1)}%`;
       case 'time':
-        return value < 1 ? `${(value * 60).toFixed(0)}m` : `${value.toFixed(1)}h`;
+        return value < 1
+          ? `${(value * 60).toFixed(0)}m`
+          : `${value.toFixed(1)}h`;
       default:
         return value.toFixed(1);
     }
@@ -53,25 +62,27 @@ function MetricCard({ title, value, format, change, icon, colorClass }: MetricCa
     change === undefined || change === null
       ? 'text-gray-500'
       : change > 0
-      ? 'text-green-600'
-      : change < 0
-      ? 'text-red-600'
-      : 'text-gray-500';
+        ? 'text-green-600'
+        : change < 0
+          ? 'text-red-600'
+          : 'text-gray-500';
 
   const ChangeIcon =
     change === undefined || change === null
       ? Minus
       : change > 0
-      ? TrendingUp
-      : change < 0
-      ? TrendingDown
-      : Minus;
+        ? TrendingUp
+        : change < 0
+          ? TrendingDown
+          : Minus;
 
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
-          <div className={cn('p-2 rounded-lg bg-gray-100', colorClass)}>{icon}</div>
+          <div className={cn('p-2 rounded-lg bg-gray-100', colorClass)}>
+            {icon}
+          </div>
           {change !== undefined && change !== null && (
             <div className={cn('flex items-center gap-1 text-sm', changeColor)}>
               <ChangeIcon className="h-3 w-3" />
@@ -80,7 +91,12 @@ function MetricCard({ title, value, format, change, icon, colorClass }: MetricCa
           )}
         </div>
         <div className="mt-3">
-          <div className={cn('text-2xl font-bold', colorClass?.replace('bg-', 'text-') || 'text-gray-900')}>
+          <div
+            className={cn(
+              'text-2xl font-bold',
+              colorClass?.replace('bg-', 'text-') || 'text-gray-900'
+            )}
+          >
             {formattedValue}
           </div>
           <div className="text-sm text-gray-500">{title}</div>
@@ -109,7 +125,9 @@ export function ComplianceMetricsPanel({
   return (
     <div className={cn('space-y-4', className)}>
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">Compliance Metrics</h2>
+        <h2 className="text-lg font-semibold text-gray-900">
+          Compliance Metrics
+        </h2>
         <span className="text-sm text-gray-500">Last 30 days</span>
       </div>
 
@@ -189,8 +207,13 @@ export function ComplianceMetricsPanel({
               )}
               <span>
                 Compliance{' '}
-                {metrics.trendsVsPreviousPeriod?.complianceScoreChange >= 0 ? '+' : ''}
-                {metrics.trendsVsPreviousPeriod?.complianceScoreChange?.toFixed(1)}%
+                {metrics.trendsVsPreviousPeriod?.complianceScoreChange >= 0
+                  ? '+'
+                  : ''}
+                {metrics.trendsVsPreviousPeriod?.complianceScoreChange?.toFixed(
+                  1
+                )}
+                %
               </span>
             </div>
 
@@ -229,8 +252,13 @@ export function ComplianceMetricsPanel({
               )}
               <span>
                 Resolution{' '}
-                {metrics.trendsVsPreviousPeriod?.resolutionRateChange >= 0 ? '+' : ''}
-                {metrics.trendsVsPreviousPeriod?.resolutionRateChange?.toFixed(1)}%
+                {metrics.trendsVsPreviousPeriod?.resolutionRateChange >= 0
+                  ? '+'
+                  : ''}
+                {metrics.trendsVsPreviousPeriod?.resolutionRateChange?.toFixed(
+                  1
+                )}
+                %
               </span>
             </div>
           </div>

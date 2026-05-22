@@ -25,7 +25,11 @@ const seoSiteAuditTemplate: PlaybookRuntimeTemplate = {
       version: 1,
       status: 'DRAFT',
       inputSchema: { url: 'string', depth: 'number' },
-      outputSchema: { report: 'object', score: 'number', recommendations: 'array' },
+      outputSchema: {
+        report: 'object',
+        score: 'number',
+        recommendations: 'array',
+      },
       timeoutSeconds: 300,
       maxRetries: 2,
       tags: ['seo', 'audit'],
@@ -60,7 +64,8 @@ const seoSiteAuditTemplate: PlaybookRuntimeTemplate = {
         type: 'AGENT',
         config: {
           agentId: 'seo-analyzer',
-          prompt: 'Analyze the following page for on-page SEO factors: {{previous.fetch-page.output}}',
+          prompt:
+            'Analyze the following page for on-page SEO factors: {{previous.fetch-page.output}}',
           model: 'gpt-4',
           temperature: 0.3,
         },
@@ -98,7 +103,8 @@ const seoOpportunityReviewTemplate: PlaybookRuntimeTemplate = {
   id: 'tpl-seo-opportunity-review',
   slug: 'seo-opportunity-review',
   name: 'SEO Opportunity Review',
-  description: 'Identify and prioritize SEO opportunities based on keyword research and competitive analysis',
+  description:
+    'Identify and prioritize SEO opportunities based on keyword research and competitive analysis',
   category: 'seo',
   templateTags: ['seo', 'keywords', 'opportunities'],
   definition: {
@@ -205,7 +211,8 @@ const prMediaListCurationTemplate: PlaybookRuntimeTemplate = {
   id: 'tpl-pr-media-list',
   slug: 'pr-media-list-curation',
   name: 'PR Media List Curation',
-  description: 'Automatically curate and qualify media contacts based on campaign criteria',
+  description:
+    'Automatically curate and qualify media contacts based on campaign criteria',
   category: 'pr',
   templateTags: ['pr', 'media', 'outreach'],
   definition: {
@@ -293,7 +300,8 @@ const contentQualityReviewTemplate: PlaybookRuntimeTemplate = {
   id: 'tpl-content-quality',
   slug: 'content-quality-review',
   name: 'Content Quality Review',
-  description: 'Automated content review for quality, SEO, readability, and brand alignment',
+  description:
+    'Automated content review for quality, SEO, readability, and brand alignment',
   category: 'content',
   templateTags: ['content', 'quality', 'review'],
   definition: {
@@ -304,7 +312,11 @@ const contentQualityReviewTemplate: PlaybookRuntimeTemplate = {
       version: 1,
       status: 'DRAFT',
       inputSchema: { content: 'string', targetKeywords: 'array' },
-      outputSchema: { score: 'number', feedback: 'object', approved: 'boolean' },
+      outputSchema: {
+        score: 'number',
+        feedback: 'object',
+        approved: 'boolean',
+      },
       timeoutSeconds: 120,
       maxRetries: 0,
       tags: ['content', 'qa'],
@@ -412,6 +424,8 @@ export function listPlaybookTemplates(): PlaybookRuntimeTemplate[] {
 /**
  * Get a template by slug
  */
-export function getPlaybookTemplateBySlug(slug: string): PlaybookRuntimeTemplate | undefined {
+export function getPlaybookTemplateBySlug(
+  slug: string
+): PlaybookRuntimeTemplate | undefined {
   return PLAYBOOK_TEMPLATES.find((t) => t.slug === slug);
 }

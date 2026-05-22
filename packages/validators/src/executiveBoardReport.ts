@@ -76,17 +76,29 @@ export const execBoardReportSectionStatusSchema = z.enum([
 /**
  * Access level enum
  */
-export const execBoardReportAccessLevelSchema = z.enum(['view', 'comment', 'approve']);
+export const execBoardReportAccessLevelSchema = z.enum([
+  'view',
+  'comment',
+  'approve',
+]);
 
 /**
  * Tone enum
  */
-export const execBoardReportToneSchema = z.enum(['professional', 'formal', 'executive']);
+export const execBoardReportToneSchema = z.enum([
+  'professional',
+  'formal',
+  'executive',
+]);
 
 /**
  * Target length enum
  */
-export const execBoardReportTargetLengthSchema = z.enum(['brief', 'standard', 'comprehensive']);
+export const execBoardReportTargetLengthSchema = z.enum([
+  'brief',
+  'standard',
+  'comprehensive',
+]);
 
 // ============================================================================
 // Input Schemas
@@ -99,8 +111,12 @@ export const createExecBoardReportSchema = z.object({
   title: z.string().min(1).max(300),
   description: z.string().max(2000).optional().nullable(),
   format: execBoardReportFormatSchema,
-  periodStart: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format'),
-  periodEnd: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format'),
+  periodStart: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format'),
+  periodEnd: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format'),
   fiscalQuarter: z.string().max(20).optional().nullable(), // e.g., "Q1 2025"
   fiscalYear: z.number().int().min(2000).max(2100).optional().nullable(),
   sectionTypes: z.array(execBoardReportSectionTypeSchema).optional(),
@@ -110,7 +126,9 @@ export const createExecBoardReportSchema = z.object({
   targetLength: execBoardReportTargetLengthSchema.optional(),
 });
 
-export type CreateExecBoardReportInput = z.infer<typeof createExecBoardReportSchema>;
+export type CreateExecBoardReportInput = z.infer<
+  typeof createExecBoardReportSchema
+>;
 
 /**
  * Update board report schema
@@ -120,8 +138,14 @@ export const updateExecBoardReportSchema = z.object({
   description: z.string().max(2000).nullable().optional(),
   format: execBoardReportFormatSchema.optional(),
   status: execBoardReportStatusSchema.optional(),
-  periodStart: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format').optional(),
-  periodEnd: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format').optional(),
+  periodStart: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format')
+    .optional(),
+  periodEnd: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format')
+    .optional(),
   fiscalQuarter: z.string().max(20).nullable().optional(),
   fiscalYear: z.number().int().min(2000).max(2100).nullable().optional(),
   sectionTypes: z.array(execBoardReportSectionTypeSchema).optional(),
@@ -132,7 +156,9 @@ export const updateExecBoardReportSchema = z.object({
   isArchived: z.boolean().optional(),
 });
 
-export type UpdateExecBoardReportInput = z.infer<typeof updateExecBoardReportSchema>;
+export type UpdateExecBoardReportInput = z.infer<
+  typeof updateExecBoardReportSchema
+>;
 
 /**
  * Generate board report schema
@@ -144,7 +170,9 @@ export const generateExecBoardReportSchema = z.object({
   generatePptx: z.boolean().optional(),
 });
 
-export type GenerateExecBoardReportInput = z.infer<typeof generateExecBoardReportSchema>;
+export type GenerateExecBoardReportInput = z.infer<
+  typeof generateExecBoardReportSchema
+>;
 
 /**
  * Publish board report schema
@@ -155,7 +183,9 @@ export const publishExecBoardReportSchema = z.object({
   regeneratePptx: z.boolean().optional(),
 });
 
-export type PublishExecBoardReportInput = z.infer<typeof publishExecBoardReportSchema>;
+export type PublishExecBoardReportInput = z.infer<
+  typeof publishExecBoardReportSchema
+>;
 
 /**
  * Approve board report schema
@@ -164,7 +194,9 @@ export const approveExecBoardReportSchema = z.object({
   comments: z.string().max(2000).optional(),
 });
 
-export type ApproveExecBoardReportInput = z.infer<typeof approveExecBoardReportSchema>;
+export type ApproveExecBoardReportInput = z.infer<
+  typeof approveExecBoardReportSchema
+>;
 
 /**
  * Add audience member schema
@@ -177,7 +209,9 @@ export const addExecBoardReportAudienceSchema = z.object({
   accessLevel: execBoardReportAccessLevelSchema.optional(),
 });
 
-export type AddExecBoardReportAudienceInput = z.infer<typeof addExecBoardReportAudienceSchema>;
+export type AddExecBoardReportAudienceInput = z.infer<
+  typeof addExecBoardReportAudienceSchema
+>;
 
 /**
  * Update audience member schema
@@ -189,7 +223,9 @@ export const updateExecBoardReportAudienceSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export type UpdateExecBoardReportAudienceInput = z.infer<typeof updateExecBoardReportAudienceSchema>;
+export type UpdateExecBoardReportAudienceInput = z.infer<
+  typeof updateExecBoardReportAudienceSchema
+>;
 
 /**
  * Update section schema
@@ -203,7 +239,9 @@ export const updateExecBoardReportSectionSchema = z.object({
   sortOrder: z.number().int().min(0).optional(),
 });
 
-export type UpdateExecBoardReportSectionInput = z.infer<typeof updateExecBoardReportSectionSchema>;
+export type UpdateExecBoardReportSectionInput = z.infer<
+  typeof updateExecBoardReportSectionSchema
+>;
 
 /**
  * Update section order schema
@@ -217,7 +255,9 @@ export const updateExecBoardReportSectionOrderSchema = z.object({
   ),
 });
 
-export type UpdateExecBoardReportSectionOrderInput = z.infer<typeof updateExecBoardReportSectionOrderSchema>;
+export type UpdateExecBoardReportSectionOrderInput = z.infer<
+  typeof updateExecBoardReportSectionOrderSchema
+>;
 
 // ============================================================================
 // Query Schemas
@@ -238,7 +278,9 @@ export const listExecBoardReportsSchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).optional(),
 });
 
-export type ListExecBoardReportsQuery = z.infer<typeof listExecBoardReportsSchema>;
+export type ListExecBoardReportsQuery = z.infer<
+  typeof listExecBoardReportsSchema
+>;
 
 /**
  * List sections query schema
@@ -249,7 +291,9 @@ export const listExecBoardReportSectionsSchema = z.object({
   isVisible: z.coerce.boolean().optional(),
 });
 
-export type ListExecBoardReportSectionsQuery = z.infer<typeof listExecBoardReportSectionsSchema>;
+export type ListExecBoardReportSectionsQuery = z.infer<
+  typeof listExecBoardReportSectionsSchema
+>;
 
 /**
  * List audience query schema
@@ -261,7 +305,9 @@ export const listExecBoardReportAudienceSchema = z.object({
   offset: z.coerce.number().int().min(0).optional(),
 });
 
-export type ListExecBoardReportAudienceQuery = z.infer<typeof listExecBoardReportAudienceSchema>;
+export type ListExecBoardReportAudienceQuery = z.infer<
+  typeof listExecBoardReportAudienceSchema
+>;
 
 /**
  * List audit logs query schema
@@ -272,7 +318,9 @@ export const listExecBoardReportAuditLogsSchema = z.object({
   offset: z.coerce.number().int().min(0).optional(),
 });
 
-export type ListExecBoardReportAuditLogsQuery = z.infer<typeof listExecBoardReportAuditLogsSchema>;
+export type ListExecBoardReportAuditLogsQuery = z.infer<
+  typeof listExecBoardReportAuditLogsSchema
+>;
 
 // ============================================================================
 // Parameter Schemas
@@ -285,7 +333,9 @@ export const execBoardReportIdParamSchema = z.object({
   id: z.string().uuid(),
 });
 
-export type ExecBoardReportIdParam = z.infer<typeof execBoardReportIdParamSchema>;
+export type ExecBoardReportIdParam = z.infer<
+  typeof execBoardReportIdParamSchema
+>;
 
 /**
  * Section ID parameter schema
@@ -295,7 +345,9 @@ export const execBoardReportSectionIdParamSchema = z.object({
   sectionId: z.string().uuid(),
 });
 
-export type ExecBoardReportSectionIdParam = z.infer<typeof execBoardReportSectionIdParamSchema>;
+export type ExecBoardReportSectionIdParam = z.infer<
+  typeof execBoardReportSectionIdParamSchema
+>;
 
 /**
  * Audience ID parameter schema
@@ -305,7 +357,9 @@ export const execBoardReportAudienceIdParamSchema = z.object({
   audienceId: z.string().uuid(),
 });
 
-export type ExecBoardReportAudienceIdParam = z.infer<typeof execBoardReportAudienceIdParamSchema>;
+export type ExecBoardReportAudienceIdParam = z.infer<
+  typeof execBoardReportAudienceIdParamSchema
+>;
 
 // ============================================================================
 // Data Schemas
@@ -325,7 +379,9 @@ export const execBoardReportKpiSnapshotSchema = z.object({
   source: z.string(),
 });
 
-export type ExecBoardReportKpiSnapshot = z.infer<typeof execBoardReportKpiSnapshotSchema>;
+export type ExecBoardReportKpiSnapshot = z.infer<
+  typeof execBoardReportKpiSnapshotSchema
+>;
 
 /**
  * Strategic insight schema
@@ -339,7 +395,9 @@ export const execBoardReportInsightSchema = z.object({
   recommendations: z.array(z.string()),
 });
 
-export type ExecBoardReportInsight = z.infer<typeof execBoardReportInsightSchema>;
+export type ExecBoardReportInsight = z.infer<
+  typeof execBoardReportInsightSchema
+>;
 
 // ============================================================================
 // Full Entity Schemas (for response validation)
@@ -417,7 +475,9 @@ export const execBoardReportSectionSchema = z.object({
   updatedAt: z.string(),
 });
 
-export type ExecBoardReportSection = z.infer<typeof execBoardReportSectionSchema>;
+export type ExecBoardReportSection = z.infer<
+  typeof execBoardReportSectionSchema
+>;
 
 /**
  * Source schema
@@ -458,7 +518,9 @@ export const execBoardReportAudienceSchema = z.object({
   updatedAt: z.string(),
 });
 
-export type ExecBoardReportAudience = z.infer<typeof execBoardReportAudienceSchema>;
+export type ExecBoardReportAudience = z.infer<
+  typeof execBoardReportAudienceSchema
+>;
 
 /**
  * Audit log schema
@@ -477,7 +539,9 @@ export const execBoardReportAuditLogSchema = z.object({
   createdAt: z.string(),
 });
 
-export type ExecBoardReportAuditLog = z.infer<typeof execBoardReportAuditLogSchema>;
+export type ExecBoardReportAuditLog = z.infer<
+  typeof execBoardReportAuditLogSchema
+>;
 
 /**
  * Board report with counts schema
@@ -488,7 +552,9 @@ export const execBoardReportWithCountsSchema = execBoardReportSchema.extend({
   completedSectionCount: z.number(),
 });
 
-export type ExecBoardReportWithCounts = z.infer<typeof execBoardReportWithCountsSchema>;
+export type ExecBoardReportWithCounts = z.infer<
+  typeof execBoardReportWithCountsSchema
+>;
 
 /**
  * Board report statistics schema

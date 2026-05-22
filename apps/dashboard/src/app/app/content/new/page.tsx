@@ -48,7 +48,9 @@ export default function ContentNewPage() {
     router.push('/app/content/new-document');
   }
 
-  const sourceLabel = prefillSource ? (SOURCE_LABEL[prefillSource] ?? prefillSource) : null;
+  const sourceLabel = prefillSource
+    ? (SOURCE_LABEL[prefillSource] ?? prefillSource)
+    : null;
 
   return (
     <div className="min-h-full bg-slate-0 pt-8 pb-16 px-8">
@@ -72,12 +74,18 @@ export default function ContentNewPage() {
               )}
               {prefillTitle && (
                 <p className="text-sm text-white">
-                  Title: <span className="font-semibold">{decodeURIComponent(prefillTitle)}</span>
+                  Title:{' '}
+                  <span className="font-semibold">
+                    {decodeURIComponent(prefillTitle)}
+                  </span>
                 </p>
               )}
               {prefillTopic && (
                 <p className="text-sm text-white/70 mt-0.5">
-                  Topic cluster: <span className="font-medium text-white/85">{decodeURIComponent(prefillTopic)}</span>
+                  Topic cluster:{' '}
+                  <span className="font-medium text-white/85">
+                    {decodeURIComponent(prefillTopic)}
+                  </span>
                 </p>
               )}
             </div>
@@ -88,14 +96,18 @@ export default function ContentNewPage() {
         <h1 className="text-3xl font-bold text-white mb-2">
           What would you like to create?
         </h1>
-        <p className="text-sm text-white/50 mb-10">Choose your starting point.</p>
+        <p className="text-sm text-white/50 mb-10">
+          Choose your starting point.
+        </p>
 
         {/* Three option cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {/* Card 1: SAGE Brief */}
           <button
             type="button"
-            onClick={() => setActiveSection(activeSection === 'briefs' ? null : 'briefs')}
+            onClick={() =>
+              setActiveSection(activeSection === 'briefs' ? null : 'briefs')
+            }
             className={`bg-slate-2 rounded-2xl p-6 cursor-pointer text-left transition-all ${
               activeSection === 'briefs'
                 ? 'border-2 border-brand-iris/70 shadow-[0_0_20px_rgba(168,85,247,0.1)]'
@@ -115,7 +127,8 @@ export default function ContentNewPage() {
               competitive context.
             </p>
             <p className="text-xs text-brand-iris mt-4">
-              {mockBriefs.length} brief{mockBriefs.length !== 1 ? 's' : ''} ready
+              {mockBriefs.length} brief{mockBriefs.length !== 1 ? 's' : ''}{' '}
+              ready
             </p>
             <span className="text-sm font-semibold text-brand-iris mt-2 block">
               Select Brief &rarr;
@@ -125,7 +138,11 @@ export default function ContentNewPage() {
           {/* Card 2: Template */}
           <button
             type="button"
-            onClick={() => setActiveSection(activeSection === 'templates' ? null : 'templates')}
+            onClick={() =>
+              setActiveSection(
+                activeSection === 'templates' ? null : 'templates'
+              )
+            }
             className={`bg-slate-2 rounded-2xl p-6 cursor-pointer text-left transition-all ${
               activeSection === 'templates'
                 ? 'border-2 border-slate-5'
@@ -133,7 +150,9 @@ export default function ContentNewPage() {
             }`}
           >
             <Layout size={32} className="text-white/60" weight="regular" />
-            <h3 className="text-xl font-semibold text-white mt-3">Choose a Template</h3>
+            <h3 className="text-xl font-semibold text-white mt-3">
+              Choose a Template
+            </h3>
             <p className="text-sm text-white/60 leading-relaxed mt-2">
               Pick from 8 proven content types with guided brief intake forms.
               AI generates a first draft from your inputs.
@@ -146,8 +165,14 @@ export default function ContentNewPage() {
             onClick={handleBlankClick}
             className="bg-slate-2 border border-slate-4 rounded-2xl p-6 cursor-pointer hover:border-slate-5 transition-all text-left"
           >
-            <PencilSimple size={32} className="text-white/60" weight="regular" />
-            <h3 className="text-xl font-semibold text-white mt-3">Start Blank</h3>
+            <PencilSimple
+              size={32}
+              className="text-white/60"
+              weight="regular"
+            />
+            <h3 className="text-xl font-semibold text-white mt-3">
+              Start Blank
+            </h3>
             <p className="text-sm text-white/60 leading-relaxed mt-2">
               Open the editor directly. AI assist, slash commands, and CiteMind
               scoring are always available &mdash; press / to get started.

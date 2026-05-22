@@ -34,6 +34,7 @@ Sprint S22 adds real-time collaboration to the Visual Playbook Editor (S17) by l
 - Prevent conflicts with soft-locking
 
 **Key Features:**
+
 - Multi-user presence tracking with color-coded avatars
 - Live cursor rendering on canvas
 - Node selection highlighting per user
@@ -114,6 +115,7 @@ Located at: `apps/api/src/events/editor/editorEventBus.ts`
 The `EditorEventBus` is a singleton in-memory pub/sub system for editor collaboration events.
 
 **Features:**
+
 - Subscribe to events for a specific `playbookId`
 - Publish events synchronously to all subscribers
 - Automatic cleanup on unsubscribe
@@ -125,22 +127,25 @@ The `EditorEventBus` is a singleton in-memory pub/sub system for editor collabor
 ```typescript
 class EditorEventBus {
   // Subscribe to events for a playbook
-  subscribe(playbookId: string, handler: (event: EditorEvent) => void): () => void
+  subscribe(
+    playbookId: string,
+    handler: (event: EditorEvent) => void
+  ): () => void;
 
   // Publish event to all subscribers of that playbook
-  publish(event: EditorEvent): void
+  publish(event: EditorEvent): void;
 
   // Get subscription count for a specific playbook
-  getSubscriptionCount(playbookId: string): number
+  getSubscriptionCount(playbookId: string): number;
 
   // Get total subscription count across all playbooks
-  getTotalSubscriptionCount(): number
+  getTotalSubscriptionCount(): number;
 
   // Get list of active playbook IDs
-  getActivePlaybooks(): string[]
+  getActivePlaybooks(): string[];
 
   // Clear all subscriptions (for testing/cleanup)
-  clear(): void
+  clear(): void;
 }
 
 // Singleton instance
@@ -184,11 +189,11 @@ Presence tracks which users are actively viewing/editing a playbook.
 
 ```typescript
 interface UserPresence {
-  userId: string;        // Unique user ID
-  userName: string;      // Display name
-  userEmail: string;     // User email
-  color: string;         // HSL color (e.g., "hsl(180, 70%, 50%)")
-  joinedAt: string;      // ISO timestamp when user joined
+  userId: string; // Unique user ID
+  userName: string; // Display name
+  userEmail: string; // User email
+  color: string; // HSL color (e.g., "hsl(180, 70%, 50%)")
+  joinedAt: string; // ISO timestamp when user joined
   lastActivityAt: string; // ISO timestamp of last activity
 }
 ```
@@ -198,12 +203,15 @@ interface UserPresence {
 Each user gets a unique color based on a hash of their `userId`:
 
 ```typescript
-const colorHash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+const colorHash = userId
+  .split('')
+  .reduce((acc, char) => acc + char.charCodeAt(0), 0);
 const hue = colorHash % 360;
 const color = `hsl(${hue}, 70%, 50%)`;
 ```
 
 This ensures:
+
 - Consistent color across sessions for the same user
 - No database storage required
 - Good visual distinction between users
@@ -265,10 +273,10 @@ Cursors track mouse position of each user on the canvas in real-time.
 
 ```typescript
 interface CursorPosition {
-  x: number;           // X coordinate relative to canvas
-  y: number;           // Y coordinate relative to canvas
-  viewportX?: number;  // Optional viewport X (for future use)
-  viewportY?: number;  // Optional viewport Y (for future use)
+  x: number; // X coordinate relative to canvas
+  y: number; // Y coordinate relative to canvas
+  viewportX?: number; // Optional viewport X (for future use)
+  viewportY?: number; // Optional viewport Y (for future use)
 }
 ```
 
@@ -299,16 +307,22 @@ UI renders remote cursor at position
 Cursor updates are throttled to 100ms to prevent overwhelming the SSE stream:
 
 ```typescript
-const handleMouseMove = useCallback((e: React.MouseEvent) => {
-  const rect = e.currentTarget.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+const handleMouseMove = useCallback(
+  (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-  if (!handleMouseMove.lastSent || Date.now() - handleMouseMove.lastSent > 100) {
-    sendCursor({ x, y, viewportX: e.clientX, viewportY: e.clientY });
-    handleMouseMove.lastSent = Date.now();
-  }
-}, [sendCursor]);
+    if (
+      !handleMouseMove.lastSent ||
+      Date.now() - handleMouseMove.lastSent > 100
+    ) {
+      sendCursor({ x, y, viewportX: e.clientX, viewportY: e.clientY });
+      handleMouseMove.lastSent = Date.now();
+    }
+  },
+  [sendCursor]
+);
 ```
 
 **UI Rendering:**
@@ -345,6 +359,7 @@ Cursors are rendered as SVG arrows with user name labels:
 ## Selection Model
 
 Selections track which nodes/edges each user has selected, enabling:
+
 - Visual highlighting of selected elements
 - Soft-locking to prevent simultaneous edits
 
@@ -352,8 +367,8 @@ Selections track which nodes/edges each user has selected, enabling:
 
 ```typescript
 interface NodeSelection {
-  nodeIds: string[];  // Array of selected node IDs
-  edgeIds: string[];  // Array of selected edge IDs
+  nodeIds: string[]; // Array of selected node IDs
+  edgeIds: string[]; // Array of selected edge IDs
 }
 ```
 
@@ -384,7 +399,11 @@ Optional `lock` parameter prevents other users from editing selected nodes:
 sendSelection({ nodeIds: ['node-1'], edgeIds: [] }, true);
 
 // Check if node is locked
-const isLocked = editorSessionManager.isNodeLocked(playbookId, nodeId, currentUserId);
+const isLocked = editorSessionManager.isNodeLocked(
+  playbookId,
+  nodeId,
+  currentUserId
+);
 if (isLocked) {
   // Show "Node locked by User X" message
   return;
@@ -392,6 +411,7 @@ if (isLocked) {
 ```
 
 **Locks are automatically released when:**
+
 - User selects different nodes
 - User disconnects
 - User times out (5 min inactivity)
@@ -433,8 +453,8 @@ Graph patches enable incremental synchronization of graph changes without sendin
 
 ```typescript
 interface GraphPatch {
-  patchId: string;     // Unique patch ID
-  userId: string;      // User who created the patch
+  patchId: string; // Unique patch ID
+  userId: string; // User who created the patch
 
   // Node operations
   nodesAdded?: GraphNode[];
@@ -464,8 +484,8 @@ interface GraphNode {
 ```typescript
 interface GraphEdge {
   id: string;
-  source: string;  // Source node ID
-  target: string;  // Target node ID
+  source: string; // Source node ID
+  target: string; // Target node ID
   type?: string;
   data?: Record<string, unknown>;
 }
@@ -571,12 +591,14 @@ Result: Both users see blue (B's change wins)
 ```
 
 **Limitations:**
+
 - No operational transformation (OT)
 - No CRDT (Conflict-Free Replicated Data Types)
 - Simultaneous edits may result in one user's change being overwritten
 - No merge/rebase logic
 
 **Why LWW?**
+
 - Simple to implement
 - Good enough for V1 with low user count
 - Soft-locking reduces conflicts in practice
@@ -722,13 +744,16 @@ data: {"type":"cursor.update","playbookId":"123","userId":"456","timestamp":"202
 Server does **not** echo events back to the sender:
 
 ```typescript
-const unsubscribe = editorEventBus.subscribe(playbookId, (event: EditorEvent) => {
-  // Don't echo events back to sender
-  if (event.userId === userId) return;
+const unsubscribe = editorEventBus.subscribe(
+  playbookId,
+  (event: EditorEvent) => {
+    // Don't echo events back to sender
+    if (event.userId === userId) return;
 
-  reply.raw.write(`event: ${event.type}\n`);
-  reply.raw.write(`data: ${JSON.stringify(event)}\n\n`);
-});
+    reply.raw.write(`event: ${event.type}\n`);
+    reply.raw.write(`data: ${JSON.stringify(event)}\n\n`);
+  }
+);
 ```
 
 ---
@@ -1116,19 +1141,20 @@ Sprint S21 built the SSE infrastructure for real-time execution streaming. S22 r
 
 ### Key Differences from S21
 
-| Aspect                | S21 Execution Stream         | S22 Editor Stream            |
-|-----------------------|------------------------------|------------------------------|
-| **Event Bus**         | `ExecutionEventBus`          | `EditorEventBus`             |
-| **Keying**            | By `runId`                   | By `playbookId`              |
-| **Session Manager**   | None (stateless)             | `EditorSessionManager`       |
-| **Event Types**       | Execution-related            | Collaboration-related        |
-| **Persistence**       | Events logged to DB          | No persistence (in-memory)   |
-| **Use Case**          | Monitor playbook execution   | Collaborative editing        |
-| **SSE Route**         | `/playbooks/:id/run/:runId/stream` | `/playbooks/:id/editor/stream` |
+| Aspect              | S21 Execution Stream               | S22 Editor Stream              |
+| ------------------- | ---------------------------------- | ------------------------------ |
+| **Event Bus**       | `ExecutionEventBus`                | `EditorEventBus`               |
+| **Keying**          | By `runId`                         | By `playbookId`                |
+| **Session Manager** | None (stateless)                   | `EditorSessionManager`         |
+| **Event Types**     | Execution-related                  | Collaboration-related          |
+| **Persistence**     | Events logged to DB                | No persistence (in-memory)     |
+| **Use Case**        | Monitor playbook execution         | Collaborative editing          |
+| **SSE Route**       | `/playbooks/:id/run/:runId/stream` | `/playbooks/:id/editor/stream` |
 
 ### Why Separate Event Buses?
 
 **Rationale:**
+
 - Clean separation of concerns
 - Different keying strategies (runId vs playbookId)
 - Different event types and payloads
@@ -1136,6 +1162,7 @@ Sprint S21 built the SSE infrastructure for real-time execution streaming. S22 r
 - Easier to test and maintain
 
 **Alternative Considered:**
+
 - Single unified event bus with type discriminators
 - **Rejected** due to complexity and coupling
 
@@ -1175,12 +1202,14 @@ data: {"type":"cursor.update",...}
 ```
 
 **Lifecycle:**
+
 - **On Connect**: Auth validation, session join, send initial presence list
 - **Active**: Stream events, send heartbeats every 20s
 - **On Disconnect**: Cleanup session, broadcast presence.leave
 - **Timeout**: Auto-disconnect after 30 minutes
 
 **Error Handling:**
+
 - 401: Unauthorized (no valid session)
 - 403: Forbidden (user not in org)
 - 404: Playbook not found
@@ -1217,6 +1246,7 @@ data: {"type":"cursor.update",...}
 ```
 
 **Side Effects:**
+
 - Updates cursor in `EditorSessionManager`
 - Publishes `cursor.update` event to `EditorEventBus`
 - Broadcasts to all connected clients (except sender)
@@ -1252,6 +1282,7 @@ data: {"type":"cursor.update",...}
 ```
 
 **Side Effects:**
+
 - Updates selection in `EditorSessionManager`
 - If `lock: true`, creates soft locks on selected nodes
 - Publishes `selection.update` event
@@ -1275,12 +1306,15 @@ data: {"type":"cursor.update",...}
     "patchId": "patch-1731843015-abc123",
     "userId": "user-456",
     "nodesAdded": [
-      { "id": "node-5", "type": "default", "position": { "x": 300, "y": 200 }, "data": { "label": "New" } }
+      {
+        "id": "node-5",
+        "type": "default",
+        "position": { "x": 300, "y": 200 },
+        "data": { "label": "New" }
+      }
     ],
     "nodesRemoved": ["node-2"],
-    "nodesUpdated": [
-      { "id": "node-1", "position": { "x": 150, "y": 100 } }
-    ],
+    "nodesUpdated": [{ "id": "node-1", "position": { "x": 150, "y": 100 } }],
     "edgesAdded": [],
     "edgesRemoved": [],
     "edgesUpdated": []
@@ -1298,11 +1332,13 @@ data: {"type":"cursor.update",...}
 ```
 
 **Side Effects:**
+
 - Publishes `graph.patch` event
 - **Does NOT persist to database** (handled separately by S20)
 - Broadcasts to all connected clients
 
 **Important Notes:**
+
 - Client should call S20 versioning API separately to persist graph
 - This endpoint only handles real-time broadcasting
 
@@ -1321,12 +1357,20 @@ data: {"type":"cursor.update",...}
 ```json
 {
   "nodes": [
-    { "id": "node-1", "type": "default", "position": { "x": 100, "y": 100 }, "data": { "label": "Start" } },
-    { "id": "node-2", "type": "default", "position": { "x": 300, "y": 100 }, "data": { "label": "End" } }
+    {
+      "id": "node-1",
+      "type": "default",
+      "position": { "x": 100, "y": 100 },
+      "data": { "label": "Start" }
+    },
+    {
+      "id": "node-2",
+      "type": "default",
+      "position": { "x": 300, "y": 100 },
+      "data": { "label": "End" }
+    }
   ],
-  "edges": [
-    { "id": "edge-1", "source": "node-1", "target": "node-2" }
-  ],
+  "edges": [{ "id": "edge-1", "source": "node-1", "target": "node-2" }],
   "graphVersion": 43
 }
 ```
@@ -1340,6 +1384,7 @@ data: {"type":"cursor.update",...}
 ```
 
 **Side Effects:**
+
 - Publishes `graph.replace` event
 - **Does NOT persist to database**
 - Broadcasts to all connected clients
@@ -1411,10 +1456,10 @@ function PlaybookEditorPage() {
 
 ```typescript
 interface UseEditorStreamOptions {
-  enabled?: boolean;       // Default: true
-  maxEvents?: number;      // Default: 100
-  retryDelay?: number;     // Default: 3000ms
-  maxRetries?: number;     // Default: 5
+  enabled?: boolean; // Default: true
+  maxEvents?: number; // Default: 100
+  retryDelay?: number; // Default: 3000ms
+  maxRetries?: number; // Default: 5
 }
 
 interface UseEditorStreamReturn {
@@ -1442,6 +1487,7 @@ interface UseEditorStreamReturn {
 ```
 
 **Features:**
+
 - Automatic connection on mount
 - Automatic reconnection with exponential backoff
 - Event buffering (configurable max)
@@ -1463,7 +1509,10 @@ import { useReducer, useEffect } from 'react';
 import { collabReducer, initialCollabState } from './collabReducer';
 
 function PlaybookEditorPage() {
-  const [collabState, dispatchCollab] = useReducer(collabReducer, initialCollabState);
+  const [collabState, dispatchCollab] = useReducer(
+    collabReducer,
+    initialCollabState
+  );
   const { lastEvent } = useEditorStream(playbookId);
 
   // Apply remote events
@@ -1532,11 +1581,13 @@ function getUserById(
 **Limitation:** All collaboration state (presence, cursors, selections, soft locks) is stored in memory.
 
 **Implications:**
+
 - State lost on server restart
 - Not suitable for distributed deployments without sticky sessions
 - No historical record of collaboration activity
 
 **Workaround:**
+
 - Use single-server deployment
 - Implement session affinity (sticky sessions) for load balancing
 - Future: Add Redis for distributed state (S23)
@@ -1548,11 +1599,13 @@ function getUserById(
 **Limitation:** Uses Last-Writer-Wins conflict resolution instead of OT.
 
 **Implications:**
+
 - Simultaneous edits may overwrite each other
 - No automatic merging of concurrent changes
 - User edits can be "lost" if another user saves at the same time
 
 **Workaround:**
+
 - Use soft-locking to prevent simultaneous edits
 - Educate users on collaboration etiquette
 - Future: Implement OT or CRDT (S24)
@@ -1564,11 +1617,13 @@ function getUserById(
 **Limitation:** No support for divergent editing with explicit merge.
 
 **Implications:**
+
 - All users edit the same canonical version
 - Can't create experimental branches
 - No "what-if" scenarios
 
 **Workaround:**
+
 - Duplicate playbook for experimentation
 - Use S20 versioning to restore previous states
 - Future: Add branching/merging (S23)
@@ -1580,11 +1635,13 @@ function getUserById(
 **Limitation:** Graph patches are only broadcast via SSE, not saved to database.
 
 **Implications:**
+
 - No audit trail of who changed what
 - Can't replay collaboration history
 - Must separately call S20 API to persist graph
 
 **Workaround:**
+
 - Client should periodically save graph via S20 API
 - Implement auto-save on client (e.g., every 30 seconds)
 - Future: Add patch logging to DB (S23)
@@ -1596,11 +1653,13 @@ function getUserById(
 **Limitation:** SSE connections automatically close after 30 minutes.
 
 **Implications:**
+
 - Clients must handle reconnection
 - Brief interruption in collaboration stream
 - Possible race conditions during reconnect
 
 **Workaround:**
+
 - Frontend automatically reconnects (built into `useEditorStream`)
 - Clients request full graph sync after reconnect
 - Future: Increase timeout or remove limit
@@ -1612,11 +1671,13 @@ function getUserById(
 **Limitation:** In-memory event bus with synchronous publish.
 
 **Implications:**
+
 - Not suitable for 100+ simultaneous editors per playbook
 - Server memory grows with active sessions
 - Event delivery latency increases with subscriber count
 
 **Workaround:**
+
 - Limit concurrent editors per playbook (e.g., max 10)
 - Monitor memory usage and scale vertically
 - Future: Use Redis pub/sub for horizontal scaling (S23)
@@ -1628,10 +1689,12 @@ function getUserById(
 **Limitation:** Requires active internet connection. No offline editing with sync.
 
 **Implications:**
+
 - Editing not possible during network outages
 - Mobile users with poor connectivity affected
 
 **Workaround:**
+
 - Detect offline state and show "Read-Only" mode
 - Queue changes locally and sync when reconnected
 - Future: Implement offline-first with CRDTs (S24)
@@ -1643,11 +1706,13 @@ function getUserById(
 **Limitation:** All users in org can edit all nodes. No node-level permissions.
 
 **Implications:**
+
 - Can't restrict who can edit specific nodes
 - No "view-only" mode for certain users
 - Risk of accidental edits to critical nodes
 
 **Workaround:**
+
 - Use soft-locking to coordinate edits
 - Implement playbook-level permissions (separate feature)
 - Future: Add node-level ACLs (S25)
@@ -1661,6 +1726,7 @@ function getUserById(
 **Goal:** Scale collaboration to distributed deployments
 
 **Features:**
+
 - **Redis Pub/Sub**: Replace in-memory EventBus with Redis
 - **Distributed Session Manager**: Store sessions in Redis
 - **Horizontal Scaling**: Support multiple API servers
@@ -1676,6 +1742,7 @@ function getUserById(
 **Goal:** Improve conflict handling beyond LWW
 
 **Features:**
+
 - **Operational Transformation (OT)**: Rebase concurrent edits
 - **CRDT for Nodes**: Conflict-free node properties
 - **Version Vectors**: Track causality for better merging
@@ -1691,6 +1758,7 @@ function getUserById(
 **Goal:** Enable divergent editing with explicit merge
 
 **Features:**
+
 - **Branch Creation**: Create named branches from any version
 - **Branch Switching**: Switch between branches in editor
 - **3-Way Merge**: Merge changes from branch to main
@@ -1706,6 +1774,7 @@ function getUserById(
 **Goal:** Insights into team collaboration patterns
 
 **Features:**
+
 - **Activity Timeline**: Who edited what and when
 - **Contribution Metrics**: Quantify user contributions
 - **Collaboration Heatmap**: Visualize areas of high activity
@@ -1721,6 +1790,7 @@ function getUserById(
 **Goal:** Optimize collaboration for mobile devices
 
 **Features:**
+
 - **Touch Gestures**: Pan, zoom, select with touch
 - **Mobile-Optimized Cursors**: Larger touch targets
 - **Offline Editing**: CRDT-based offline mode
@@ -1736,6 +1806,7 @@ function getUserById(
 **Goal:** Add real-time communication to collaboration
 
 **Features:**
+
 - **WebRTC Video**: Peer-to-peer video chat
 - **Screen Sharing**: Share screen while editing
 - **Voice Channels**: Always-on voice chat per playbook

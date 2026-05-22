@@ -22,25 +22,25 @@ This document FREEZES Command Center V1 by:
 
 ### 2.1 What V1 Includes
 
-| Component | Status | Contract Document |
-|-----------|--------|-------------------|
-| **Action Stream** | FROZEN | COMMAND-CENTER-UI.md |
-| **Entity Map** | FROZEN | ENTITY_MAP_CONTRACT.md |
-| **Calendar Peek** | FROZEN | ORCHESTRATION_CALENDAR_CONTRACT.md |
-| **Strategy Panel** | FROZEN | COMMAND-CENTER-UI.md |
-| **Golden Flow** | FROZEN | COMMAND_CENTER_GOLDEN_FLOW.md |
-| **HoverCard Micro-Brief** | FROZEN | COMMAND-CENTER-UI.md |
-| **Action Modal** | FROZEN | COMMAND-CENTER-UI.md |
+| Component                 | Status | Contract Document                  |
+| ------------------------- | ------ | ---------------------------------- |
+| **Action Stream**         | FROZEN | COMMAND-CENTER-UI.md               |
+| **Entity Map**            | FROZEN | ENTITY_MAP_CONTRACT.md             |
+| **Calendar Peek**         | FROZEN | ORCHESTRATION_CALENDAR_CONTRACT.md |
+| **Strategy Panel**        | FROZEN | COMMAND-CENTER-UI.md               |
+| **Golden Flow**           | FROZEN | COMMAND_CENTER_GOLDEN_FLOW.md      |
+| **HoverCard Micro-Brief** | FROZEN | COMMAND-CENTER-UI.md               |
+| **Action Modal**          | FROZEN | COMMAND-CENTER-UI.md               |
 
 ### 2.2 What V1 Excludes (Deferred to V2)
 
-| Feature | Reason | V2 Priority |
-|---------|--------|-------------|
-| Full Calendar Page | CalendarPeek sufficient for V1 | Medium |
-| Entity Map Temporal Navigation | Complexity | Low |
-| Multi-Action Selection | Single-action focus for V1 | Medium |
-| Custom Node Types | 6 types sufficient | Low |
-| Drag-and-Drop Scheduling | Not a planner | None |
+| Feature                        | Reason                         | V2 Priority |
+| ------------------------------ | ------------------------------ | ----------- |
+| Full Calendar Page             | CalendarPeek sufficient for V1 | Medium      |
+| Entity Map Temporal Navigation | Complexity                     | Low         |
+| Multi-Action Selection         | Single-action focus for V1     | Medium      |
+| Custom Node Types              | 6 types sufficient             | Low         |
+| Drag-and-Drop Scheduling       | Not a planner                  | None        |
 
 ---
 
@@ -71,11 +71,11 @@ This document FREEZES Command Center V1 by:
 
 ### 3.2 Component Width Distribution (FROZEN)
 
-| Viewport | Action Stream | Intelligence | Strategy |
-|----------|---------------|--------------|----------|
-| Desktop (≥1280px) | 360px fixed | Flex | 320px fixed |
-| Tablet (768-1279px) | 320px fixed | Flex | Hidden (drawer) |
-| Mobile (<768px) | Full width | Tab-based | Tab-based |
+| Viewport            | Action Stream | Intelligence | Strategy        |
+| ------------------- | ------------- | ------------ | --------------- |
+| Desktop (≥1280px)   | 360px fixed   | Flex         | 320px fixed     |
+| Tablet (768-1279px) | 320px fixed   | Flex         | Hidden (drawer) |
+| Mobile (<768px)     | Full width    | Tab-based    | Tab-based       |
 
 ---
 
@@ -83,13 +83,13 @@ This document FREEZES Command Center V1 by:
 
 ### 4.1 Shared State (FROZEN)
 
-| State | Owner | Consumers | Purpose |
-|-------|-------|-----------|---------|
-| `hoveredActionId` | Command Center Page | Entity Map | Hover highlighting |
-| `executingActionId` | Command Center Page | Entity Map | Pulse animation |
-| `selectedAction` | Command Center Page | Action Modal | Modal content |
-| `executionStates` | Command Center Page | Action Stream, Modal | Execution feedback |
-| `eviFilter` | Command Center Page | Action Stream | Filter by EVI driver |
+| State               | Owner               | Consumers            | Purpose              |
+| ------------------- | ------------------- | -------------------- | -------------------- |
+| `hoveredActionId`   | Command Center Page | Entity Map           | Hover highlighting   |
+| `executingActionId` | Command Center Page | Entity Map           | Pulse animation      |
+| `selectedAction`    | Command Center Page | Action Modal         | Modal content        |
+| `executionStates`   | Command Center Page | Action Stream, Modal | Execution feedback   |
+| `eviFilter`         | Command Center Page | Action Stream        | Filter by EVI driver |
 
 ### 4.2 State Flow Diagram
 
@@ -117,50 +117,50 @@ Strategy Panel                   Calendar Peek
 
 ### 5.1 Action Stream Invariants
 
-| Invariant | Enforcement |
-|-----------|-------------|
-| Cards sorted by priority, then confidence | CI check |
-| Comfortable mode is default for ≤8 cards | CI check |
-| Primary CTA always visible | CI check |
-| Hover triggers HoverCard | Manual QA |
-| Hover broadcasts `hoveredActionId` | Unit test |
+| Invariant                                 | Enforcement |
+| ----------------------------------------- | ----------- |
+| Cards sorted by priority, then confidence | CI check    |
+| Comfortable mode is default for ≤8 cards  | CI check    |
+| Primary CTA always visible                | CI check    |
+| Hover triggers HoverCard                  | Manual QA   |
+| Hover broadcasts `hoveredActionId`        | Unit test   |
 
 ### 5.2 Entity Map Invariants
 
-| Invariant | Enforcement |
-|-----------|-------------|
-| Zone layout matches SAGE dimensions | CI check |
-| Hover highlights affected entities | Unit test |
-| Execute triggers pulse animation | Unit test |
-| Layout is deterministic (same seed = same positions) | Unit test |
-| No navigation on entity click | CI check |
+| Invariant                                            | Enforcement |
+| ---------------------------------------------------- | ----------- |
+| Zone layout matches SAGE dimensions                  | CI check    |
+| Hover highlights affected entities                   | Unit test   |
+| Execute triggers pulse animation                     | Unit test   |
+| Layout is deterministic (same seed = same positions) | Unit test   |
+| No navigation on entity click                        | CI check    |
 
 ### 5.3 Calendar Invariants
 
-| Invariant | Enforcement |
-|-----------|-------------|
-| Container height fixed at `h-[280px]` | CI check |
-| Click opens modal, not navigation | CI check |
-| All items have required fields | Schema validation |
-| Status/Mode/Risk display correctly | Manual QA |
+| Invariant                             | Enforcement       |
+| ------------------------------------- | ----------------- |
+| Container height fixed at `h-[280px]` | CI check          |
+| Click opens modal, not navigation     | CI check          |
+| All items have required fields        | Schema validation |
+| Status/Mode/Risk display correctly    | Manual QA         |
 
 ### 5.4 Strategy Panel Invariants
 
-| Invariant | Enforcement |
-|-----------|-------------|
-| EVI is the ONLY top-level KPI | CI check |
-| NO action buttons | CI check |
+| Invariant                     | Enforcement       |
+| ----------------------------- | ----------------- |
+| EVI is the ONLY top-level KPI | CI check          |
+| NO action buttons             | CI check          |
 | Driver breakdown sums to 100% | Schema validation |
-| Diagnostic only | CI check |
+| Diagnostic only               | CI check          |
 
 ### 5.5 Golden Flow Invariants
 
-| Invariant | Enforcement |
-|-----------|-------------|
+| Invariant                                 | Enforcement      |
+| ----------------------------------------- | ---------------- |
 | Hover → Entity Map highlight coordination | Integration test |
-| Execute → Entity Map pulse coordination | Integration test |
-| Modal opens on card click | Manual QA |
-| No navigation during flow | CI check |
+| Execute → Entity Map pulse coordination   | Integration test |
+| Modal opens on card click                 | Manual QA        |
+| No navigation during flow                 | CI check         |
 
 ---
 
@@ -168,16 +168,16 @@ Strategy Panel                   Calendar Peek
 
 ### 6.1 Calendar: Drawer vs Modal
 
-| Specification | Implementation | Disposition |
-|---------------|----------------|-------------|
+| Specification            | Implementation     | Disposition     |
+| ------------------------ | ------------------ | --------------- |
 | Click opens Action Modal | Click opens Drawer | **V1 ACCEPTED** |
 
 **Rationale:** Drawer provides sufficient functionality. Modal migration deferred to V2.
 
 ### 6.2 Entity Map: Entity States
 
-| Specification | Implementation | Disposition |
-|---------------|----------------|-------------|
+| Specification                              | Implementation              | Disposition     |
+| ------------------------------------------ | --------------------------- | --------------- |
 | 5-state progression (Invisible → Dominant) | States not fully visualized | **V1 ACCEPTED** |
 
 **Rationale:** Hover/execute highlighting is primary V1 value. Full state visualization is V2.
@@ -188,13 +188,13 @@ Strategy Panel                   Calendar Peek
 
 ### 7.1 Required Checks
 
-| Check | File | Purpose |
-|-------|------|---------|
-| `check-command-center-kpis.mjs` | Strategy Panel | No duplicate top-level KPIs |
-| `check-entity-map-zones.mjs` | Entity Map | Zone layout matches SAGE |
-| `check-calendar-height.mjs` | Calendar | Fixed height enforced |
-| `check-strategy-panel-buttons.mjs` | Strategy Panel | No action buttons |
-| `check-golden-flow-integration.mjs` | Page | State coordination exists |
+| Check                               | File           | Purpose                     |
+| ----------------------------------- | -------------- | --------------------------- |
+| `check-command-center-kpis.mjs`     | Strategy Panel | No duplicate top-level KPIs |
+| `check-entity-map-zones.mjs`        | Entity Map     | Zone layout matches SAGE    |
+| `check-calendar-height.mjs`         | Calendar       | Fixed height enforced       |
+| `check-strategy-panel-buttons.mjs`  | Strategy Panel | No action buttons           |
+| `check-golden-flow-integration.mjs` | Page           | State coordination exists   |
 
 ### 7.2 Check Implementation
 
@@ -242,39 +242,39 @@ jobs:
 
 ### 8.1 Page
 
-| File | Purpose | Frozen |
-|------|---------|--------|
-| `app/app/command-center/page.tsx` | Main page, state coordination | Yes |
+| File                              | Purpose                       | Frozen |
+| --------------------------------- | ----------------------------- | ------ |
+| `app/app/command-center/page.tsx` | Main page, state coordination | Yes    |
 
 ### 8.2 Components
 
-| File | Purpose | Frozen |
-|------|---------|--------|
-| `components/command-center/TriPaneShell.tsx` | Layout | Yes |
-| `components/command-center/ActionStreamPane.tsx` | Left pane | Yes |
-| `components/command-center/ActionCard.tsx` | Action cards | Yes |
-| `components/command-center/ActionHoverBrief.tsx` | HoverCard content | Yes |
-| `components/command-center/IntelligenceCanvasPane.tsx` | Center pane | Yes |
-| `components/command-center/EntityMap.tsx` | Graph visualization | Yes |
-| `components/command-center/CalendarPeek.tsx` | Calendar widget | Yes |
-| `components/command-center/StrategyPanelPane.tsx` | Right pane | Yes |
-| `components/command-center/ActionModal.tsx` | Action modal | Yes |
+| File                                                   | Purpose             | Frozen |
+| ------------------------------------------------------ | ------------------- | ------ |
+| `components/command-center/TriPaneShell.tsx`           | Layout              | Yes    |
+| `components/command-center/ActionStreamPane.tsx`       | Left pane           | Yes    |
+| `components/command-center/ActionCard.tsx`             | Action cards        | Yes    |
+| `components/command-center/ActionHoverBrief.tsx`       | HoverCard content   | Yes    |
+| `components/command-center/IntelligenceCanvasPane.tsx` | Center pane         | Yes    |
+| `components/command-center/EntityMap.tsx`              | Graph visualization | Yes    |
+| `components/command-center/CalendarPeek.tsx`           | Calendar widget     | Yes    |
+| `components/command-center/StrategyPanelPane.tsx`      | Right pane          | Yes    |
+| `components/command-center/ActionModal.tsx`            | Action modal        | Yes    |
 
 ### 8.3 Types
 
-| File | Purpose | Frozen |
-|------|---------|--------|
-| `components/command-center/types.ts` | TypeScript definitions | Yes |
+| File                                 | Purpose                | Frozen |
+| ------------------------------------ | ---------------------- | ------ |
+| `components/command-center/types.ts` | TypeScript definitions | Yes    |
 
 ### 8.4 Contracts
 
-| File | Purpose | Frozen |
-|------|---------|--------|
-| `contracts/examples/action-stream.json` | Action Stream schema | Yes |
-| `contracts/examples/entity-map.json` | Entity Map schema | Yes |
-| `contracts/examples/orchestration-calendar.json` | Calendar schema | Yes |
-| `contracts/examples/strategy-panel.json` | Strategy Panel schema | Yes |
-| `contracts/examples/intelligence-canvas.json` | Intelligence Canvas schema | Yes |
+| File                                             | Purpose                    | Frozen |
+| ------------------------------------------------ | -------------------------- | ------ |
+| `contracts/examples/action-stream.json`          | Action Stream schema       | Yes    |
+| `contracts/examples/entity-map.json`             | Entity Map schema          | Yes    |
+| `contracts/examples/orchestration-calendar.json` | Calendar schema            | Yes    |
+| `contracts/examples/strategy-panel.json`         | Strategy Panel schema      | Yes    |
+| `contracts/examples/intelligence-canvas.json`    | Intelligence Canvas schema | Yes    |
 
 ---
 
@@ -291,15 +291,15 @@ Any change to frozen files requires:
 
 ### 9.2 Allowed V1 Changes
 
-| Change Type | Allowed | Example |
-|-------------|---------|---------|
-| Bug fixes | Yes | Fix rendering glitch |
-| Performance improvements | Yes | Optimize re-renders |
-| Accessibility improvements | Yes | Add ARIA labels |
-| New optional props | Yes | Add logging callback |
-| Behavior changes | NO | Change hover timing |
-| Layout changes | NO | Move Strategy Panel |
-| State changes | NO | Add new shared state |
+| Change Type                | Allowed | Example              |
+| -------------------------- | ------- | -------------------- |
+| Bug fixes                  | Yes     | Fix rendering glitch |
+| Performance improvements   | Yes     | Optimize re-renders  |
+| Accessibility improvements | Yes     | Add ARIA labels      |
+| New optional props         | Yes     | Add logging callback |
+| Behavior changes           | NO      | Change hover timing  |
+| Layout changes             | NO      | Move Strategy Panel  |
+| State changes              | NO      | Add new shared state |
 
 ### 9.3 V2 Scope
 
@@ -317,27 +317,27 @@ V2 may add (not change V1):
 
 ### 10.1 Unit Tests
 
-| Component | Test File | Coverage Target |
-|-----------|-----------|-----------------|
-| EntityMap | `EntityMap.test.tsx` | 80% |
-| ActionCard | `ActionCard.test.tsx` | 80% |
-| CalendarPeek | `CalendarPeek.test.tsx` | 70% |
-| StrategyPanelPane | `StrategyPanelPane.test.tsx` | 70% |
+| Component         | Test File                    | Coverage Target |
+| ----------------- | ---------------------------- | --------------- |
+| EntityMap         | `EntityMap.test.tsx`         | 80%             |
+| ActionCard        | `ActionCard.test.tsx`        | 80%             |
+| CalendarPeek      | `CalendarPeek.test.tsx`      | 70%             |
+| StrategyPanelPane | `StrategyPanelPane.test.tsx` | 70%             |
 
 ### 10.2 Integration Tests
 
-| Flow | Test File | Coverage |
-|------|-----------|----------|
+| Flow        | Test File              | Coverage                            |
+| ----------- | ---------------------- | ----------------------------------- |
 | Golden Flow | `golden-flow.test.tsx` | Hover → Highlight → Execute → Pulse |
-| EVI Filter | `evi-filter.test.tsx` | Panel → URL → Stream |
+| EVI Filter  | `evi-filter.test.tsx`  | Panel → URL → Stream                |
 
 ### 10.3 E2E Tests
 
-| Scenario | Coverage |
-|----------|----------|
-| Load Command Center | Page renders without error |
-| Execute Action | Card → CTA → Toast |
-| Hover Action | Card → HoverCard → Entity Map highlight |
+| Scenario            | Coverage                                |
+| ------------------- | --------------------------------------- |
+| Load Command Center | Page renders without error              |
+| Execute Action      | Card → CTA → Toast                      |
+| Hover Action        | Card → HoverCard → Entity Map highlight |
 
 ---
 
@@ -346,6 +346,7 @@ V2 may add (not change V1):
 V1 release MUST satisfy:
 
 **Action Stream:**
+
 - [ ] Cards sorted by priority, then confidence
 - [ ] Comfortable mode default for ≤8 cards
 - [ ] HoverCard appears on hover with correct content
@@ -353,6 +354,7 @@ V1 release MUST satisfy:
 - [ ] Hover broadcasts `hoveredActionId`
 
 **Entity Map:**
+
 - [ ] Zone layout matches SAGE (Authority/Signal/Growth/Exposure)
 - [ ] Hover highlighting works via `hoveredActionId`
 - [ ] Execute pulse works via `executingActionId`
@@ -360,18 +362,21 @@ V1 release MUST satisfy:
 - [ ] No navigation on entity click
 
 **Calendar:**
+
 - [ ] Container height fixed at `h-[280px]`
 - [ ] Click opens detail view (drawer or modal)
 - [ ] All items have required fields
 - [ ] Status/Mode badges display correctly
 
 **Strategy Panel:**
+
 - [ ] EVI is the ONLY top-level KPI
 - [ ] NO action buttons present
 - [ ] Driver breakdown visible and expandable
 - [ ] Diagnostic-only (no mutations)
 
 **Golden Flow:**
+
 - [ ] Hover → Entity Map highlight coordination works
 - [ ] Execute → Entity Map pulse coordination works
 - [ ] Modal/drawer opens on card click
@@ -381,7 +386,6 @@ V1 release MUST satisfy:
 
 ## 12. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-01-13 | 1.0 | V1 freeze — Command Center locked for release |
-
+| Date       | Version | Change                                        |
+| ---------- | ------- | --------------------------------------------- |
+| 2026-01-13 | 1.0     | V1 freeze — Command Center locked for release |

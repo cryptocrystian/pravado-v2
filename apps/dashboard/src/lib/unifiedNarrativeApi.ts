@@ -115,7 +115,8 @@ export async function createNarrative(
     body: JSON.stringify(input),
   });
 
-  if (!response.ok) throw new Error(`Failed to create narrative: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to create narrative: ${response.statusText}`);
   const data = await response.json();
   return data.narrative;
 }
@@ -123,12 +124,15 @@ export async function createNarrative(
 /**
  * Get a unified narrative by ID with sections and sources
  */
-export async function getNarrative(narrativeId: string): Promise<NarrativeWithSections> {
+export async function getNarrative(
+  narrativeId: string
+): Promise<NarrativeWithSections> {
   const response = await fetch(`${BASE_URL}${API_PREFIX}/${narrativeId}`, {
     credentials: 'include',
   });
 
-  if (!response.ok) throw new Error(`Failed to fetch narrative: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to fetch narrative: ${response.statusText}`);
   return response.json();
 }
 
@@ -146,7 +150,8 @@ export async function updateNarrative(
     body: JSON.stringify(updates),
   });
 
-  if (!response.ok) throw new Error(`Failed to update narrative: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to update narrative: ${response.statusText}`);
   const data = await response.json();
   return data.narrative;
 }
@@ -160,7 +165,8 @@ export async function deleteNarrative(narrativeId: string): Promise<void> {
     credentials: 'include',
   });
 
-  if (!response.ok) throw new Error(`Failed to delete narrative: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to delete narrative: ${response.statusText}`);
 }
 
 /**
@@ -183,13 +189,18 @@ export async function listNarratives(
   if (query.sortBy) params.set('sortBy', query.sortBy);
   if (query.sortOrder) params.set('sortOrder', query.sortOrder);
   if (query.tags?.length) params.set('tags', query.tags.join(','));
-  if (query.sourceSystems?.length) params.set('sourceSystems', query.sourceSystems.join(','));
+  if (query.sourceSystems?.length)
+    params.set('sourceSystems', query.sourceSystems.join(','));
 
-  const response = await fetch(`${BASE_URL}${API_PREFIX}?${params.toString()}`, {
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}?${params.toString()}`,
+    {
+      credentials: 'include',
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to list narratives: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to list narratives: ${response.statusText}`);
   return response.json();
 }
 
@@ -204,14 +215,18 @@ export async function generateNarrative(
   narrativeId: string,
   input: Partial<GenerateNarrative> = {}
 ): Promise<GenerateNarrativeResponse> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/${narrativeId}/generate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/${narrativeId}/generate`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to generate narrative: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to generate narrative: ${response.statusText}`);
   return response.json();
 }
 
@@ -237,7 +252,8 @@ export async function updateSection(
     }
   );
 
-  if (!response.ok) throw new Error(`Failed to update section: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to update section: ${response.statusText}`);
   const data = await response.json();
   return data.section;
 }
@@ -260,7 +276,8 @@ export async function regenerateSection(
     }
   );
 
-  if (!response.ok) throw new Error(`Failed to regenerate section: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to regenerate section: ${response.statusText}`);
   const data = await response.json();
   return data.section;
 }
@@ -274,16 +291,22 @@ export async function regenerateSection(
  */
 export async function computeDelta(
   narrativeId: string,
-  input: { previousNarrativeId: string } & Partial<Omit<ComputeDelta, 'previousNarrativeId'>>
+  input: { previousNarrativeId: string } & Partial<
+    Omit<ComputeDelta, 'previousNarrativeId'>
+  >
 ): Promise<ComputeDeltaResponse> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/${narrativeId}/compute-delta`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/${narrativeId}/compute-delta`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to compute delta: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to compute delta: ${response.statusText}`);
   return response.json();
 }
 
@@ -313,7 +336,8 @@ export async function getInsights(
     }
   );
 
-  if (!response.ok) throw new Error(`Failed to fetch insights: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to fetch insights: ${response.statusText}`);
   return response.json();
 }
 
@@ -328,14 +352,18 @@ export async function approveNarrative(
   narrativeId: string,
   input: Partial<ApproveNarrative> = {}
 ): Promise<UnifiedNarrative> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/${narrativeId}/approve`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/${narrativeId}/approve`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to approve narrative: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to approve narrative: ${response.statusText}`);
   const data = await response.json();
   return data.narrative;
 }
@@ -347,14 +375,18 @@ export async function publishNarrative(
   narrativeId: string,
   input: Partial<PublishNarrative> = {}
 ): Promise<UnifiedNarrative> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/${narrativeId}/publish`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/${narrativeId}/publish`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to publish narrative: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to publish narrative: ${response.statusText}`);
   const data = await response.json();
   return data.narrative;
 }
@@ -366,14 +398,18 @@ export async function archiveNarrative(
   narrativeId: string,
   reason?: string
 ): Promise<UnifiedNarrative> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/${narrativeId}/archive`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ archiveReason: reason }),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/${narrativeId}/archive`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ archiveReason: reason }),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to archive narrative: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to archive narrative: ${response.statusText}`);
   const data = await response.json();
   return data.narrative;
 }
@@ -387,16 +423,22 @@ export async function archiveNarrative(
  */
 export async function exportNarrative(
   narrativeId: string,
-  input: { format: 'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json' } & Partial<Omit<ExportNarrative, 'format'>>
+  input: { format: 'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json' } & Partial<
+    Omit<ExportNarrative, 'format'>
+  >
 ): Promise<{ url: string; format: string }> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/${narrativeId}/export`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/${narrativeId}/export`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to export narrative: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to export narrative: ${response.statusText}`);
   return response.json();
 }
 
@@ -412,7 +454,8 @@ export async function getNarrativeStats(): Promise<NarrativeStats> {
     credentials: 'include',
   });
 
-  if (!response.ok) throw new Error(`Failed to fetch stats: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to fetch stats: ${response.statusText}`);
   const data = await response.json();
   return data.stats;
 }
@@ -452,7 +495,8 @@ export async function listAuditLogs(
     credentials: 'include',
   });
 
-  if (!response.ok) throw new Error(`Failed to fetch audit logs: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to fetch audit logs: ${response.statusText}`);
   return response.json();
 }
 
@@ -505,7 +549,9 @@ export function getEventLabel(event: NarrativeEventType): string {
 /**
  * Get display label for insight strength
  */
-export function getInsightStrengthLabel(strength: NarrativeInsightStrength): string {
+export function getInsightStrengthLabel(
+  strength: NarrativeInsightStrength
+): string {
   return NARRATIVE_INSIGHT_STRENGTH_LABELS[strength] || strength;
 }
 
@@ -534,7 +580,9 @@ export function getStatusColor(status: NarrativeStatus): string {
 /**
  * Get insight strength color class
  */
-export function getInsightStrengthColor(strength: NarrativeInsightStrength): string {
+export function getInsightStrengthColor(
+  strength: NarrativeInsightStrength
+): string {
   const colors: Record<NarrativeInsightStrength, string> = {
     critical: 'bg-red-100 text-red-800',
     high: 'bg-orange-100 text-orange-800',
@@ -627,12 +675,22 @@ export function formatNarrativeDate(date: Date | string | undefined): string {
 /**
  * Format period for display
  */
-export function formatNarrativePeriod(start: Date | string, end: Date | string): string {
+export function formatNarrativePeriod(
+  start: Date | string,
+  end: Date | string
+): string {
   const s = typeof start === 'string' ? new Date(start) : start;
   const e = typeof end === 'string' ? new Date(end) : end;
 
-  const startStr = s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const endStr = e.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const startStr = s.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+  const endStr = e.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
   return `${startStr} - ${endStr}`;
 }

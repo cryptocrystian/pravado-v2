@@ -21,7 +21,11 @@ export interface MergeModalProps {
     sourceBranchId: string,
     targetBranchId: string,
     message?: string,
-    resolutions?: Array<{ nodeId?: string; edgeId?: string; resolution: 'ours' | 'theirs' }>
+    resolutions?: Array<{
+      nodeId?: string;
+      edgeId?: string;
+      resolution: 'ours' | 'theirs';
+    }>
   ) => void;
 }
 
@@ -59,24 +63,36 @@ export function MergeModal({
 
     if (!sourceBranchId || !currentBranchId) return;
 
-    const resolutions = Array.from(conflictResolutions.entries()).map(([key, resolution]) => {
-      const [type, id] = key.split(':');
-      return type === 'node'
-        ? { nodeId: id, resolution }
-        : { edgeId: id, resolution };
-    });
+    const resolutions = Array.from(conflictResolutions.entries()).map(
+      ([key, resolution]) => {
+        const [type, id] = key.split(':');
+        return type === 'node'
+          ? { nodeId: id, resolution }
+          : { edgeId: id, resolution };
+      }
+    );
 
-    onMerge(sourceBranchId, currentBranchId, message || undefined, resolutions.length > 0 ? resolutions : undefined);
+    onMerge(
+      sourceBranchId,
+      currentBranchId,
+      message || undefined,
+      resolutions.length > 0 ? resolutions : undefined
+    );
   };
 
-  const handleResolution = (conflictKey: string, resolution: 'ours' | 'theirs') => {
+  const handleResolution = (
+    conflictKey: string,
+    resolution: 'ours' | 'theirs'
+  ) => {
     const newResolutions = new Map(conflictResolutions);
     newResolutions.set(conflictKey, resolution);
     setConflictResolutions(newResolutions);
   };
 
   const allConflictsResolved =
-    !conflicts || conflicts.length === 0 || conflicts.every((c) => {
+    !conflicts ||
+    conflicts.length === 0 ||
+    conflicts.every((c) => {
       const key = c.nodeId ? `node:${c.nodeId}` : `edge:${c.edgeId}`;
       return conflictResolutions.has(key);
     });
@@ -97,7 +113,10 @@ export function MergeModal({
           </div>
 
           <div className="mb-4">
-            <label htmlFor="source-branch" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="source-branch"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Source Branch *
             </label>
             <select
@@ -123,18 +142,28 @@ export function MergeModal({
                 ⚠️ Merge Conflicts Detected ({conflicts.length})
               </h3>
               <p className="text-xs text-yellow-700 mb-3">
-                Both branches modified the same elements. Choose which version to keep:
+                Both branches modified the same elements. Choose which version
+                to keep:
               </p>
               <div className="space-y-3">
                 {conflicts.map((conflict, index) => {
-                  const conflictKey = conflict.nodeId ? `node:${conflict.nodeId}` : `edge:${conflict.edgeId}`;
+                  const conflictKey = conflict.nodeId
+                    ? `node:${conflict.nodeId}`
+                    : `edge:${conflict.edgeId}`;
                   const resolution = conflictResolutions.get(conflictKey);
 
                   return (
-                    <div key={index} className="bg-white p-3 rounded border border-yellow-300">
+                    <div
+                      key={index}
+                      className="bg-white p-3 rounded border border-yellow-300"
+                    >
                       <div className="text-sm font-medium mb-2">
-                        {conflict.nodeId ? `Node: ${conflict.nodeId}` : `Edge: ${conflict.edgeId}`}
-                        <span className="ml-2 text-xs text-gray-500">({conflict.type})</span>
+                        {conflict.nodeId
+                          ? `Node: ${conflict.nodeId}`
+                          : `Edge: ${conflict.edgeId}`}
+                        <span className="ml-2 text-xs text-gray-500">
+                          ({conflict.type})
+                        </span>
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -150,7 +179,9 @@ export function MergeModal({
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleResolution(conflictKey, 'theirs')}
+                          onClick={() =>
+                            handleResolution(conflictKey, 'theirs')
+                          }
                           className={`flex-1 px-3 py-2 text-sm border rounded ${
                             resolution === 'theirs'
                               ? 'bg-blue-100 border-blue-500 text-blue-800'
@@ -168,7 +199,10 @@ export function MergeModal({
           )}
 
           <div className="mb-4">
-            <label htmlFor="merge-message" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="merge-message"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Merge Message (optional)
             </label>
             <input
@@ -198,7 +232,11 @@ export function MergeModal({
             >
               {isMerging ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -217,7 +255,12 @@ export function MergeModal({
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

@@ -12,6 +12,7 @@
 **Problem**: Component crashed with "Cannot read properties of undefined (reading 'drivers')" when API returned unexpected data.
 
 **Fix**:
+
 - Added null guard before rendering EVI data: if `evi` is missing or `evi.score` is not a number, renders a graceful "EVI data is loading or unavailable" message instead of crashing
 - Wrapped `evi.drivers` iteration with `(evi.drivers ?? [])` and conditional rendering
 - Added `?? 'emerging'` fallback for `evi.status` in EVIHero
@@ -42,6 +43,7 @@ Both Queue and Worker instances updated to use matching names.
 ## BUG CC-03 — SAGE Daily Brief showing hardcoded demo content
 
 **Files**:
+
 - `apps/dashboard/src/components/command-center/ActionStreamPane.tsx`
 - `apps/dashboard/src/components/command-center/SituationBrief.tsx`
 - `apps/dashboard/src/components/command-center/types.ts`
@@ -49,6 +51,7 @@ Both Queue and Worker instances updated to use matching names.
 **Problem**: The SAGE Daily Brief always showed hardcoded demo text from `cc-mock-data.ts` regardless of API response.
 
 **Fix**:
+
 - Removed `import { situationBriefText } from './cc-mock-data'` from ActionStreamPane
 - Added `daily_brief?: string | null` to `ActionStreamResponse` type
 - ActionStreamPane now renders `data?.daily_brief` when present, otherwise shows empty state: "SAGE is analyzing your signals. Your first daily brief will appear here once enough data has been collected."
@@ -59,12 +62,12 @@ Both Queue and Worker instances updated to use matching names.
 
 ## Exit Criteria Verification
 
-| # | Criterion | Status |
-|---|-----------|--------|
-| 1 | Command Center loads without JS crash with valid data | Fixed — null guards on all EVI property access |
-| 2 | Command Center shows graceful empty state when API down | Fixed — renders "EVI data is loading or unavailable" |
-| 3 | `pnpm dev` starts with no BullMQ queue name error | Fixed — all colons replaced with hyphens |
-| 4 | BullMQ workers initialize successfully | Fixed — queue names match between Queue and Worker |
-| 5 | SAGE Daily Brief shows real data or empty state | Fixed — no hardcoded demo text remains |
-| 6 | Zero TypeScript errors | Verified — both dashboard and API pass `tsc --noEmit` |
-| 7 | Sprint summary written | This file |
+| #   | Criterion                                               | Status                                                |
+| --- | ------------------------------------------------------- | ----------------------------------------------------- |
+| 1   | Command Center loads without JS crash with valid data   | Fixed — null guards on all EVI property access        |
+| 2   | Command Center shows graceful empty state when API down | Fixed — renders "EVI data is loading or unavailable"  |
+| 3   | `pnpm dev` starts with no BullMQ queue name error       | Fixed — all colons replaced with hyphens              |
+| 4   | BullMQ workers initialize successfully                  | Fixed — queue names match between Queue and Worker    |
+| 5   | SAGE Daily Brief shows real data or empty state         | Fixed — no hardcoded demo text remains                |
+| 6   | Zero TypeScript errors                                  | Verified — both dashboard and API pass `tsc --noEmit` |
+| 7   | Sprint summary written                                  | This file                                             |

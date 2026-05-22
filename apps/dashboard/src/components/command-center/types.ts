@@ -166,18 +166,22 @@ export interface IntelligenceCanvasResponse {
  * Edge states for Entity Map v3
  * @see ENTITY_MAP_SPEC.md §4 Edge Semantics
  */
-export type EdgeState = 'verified_solid' | 'verified_pending' | 'gap' | 'in_progress';
+export type EdgeState =
+  | 'verified_solid'
+  | 'verified_pending'
+  | 'gap'
+  | 'in_progress';
 
 /**
  * Edge relationship types for concentric ring model
  */
 export type EdgeRel =
-  | 'topic_to_brand'     // Ring 1 → Core
-  | 'earned_from_topic'  // Ring 1 → Ring 2
-  | 'journalist_covers'  // Ring 2 → Core
-  | 'cites_brand'        // Ring 3 → Core
-  | 'journalist_to_ai'   // Ring 2 → Ring 3 (cross-ring synergy)
-  | 'topic_to_ai';       // Ring 1 → Ring 3 (cross-ring synergy)
+  | 'topic_to_brand' // Ring 1 → Core
+  | 'earned_from_topic' // Ring 1 → Ring 2
+  | 'journalist_covers' // Ring 2 → Core
+  | 'cites_brand' // Ring 3 → Core
+  | 'journalist_to_ai' // Ring 2 → Ring 3 (cross-ring synergy)
+  | 'topic_to_ai'; // Ring 1 → Ring 3 (cross-ring synergy)
 
 /**
  * Entity Node v3 — Concentric ring model

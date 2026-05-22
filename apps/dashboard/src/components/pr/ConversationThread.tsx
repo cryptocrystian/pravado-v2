@@ -11,26 +11,32 @@ interface ConversationThreadProps {
   onClose: () => void;
 }
 
-export function ConversationThread({ journalist, messages, open, onClose }: ConversationThreadProps) {
+export function ConversationThread({
+  journalist,
+  messages,
+  open,
+  onClose,
+}: ConversationThreadProps) {
   if (!open) return null;
 
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-page/70 z-40"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-page/70 z-40" onClick={onClose} />
 
       {/* Slide-in panel */}
       <div className="fixed top-0 right-0 bottom-0 w-full max-w-[520px] bg-cc-page border-l border-white/8 z-50 flex flex-col animate-in slide-in-from-right duration-200">
         {/* Header */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-white/5">
           <div className="w-10 h-10 rounded-full bg-cc-cyan/20 flex items-center justify-center flex-shrink-0">
-            <span className="text-sm font-semibold text-cc-cyan">{journalist.initials}</span>
+            <span className="text-sm font-semibold text-cc-cyan">
+              {journalist.initials}
+            </span>
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-white">{journalist.name}</h3>
+            <h3 className="text-sm font-semibold text-white">
+              {journalist.name}
+            </h3>
             <p className="text-xs text-white/45">{journalist.publication}</p>
           </div>
           <button
@@ -54,14 +60,20 @@ export function ConversationThread({ journalist, messages, open, onClose }: Conv
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-medium ${
-                  msg.senderType === 'journalist' ? 'text-cc-cyan' : 'text-white/70'
-                }`}>
+                <span
+                  className={`text-xs font-medium ${
+                    msg.senderType === 'journalist'
+                      ? 'text-cc-cyan'
+                      : 'text-white/70'
+                  }`}
+                >
                   {msg.sender}
                 </span>
                 <span className="text-xs text-white/30">{msg.date}</span>
               </div>
-              <p className="text-sm text-white/70 whitespace-pre-line">{msg.body}</p>
+              <p className="text-sm text-white/70 whitespace-pre-line">
+                {msg.body}
+              </p>
             </div>
           ))}
         </div>

@@ -11,7 +11,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getPRConfig } from '@/lib/env/pr-config';
-import { authenticatePRRequest, createAuthErrorResponse, addPRAuthHeader } from '@/server/pr/prAuth';
+import {
+  authenticatePRRequest,
+  createAuthErrorResponse,
+  addPRAuthHeader,
+} from '@/server/pr/prAuth';
 import { createPRService } from '@/server/pr/prService';
 
 export const dynamic = 'force-dynamic';
@@ -30,7 +34,9 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/journalists/${id}] GET Auth failed: ${auth.status}`);
+      console.log(
+        `[API /api/pr/journalists/${id}] GET Auth failed: ${auth.status}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -48,7 +54,9 @@ export async function GET(_request: NextRequest, context: RouteContext) {
     }
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/journalists/${id}] GET: ${journalist.fullName}`);
+      console.log(
+        `[API /api/pr/journalists/${id}] GET: ${journalist.fullName}`
+      );
     }
 
     const response = NextResponse.json(journalist);
@@ -74,7 +82,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/journalists/${id}] PATCH Auth failed: ${auth.status}`);
+      console.log(
+        `[API /api/pr/journalists/${id}] PATCH Auth failed: ${auth.status}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -104,13 +114,24 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     if (body.linkedinUrl !== undefined || body.linkedin_url !== undefined) {
       updateInput.linkedinUrl = body.linkedinUrl || body.linkedin_url;
     }
-    if (body.engagementScore !== undefined || body.engagement_score !== undefined) {
-      updateInput.engagementScore = body.engagementScore ?? body.engagement_score;
+    if (
+      body.engagementScore !== undefined ||
+      body.engagement_score !== undefined
+    ) {
+      updateInput.engagementScore =
+        body.engagementScore ?? body.engagement_score;
     }
-    if (body.responsivenessScore !== undefined || body.responsiveness_score !== undefined) {
-      updateInput.responsivenessScore = body.responsivenessScore ?? body.responsiveness_score;
+    if (
+      body.responsivenessScore !== undefined ||
+      body.responsiveness_score !== undefined
+    ) {
+      updateInput.responsivenessScore =
+        body.responsivenessScore ?? body.responsiveness_score;
     }
-    if (body.relevanceScore !== undefined || body.relevance_score !== undefined) {
+    if (
+      body.relevanceScore !== undefined ||
+      body.relevance_score !== undefined
+    ) {
       updateInput.relevanceScore = body.relevanceScore ?? body.relevance_score;
     }
     if (body.metadata !== undefined) {
@@ -120,7 +141,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const journalist = await prService.updateJournalist(id, updateInput);
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/journalists/${id}] PATCH: Updated ${journalist.fullName}`);
+      console.log(
+        `[API /api/pr/journalists/${id}] PATCH: Updated ${journalist.fullName}`
+      );
     }
 
     const response = NextResponse.json(journalist);
@@ -155,7 +178,9 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/journalists/${id}] DELETE Auth failed: ${auth.status}`);
+      console.log(
+        `[API /api/pr/journalists/${id}] DELETE Auth failed: ${auth.status}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -185,7 +210,9 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
     });
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/journalists/${id}] DELETE: Archived ${current.fullName}`);
+      console.log(
+        `[API /api/pr/journalists/${id}] DELETE: Archived ${current.fullName}`
+      );
     }
 
     const response = NextResponse.json({ success: true, archived: true });

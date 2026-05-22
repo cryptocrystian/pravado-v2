@@ -11,18 +11,21 @@ The Executive Risk Radar is a comprehensive risk monitoring and forecasting syst
 ## Key Features
 
 ### 1. Risk Snapshots
+
 - Point-in-time risk assessments with computed risk index (0-100)
 - Component scores: sentiment, velocity, alerts, competitive, governance, persona
 - Key concerns, emerging risks, and positive factors identification
 - Signal matrix aggregation from integrated systems
 
 ### 2. Risk Indicators
+
 - Aggregated indicators from multiple source systems
 - Indicator types: sentiment, velocity, alerts, competitive, governance, persona, media_coverage, crisis_history, reputation
 - Trend analysis with velocity tracking
 - Normalized scoring with configurable weights
 
 ### 3. Predictive Forecasting
+
 - Multiple forecast horizons: 24h, 72h, 7d, 14d, 30d
 - Projection curves with confidence intervals
 - Crisis probability estimation
@@ -30,18 +33,21 @@ The Executive Risk Radar is a comprehensive risk monitoring and forecasting syst
 - Recommended actions and watch items
 
 ### 4. Risk Drivers
+
 - Identification of key factors driving risk scores
 - Categories: sentiment_shift, velocity_spike, competitive_pressure, governance_violation, media_surge, crisis_pattern, persona_sensitivity, external_event, reputation_decline
 - Urgency classification: critical, high, medium, low
 - Emerging and turning point flagging
 
 ### 5. Collaborative Notes
+
 - Executive-visible collaboration layer
 - Note types: observation, action_taken, escalation, resolution, context, executive_comment
 - Pinning and tagging support
 - Audit trail for compliance
 
 ### 6. Executive Dashboard
+
 - Real-time risk posture visualization
 - Trend comparison with previous snapshots
 - Component score breakdown
@@ -112,29 +118,32 @@ app/app/risk-radar/
 ## Risk Index Computation
 
 ### Component Weights (Default)
-| Component | Weight |
-|-----------|--------|
-| Sentiment | 15% |
-| Velocity | 12% |
-| Alerts | 15% |
-| Competitive | 10% |
-| Governance | 12% |
-| Persona | 8% |
-| Media Coverage | 10% |
-| Crisis History | 10% |
-| Reputation | 8% |
+
+| Component      | Weight |
+| -------------- | ------ |
+| Sentiment      | 15%    |
+| Velocity       | 12%    |
+| Alerts         | 15%    |
+| Competitive    | 10%    |
+| Governance     | 12%    |
+| Persona        | 8%     |
+| Media Coverage | 10%    |
+| Crisis History | 10%    |
+| Reputation     | 8%     |
 
 ### Risk Level Classification
-| Index Range | Level |
-|-------------|-------|
-| 80-100 | Critical |
-| 60-79 | High |
-| 40-59 | Medium |
-| 0-39 | Low |
+
+| Index Range | Level    |
+| ----------- | -------- |
+| 80-100      | Critical |
+| 60-79       | High     |
+| 40-59       | Medium   |
+| 0-39        | Low      |
 
 ## Signal Matrix Integration
 
 The Risk Radar aggregates signals from:
+
 - **S40:** Media Monitoring (coverage volume, sentiment)
 - **S44:** Crisis Response (active incidents, severity)
 - **S47:** Competitive Intelligence (market position, threats)
@@ -144,11 +153,13 @@ The Risk Radar aggregates signals from:
 ## Forecasting Models
 
 ### Statistical Model
+
 - Time-series projection based on historical snapshots
 - Moving average with trend extrapolation
 - Confidence intervals based on variance
 
 ### LLM-Enhanced Narrative
+
 - Executive summary generation
 - Key assumptions extraction
 - Recommended actions formulation
@@ -157,26 +168,29 @@ The Risk Radar aggregates signals from:
 ## Usage
 
 ### Creating a Snapshot
+
 ```typescript
 const snapshot = await riskRadarApi.createSnapshot({
   title: 'Daily Risk Assessment',
-  description: 'Automated daily risk snapshot'
+  description: 'Automated daily risk snapshot',
 });
 ```
 
 ### Generating a Forecast
+
 ```typescript
 const forecast = await riskRadarApi.generateForecast(snapshotId, {
   horizon: '7d',
-  useLlm: true
+  useLlm: true,
 });
 ```
 
 ### Adding a Note
+
 ```typescript
 const note = await riskRadarApi.addNote(snapshotId, {
   noteType: 'observation',
-  content: 'CEO flagged concerns about competitive pressure'
+  content: 'CEO flagged concerns about competitive pressure',
 });
 ```
 

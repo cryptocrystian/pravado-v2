@@ -11,9 +11,20 @@
 import type { PRGeneratedRelease, PRGenerationInput } from '@pravado/types';
 import { useCallback, useState, useEffect } from 'react';
 
-import { PRGenerationResult, PRGeneratorForm, PRSidebarList } from '@/components/pr-generator';
+import {
+  PRGenerationResult,
+  PRGeneratorForm,
+  PRSidebarList,
+} from '@/components/pr-generator';
 
-type GenerationStep = 'idle' | 'context' | 'angles' | 'headlines' | 'draft' | 'seo' | 'complete';
+type GenerationStep =
+  | 'idle'
+  | 'context'
+  | 'angles'
+  | 'headlines'
+  | 'draft'
+  | 'seo'
+  | 'complete';
 
 const STEP_LABELS: Record<GenerationStep, string> = {
   idle: 'Ready',
@@ -29,9 +40,13 @@ interface GeneratorClientProps {
   initialReleases: PRGeneratedRelease[];
 }
 
-export default function GeneratorClient({ initialReleases }: GeneratorClientProps) {
-  const [releases, setReleases] = useState<PRGeneratedRelease[]>(initialReleases);
-  const [selectedRelease, setSelectedRelease] = useState<PRGeneratedRelease | null>(null);
+export default function GeneratorClient({
+  initialReleases,
+}: GeneratorClientProps) {
+  const [releases, setReleases] =
+    useState<PRGeneratedRelease[]>(initialReleases);
+  const [selectedRelease, setSelectedRelease] =
+    useState<PRGeneratedRelease | null>(null);
   const [isLoading, setIsLoading] = useState(initialReleases.length === 0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -100,19 +115,19 @@ export default function GeneratorClient({ initialReleases }: GeneratorClientProp
       setGenerationStep('angles');
       setProgress(20);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setGenerationStep('headlines');
       setProgress(40);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setGenerationStep('draft');
       setProgress(60);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setGenerationStep('seo');
       setProgress(80);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setGenerationStep('complete');
       setProgress(100);
 
@@ -128,7 +143,9 @@ export default function GeneratorClient({ initialReleases }: GeneratorClientProp
 
       setTimeout(() => setGenerationStep('idle'), 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate press release');
+      setError(
+        err instanceof Error ? err.message : 'Failed to generate press release'
+      );
       setGenerationStep('idle');
     } finally {
       setIsGenerating(false);
@@ -140,9 +157,12 @@ export default function GeneratorClient({ initialReleases }: GeneratorClientProp
 
     setIsOptimizing(true);
     try {
-      const response = await fetch(`/api/pr/releases/${selectedRelease.id}/optimize`, {
-        method: 'POST',
-      });
+      const response = await fetch(
+        `/api/pr/releases/${selectedRelease.id}/optimize`,
+        {
+          method: 'POST',
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Optimization failed');
@@ -181,9 +201,12 @@ export default function GeneratorClient({ initialReleases }: GeneratorClientProp
         <div className="max-w-4xl mx-auto p-6">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-white">Press Release Generator</h1>
+            <h1 className="text-2xl font-bold text-white">
+              Press Release Generator
+            </h1>
             <p className="text-white/50 mt-1">
-              Generate professional press releases with AI-powered angle finding and SEO optimization
+              Generate professional press releases with AI-powered angle finding
+              and SEO optimization
             </p>
           </div>
 
@@ -220,13 +243,18 @@ export default function GeneratorClient({ initialReleases }: GeneratorClientProp
 
           {/* Generator Form */}
           <div className="mb-8">
-            <PRGeneratorForm onSubmit={handleGenerate} isLoading={isGenerating} />
+            <PRGeneratorForm
+              onSubmit={handleGenerate}
+              isLoading={isGenerating}
+            />
           </div>
 
           {/* Result */}
           {selectedRelease && (
             <div className="mt-8">
-              <h2 className="text-xl font-semibold text-white mb-4">Generated Press Release</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">
+                Generated Press Release
+              </h2>
               <PRGenerationResult
                 release={selectedRelease}
                 onOptimize={handleOptimize}

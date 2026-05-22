@@ -74,7 +74,9 @@ export interface AIScenarioSimulationContext {
 // HELPER FUNCTIONS
 // ============================================================================
 
-function mapRowToSimulation(row: Record<string, unknown>): AIScenarioSimulation {
+function mapRowToSimulation(
+  row: Record<string, unknown>
+): AIScenarioSimulation {
   return {
     id: row.id as string,
     orgId: row.org_id as string,
@@ -91,7 +93,9 @@ function mapRowToSimulation(row: Record<string, unknown>): AIScenarioSimulation 
     updatedAt: new Date(row.updated_at as string),
     deletedAt: row.deleted_at ? new Date(row.deleted_at as string) : undefined,
     runCount: row.run_count as number | undefined,
-    lastRunAt: row.last_run_at ? new Date(row.last_run_at as string) : undefined,
+    lastRunAt: row.last_run_at
+      ? new Date(row.last_run_at as string)
+      : undefined,
     lastRunStatus: row.last_run_status as AIRunStatus | undefined,
     linkedPlaybookName: row.linked_playbook_name as string | undefined,
   };
@@ -114,7 +118,9 @@ function mapRowToRun(row: Record<string, unknown>): AIScenarioRun {
     errorMessage: row.error_message as string | undefined,
     errorDetails: row.error_details as Record<string, unknown> | undefined,
     startedAt: row.started_at ? new Date(row.started_at as string) : undefined,
-    completedAt: row.completed_at ? new Date(row.completed_at as string) : undefined,
+    completedAt: row.completed_at
+      ? new Date(row.completed_at as string)
+      : undefined,
     createdAt: new Date(row.created_at as string),
     updatedAt: new Date(row.updated_at as string),
     agentCount: row.agent_count as number | undefined,
@@ -165,7 +171,9 @@ function mapRowToMetric(row: Record<string, unknown>): AIScenarioMetric {
     metricKey: row.metric_key as string,
     metricLabel: row.metric_label as string,
     metricCategory: row.metric_category as string | undefined,
-    valueNumeric: row.value_numeric ? parseFloat(row.value_numeric as string) : undefined,
+    valueNumeric: row.value_numeric
+      ? parseFloat(row.value_numeric as string)
+      : undefined,
     valueJson: row.value_json as Record<string, unknown> | undefined,
     stepIndex: row.step_index as number | undefined,
     computedAt: new Date(row.computed_at as string),
@@ -181,14 +189,20 @@ function mapRowToOutcome(row: Record<string, unknown>): AIScenarioOutcome {
     riskLevel: row.risk_level as AIScenarioRiskLevel,
     title: row.title as string,
     description: row.description as string | undefined,
-    recommendedActions: row.recommended_actions as AIScenarioRecommendedAction[] | undefined,
+    recommendedActions: row.recommended_actions as
+      | AIScenarioRecommendedAction[]
+      | undefined,
     linkedPlaybookStepIds: row.linked_playbook_step_ids as string[] | undefined,
-    confidenceScore: row.confidence_score ? parseFloat(row.confidence_score as string) : undefined,
+    confidenceScore: row.confidence_score
+      ? parseFloat(row.confidence_score as string)
+      : undefined,
     createdAt: new Date(row.created_at as string),
   };
 }
 
-function mapRowToAuditLog(row: Record<string, unknown>): AIScenarioAuditLogEntry {
+function mapRowToAuditLog(
+  row: Record<string, unknown>
+): AIScenarioAuditLogEntry {
   return {
     id: row.id as string,
     orgId: row.org_id as string,
@@ -255,12 +269,17 @@ export async function createSimulation(
 
   const simulation = mapRowToSimulation(data);
 
-  await logAuditEvent(ctx, 'simulation_created', {
-    description: `Created simulation: ${simulation.name}`,
-    simulationName: simulation.name,
-    objectiveType: simulation.objectiveType,
-    simulationMode: simulation.simulationMode,
-  }, simulation.id);
+  await logAuditEvent(
+    ctx,
+    'simulation_created',
+    {
+      description: `Created simulation: ${simulation.name}`,
+      simulationName: simulation.name,
+      objectiveType: simulation.objectiveType,
+      simulationMode: simulation.simulationMode,
+    },
+    simulation.id
+  );
 
   return simulation;
 }
@@ -286,10 +305,14 @@ export async function updateSimulation(
   };
 
   if (input.name !== undefined) updateData.name = input.name;
-  if (input.description !== undefined) updateData.description = input.description;
-  if (input.linkedPlaybookId !== undefined) updateData.linked_playbook_id = input.linkedPlaybookId;
-  if (input.simulationMode !== undefined) updateData.simulation_mode = input.simulationMode;
-  if (input.objectiveType !== undefined) updateData.objective_type = input.objectiveType;
+  if (input.description !== undefined)
+    updateData.description = input.description;
+  if (input.linkedPlaybookId !== undefined)
+    updateData.linked_playbook_id = input.linkedPlaybookId;
+  if (input.simulationMode !== undefined)
+    updateData.simulation_mode = input.simulationMode;
+  if (input.objectiveType !== undefined)
+    updateData.objective_type = input.objectiveType;
   if (input.status !== undefined) updateData.status = input.status;
   if (input.config !== undefined) updateData.config = input.config;
 
@@ -305,11 +328,16 @@ export async function updateSimulation(
 
   const simulation = mapRowToSimulation(data);
 
-  await logAuditEvent(ctx, 'simulation_updated', {
-    description: `Updated simulation: ${simulation.name}`,
-    before: { status: before.status, name: before.name },
-    after: { status: simulation.status, name: simulation.name },
-  }, simulation.id);
+  await logAuditEvent(
+    ctx,
+    'simulation_updated',
+    {
+      description: `Updated simulation: ${simulation.name}`,
+      before: { status: before.status, name: before.name },
+      after: { status: simulation.status, name: simulation.name },
+    },
+    simulation.id
+  );
 
   return simulation;
 }
@@ -345,7 +373,9 @@ export async function listSimulations(
     .is('deleted_at', null);
 
   if (query.search) {
-    dbQuery = dbQuery.or(`name.ilike.%${query.search}%,description.ilike.%${query.search}%`);
+    dbQuery = dbQuery.or(
+      `name.ilike.%${query.search}%,description.ilike.%${query.search}%`
+    );
   }
   if (query.status) {
     dbQuery = dbQuery.eq('status', query.status);
@@ -360,9 +390,14 @@ export async function listSimulations(
     dbQuery = dbQuery.eq('linked_playbook_id', query.linkedPlaybookId);
   }
 
-  const sortColumn = query.sortBy === 'name' ? 'name' :
-    query.sortBy === 'status' ? 'status' :
-    query.sortBy === 'created_at' ? 'created_at' : 'updated_at';
+  const sortColumn =
+    query.sortBy === 'name'
+      ? 'name'
+      : query.sortBy === 'status'
+        ? 'status'
+        : query.sortBy === 'created_at'
+          ? 'created_at'
+          : 'updated_at';
   const ascending = query.sortOrder === 'asc';
 
   dbQuery = dbQuery.order(sortColumn, { ascending });
@@ -404,10 +439,15 @@ export async function archiveSimulation(
 
   const simulation = mapRowToSimulation(data);
 
-  await logAuditEvent(ctx, 'simulation_archived', {
-    description: `Archived simulation: ${simulation.name}`,
-    reason,
-  }, simulation.id);
+  await logAuditEvent(
+    ctx,
+    'simulation_archived',
+    {
+      description: `Archived simulation: ${simulation.name}`,
+      reason,
+    },
+    simulation.id
+  );
 
   return { success: true, simulation };
 }
@@ -424,9 +464,14 @@ export async function deleteSimulation(
 
   if (error) throw new Error(`Failed to delete simulation: ${error.message}`);
 
-  await logAuditEvent(ctx, 'simulation_deleted', {
-    description: 'Permanently deleted simulation',
-  }, simulationId);
+  await logAuditEvent(
+    ctx,
+    'simulation_deleted',
+    {
+      description: 'Permanently deleted simulation',
+    },
+    simulationId
+  );
 }
 
 // ============================================================================
@@ -452,7 +497,11 @@ export async function startRun(
   const runNumber = (count || 0) + 1;
 
   // Build context snapshot
-  const seedContext = await buildContextSnapshot(ctx, input.seedSources, input.customContext);
+  const seedContext = await buildContextSnapshot(
+    ctx,
+    input.seedSources,
+    input.customContext
+  );
 
   // Create run
   const { data: runData, error: runError } = await ctx.supabase
@@ -498,12 +547,18 @@ export async function startRun(
     .update({ status: 'running', updated_by: ctx.userId })
     .eq('id', simulationId);
 
-  await logAuditEvent(ctx, 'run_started', {
-    description: `Started run ${runNumber} for simulation`,
-    runLabel: run.runLabel,
-    maxSteps: run.maxSteps,
-    agentCount: agentDefs.length,
-  }, simulationId, run.id);
+  await logAuditEvent(
+    ctx,
+    'run_started',
+    {
+      description: `Started run ${runNumber} for simulation`,
+      runLabel: run.runLabel,
+      maxSteps: run.maxSteps,
+      agentCount: agentDefs.length,
+    },
+    simulationId,
+    run.id
+  );
 
   // Start immediately if requested
   if (input.startImmediately) {
@@ -539,35 +594,36 @@ export async function getRunDetail(
   const run = await getRunById(ctx, runId);
   if (!run) return null;
 
-  const [agentsResult, turnsResult, metricsResult, outcomesResult] = await Promise.all([
-    ctx.supabase
-      .from('ai_scenario_agents')
-      .select('*')
-      .eq('run_id', runId)
-      .eq('org_id', ctx.orgId)
-      .eq('is_active', true),
-    ctx.supabase
-      .from('ai_scenario_turns')
-      .select('*')
-      .eq('run_id', runId)
-      .eq('org_id', ctx.orgId)
-      .order('step_index', { ascending: false })
-      .order('turn_order', { ascending: true })
-      .limit(20),
-    ctx.supabase
-      .from('ai_scenario_metrics')
-      .select('*')
-      .eq('run_id', runId)
-      .eq('org_id', ctx.orgId)
-      .order('computed_at', { ascending: false })
-      .limit(50),
-    ctx.supabase
-      .from('ai_scenario_outcomes')
-      .select('*')
-      .eq('run_id', runId)
-      .eq('org_id', ctx.orgId)
-      .order('created_at', { ascending: false }),
-  ]);
+  const [agentsResult, turnsResult, metricsResult, outcomesResult] =
+    await Promise.all([
+      ctx.supabase
+        .from('ai_scenario_agents')
+        .select('*')
+        .eq('run_id', runId)
+        .eq('org_id', ctx.orgId)
+        .eq('is_active', true),
+      ctx.supabase
+        .from('ai_scenario_turns')
+        .select('*')
+        .eq('run_id', runId)
+        .eq('org_id', ctx.orgId)
+        .order('step_index', { ascending: false })
+        .order('turn_order', { ascending: true })
+        .limit(20),
+      ctx.supabase
+        .from('ai_scenario_metrics')
+        .select('*')
+        .eq('run_id', runId)
+        .eq('org_id', ctx.orgId)
+        .order('computed_at', { ascending: false })
+        .limit(50),
+      ctx.supabase
+        .from('ai_scenario_outcomes')
+        .select('*')
+        .eq('run_id', runId)
+        .eq('org_id', ctx.orgId)
+        .order('created_at', { ascending: false }),
+    ]);
 
   return {
     run,
@@ -596,9 +652,14 @@ export async function listRunsForSimulation(
     dbQuery = dbQuery.eq('risk_level', query.riskLevel);
   }
 
-  const sortColumn = query.sortBy === 'run_number' ? 'run_number' :
-    query.sortBy === 'started_at' ? 'started_at' :
-    query.sortBy === 'status' ? 'status' : 'created_at';
+  const sortColumn =
+    query.sortBy === 'run_number'
+      ? 'run_number'
+      : query.sortBy === 'started_at'
+        ? 'started_at'
+        : query.sortBy === 'status'
+          ? 'status'
+          : 'created_at';
   const ascending = query.sortOrder === 'asc';
 
   dbQuery = dbQuery.order(sortColumn, { ascending });
@@ -638,10 +699,16 @@ export async function abortRun(
 
   const run = mapRowToRun(data);
 
-  await logAuditEvent(ctx, 'run_aborted', {
-    description: 'Run aborted by user',
-    stepCount: run.stepCount,
-  }, run.simulationId, run.id);
+  await logAuditEvent(
+    ctx,
+    'run_aborted',
+    {
+      description: 'Run aborted by user',
+      stepCount: run.stepCount,
+    },
+    run.simulationId,
+    run.id
+  );
 
   return run;
 }
@@ -658,7 +725,11 @@ export async function runOneStep(
   const run = await getRunById(ctx, runId);
   if (!run) throw new Error('Run not found');
 
-  if (run.status === 'completed' || run.status === 'failed' || run.status === 'aborted') {
+  if (
+    run.status === 'completed' ||
+    run.status === 'failed' ||
+    run.status === 'aborted'
+  ) {
     throw new Error(`Run is already ${run.status}`);
   }
 
@@ -692,7 +763,7 @@ export async function runOneStep(
   let selectedAgent: AIScenarioAgent;
 
   if (input?.agentId) {
-    const found = agentList.find(a => a.id === input.agentId);
+    const found = agentList.find((a) => a.id === input.agentId);
     if (!found) throw new Error('Specified agent not found');
     selectedAgent = found;
   } else if (input?.skipAgent) {
@@ -779,18 +850,24 @@ export async function runOneStep(
     .select('*')
     .single();
 
-  await logAuditEvent(ctx, 'agent_step', {
-    description: `Agent ${selectedAgent.displayName} took turn`,
-    agentKey: selectedAgent.agentKey,
-    stepIndex: newStep,
-    channel,
-    llmModel: turnContent.model,
-    tokenUsage: {
-      prompt: turnContent.promptTokens || 0,
-      completion: turnContent.completionTokens || 0,
+  await logAuditEvent(
+    ctx,
+    'agent_step',
+    {
+      description: `Agent ${selectedAgent.displayName} took turn`,
+      agentKey: selectedAgent.agentKey,
+      stepIndex: newStep,
+      channel,
+      llmModel: turnContent.model,
+      tokenUsage: {
+        prompt: turnContent.promptTokens || 0,
+        completion: turnContent.completionTokens || 0,
+      },
+      durationMs: generationTimeMs,
     },
-    durationMs: generationTimeMs,
-  }, run.simulationId, runId);
+    run.simulationId,
+    runId
+  );
 
   // Compute metrics after each step
   await computeStepMetrics(ctx, runId, newStep);
@@ -816,7 +893,10 @@ export async function runUntilConverged(
     stepsExecuted++;
 
     // Check convergence criteria
-    if (input?.pauseOnHighRisk && (run.riskLevel === 'high' || run.riskLevel === 'critical')) {
+    if (
+      input?.pauseOnHighRisk &&
+      (run.riskLevel === 'high' || run.riskLevel === 'critical')
+    ) {
       converged = true;
       convergenceReason = `Paused due to ${run.riskLevel} risk level`;
     }
@@ -857,7 +937,7 @@ export async function postAgentFeedback(
       .eq('run_id', runId)
       .eq('org_id', ctx.orgId)
       .eq('is_active', true);
-    agentsToUpdate = (agents || []).map(a => a.id);
+    agentsToUpdate = (agents || []).map((a) => a.id);
   }
 
   // Update agent configs with feedback
@@ -876,9 +956,10 @@ export async function postAgentFeedback(
         updatedConstraints.push(input.content);
       }
 
-      const customInstructions = input.feedbackType === 'guidance'
-        ? `${currentConfig.customInstructions || ''}\n${input.content}`.trim()
-        : currentConfig.customInstructions;
+      const customInstructions =
+        input.feedbackType === 'guidance'
+          ? `${currentConfig.customInstructions || ''}\n${input.content}`.trim()
+          : currentConfig.customInstructions;
 
       await ctx.supabase
         .from('ai_scenario_agents')
@@ -893,12 +974,18 @@ export async function postAgentFeedback(
     }
   }
 
-  await logAuditEvent(ctx, 'agent_feedback', {
-    description: `User provided ${input.feedbackType} feedback`,
-    feedbackType: input.feedbackType,
-    targetAgentId: input.targetAgentId,
-    appliedTo: agentsToUpdate,
-  }, run.simulationId, runId);
+  await logAuditEvent(
+    ctx,
+    'agent_feedback',
+    {
+      description: `User provided ${input.feedbackType} feedback`,
+      feedbackType: input.feedbackType,
+      targetAgentId: input.targetAgentId,
+      appliedTo: agentsToUpdate,
+    },
+    run.simulationId,
+    runId
+  );
 
   return {
     success: true,
@@ -1050,12 +1137,13 @@ async function computeStepMetrics(
 
   // Compute aggregate sentiment
   const sentiments = turns
-    .map(t => (t.metadata as AIScenarioTurnMetadata)?.sentimentScore)
+    .map((t) => (t.metadata as AIScenarioTurnMetadata)?.sentimentScore)
     .filter((s): s is number => s !== undefined);
 
-  const avgSentiment = sentiments.length > 0
-    ? sentiments.reduce((a, b) => a + b, 0) / sentiments.length
-    : 0;
+  const avgSentiment =
+    sentiments.length > 0
+      ? sentiments.reduce((a, b) => a + b, 0) / sentiments.length
+      : 0;
 
   // Compute risk level based on sentiment
   let riskLevel: AIScenarioRiskLevel = 'low';
@@ -1124,7 +1212,7 @@ export async function computeRunMetrics(
 
   // Sentiment progression
   const sentiments = turns
-    .map(t => (t.metadata as AIScenarioTurnMetadata)?.sentimentScore)
+    .map((t) => (t.metadata as AIScenarioTurnMetadata)?.sentimentScore)
     .filter((s): s is number => s !== undefined);
 
   if (sentiments.length > 0) {
@@ -1137,7 +1225,7 @@ export async function computeRunMetrics(
   }
 
   // Insert computed metrics
-  const metricsToInsert = metrics.map(m => ({
+  const metricsToInsert = metrics.map((m) => ({
     org_id: ctx.orgId,
     run_id: runId,
     metric_key: m.metricKey,
@@ -1185,7 +1273,7 @@ export async function summarizeOutcomes(
   );
 
   // Insert outcomes
-  const outcomesToInsert = outcomeResult.outcomes.map(o => ({
+  const outcomesToInsert = outcomeResult.outcomes.map((o) => ({
     org_id: ctx.orgId,
     run_id: runId,
     outcome_type: o.outcomeType,
@@ -1235,16 +1323,30 @@ export async function getSimulationStats(
     .is('deleted_at', null);
 
   const byStatus: Record<AISimulationStatus, number> = {
-    draft: 0, configured: 0, running: 0, paused: 0,
-    completed: 0, failed: 0, archived: 0,
+    draft: 0,
+    configured: 0,
+    running: 0,
+    paused: 0,
+    completed: 0,
+    failed: 0,
+    archived: 0,
   };
   const byObjective: Record<AIScenarioObjectiveType, number> = {
-    crisis_comms: 0, investor_relations: 0, reputation: 0, go_to_market: 0,
-    regulatory: 0, competitive: 0, earnings: 0, leadership_change: 0,
-    m_and_a: 0, custom: 0,
+    crisis_comms: 0,
+    investor_relations: 0,
+    reputation: 0,
+    go_to_market: 0,
+    regulatory: 0,
+    competitive: 0,
+    earnings: 0,
+    leadership_change: 0,
+    m_and_a: 0,
+    custom: 0,
   };
   const byMode: Record<AISimulationMode, number> = {
-    single_run: 0, multi_run: 0, what_if: 0,
+    single_run: 0,
+    multi_run: 0,
+    what_if: 0,
   };
 
   for (const sim of simulations || []) {
@@ -1260,12 +1362,17 @@ export async function getSimulationStats(
     .eq('org_id', ctx.orgId);
 
   const totalRuns = runs?.length || 0;
-  const completedRuns = runs?.filter(r => r.status === 'completed').length || 0;
-  const totalSteps = runs?.reduce((sum, r) => sum + (r.step_count || 0), 0) || 0;
+  const completedRuns =
+    runs?.filter((r) => r.status === 'completed').length || 0;
+  const totalSteps =
+    runs?.reduce((sum, r) => sum + (r.step_count || 0), 0) || 0;
   const avgSteps = totalRuns > 0 ? totalSteps / totalRuns : 0;
 
   const riskDistribution: Record<AIScenarioRiskLevel, number> = {
-    low: 0, medium: 0, high: 0, critical: 0,
+    low: 0,
+    medium: 0,
+    high: 0,
+    critical: 0,
   };
 
   for (const run of runs || []) {
@@ -1318,10 +1425,12 @@ async function buildContextSnapshot(
   return snapshot;
 }
 
-function getDefaultAgents(objectiveType: AIScenarioObjectiveType): AIAgentDefinitionInput[] {
+function getDefaultAgents(
+  objectiveType: AIScenarioObjectiveType
+): AIAgentDefinitionInput[] {
   // Get presets suitable for this objective
-  const suitablePresets = AI_AGENT_PRESETS.filter(
-    p => p.suitableFor.includes(objectiveType)
+  const suitablePresets = AI_AGENT_PRESETS.filter((p) =>
+    p.suitableFor.includes(objectiveType)
   );
 
   if (suitablePresets.length === 0) {
@@ -1345,7 +1454,7 @@ function getDefaultAgents(objectiveType: AIScenarioObjectiveType): AIAgentDefini
   }
 
   // Return up to 5 suitable agents
-  return suitablePresets.slice(0, 5).map(p => ({
+  return suitablePresets.slice(0, 5).map((p) => ({
     agentKey: p.agentKey,
     displayName: p.displayName,
     roleType: p.roleType,
@@ -1354,7 +1463,9 @@ function getDefaultAgents(objectiveType: AIScenarioObjectiveType): AIAgentDefini
   }));
 }
 
-function selectChannelForAgent(roleType: AIAgentRoleType): AIScenarioChannelType {
+function selectChannelForAgent(
+  roleType: AIAgentRoleType
+): AIScenarioChannelType {
   switch (roleType) {
     case 'journalist':
       return 'press';
@@ -1402,7 +1513,13 @@ async function generateAgentTurn(
   userGuidance?: string
 ): Promise<TurnGenerationResult> {
   const systemPrompt = buildAgentSystemPrompt(agent, simulation);
-  const userPrompt = buildAgentUserPrompt(agent, simulation, run, recentTurns, userGuidance);
+  const userPrompt = buildAgentUserPrompt(
+    agent,
+    simulation,
+    run,
+    recentTurns,
+    userGuidance
+  );
 
   try {
     const response = await routeLLM({
@@ -1449,7 +1566,7 @@ function buildAgentSystemPrompt(
     regulator: 'You are a regulatory official overseeing this industry.',
     market_analyst: 'You are a financial analyst covering this company.',
     system: 'You are a neutral narrator providing context and transitions.',
-    critic: 'You are an internal devil\'s advocate challenging assumptions.',
+    critic: "You are an internal devil's advocate challenging assumptions.",
   };
 
   let prompt = `You are playing the role of "${agent.displayName}" in a scenario simulation.
@@ -1515,8 +1632,23 @@ function buildAgentUserPrompt(
 
 function analyzeSentiment(content: string): number {
   // Simple keyword-based sentiment (placeholder for real NLP)
-  const positive = ['success', 'confident', 'opportunity', 'growth', 'strong', 'excellent'];
-  const negative = ['concern', 'risk', 'problem', 'crisis', 'threat', 'decline', 'worried'];
+  const positive = [
+    'success',
+    'confident',
+    'opportunity',
+    'growth',
+    'strong',
+    'excellent',
+  ];
+  const negative = [
+    'concern',
+    'risk',
+    'problem',
+    'crisis',
+    'threat',
+    'decline',
+    'worried',
+  ];
 
   const lowerContent = content.toLowerCase();
   let score = 0;
@@ -1571,9 +1703,10 @@ Format your response as JSON with the following structure:
   "narrativeSummary": "..."
 }`;
 
-  const turnSummary = turns.slice(-10).map(t =>
-    `[Step ${t.stepIndex}]: ${t.content.substring(0, 200)}...`
-  ).join('\n\n');
+  const turnSummary = turns
+    .slice(-10)
+    .map((t) => `[Step ${t.stepIndex}]: ${t.content.substring(0, 200)}...`)
+    .join('\n\n');
 
   const userPrompt = `Simulation: ${simulation.name}
 Objective: ${simulation.objectiveType}
@@ -1605,22 +1738,27 @@ Analyze this scenario and provide outcomes and recommendations.`;
       narrativeSummary: parsed.narrativeSummary,
       keyInsights: parsed.keyInsights || [],
       overallRiskLevel: parsed.overallRiskLevel || 'medium',
-      topRecommendations: (parsed.recommendations || []).map((r: Record<string, unknown>) => ({
-        action: (r.action as string) || '',
-        priority: (r.priority as 'high' | 'medium' | 'low') || 'medium',
-        rationale: r.rationale as string,
-      })),
+      topRecommendations: (parsed.recommendations || []).map(
+        (r: Record<string, unknown>) => ({
+          action: (r.action as string) || '',
+          priority: (r.priority as 'high' | 'medium' | 'low') || 'medium',
+          rationale: r.rationale as string,
+        })
+      ),
     };
   } catch (error) {
     console.error('Outcome generation error:', error);
     return {
-      outcomes: [{
-        outcomeType: 'neutral',
-        riskLevel: run.riskLevel || 'medium',
-        title: 'Simulation Completed',
-        description: 'The simulation has completed. Review the transcript for details.',
-        confidenceScore: 0.5,
-      }],
+      outcomes: [
+        {
+          outcomeType: 'neutral',
+          riskLevel: run.riskLevel || 'medium',
+          title: 'Simulation Completed',
+          description:
+            'The simulation has completed. Review the transcript for details.',
+          confidenceScore: 0.5,
+        },
+      ],
       keyInsights: ['Review transcript for detailed analysis'],
       overallRiskLevel: run.riskLevel || 'medium',
       topRecommendations: [],
@@ -1659,11 +1797,17 @@ async function completeRun(
     .update({ status: 'completed' })
     .eq('id', run.simulationId);
 
-  await logAuditEvent(ctx, 'run_completed', {
-    description: 'Run completed successfully',
-    totalSteps: run.stepCount,
-    finalRiskLevel: run.riskLevel,
-  }, run.simulationId, run.id);
+  await logAuditEvent(
+    ctx,
+    'run_completed',
+    {
+      description: 'Run completed successfully',
+      totalSteps: run.stepCount,
+      finalRiskLevel: run.riskLevel,
+    },
+    run.simulationId,
+    run.id
+  );
 
   return run;
 }

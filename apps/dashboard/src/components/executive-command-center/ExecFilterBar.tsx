@@ -32,7 +32,6 @@ import {
 } from '@/lib/executiveCommandCenterApi';
 import { cn } from '@/lib/utils';
 
-
 interface ExecFilterBarProps {
   timeWindow: ExecDashboardTimeWindow;
   primaryFocus: ExecDashboardPrimaryFocus;
@@ -128,7 +127,9 @@ export function ExecFilterBar({
                   onClick={() => onPrimaryFocusChange?.(focus)}
                   disabled={disabled}
                 >
-                  {getPrimaryFocusLabel(focus).replace(' Overview', '').replace(' Management', '')}
+                  {getPrimaryFocusLabel(focus)
+                    .replace(' Overview', '')
+                    .replace(' Management', '')}
                 </Button>
               ))}
             </div>

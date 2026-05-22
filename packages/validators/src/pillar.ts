@@ -24,7 +24,13 @@ export const validatePlaybookRequestSchema = z.object({
         condition: z
           .object({
             nodeId: z.string(),
-            operator: z.enum(['equals', 'notEquals', 'contains', 'greaterThan', 'lessThan']),
+            operator: z.enum([
+              'equals',
+              'notEquals',
+              'contains',
+              'greaterThan',
+              'lessThan',
+            ]),
             value: z.unknown(),
           })
           .optional(),
@@ -45,7 +51,9 @@ export const validatePlaybookRequestSchema = z.object({
   }),
 });
 
-export type ValidatePlaybookRequest = z.infer<typeof validatePlaybookRequestSchema>;
+export type ValidatePlaybookRequest = z.infer<
+  typeof validatePlaybookRequestSchema
+>;
 
 // ========================================
 // PR PILLAR SCHEMAS (S3 + S6)
@@ -54,7 +62,9 @@ export type ValidatePlaybookRequest = z.infer<typeof validatePlaybookRequestSche
 export const listPRSourcesSchema = z.object({
   limit: z.number().int().positive().max(100).optional(),
   offset: z.number().int().nonnegative().optional(),
-  sourceType: z.enum(['press_release', 'backlink', 'mention', 'earned_media']).optional(),
+  sourceType: z
+    .enum(['press_release', 'backlink', 'mention', 'earned_media'])
+    .optional(),
   status: z.string().optional(),
 });
 
@@ -71,7 +81,9 @@ export const listJournalistsQuerySchema = z.object({
   offset: z.number().int().nonnegative().optional().default(0),
 });
 
-export type ListJournalistsQueryParams = z.infer<typeof listJournalistsQuerySchema>;
+export type ListJournalistsQueryParams = z.infer<
+  typeof listJournalistsQuerySchema
+>;
 
 // S6 - PR Lists
 export const listPRListsQuerySchema = z.object({
@@ -92,7 +104,9 @@ export const updatePRListMembersSchema = z.object({
   journalistIds: z.array(z.string().uuid()).min(1),
 });
 
-export type UpdatePRListMembersParams = z.infer<typeof updatePRListMembersSchema>;
+export type UpdatePRListMembersParams = z.infer<
+  typeof updatePRListMembersSchema
+>;
 
 // ========================================
 // CONTENT PILLAR SCHEMAS (S3 + S12)
@@ -106,7 +120,13 @@ export const listContentItemsSchema = z.object({
   page: z.number().int().positive().optional().default(1),
   pageSize: z.number().int().positive().max(100).optional().default(20),
   contentType: z
-    .enum(['blog_post', 'social_post', 'long_form', 'video_script', 'newsletter'])
+    .enum([
+      'blog_post',
+      'social_post',
+      'long_form',
+      'video_script',
+      'newsletter',
+    ])
     .optional(),
 });
 
@@ -116,8 +136,17 @@ export type ListContentItemsParams = z.infer<typeof listContentItemsSchema>;
 export const createContentItemSchema = z.object({
   title: z.string().min(1).max(500),
   slug: z.string().min(1).max(200).optional(),
-  contentType: z.enum(['blog_post', 'social_post', 'long_form', 'video_script', 'newsletter']),
-  status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
+  contentType: z.enum([
+    'blog_post',
+    'social_post',
+    'long_form',
+    'video_script',
+    'newsletter',
+  ]),
+  status: z
+    .enum(['draft', 'published', 'archived'])
+    .optional()
+    .default('draft'),
   body: z.string().optional(),
   url: z.string().url().optional(),
   primaryTopicId: z.string().uuid().optional(),
@@ -130,7 +159,15 @@ export type CreateContentItemParams = z.infer<typeof createContentItemSchema>;
 export const updateContentItemSchema = z.object({
   title: z.string().min(1).max(500).optional(),
   slug: z.string().min(1).max(200).optional(),
-  contentType: z.enum(['blog_post', 'social_post', 'long_form', 'video_script', 'newsletter']).optional(),
+  contentType: z
+    .enum([
+      'blog_post',
+      'social_post',
+      'long_form',
+      'video_script',
+      'newsletter',
+    ])
+    .optional(),
   status: z.enum(['draft', 'published', 'archived']).optional(),
   body: z.string().optional(),
   url: z.string().url().optional(),
@@ -159,7 +196,10 @@ export const createContentBriefSchema = z.object({
   tone: z.enum(['professional', 'casual', 'technical', 'friendly']).optional(),
   minWordCount: z.number().int().positive().optional(),
   maxWordCount: z.number().int().positive().optional(),
-  status: z.enum(['draft', 'in_progress', 'completed']).optional().default('draft'),
+  status: z
+    .enum(['draft', 'in_progress', 'completed'])
+    .optional()
+    .default('draft'),
   metadata: z.record(z.unknown()).optional().default({}),
 });
 
@@ -209,7 +249,13 @@ export const listSEOKeywordsSchema = z.object({
   status: z.enum(['active', 'paused', 'archived']).optional(),
   intent: seoKeywordIntentSchema.optional(),
   sortBy: z
-    .enum(['keyword', 'searchVolume', 'difficulty', 'priorityScore', 'createdAt'])
+    .enum([
+      'keyword',
+      'searchVolume',
+      'difficulty',
+      'priorityScore',
+      'createdAt',
+    ])
     .optional()
     .default('priorityScore'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
@@ -227,14 +273,22 @@ export const listSEOOpportunitiesSchema = z.object({
   limit: z.number().int().positive().max(100).optional().default(20),
   offset: z.number().int().nonnegative().optional().default(0),
   opportunityType: z
-    .enum(['keyword_gap', 'content_refresh', 'broken_link', 'missing_meta', 'low_content'])
+    .enum([
+      'keyword_gap',
+      'content_refresh',
+      'broken_link',
+      'missing_meta',
+      'low_content',
+    ])
     .optional(),
   priority: z.enum(['low', 'medium', 'high', 'critical']).optional(),
   status: z.enum(['open', 'in_progress', 'completed', 'dismissed']).optional(),
   minPriorityScore: z.number().min(0).max(100).optional(),
 });
 
-export type ListSEOOpportunitiesParams = z.infer<typeof listSEOOpportunitiesSchema>;
+export type ListSEOOpportunitiesParams = z.infer<
+  typeof listSEOOpportunitiesSchema
+>;
 
 // ========================================
 // SEO ON-PAGE OPTIMIZATION SCHEMAS (S5)
@@ -267,7 +321,9 @@ export const getSEOBacklinkProfileSchema = z.object({
   pageId: z.string().uuid().optional(), // If omitted, return org-wide profile
 });
 
-export type GetSEOBacklinkProfileParams = z.infer<typeof getSEOBacklinkProfileSchema>;
+export type GetSEOBacklinkProfileParams = z.infer<
+  typeof getSEOBacklinkProfileSchema
+>;
 
 export const listSEOBacklinksSchema = z.object({
   pageId: z.string().uuid().optional(),
@@ -277,7 +333,10 @@ export const listSEOBacklinksSchema = z.object({
   referringDomainId: z.string().uuid().optional(),
   limit: z.number().int().positive().max(100).optional().default(20),
   offset: z.number().int().nonnegative().optional().default(0),
-  sortBy: z.enum(['discoveredAt', 'lastSeenAt', 'lostAt']).optional().default('lastSeenAt'),
+  sortBy: z
+    .enum(['discoveredAt', 'lastSeenAt', 'lostAt'])
+    .optional()
+    .default('lastSeenAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -289,8 +348,13 @@ export const listSEOReferringDomainsSchema = z.object({
   minBacklinks: z.number().int().nonnegative().optional(),
   limit: z.number().int().positive().max(100).optional().default(20),
   offset: z.number().int().nonnegative().optional().default(0),
-  sortBy: z.enum(['domainAuthority', 'totalBacklinks', 'firstSeenAt']).optional().default('domainAuthority'),
+  sortBy: z
+    .enum(['domainAuthority', 'totalBacklinks', 'firstSeenAt'])
+    .optional()
+    .default('domainAuthority'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
-export type ListSEOReferringDomainsParams = z.infer<typeof listSEOReferringDomainsSchema>;
+export type ListSEOReferringDomainsParams = z.infer<
+  typeof listSEOReferringDomainsSchema
+>;

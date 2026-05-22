@@ -63,7 +63,10 @@ export class MediaAlertService {
   /**
    * Create a new alert rule
    */
-  async createRule(orgId: string, input: CreateMediaAlertRuleInput): Promise<MediaAlertRule> {
+  async createRule(
+    orgId: string,
+    input: CreateMediaAlertRuleInput
+  ): Promise<MediaAlertRule> {
     const { data, error } = await this.supabase
       .from('media_alert_rules')
       .insert({
@@ -76,8 +79,10 @@ export class MediaAlertService {
         competitor_terms: input.competitorTerms || null,
         journalist_ids: input.journalistIds || null,
         outlet_ids: input.outletIds || null,
-        min_sentiment: input.minSentiment !== undefined ? input.minSentiment : null,
-        max_sentiment: input.maxSentiment !== undefined ? input.maxSentiment : null,
+        min_sentiment:
+          input.minSentiment !== undefined ? input.minSentiment : null,
+        max_sentiment:
+          input.maxSentiment !== undefined ? input.maxSentiment : null,
         min_mentions: input.minMentions || null,
         time_window_minutes: input.timeWindowMinutes || null,
         min_relevance: input.minRelevance || null,
@@ -99,7 +104,14 @@ export class MediaAlertService {
     orgId: string,
     query: ListMediaAlertRulesQuery = {}
   ): Promise<MediaAlertRuleListResponse> {
-    const { alertType, isActive, limit = 50, offset = 0, sortBy = 'created_at', sortOrder = 'desc' } = query;
+    const {
+      alertType,
+      isActive,
+      limit = 50,
+      offset = 0,
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+    } = query;
 
     let supabaseQuery = this.supabase
       .from('media_alert_rules')
@@ -116,7 +128,9 @@ export class MediaAlertService {
     }
 
     // Apply sorting
-    supabaseQuery = supabaseQuery.order(sortBy, { ascending: sortOrder === 'asc' });
+    supabaseQuery = supabaseQuery.order(sortBy, {
+      ascending: sortOrder === 'asc',
+    });
 
     // Apply pagination
     supabaseQuery = supabaseQuery.range(offset, offset + limit - 1);
@@ -127,7 +141,9 @@ export class MediaAlertService {
       throw new Error(`Failed to list alert rules: ${error.message}`);
     }
 
-    const rules = (data as MediaAlertRuleRecord[]).map(transformMediaAlertRuleRecord);
+    const rules = (data as MediaAlertRuleRecord[]).map(
+      transformMediaAlertRuleRecord
+    );
 
     return {
       rules,
@@ -166,18 +182,27 @@ export class MediaAlertService {
     const updateData: Record<string, any> = {};
 
     if (input.name !== undefined) updateData.name = input.name;
-    if (input.description !== undefined) updateData.description = input.description;
+    if (input.description !== undefined)
+      updateData.description = input.description;
     if (input.isActive !== undefined) updateData.is_active = input.isActive;
     if (input.alertType !== undefined) updateData.alert_type = input.alertType;
-    if (input.brandTerms !== undefined) updateData.brand_terms = input.brandTerms;
-    if (input.competitorTerms !== undefined) updateData.competitor_terms = input.competitorTerms;
-    if (input.journalistIds !== undefined) updateData.journalist_ids = input.journalistIds;
+    if (input.brandTerms !== undefined)
+      updateData.brand_terms = input.brandTerms;
+    if (input.competitorTerms !== undefined)
+      updateData.competitor_terms = input.competitorTerms;
+    if (input.journalistIds !== undefined)
+      updateData.journalist_ids = input.journalistIds;
     if (input.outletIds !== undefined) updateData.outlet_ids = input.outletIds;
-    if (input.minSentiment !== undefined) updateData.min_sentiment = input.minSentiment;
-    if (input.maxSentiment !== undefined) updateData.max_sentiment = input.maxSentiment;
-    if (input.minMentions !== undefined) updateData.min_mentions = input.minMentions;
-    if (input.timeWindowMinutes !== undefined) updateData.time_window_minutes = input.timeWindowMinutes;
-    if (input.minRelevance !== undefined) updateData.min_relevance = input.minRelevance;
+    if (input.minSentiment !== undefined)
+      updateData.min_sentiment = input.minSentiment;
+    if (input.maxSentiment !== undefined)
+      updateData.max_sentiment = input.maxSentiment;
+    if (input.minMentions !== undefined)
+      updateData.min_mentions = input.minMentions;
+    if (input.timeWindowMinutes !== undefined)
+      updateData.time_window_minutes = input.timeWindowMinutes;
+    if (input.minRelevance !== undefined)
+      updateData.min_relevance = input.minRelevance;
 
     const { data, error } = await this.supabase
       .from('media_alert_rules')
@@ -264,7 +289,9 @@ export class MediaAlertService {
     }
 
     // Apply sorting
-    supabaseQuery = supabaseQuery.order(sortBy, { ascending: sortOrder === 'asc' });
+    supabaseQuery = supabaseQuery.order(sortBy, {
+      ascending: sortOrder === 'asc',
+    });
 
     // Apply pagination
     supabaseQuery = supabaseQuery.range(offset, offset + limit - 1);
@@ -275,7 +302,9 @@ export class MediaAlertService {
       throw new Error(`Failed to list alert events: ${error.message}`);
     }
 
-    const events = (data as MediaAlertEventRecord[]).map(transformMediaAlertEventRecord);
+    const events = (data as MediaAlertEventRecord[]).map(
+      transformMediaAlertEventRecord
+    );
 
     return {
       events,
@@ -306,7 +335,10 @@ export class MediaAlertService {
   /**
    * Mark alert events as read or unread
    */
-  async markEventsAsRead(orgId: string, input: MarkAlertEventsReadInput): Promise<number> {
+  async markEventsAsRead(
+    orgId: string,
+    input: MarkAlertEventsReadInput
+  ): Promise<number> {
     const { eventIds, isRead } = input;
 
     const { error, count } = await this.supabase
@@ -330,9 +362,13 @@ export class MediaAlertService {
    * Evaluate all active rules against a new mention
    * Called immediately after mention creation in S40
    */
-  async evaluateRulesForNewMention(mention: EarnedMention): Promise<MediaAlertEvent[]> {
+  async evaluateRulesForNewMention(
+    mention: EarnedMention
+  ): Promise<MediaAlertEvent[]> {
     if (this.debugMode) {
-      console.log(`[MediaAlertService] Evaluating rules for new mention: ${mention.id}`);
+      console.log(
+        `[MediaAlertService] Evaluating rules for new mention: ${mention.id}`
+      );
     }
 
     // Fetch all active rules for the organization
@@ -346,7 +382,9 @@ export class MediaAlertService {
       throw new Error(`Failed to fetch active rules: ${rulesError.message}`);
     }
 
-    const rules = (rulesData as MediaAlertRuleRecord[]).map(transformMediaAlertRuleRecord);
+    const rules = (rulesData as MediaAlertRuleRecord[]).map(
+      transformMediaAlertRuleRecord
+    );
     const triggeredEvents: MediaAlertEvent[] = [];
 
     // Evaluate each rule
@@ -453,7 +491,9 @@ export class MediaAlertService {
    */
   async evaluateRulesForWindow(orgId: string): Promise<MediaAlertEvent[]> {
     if (this.debugMode) {
-      console.log(`[MediaAlertService] Evaluating time-window rules for org: ${orgId}`);
+      console.log(
+        `[MediaAlertService] Evaluating time-window rules for org: ${orgId}`
+      );
     }
 
     // Fetch all active rules for the organization
@@ -468,7 +508,9 @@ export class MediaAlertService {
       throw new Error(`Failed to fetch active rules: ${rulesError.message}`);
     }
 
-    const rules = (rulesData as MediaAlertRuleRecord[]).map(transformMediaAlertRuleRecord);
+    const rules = (rulesData as MediaAlertRuleRecord[]).map(
+      transformMediaAlertRuleRecord
+    );
     const triggeredEvents: MediaAlertEvent[] = [];
 
     // Evaluate each rule
@@ -499,7 +541,9 @@ export class MediaAlertService {
    * Evaluate volume spike rule
    * Triggers when mention count exceeds threshold within time window
    */
-  private async evaluateVolumeSpikeRule(rule: MediaAlertRule): Promise<MediaAlertEvent | null> {
+  private async evaluateVolumeSpikeRule(
+    rule: MediaAlertRule
+  ): Promise<MediaAlertEvent | null> {
     if (!rule.minMentions || !rule.timeWindowMinutes) {
       return null; // Skip if required parameters are missing
     }
@@ -514,7 +558,9 @@ export class MediaAlertService {
     }
 
     // Calculate time window
-    const windowStart = new Date(Date.now() - rule.timeWindowMinutes * 60 * 1000);
+    const windowStart = new Date(
+      Date.now() - rule.timeWindowMinutes * 60 * 1000
+    );
 
     // Count mentions in time window
     const countQuery = this.supabase
@@ -532,7 +578,9 @@ export class MediaAlertService {
     const { count, error } = await countQuery;
 
     if (error) {
-      console.error(`Failed to count mentions for volume spike: ${error.message}`);
+      console.error(
+        `Failed to count mentions for volume spike: ${error.message}`
+      );
       return null;
     }
 
@@ -543,7 +591,8 @@ export class MediaAlertService {
     }
 
     // Create alert event
-    const severity: MediaAlertSeverity = mentionCount >= rule.minMentions * 2 ? 'critical' : 'warning';
+    const severity: MediaAlertSeverity =
+      mentionCount >= rule.minMentions * 2 ? 'critical' : 'warning';
     const summary = `Volume spike detected: ${mentionCount} mentions in ${rule.timeWindowMinutes} minutes (threshold: ${rule.minMentions})`;
 
     const event = await this.createAlertEvent({
@@ -573,7 +622,9 @@ export class MediaAlertService {
    * Evaluate sentiment shift rule
    * Triggers when negative sentiment percentage exceeds threshold
    */
-  private async evaluateSentimentShiftRule(rule: MediaAlertRule): Promise<MediaAlertEvent | null> {
+  private async evaluateSentimentShiftRule(
+    rule: MediaAlertRule
+  ): Promise<MediaAlertEvent | null> {
     if (!rule.timeWindowMinutes) {
       return null;
     }
@@ -588,7 +639,9 @@ export class MediaAlertService {
     }
 
     // Calculate time window
-    const windowStart = new Date(Date.now() - rule.timeWindowMinutes * 60 * 1000);
+    const windowStart = new Date(
+      Date.now() - rule.timeWindowMinutes * 60 * 1000
+    );
 
     // Fetch mentions in time window
     const { data: mentionsData, error: mentionsError } = await this.supabase
@@ -602,19 +655,23 @@ export class MediaAlertService {
     }
 
     // Calculate sentiment distribution
-    const negativeMentions = mentionsData.filter((m: any) => m.sentiment === 'negative').length;
+    const negativeMentions = mentionsData.filter(
+      (m: any) => m.sentiment === 'negative'
+    ).length;
     const totalMentions = mentionsData.length;
     const negativePercentage = (negativeMentions / totalMentions) * 100;
 
     // Trigger if negative sentiment exceeds 50% (or custom threshold)
-    const threshold = rule.maxSentiment !== null ? Math.abs(rule.maxSentiment) * 100 : 50;
+    const threshold =
+      rule.maxSentiment !== null ? Math.abs(rule.maxSentiment) * 100 : 50;
 
     if (negativePercentage < threshold) {
       return null;
     }
 
     // Create alert event
-    const severity: MediaAlertSeverity = negativePercentage >= 75 ? 'critical' : 'warning';
+    const severity: MediaAlertSeverity =
+      negativePercentage >= 75 ? 'critical' : 'warning';
     const summary = `Sentiment shift detected: ${negativePercentage.toFixed(1)}% negative mentions in ${rule.timeWindowMinutes} minutes`;
 
     const event = await this.createAlertEvent({
@@ -645,14 +702,17 @@ export class MediaAlertService {
    * Evaluate tier coverage rule
    * Triggers when high-priority outlets mention the brand
    */
-  private async evaluateTierCoverageRule(rule: MediaAlertRule): Promise<MediaAlertEvent | null> {
+  private async evaluateTierCoverageRule(
+    rule: MediaAlertRule
+  ): Promise<MediaAlertEvent | null> {
     if (!rule.outletIds || rule.outletIds.length === 0) {
       return null;
     }
 
     // Check if rule was recently triggered
     if (rule.lastTriggeredAt) {
-      const minutesSinceLastTrigger = (Date.now() - rule.lastTriggeredAt.getTime()) / 1000 / 60;
+      const minutesSinceLastTrigger =
+        (Date.now() - rule.lastTriggeredAt.getTime()) / 1000 / 60;
       if (minutesSinceLastTrigger < 60) {
         // Avoid triggering more than once per hour
         return null;
@@ -664,7 +724,10 @@ export class MediaAlertService {
       .from('media_monitoring_mentions')
       .select('id, article_id, entity, created_at')
       .eq('org_id', rule.orgId)
-      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) // Last 24 hours
+      .gte(
+        'created_at',
+        new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      ) // Last 24 hours
       .limit(1);
 
     if (mentionsError || !mentionsData || mentionsData.length === 0) {
@@ -744,7 +807,10 @@ export class MediaAlertService {
       .from('media_alert_events')
       .select('alert_type')
       .eq('org_id', orgId)
-      .gte('triggered_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()); // Last 7 days
+      .gte(
+        'triggered_at',
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+      ); // Last 7 days
 
     const typeCounts: Record<string, number> = {};
     (typeData || []).forEach((event: any) => {
@@ -752,7 +818,10 @@ export class MediaAlertService {
     });
 
     const topAlertTypes = Object.entries(typeCounts)
-      .map(([alertType, count]) => ({ alertType: alertType as MediaAlertType, count }))
+      .map(([alertType, count]) => ({
+        alertType: alertType as MediaAlertType,
+        count,
+      }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
@@ -774,7 +843,9 @@ export class MediaAlertService {
   /**
    * Fallback method for signals overview if RPC fails
    */
-  private async getSignalsOverviewFallback(orgId: string): Promise<MediaAlertSignalsOverview> {
+  private async getSignalsOverviewFallback(
+    orgId: string
+  ): Promise<MediaAlertSignalsOverview> {
     // Fetch basic stats manually
     const { count: totalRules } = await this.supabase
       .from('media_alert_rules')
@@ -875,7 +946,10 @@ export class MediaAlertService {
   /**
    * Determine alert severity based on rule and mention characteristics
    */
-  private determineSeverity(_rule: MediaAlertRule, mention: EarnedMention): MediaAlertSeverity {
+  private determineSeverity(
+    _rule: MediaAlertRule,
+    mention: EarnedMention
+  ): MediaAlertSeverity {
     // Critical if negative sentiment and high confidence
     if (mention.sentiment === 'negative' && mention.confidence >= 0.8) {
       return 'critical';
@@ -895,6 +969,8 @@ export class MediaAlertService {
 // SERVICE FACTORY
 // ========================================
 
-export function createMediaAlertService(config: MediaAlertServiceConfig): MediaAlertService {
+export function createMediaAlertService(
+  config: MediaAlertServiceConfig
+): MediaAlertService {
   return new MediaAlertService(config);
 }

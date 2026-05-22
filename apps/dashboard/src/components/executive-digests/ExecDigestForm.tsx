@@ -11,7 +11,10 @@ import {
   type ExecDigestDeliveryPeriod,
   type ExecDigestTimeWindow,
 } from '@pravado/types';
-import type { CreateExecDigestInput, UpdateExecDigestInput } from '@pravado/validators';
+import type {
+  CreateExecDigestInput,
+  UpdateExecDigestInput,
+} from '@pravado/validators';
 import {
   FileText,
   Calendar,
@@ -42,7 +45,6 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-
 
 const DAYS_OF_WEEK = [
   { value: 0, label: 'Sunday' },
@@ -75,7 +77,9 @@ interface ExecDigestFormProps {
   initialValues?: CreateExecDigestInput | UpdateExecDigestInput;
   isEditing?: boolean;
   isSubmitting?: boolean;
-  onSubmit: (values: CreateExecDigestInput | UpdateExecDigestInput) => Promise<void>;
+  onSubmit: (
+    values: CreateExecDigestInput | UpdateExecDigestInput
+  ) => Promise<void>;
   onCancel?: () => void;
   className?: string;
 }
@@ -153,9 +157,7 @@ export function ExecDigestForm({
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label>Active</Label>
-              <p className="text-xs text-gray-500">
-                Enable scheduled delivery
-              </p>
+              <p className="text-xs text-gray-500">Enable scheduled delivery</p>
             </div>
             <Switch
               checked={values.isActive}
@@ -179,17 +181,21 @@ export function ExecDigestForm({
               <Label>Delivery Period</Label>
               <Select
                 value={values.deliveryPeriod}
-                onValueChange={(v) => updateValue('deliveryPeriod', v as ExecDigestDeliveryPeriod)}
+                onValueChange={(v) =>
+                  updateValue('deliveryPeriod', v as ExecDigestDeliveryPeriod)
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(EXEC_DIGEST_DELIVERY_PERIOD_LABELS).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ))}
+                  {Object.entries(EXEC_DIGEST_DELIVERY_PERIOD_LABELS).map(
+                    ([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    )
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -197,17 +203,21 @@ export function ExecDigestForm({
               <Label>Data Time Window</Label>
               <Select
                 value={values.timeWindow}
-                onValueChange={(v) => updateValue('timeWindow', v as ExecDigestTimeWindow)}
+                onValueChange={(v) =>
+                  updateValue('timeWindow', v as ExecDigestTimeWindow)
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(EXEC_DIGEST_TIME_WINDOW_LABELS).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ))}
+                  {Object.entries(EXEC_DIGEST_TIME_WINDOW_LABELS).map(
+                    ([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    )
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -218,7 +228,9 @@ export function ExecDigestForm({
               <Label>Day of Week</Label>
               <Select
                 value={String(values.scheduleDayOfWeek)}
-                onValueChange={(v) => updateValue('scheduleDayOfWeek', parseInt(v))}
+                onValueChange={(v) =>
+                  updateValue('scheduleDayOfWeek', parseInt(v))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -312,28 +324,36 @@ export function ExecDigestForm({
               label="Reputation Summary"
               description="Brand reputation status"
               checked={values.includeReputationSummary}
-              onChange={(checked) => updateValue('includeReputationSummary', checked)}
+              onChange={(checked) =>
+                updateValue('includeReputationSummary', checked)
+              }
             />
             <SectionToggle
               icon={<Users className="h-4 w-4" />}
               label="Competitive Summary"
               description="Competitive intelligence"
               checked={values.includeCompetitiveSummary}
-              onChange={(checked) => updateValue('includeCompetitiveSummary', checked)}
+              onChange={(checked) =>
+                updateValue('includeCompetitiveSummary', checked)
+              }
             />
             <SectionToggle
               icon={<TrendingUp className="h-4 w-4" />}
               label="Media Performance"
               description="Media coverage metrics"
               checked={values.includeMediaPerformance}
-              onChange={(checked) => updateValue('includeMediaPerformance', checked)}
+              onChange={(checked) =>
+                updateValue('includeMediaPerformance', checked)
+              }
             />
             <SectionToggle
               icon={<AlertOctagon className="h-4 w-4" />}
               label="Crisis Status"
               description="Active crisis incidents"
               checked={values.includeCrisisStatus}
-              onChange={(checked) => updateValue('includeCrisisStatus', checked)}
+              onChange={(checked) =>
+                updateValue('includeCrisisStatus', checked)
+              }
             />
             <SectionToggle
               icon={<Shield className="h-4 w-4" />}
@@ -347,7 +367,9 @@ export function ExecDigestForm({
               label="Recommendations"
               description="AI-generated action items"
               checked={values.includeRecommendations}
-              onChange={(checked) => updateValue('includeRecommendations', checked)}
+              onChange={(checked) =>
+                updateValue('includeRecommendations', checked)
+              }
             />
           </div>
         </CardContent>
@@ -356,12 +378,21 @@ export function ExecDigestForm({
       {/* Actions */}
       <div className="flex items-center justify-end gap-3">
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
         )}
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Digest'}
+          {isSubmitting
+            ? 'Saving...'
+            : isEditing
+              ? 'Save Changes'
+              : 'Create Digest'}
         </Button>
       </div>
     </form>

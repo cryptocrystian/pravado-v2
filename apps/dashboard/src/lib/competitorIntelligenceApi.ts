@@ -90,7 +90,9 @@ function buildQueryString(params: Record<string, any>): string {
 // COMPETITOR MANAGEMENT API
 // ============================================================================
 
-export async function createCompetitor(data: CreateCompetitorRequest): Promise<Competitor> {
+export async function createCompetitor(
+  data: CreateCompetitorRequest
+): Promise<Competitor> {
   const result = await apiClient<Competitor>('/competitors', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -104,7 +106,9 @@ export async function getCompetitors(
   offset: number = 0
 ): Promise<GetCompetitorsResponse> {
   const query = buildQueryString({ ...filters, limit, offset });
-  const result = await apiClient<GetCompetitorsResponse>(`/competitors?${query}`);
+  const result = await apiClient<GetCompetitorsResponse>(
+    `/competitors?${query}`
+  );
   return result.data!;
 }
 
@@ -134,7 +138,9 @@ export async function deleteCompetitor(id: string): Promise<void> {
 // MENTION TRACKING API
 // ============================================================================
 
-export async function createMention(data: CreateCompetitorMentionRequest): Promise<CompetitorMention> {
+export async function createMention(
+  data: CreateCompetitorMentionRequest
+): Promise<CompetitorMention> {
   const result = await apiClient<CompetitorMention>('/mentions', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -148,7 +154,9 @@ export async function getMentions(
   offset: number = 0
 ): Promise<GetCompetitorMentionsResponse> {
   const query = buildQueryString({ ...filters, limit, offset });
-  const result = await apiClient<GetCompetitorMentionsResponse>(`/mentions?${query}`);
+  const result = await apiClient<GetCompetitorMentionsResponse>(
+    `/mentions?${query}`
+  );
   return result.data!;
 }
 
@@ -156,11 +164,17 @@ export async function getMentions(
 // SNAPSHOT & METRICS API
 // ============================================================================
 
-export async function createSnapshot(competitorId: string, period: string = 'daily'): Promise<CompetitorMetricsSnapshot> {
-  const result = await apiClient<CompetitorMetricsSnapshot>(`/competitors/${competitorId}/snapshots`, {
-    method: 'POST',
-    body: JSON.stringify({ period }),
-  });
+export async function createSnapshot(
+  competitorId: string,
+  period: string = 'daily'
+): Promise<CompetitorMetricsSnapshot> {
+  const result = await apiClient<CompetitorMetricsSnapshot>(
+    `/competitors/${competitorId}/snapshots`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ period }),
+    }
+  );
   return result.data!;
 }
 
@@ -183,7 +197,9 @@ export async function getCompetitorMetrics(
     startDate: startDate instanceof Date ? startDate.toISOString() : startDate,
     endDate: endDate instanceof Date ? endDate.toISOString() : endDate,
   });
-  const result = await apiClient<CompetitorMetricsSummary>(`/competitors/${competitorId}/metrics?${query}`);
+  const result = await apiClient<CompetitorMetricsSummary>(
+    `/competitors/${competitorId}/metrics?${query}`
+  );
   return result.data!;
 }
 
@@ -197,14 +213,18 @@ export async function getComparativeAnalytics(
   endDate: Date | string,
   brandId?: string
 ): Promise<ComparativeAnalyticsResponse> {
-  const result = await apiClient<ComparativeAnalyticsResponse>(`/competitors/${competitorId}/compare`, {
-    method: 'POST',
-    body: JSON.stringify({
-      startDate: startDate instanceof Date ? startDate.toISOString() : startDate,
-      endDate: endDate instanceof Date ? endDate.toISOString() : endDate,
-      brandId,
-    }),
-  });
+  const result = await apiClient<ComparativeAnalyticsResponse>(
+    `/competitors/${competitorId}/compare`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        startDate:
+          startDate instanceof Date ? startDate.toISOString() : startDate,
+        endDate: endDate instanceof Date ? endDate.toISOString() : endDate,
+        brandId,
+      }),
+    }
+  );
   return result.data!;
 }
 
@@ -217,10 +237,13 @@ export async function analyzeOverlap(
   overlapType: OverlapType,
   timeWindowDays: number = 30
 ): Promise<OverlapAnalysisResponse> {
-  const result = await apiClient<OverlapAnalysisResponse>(`/competitors/${competitorId}/overlap`, {
-    method: 'POST',
-    body: JSON.stringify({ overlapType, timeWindowDays }),
-  });
+  const result = await apiClient<OverlapAnalysisResponse>(
+    `/competitors/${competitorId}/overlap`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ overlapType, timeWindowDays }),
+    }
+  );
   return result.data!;
 }
 
@@ -238,7 +261,9 @@ export async function getOverlap(
 // INSIGHT GENERATION API
 // ============================================================================
 
-export async function createInsight(data: CreateCompetitorInsightRequest): Promise<CompetitorInsight> {
+export async function createInsight(
+  data: CreateCompetitorInsightRequest
+): Promise<CompetitorInsight> {
   const result = await apiClient<CompetitorInsight>('/insights', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -267,7 +292,9 @@ export async function updateInsight(
   return result.data!;
 }
 
-export async function generateInsight(data: GenerateInsightRequest): Promise<CompetitorInsight> {
+export async function generateInsight(
+  data: GenerateInsightRequest
+): Promise<CompetitorInsight> {
   const result = await apiClient<CompetitorInsight>('/insights/generate', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -303,10 +330,10 @@ export async function evaluateCompetitor(
  */
 export function getTierColor(tier: CompetitorTier): string {
   const colors: Record<CompetitorTier, string> = {
-    tier_1: 'text-red-600',    // Direct competitors - highest priority
+    tier_1: 'text-red-600', // Direct competitors - highest priority
     tier_2: 'text-orange-600', // Secondary competitors
     tier_3: 'text-yellow-600', // Emerging competitors
-    tier_4: 'text-gray-600',   // Distant competitors
+    tier_4: 'text-gray-600', // Distant competitors
   };
   return colors[tier] || 'text-gray-600';
 }
@@ -394,7 +421,9 @@ export function formatAdvantageScore(score: number | null | undefined): string {
 /**
  * Get color for advantage score
  */
-export function getAdvantageScoreColor(score: number | null | undefined): string {
+export function getAdvantageScoreColor(
+  score: number | null | undefined
+): string {
   if (score === null || score === undefined) return 'text-gray-600';
   if (score > 20) return 'text-green-600';
   if (score > 0) return 'text-green-500';
@@ -405,7 +434,9 @@ export function getAdvantageScoreColor(score: number | null | undefined): string
 /**
  * Format overlap percentage
  */
-export function formatOverlapPercentage(score: number | null | undefined): string {
+export function formatOverlapPercentage(
+  score: number | null | undefined
+): string {
   if (score === null || score === undefined) return 'N/A';
   return `${score.toFixed(1)}%`;
 }
@@ -415,10 +446,10 @@ export function formatOverlapPercentage(score: number | null | undefined): strin
  */
 export function getOverlapScoreColor(score: number | null | undefined): string {
   if (score === null || score === undefined) return 'text-gray-600';
-  if (score > 60) return 'text-red-600';    // High overlap = bad (not differentiated)
+  if (score > 60) return 'text-red-600'; // High overlap = bad (not differentiated)
   if (score > 40) return 'text-orange-600';
   if (score > 20) return 'text-yellow-600';
-  return 'text-green-600';                   // Low overlap = good (differentiated)
+  return 'text-green-600'; // Low overlap = good (differentiated)
 }
 
 /**
@@ -444,7 +475,9 @@ export function formatSentiment(sentiment: number | null | undefined): string {
 /**
  * Get color for sentiment
  */
-export function getSentimentColor(sentiment: number | null | undefined): string {
+export function getSentimentColor(
+  sentiment: number | null | undefined
+): string {
   if (sentiment === null || sentiment === undefined) return 'text-gray-600';
   if (sentiment > 0.3) return 'text-green-600';
   if (sentiment < -0.3) return 'text-red-600';
@@ -477,7 +510,10 @@ export function getEVIScoreColor(score: number | null | undefined): string {
  * Format date range
  */
 export function formatDateRange(start: Date, end: Date): string {
-  const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+  };
   return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
 }
 

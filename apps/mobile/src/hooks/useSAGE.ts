@@ -33,7 +33,9 @@ export function useSAGE() {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiFetch<ActionStream>('/command-center/action-stream').catch(() => null);
+      const data = await apiFetch<ActionStream>(
+        '/command-center/action-stream'
+      ).catch(() => null);
       if (data) {
         setProposals(data.items || []);
         setDailyBrief(data.daily_brief || null);
@@ -45,27 +47,50 @@ export function useSAGE() {
     }
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
-
-  const pendingCount = proposals.filter(p => p.status === 'active' || p.status === 'ready').length;
-
-  const approve = useCallback(async (id: string) => {
-    setProposals(prev => prev.filter(p => p.id !== id));
-    try {
-      await apiFetch(`/command-center/proposals/${id}/execute`, { method: 'POST' });
-    } catch {
-      refresh();
-    }
+  useEffect(() => {
+    refresh();
   }, [refresh]);
 
-  const dismiss = useCallback(async (id: string) => {
-    setProposals(prev => prev.filter(p => p.id !== id));
-    try {
-      await apiFetch(`/command-center/proposals/${id}/dismiss`, { method: 'POST' });
-    } catch {
-      refresh();
-    }
-  }, [refresh]);
+  const pendingCount = proposals.filter(
+    (p) => p.status === 'active' || p.status === 'ready'
+  ).length;
 
-  return { proposals, pendingCount, dailyBrief, loading, error, approve, dismiss, refresh };
+  const approve = useCallback(
+    async (id: string) => {
+      setProposals((prev) => prev.filter((p) => p.id !== id));
+      try {
+        await apiFetch(`/command-center/proposals/${id}/execute`, {
+          method: 'POST',
+        });
+      } catch {
+        refresh();
+      }
+    },
+    [refresh]
+  );
+
+  const dismiss = useCallback(
+    async (id: string) => {
+      setProposals((prev) => prev.filter((p) => p.id !== id));
+      try {
+        await apiFetch(`/command-center/proposals/${id}/dismiss`, {
+          method: 'POST',
+        });
+      } catch {
+        refresh();
+      }
+    },
+    [refresh]
+  );
+
+  return {
+    proposals,
+    pendingCount,
+    dailyBrief,
+    loading,
+    error,
+    approve,
+    dismiss,
+    refresh,
+  };
 }

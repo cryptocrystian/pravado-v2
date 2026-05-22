@@ -16,13 +16,20 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const data = await prBackendFetch(`/api/v1/pr/pitches/contacts/${id}/queue`, {
-      method: 'POST',
-    });
+    const data = await prBackendFetch(
+      `/api/v1/pr/pitches/contacts/${id}/queue`,
+      {
+        method: 'POST',
+      }
+    );
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/pitches/contacts/[id]/queue] POST Error:', { status, message, code });
+    console.error('[API /api/pr/pitches/contacts/[id]/queue] POST Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

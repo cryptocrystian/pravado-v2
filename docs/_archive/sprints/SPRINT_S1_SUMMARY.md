@@ -5,6 +5,7 @@
 Sprint S1 has been successfully completed with all core features implemented:
 
 ### ✅ Database & Migrations
+
 - Created 5 SQL migration files in `apps/api/supabase/migrations/`
   - `01_create_orgs.sql` - Organizations table with RLS policies
   - `02_create_users.sql` - Users table with auth trigger
@@ -13,6 +14,7 @@ Sprint S1 has been successfully completed with all core features implemented:
   - `05_create_roles_and_permissions.sql` - Complete RLS policy setup
 
 ### ✅ Backend API (Fastify)
+
 - **Auth Plugin** (`apps/api/src/plugins/auth.ts`): Automatic user context attachment via Supabase token validation
 - **Middleware Stack**:
   - `requireUser.ts`: Ensures authenticated user
@@ -26,10 +28,12 @@ Sprint S1 has been successfully completed with all core features implemented:
   - `POST /api/v1/orgs/:id/join` - Accept invite and join org
 
 ### ✅ Shared Packages
+
 - **@pravado/types**: Complete auth & org type definitions with ApiResponse wrapper
 - **@pravado/validators**: Zod schemas for all request validation + environment validation
 
 ### ✅ Dashboard Frontend (Next.js 14)
+
 - **Pages**:
   - `/login` - Email/password sign in/sign up with Supabase Auth
   - `/callback` - Auth callback handler with org-based routing
@@ -41,15 +45,18 @@ Sprint S1 has been successfully completed with all core features implemented:
   - `middleware.ts` - Auth flow routing protection
 
 ### ✅ Documentation
+
 - `docs/auth_model.md` - Complete authentication architecture documentation
 - `docs/org_model.md` - Organization model, RLS policies, and best practices
 - `MIGRATION_INSTRUCTIONS.md` - Step-by-step database migration guide
 
 ### ✅ Testing
+
 - API tests for auth and orgs endpoints (`apps/api/tests/`)
 - Playwright E2E smoke tests for dashboard (`apps/dashboard/tests/`)
 
 ### ✅ TypeScript & Quality
+
 - All packages pass `pnpm run typecheck` ✓
 - Fixed import ordering and linting issues
 - API and shared libraries build successfully
@@ -57,27 +64,32 @@ Sprint S1 has been successfully completed with all core features implemented:
 ## Known Issues & Manual Steps Required
 
 ### 1. Database Migrations (Manual Step Required)
+
 **Status**: Migration files created, need to be applied manually
 
 **Reason**: Database password required for `supabase db push`
 
 **Instructions**: See `MIGRATION_INSTRUCTIONS.md` for three options:
+
 - Option 1: Supabase CLI (recommended)
 - Option 2: Supabase Dashboard SQL Editor
 - Option 3: Direct psql connection
 
 ### 2. Dashboard Build (Development Mode Works)
+
 **Status**: Dashboard works in dev mode, production build has SSR issues
 
 **Issue**: Next.js App Router trying to statically generate client components with useContext during build
 
 **Workaround for Development**:
+
 ```bash
 cd apps/dashboard
 pnpm run dev  # Works perfectly
 ```
 
 **Production Build Fix** (Future Sprint):
+
 - Configure Next.js for proper SSR/CSR boundaries
 - Or use `output: 'standalone'` for server-side rendering
 - Or refactor to use React Server Components pattern
@@ -85,21 +97,25 @@ pnpm run dev  # Works perfectly
 ## Testing the Implementation
 
 ### 1. Run Migrations (First Time Setup)
+
 Follow instructions in `MIGRATION_INSTRUCTIONS.md`
 
 ### 2. Start API Server
+
 ```bash
 cd apps/api
 pnpm run dev  # Runs on http://localhost:3001
 ```
 
 ### 3. Start Dashboard
+
 ```bash
 cd apps/dashboard
 pnpm run dev  # Runs on http://localhost:3000
 ```
 
 ### 4. Test the Flow
+
 1. Navigate to `http://localhost:3000/login`
 2. Sign up with email/password
 3. Get redirected to `/onboarding`
@@ -109,18 +125,21 @@ pnpm run dev  # Runs on http://localhost:3000
 ## Architecture Highlights
 
 ### Security
+
 - HttpOnly cookies prevent XSS attacks
 - Row-Level Security (RLS) enforces data isolation
 - Role hierarchy prevents privilege escalation
 - Supabase handles password hashing and token generation
 
 ### Multi-Tenancy
+
 - Organizations are first-class entities
 - Users can belong to multiple orgs with different roles
 - All org-scoped data uses RLS policies
 - Middleware enforces org membership and roles
 
 ### Developer Experience
+
 - End-to-end TypeScript type safety
 - Zod validation at all API boundaries
 - Comprehensive error handling with typed responses
@@ -137,6 +156,7 @@ pnpm run dev  # Runs on http://localhost:3000
 ## Sprint S1 Grade: ✅ Complete
 
 All core functionality delivered:
+
 - ✅ Database schema with RLS
 - ✅ Complete auth flow
 - ✅ Organization management

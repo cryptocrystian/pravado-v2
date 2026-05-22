@@ -114,13 +114,19 @@ function sanitizePastedHTML(html: string): string {
   });
 
   // Remove all inline styles
-  container.querySelectorAll('[style]').forEach((el) => el.removeAttribute('style'));
+  container
+    .querySelectorAll('[style]')
+    .forEach((el) => el.removeAttribute('style'));
 
   // Remove all class attributes
-  container.querySelectorAll('[class]').forEach((el) => el.removeAttribute('class'));
+  container
+    .querySelectorAll('[class]')
+    .forEach((el) => el.removeAttribute('class'));
 
   // Remove MS Office and Google Sheets elements
-  container.querySelectorAll('o\\:p, google-sheets-html-origin').forEach((el) => el.remove());
+  container
+    .querySelectorAll('o\\:p, google-sheets-html-origin')
+    .forEach((el) => el.remove());
 
   // Unwrap empty/styling-only spans (preserve text)
   container.querySelectorAll('span').forEach((el) => {
@@ -166,21 +172,24 @@ const SLASH_COMMANDS: SlashCommandItem[] = [
     description: 'Top-level section heading',
     icon: 'H1',
     category: 'Structure',
-    command: (editor) => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+    command: (editor) =>
+      editor.chain().focus().toggleHeading({ level: 1 }).run(),
   },
   {
     title: 'Heading 2',
     description: 'Sub-section heading',
     icon: 'H2',
     category: 'Structure',
-    command: (editor) => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+    command: (editor) =>
+      editor.chain().focus().toggleHeading({ level: 2 }).run(),
   },
   {
     title: 'Heading 3',
     description: 'Minor section heading',
     icon: 'H3',
     category: 'Structure',
-    command: (editor) => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+    command: (editor) =>
+      editor.chain().focus().toggleHeading({ level: 3 }).run(),
   },
   // Lists
   {
@@ -249,7 +258,13 @@ interface SlashMenuProps {
   filter: string;
 }
 
-function SlashMenu({ editor, isOpen, onClose, position, filter }: SlashMenuProps) {
+function SlashMenu({
+  editor,
+  isOpen,
+  onClose,
+  position,
+  filter,
+}: SlashMenuProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -350,15 +365,21 @@ function SlashMenu({ editor, isOpen, onClose, position, filter }: SlashMenuProps
                 onClick={() => selectItem(item)}
                 onMouseEnter={() => setSelectedIndex(idx)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
-                  idx === selectedIndex ? 'bg-brand-iris/10' : 'hover:bg-white/5'
+                  idx === selectedIndex
+                    ? 'bg-brand-iris/10'
+                    : 'hover:bg-white/5'
                 }`}
               >
                 <span className="w-10 h-10 flex items-center justify-center text-xs font-mono font-bold text-white/50 bg-slate-3 rounded-lg shrink-0">
                   {item.icon}
                 </span>
                 <div className="min-w-0">
-                  <div className="text-sm font-medium text-white/95">{item.title}</div>
-                  <div className="text-xs text-white/40 leading-snug">{item.description}</div>
+                  <div className="text-sm font-medium text-white/95">
+                    {item.title}
+                  </div>
+                  <div className="text-xs text-white/40 leading-snug">
+                    {item.description}
+                  </div>
                 </div>
               </button>
             );
@@ -454,8 +475,18 @@ function BubbleToolbar({ editor }: BubbleToolbarProps) {
           }}
           className="p-1 text-white/40 hover:text-white transition-colors"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -470,7 +501,9 @@ function BubbleToolbar({ editor }: BubbleToolbarProps) {
         className={btnClass(editor.isActive('bold'))}
         title="Bold (Cmd+B)"
       >
-        <span className="text-sm font-bold w-5 h-5 flex items-center justify-center">B</span>
+        <span className="text-sm font-bold w-5 h-5 flex items-center justify-center">
+          B
+        </span>
       </button>
       <button
         type="button"
@@ -478,7 +511,9 @@ function BubbleToolbar({ editor }: BubbleToolbarProps) {
         className={btnClass(editor.isActive('italic'))}
         title="Italic (Cmd+I)"
       >
-        <span className="text-sm italic w-5 h-5 flex items-center justify-center">I</span>
+        <span className="text-sm italic w-5 h-5 flex items-center justify-center">
+          I
+        </span>
       </button>
       <button
         type="button"
@@ -486,7 +521,9 @@ function BubbleToolbar({ editor }: BubbleToolbarProps) {
         className={btnClass(editor.isActive('underline'))}
         title="Underline (Cmd+U)"
       >
-        <span className="text-sm underline w-5 h-5 flex items-center justify-center">U</span>
+        <span className="text-sm underline w-5 h-5 flex items-center justify-center">
+          U
+        </span>
       </button>
       <button
         type="button"
@@ -494,7 +531,9 @@ function BubbleToolbar({ editor }: BubbleToolbarProps) {
         className={btnClass(editor.isActive('strike'))}
         title="Strikethrough"
       >
-        <span className="text-sm line-through w-5 h-5 flex items-center justify-center">S</span>
+        <span className="text-sm line-through w-5 h-5 flex items-center justify-center">
+          S
+        </span>
       </button>
       <button
         type="button"
@@ -502,7 +541,9 @@ function BubbleToolbar({ editor }: BubbleToolbarProps) {
         className={btnClass(editor.isActive('code'))}
         title="Inline code"
       >
-        <span className="text-xs font-mono w-5 h-5 flex items-center justify-center">{'{}'}</span>
+        <span className="text-xs font-mono w-5 h-5 flex items-center justify-center">
+          {'{}'}
+        </span>
       </button>
 
       <span className="w-px h-5 bg-white/10 mx-1" />
@@ -513,8 +554,18 @@ function BubbleToolbar({ editor }: BubbleToolbarProps) {
         className={btnClass(editor.isActive('link'))}
         title="Link (Cmd+K)"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+          />
         </svg>
       </button>
     </div>
@@ -605,7 +656,8 @@ export const TiptapEditor = forwardRef<TiptapEditorHandle, TiptapEditorProps>(
         Link.configure({
           openOnClick: false,
           HTMLAttributes: {
-            class: 'text-brand-iris underline decoration-brand-iris/40 hover:decoration-brand-iris cursor-pointer',
+            class:
+              'text-brand-iris underline decoration-brand-iris/40 hover:decoration-brand-iris cursor-pointer',
           },
         }),
         Underline,
@@ -624,7 +676,11 @@ export const TiptapEditor = forwardRef<TiptapEditorHandle, TiptapEditorProps>(
             return false;
           }
           // Cmd/Ctrl+K for link editing (Editor v2)
-          if (EDITOR_V2 && (event.metaKey || event.ctrlKey) && event.key === 'k') {
+          if (
+            EDITOR_V2 &&
+            (event.metaKey || event.ctrlKey) &&
+            event.key === 'k'
+          ) {
             event.preventDefault();
             setLinkEditRequested(true);
             return true;
@@ -645,7 +701,10 @@ export const TiptapEditor = forwardRef<TiptapEditorHandle, TiptapEditorProps>(
 
         // Live word count
         const text = ed.getText();
-        const wc = text.trim().split(/\s+/).filter((w) => w.length > 0).length;
+        const wc = text
+          .trim()
+          .split(/\s+/)
+          .filter((w) => w.length > 0).length;
         setWordCount(wc);
         onWordCountChange?.(wc);
 
@@ -708,9 +767,10 @@ export const TiptapEditor = forwardRef<TiptapEditorHandle, TiptapEditorProps>(
       scrollToPos: (pos: number) => {
         if (!editor) return;
         const domAtPos = editor.view.domAtPos(pos);
-        const node = domAtPos.node instanceof HTMLElement
-          ? domAtPos.node
-          : domAtPos.node.parentElement;
+        const node =
+          domAtPos.node instanceof HTMLElement
+            ? domAtPos.node
+            : domAtPos.node.parentElement;
         node?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       },
     }));
@@ -718,7 +778,8 @@ export const TiptapEditor = forwardRef<TiptapEditorHandle, TiptapEditorProps>(
     // Close slash menu on click outside
     useEffect(() => {
       if (!slashMenu.isOpen) return;
-      const handler = () => setSlashMenu((prev) => ({ ...prev, isOpen: false }));
+      const handler = () =>
+        setSlashMenu((prev) => ({ ...prev, isOpen: false }));
       document.addEventListener('click', handler);
       return () => document.removeEventListener('click', handler);
     }, [slashMenu.isOpen]);
@@ -727,7 +788,8 @@ export const TiptapEditor = forwardRef<TiptapEditorHandle, TiptapEditorProps>(
     useEffect(() => {
       return () => {
         if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
-        if (savedIndicatorTimerRef.current) clearTimeout(savedIndicatorTimerRef.current);
+        if (savedIndicatorTimerRef.current)
+          clearTimeout(savedIndicatorTimerRef.current);
       };
     }, []);
 
@@ -771,12 +833,24 @@ export const TiptapEditor = forwardRef<TiptapEditorHandle, TiptapEditorProps>(
             {!hasInteracted && (
               <div className="flex items-center gap-4 mb-3 px-1 py-2 animate-in fade-in duration-500">
                 <span className="flex items-center gap-1.5 text-xs text-white/20">
-                  <kbd className="px-1.5 py-0.5 bg-white/[0.04] border border-white/[0.06] rounded text-xs font-mono text-white/30">/</kbd>
+                  <kbd className="px-1.5 py-0.5 bg-white/[0.04] border border-white/[0.06] rounded text-xs font-mono text-white/30">
+                    /
+                  </kbd>
                   <span>for blocks</span>
                 </span>
                 <span className="flex items-center gap-1.5 text-xs text-white/20">
-                  <svg className="w-3 h-3 text-white/15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                  <svg
+                    className="w-3 h-3 text-white/15"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                    />
                   </svg>
                   <span>Select text to format</span>
                 </span>
@@ -809,13 +883,19 @@ export const TiptapEditor = forwardRef<TiptapEditorHandle, TiptapEditorProps>(
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden sm:flex items-center gap-1.5 text-white/15">
-              <kbd className="px-1 py-0.5 bg-white/5 rounded text-xs font-mono">⌘B</kbd>
+              <kbd className="px-1 py-0.5 bg-white/5 rounded text-xs font-mono">
+                ⌘B
+              </kbd>
               <span>bold</span>
               <span className="mx-0.5">·</span>
-              <kbd className="px-1 py-0.5 bg-white/5 rounded text-xs font-mono">⌘K</kbd>
+              <kbd className="px-1 py-0.5 bg-white/5 rounded text-xs font-mono">
+                ⌘K
+              </kbd>
               <span>link</span>
               <span className="mx-0.5">·</span>
-              <kbd className="px-1 py-0.5 bg-white/5 rounded text-xs font-mono">/</kbd>
+              <kbd className="px-1 py-0.5 bg-white/5 rounded text-xs font-mono">
+                /
+              </kbd>
               <span>blocks</span>
             </span>
           </div>
@@ -835,4 +915,3 @@ export const TiptapEditor = forwardRef<TiptapEditorHandle, TiptapEditorProps>(
     );
   }
 );
-

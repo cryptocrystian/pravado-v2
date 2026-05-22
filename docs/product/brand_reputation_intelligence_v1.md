@@ -14,13 +14,13 @@ Brand Reputation Intelligence provides real-time brand reputation scoring and an
 
 A composite score calculated from five weighted components:
 
-| Component | Default Weight | Description |
-|-----------|----------------|-------------|
-| Sentiment | 25% | Overall sentiment of media coverage |
-| Coverage | 25% | Volume and quality of earned media |
-| Crisis Impact | 20% | Impact of active crises on reputation |
-| Competitive Position | 15% | Position relative to tracked competitors |
-| Engagement | 15% | Journalist response rates and media engagement |
+| Component            | Default Weight | Description                                    |
+| -------------------- | -------------- | ---------------------------------------------- |
+| Sentiment            | 25%            | Overall sentiment of media coverage            |
+| Coverage             | 25%            | Volume and quality of earned media             |
+| Crisis Impact        | 20%            | Impact of active crises on reputation          |
+| Competitive Position | 15%            | Position relative to tracked competitors       |
+| Engagement           | 15%            | Journalist response rates and media engagement |
 
 ### 2. Executive Radar Dashboard
 
@@ -124,38 +124,38 @@ brand_reputation_alerts
 
 ### API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/reputation/dashboard` | Get comprehensive dashboard |
-| GET | `/api/v1/reputation/trend` | Get reputation trend data |
-| POST | `/api/v1/reputation/recalculate` | Trigger score recalculation |
-| GET | `/api/v1/reputation/config` | Get configuration |
-| PATCH | `/api/v1/reputation/config` | Update configuration |
-| GET | `/api/v1/reputation/events` | List reputation events |
-| POST | `/api/v1/reputation/events` | Create manual event |
-| GET | `/api/v1/reputation/alerts` | List alerts |
-| POST | `/api/v1/reputation/alerts/:id/acknowledge` | Acknowledge alert |
-| POST | `/api/v1/reputation/alerts/:id/resolve` | Resolve alert |
-| GET | `/api/v1/reputation/health` | System health check |
-| GET | `/api/v1/reputation/competitors` | Competitive comparison |
+| Method | Endpoint                                    | Description                 |
+| ------ | ------------------------------------------- | --------------------------- |
+| GET    | `/api/v1/reputation/dashboard`              | Get comprehensive dashboard |
+| GET    | `/api/v1/reputation/trend`                  | Get reputation trend data   |
+| POST   | `/api/v1/reputation/recalculate`            | Trigger score recalculation |
+| GET    | `/api/v1/reputation/config`                 | Get configuration           |
+| PATCH  | `/api/v1/reputation/config`                 | Update configuration        |
+| GET    | `/api/v1/reputation/events`                 | List reputation events      |
+| POST   | `/api/v1/reputation/events`                 | Create manual event         |
+| GET    | `/api/v1/reputation/alerts`                 | List alerts                 |
+| POST   | `/api/v1/reputation/alerts/:id/acknowledge` | Acknowledge alert           |
+| POST   | `/api/v1/reputation/alerts/:id/resolve`     | Resolve alert               |
+| GET    | `/api/v1/reputation/health`                 | System health check         |
+| GET    | `/api/v1/reputation/competitors`            | Competitive comparison      |
 
 ### Frontend Components
 
-| Component | Description |
-|-----------|-------------|
-| ReputationScoreCard | Displays overall score with trend |
-| ComponentScorePanel | Component breakdown visualization |
-| ReputationDriverList | Positive/negative driver lists |
-| CompetitorComparisonTable | Competitive position analysis |
-| ReputationAlertsList | Active alerts with actions |
-| ExecutiveSummaryPanel | Executive narrative panel |
-| ReputationTrendChart | Trend visualization |
-| ReputationEventsList | Recent events timeline |
+| Component                 | Description                       |
+| ------------------------- | --------------------------------- |
+| ReputationScoreCard       | Displays overall score with trend |
+| ComponentScorePanel       | Component breakdown visualization |
+| ReputationDriverList      | Positive/negative driver lists    |
+| CompetitorComparisonTable | Competitive position analysis     |
+| ReputationAlertsList      | Active alerts with actions        |
+| ExecutiveSummaryPanel     | Executive narrative panel         |
+| ReputationTrendChart      | Trend visualization               |
+| ReputationEventsList      | Recent events timeline            |
 
 ## Feature Flag
 
 ```typescript
-ENABLE_BRAND_REPUTATION: true
+ENABLE_BRAND_REPUTATION: true;
 ```
 
 ## Time Windows
@@ -191,14 +191,14 @@ overall_score =
 
 ### Inbound (Data Sources)
 
-| System | Data Provided |
-|--------|---------------|
-| Media Monitoring (S40) | Mentions, sentiment |
-| Media Performance (S52) | EVI scores, visibility |
-| Crisis Engine (S55) | Active crises, severity |
-| Competitive Intelligence (S53) | Competitor scores |
-| PR Outreach (S44) | Response rates |
-| Journalist Timeline (S49) | Engagement metrics |
+| System                         | Data Provided           |
+| ------------------------------ | ----------------------- |
+| Media Monitoring (S40)         | Mentions, sentiment     |
+| Media Performance (S52)        | EVI scores, visibility  |
+| Crisis Engine (S55)            | Active crises, severity |
+| Competitive Intelligence (S53) | Competitor scores       |
+| PR Outreach (S44)              | Response rates          |
+| Journalist Timeline (S49)      | Engagement metrics      |
 
 ### Outbound (Consumers)
 

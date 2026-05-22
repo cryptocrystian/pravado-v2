@@ -28,7 +28,7 @@ export async function GET() {
     const allCookies = cookieStore.getAll();
 
     // Check for Supabase cookies
-    const sbCookies = allCookies.filter(c => c.name.includes('sb-'));
+    const sbCookies = allCookies.filter((c) => c.name.includes('sb-'));
     const hasCookie = sbCookies.length > 0;
 
     // Create Supabase client
@@ -44,7 +44,10 @@ export async function GET() {
     });
 
     // Get session
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
 
     const hasSession = !!session;
     const tokenPresent = !!session?.access_token;
@@ -56,7 +59,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       hasCookie,
       cookieCount: allCookies.length,
-      sbCookieNames: sbCookies.map(c => c.name),
+      sbCookieNames: sbCookies.map((c) => c.name),
       hasSession,
       tokenPresent,
       tokenPrefix,
@@ -68,10 +71,13 @@ export async function GET() {
       },
     });
   } catch (err) {
-    return NextResponse.json({
-      debug: true,
-      error: err instanceof Error ? err.message : 'Unknown error',
-      timestamp: new Date().toISOString(),
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        debug: true,
+        error: err instanceof Error ? err.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
   }
 }

@@ -22,7 +22,9 @@ export interface CitationMonitorPayload {
  * Process a citation monitoring job.
  * Called by BullMQ worker when a job arrives on the 'citemind:monitor' queue.
  */
-export async function processCitationMonitor(payload: CitationMonitorPayload): Promise<void> {
+export async function processCitationMonitor(
+  payload: CitationMonitorPayload
+): Promise<void> {
   const { orgId } = payload;
   logger.info(`Running citation monitor for org ${orgId}`);
 
@@ -32,12 +34,14 @@ export async function processCitationMonitor(payload: CitationMonitorPayload): P
     const result = await monitorCitations(supabase, orgId);
     logger.info(
       `Citation monitor complete for org ${orgId}: ` +
-      `queries=${result.total_queries}, mentions=${result.total_mentions}, ` +
-      `errors=${result.errors.length}`
+        `queries=${result.total_queries}, mentions=${result.total_mentions}, ` +
+        `errors=${result.errors.length}`
     );
 
     if (result.errors.length > 0) {
-      logger.warn(`Citation monitor had ${result.errors.length} errors: ${result.errors.slice(0, 3).join('; ')}`);
+      logger.warn(
+        `Citation monitor had ${result.errors.length} errors: ${result.errors.slice(0, 3).join('; ')}`
+      );
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

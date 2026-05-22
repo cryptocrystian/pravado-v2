@@ -22,6 +22,7 @@ Sprint S33 successfully delivers the backend foundation for self-service plan ma
 #### 1. Service Layer Enhancements
 
 **BillingService** (`apps/api/src/services/billingService.ts`):
+
 - ✅ `switchOrgPlan()` - Plan switching with upgrade/downgrade validation (~87 lines)
 - ✅ `getPlanRecommendations()` - AI-driven upsell recommendations (~54 lines)
 - ✅ `buildOrgBillingSummaryEnriched()` - S33 enriched summary with renewal dates (~31 lines)
@@ -29,6 +30,7 @@ Sprint S33 successfully delivers the backend foundation for self-service plan ma
 - **Total:** ~329 lines of production code added
 
 **StripeService** (`apps/api/src/services/stripeService.ts`):
+
 - ✅ `switchSubscriptionPlan()` - Stripe subscription plan updates with proration (~108 lines)
 - ✅ `retrieveSubscriptionDetails()` - Subscription renewal info retrieval (~47 lines)
 - **Total:** ~177 lines of production code added
@@ -36,6 +38,7 @@ Sprint S33 successfully delivers the backend foundation for self-service plan ma
 #### 2. API Endpoints
 
 **Billing Routes** (`apps/api/src/routes/billing/index.ts`):
+
 - ✅ `GET /api/v1/billing/plans/:slug` - Get plan details by slug
 - ✅ `POST /api/v1/billing/org/switch-plan` - Switch organization plan
 - ✅ `POST /api/v1/billing/org/payment-method` - Generate Stripe Customer Portal link
@@ -45,12 +48,14 @@ Sprint S33 successfully delivers the backend foundation for self-service plan ma
 #### 3. Type Definitions
 
 **Types Package** (`packages/types/src/billing.ts`):
+
 - ✅ `OrgBillingSummaryEnriched` interface - Extends S32 types with:
   - `daysUntilRenewal: number | null`
   - `projectedOverageCost: number | null`
   - `recommendedPlanSlug: string | null`
 
 **Validators Package** (`packages/validators/src/billing.ts`):
+
 - ✅ `switchPlanRequestSchema` - Zod schema for plan switching
 - ✅ `getPlanBySlugParamsSchema` - Zod schema for plan lookup
 - ✅ `cancelPlanRequestSchema` - Zod schema for cancellation
@@ -58,6 +63,7 @@ Sprint S33 successfully delivers the backend foundation for self-service plan ma
 #### 4. Testing
 
 **Test Suite** (`apps/api/tests/billingPlanManagement.test.ts`):
+
 - ✅ Comprehensive S33 test file created (~700+ lines)
 - ✅ Tests for `switchOrgPlan()` (4 test cases)
 - ✅ Tests for `getPlanRecommendations()` (4 test cases)
@@ -67,6 +73,7 @@ Sprint S33 successfully delivers the backend foundation for self-service plan ma
 #### 5. Documentation
 
 **Product Documentation** (`docs/product/billing_plan_management_v1.md`):
+
 - ✅ Complete product documentation (~600+ lines)
 - ✅ Architecture overview
 - ✅ API endpoint specifications
@@ -79,8 +86,8 @@ Sprint S33 successfully delivers the backend foundation for self-service plan ma
 
 - ✅ **Lint:** Passed (0 errors, 239 warnings - all pre-existing)
 - ✅ **Typecheck:** Passed (11/11 tasks successful)
-- ⚠️  **Tests:** S33 tests created (pre-existing S28-S32 test failures remain)
-- ⏸️  **Build:** Not run (blocked by pre-existing test failures)
+- ⚠️ **Tests:** S33 tests created (pre-existing S28-S32 test failures remain)
+- ⏸️ **Build:** Not run (blocked by pre-existing test failures)
 
 ---
 
@@ -103,6 +110,7 @@ The following deliverables were specified in the original Sprint S33 spec but ar
 ### Plan Switching Logic
 
 **Upgrade Flow:**
+
 1. Validate target plan exists and is active
 2. Determine if upgrade (higher monthly price)
 3. Update Stripe subscription (if paid plan)
@@ -110,6 +118,7 @@ The following deliverables were specified in the original Sprint S33 spec but ar
 5. Generate `plan_upgraded` alert
 
 **Downgrade Flow (with Guardrails):**
+
 1. Retrieve current usage summary
 2. Check if current usage exceeds target plan limits:
    - Tokens: `tokensUsed > targetPlan.includedTokensMonthly`
@@ -122,6 +131,7 @@ The following deliverables were specified in the original Sprint S33 spec but ar
 ### Recommendation Algorithm
 
 **Three-Tier Logic:**
+
 1. **Primary:** Usage > 80% of plan limits → Recommend upgrade
 2. **Secondary:** Critical alerts active → Recommend upgrade
 3. **Tertiary:** Overage costs > $50/month → Recommend upgrade
@@ -130,11 +140,13 @@ The following deliverables were specified in the original Sprint S33 spec but ar
 ### Stripe Integration
 
 **Subscription Update:**
+
 - Uses `stripe.subscriptions.update()` with proration enabled
 - Handles trial termination (`trial_end: 'now'` on upgrade)
 - Updates `org_billing_state` with new plan and status
 
 **Customer Portal:**
+
 - Generates time-limited session URLs
 - Allows payment method updates without backend involvement
 - Returns to `/app/billing` after completion
@@ -145,23 +157,23 @@ The following deliverables were specified in the original Sprint S33 spec but ar
 
 ### Modified Files
 
-| File | Lines Changed | Description |
-|------|--------------|-------------|
-| `apps/api/src/services/billingService.ts` | +329 | Added S33 methods |
-| `apps/api/src/services/stripeService.ts` | +177 | Added S33 Stripe integration |
-| `apps/api/src/routes/billing/index.ts` | +263 | Added 4 new endpoints |
-| `packages/types/src/billing.ts` | +13 | Added `OrgBillingSummaryEnriched` |
-| `packages/validators/src/billing.ts` | +28 | Added 3 validation schemas |
+| File                                      | Lines Changed | Description                       |
+| ----------------------------------------- | ------------- | --------------------------------- |
+| `apps/api/src/services/billingService.ts` | +329          | Added S33 methods                 |
+| `apps/api/src/services/stripeService.ts`  | +177          | Added S33 Stripe integration      |
+| `apps/api/src/routes/billing/index.ts`    | +263          | Added 4 new endpoints             |
+| `packages/types/src/billing.ts`           | +13           | Added `OrgBillingSummaryEnriched` |
+| `packages/validators/src/billing.ts`      | +28           | Added 3 validation schemas        |
 
 **Total Production Code:** ~810 lines
 
 ### Created Files
 
-| File | Lines | Description |
-|------|-------|-------------|
-| `apps/api/tests/billingPlanManagement.test.ts` | ~700 | S33 comprehensive test suite |
-| `docs/product/billing_plan_management_v1.md` | ~600 | Product documentation |
-| `docs/SPRINT_S33_COMPLETION_REPORT.md` | ~350 | This report |
+| File                                           | Lines | Description                  |
+| ---------------------------------------------- | ----- | ---------------------------- |
+| `apps/api/tests/billingPlanManagement.test.ts` | ~700  | S33 comprehensive test suite |
+| `docs/product/billing_plan_management_v1.md`   | ~600  | Product documentation        |
+| `docs/SPRINT_S33_COMPLETION_REPORT.md`         | ~350  | This report                  |
 
 **Total Documentation/Tests:** ~1,650 lines
 
@@ -180,13 +192,13 @@ POST   /api/v1/billing/org/plan/cancel
 
 ### Error Codes
 
-| Code | HTTP Status | Meaning |
-|------|-------------|---------|
-| `UPGRADE_REQUIRED` | 422 | Downgrade blocked - usage exceeds target limits |
-| `PLAN_NOT_FOUND` | 404 | Plan slug not found or inactive |
-| `FEATURE_DISABLED` | 503 | Stripe billing not enabled |
-| `NO_ORG_ACCESS` | 403 | User not member of organization |
-| `VALIDATION_ERROR` | 400 | Invalid request body |
+| Code               | HTTP Status | Meaning                                         |
+| ------------------ | ----------- | ----------------------------------------------- |
+| `UPGRADE_REQUIRED` | 422         | Downgrade blocked - usage exceeds target limits |
+| `PLAN_NOT_FOUND`   | 404         | Plan slug not found or inactive                 |
+| `FEATURE_DISABLED` | 503         | Stripe billing not enabled                      |
+| `NO_ORG_ACCESS`    | 403         | User not member of organization                 |
+| `VALIDATION_ERROR` | 400         | Invalid request body                            |
 
 ---
 
@@ -221,24 +233,28 @@ POST   /api/v1/billing/org/plan/cancel
 **Test File:** `apps/api/tests/billingPlanManagement.test.ts`
 
 #### switchOrgPlan() Tests
+
 - ✅ Should successfully upgrade from starter to growth plan
 - ✅ Should block downgrade when current usage exceeds target plan limits
 - ✅ Should allow downgrade when usage is within target plan limits
 - ✅ Should create plan change alert on successful switch
 
 #### getPlanRecommendations() Tests
+
 - ✅ Should recommend upgrade when token usage > 80%
 - ✅ Should recommend upgrade when playbook run usage > 80%
 - ✅ Should return null for enterprise plan (no higher tier)
 - ✅ Should return null when usage is below 80% threshold
 
 #### buildOrgBillingSummaryEnriched() Tests
+
 - ✅ Should include daysUntilRenewal when period end is set
 - ✅ Should include projectedOverageCost when overages exist
 - ✅ Should include recommendedPlanSlug when recommendation exists
 - ✅ Should return null when base summary is null
 
 #### Stripe Integration Tests (Outlined)
+
 - Should handle upgrade with trial termination
 - Should handle downgrade with proration
 
@@ -253,21 +269,25 @@ POST   /api/v1/billing/org/plan/cancel
 ## Security Audit
 
 ### Authorization
+
 - ✅ All endpoints require authenticated user (`requireUser`)
 - ✅ Org-level authorization enforced via `getUserOrgId()`
 - ✅ Only org members can switch plans
 
 ### Input Validation
+
 - ✅ Zod schemas validate all request bodies
 - ✅ Plan slugs validated against active plans in database
 - ✅ Target plan must differ from current plan
 
 ### Stripe Security
+
 - ✅ Subscription updates use authenticated Stripe API
 - ✅ Customer Portal sessions time-limited (1 hour)
 - ✅ Webhook signature verification (S30)
 
 ### Error Handling
+
 - ✅ Sensitive errors logged server-side only
 - ✅ Client receives sanitized error messages
 - ✅ `BillingQuotaError` exposes minimal details
@@ -279,6 +299,7 @@ POST   /api/v1/billing/org/plan/cancel
 ### Database Queries
 
 **Plan Switch (Upgrade):**
+
 - 3 parallel reads: `org_billing_state`, billing summary, target plan
 - 1 Stripe API call: subscription update
 - 1 write: update `org_billing_state`
@@ -286,6 +307,7 @@ POST   /api/v1/billing/org/plan/cancel
 - **Total:** ~6 operations
 
 **Plan Recommendations:**
+
 - 1 read: billing summary
 - 1 read: all plans (cached)
 - 1 read: alert summary (conditional)
@@ -305,6 +327,7 @@ POST   /api/v1/billing/org/plan/cancel
 ### Logging
 
 All S33 operations log:
+
 ```typescript
 logger.info('Switching org plan', { orgId, fromPlan, toPlan, isUpgrade });
 logger.error('Failed to switch plan', { error, orgId, targetPlanSlug });
@@ -313,12 +336,14 @@ logger.error('Failed to switch plan', { error, orgId, targetPlanSlug });
 ### Alerts
 
 S33 generates billing alerts (S32):
+
 - `plan_upgraded` (severity: `info`)
 - `plan_downgraded` (severity: `warning`)
 
 ### Recommended Metrics
 
 Track in production:
+
 - Plan switch success/failure rates
 - Downgrade block frequency by quota type
 - Recommendation acceptance rates

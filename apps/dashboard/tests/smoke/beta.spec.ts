@@ -18,7 +18,7 @@ test.describe('Beta request flow', () => {
     await page.fill('input[type="email"]', 'test@gmail.com');
     // Try to find and click a submit button
     const submitBtn = page.locator('button[type="submit"]');
-    if (await submitBtn.count() > 0) {
+    if ((await submitBtn.count()) > 0) {
       await submitBtn.click();
       await page.waitForTimeout(1000);
       const text = await page.textContent('body');

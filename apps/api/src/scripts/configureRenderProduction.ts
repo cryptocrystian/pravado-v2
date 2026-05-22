@@ -39,7 +39,10 @@ const ENV_VARS: Array<{ key: string; value: string }> = [
   // Supabase
   { key: 'SUPABASE_URL', value: process.env.SUPABASE_URL || '' },
   { key: 'SUPABASE_ANON_KEY', value: process.env.SUPABASE_ANON_KEY || '' },
-  { key: 'SUPABASE_SERVICE_ROLE_KEY', value: process.env.SUPABASE_SERVICE_ROLE_KEY || '' },
+  {
+    key: 'SUPABASE_SERVICE_ROLE_KEY',
+    value: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  },
   { key: 'SUPABASE_JWT_SECRET', value: process.env.SUPABASE_JWT_SECRET || '' },
 
   // Redis
@@ -51,9 +54,18 @@ const ENV_VARS: Array<{ key: string; value: string }> = [
 
   // Stripe
   { key: 'STRIPE_SECRET_KEY', value: process.env.STRIPE_SECRET_KEY || '' },
-  { key: 'STRIPE_PUBLISHABLE_KEY', value: process.env.STRIPE_PUBLISHABLE_KEY || '' },
-  { key: 'STRIPE_WEBHOOK_SECRET', value: process.env.STRIPE_WEBHOOK_SECRET || '' },
-  { key: 'STRIPE_PRICE_STARTER', value: process.env.STRIPE_PRICE_STARTER || '' },
+  {
+    key: 'STRIPE_PUBLISHABLE_KEY',
+    value: process.env.STRIPE_PUBLISHABLE_KEY || '',
+  },
+  {
+    key: 'STRIPE_WEBHOOK_SECRET',
+    value: process.env.STRIPE_WEBHOOK_SECRET || '',
+  },
+  {
+    key: 'STRIPE_PRICE_STARTER',
+    value: process.env.STRIPE_PRICE_STARTER || '',
+  },
   { key: 'STRIPE_PRICE_PRO', value: process.env.STRIPE_PRICE_PRO || '' },
   { key: 'STRIPE_PRICE_GROWTH', value: process.env.STRIPE_PRICE_GROWTH || '' },
 
@@ -64,7 +76,10 @@ const ENV_VARS: Array<{ key: string; value: string }> = [
 
   // Google OAuth
   { key: 'GOOGLE_CLIENT_ID', value: process.env.GOOGLE_CLIENT_ID || '' },
-  { key: 'GOOGLE_CLIENT_SECRET', value: process.env.GOOGLE_CLIENT_SECRET || '' },
+  {
+    key: 'GOOGLE_CLIENT_SECRET',
+    value: process.env.GOOGLE_CLIENT_SECRET || '',
+  },
 
   // Email
   { key: 'SENDGRID_API_KEY', value: process.env.SENDGRID_API_KEY || '' },
@@ -74,7 +89,10 @@ const ENV_VARS: Array<{ key: string; value: string }> = [
   { key: 'POSTHOG_API_KEY', value: process.env.POSTHOG_API_KEY || '' },
 
   // Data Enrichment
-  { key: 'PEOPLE_DATA_LABS_API_KEY', value: process.env.PEOPLE_DATA_LABS_API_KEY || '' },
+  {
+    key: 'PEOPLE_DATA_LABS_API_KEY',
+    value: process.env.PEOPLE_DATA_LABS_API_KEY || '',
+  },
   { key: 'HUNTER_API_KEY', value: process.env.HUNTER_API_KEY || '' },
   { key: 'WHOIS_XML_API_KEY', value: process.env.WHOIS_XML_API_KEY || '' },
 
@@ -89,7 +107,7 @@ const ENV_VARS: Array<{ key: string; value: string }> = [
 
 async function renderFetch<T = unknown>(
   path: string,
-  init: RequestInit = {},
+  init: RequestInit = {}
 ): Promise<{ status: number; ok: boolean; body: T | null }> {
   const res = await fetch(`${RENDER_API_BASE}${path}`, { ...init, headers });
   const body = (await res.json().catch(() => null)) as T | null;
@@ -97,15 +115,21 @@ async function renderFetch<T = unknown>(
 }
 
 async function findService(): Promise<string | null> {
-  const { ok, body } = await renderFetch<Array<{ service?: { id: string }; id?: string }>>(`/services?name=${encodeURIComponent(SERVICE_NAME)}&type=web&limit=1`);
+  const { ok, body } = await renderFetch<
+    Array<{ service?: { id: string }; id?: string }>
+  >(`/services?name=${encodeURIComponent(SERVICE_NAME)}&type=web&limit=1`);
   if (!ok || !Array.isArray(body) || body.length === 0) return null;
   return body[0].service?.id || body[0].id || null;
 }
 
 async function getOwnerId(): Promise<string> {
-  const { ok, body } = await renderFetch<Array<{ owner: { id: string } }>>('/owners?limit=1');
+  const { ok, body } =
+    await renderFetch<Array<{ owner: { id: string } }>>('/owners?limit=1');
   if (!ok || !Array.isArray(body) || body.length === 0) {
-    console.error('Failed to fetch Render owner:', JSON.stringify(body, null, 2));
+    console.error(
+      'Failed to fetch Render owner:',
+      JSON.stringify(body, null, 2)
+    );
     process.exit(1);
   }
   return body[0].owner.id;
@@ -113,8 +137,13 @@ async function getOwnerId(): Promise<string> {
 
 async function createService(): Promise<string> {
   const ownerId = await getOwnerId();
-  console.log(`Creating service "${SERVICE_NAME}" on Render (owner: ${ownerId})...`);
-  const { ok, body } = await renderFetch<{ service?: { id: string }; id?: string }>('/services', {
+  console.log(
+    `Creating service "${SERVICE_NAME}" on Render (owner: ${ownerId})...`
+  );
+  const { ok, body } = await renderFetch<{
+    service?: { id: string };
+    id?: string;
+  }>('/services', {
     method: 'POST',
     body: JSON.stringify({
       type: 'web_service',
@@ -129,7 +158,8 @@ async function createService(): Promise<string> {
         plan: PLAN,
         healthCheckPath: '/health',
         envSpecificDetails: {
-          buildCommand: 'npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @pravado/api build',
+          buildCommand:
+            'npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @pravado/api build',
           startCommand: 'pnpm --filter @pravado/api start:prod',
           runtime: 'node',
         },
@@ -145,7 +175,10 @@ async function createService(): Promise<string> {
 
   const serviceId = body.service?.id ?? body.id;
   if (!serviceId) {
-    console.error('Service created but response missing id:', JSON.stringify(body, null, 2));
+    console.error(
+      'Service created but response missing id:',
+      JSON.stringify(body, null, 2)
+    );
     process.exit(1);
   }
   console.log(`Service created: ${serviceId}`);
@@ -190,7 +223,9 @@ async function main() {
   console.log(`Health: https://pravado-api.onrender.com/health`);
   console.log();
   console.log('Next: trigger a deploy with:');
-  console.log(`  curl -X POST "https://api.render.com/v1/services/${serviceId}/deploys" \\`);
+  console.log(
+    `  curl -X POST "https://api.render.com/v1/services/${serviceId}/deploys" \\`
+  );
   console.log(`    -H "Authorization: Bearer $RENDER_API_KEY" \\`);
   console.log(`    -H "Content-Type: application/json" \\`);
   console.log(`    -d '{"clearCache": "do_not_clear"}'`);

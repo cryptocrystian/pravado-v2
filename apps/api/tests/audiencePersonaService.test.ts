@@ -120,7 +120,12 @@ describe('AudiencePersonaService', () => {
         error: null,
       } as any);
 
-      const result = await service.updatePersona(testOrgId, 'persona-1', updates, testUserId);
+      const result = await service.updatePersona(
+        testOrgId,
+        'persona-1',
+        updates,
+        testUserId
+      );
 
       expect(mockSupabase.from).toHaveBeenCalledWith('audience_personas');
       expect(mockSupabase.update).toHaveBeenCalled();
@@ -182,7 +187,9 @@ describe('AudiencePersonaService', () => {
         error: { message: 'Not found' },
       } as any);
 
-      await expect(service.getPersona(testOrgId, 'nonexistent')).rejects.toThrow();
+      await expect(
+        service.getPersona(testOrgId, 'nonexistent')
+      ).rejects.toThrow();
     });
   });
 
@@ -219,7 +226,9 @@ describe('AudiencePersonaService', () => {
 
       await service.listPersonas(testOrgId, query);
 
-      expect(mockSupabase.in).toHaveBeenCalledWith('persona_type', ['primary_audience']);
+      expect(mockSupabase.in).toHaveBeenCalledWith('persona_type', [
+        'primary_audience',
+      ]);
     });
 
     it('should filter by min score', async () => {
@@ -246,7 +255,8 @@ describe('AudiencePersonaService', () => {
     it('should generate persona from source text', async () => {
       const context: GenerationContext = {
         sourceType: 'press_release',
-        sourceText: 'We are targeting enterprise CTOs in the healthcare industry...',
+        sourceText:
+          'We are targeting enterprise CTOs in the healthcare industry...',
         personaType: 'primary_audience',
         extractTraits: true,
         extractInsights: true,
@@ -271,7 +281,11 @@ describe('AudiencePersonaService', () => {
         error: null,
       } as any);
 
-      const result = await service.generatePersona(testOrgId, context, testUserId);
+      const result = await service.generatePersona(
+        testOrgId,
+        context,
+        testUserId
+      );
 
       expect(result.persona).toBeDefined();
       expect(result.traits).toHaveLength(1);
@@ -284,7 +298,9 @@ describe('AudiencePersonaService', () => {
         sourceText: 'Test content',
       };
 
-      vi.spyOn(service as any, 'extractWithLLM').mockRejectedValueOnce(new Error('LLM error'));
+      vi.spyOn(service as any, 'extractWithLLM').mockRejectedValueOnce(
+        new Error('LLM error')
+      );
       vi.spyOn(service as any, 'extractDeterministic').mockResolvedValueOnce({
         traits: [],
         insights: [],
@@ -344,7 +360,12 @@ describe('AudiencePersonaService', () => {
         error: null,
       } as any);
 
-      const result = await service.addInsight(testOrgId, 'p1', insight, testUserId);
+      const result = await service.addInsight(
+        testOrgId,
+        'p1',
+        insight,
+        testUserId
+      );
 
       expect(result.insightTitle).toBe('Struggles with scaling');
       expect(result.isActionable).toBe(true);
@@ -404,7 +425,10 @@ describe('AudiencePersonaService', () => {
 
     it('should recommend merge if similarity > 80%', async () => {
       vi.spyOn(service, 'getPersona').mockResolvedValue({ id: 'p1' } as any);
-      vi.mocked(mockSupabase.rpc).mockResolvedValueOnce({ data: 85, error: null } as any);
+      vi.mocked(mockSupabase.rpc).mockResolvedValueOnce({
+        data: 85,
+        error: null,
+      } as any);
       vi.spyOn(service as any, 'getPersonaTraits').mockResolvedValue([]);
 
       const result = await service.comparePersonas(testOrgId, 'p1', 'p2');
@@ -430,14 +454,28 @@ describe('AudiencePersonaService', () => {
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([]);
 
-      vi.mocked(mockSupabase.insert).mockResolvedValue({ data: [], error: null } as any);
-      vi.mocked(mockSupabase.update).mockResolvedValue({ data: [], error: null } as any);
+      vi.mocked(mockSupabase.insert).mockResolvedValue({
+        data: [],
+        error: null,
+      } as any);
+      vi.mocked(mockSupabase.update).mockResolvedValue({
+        data: [],
+        error: null,
+      } as any);
       vi.mocked(mockSupabase.single).mockResolvedValue({
         data: { id: 'target', name: 'Target' },
         error: null,
       } as any);
 
-      const result = await service.mergePersonas(testOrgId, 'source', 'target', true, true, true, testUserId);
+      const result = await service.mergePersonas(
+        testOrgId,
+        'source',
+        'target',
+        true,
+        true,
+        true,
+        testUserId
+      );
 
       expect(result.mergedPersona).toBeDefined();
       expect(result.traitsAdded).toBe(1);
@@ -451,7 +489,14 @@ describe('AudiencePersonaService', () => {
         error: null,
       } as any);
 
-      await service.mergePersonas(testOrgId, 'source', 'target', true, true, true);
+      await service.mergePersonas(
+        testOrgId,
+        'source',
+        'target',
+        true,
+        true,
+        true
+      );
 
       expect(mockSupabase.update).toHaveBeenCalledWith(
         expect.objectContaining({ status: 'archived' })
@@ -485,7 +530,9 @@ describe('AudiencePersonaService', () => {
         testUserId
       );
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('audience_persona_history');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'audience_persona_history'
+      );
       expect(mockSupabase.insert).toHaveBeenCalled();
     });
   });
@@ -518,8 +565,12 @@ describe('AudiencePersonaService', () => {
       const result = await service.getPersonaTrends(testOrgId, 'p1', 90);
 
       expect(result.trends).toHaveLength(6);
-      expect(result.trends.find((t) => t.metric === 'overall_score')).toBeDefined();
-      expect(result.trends.find((t) => t.metric === 'trait_count')).toBeDefined();
+      expect(
+        result.trends.find((t) => t.metric === 'overall_score')
+      ).toBeDefined();
+      expect(
+        result.trends.find((t) => t.metric === 'trait_count')
+      ).toBeDefined();
     });
   });
 
@@ -557,11 +608,15 @@ describe('AudiencePersonaService', () => {
         error: { message: 'Database error' },
       } as any);
 
-      await expect(service.getPersona(testOrgId, 'p1')).rejects.toThrow('Database error');
+      await expect(service.getPersona(testOrgId, 'p1')).rejects.toThrow(
+        'Database error'
+      );
     });
 
     it('should handle missing org ID', async () => {
-      await expect(service.createPersona('', { name: 'Test' } as any)).rejects.toThrow();
+      await expect(
+        service.createPersona('', { name: 'Test' } as any)
+      ).rejects.toThrow();
     });
   });
 
@@ -593,7 +648,9 @@ describe('AudiencePersonaService', () => {
 
       await service.listPersonas(testOrgId, query);
 
-      expect(mockSupabase.order).toHaveBeenCalledWith('overall_score', { ascending: false });
+      expect(mockSupabase.order).toHaveBeenCalledWith('overall_score', {
+        ascending: false,
+      });
     });
 
     it('should sort by updated date asc', async () => {
@@ -601,7 +658,9 @@ describe('AudiencePersonaService', () => {
 
       await service.listPersonas(testOrgId, query);
 
-      expect(mockSupabase.order).toHaveBeenCalledWith('updated_at', { ascending: true });
+      expect(mockSupabase.order).toHaveBeenCalledWith('updated_at', {
+        ascending: true,
+      });
     });
   });
 
@@ -628,7 +687,9 @@ describe('AudiencePersonaService', () => {
         data: { id: 'p1', name: 'Updated' },
         error: null,
       } as any);
-      const updated = await service.updatePersona(testOrgId, 'p1', { name: 'Updated' });
+      const updated = await service.updatePersona(testOrgId, 'p1', {
+        name: 'Updated',
+      });
       expect(updated.name).toBe('Updated');
 
       // Delete

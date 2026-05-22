@@ -82,7 +82,11 @@ function dbRowToRealityMap(row: Record<string, unknown>): RealityMap {
     totalEdges: row.total_edges as number,
     totalPaths: row.total_paths as number,
     maxDepthReached: row.max_depth_reached as number,
-    analysisStatus: row.analysis_status as 'pending' | 'running' | 'completed' | 'failed',
+    analysisStatus: row.analysis_status as
+      | 'pending'
+      | 'running'
+      | 'completed'
+      | 'failed',
     executiveSummary: row.executive_summary as string | null,
     topRisks: row.top_risks as RealityMapRiskFactor[] | null,
     topOpportunities: row.top_opportunities as OpportunityFactor[] | null,
@@ -122,8 +126,10 @@ function dbRowToNode(row: Record<string, unknown>): RealityMapNode {
     snapshot: (row.snapshot as NodeSnapshot) || {},
     riskFactors: (row.risk_factors as RealityMapRiskFactor[]) || [],
     opportunityFactors: (row.opportunity_factors as OpportunityFactor[]) || [],
-    mitigationStrategies: (row.mitigation_strategies as MitigationStrategy[]) || [],
-    actionRecommendations: (row.action_recommendations as RealityMapActionRecommendation[]) || [],
+    mitigationStrategies:
+      (row.mitigation_strategies as MitigationStrategy[]) || [],
+    actionRecommendations:
+      (row.action_recommendations as RealityMapActionRecommendation[]) || [],
     generationOrder: row.generation_order as number | null,
     processingTimeMs: row.processing_time_ms as number | null,
     tokensUsed: row.tokens_used as number,
@@ -142,7 +148,10 @@ function dbRowToEdge(row: Record<string, unknown>): RealityMapEdge {
     realityMapId: row.reality_map_id as string,
     parentNodeId: row.parent_node_id as string,
     childNodeId: row.child_node_id as string,
-    trigger: (row.trigger as EdgeTrigger) || { type: 'simulation_outcome', condition: '' },
+    trigger: (row.trigger as EdgeTrigger) || {
+      type: 'simulation_outcome',
+      condition: '',
+    },
     triggerType: row.trigger_type as EdgeTriggerType | null,
     transitionProbability: row.transition_probability as number,
     label: row.label as string | null,
@@ -173,7 +182,8 @@ function dbRowToPath(row: Record<string, unknown>): RealityMapPath {
     pathSummary: row.path_summary as string | null,
     pathTitle: row.path_title as string | null,
     outcomeType: row.outcome_type as PathOutcomeType | null,
-    comparisonMetrics: row.comparison_metrics as RealityMapPath['comparisonMetrics'],
+    comparisonMetrics:
+      row.comparison_metrics as RealityMapPath['comparisonMetrics'],
     createdAt: row.created_at as string,
   };
 }
@@ -298,7 +308,9 @@ export async function listRealityMaps(
     .eq('org_id', orgId);
 
   if (query.search) {
-    queryBuilder = queryBuilder.or(`name.ilike.%${query.search}%,description.ilike.%${query.search}%`);
+    queryBuilder = queryBuilder.or(
+      `name.ilike.%${query.search}%,description.ilike.%${query.search}%`
+    );
   }
 
   if (query.status) {
@@ -311,7 +323,9 @@ export async function listRealityMaps(
 
   const sortColumn = query.sortBy || 'created_at';
   const sortOrder = query.sortOrder || 'desc';
-  queryBuilder = queryBuilder.order(sortColumn, { ascending: sortOrder === 'asc' });
+  queryBuilder = queryBuilder.order(sortColumn, {
+    ascending: sortOrder === 'asc',
+  });
 
   const limit = query.limit || 20;
   const offset = query.offset || 0;
@@ -459,9 +473,18 @@ export async function generateRealityMap(
 
     // Clear existing nodes/edges if regenerating
     if (input.regenerate) {
-      await supabase.from('reality_map_edges').delete().eq('reality_map_id', mapId);
-      await supabase.from('reality_map_nodes').delete().eq('reality_map_id', mapId);
-      await supabase.from('reality_map_paths').delete().eq('reality_map_id', mapId);
+      await supabase
+        .from('reality_map_edges')
+        .delete()
+        .eq('reality_map_id', mapId);
+      await supabase
+        .from('reality_map_nodes')
+        .delete()
+        .eq('reality_map_id', mapId);
+      await supabase
+        .from('reality_map_paths')
+        .delete()
+        .eq('reality_map_id', mapId);
     }
 
     // Step 1: Ingest source data
@@ -722,12 +745,14 @@ function extractOutcomesFromSimulation(
   // Create main outcome from simulation
   outcomes.push({
     id: `outcome-${simData.id}-main`,
-    type: simData.objective_type as string || 'general',
+    type: (simData.objective_type as string) || 'general',
     probability: 0.5,
-    description: runData?.outcome_narrative as string || 'Simulation outcome',
-    riskLevel: runData?.risk_level as 'critical' | 'high' | 'medium' | 'low' || 'medium',
+    description: (runData?.outcome_narrative as string) || 'Simulation outcome',
+    riskLevel:
+      (runData?.risk_level as 'critical' | 'high' | 'medium' | 'low') ||
+      'medium',
     opportunityLevel: 'medium' as const,
-    drivers: runData?.key_findings as string[] || [],
+    drivers: (runData?.key_findings as string[]) || [],
   });
 
   // Add alternative outcomes if available
@@ -737,12 +762,15 @@ function extractOutcomesFromSimulation(
       const altObj = alt as Record<string, unknown>;
       outcomes.push({
         id: `outcome-${simData.id}-alt-${idx}`,
-        type: altObj.type as string || 'alternative',
+        type: (altObj.type as string) || 'alternative',
         probability: (altObj.probability as number) || 0.2,
-        description: altObj.description as string || 'Alternative outcome',
-        riskLevel: altObj.riskLevel as 'critical' | 'high' | 'medium' | 'low' || 'medium',
-        opportunityLevel: altObj.opportunityLevel as 'high' | 'medium' | 'low' || 'medium',
-        drivers: altObj.drivers as string[] || [],
+        description: (altObj.description as string) || 'Alternative outcome',
+        riskLevel:
+          (altObj.riskLevel as 'critical' | 'high' | 'medium' | 'low') ||
+          'medium',
+        opportunityLevel:
+          (altObj.opportunityLevel as 'high' | 'medium' | 'low') || 'medium',
+        drivers: (altObj.drivers as string[]) || [],
       });
     });
   }
@@ -760,10 +788,10 @@ function extractRiskAssessment(
     return { overallScore: 50, factors: [], mitigations: [] };
   }
 
-  const riskFactors = runData.risk_factors as RealityMapRiskFactor[] || [];
+  const riskFactors = (runData.risk_factors as RealityMapRiskFactor[]) || [];
 
   return {
-    overallScore: runData.risk_score as number || 50,
+    overallScore: (runData.risk_score as number) || 50,
     factors: riskFactors,
     mitigations: [],
   };
@@ -780,8 +808,8 @@ function extractOpportunityAssessment(
   }
 
   return {
-    overallScore: runData.opportunity_score as number || 50,
-    factors: runData.opportunity_factors as OpportunityFactor[] || [],
+    overallScore: (runData.opportunity_score as number) || 50,
+    factors: (runData.opportunity_factors as OpportunityFactor[]) || [],
     actions: [],
   };
 }
@@ -790,7 +818,10 @@ function extractOpportunityAssessment(
  * Compute branching structure from source data
  */
 async function computeBranchingStructure(
-  sourceData: { simulations: SimulationDataForIngestion[]; suites: SuiteDataForIngestion[] },
+  sourceData: {
+    simulations: SimulationDataForIngestion[];
+    suites: SuiteDataForIngestion[];
+  },
   parameters: RealityMapParameters
 ): Promise<BranchingStructure> {
   // Note: allNodes tracking removed as it was unused
@@ -980,7 +1011,7 @@ async function runProbabilityModel(
       probability: node.probability,
       confidence: parameters.probabilityModel === 'expert_adjusted' ? 0.7 : 0.8,
       methodology: parameters.probabilityModel,
-      inputs: node.metadata.drivers as string[] || [],
+      inputs: (node.metadata.drivers as string[]) || [],
       adjustments: [],
     });
 
@@ -1003,14 +1034,22 @@ async function generateNodeNarratives(
 ): Promise<Map<string, NodeNarrativeResult>> {
   const results = new Map<string, NodeNarrativeResult>();
 
-  const processNode = async (node: BranchingNode, parentLabel: string | null) => {
+  const processNode = async (
+    node: BranchingNode,
+    parentLabel: string | null
+  ) => {
     const startTime = Date.now();
 
     try {
-      const prompt = buildNarrativePrompt(node, parentLabel, parameters.narrativeStyle);
+      const prompt = buildNarrativePrompt(
+        node,
+        parentLabel,
+        parameters.narrativeStyle
+      );
 
       const response = await routeLLM({
-        systemPrompt: 'You are an expert scenario analyst. Generate concise, actionable narratives for scenario outcomes.',
+        systemPrompt:
+          'You are an expert scenario analyst. Generate concise, actionable narratives for scenario outcomes.',
         userPrompt: prompt,
         temperature: 0.6,
       });
@@ -1055,10 +1094,14 @@ function buildNarrativePrompt(
   style: string
 ): string {
   const styleGuide = {
-    executive: 'Use executive-level language. Focus on strategic implications and decision points.',
-    detailed: 'Provide detailed analysis with supporting evidence and reasoning.',
-    technical: 'Use technical language. Focus on operational details and metrics.',
-    strategic: 'Focus on long-term strategic positioning and competitive advantage.',
+    executive:
+      'Use executive-level language. Focus on strategic implications and decision points.',
+    detailed:
+      'Provide detailed analysis with supporting evidence and reasoning.',
+    technical:
+      'Use technical language. Focus on operational details and metrics.',
+    strategic:
+      'Focus on long-term strategic positioning and competitive advantage.',
   };
 
   return `Generate a ${style} narrative for this scenario outcome:
@@ -1080,12 +1123,21 @@ Provide a 2-3 sentence summary of this scenario state and its implications.`;
 function extractDriversFromNarrative(narrative: string): KeyDriver[] {
   // Simple extraction - in production would use NLP
   const drivers: KeyDriver[] = [];
-  const keywords = ['because', 'due to', 'driven by', 'caused by', 'resulting from'];
+  const keywords = [
+    'because',
+    'due to',
+    'driven by',
+    'caused by',
+    'resulting from',
+  ];
 
   for (const keyword of keywords) {
     const idx = narrative.toLowerCase().indexOf(keyword);
     if (idx !== -1) {
-      const snippet = narrative.slice(idx + keyword.length, idx + keyword.length + 100);
+      const snippet = narrative.slice(
+        idx + keyword.length,
+        idx + keyword.length + 100
+      );
       const endIdx = snippet.search(/[.!?]/);
       const driverText = endIdx > 0 ? snippet.slice(0, endIdx) : snippet;
 
@@ -1109,7 +1161,10 @@ function extractDriversFromNarrative(narrative: string): KeyDriver[] {
  */
 async function computeRiskOpportunityScores(
   structure: BranchingStructure,
-  sourceData: { simulations: SimulationDataForIngestion[]; suites: SuiteDataForIngestion[] }
+  sourceData: {
+    simulations: SimulationDataForIngestion[];
+    suites: SuiteDataForIngestion[];
+  }
 ): Promise<Map<string, ScoreComputationResult>> {
   const results = new Map<string, ScoreComputationResult>();
 
@@ -1144,7 +1199,8 @@ async function computeRiskOpportunityScores(
 
     const escalationType = node.metadata.escalationType as string;
     if (escalationType === 'crisis') riskScore = Math.min(100, riskScore + 20);
-    if (escalationType === 'opportunity') opportunityScore = Math.min(100, opportunityScore + 20);
+    if (escalationType === 'opportunity')
+      opportunityScore = Math.min(100, opportunityScore + 20);
 
     results.set(node.id, {
       nodeId: node.id,
@@ -1197,7 +1253,8 @@ async function buildGraph(
       .insert({
         reality_map_id: mapId,
         parent_node_id: parentDbId,
-        node_type: depth === 0 ? 'root' : node.children.length === 0 ? 'leaf' : 'branch',
+        node_type:
+          depth === 0 ? 'root' : node.children.length === 0 ? 'leaf' : 'branch',
         depth,
         path_index: pathIndex,
         label: node.label,
@@ -1230,19 +1287,21 @@ async function buildGraph(
 
     // Create edge from parent
     if (parentDbId) {
-      const { error: edgeError } = await supabase.from('reality_map_edges').insert({
-        reality_map_id: mapId,
-        parent_node_id: parentDbId,
-        child_node_id: dbId,
-        trigger: {
-          type: 'simulation_outcome',
-          condition: node.label,
-        },
-        trigger_type: 'simulation_outcome',
-        transition_probability: node.probability,
-        label: node.label,
-        weight: 1.0,
-      });
+      const { error: edgeError } = await supabase
+        .from('reality_map_edges')
+        .insert({
+          reality_map_id: mapId,
+          parent_node_id: parentDbId,
+          child_node_id: dbId,
+          trigger: {
+            type: 'simulation_outcome',
+            condition: node.label,
+          },
+          trigger_type: 'simulation_outcome',
+          transition_probability: node.probability,
+          label: node.label,
+          weight: 1.0,
+        });
 
       if (!edgeError) {
         edgesCreated++;
@@ -1396,42 +1455,57 @@ export async function getGraph(
   }
 
   // Convert to graph format
-  const nodes: RealityMapGraphNode[] = (nodesData || []).map((node: Record<string, unknown>, idx: number) => ({
-    id: node.id as string,
-    label: (node.label as string) || `Node ${idx + 1}`,
-    type: node.node_type as RealityMapNodeType,
-    depth: node.depth as number,
-    probability: node.probability as number,
-    cumulativeProbability: node.cumulative_probability as number,
-    riskScore: node.risk_score as number,
-    opportunityScore: node.opportunity_score as number,
-    summary: (node.ai_summary as string | undefined) ?? null,
-    parentId: node.parent_node_id as string | null,
-    childIds: childIdsMap.get(node.id as string) || [],
-    position: computeNodePosition(node.depth as number, idx, (nodesData || []).length),
-    color: getNodeColor(node.node_type as RealityMapNodeType, node.risk_score as number),
-    size: Math.max(20, (node.probability as number) * 50),
-  }));
+  const nodes: RealityMapGraphNode[] = (nodesData || []).map(
+    (node: Record<string, unknown>, idx: number) => ({
+      id: node.id as string,
+      label: (node.label as string) || `Node ${idx + 1}`,
+      type: node.node_type as RealityMapNodeType,
+      depth: node.depth as number,
+      probability: node.probability as number,
+      cumulativeProbability: node.cumulative_probability as number,
+      riskScore: node.risk_score as number,
+      opportunityScore: node.opportunity_score as number,
+      summary: (node.ai_summary as string | undefined) ?? null,
+      parentId: node.parent_node_id as string | null,
+      childIds: childIdsMap.get(node.id as string) || [],
+      position: computeNodePosition(
+        node.depth as number,
+        idx,
+        (nodesData || []).length
+      ),
+      color: getNodeColor(
+        node.node_type as RealityMapNodeType,
+        node.risk_score as number
+      ),
+      size: Math.max(20, (node.probability as number) * 50),
+    })
+  );
 
-  const edges: RealityMapGraphEdge[] = (edgesData || []).map((edge: Record<string, unknown>) => ({
-    id: edge.id as string,
-    source: edge.parent_node_id as string,
-    target: edge.child_node_id as string,
-    label: (edge.label as string | undefined) ?? null,
-    probability: edge.transition_probability as number,
-    triggerType: (edge.trigger_type as EdgeTriggerType | undefined) ?? null,
-    weight: edge.weight as number,
-    color: '#9CA3AF',
-    animated: false,
-  }));
+  const edges: RealityMapGraphEdge[] = (edgesData || []).map(
+    (edge: Record<string, unknown>) => ({
+      id: edge.id as string,
+      source: edge.parent_node_id as string,
+      target: edge.child_node_id as string,
+      label: (edge.label as string | undefined) ?? null,
+      probability: edge.transition_probability as number,
+      triggerType: (edge.trigger_type as EdgeTriggerType | undefined) ?? null,
+      weight: edge.weight as number,
+      color: '#9CA3AF',
+      animated: false,
+    })
+  );
 
   const paths = (pathsData || []).map(dbRowToPath);
 
   // Find special nodes/paths
   const rootNode = nodes.find((n) => n.type === 'root');
   const leafNodes = nodes.filter((n) => n.type === 'leaf');
-  const mostLikelyPath = paths.sort((a, b) => b.totalProbability - a.totalProbability)[0];
-  const highestRiskPath = paths.sort((a, b) => b.maxRiskScore - a.maxRiskScore)[0];
+  const mostLikelyPath = paths.sort(
+    (a, b) => b.totalProbability - a.totalProbability
+  )[0];
+  const highestRiskPath = paths.sort(
+    (a, b) => b.maxRiskScore - a.maxRiskScore
+  )[0];
   const highestOpportunityPath = paths.sort(
     (a, b) => b.maxOpportunityScore - a.maxOpportunityScore
   )[0];
@@ -1531,7 +1605,10 @@ export async function getAnalysis(
     const correlations = await detectCorrelations(mapId);
 
     // Generate recommendations
-    const recommendations = await generateRecommendations(mapId, outcomeUniverse);
+    const recommendations = await generateRecommendations(
+      mapId,
+      outcomeUniverse
+    );
 
     // Update map with analysis results
     await supabase
@@ -1573,7 +1650,9 @@ export async function getAnalysis(
 /**
  * Generate outcome universe
  */
-async function generateOutcomeUniverse(mapId: string): Promise<OutcomeUniverse> {
+async function generateOutcomeUniverse(
+  mapId: string
+): Promise<OutcomeUniverse> {
   const supabase = getSupabaseClient();
 
   // Get paths
@@ -1590,7 +1669,8 @@ async function generateOutcomeUniverse(mapId: string): Promise<OutcomeUniverse> 
     .eq('reality_map_id', mapId);
 
   const totalRealities = paths?.length || 0;
-  const branchingNodes = nodes?.filter((n) => n.node_type === 'branch').length || 0;
+  const branchingNodes =
+    nodes?.filter((n) => n.node_type === 'branch').length || 0;
 
   // Build probability distribution
   const probabilityWeightedOutcomes: ProbabilityDistribution[] = [];
@@ -1656,7 +1736,14 @@ function buildPathSummary(path: Record<string, unknown>): RealityPathSummary {
     title: (path.path_title as string) || 'Untitled Path',
     description: (path.path_summary as string) || 'No description available',
     probability: path.total_probability as number,
-    riskLevel: maxRisk >= 80 ? 'critical' : maxRisk >= 60 ? 'high' : maxRisk >= 40 ? 'medium' : 'low',
+    riskLevel:
+      maxRisk >= 80
+        ? 'critical'
+        : maxRisk >= 60
+          ? 'high'
+          : maxRisk >= 40
+            ? 'medium'
+            : 'low',
     opportunityLevel:
       (path.max_opportunity_score as number) >= 70
         ? 'high'
@@ -1701,7 +1788,9 @@ Focus on strategic implications and key takeaways for executive decision-making.
 /**
  * Compute path comparisons
  */
-async function computePathComparisons(mapId: string): Promise<PathComparisonResult[]> {
+async function computePathComparisons(
+  mapId: string
+): Promise<PathComparisonResult[]> {
   const supabase = getSupabaseClient();
 
   const { data: paths } = await supabase
@@ -1732,7 +1821,8 @@ async function computePathComparisons(mapId: string): Promise<PathComparisonResu
       ],
       probabilityDelta: path1.total_probability - path2.total_probability,
       riskDelta: path1.avg_risk_score - path2.avg_risk_score,
-      opportunityDelta: path1.avg_opportunity_score - path2.avg_opportunity_score,
+      opportunityDelta:
+        path1.avg_opportunity_score - path2.avg_opportunity_score,
       recommendation:
         path1.avg_risk_score > path2.avg_risk_score
           ? 'Consider mitigation strategies for higher-risk path'
@@ -1746,7 +1836,9 @@ async function computePathComparisons(mapId: string): Promise<PathComparisonResu
 /**
  * Compute narrative delta
  */
-async function computeNarrativeDelta(mapId: string): Promise<NarrativeDeltaResult> {
+async function computeNarrativeDelta(
+  mapId: string
+): Promise<NarrativeDeltaResult> {
   const supabase = getSupabaseClient();
 
   const { data: nodes } = await supabase
@@ -1775,7 +1867,9 @@ async function computeNarrativeDelta(mapId: string): Promise<NarrativeDeltaResul
 /**
  * Detect contradictions in the map
  */
-async function detectContradictions(mapId: string): Promise<DetectedContradiction[]> {
+async function detectContradictions(
+  mapId: string
+): Promise<DetectedContradiction[]> {
   const supabase = getSupabaseClient();
 
   const { data: paths } = await supabase
@@ -1786,7 +1880,10 @@ async function detectContradictions(mapId: string): Promise<DetectedContradictio
   const contradictions: DetectedContradiction[] = [];
 
   // Check for probability inconsistencies
-  const totalProb = (paths || []).reduce((sum, p) => sum + p.total_probability, 0);
+  const totalProb = (paths || []).reduce(
+    (sum, p) => sum + p.total_probability,
+    0
+  );
   if (totalProb > 1.1) {
     contradictions.push({
       id: 'prob-overflow',
@@ -1804,7 +1901,9 @@ async function detectContradictions(mapId: string): Promise<DetectedContradictio
 /**
  * Detect correlations in the map
  */
-async function detectCorrelations(mapId: string): Promise<DetectedCorrelation[]> {
+async function detectCorrelations(
+  mapId: string
+): Promise<DetectedCorrelation[]> {
   const supabase = getSupabaseClient();
 
   const { data: nodes } = await supabase
@@ -1815,8 +1914,12 @@ async function detectCorrelations(mapId: string): Promise<DetectedCorrelation[]>
   const correlations: DetectedCorrelation[] = [];
 
   // Check for risk-opportunity correlation
-  const avgRisk = (nodes || []).reduce((sum, n) => sum + n.risk_score, 0) / (nodes?.length || 1);
-  const avgOpp = (nodes || []).reduce((sum, n) => sum + n.opportunity_score, 0) / (nodes?.length || 1);
+  const avgRisk =
+    (nodes || []).reduce((sum, n) => sum + n.risk_score, 0) /
+    (nodes?.length || 1);
+  const avgOpp =
+    (nodes || []).reduce((sum, n) => sum + n.opportunity_score, 0) /
+    (nodes?.length || 1);
 
   if (Math.abs(avgRisk - avgOpp) < 20) {
     correlations.push({
@@ -1844,7 +1947,10 @@ async function generateRecommendations(
   const recommendations: RealityMapActionRecommendation[] = [];
 
   // Based on worst case scenario
-  if (universe.worstCaseScenario && universe.worstCaseScenario.riskLevel === 'critical') {
+  if (
+    universe.worstCaseScenario &&
+    universe.worstCaseScenario.riskLevel === 'critical'
+  ) {
     recommendations.push({
       id: 'rec-1',
       action: 'Develop contingency plans for high-risk scenarios',
@@ -1858,7 +1964,10 @@ async function generateRecommendations(
   }
 
   // Based on best case scenario
-  if (universe.bestCaseScenario && universe.bestCaseScenario.opportunityLevel === 'high') {
+  if (
+    universe.bestCaseScenario &&
+    universe.bestCaseScenario.opportunityLevel === 'high'
+  ) {
     recommendations.push({
       id: 'rec-2',
       action: 'Prepare to capitalize on favorable outcomes',
@@ -1923,9 +2032,12 @@ async function computeMapStats(mapId: string): Promise<RealityMapStats | null> {
     totalEdges: edges?.length || 0,
     totalPaths: paths?.length || 0,
     maxDepth: Math.max(...nodes.map((n) => n.depth)),
-    avgProbability: nodes.reduce((sum, n) => sum + n.probability, 0) / nodes.length,
-    avgRiskScore: nodes.reduce((sum, n) => sum + n.risk_score, 0) / nodes.length,
-    avgOpportunityScore: nodes.reduce((sum, n) => sum + n.opportunity_score, 0) / nodes.length,
+    avgProbability:
+      nodes.reduce((sum, n) => sum + n.probability, 0) / nodes.length,
+    avgRiskScore:
+      nodes.reduce((sum, n) => sum + n.risk_score, 0) / nodes.length,
+    avgOpportunityScore:
+      nodes.reduce((sum, n) => sum + n.opportunity_score, 0) / nodes.length,
     leafNodeCount: leafNodes.length,
     branchNodeCount: branchNodes.length,
   };

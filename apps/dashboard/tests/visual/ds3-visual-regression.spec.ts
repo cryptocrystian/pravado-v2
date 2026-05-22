@@ -28,7 +28,10 @@ import { test, expect, Page } from '@playwright/test';
  * Wait for page to be fully loaded and stable
  * Ensures animations complete and dynamic content renders
  */
-async function waitForPageStable(page: Page, options?: { timeout?: number }): Promise<void> {
+async function waitForPageStable(
+  page: Page,
+  options?: { timeout?: number }
+): Promise<void> {
   const timeout = options?.timeout ?? 5000;
 
   // Wait for network idle (no pending requests for 500ms)
@@ -84,16 +87,19 @@ test.describe('Command Center Visual Regression', () => {
 
   test('command-center-action-stream-pane', async ({ page }) => {
     // Focus on action stream section
-    const actionStream = page.locator('[data-testid="action-stream"]').or(
-      page.locator('[class*="action-stream"]').first()
-    );
+    const actionStream = page
+      .locator('[data-testid="action-stream"]')
+      .or(page.locator('[class*="action-stream"]').first());
 
     // If we can find the element, screenshot it specifically
     if (await actionStream.isVisible()) {
-      await expect(actionStream).toHaveScreenshot('command-center-action-stream.png', {
-        mask: getCommonMasks(page),
-        animations: 'disabled',
-      });
+      await expect(actionStream).toHaveScreenshot(
+        'command-center-action-stream.png',
+        {
+          mask: getCommonMasks(page),
+          animations: 'disabled',
+        }
+      );
     } else {
       // Fall back to viewport screenshot
       await expect(page).toHaveScreenshot('command-center-viewport.png', {
@@ -104,15 +110,18 @@ test.describe('Command Center Visual Regression', () => {
   });
 
   test('command-center-strategy-panel', async ({ page }) => {
-    const strategyPanel = page.locator('[data-testid="strategy-panel"]').or(
-      page.locator('[class*="strategy-panel"]').first()
-    );
+    const strategyPanel = page
+      .locator('[data-testid="strategy-panel"]')
+      .or(page.locator('[class*="strategy-panel"]').first());
 
     if (await strategyPanel.isVisible()) {
-      await expect(strategyPanel).toHaveScreenshot('command-center-strategy-panel.png', {
-        mask: getCommonMasks(page),
-        animations: 'disabled',
-      });
+      await expect(strategyPanel).toHaveScreenshot(
+        'command-center-strategy-panel.png',
+        {
+          mask: getCommonMasks(page),
+          animations: 'disabled',
+        }
+      );
     }
   });
 });
@@ -162,7 +171,10 @@ test.describe('PR Database (Journalists) Visual Regression', () => {
 
   test('pr-database-table-view', async ({ page }) => {
     // Screenshot the table/list component
-    const table = page.locator('table').or(page.locator('[role="table"]')).first();
+    const table = page
+      .locator('table')
+      .or(page.locator('[role="table"]'))
+      .first();
 
     if (await table.isVisible()) {
       await expect(table).toHaveScreenshot('pr-database-table.png', {
@@ -201,9 +213,9 @@ test.describe('PR Pitches Visual Regression', () => {
 
   test('pr-pitches-sequence-list', async ({ page }) => {
     // Screenshot the pitch sequences list
-    const sequenceList = page.locator('[data-testid="pitch-sequences"]').or(
-      page.locator('[class*="sequence"]').first()
-    );
+    const sequenceList = page
+      .locator('[data-testid="pitch-sequences"]')
+      .or(page.locator('[class*="sequence"]').first());
 
     if (await sequenceList.isVisible()) {
       await expect(sequenceList).toHaveScreenshot('pr-pitches-sequences.png', {
@@ -228,7 +240,9 @@ test.describe('DS v3 Typography Token Verification', () => {
     const headings = await page.locator('h1, h2, h3').all();
 
     for (const heading of headings.slice(0, 3)) {
-      const fontWeight = await heading.evaluate((el) => getComputedStyle(el).fontWeight);
+      const fontWeight = await heading.evaluate(
+        (el) => getComputedStyle(el).fontWeight
+      );
       // DS v3 requires semibold (600) or bold (700) for headings
       const weight = parseInt(fontWeight);
       expect(weight).toBeGreaterThanOrEqual(500);
@@ -276,7 +290,8 @@ test.describe('DS v3 Typography Token Verification', () => {
       // If text is smaller than 12px and NOT uppercase with tracking, it's a violation
       if (styles.fontSize < 12 && styles.fontSize > 0) {
         const isUppercaseLabel =
-          styles.textTransform === 'uppercase' && styles.letterSpacing !== 'normal';
+          styles.textTransform === 'uppercase' &&
+          styles.letterSpacing !== 'normal';
 
         if (!isUppercaseLabel) {
           undersizedCount++;

@@ -16,16 +16,21 @@ Sprint S75 focused exclusively on eliminating all TypeScript compilation errors 
 ## Error Classification & Fixes
 
 ### B1: Import Type Used as Value
+
 **Files Fixed:**
+
 - `src/lib/realityMapApi.ts` - Separated `import type` from value imports for constants
 - `src/lib/scenarioOrchestrationApi.ts` - Same separation pattern applied
 
 ### B6: Unused Imports/Variables
+
 **Files Fixed:**
+
 - `src/lib/scenarioOrchestrationApi.ts:29` - Removed unused `AbortSuiteRunInput` import
 - Various insight-conflicts components - Removed unused type imports
 
 ### B2: Prop/State Shape Mismatches
+
 **Files Fixed:**
 
 1. **`src/app/app/scenarios/orchestrations/page.tsx`**
@@ -50,6 +55,7 @@ Sprint S75 focused exclusively on eliminating all TypeScript compilation errors 
    - Lines 121, 312: Cast query objects to `Record<string, unknown>`
 
 ### B3: Type Property Mismatches
+
 **Files Fixed:**
 
 1. **`src/components/reality-maps/RealityAnalysisPanel.tsx`**
@@ -73,11 +79,13 @@ Sprint S75 focused exclusively on eliminating all TypeScript compilation errors 
 During this sprint (and prior S74.2), the following types were widened:
 
 ### `scenarioOrchestration.ts`
+
 - Added `running`, `paused` to `ScenarioSuiteRunStatus`
 - Added `totalDurationMs`, `aggregatedOutcomes`, `errorDetails` to `ScenarioSuiteRun`
 - Added `skipCurrent` to `AdvanceSuiteRunInput`
 
 ### `scenarioRealityMap.ts`
+
 - Added dashboard-expected properties to `OutcomeUniverse`
 - Added `aggregatedRisks`, `aggregatedOpportunities` to `RealityMapAnalysisResponse`
 - Created `RealityGraphPath` interface for graph path visualization
@@ -98,17 +106,17 @@ Exit code: 0
 
 ## Files Modified
 
-| File | Changes |
-|------|---------|
-| `src/lib/scenarioOrchestrationApi.ts` | Removed unused import |
-| `src/lib/insightConflictApi.ts` | Added type casts for query params |
-| `src/app/app/scenarios/orchestrations/page.tsx` | Added type imports and casts |
-| `src/app/app/reality-maps/page.tsx` | Widened handler signature |
-| `src/components/reality-maps/RealityAnalysisPanel.tsx` | Fixed correlation property access |
-| `src/components/reality-maps/RealityPathPanel.tsx` | Added null checks and fallbacks |
-| `src/components/scenario-orchestrations/SuiteItemList.tsx` | Cast trigger condition |
-| `src/components/scenario-orchestrations/SuiteOutcomePanel.tsx` | Added type casts |
-| `src/components/scenario-orchestrations/SuiteRunTimeline.tsx` | Fixed null checks |
+| File                                                           | Changes                           |
+| -------------------------------------------------------------- | --------------------------------- |
+| `src/lib/scenarioOrchestrationApi.ts`                          | Removed unused import             |
+| `src/lib/insightConflictApi.ts`                                | Added type casts for query params |
+| `src/app/app/scenarios/orchestrations/page.tsx`                | Added type imports and casts      |
+| `src/app/app/reality-maps/page.tsx`                            | Widened handler signature         |
+| `src/components/reality-maps/RealityAnalysisPanel.tsx`         | Fixed correlation property access |
+| `src/components/reality-maps/RealityPathPanel.tsx`             | Added null checks and fallbacks   |
+| `src/components/scenario-orchestrations/SuiteItemList.tsx`     | Cast trigger condition            |
+| `src/components/scenario-orchestrations/SuiteOutcomePanel.tsx` | Added type casts                  |
+| `src/components/scenario-orchestrations/SuiteRunTimeline.tsx`  | Fixed null checks                 |
 
 ---
 

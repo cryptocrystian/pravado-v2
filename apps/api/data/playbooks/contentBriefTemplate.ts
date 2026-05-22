@@ -13,7 +13,8 @@ import type { PlaybookDefinition, PlaybookStep } from '@pravado/types';
 /**
  * Playbook ID for brief generation
  */
-export const CONTENT_BRIEF_GENERATION_PLAYBOOK_ID = 'CONTENT_BRIEF_GENERATION_V1';
+export const CONTENT_BRIEF_GENERATION_PLAYBOOK_ID =
+  'CONTENT_BRIEF_GENERATION_V1';
 
 /**
  * Step 1: GATHER_CONTEXT

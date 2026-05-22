@@ -5,7 +5,10 @@
 
 'use client';
 
-import type { PersonaComparisonResult, AudiencePersonaTrait } from '@pravado/types';
+import type {
+  PersonaComparisonResult,
+  AudiencePersonaTrait,
+} from '@pravado/types';
 import {
   AlertTriangle,
   ArrowRight,
@@ -34,7 +37,6 @@ import {
 } from '@/lib/personaApi';
 import { cn } from '@/lib/utils';
 
-
 interface PersonaComparisonDrawerProps {
   comparison: PersonaComparisonResult | null;
   isOpen: boolean;
@@ -54,7 +56,10 @@ export function PersonaComparisonDrawer({
   if (!comparison) {
     return (
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-4xl overflow-y-auto"
+        >
           <SheetHeader>
             <SheetTitle>Persona Comparison</SheetTitle>
             <SheetDescription>No comparison data available</SheetDescription>
@@ -64,7 +69,17 @@ export function PersonaComparisonDrawer({
     );
   }
 
-  const { persona1, persona2, similarityScore, scoreDifferences, commonTraits, uniqueTraits1, uniqueTraits2, mergeRecommendation, mergeSuggestion } = comparison;
+  const {
+    persona1,
+    persona2,
+    similarityScore,
+    scoreDifferences,
+    commonTraits,
+    uniqueTraits1,
+    uniqueTraits2,
+    mergeRecommendation,
+    mergeSuggestion,
+  } = comparison;
 
   const handleMerge = async () => {
     if (!onMerge) return;
@@ -84,14 +99,25 @@ export function PersonaComparisonDrawer({
   };
 
   const similarityColor =
-    similarityScore >= 80 ? 'text-red-600' : similarityScore >= 60 ? 'text-yellow-600' : 'text-green-600';
+    similarityScore >= 80
+      ? 'text-red-600'
+      : similarityScore >= 60
+        ? 'text-yellow-600'
+        : 'text-green-600';
 
   const similarityBg =
-    similarityScore >= 80 ? 'bg-red-100' : similarityScore >= 60 ? 'bg-yellow-100' : 'bg-blue-100';
+    similarityScore >= 80
+      ? 'bg-red-100'
+      : similarityScore >= 60
+        ? 'bg-yellow-100'
+        : 'bg-blue-100';
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-4xl overflow-y-auto"
+      >
         <SheetHeader>
           <SheetTitle>Persona Comparison</SheetTitle>
           <SheetDescription>
@@ -105,7 +131,9 @@ export function PersonaComparisonDrawer({
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Similarity Score</div>
+                  <div className="text-sm text-gray-600 mb-1">
+                    Similarity Score
+                  </div>
                   <div className={cn('text-4xl font-bold', similarityColor)}>
                     {similarityScore.toFixed(1)}%
                   </div>
@@ -129,7 +157,9 @@ export function PersonaComparisonDrawer({
             <Card>
               <CardHeader className="pb-3">
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-base">{formatPersonaName(persona1)}</h3>
+                  <h3 className="font-semibold text-base">
+                    {formatPersonaName(persona1)}
+                  </h3>
                   <Badge variant="outline" className="text-xs">
                     {getPersonaTypeLabel(persona1.personaType)}
                   </Badge>
@@ -137,22 +167,27 @@ export function PersonaComparisonDrawer({
               </CardHeader>
               <CardContent className="space-y-3">
                 {persona1.description && (
-                  <p className="text-sm text-gray-600">{persona1.description}</p>
+                  <p className="text-sm text-gray-600">
+                    {persona1.description}
+                  </p>
                 )}
                 <div className="space-y-1 text-xs">
                   {persona1.role && (
                     <div>
-                      <span className="text-gray-500">Role:</span> {persona1.role}
+                      <span className="text-gray-500">Role:</span>{' '}
+                      {persona1.role}
                     </div>
                   )}
                   {persona1.industry && (
                     <div>
-                      <span className="text-gray-500">Industry:</span> {persona1.industry}
+                      <span className="text-gray-500">Industry:</span>{' '}
+                      {persona1.industry}
                     </div>
                   )}
                   {persona1.seniorityLevel && (
                     <div>
-                      <span className="text-gray-500">Seniority:</span> {persona1.seniorityLevel}
+                      <span className="text-gray-500">Seniority:</span>{' '}
+                      {persona1.seniorityLevel}
                     </div>
                   )}
                 </div>
@@ -163,7 +198,9 @@ export function PersonaComparisonDrawer({
             <Card>
               <CardHeader className="pb-3">
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-base">{formatPersonaName(persona2)}</h3>
+                  <h3 className="font-semibold text-base">
+                    {formatPersonaName(persona2)}
+                  </h3>
                   <Badge variant="outline" className="text-xs">
                     {getPersonaTypeLabel(persona2.personaType)}
                   </Badge>
@@ -171,22 +208,27 @@ export function PersonaComparisonDrawer({
               </CardHeader>
               <CardContent className="space-y-3">
                 {persona2.description && (
-                  <p className="text-sm text-gray-600">{persona2.description}</p>
+                  <p className="text-sm text-gray-600">
+                    {persona2.description}
+                  </p>
                 )}
                 <div className="space-y-1 text-xs">
                   {persona2.role && (
                     <div>
-                      <span className="text-gray-500">Role:</span> {persona2.role}
+                      <span className="text-gray-500">Role:</span>{' '}
+                      {persona2.role}
                     </div>
                   )}
                   {persona2.industry && (
                     <div>
-                      <span className="text-gray-500">Industry:</span> {persona2.industry}
+                      <span className="text-gray-500">Industry:</span>{' '}
+                      {persona2.industry}
                     </div>
                   )}
                   {persona2.seniorityLevel && (
                     <div>
-                      <span className="text-gray-500">Seniority:</span> {persona2.seniorityLevel}
+                      <span className="text-gray-500">Seniority:</span>{' '}
+                      {persona2.seniorityLevel}
                     </div>
                   )}
                 </div>
@@ -200,24 +242,30 @@ export function PersonaComparisonDrawer({
               <h4 className="font-semibold text-sm">Score Comparison</h4>
             </CardHeader>
             <CardContent className="space-y-2">
-              {scoreDifferences && Object.entries(scoreDifferences).map(([key, diff]) => {
-                const isPositive = diff > 0;
-                const Icon = isPositive ? TrendingUp : TrendingDown;
-                const color = isPositive ? 'text-green-600' : 'text-red-600';
+              {scoreDifferences &&
+                Object.entries(scoreDifferences).map(([key, diff]) => {
+                  const isPositive = diff > 0;
+                  const Icon = isPositive ? TrendingUp : TrendingDown;
+                  const color = isPositive ? 'text-green-600' : 'text-red-600';
 
-                return (
-                  <div key={key} className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600 capitalize">{key.replace(/_/g, ' ')}</span>
-                    <div className="flex items-center gap-2">
-                      <span className={cn('font-medium', color)}>
-                        {isPositive ? '+' : ''}
-                        {diff.toFixed(1)}
+                  return (
+                    <div
+                      key={key}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="text-gray-600 capitalize">
+                        {key.replace(/_/g, ' ')}
                       </span>
-                      <Icon className={cn('h-4 w-4', color)} />
+                      <div className="flex items-center gap-2">
+                        <span className={cn('font-medium', color)}>
+                          {isPositive ? '+' : ''}
+                          {diff.toFixed(1)}
+                        </span>
+                        <Icon className={cn('h-4 w-4', color)} />
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </CardContent>
           </Card>
 
@@ -241,7 +289,9 @@ export function PersonaComparisonDrawer({
                     >
                       <div className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-medium">{trait.traitName}</span>
+                        <span className="text-sm font-medium">
+                          {trait.traitName}
+                        </span>
                         <Badge variant="outline" className="text-xs">
                           {getTraitCategoryLabel(trait.traitCategory)}
                         </Badge>
@@ -264,7 +314,9 @@ export function PersonaComparisonDrawer({
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-sm">Unique to {persona1.name}</h4>
+                  <h4 className="font-semibold text-sm">
+                    Unique to {persona1.name}
+                  </h4>
                   <Badge variant="secondary" className="text-xs">
                     {uniqueTraits1?.length || 0}
                   </Badge>
@@ -273,17 +325,19 @@ export function PersonaComparisonDrawer({
               <CardContent>
                 {uniqueTraits1 && uniqueTraits1.length > 0 ? (
                   <div className="space-y-1">
-                    {uniqueTraits1.slice(0, 5).map((trait: AudiencePersonaTrait) => (
-                      <div
-                        key={trait.id}
-                        className="flex items-center gap-2 p-2 bg-blue-50 rounded text-sm"
-                      >
-                        <span className="font-medium">{trait.traitName}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {(trait.traitStrength * 100).toFixed(0)}%
-                        </Badge>
-                      </div>
-                    ))}
+                    {uniqueTraits1
+                      .slice(0, 5)
+                      .map((trait: AudiencePersonaTrait) => (
+                        <div
+                          key={trait.id}
+                          className="flex items-center gap-2 p-2 bg-blue-50 rounded text-sm"
+                        >
+                          <span className="font-medium">{trait.traitName}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {(trait.traitStrength * 100).toFixed(0)}%
+                          </Badge>
+                        </div>
+                      ))}
                     {uniqueTraits1.length > 5 && (
                       <p className="text-xs text-gray-500 pt-2">
                         +{uniqueTraits1.length - 5} more
@@ -300,7 +354,9 @@ export function PersonaComparisonDrawer({
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-sm">Unique to {persona2.name}</h4>
+                  <h4 className="font-semibold text-sm">
+                    Unique to {persona2.name}
+                  </h4>
                   <Badge variant="secondary" className="text-xs">
                     {uniqueTraits2?.length || 0}
                   </Badge>
@@ -309,17 +365,19 @@ export function PersonaComparisonDrawer({
               <CardContent>
                 {uniqueTraits2 && uniqueTraits2.length > 0 ? (
                   <div className="space-y-1">
-                    {uniqueTraits2.slice(0, 5).map((trait: AudiencePersonaTrait) => (
-                      <div
-                        key={trait.id}
-                        className="flex items-center gap-2 p-2 bg-purple-50 rounded text-sm"
-                      >
-                        <span className="font-medium">{trait.traitName}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {(trait.traitStrength * 100).toFixed(0)}%
-                        </Badge>
-                      </div>
-                    ))}
+                    {uniqueTraits2
+                      .slice(0, 5)
+                      .map((trait: AudiencePersonaTrait) => (
+                        <div
+                          key={trait.id}
+                          className="flex items-center gap-2 p-2 bg-purple-50 rounded text-sm"
+                        >
+                          <span className="font-medium">{trait.traitName}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {(trait.traitStrength * 100).toFixed(0)}%
+                          </Badge>
+                        </div>
+                      ))}
                     {uniqueTraits2.length > 5 && (
                       <p className="text-xs text-gray-500 pt-2">
                         +{uniqueTraits2.length - 5} more
@@ -340,15 +398,20 @@ export function PersonaComparisonDrawer({
                 <div className="flex items-start gap-3">
                   <GitMerge className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <h4 className="font-semibold text-sm mb-1">Merge These Personas?</h4>
+                    <h4 className="font-semibold text-sm mb-1">
+                      Merge These Personas?
+                    </h4>
                     <p className="text-xs text-gray-700 mb-3">
-                      These personas are very similar. Merging will combine their traits and insights
-                      while archiving the source persona.
+                      These personas are very similar. Merging will combine
+                      their traits and insights while archiving the source
+                      persona.
                     </p>
 
                     {/* Merge Direction */}
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-gray-700">Merge Direction:</label>
+                      <label className="text-xs font-medium text-gray-700">
+                        Merge Direction:
+                      </label>
                       <div className="flex gap-2">
                         <button
                           onClick={() => setMergeDirection('1to2')}

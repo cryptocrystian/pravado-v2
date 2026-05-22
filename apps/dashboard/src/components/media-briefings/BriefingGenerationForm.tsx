@@ -7,10 +7,7 @@
 
 'use client';
 
-import type {
-  BriefFormatType,
-  CreateBriefingRequest,
-} from '@pravado/types';
+import type { BriefFormatType, CreateBriefingRequest } from '@pravado/types';
 import {
   FileText,
   Users,
@@ -26,7 +23,13 @@ import React, { useState, useCallback } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -71,12 +74,18 @@ const toneOptions = [
 ];
 
 const formatDescriptions: Record<BriefFormatType, string> = {
-  full_brief: 'Comprehensive briefing with all sections including background, key messages, Q&A prep, and competitive analysis',
-  executive_summary: 'Condensed overview highlighting critical points for quick consumption by leadership',
-  talking_points_only: 'Focused set of key talking points and messages without additional context',
-  media_prep: 'Interview preparation with anticipated questions, messaging frameworks, and bridge statements',
-  crisis_brief: 'Rapid response format with defensive messaging, risk assessment, and mitigation strategies',
-  interview_prep: 'Detailed preparation for media appearances with anticipated questions and suggested answers',
+  full_brief:
+    'Comprehensive briefing with all sections including background, key messages, Q&A prep, and competitive analysis',
+  executive_summary:
+    'Condensed overview highlighting critical points for quick consumption by leadership',
+  talking_points_only:
+    'Focused set of key talking points and messages without additional context',
+  media_prep:
+    'Interview preparation with anticipated questions, messaging frameworks, and bridge statements',
+  crisis_brief:
+    'Rapid response format with defensive messaging, risk assessment, and mitigation strategies',
+  interview_prep:
+    'Detailed preparation for media appearances with anticipated questions and suggested answers',
 };
 
 export default function BriefingGenerationForm({
@@ -111,9 +120,12 @@ export default function BriefingGenerationForm({
     }
   }, [focusAreaInput, focusAreas]);
 
-  const handleRemoveFocusArea = useCallback((area: string) => {
-    setFocusAreas(focusAreas.filter((a) => a !== area));
-  }, [focusAreas]);
+  const handleRemoveFocusArea = useCallback(
+    (area: string) => {
+      setFocusAreas(focusAreas.filter((a) => a !== area));
+    },
+    [focusAreas]
+  );
 
   const handleAddExcludedTopic = useCallback(() => {
     const trimmed = excludedTopicInput.trim();
@@ -123,9 +135,12 @@ export default function BriefingGenerationForm({
     }
   }, [excludedTopicInput, excludedTopics]);
 
-  const handleRemoveExcludedTopic = useCallback((topic: string) => {
-    setExcludedTopics(excludedTopics.filter((t) => t !== topic));
-  }, [excludedTopics]);
+  const handleRemoveExcludedTopic = useCallback(
+    (topic: string) => {
+      setExcludedTopics(excludedTopics.filter((t) => t !== topic));
+    },
+    [excludedTopics]
+  );
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -154,9 +169,11 @@ export default function BriefingGenerationForm({
       subtitle: subtitle.trim() || undefined,
       format,
       tone,
-      journalistIds: selectedJournalists.length > 0 ? selectedJournalists : undefined,
+      journalistIds:
+        selectedJournalists.length > 0 ? selectedJournalists : undefined,
       personaIds: selectedPersonas.length > 0 ? selectedPersonas : undefined,
-      competitorIds: selectedCompetitors.length > 0 ? selectedCompetitors : undefined,
+      competitorIds:
+        selectedCompetitors.length > 0 ? selectedCompetitors : undefined,
       focusAreas: focusAreas.length > 0 ? focusAreas : undefined,
       excludedTopics: excludedTopics.length > 0 ? excludedTopics : undefined,
       customInstructions: customInstructions.trim() || undefined,
@@ -185,7 +202,9 @@ export default function BriefingGenerationForm({
               placeholder="e.g., Q4 Product Launch Media Brief"
               className={cn(errors.title && 'border-red-500')}
             />
-            {errors.title && <span className="text-xs text-red-500 mt-1">{errors.title}</span>}
+            {errors.title && (
+              <span className="text-xs text-red-500 mt-1">{errors.title}</span>
+            )}
           </div>
 
           <div>
@@ -197,7 +216,11 @@ export default function BriefingGenerationForm({
               placeholder="e.g., Key messages for TechCrunch interview"
               className={cn(errors.subtitle && 'border-red-500')}
             />
-            {errors.subtitle && <span className="text-xs text-red-500 mt-1">{errors.subtitle}</span>}
+            {errors.subtitle && (
+              <span className="text-xs text-red-500 mt-1">
+                {errors.subtitle}
+              </span>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -206,7 +229,9 @@ export default function BriefingGenerationForm({
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Briefing Format</CardTitle>
-          <CardDescription>Choose the format that best fits your needs</CardDescription>
+          <CardDescription>
+            Choose the format that best fits your needs
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -224,7 +249,9 @@ export default function BriefingGenerationForm({
               >
                 <div className="flex items-center gap-2 mb-1">
                   <span>{getFormatIcon(f)}</span>
-                  <span className="text-sm font-medium">{getFormatLabel(f)}</span>
+                  <span className="text-sm font-medium">
+                    {getFormatLabel(f)}
+                  </span>
                 </div>
                 <span className="text-xs text-white/50 line-clamp-2">
                   {formatDescriptions[f]}
@@ -268,7 +295,9 @@ export default function BriefingGenerationForm({
             <Target className="h-4 w-4" />
             Sources & Context
           </CardTitle>
-          <CardDescription>Link relevant sources to enrich the briefing</CardDescription>
+          <CardDescription>
+            Link relevant sources to enrich the briefing
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Journalists */}
@@ -301,14 +330,18 @@ export default function BriefingGenerationForm({
               {selectedJournalists.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {selectedJournalists.map((id) => {
-                    const journalist = availableJournalists.find((j) => j.id === id);
+                    const journalist = availableJournalists.find(
+                      (j) => j.id === id
+                    );
                     return (
                       <Badge key={id} variant="secondary" className="text-xs">
                         {journalist?.name || id}
                         <button
                           type="button"
                           onClick={() =>
-                            setSelectedJournalists(selectedJournalists.filter((j) => j !== id))
+                            setSelectedJournalists(
+                              selectedJournalists.filter((j) => j !== id)
+                            )
                           }
                           className="ml-1"
                         >
@@ -354,12 +387,18 @@ export default function BriefingGenerationForm({
                   {selectedPersonas.map((id) => {
                     const persona = availablePersonas.find((p) => p.id === id);
                     return (
-                      <Badge key={id} variant="secondary" className="text-xs bg-purple-100 text-purple-700">
+                      <Badge
+                        key={id}
+                        variant="secondary"
+                        className="text-xs bg-purple-100 text-purple-700"
+                      >
                         {persona?.name || id}
                         <button
                           type="button"
                           onClick={() =>
-                            setSelectedPersonas(selectedPersonas.filter((p) => p !== id))
+                            setSelectedPersonas(
+                              selectedPersonas.filter((p) => p !== id)
+                            )
                           }
                           className="ml-1"
                         >
@@ -403,14 +442,22 @@ export default function BriefingGenerationForm({
               {selectedCompetitors.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {selectedCompetitors.map((id) => {
-                    const competitor = availableCompetitors.find((c) => c.id === id);
+                    const competitor = availableCompetitors.find(
+                      (c) => c.id === id
+                    );
                     return (
-                      <Badge key={id} variant="secondary" className="text-xs bg-orange-100 text-orange-700">
+                      <Badge
+                        key={id}
+                        variant="secondary"
+                        className="text-xs bg-orange-100 text-orange-700"
+                      >
                         {competitor?.name || id}
                         <button
                           type="button"
                           onClick={() =>
-                            setSelectedCompetitors(selectedCompetitors.filter((c) => c !== id))
+                            setSelectedCompetitors(
+                              selectedCompetitors.filter((c) => c !== id)
+                            )
                           }
                           className="ml-1"
                         >
@@ -450,7 +497,11 @@ export default function BriefingGenerationForm({
                   }
                 }}
               />
-              <Button type="button" variant="outline" onClick={handleAddFocusArea}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAddFocusArea}
+              >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
@@ -459,7 +510,11 @@ export default function BriefingGenerationForm({
                 {focusAreas.map((area, idx) => (
                   <Badge key={idx} variant="secondary" className="text-xs">
                     {area}
-                    <button type="button" onClick={() => handleRemoveFocusArea(area)} className="ml-1">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFocusArea(area)}
+                      className="ml-1"
+                    >
                       <X className="h-3 w-3" />
                     </button>
                   </Badge>
@@ -483,16 +538,28 @@ export default function BriefingGenerationForm({
                   }
                 }}
               />
-              <Button type="button" variant="outline" onClick={handleAddExcludedTopic}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAddExcludedTopic}
+              >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
             {excludedTopics.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {excludedTopics.map((topic, idx) => (
-                  <Badge key={idx} variant="outline" className="text-xs bg-red-50 text-red-700">
+                  <Badge
+                    key={idx}
+                    variant="outline"
+                    className="text-xs bg-red-50 text-red-700"
+                  >
                     {topic}
-                    <button type="button" onClick={() => handleRemoveExcludedTopic(topic)} className="ml-1">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveExcludedTopic(topic)}
+                      className="ml-1"
+                    >
                       <X className="h-3 w-3" />
                     </button>
                   </Badge>
@@ -510,7 +577,9 @@ export default function BriefingGenerationForm({
             <Info className="h-4 w-4" />
             Custom Instructions
           </CardTitle>
-          <CardDescription>Add any specific guidance for the AI generation</CardDescription>
+          <CardDescription>
+            Add any specific guidance for the AI generation
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
@@ -525,7 +594,12 @@ export default function BriefingGenerationForm({
       {/* Actions */}
       <div className="flex items-center justify-end gap-3">
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
         )}

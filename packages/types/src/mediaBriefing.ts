@@ -818,7 +818,10 @@ export const SECTION_TYPE_CONFIGS: SectionTypeConfig[] = [
     label: 'Key Messages',
     description: 'Core messaging and talking points',
     defaultOrder: 1,
-    requiredSources: [BriefingSourceType.PRESS_RELEASE, BriefingSourceType.PITCH],
+    requiredSources: [
+      BriefingSourceType.PRESS_RELEASE,
+      BriefingSourceType.PITCH,
+    ],
     optional: false,
   },
   {
@@ -842,7 +845,10 @@ export const SECTION_TYPE_CONFIGS: SectionTypeConfig[] = [
     label: 'Journalist Intelligence',
     description: 'Key journalist profiles and relationships',
     defaultOrder: 4,
-    requiredSources: [BriefingSourceType.JOURNALIST_PROFILE, BriefingSourceType.RELATIONSHIP_EVENT],
+    requiredSources: [
+      BriefingSourceType.JOURNALIST_PROFILE,
+      BriefingSourceType.RELATIONSHIP_EVENT,
+    ],
     optional: true,
   },
   {

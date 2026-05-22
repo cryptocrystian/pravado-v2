@@ -99,7 +99,9 @@ export async function listSuites(
 /**
  * Get suite by ID with items
  */
-export async function getSuite(suiteId: string): Promise<GetScenarioSuiteResponse> {
+export async function getSuite(
+  suiteId: string
+): Promise<GetScenarioSuiteResponse> {
   return fetchWithAuth(`${BASE_PATH}/suites/${suiteId}`);
 }
 
@@ -213,13 +215,17 @@ export async function listSuiteRuns(
   if (query?.sortOrder) params.set('sortOrder', query.sortOrder);
 
   const qs = params.toString();
-  return fetchWithAuth(`${BASE_PATH}/suites/${suiteId}/runs${qs ? `?${qs}` : ''}`);
+  return fetchWithAuth(
+    `${BASE_PATH}/suites/${suiteId}/runs${qs ? `?${qs}` : ''}`
+  );
 }
 
 /**
  * Get suite run detail
  */
-export async function getSuiteRun(runId: string): Promise<GetScenarioSuiteRunResponse> {
+export async function getSuiteRun(
+  runId: string
+): Promise<GetScenarioSuiteRunResponse> {
   return fetchWithAuth(`${BASE_PATH}/suite-runs/${runId}`);
 }
 
@@ -287,7 +293,10 @@ export async function getSuiteStats(): Promise<GetScenarioSuiteStatsResponse> {
  */
 export async function generateSuiteNarrative(
   runId: string,
-  options?: { format?: 'summary' | 'detailed' | 'executive'; includeRecommendations?: boolean }
+  options?: {
+    format?: 'summary' | 'detailed' | 'executive';
+    includeRecommendations?: boolean;
+  }
 ): Promise<GenerateSuiteNarrativeResponse> {
   return fetchWithAuth(`${BASE_PATH}/suite-runs/${runId}/narrative`, {
     method: 'POST',
@@ -325,7 +334,9 @@ export async function listSuiteAuditEvents(
   if (query?.eventType) params.set('eventType', query.eventType);
 
   const qs = params.toString();
-  return fetchWithAuth(`${BASE_PATH}/suites/${suiteId}/audit-log${qs ? `?${qs}` : ''}`);
+  return fetchWithAuth(
+    `${BASE_PATH}/suites/${suiteId}/audit-log${qs ? `?${qs}` : ''}`
+  );
 }
 
 /**
@@ -341,7 +352,9 @@ export async function listRunAuditEvents(
   if (query?.eventType) params.set('eventType', query.eventType);
 
   const qs = params.toString();
-  return fetchWithAuth(`${BASE_PATH}/suite-runs/${runId}/audit-log${qs ? `?${qs}` : ''}`);
+  return fetchWithAuth(
+    `${BASE_PATH}/suite-runs/${runId}/audit-log${qs ? `?${qs}` : ''}`
+  );
 }
 
 // ============================================================================
@@ -360,7 +373,9 @@ export const CONDITION_TYPE_DESCRIPTIONS = TRIGGER_CONDITION_TYPE_DESCRIPTIONS;
 /**
  * Get status badge color class for Tailwind
  */
-export function getStatusBadgeClass(status: ScenarioSuiteStatus | ScenarioSuiteRunStatus): string {
+export function getStatusBadgeClass(
+  status: ScenarioSuiteStatus | ScenarioSuiteRunStatus
+): string {
   const colorMap: Record<string, string> = {
     gray: 'bg-gray-100 text-gray-800',
     blue: 'bg-blue-100 text-blue-800',
@@ -371,9 +386,10 @@ export function getStatusBadgeClass(status: ScenarioSuiteStatus | ScenarioSuiteR
     indigo: 'bg-indigo-100 text-indigo-800',
   };
 
-  const color = SUITE_STATUS_COLORS[status as ScenarioSuiteStatus] ||
-                SUITE_RUN_STATUS_COLORS[status as ScenarioSuiteRunStatus] ||
-                'gray';
+  const color =
+    SUITE_STATUS_COLORS[status as ScenarioSuiteStatus] ||
+    SUITE_RUN_STATUS_COLORS[status as ScenarioSuiteRunStatus] ||
+    'gray';
 
   return colorMap[color] || colorMap.gray;
 }

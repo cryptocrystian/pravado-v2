@@ -74,11 +74,11 @@ export interface MediaListSummary extends MediaList {
 // ===================================
 
 export interface FitScoreBreakdown {
-  topicRelevance: number;      // 40% weight
-  pastCoverage: number;          // 25% weight
-  engagement: number;            // 15% weight
-  responsiveness: number;        // 10% weight
-  outletTier: number;            // 10% weight
+  topicRelevance: number; // 40% weight
+  pastCoverage: number; // 25% weight
+  engagement: number; // 15% weight
+  responsiveness: number; // 10% weight
+  outletTier: number; // 10% weight
   totalScore: number;
 }
 
@@ -91,11 +91,11 @@ export interface FitScoringWeights {
 }
 
 export const DEFAULT_FIT_WEIGHTS: FitScoringWeights = {
-  topicRelevance: 0.40,
+  topicRelevance: 0.4,
   pastCoverage: 0.25,
   engagement: 0.15,
-  responsiveness: 0.10,
-  outletTier: 0.10,
+  responsiveness: 0.1,
+  outletTier: 0.1,
 };
 
 // ===================================

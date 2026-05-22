@@ -76,7 +76,9 @@ export class SEOBacklinkService {
       .limit(10);
 
     const { data: domains } = await domainsQuery;
-    const referringDomains = domains ? domains.map(this.mapReferringDomainFromDb) : [];
+    const referringDomains = domains
+      ? domains.map(this.mapReferringDomainFromDb)
+      : [];
 
     // Get recent backlinks (last 30 days, active only)
     const thirtyDaysAgo = new Date();
@@ -84,13 +86,12 @@ export class SEOBacklinkService {
 
     const recentBacklinks = backlinks
       .filter(
-        (b) =>
-          b.lost_at === null &&
-          new Date(b.discovered_at) >= thirtyDaysAgo
+        (b) => b.lost_at === null && new Date(b.discovered_at) >= thirtyDaysAgo
       )
       .sort(
         (a, b) =>
-          new Date(b.discovered_at).getTime() - new Date(a.discovered_at).getTime()
+          new Date(b.discovered_at).getTime() -
+          new Date(a.discovered_at).getTime()
       )
       .slice(0, 20)
       .map(this.mapBacklinkFromDb);
@@ -172,8 +173,8 @@ export class SEOBacklinkService {
       sortBy === 'discoveredAt'
         ? 'discovered_at'
         : sortBy === 'lastSeenAt'
-        ? 'last_seen_at'
-        : 'lost_at';
+          ? 'last_seen_at'
+          : 'lost_at';
 
     itemsQuery = itemsQuery.order(sortColumn, {
       ascending: sortOrder === 'asc',
@@ -261,8 +262,8 @@ export class SEOBacklinkService {
       sortBy === 'domainAuthority'
         ? 'domain_authority'
         : sortBy === 'totalBacklinks'
-        ? 'total_backlinks'
-        : 'first_seen_at';
+          ? 'total_backlinks'
+          : 'first_seen_at';
 
     itemsQuery = itemsQuery.order(sortColumn, {
       ascending: sortOrder === 'asc',
@@ -275,7 +276,9 @@ export class SEOBacklinkService {
     const { data: items, error: itemsError } = await itemsQuery;
 
     if (itemsError) {
-      throw new Error(`Failed to list referring domains: ${itemsError.message}`);
+      throw new Error(
+        `Failed to list referring domains: ${itemsError.message}`
+      );
     }
 
     // Get total count

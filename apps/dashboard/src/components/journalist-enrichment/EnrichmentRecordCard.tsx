@@ -69,7 +69,8 @@ export function EnrichmentRecordCard({
     return colors[status] || colors.pending;
   };
 
-  const hasQualityIssues = record.qualityFlags && record.qualityFlags.length > 0;
+  const hasQualityIssues =
+    record.qualityFlags && record.qualityFlags.length > 0;
 
   return (
     <div
@@ -77,8 +78,8 @@ export function EnrichmentRecordCard({
         selected
           ? 'border-blue-500 shadow-md'
           : hasQualityIssues
-          ? 'border-yellow-200'
-          : 'border-gray-200 hover:border-gray-300'
+            ? 'border-yellow-200'
+            : 'border-gray-200 hover:border-gray-300'
       }`}
       onClick={onClick}
     >
@@ -123,7 +124,9 @@ export function EnrichmentRecordCard({
         {record.email && (
           <div className="flex items-center gap-2 text-sm">
             <EnvelopeIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
-            <span className="text-gray-900 truncate flex-1">{record.email}</span>
+            <span className="text-gray-900 truncate flex-1">
+              {record.email}
+            </span>
             {record.emailVerified && (
               <CheckCircleIcon className="h-4 w-4 text-green-600 flex-shrink-0" />
             )}
@@ -143,7 +146,9 @@ export function EnrichmentRecordCard({
         {record.outlet && (
           <div className="flex items-center gap-2 text-sm">
             <GlobeAltIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
-            <span className="text-gray-900 truncate flex-1">{record.outlet}</span>
+            <span className="text-gray-900 truncate flex-1">
+              {record.outlet}
+            </span>
             {record.outletAuthorityScore !== undefined && (
               <span className="text-xs text-gray-600 flex-shrink-0">
                 ({record.outletAuthorityScore}/100)

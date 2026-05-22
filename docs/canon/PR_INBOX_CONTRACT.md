@@ -12,12 +12,14 @@
 The **PR Inbox** is the daily driver for PR users. It surfaces all actionable items across the PR pillar in a single, prioritized queue that enables one-click continuation into the correct next state.
 
 The PR Inbox is NOT:
+
 - A notification feed
 - An email inbox clone
 - A todo list
 - A passive activity log
 
 The PR Inbox IS:
+
 - A **unified work queue** across all PR activity types
 - A **prioritized action surface** with urgency and SLA semantics
 - A **one-click continuation system** that routes users directly to context-rich next screens
@@ -29,14 +31,14 @@ The PR Inbox IS:
 
 ### 2.1 Item Type Definitions
 
-| Type | Description | Source | Mode Ceiling |
-|------|-------------|--------|--------------|
-| **Inquiry** | Inbound media request requiring response | Monitoring, email integration | Manual |
-| **FollowUpDue** | Pitch follow-up window reached | System calculation | Manual |
-| **CoverageTriage** | New coverage detected, needs attribution | Monitoring | Copilot |
-| **RelationshipDecay** | Relationship score dropped below threshold | System calculation | Manual |
-| **ApprovalQueue** | Copilot-generated draft awaiting review | SAGE/Copilot | Manual |
-| **DataHygiene** | Contact enrichment or dedupe suggestion | CiteMind Engine 3 | Copilot |
+| Type                  | Description                                | Source                        | Mode Ceiling |
+| --------------------- | ------------------------------------------ | ----------------------------- | ------------ |
+| **Inquiry**           | Inbound media request requiring response   | Monitoring, email integration | Manual       |
+| **FollowUpDue**       | Pitch follow-up window reached             | System calculation            | Manual       |
+| **CoverageTriage**    | New coverage detected, needs attribution   | Monitoring                    | Copilot      |
+| **RelationshipDecay** | Relationship score dropped below threshold | System calculation            | Manual       |
+| **ApprovalQueue**     | Copilot-generated draft awaiting review    | SAGE/Copilot                  | Manual       |
+| **DataHygiene**       | Contact enrichment or dedupe suggestion    | CiteMind Engine 3             | Copilot      |
 
 ### 2.2 TypeScript Definition
 
@@ -89,23 +91,23 @@ interface InboxItem {
 
 ### 3.1 Due Date Calculation
 
-| Item Type | SLA Default | Urgency Calculation |
-|-----------|-------------|---------------------|
-| **Inquiry** | 4 hours | `urgency = 100 - (hoursRemaining / 4 * 100)` |
-| **FollowUpDue** | From pitch follow-up window | Based on follow-up rules |
-| **CoverageTriage** | 24 hours | Standard decay |
-| **RelationshipDecay** | 48 hours (warning) | Based on decay rate |
-| **ApprovalQueue** | 24 hours | Standard |
-| **DataHygiene** | 7 days | Low urgency |
+| Item Type             | SLA Default                 | Urgency Calculation                          |
+| --------------------- | --------------------------- | -------------------------------------------- |
+| **Inquiry**           | 4 hours                     | `urgency = 100 - (hoursRemaining / 4 * 100)` |
+| **FollowUpDue**       | From pitch follow-up window | Based on follow-up rules                     |
+| **CoverageTriage**    | 24 hours                    | Standard decay                               |
+| **RelationshipDecay** | 48 hours (warning)          | Based on decay rate                          |
+| **ApprovalQueue**     | 24 hours                    | Standard                                     |
+| **DataHygiene**       | 7 days                      | Low urgency                                  |
 
 ### 3.2 Risk Classification
 
-| Risk Level | Visual Indicator | Interpretation |
-|------------|------------------|----------------|
-| **None** | No indicator | Item can wait |
-| **Low** | Subtle border | Should address soon |
-| **Medium** | Amber highlight | Prioritize today |
-| **High** | Red pulse | Immediate attention required |
+| Risk Level | Visual Indicator | Interpretation               |
+| ---------- | ---------------- | ---------------------------- |
+| **None**   | No indicator     | Item can wait                |
+| **Low**    | Subtle border    | Should address soon          |
+| **Medium** | Amber highlight  | Prioritize today             |
+| **High**   | Red pulse        | Immediate attention required |
 
 ---
 
@@ -119,14 +121,14 @@ This is the defining characteristic of the PR Inbox. Users should never have to 
 
 ### 4.2 Continuation Routes
 
-| Item Type | Primary CTA | Target Screen State |
-|-----------|-------------|---------------------|
-| **Inquiry** | "Respond" | PitchComposer with contact + inquiry context + suggested angles |
-| **FollowUpDue** | "Draft Follow-up" | Pitch detail with follow-up editor + templates |
-| **CoverageTriage** | "Review Coverage" | Coverage detail with attribution fields + "Confirm citation" actions |
-| **RelationshipDecay** | "Re-engage" | ContactDetailDrawer → Relationship Ledger with suggested next touch |
-| **ApprovalQueue** | "Review Draft" | Draft review modal with approve/edit/save-to-drafts (NOT send) |
-| **DataHygiene** | "Review Suggestion" | Data quality modal with approve/reject enrichment |
+| Item Type             | Primary CTA         | Target Screen State                                                  |
+| --------------------- | ------------------- | -------------------------------------------------------------------- |
+| **Inquiry**           | "Respond"           | PitchComposer with contact + inquiry context + suggested angles      |
+| **FollowUpDue**       | "Draft Follow-up"   | Pitch detail with follow-up editor + templates                       |
+| **CoverageTriage**    | "Review Coverage"   | Coverage detail with attribution fields + "Confirm citation" actions |
+| **RelationshipDecay** | "Re-engage"         | ContactDetailDrawer → Relationship Ledger with suggested next touch  |
+| **ApprovalQueue**     | "Review Draft"      | Draft review modal with approve/edit/save-to-drafts (NOT send)       |
+| **DataHygiene**       | "Review Suggestion" | Data quality modal with approve/reject enrichment                    |
 
 ### 4.3 Context Preload
 
@@ -162,14 +164,14 @@ interface PreloadContext {
 
 ### 5.1 Mode Ceiling Enforcement
 
-| Item Type | Mode Ceiling | Rationale |
-|-----------|--------------|-----------|
-| **Inquiry** | Manual | External communication, relationship impact |
-| **FollowUpDue** | Manual | External communication, relationship sensitive |
-| **CoverageTriage** | Copilot | Attribution can be suggested, but human confirms |
-| **RelationshipDecay** | Manual | Relationship decisions require human judgment |
-| **ApprovalQueue** | Manual | By definition, requires human approval |
-| **DataHygiene** | Copilot | Enrichment can be suggested, human confirms |
+| Item Type             | Mode Ceiling | Rationale                                        |
+| --------------------- | ------------ | ------------------------------------------------ |
+| **Inquiry**           | Manual       | External communication, relationship impact      |
+| **FollowUpDue**       | Manual       | External communication, relationship sensitive   |
+| **CoverageTriage**    | Copilot      | Attribution can be suggested, but human confirms |
+| **RelationshipDecay** | Manual       | Relationship decisions require human judgment    |
+| **ApprovalQueue**     | Manual       | By definition, requires human approval           |
+| **DataHygiene**       | Copilot      | Enrichment can be suggested, human confirms      |
 
 ### 5.2 Approval Queue Special Rules
 
@@ -189,13 +191,13 @@ Items in ApprovalQueue are Copilot-generated drafts. The approval interface MUST
 
 ### 6.1 Prohibited Practices
 
-| Anti-Pattern | Why Prohibited | Detection |
-|--------------|----------------|-----------|
-| **Dead-end cards** | Forces users to hunt for next action | Card without primaryAction |
-| **Auto-send** | External comms must be human-approved | Any auto-send logic |
-| **Spammy batch actions** | Damages relationships | Bulk action without safeguards |
-| **Hunt-and-find** | User must click through multiple screens | CTA that doesn't land in context |
-| **Notification overload** | Low-value items drown high-value | No priority filtering |
+| Anti-Pattern              | Why Prohibited                           | Detection                        |
+| ------------------------- | ---------------------------------------- | -------------------------------- |
+| **Dead-end cards**        | Forces users to hunt for next action     | Card without primaryAction       |
+| **Auto-send**             | External comms must be human-approved    | Any auto-send logic              |
+| **Spammy batch actions**  | Damages relationships                    | Bulk action without safeguards   |
+| **Hunt-and-find**         | User must click through multiple screens | CTA that doesn't land in context |
+| **Notification overload** | Low-value items drown high-value         | No priority filtering            |
 
 ### 6.2 Required Safeguards
 
@@ -241,6 +243,7 @@ The Inbox MUST display items in grouped sections with counts:
 ### 7.3 Impact Strip Integration
 
 Every Inbox item MUST display the Impact Strip showing:
+
 - SAGE contribution tags (Signal / Authority / Growth / Exposure)
 - EVI driver direction (Visibility/Authority/Momentum +/0/-)
 - CRAFT mode badge (Manual/Copilot/Autopilot)
@@ -249,8 +252,8 @@ Every Inbox item MUST display the Impact Strip showing:
 
 ## 8. Route Definition
 
-| Route | Component | Description |
-|-------|-----------|-------------|
+| Route           | Component     | Description                |
+| --------------- | ------------- | -------------------------- |
 | `/app/pr/inbox` | `PRInbox.tsx` | PR Inbox / Work Queue view |
 
 ---
@@ -281,6 +284,7 @@ This document is the authoritative specification for PR Inbox behavior. Any impl
 ### 10.2 Change Control
 
 Modifications require:
+
 1. Product review sign-off
 2. Update to PR_WORK_SURFACE_CONTRACT.md
 3. Update to CI guardrails
@@ -290,6 +294,6 @@ Modifications require:
 
 ## 11. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-01-14 | 1.0 | Initial PR Inbox Contract specification |
+| Date       | Version | Change                                  |
+| ---------- | ------- | --------------------------------------- |
+| 2026-01-14 | 1.0     | Initial PR Inbox Contract specification |

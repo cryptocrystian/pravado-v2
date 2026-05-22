@@ -12,12 +12,12 @@ The `/contracts/examples/` folder contains JSON contract files that define the e
 
 ## Contract Files
 
-| File | Purpose | Endpoint |
-|------|---------|----------|
-| `action-stream.json` | Action items with pillars, priorities, gates | `/api/command-center/action-stream` |
-| `intelligence-canvas.json` | Knowledge graph nodes, edges, citations | `/api/command-center/intelligence-canvas` |
-| `strategy-panel.json` | KPIs, narratives, recommendations | `/api/command-center/strategy-panel` |
-| `orchestration-calendar.json` | Calendar items with statuses and modes | `/api/command-center/orchestration-calendar` |
+| File                          | Purpose                                      | Endpoint                                     |
+| ----------------------------- | -------------------------------------------- | -------------------------------------------- |
+| `action-stream.json`          | Action items with pillars, priorities, gates | `/api/command-center/action-stream`          |
+| `intelligence-canvas.json`    | Knowledge graph nodes, edges, citations      | `/api/command-center/intelligence-canvas`    |
+| `strategy-panel.json`         | KPIs, narratives, recommendations            | `/api/command-center/strategy-panel`         |
+| `orchestration-calendar.json` | Calendar items with statuses and modes       | `/api/command-center/orchestration-calendar` |
 
 ## Enabling MSW
 
@@ -51,9 +51,7 @@ export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <MSWProvider>
-          {children}
-        </MSWProvider>
+        <MSWProvider>{children}</MSWProvider>
       </body>
     </html>
   );

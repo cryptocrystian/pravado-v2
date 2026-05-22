@@ -9,7 +9,10 @@
 
 export type SchedulerTaskStatus = 'success' | 'failure';
 
-export const SCHEDULER_TASK_STATUSES: readonly SchedulerTaskStatus[] = ['success', 'failure'] as const;
+export const SCHEDULER_TASK_STATUSES: readonly SchedulerTaskStatus[] = [
+  'success',
+  'failure',
+] as const;
 
 // ========================================
 // DATABASE RECORDS
@@ -180,7 +183,9 @@ export interface NightlyCleanupMetadata {
 // TRANSFORM FUNCTIONS
 // ========================================
 
-export function transformSchedulerTaskRecord(record: SchedulerTaskRecord): SchedulerTask {
+export function transformSchedulerTaskRecord(
+  record: SchedulerTaskRecord
+): SchedulerTask {
   return {
     id: record.id,
     name: record.name,
@@ -194,7 +199,9 @@ export function transformSchedulerTaskRecord(record: SchedulerTaskRecord): Sched
   };
 }
 
-export function transformSchedulerTaskRunRecord(record: SchedulerTaskRunRecord): SchedulerTaskRun {
+export function transformSchedulerTaskRunRecord(
+  record: SchedulerTaskRunRecord
+): SchedulerTaskRun {
   return {
     id: record.id,
     taskId: record.task_id,

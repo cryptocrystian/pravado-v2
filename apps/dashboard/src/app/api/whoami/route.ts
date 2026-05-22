@@ -11,7 +11,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 // Git SHA from build-time environment variable
-const GIT_SHA = process.env.VERCEL_GIT_COMMIT_SHA || process.env.GIT_SHA || 'local';
+const GIT_SHA =
+  process.env.VERCEL_GIT_COMMIT_SHA || process.env.GIT_SHA || 'local';
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -19,7 +20,8 @@ export async function GET() {
 
   // Check for Supabase auth cookies
   const hasCookie = allCookies.some(
-    (cookie) => cookie.name.includes('auth-token') || cookie.name.includes('sb-')
+    (cookie) =>
+      cookie.name.includes('auth-token') || cookie.name.includes('sb-')
   );
 
   return NextResponse.json({

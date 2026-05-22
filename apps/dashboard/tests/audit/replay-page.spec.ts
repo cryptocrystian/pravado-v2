@@ -37,7 +37,9 @@ test.describe('Audit Replay Page', () => {
 
   test.describe('Replay Configuration', () => {
     test('should allow setting date range', async ({ page }) => {
-      const startDateInput = page.locator('input[type="datetime-local"]').first();
+      const startDateInput = page
+        .locator('input[type="datetime-local"]')
+        .first();
       const endDateInput = page.locator('input[type="datetime-local"]').nth(1);
 
       await expect(startDateInput).toBeVisible();
@@ -100,19 +102,24 @@ test.describe('Audit Replay Page', () => {
       });
 
       // Mock SSE stream
-      await page.route('**/api/v1/audit/replay/test-job-123/stream', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'text/event-stream',
-          body: `data: ${JSON.stringify({ type: 'connected', runId: 'test-job-123' })}\n\n`,
-        });
-      });
+      await page.route(
+        '**/api/v1/audit/replay/test-job-123/stream',
+        async (route) => {
+          await route.fulfill({
+            status: 200,
+            contentType: 'text/event-stream',
+            body: `data: ${JSON.stringify({ type: 'connected', runId: 'test-job-123' })}\n\n`,
+          });
+        }
+      );
 
       const startButton = page.locator('button:has-text("Start Replay")');
       await startButton.click();
 
       // Should show progress modal
-      await expect(page.locator('text=Replay Progress')).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('text=Replay Progress')).toBeVisible({
+        timeout: 5000,
+      });
     });
   });
 
@@ -132,22 +139,27 @@ test.describe('Audit Replay Page', () => {
         }
       });
 
-      await page.route('**/api/v1/audit/replay/test-job-123/stream', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'text/event-stream',
-          body: [
-            `data: ${JSON.stringify({ type: 'replay.started', data: { runId: 'test-job-123' } })}\n\n`,
-            `data: ${JSON.stringify({ type: 'replay.progress', data: { runId: 'test-job-123', progress: 50, currentEvent: 5, totalEvents: 10 } })}\n\n`,
-          ].join(''),
-        });
-      });
+      await page.route(
+        '**/api/v1/audit/replay/test-job-123/stream',
+        async (route) => {
+          await route.fulfill({
+            status: 200,
+            contentType: 'text/event-stream',
+            body: [
+              `data: ${JSON.stringify({ type: 'replay.started', data: { runId: 'test-job-123' } })}\n\n`,
+              `data: ${JSON.stringify({ type: 'replay.progress', data: { runId: 'test-job-123', progress: 50, currentEvent: 5, totalEvents: 10 } })}\n\n`,
+            ].join(''),
+          });
+        }
+      );
 
       const startButton = page.locator('button:has-text("Start Replay")');
       await startButton.click();
 
       // Should show modal with progress
-      await expect(page.locator('text=Replay Progress')).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('text=Replay Progress')).toBeVisible({
+        timeout: 5000,
+      });
       await expect(page.locator('text=Status')).toBeVisible();
     });
   });
@@ -194,7 +206,9 @@ test.describe('Audit Replay Page', () => {
       await page.reload();
 
       // Should show replay cards
-      await expect(page.locator('text=Replay #run-1')).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('text=Replay #run-1')).toBeVisible({
+        timeout: 5000,
+      });
       await expect(page.locator('text=Replay #run-2')).toBeVisible();
     });
 
@@ -244,9 +258,18 @@ test.describe('Audit Replay Page', () => {
                     totalSnapshots: 5,
                     entityBreakdown: { content: 3, playbook: 2 },
                     eventTypeBreakdown: {},
-                    severityBreakdown: { info: 4, warning: 1, error: 0, critical: 0 },
+                    severityBreakdown: {
+                      info: 4,
+                      warning: 1,
+                      error: 0,
+                      critical: 0,
+                    },
                     timeRange: { start: '2024-01-01', end: '2024-01-02' },
-                    stateChanges: { additions: 2, modifications: 2, deletions: 1 },
+                    stateChanges: {
+                      additions: 2,
+                      modifications: 2,
+                      deletions: 1,
+                    },
                   },
                   createdAt: new Date().toISOString(),
                 },
@@ -308,14 +331,20 @@ test.describe('Audit Replay Page', () => {
       await replayCard.click();
 
       // Should show timeline events
-      await expect(page.locator('text=Content created: Test Article')).toBeVisible({
+      await expect(
+        page.locator('text=Content created: Test Article')
+      ).toBeVisible({
         timeout: 5000,
       });
-      await expect(page.locator('text=Playbook started: Content Distribution')).toBeVisible();
+      await expect(
+        page.locator('text=Playbook started: Content Distribution')
+      ).toBeVisible();
     });
 
     test('should show message when no run selected', async ({ page }) => {
-      await expect(page.locator('text=Select a replay run to view timeline')).toBeVisible();
+      await expect(
+        page.locator('text=Select a replay run to view timeline')
+      ).toBeVisible();
     });
   });
 
@@ -370,29 +399,42 @@ test.describe('Audit Replay Page', () => {
         }
       });
 
-      await page.route('**/api/v1/audit/replay/run-1/snapshots/0', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            success: true,
-            data: {
-              id: 'snapshot-1',
-              replayRunId: 'run-1',
-              snapshotIndex: 0,
-              eventType: 'content.created',
-              timestamp: '2024-01-01T10:00:00Z',
-              stateBefore: null,
-              stateAfter: { id: 'content-1', title: 'New Article' },
-              diff: [
-                { field: 'id', before: undefined, after: 'content-1', operation: 'added' },
-                { field: 'title', before: undefined, after: 'New Article', operation: 'added' },
-              ],
-              entityType: 'content',
-            },
-          }),
-        });
-      });
+      await page.route(
+        '**/api/v1/audit/replay/run-1/snapshots/0',
+        async (route) => {
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              success: true,
+              data: {
+                id: 'snapshot-1',
+                replayRunId: 'run-1',
+                snapshotIndex: 0,
+                eventType: 'content.created',
+                timestamp: '2024-01-01T10:00:00Z',
+                stateBefore: null,
+                stateAfter: { id: 'content-1', title: 'New Article' },
+                diff: [
+                  {
+                    field: 'id',
+                    before: undefined,
+                    after: 'content-1',
+                    operation: 'added',
+                  },
+                  {
+                    field: 'title',
+                    before: undefined,
+                    after: 'New Article',
+                    operation: 'added',
+                  },
+                ],
+                entityType: 'content',
+              },
+            }),
+          });
+        }
+      );
 
       await page.reload();
 
@@ -400,13 +442,17 @@ test.describe('Audit Replay Page', () => {
       await page.locator('text=Replay #run-1').click();
 
       // Wait for timeline to load
-      await expect(page.locator('text=Content created')).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('text=Content created')).toBeVisible({
+        timeout: 5000,
+      });
 
       // Click on timeline event
       await page.locator('text=Content created').click();
 
       // Should show snapshot details
-      await expect(page.locator('text=Event #1')).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('text=Event #1')).toBeVisible({
+        timeout: 5000,
+      });
       await expect(page.locator('text=Changes')).toBeVisible();
     });
   });
@@ -429,7 +475,11 @@ test.describe('Audit Replay Page', () => {
 
       await page.reload();
 
-      await expect(page.locator('text=Failed to fetch replay runs').or(page.locator('.bg-red-50'))).toBeVisible();
+      await expect(
+        page
+          .locator('text=Failed to fetch replay runs')
+          .or(page.locator('.bg-red-50'))
+      ).toBeVisible();
     });
   });
 });

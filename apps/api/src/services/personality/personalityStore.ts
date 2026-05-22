@@ -3,7 +3,11 @@
  * Handles CRUD operations for agent personalities and assignments
  */
 
-import type { AgentPersonality, PersonalityProfile, PersonalityAssignment } from '@pravado/types';
+import type {
+  AgentPersonality,
+  PersonalityProfile,
+  PersonalityAssignment,
+} from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export interface PersonalityStoreOptions {
@@ -45,7 +49,10 @@ export class PersonalityStore {
     data: CreatePersonalityInput
   ): Promise<AgentPersonality> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Creating personality', { orgId, slug: data.slug });
+      console.log('[PersonalityStore] Creating personality', {
+        orgId,
+        slug: data.slug,
+      });
     }
 
     const { data: personality, error } = await this.supabase
@@ -77,7 +84,10 @@ export class PersonalityStore {
     data: UpdatePersonalityInput
   ): Promise<AgentPersonality> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Updating personality', { orgId, personalityId });
+      console.log('[PersonalityStore] Updating personality', {
+        orgId,
+        personalityId,
+      });
     }
 
     const updateData: any = {
@@ -85,8 +95,10 @@ export class PersonalityStore {
     };
 
     if (data.name !== undefined) updateData.name = data.name;
-    if (data.description !== undefined) updateData.description = data.description;
-    if (data.configuration !== undefined) updateData.configuration = data.configuration;
+    if (data.description !== undefined)
+      updateData.description = data.description;
+    if (data.configuration !== undefined)
+      updateData.configuration = data.configuration;
 
     const { data: personality, error } = await this.supabase
       .from('agent_personalities')
@@ -106,9 +118,17 @@ export class PersonalityStore {
   /**
    * List all personalities for an organization
    */
-  async listPersonalities(orgId: string, limit: number = 50, offset: number = 0): Promise<AgentPersonality[]> {
+  async listPersonalities(
+    orgId: string,
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<AgentPersonality[]> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Listing personalities', { orgId, limit, offset });
+      console.log('[PersonalityStore] Listing personalities', {
+        orgId,
+        limit,
+        offset,
+      });
     }
 
     const { data, error } = await this.supabase
@@ -128,7 +148,10 @@ export class PersonalityStore {
   /**
    * Get a specific personality by ID
    */
-  async getPersonality(orgId: string, id: string): Promise<AgentPersonality | null> {
+  async getPersonality(
+    orgId: string,
+    id: string
+  ): Promise<AgentPersonality | null> {
     if (this.debugMode) {
       console.log('[PersonalityStore] Getting personality', { orgId, id });
     }
@@ -153,9 +176,15 @@ export class PersonalityStore {
   /**
    * Get a personality by slug
    */
-  async getPersonalityBySlug(orgId: string, slug: string): Promise<AgentPersonality | null> {
+  async getPersonalityBySlug(
+    orgId: string,
+    slug: string
+  ): Promise<AgentPersonality | null> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Getting personality by slug', { orgId, slug });
+      console.log('[PersonalityStore] Getting personality by slug', {
+        orgId,
+        slug,
+      });
     }
 
     const { data, error } = await this.supabase
@@ -178,9 +207,17 @@ export class PersonalityStore {
   /**
    * Assign a personality to an agent
    */
-  async assignPersonalityToAgent(orgId: string, agentId: string, personalityId: string): Promise<void> {
+  async assignPersonalityToAgent(
+    orgId: string,
+    agentId: string,
+    personalityId: string
+  ): Promise<void> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Assigning personality to agent', { orgId, agentId, personalityId });
+      console.log('[PersonalityStore] Assigning personality to agent', {
+        orgId,
+        agentId,
+        personalityId,
+      });
     }
 
     // Check if assignment already exists
@@ -200,15 +237,19 @@ export class PersonalityStore {
         .eq('agent_id', agentId);
 
       if (error) {
-        throw new Error(`Failed to update personality assignment: ${error.message}`);
+        throw new Error(
+          `Failed to update personality assignment: ${error.message}`
+        );
       }
     } else {
       // Create new assignment
-      const { error } = await this.supabase.from('agent_personality_assignments').insert({
-        org_id: orgId,
-        agent_id: agentId,
-        personality_id: personalityId,
-      });
+      const { error } = await this.supabase
+        .from('agent_personality_assignments')
+        .insert({
+          org_id: orgId,
+          agent_id: agentId,
+          personality_id: personalityId,
+        });
 
       if (error) {
         throw new Error(`Failed to assign personality: ${error.message}`);
@@ -219,9 +260,15 @@ export class PersonalityStore {
   /**
    * Get the assigned personality for an agent
    */
-  async getPersonalityForAgent(orgId: string, agentId: string): Promise<AgentPersonality | null> {
+  async getPersonalityForAgent(
+    orgId: string,
+    agentId: string
+  ): Promise<AgentPersonality | null> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Getting personality for agent', { orgId, agentId });
+      console.log('[PersonalityStore] Getting personality for agent', {
+        orgId,
+        agentId,
+      });
     }
 
     const { data: assignment, error: assignmentError } = await this.supabase
@@ -241,9 +288,15 @@ export class PersonalityStore {
   /**
    * Remove personality assignment from an agent
    */
-  async removePersonalityFromAgent(orgId: string, agentId: string): Promise<void> {
+  async removePersonalityFromAgent(
+    orgId: string,
+    agentId: string
+  ): Promise<void> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Removing personality from agent', { orgId, agentId });
+      console.log('[PersonalityStore] Removing personality from agent', {
+        orgId,
+        agentId,
+      });
     }
 
     const { error } = await this.supabase
@@ -253,7 +306,9 @@ export class PersonalityStore {
       .eq('agent_id', agentId);
 
     if (error) {
-      throw new Error(`Failed to remove personality assignment: ${error.message}`);
+      throw new Error(
+        `Failed to remove personality assignment: ${error.message}`
+      );
     }
   }
 

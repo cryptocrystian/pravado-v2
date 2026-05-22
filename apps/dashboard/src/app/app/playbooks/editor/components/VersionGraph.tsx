@@ -79,7 +79,10 @@ function formatTimestamp(timestamp: string): string {
   return date.toLocaleDateString();
 }
 
-export function VersionGraph({ playbookId, onCommitSelect }: VersionGraphProps) {
+export function VersionGraph({
+  playbookId,
+  onCommitSelect,
+}: VersionGraphProps) {
   const [dag, setDag] = useState<CommitDAGNode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +93,9 @@ export function VersionGraph({ playbookId, onCommitSelect }: VersionGraphProps) 
     const loadDAG = async () => {
       try {
         // Gate 1A: Use route handler, not direct backend call
-        const response = await fetch(`/api/playbooks/${playbookId}/commits/dag`);
+        const response = await fetch(
+          `/api/playbooks/${playbookId}/commits/dag`
+        );
         const data = await response.json();
 
         if (data.success && data.data?.dag) {

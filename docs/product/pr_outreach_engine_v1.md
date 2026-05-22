@@ -7,6 +7,7 @@ The Automated Journalist Outreach Engine enables systematic, multi-step email ca
 ## Key Features
 
 ### 1. Sequence Management
+
 - Create multi-step email sequences
 - Configure delays between steps
 - Template-based email content
@@ -15,6 +16,7 @@ The Automated Journalist Outreach Engine enables systematic, multi-step email ca
 - Auto-stop on journalist reply
 
 ### 2. Smart Targeting
+
 - Target specific journalists by ID
 - Filter by outlet
 - Filter by beat/topic
@@ -22,6 +24,7 @@ The Automated Journalist Outreach Engine enables systematic, multi-step email ca
 - Preview targeting before launch
 
 ### 3. Email Steps
+
 - Step-by-step progression
 - Configurable delays (hours)
 - Template variables
@@ -29,6 +32,7 @@ The Automated Journalist Outreach Engine enables systematic, multi-step email ca
 - Subject and body templates
 
 ### 4. Run Management
+
 - Track individual journalist runs
 - Monitor step progression
 - Manual stop control
@@ -36,6 +40,7 @@ The Automated Journalist Outreach Engine enables systematic, multi-step email ca
 - Error tracking and retry logic
 
 ### 5. Event Tracking
+
 - Sent tracking
 - Open tracking
 - Click tracking
@@ -44,6 +49,7 @@ The Automated Journalist Outreach Engine enables systematic, multi-step email ca
 - Failure logging
 
 ### 6. Analytics & Stats
+
 - Total sequences and active count
 - Run statistics
 - Email delivery metrics
@@ -55,22 +61,26 @@ The Automated Journalist Outreach Engine enables systematic, multi-step email ca
 ### Database Schema
 
 **pr_outreach_sequences**: Campaign definitions
+
 - Targeting criteria
 - Execution settings
 - Associated content (pitch/press release)
 - Statistics tracking
 
 **pr_outreach_sequence_steps**: Email templates
+
 - Step ordering and delays
 - Template content
 - LLM generation settings
 
 **pr_outreach_runs**: Execution instances
+
 - Per-journalist tracking
 - State management
 - Progress monitoring
 
 **pr_outreach_events**: Activity log
+
 - All email events
 - Timestamp tracking
 - Metadata storage
@@ -78,6 +88,7 @@ The Automated Journalist Outreach Engine enables systematic, multi-step email ca
 ### Service Layer
 
 **OutreachService** (~950 lines):
+
 - Sequence CRUD operations
 - Step management
 - Run execution engine
@@ -176,7 +187,8 @@ await createOutreachStep(sequence.id, {
   stepNumber: 1,
   useLlmGeneration: true,
   llmModel: 'gpt-4',
-  llmPrompt: 'Generate a personalized outreach email for {{journalist_name}} at {{outlet}} about our new AI product launch. Make it professional and concise.',
+  llmPrompt:
+    'Generate a personalized outreach email for {{journalist_name}} at {{outlet}} about our new AI product launch. Make it professional and concise.',
   subjectTemplate: '...', // Used as starting point
   bodyTemplate: '...',
 });
@@ -225,18 +237,22 @@ Supported events: sent, opened, clicked, replied, bounced, failed
 ## Integration Points
 
 ### S39 (PR Pitch Engine)
+
 - Link sequences to generated pitches
 - Access pitch context in templates
 
 ### S38 (Press Release Generator)
+
 - Link sequences to press releases
 - Include release content in outreach
 
 ### S40-S43 (Media Monitoring)
+
 - Target journalists from monitoring data
 - Track coverage from outreach
 
 ### S42 (Scheduler)
+
 - Automatic run advancement
 - Scheduled email sending
 - Background processing
@@ -244,6 +260,7 @@ Supported events: sent, opened, clicked, replied, bounced, failed
 ## Metrics & KPIs
 
 Dashboard displays:
+
 - Total sequences (active vs. inactive)
 - Total runs (running vs. completed)
 - Email metrics (sent/opened/clicked/replied)

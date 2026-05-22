@@ -152,7 +152,8 @@ export class ContentQualityService {
     const avgWordsPerSentence = wordCount / sentenceCount;
     const avgSyllablesPerWord = syllableCount / wordCount;
 
-    let readingEase = 206.835 - 1.015 * avgWordsPerSentence - 84.6 * avgSyllablesPerWord;
+    let readingEase =
+      206.835 - 1.015 * avgWordsPerSentence - 84.6 * avgSyllablesPerWord;
 
     // Clamp to 0-100
     readingEase = Math.max(0, Math.min(100, readingEase));
@@ -264,13 +265,16 @@ export class ContentQualityService {
 
     // Use pgvector to find similar content
     // In Supabase, we can use the <-> operator for cosine distance
-    const { data: similarItems } = await this.supabase.rpc('find_similar_content', {
-      p_org_id: orgId,
-      p_content_item_id: item.id,
-      p_embedding: item.embeddings,
-      p_threshold: 1 - this.SIMILARITY_THRESHOLD, // Convert similarity to distance
-      p_limit: 5,
-    });
+    const { data: similarItems } = await this.supabase.rpc(
+      'find_similar_content',
+      {
+        p_org_id: orgId,
+        p_content_item_id: item.id,
+        p_embedding: item.embeddings,
+        p_threshold: 1 - this.SIMILARITY_THRESHOLD, // Convert similarity to distance
+        p_limit: 5,
+      }
+    );
 
     if (!similarItems || similarItems.length === 0) {
       return [];
@@ -408,7 +412,9 @@ export class ContentQualityService {
     }
 
     if (improvements.length === 0) {
-      improvements.push('Content quality is good! No major improvements needed.');
+      improvements.push(
+        'Content quality is good! No major improvements needed.'
+      );
     }
 
     return improvements;
@@ -488,15 +494,19 @@ export class ContentQualityService {
   /**
    * Map database record to ContentQualityScore type
    */
-  private mapQualityScoreFromDb(data: Record<string, unknown>): ContentQualityScore {
+  private mapQualityScoreFromDb(
+    data: Record<string, unknown>
+  ): ContentQualityScore {
     return {
       id: data.id as string,
       orgId: data.org_id as string,
       contentItemId: data.content_item_id as string,
       score: Number(data.score),
       readability: data.readability !== null ? Number(data.readability) : null,
-      topicAlignment: data.topic_alignment !== null ? Number(data.topic_alignment) : null,
-      keywordAlignment: data.keyword_alignment !== null ? Number(data.keyword_alignment) : null,
+      topicAlignment:
+        data.topic_alignment !== null ? Number(data.topic_alignment) : null,
+      keywordAlignment:
+        data.keyword_alignment !== null ? Number(data.keyword_alignment) : null,
       thinContent: data.thin_content as boolean,
       duplicateFlag: data.duplicate_flag as boolean,
       warnings: (data.warnings as Record<string, unknown>) || {},

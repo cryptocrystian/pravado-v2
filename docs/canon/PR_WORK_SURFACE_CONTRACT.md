@@ -17,22 +17,22 @@ This document defines the **V1 frozen contract** for the PR Work Surface. All im
 
 ### 2.1 The Problem with Traditional PR Tools
 
-| Tool | Primary Problem | Why Pravado is Different |
-|------|-----------------|--------------------------|
-| **Cision** | Distribution-first; volume over quality; no AI visibility | Relationship-first; quality metrics; CiteMind integration |
-| **Meltwater** | Monitoring-heavy; weak outreach; siloed from content/SEO | Integrated pillar; cross-pillar reinforcement; SAGE orchestration |
-| **Prezly** | CRM-like but no intelligence; no AI optimization | SAGE-driven proposals; CiteMind citation tracking |
+| Tool          | Primary Problem                                           | Why Pravado is Different                                          |
+| ------------- | --------------------------------------------------------- | ----------------------------------------------------------------- |
+| **Cision**    | Distribution-first; volume over quality; no AI visibility | Relationship-first; quality metrics; CiteMind integration         |
+| **Meltwater** | Monitoring-heavy; weak outreach; siloed from content/SEO  | Integrated pillar; cross-pillar reinforcement; SAGE orchestration |
+| **Prezly**    | CRM-like but no intelligence; no AI optimization          | SAGE-driven proposals; CiteMind citation tracking                 |
 
 ### 2.2 The Pravado Advantage
 
-| Capability | Traditional Tools | Pravado |
-|------------|-------------------|---------|
-| **Distribution model** | Pay-per-release wire | CiteMind AEO + optional wire |
-| **Intelligence** | Separate monitoring tool | Integrated CiteMind Engine 3 |
-| **Cross-pillar** | Isolated silo | PR → Content → SEO reinforcement |
-| **AI visibility** | Not addressed | Native CiteMind citation building |
-| **Automation** | Bulk send (dangerous) | Governed modes (safe) |
-| **Measurement** | Vanity metrics (impressions) | Outcome metrics (coverage, citations) |
+| Capability             | Traditional Tools            | Pravado                               |
+| ---------------------- | ---------------------------- | ------------------------------------- |
+| **Distribution model** | Pay-per-release wire         | CiteMind AEO + optional wire          |
+| **Intelligence**       | Separate monitoring tool     | Integrated CiteMind Engine 3          |
+| **Cross-pillar**       | Isolated silo                | PR → Content → SEO reinforcement      |
+| **AI visibility**      | Not addressed                | Native CiteMind citation building     |
+| **Automation**         | Bulk send (dangerous)        | Governed modes (safe)                 |
+| **Measurement**        | Vanity metrics (impressions) | Outcome metrics (coverage, citations) |
 
 ### 2.3 Value Proposition
 
@@ -44,38 +44,39 @@ This document defines the **V1 frozen contract** for the PR Work Surface. All im
 
 ### 3.1 Mode Definitions for PR
 
-| Mode | Description | User Role | System Role |
-|------|-------------|-----------|-------------|
-| **Manual** | User initiates and executes all actions | Full control | Research/context only |
-| **Copilot** | System proposes and assists; user approves | Approve/modify | Draft, suggest, prepare |
-| **Autopilot** | System executes within guardrails | Monitor | Execute low-risk internal actions |
+| Mode          | Description                                | User Role      | System Role                       |
+| ------------- | ------------------------------------------ | -------------- | --------------------------------- |
+| **Manual**    | User initiates and executes all actions    | Full control   | Research/context only             |
+| **Copilot**   | System proposes and assists; user approves | Approve/modify | Draft, suggest, prepare           |
+| **Autopilot** | System executes within guardrails          | Monitor        | Execute low-risk internal actions |
 
 ### 3.2 Action-Mode Matrix (V1)
 
-| Action | Manual | Copilot | Autopilot | V1 Default |
-|--------|--------|---------|-----------|------------|
-| Journalist research | Yes | Yes | Yes | Copilot |
-| Media list building | Yes | Yes | Yes | Copilot |
-| Coverage monitoring | Yes | Yes | Yes | Autopilot |
-| Pitch draft | Yes | Yes | No | Copilot |
-| Pitch send | Yes | No | No | Manual |
-| Press release draft | Yes | Yes | No | Copilot |
-| Pravado Newsroom publish | Yes | Yes | No | Copilot |
-| Wire distribution | Yes | No | No | Manual |
-| Follow-up sending | Yes | No | No | Manual |
+| Action                   | Manual | Copilot | Autopilot | V1 Default |
+| ------------------------ | ------ | ------- | --------- | ---------- |
+| Journalist research      | Yes    | Yes     | Yes       | Copilot    |
+| Media list building      | Yes    | Yes     | Yes       | Copilot    |
+| Coverage monitoring      | Yes    | Yes     | Yes       | Autopilot  |
+| Pitch draft              | Yes    | Yes     | No        | Copilot    |
+| Pitch send               | Yes    | No      | No        | Manual     |
+| Press release draft      | Yes    | Yes     | No        | Copilot    |
+| Pravado Newsroom publish | Yes    | Yes     | No        | Copilot    |
+| Wire distribution        | Yes    | No      | No        | Manual     |
+| Follow-up sending        | Yes    | No      | No        | Manual     |
 
 ### 3.3 Mode Ceiling Enforcement
 
 **CRITICAL:** The following actions have hard mode ceilings that cannot be overridden:
 
-| Action | Mode Ceiling | Rationale |
-|--------|--------------|-----------|
-| **Pitch send** | Manual | External, irreversible, relationship impact |
-| **Wire distribution** | Manual | External, costly, compliance implications |
-| **Follow-up sending** | Manual | Relationship sensitive |
-| **Crisis response** | Manual | High stakes |
+| Action                | Mode Ceiling | Rationale                                   |
+| --------------------- | ------------ | ------------------------------------------- |
+| **Pitch send**        | Manual       | External, irreversible, relationship impact |
+| **Wire distribution** | Manual       | External, costly, compliance implications   |
+| **Follow-up sending** | Manual       | Relationship sensitive                      |
+| **Crisis response**   | Manual       | High stakes                                 |
 
 These ceilings apply regardless of:
+
 - Plan tier (Enterprise included)
 - Trust level (Veteran included)
 - Confidence score (even at 1.0)
@@ -114,6 +115,7 @@ The primary distribution path in V1:
 ```
 
 **V1 Features:**
+
 - Pravado Newsroom hosted page
 - NewsArticle schema auto-generation
 - IndexNow ping on publish
@@ -121,13 +123,13 @@ The primary distribution path in V1:
 
 ### 4.2 Legacy Wire Integration (V1)
 
-| Feature | V1 Status | Notes |
-|---------|-----------|-------|
-| PR Newswire submission | Available | Manual mode only |
-| BusinessWire submission | Available | Manual mode only |
-| GlobeNewswire submission | Roadmap | Not V1 |
-| Cost preview | Required | Before submission |
-| Draft preview | Required | Before submission |
+| Feature                  | V1 Status | Notes             |
+| ------------------------ | --------- | ----------------- |
+| PR Newswire submission   | Available | Manual mode only  |
+| BusinessWire submission  | Available | Manual mode only  |
+| GlobeNewswire submission | Roadmap   | Not V1            |
+| Cost preview             | Required  | Before submission |
+| Draft preview            | Required  | Before submission |
 
 **V1 Constraint:** Wire distribution always requires explicit user confirmation with cost display.
 
@@ -159,29 +161,29 @@ The primary distribution path in V1:
 
 ### 5.2 Required Views (V1)
 
-| View | Route | Status | Description |
-|------|-------|--------|-------------|
-| PR Dashboard | `/app/pr` | Required | Overview, SAGE proposals, quick actions |
-| Media Database | `/app/pr/media` | Required | Journalist contacts, search, lists |
-| Pitch Composer | `/app/pr/pitch/[id]` | Required | Create/edit pitch with context |
-| Contact Detail | `/app/pr/media/[id]` | Required | Journalist profile + timeline |
-| Press Releases | `/app/pr/releases` | Required | Release management |
-| Release Editor | `/app/pr/releases/[id]` | Required | Create/edit release |
-| Coverage | `/app/pr/coverage` | Required | Coverage tracking |
-| Analytics | `/app/pr/analytics` | Required | PR performance metrics |
+| View           | Route                   | Status   | Description                             |
+| -------------- | ----------------------- | -------- | --------------------------------------- |
+| PR Dashboard   | `/app/pr`               | Required | Overview, SAGE proposals, quick actions |
+| Media Database | `/app/pr/media`         | Required | Journalist contacts, search, lists      |
+| Pitch Composer | `/app/pr/pitch/[id]`    | Required | Create/edit pitch with context          |
+| Contact Detail | `/app/pr/media/[id]`    | Required | Journalist profile + timeline           |
+| Press Releases | `/app/pr/releases`      | Required | Release management                      |
+| Release Editor | `/app/pr/releases/[id]` | Required | Create/edit release                     |
+| Coverage       | `/app/pr/coverage`      | Required | Coverage tracking                       |
+| Analytics      | `/app/pr/analytics`     | Required | PR performance metrics                  |
 
 ### 5.3 Component Requirements
 
-| Component | V1 Requirement | Description |
-|-----------|----------------|-------------|
-| **MediaDatabaseTable** | Required | Sortable, filterable journalist list |
-| **JournalistCard** | Required | Compact journalist info display |
-| **ContactTimeline** | Required | Interaction history |
-| **PitchComposer** | Required | Draft/edit pitch with context |
-| **PersonalizationScore** | Required | Real-time pitch quality indicator |
-| **ReleaseEditor** | Required | Press release authoring |
-| **CoverageCard** | Required | Coverage item display |
-| **DistributionOptions** | Required | CiteMind AEO + Wire selector |
+| Component                | V1 Requirement | Description                          |
+| ------------------------ | -------------- | ------------------------------------ |
+| **MediaDatabaseTable**   | Required       | Sortable, filterable journalist list |
+| **JournalistCard**       | Required       | Compact journalist info display      |
+| **ContactTimeline**      | Required       | Interaction history                  |
+| **PitchComposer**        | Required       | Draft/edit pitch with context        |
+| **PersonalizationScore** | Required       | Real-time pitch quality indicator    |
+| **ReleaseEditor**        | Required       | Press release authoring              |
+| **CoverageCard**         | Required       | Coverage item display                |
+| **DistributionOptions**  | Required       | CiteMind AEO + Wire selector         |
 
 ---
 
@@ -263,23 +265,23 @@ The primary distribution path in V1:
 
 ### 7.1 V1 Guardrails
 
-| Guardrail | Threshold | Enforcement |
-|-----------|-----------|-------------|
-| **Pitch personalization** | > 40% to send | Block |
-| **Daily pitch cap** | Plan-tier dependent | Queue |
-| **Follow-up limit** | Max 2 per journalist per 7 days | Block |
-| **New contact rate** | Warning at > 20% new per campaign | Warn |
-| **Wire distribution cost** | Must confirm cost before submit | Block |
+| Guardrail                  | Threshold                         | Enforcement |
+| -------------------------- | --------------------------------- | ----------- |
+| **Pitch personalization**  | > 40% to send                     | Block       |
+| **Daily pitch cap**        | Plan-tier dependent               | Queue       |
+| **Follow-up limit**        | Max 2 per journalist per 7 days   | Block       |
+| **New contact rate**       | Warning at > 20% new per campaign | Warn        |
+| **Wire distribution cost** | Must confirm cost before submit   | Block       |
 
 ### 7.2 V1 Quality Gates
 
-| Gate | Condition | Action |
-|------|-----------|--------|
-| **Personalization minimum** | Score < 40% | Block send, show improvement suggestions |
-| **Personalization warning** | Score 40-60% | Warning banner, allow proceed |
-| **Follow-up blocked** | > 2 in 7 days | Block send, show history |
-| **Relationship decay** | No interaction > 90 days | Warning on pitch |
-| **Bounce detected** | Previous bounce on contact | Warning, suggest verify |
+| Gate                        | Condition                  | Action                                   |
+| --------------------------- | -------------------------- | ---------------------------------------- |
+| **Personalization minimum** | Score < 40%                | Block send, show improvement suggestions |
+| **Personalization warning** | Score 40-60%               | Warning banner, allow proceed            |
+| **Follow-up blocked**       | > 2 in 7 days              | Block send, show history                 |
+| **Relationship decay**      | No interaction > 90 days   | Warning on pitch                         |
+| **Bounce detected**         | Previous bounce on contact | Warning, suggest verify                  |
 
 ---
 
@@ -287,17 +289,17 @@ The primary distribution path in V1:
 
 ### 8.1 Core Entities
 
-| Entity | Description | Key Fields |
-|--------|-------------|------------|
-| **MediaContact** | Unified contact record (all four types) | id, contact_type, name, contact_state, pitch_eligibility_score, vector_embedding |
-| **ContactEmail** | JIT-enriched ephemeral email record — never stored from static scrapes | id, contact_id, email, email_verified_at, email_source, is_stale |
-| **OutletAffiliation** | Many-to-many contact-to-outlet junction | id, contact_id, outlet_id, role, is_primary, beat_at_outlet, start_date, end_date |
-| **Outlet** | Media outlet | id, name, tier, domain, type, domain_authority |
-| **Pitch** | Outreach message | id, contact_id, subject, body, status, sent_at, personalization_score |
-| **Release** | Press release | id, title, body, schema, status, published_at, distribution_path |
-| **Coverage** | Earned media | id, url, headline, outlet_id, contact_id, attribution |
-| **Interaction** | Timeline entry | id, contact_id, type, timestamp, notes |
-| **PlatformPitchEvent** | Platform-wide anonymized pitch event for saturation scoring | id, contact_id, org_id, event_type, occurred_at |
+| Entity                 | Description                                                            | Key Fields                                                                        |
+| ---------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **MediaContact**       | Unified contact record (all four types)                                | id, contact_type, name, contact_state, pitch_eligibility_score, vector_embedding  |
+| **ContactEmail**       | JIT-enriched ephemeral email record — never stored from static scrapes | id, contact_id, email, email_verified_at, email_source, is_stale                  |
+| **OutletAffiliation**  | Many-to-many contact-to-outlet junction                                | id, contact_id, outlet_id, role, is_primary, beat_at_outlet, start_date, end_date |
+| **Outlet**             | Media outlet                                                           | id, name, tier, domain, type, domain_authority                                    |
+| **Pitch**              | Outreach message                                                       | id, contact_id, subject, body, status, sent_at, personalization_score             |
+| **Release**            | Press release                                                          | id, title, body, schema, status, published_at, distribution_path                  |
+| **Coverage**           | Earned media                                                           | id, url, headline, outlet_id, contact_id, attribution                             |
+| **Interaction**        | Timeline entry                                                         | id, contact_id, type, timestamp, notes                                            |
+| **PlatformPitchEvent** | Platform-wide anonymized pitch event for saturation scoring            | id, contact_id, org_id, event_type, occurred_at                                   |
 
 ### 8.2 Key Relationships
 
@@ -321,16 +323,16 @@ PlatformPitchEvent ─ belongs_to ─── MediaContact (anonymized org_id)
 
 The simple `status: enum(Active/Paused/Blocked)` field is replaced by a full state machine. See `JOURNALIST_DATABASE_GOVERNANCE.md` for complete transition rules.
 
-| State | Description | Pitch Eligible |
-|-------|-------------|----------------|
-| `identity_only` | Name/outlet only, no email | No |
-| `enrichment_queued` | JIT enrichment in progress | No |
-| `enriched` | Valid email returned, quality gates pending | No |
-| `pitch_eligible` | Meets all quality gates | **Yes** |
-| `stale` | Email unverified > 60 days | No — re-verification required |
-| `suppressed` | Opted out — permanent and global | Never |
-| `bounced` | Hard bounce received | Never |
-| `do_not_contact` | Org-level flag | No — org-scoped, reversible |
+| State               | Description                                 | Pitch Eligible                |
+| ------------------- | ------------------------------------------- | ----------------------------- |
+| `identity_only`     | Name/outlet only, no email                  | No                            |
+| `enrichment_queued` | JIT enrichment in progress                  | No                            |
+| `enriched`          | Valid email returned, quality gates pending | No                            |
+| `pitch_eligible`    | Meets all quality gates                     | **Yes**                       |
+| `stale`             | Email unverified > 60 days                  | No — re-verification required |
+| `suppressed`        | Opted out — permanent and global            | Never                         |
+| `bounced`           | Hard bounce received                        | Never                         |
+| `do_not_contact`    | Org-level flag                              | No — org-scoped, reversible   |
 
 ---
 
@@ -338,21 +340,21 @@ The simple `status: enum(Active/Paused/Blocked)` field is replaced by a full sta
 
 ### 9.1 Inbound Signals
 
-| Signal | Source | PR Proposal Generated |
-|--------|--------|----------------------|
-| Journalist topic trend | CiteMind Engine 3 | Pitch opportunity |
-| Coverage gap | Competitive monitoring | Press release opportunity |
-| Content published | Content pillar | Distribution opportunity |
-| Relationship decay | Internal calculation | Re-engagement suggestion |
+| Signal                 | Source                 | PR Proposal Generated     |
+| ---------------------- | ---------------------- | ------------------------- |
+| Journalist topic trend | CiteMind Engine 3      | Pitch opportunity         |
+| Coverage gap           | Competitive monitoring | Press release opportunity |
+| Content published      | Content pillar         | Distribution opportunity  |
+| Relationship decay     | Internal calculation   | Re-engagement suggestion  |
 
 ### 9.2 Outbound Signals
 
-| PR Event | Signal Emitted | Cross-Pillar Effect |
-|----------|----------------|---------------------|
-| Pitch sent | Activity signal | Timeline update |
-| Coverage obtained | Authority signal | Content brief trigger |
-| Relationship established | Growth signal | Future opportunity |
-| Release published | Visibility signal | SEO schema boost |
+| PR Event                 | Signal Emitted    | Cross-Pillar Effect   |
+| ------------------------ | ----------------- | --------------------- |
+| Pitch sent               | Activity signal   | Timeline update       |
+| Coverage obtained        | Authority signal  | Content brief trigger |
+| Relationship established | Growth signal     | Future opportunity    |
+| Release published        | Visibility signal | SEO schema boost      |
 
 ---
 
@@ -377,11 +379,11 @@ V1 PR Work Surface MUST satisfy:
 
 The following CI checks must pass for PR Work Surface changes:
 
-| Check | File | Validates |
-|-------|------|-----------|
-| `check-pr-mode-ceilings.mjs` | PR components | No auto-send on pitch/wire |
+| Check                               | File          | Validates                      |
+| ----------------------------------- | ------------- | ------------------------------ |
+| `check-pr-mode-ceilings.mjs`        | PR components | No auto-send on pitch/wire     |
 | `check-pr-personalization-gate.mjs` | PitchComposer | Personalization score enforced |
-| `check-pr-contact-limits.mjs` | Pitch logic | Follow-up limits enforced |
+| `check-pr-contact-limits.mjs`       | Pitch logic   | Follow-up limits enforced      |
 
 ---
 
@@ -390,6 +392,7 @@ The following CI checks must pass for PR Work Surface changes:
 ### 12.1 Contract Authority
 
 This document defines the V1 frozen contract. Any implementation that deviates requires a Canon Amendment PR with:
+
 1. Justification for deviation
 2. Product review sign-off
 3. Update to this contract document
@@ -397,6 +400,7 @@ This document defines the V1 frozen contract. Any implementation that deviates r
 ### 12.2 Amendment Process
 
 To modify this contract:
+
 1. Create PR with proposed changes
 2. Tag as `canon-amendment`
 3. Require product owner approval
@@ -411,21 +415,23 @@ To modify this contract:
 V1.1 transforms PR from "modules" into a unified **Influence Orchestration System** with short task routes, CRM depth, and visible SAGE/EVI/CRAFT interoperability.
 
 **Non-negotiables:**
+
 - Manual/Copilot/Autopilot ceilings MUST remain enforced
 - No spray-and-pray patterns
 - No auto-send of relationship actions
 
 ### 13.2 V1.1 Dependent Contracts
 
-| Contract | Purpose | Reference |
-|----------|---------|-----------|
-| `PR_INBOX_CONTRACT.md` | PR Inbox / Work Queue specification | Daily driver with one-click continuation |
-| `PR_CONTACT_LEDGER_CONTRACT.md` | Contact Timeline / Relationship Ledger | Core differentiator with explainability |
-| `PR_PITCH_PIPELINE_CONTRACT.md` | Pitch Pipeline specification | Stage-based pitch tracking and follow-up |
+| Contract                        | Purpose                                | Reference                                |
+| ------------------------------- | -------------------------------------- | ---------------------------------------- |
+| `PR_INBOX_CONTRACT.md`          | PR Inbox / Work Queue specification    | Daily driver with one-click continuation |
+| `PR_CONTACT_LEDGER_CONTRACT.md` | Contact Timeline / Relationship Ledger | Core differentiator with explainability  |
+| `PR_PITCH_PIPELINE_CONTRACT.md` | Pitch Pipeline specification           | Stage-based pitch tracking and follow-up |
 
 ### 13.3 Impact Strip Requirement
 
 All PR surfaces MUST display the **Impact Strip** showing:
+
 - **SAGE contribution tags** (Signal / Authority / Growth / Exposure)
 - **EVI driver direction** (Visibility / Authority / Momentum +/0/-)
 - **CRAFT mode badge** (Manual / Copilot / Autopilot) with tooltip
@@ -437,10 +443,12 @@ This strip makes the system feel like an "organism," not disconnected modules.
 The Distribution view MUST distinguish between:
 
 **Track 1: CiteMind AEO** (Primary)
+
 - Schema generation → Newsroom publish → IndexNow → Citation monitoring
 - Should feel like a cohesive, integrated flow
 
 **Track 2: Legacy Wire** (Secondary)
+
 - Add-on commerce decision
 - Cost must be shown
 - Explicit confirmation required
@@ -449,19 +457,19 @@ The Distribution view MUST distinguish between:
 
 ### 13.5 V1.1 Route Additions
 
-| Route | Component | Description |
-|-------|-----------|-------------|
-| `/app/pr/inbox` | `PRInbox.tsx` | PR Inbox / Work Queue |
-| `/app/pr/pitches/pipeline` | `PRPitchPipeline.tsx` | Pitch Pipeline view |
+| Route                      | Component             | Description           |
+| -------------------------- | --------------------- | --------------------- |
+| `/app/pr/inbox`            | `PRInbox.tsx`         | PR Inbox / Work Queue |
+| `/app/pr/pitches/pipeline` | `PRPitchPipeline.tsx` | Pitch Pipeline view   |
 
 ### 13.6 V1.1 Component Additions
 
-| Component | Location | Purpose |
-|-----------|----------|---------|
-| `PRInbox.tsx` | `views/` | PR Inbox / Work Queue view |
+| Component                       | Location      | Purpose                      |
+| ------------------------------- | ------------- | ---------------------------- |
+| `PRInbox.tsx`                   | `views/`      | PR Inbox / Work Queue view   |
 | `ContactRelationshipLedger.tsx` | `components/` | Timeline with explainability |
-| `PRPitchPipeline.tsx` | `views/` | Stage-based pitch tracking |
-| `ImpactStrip.tsx` | `components/` | SAGE/EVI/CRAFT indicator |
+| `PRPitchPipeline.tsx`           | `views/`      | Stage-based pitch tracking   |
+| `ImpactStrip.tsx`               | `components/` | SAGE/EVI/CRAFT indicator     |
 
 ### 13.7 V1.1 Compliance Checklist
 
@@ -485,6 +493,7 @@ The Distribution view MUST distinguish between:
 V1.2 delivers **minimum real workflows** that allow end-to-end PR operations with database persistence. These workflows are fully functional and testable.
 
 **Non-negotiables enforced:**
+
 - `send_pitch` = **Manual-only** (SYSTEM ENFORCED)
 - `send_followup` = **Copilot max** (requires human review)
 - No bulk send, no spray-and-pray
@@ -493,16 +502,18 @@ V1.2 delivers **minimum real workflows** that allow end-to-end PR operations wit
 
 #### Create Journalist
 
-| Method | Endpoint | Required Fields |
-|--------|----------|-----------------|
+| Method | Endpoint              | Required Fields                             |
+| ------ | --------------------- | ------------------------------------------- |
 | `POST` | `/api/pr/journalists` | `fullName`, `primaryEmail`, `primaryOutlet` |
 
 **UI Flow:**
+
 1. Click "Add Contact" in Database header
 2. Fill form: Name, Email, Outlet, Beat (optional), Social links (optional)
 3. Submit → Contact appears in Database list
 
 **Validation:**
+
 - Name: Required
 - Email: Required, valid format
 - Outlet: Required
@@ -510,19 +521,20 @@ V1.2 delivers **minimum real workflows** that allow end-to-end PR operations wit
 
 #### Update Journalist
 
-| Method | Endpoint | Fields |
-|--------|----------|--------|
+| Method  | Endpoint                  | Fields             |
+| ------- | ------------------------- | ------------------ |
 | `PATCH` | `/api/pr/journalists/:id` | Any editable field |
 
 **UI Flow:**
+
 1. Click contact row → Drawer opens
 2. Click "Edit Contact"
 3. Modify fields → Save
 
 #### Delete Journalist (Soft)
 
-| Method | Endpoint | Effect |
-|--------|----------|--------|
+| Method   | Endpoint                  | Effect                          |
+| -------- | ------------------------- | ------------------------------- |
 | `DELETE` | `/api/pr/journalists/:id` | Sets `metadata.archived = true` |
 
 ### 14.3 Pitch Sequences Lifecycle (Pitches Tab)
@@ -533,47 +545,50 @@ V1.2 delivers **minimum real workflows** that allow end-to-end PR operations wit
 Draft → Ready → Sent → Opened → Replied
 ```
 
-| Stage | Description | User Action |
-|-------|-------------|-------------|
-| `draft` | Initial creation | Edit, add contacts |
-| `active` | Ready to send | Manual send available |
-| `sent` | Pitch sent | Await response |
-| `paused` | Temporarily held | Resume later |
-| `completed` | Sequence finished | Archive |
-| `archived` | Soft deleted | Restore if needed |
+| Stage       | Description       | User Action           |
+| ----------- | ----------------- | --------------------- |
+| `draft`     | Initial creation  | Edit, add contacts    |
+| `active`    | Ready to send     | Manual send available |
+| `sent`      | Pitch sent        | Await response        |
+| `paused`    | Temporarily held  | Resume later          |
+| `completed` | Sequence finished | Archive               |
+| `archived`  | Soft deleted      | Restore if needed     |
 
 #### Create Sequence
 
-| Method | Endpoint | Required |
-|--------|----------|----------|
-| `POST` | `/api/pr/pitches/sequences` | `name` |
+| Method | Endpoint                    | Required |
+| ------ | --------------------------- | -------- |
+| `POST` | `/api/pr/pitches/sequences` | `name`   |
 
 #### Update Sequence
 
-| Method | Endpoint | Fields |
-|--------|----------|--------|
+| Method  | Endpoint                        | Fields                       |
+| ------- | ------------------------------- | ---------------------------- |
 | `PATCH` | `/api/pr/pitches/sequences/:id` | `name`, `status`, `settings` |
 
 ### 14.4 Manual Send Workflow
 
 **This is the key "it works" moment for V1.2.**
 
-| Method | Endpoint | Required |
-|--------|----------|----------|
+| Method | Endpoint                      | Required                  |
+| ------ | ----------------------------- | ------------------------- |
 | `POST` | `/api/pr/pitches/manual-send` | `sequenceId`, `contactId` |
 
 **On Success:**
+
 1. Creates `pr_pitch_events` entry (type: `sent`)
 2. Updates `pr_pitch_sequences.status` if applicable
 3. Inserts `journalist_activity_log` entry (type: `pitch_sent`)
 4. Returns EVI attribution data for Command Center
 
 **UI Effect:**
+
 - Sequence moves to **Sent** stage in Kanban
 - Ledger shows new event in Contact Timeline
 - Toast: "Pitch recorded as sent"
 
 **EVI Attribution:**
+
 ```json
 {
   "pillar": "pr",
@@ -586,11 +601,12 @@ Draft → Ready → Sent → Opened → Replied
 
 ### 14.5 Touches Logging
 
-| Method | Endpoint | Required |
-|--------|----------|----------|
+| Method | Endpoint          | Required                       |
+| ------ | ----------------- | ------------------------------ |
 | `POST` | `/api/pr/touches` | `journalistId`, `activityType` |
 
 **Activity Types:**
+
 - `email` - Email interaction
 - `call` - Phone call
 - `meeting` - In-person or video meeting
@@ -598,6 +614,7 @@ Draft → Ready → Sent → Opened → Replied
 - `social_interaction` - Social media interaction
 
 **On Success:**
+
 - Updates `journalist.last_activity_at`
 - Creates `journalist_activity_log` entry
 - Relationship ledger reflects new touch
@@ -607,6 +624,7 @@ Draft → Ready → Sent → Opened → Replied
 #### Deep Links
 
 PR-related Action Stream items include `deep_link` pointing to:
+
 - `/app/pr?tab=database&contactId=<id>` - Focus on contact
 - `/app/pr?tab=pitches&sequenceId=<id>` - Focus on sequence
 - `/app/pr?tab=inbox` - PR Inbox
@@ -614,23 +632,24 @@ PR-related Action Stream items include `deep_link` pointing to:
 #### EVI Attribution Events
 
 PR actions emit EVI attribution data that powers:
+
 - **Top Movers** in Command Center
 - **Strategy Panel** driver explanations
 - **Entity Map** ripple effects
 
 ### 14.7 V1.2 API Summary
 
-| Endpoint | Methods | Purpose |
-|----------|---------|---------|
-| `/api/pr/journalists` | GET, POST | List/Create journalists |
-| `/api/pr/journalists/:id` | GET, PATCH, DELETE | Individual journalist CRUD |
-| `/api/pr/pitches/sequences` | GET, POST | List/Create sequences |
-| `/api/pr/pitches/sequences/:id` | GET, PATCH, DELETE | Individual sequence CRUD |
-| `/api/pr/pitches/manual-send` | POST | Manual pitch send (NON-NEGOTIABLE) |
-| `/api/pr/touches` | GET, POST | Activity log |
-| `/api/pr/lists` | GET, POST | Media lists |
-| `/api/pr/inbox` | GET | Computed inbox items |
-| `/api/pr/status` | GET | Backend diagnostics |
+| Endpoint                        | Methods            | Purpose                            |
+| ------------------------------- | ------------------ | ---------------------------------- |
+| `/api/pr/journalists`           | GET, POST          | List/Create journalists            |
+| `/api/pr/journalists/:id`       | GET, PATCH, DELETE | Individual journalist CRUD         |
+| `/api/pr/pitches/sequences`     | GET, POST          | List/Create sequences              |
+| `/api/pr/pitches/sequences/:id` | GET, PATCH, DELETE | Individual sequence CRUD           |
+| `/api/pr/pitches/manual-send`   | POST               | Manual pitch send (NON-NEGOTIABLE) |
+| `/api/pr/touches`               | GET, POST          | Activity log                       |
+| `/api/pr/lists`                 | GET, POST          | Media lists                        |
+| `/api/pr/inbox`                 | GET                | Computed inbox items               |
+| `/api/pr/status`                | GET                | Backend diagnostics                |
 
 ### 14.8 V1.2 Compliance Checklist
 
@@ -647,9 +666,9 @@ PR actions emit EVI attribution data that powers:
 
 ## 15. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-01-14 | 1.0 | Initial V1 PR Work Surface Contract |
-| 2026-01-14 | 1.1 | Added V1.1 Best-in-Class Upgrades section |
-| 2026-01-21 | 1.2 | Added V1.2 Operational Workflows (CRUD, Manual Send, EVI attribution) |
-| 2026-02-26 | 1.3 | Data model updated: Journalist → MediaContact (four contact types); email field replaced with JIT ContactEmail entity; OutletAffiliation junction added for many-to-many outlets; PlatformPitchEvent entity added; contact state machine added replacing simple status enum |
+| Date       | Version | Change                                                                                                                                                                                                                                                                      |
+| ---------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-01-14 | 1.0     | Initial V1 PR Work Surface Contract                                                                                                                                                                                                                                         |
+| 2026-01-14 | 1.1     | Added V1.1 Best-in-Class Upgrades section                                                                                                                                                                                                                                   |
+| 2026-01-21 | 1.2     | Added V1.2 Operational Workflows (CRUD, Manual Send, EVI attribution)                                                                                                                                                                                                       |
+| 2026-02-26 | 1.3     | Data model updated: Journalist → MediaContact (four contact types); email field replaced with JIT ContactEmail entity; OutletAffiliation junction added for many-to-many outlets; PlatformPitchEvent entity added; contact state machine added replacing simple status enum |

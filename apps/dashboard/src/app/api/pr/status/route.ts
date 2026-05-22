@@ -19,14 +19,18 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 import { getPRConfig, validatePRConfig } from '@/lib/env/pr-config';
-import { checkSupabaseHealth, hasServiceRoleKey } from '@/server/supabaseServerClient';
+import {
+  checkSupabaseHealth,
+  hasServiceRoleKey,
+} from '@/server/supabaseServerClient';
 
 // Import Supabase client factory directly to avoid 'server-only' issues in edge cases
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const GIT_SHA = process.env.VERCEL_GIT_COMMIT_SHA || process.env.GIT_SHA || 'local';
+const GIT_SHA =
+  process.env.VERCEL_GIT_COMMIT_SHA || process.env.GIT_SHA || 'local';
 
 type AuthStatus = 'ok' | 'missing_session' | 'no_org' | 'error';
 
@@ -61,10 +65,16 @@ async function checkAuth(): Promise<AuthResult> {
       },
     });
 
-    const { data: { user }, error: userError } = await client.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await client.auth.getUser();
 
     if (userError || !user) {
-      return { status: 'missing_session', error: userError?.message || 'No user session' };
+      return {
+        status: 'missing_session',
+        error: userError?.message || 'No user session',
+      };
     }
 
     // Use service role key to query org membership (bypasses RLS)
@@ -84,12 +94,19 @@ async function checkAuth(): Promise<AuthResult> {
       .limit(1);
 
     if (orgError || !memberships || memberships.length === 0) {
-      return { status: 'no_org', userId: user.id, error: 'User has no organization membership' };
+      return {
+        status: 'no_org',
+        userId: user.id,
+        error: 'User has no organization membership',
+      };
     }
 
     return { status: 'ok', userId: user.id, orgId: memberships[0].org_id };
   } catch (err) {
-    return { status: 'error', error: err instanceof Error ? err.message : 'Unknown auth error' };
+    return {
+      status: 'error',
+      error: err instanceof Error ? err.message : 'Unknown auth error',
+    };
   }
 }
 
@@ -125,7 +142,9 @@ export async function GET() {
     auth: {
       status: authResult.status,
       authenticated: authResult.status === 'ok',
-      userId: authResult.userId ? authResult.userId.substring(0, 8) + '...' : null,
+      userId: authResult.userId
+        ? authResult.userId.substring(0, 8) + '...'
+        : null,
       orgId: authResult.orgId ? authResult.orgId.substring(0, 8) + '...' : null,
       error: authResult.error,
     },
@@ -150,7 +169,9 @@ export async function GET() {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
         {
           cookies: {
-            getAll() { return allCookies; },
+            getAll() {
+              return allCookies;
+            },
             setAll() {},
           },
         }
@@ -160,9 +181,18 @@ export async function GET() {
 
       // Get counts
       const [journalists, sequences, mediaLists] = await Promise.all([
-        client.from('journalist_profiles').select('id', { count: 'exact', head: true }).eq('org_id', orgId),
-        client.from('pr_pitch_sequences').select('id', { count: 'exact', head: true }).eq('org_id', orgId),
-        client.from('media_lists').select('id', { count: 'exact', head: true }).eq('org_id', orgId),
+        client
+          .from('journalist_profiles')
+          .select('id', { count: 'exact', head: true })
+          .eq('org_id', orgId),
+        client
+          .from('pr_pitch_sequences')
+          .select('id', { count: 'exact', head: true })
+          .eq('org_id', orgId),
+        client
+          .from('media_lists')
+          .select('id', { count: 'exact', head: true })
+          .eq('org_id', orgId),
       ]);
 
       result.counts = {
@@ -171,7 +201,8 @@ export async function GET() {
         mediaLists: mediaLists.count || 0,
       };
     } catch (err) {
-      result.countsError = err instanceof Error ? err.message : 'Failed to get counts';
+      result.countsError =
+        err instanceof Error ? err.message : 'Failed to get counts';
     }
   }
 
@@ -183,9 +214,10 @@ export async function GET() {
   result.summary = {
     ok: issues.length === 0,
     issues,
-    message: issues.length === 0
-      ? 'PR Backend is healthy and ready'
-      : `PR Backend has ${issues.length} issue(s): ${issues.join(', ')}`,
+    message:
+      issues.length === 0
+        ? 'PR Backend is healthy and ready'
+        : `PR Backend has ${issues.length} issue(s): ${issues.join(', ')}`,
   };
 
   // Console log in strict mode
@@ -194,7 +226,9 @@ export async function GET() {
     console.log('║           PR BACKEND STATUS                       ║');
     console.log('╠═══════════════════════════════════════════════════╣');
     console.log(`║  Git SHA: ${GIT_SHA.substring(0, 8).padEnd(40)}║`);
-    console.log(`║  Connected: ${health.connected ? '✓ YES' : '✗ NO'}                              ║`);
+    console.log(
+      `║  Connected: ${health.connected ? '✓ YES' : '✗ NO'}                              ║`
+    );
     console.log(`║  Auth Status: ${authResult.status.padEnd(35)}║`);
     if (result.counts) {
       const counts = result.counts as Record<string, number>;

@@ -4,19 +4,26 @@
  * EngineBreakdown — By AI Engine score rows + Top Topics card.
  */
 
-import { ArrowUp, ArrowDown, Lightning, ArrowRight } from '@phosphor-icons/react';
+import {
+  ArrowUp,
+  ArrowDown,
+  Lightning,
+  ArrowRight,
+} from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
 
 import { mockEngineScores, mockTopTopics } from './seo-mock-data';
 
-
 const trendBadge: Record<string, { label: string; className: string }> = {
   hot: { label: 'Hot', className: 'bg-amber-500/10 text-amber-500' },
   growing: { label: '\u2191 Growing', className: 'text-semantic-success' },
   stable: { label: '\u2192 Stable', className: 'text-white/45' },
-  declining: { label: '\u2193 Declining', className: 'bg-red-500/10 text-semantic-danger' },
+  declining: {
+    label: '\u2193 Declining',
+    className: 'bg-red-500/10 text-semantic-danger',
+  },
 };
 
 export function EngineBreakdown() {
@@ -27,7 +34,11 @@ export function EngineBreakdown() {
       {/* By AI Engine */}
       <div>
         <h3 className="text-[13px] font-semibold uppercase tracking-wider text-white/60 mb-3">
-          By AI Engine <InfoTooltip content="Your EVI score broken down by each AI engine (ChatGPT, Perplexity, Claude, Gemini). Different engines weight content differently, so optimizing for each can improve your overall visibility." size={11} />
+          By AI Engine{' '}
+          <InfoTooltip
+            content="Your EVI score broken down by each AI engine (ChatGPT, Perplexity, Claude, Gemini). Different engines weight content differently, so optimizing for each can improve your overall visibility."
+            size={11}
+          />
         </h3>
         <div>
           {mockEngineScores.map((eng) => {
@@ -37,7 +48,9 @@ export function EngineBreakdown() {
                 key={eng.engine}
                 type="button"
                 onClick={() =>
-                  router.push(`/app/seo/topics?engine=${encodeURIComponent(eng.engine)}`)
+                  router.push(
+                    `/app/seo/topics?engine=${encodeURIComponent(eng.engine)}`
+                  )
                 }
                 className="flex items-center gap-4 py-2.5 w-full cursor-pointer hover:bg-white/[0.02] rounded-lg px-2 -mx-2 border-b border-white/5 text-left"
               >
@@ -56,7 +69,9 @@ export function EngineBreakdown() {
                 </span>
                 <span
                   className={`w-16 text-right text-xs flex items-center justify-end gap-0.5 ${
-                    isPositive ? 'text-semantic-success' : 'text-semantic-danger'
+                    isPositive
+                      ? 'text-semantic-success'
+                      : 'text-semantic-danger'
                   }`}
                 >
                   {isPositive ? (
@@ -136,9 +151,9 @@ export function EngineBreakdown() {
           </span>
         </div>
         <p className="text-sm text-white/70 leading-relaxed mb-4">
-          The &lsquo;Enterprise AEO&rsquo; cluster scores 23 vs CompetitorX&apos;s 71.
-          Creating a comprehensive guide would close a 31-point gap and is estimated
-          to deliver +8&ndash;12 EVI points.
+          The &lsquo;Enterprise AEO&rsquo; cluster scores 23 vs
+          CompetitorX&apos;s 71. Creating a comprehensive guide would close a
+          31-point gap and is estimated to deliver +8&ndash;12 EVI points.
         </p>
         <div className="flex items-center gap-3">
           <button

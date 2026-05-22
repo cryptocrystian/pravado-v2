@@ -38,7 +38,9 @@ export function OutreachRunList({
       onRunChange();
     } catch (error) {
       console.error('Failed to stop run:', error);
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   };
 
@@ -93,14 +95,18 @@ export function OutreachRunList({
               key={run.id}
               onClick={() => onRunSelect(run)}
               className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                selectedRun?.id === run.id ? 'bg-blue-50 border-l-4 border-l-blue-600' : ''
+                selectedRun?.id === run.id
+                  ? 'bg-blue-50 border-l-4 border-l-blue-600'
+                  : ''
               }`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h3 className="font-medium">Run #{run.id.slice(0, 8)}</h3>
-                    <span className={`px-2 py-0.5 rounded text-xs ${getStatusColor(run.status)}`}>
+                    <span
+                      className={`px-2 py-0.5 rounded text-xs ${getStatusColor(run.status)}`}
+                    >
                       {run.status}
                     </span>
                   </div>
@@ -109,7 +115,9 @@ export function OutreachRunList({
                     <div>Steps sent: {run.totalStepsSent}</div>
                     <div>Current step: {run.currentStepNumber}</div>
                     {run.repliedAt && (
-                      <div className="text-green-600">Replied at step {run.replyStepNumber}</div>
+                      <div className="text-green-600">
+                        Replied at step {run.replyStepNumber}
+                      </div>
                     )}
                     {run.lastError && (
                       <div className="text-red-600">Error: {run.lastError}</div>
@@ -130,7 +138,12 @@ export function OutreachRunList({
                     className="ml-2 p-1 hover:bg-red-100 hover:text-red-600 rounded"
                     title="Stop run"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"

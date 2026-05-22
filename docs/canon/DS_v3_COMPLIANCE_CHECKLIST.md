@@ -1,4 +1,5 @@
 # DS v3.1 Compliance Checklist
+
 **Canon Status:** ACTIVE — Use before committing any UI component  
 **Authority:** `DS_v3_PRINCIPLES.md` + `DS_v3_1_EXPRESSION.md`  
 **Last Updated:** 2026-02-18
@@ -12,6 +13,7 @@
 If any of these appear in component code, the component **fails** compliance. No exceptions.
 
 ### 1A — Phantom Hex Values
+
 These hex values do not exist in DS v3.1. They are drift artifacts from previous sessions.
 
 ```
@@ -28,6 +30,7 @@ BANNED HEX VALUES:
 ```
 
 ### 1B — Legacy Tailwind Color Classes
+
 Any Tailwind color class NOT in the approved list below is banned:
 
 ```
@@ -47,6 +50,7 @@ border-zinc-*   →  Use border-border-subtle or border-slate-*
 ```
 
 ### 1C — Invalid Tailwind Opacity Syntax
+
 Tailwind does NOT support chained opacity modifiers. These compile silently to nothing:
 
 ```
@@ -57,6 +61,7 @@ any-class/X/Y      →  Pick ONE opacity step
 ```
 
 ### 1D — Banned JS Token Objects
+
 Do NOT define surface values as JavaScript constant objects. This bypasses Tailwind entirely:
 
 ```typescript
@@ -76,58 +81,59 @@ Always use these. Never guess, never hardcode adjacent values.
 
 ### 2A — Background Hierarchy
 
-| Intent | Tailwind Class | Hex | CSS Var |
-|--------|---------------|-----|---------|
-| Page background (darkest) | `bg-page` or `bg-slate-0` | `#0A0A0F` | `--page-bg` / `--slate-0` |
-| Subtle elevation | `bg-slate-1` | `#0E0E14` | `--slate-1` |
-| Card / Panel default | `bg-panel` or `bg-slate-2` | `#13131A` | `--panel-bg` / `--slate-2` |
-| Panel elevated | `bg-slate-3` | `#19191F` | `--slate-3` |
-| Interactive hover bg | `bg-slate-4` | `#1F1F28` | `--slate-4` |
-| Pressed / active bg | `bg-slate-5` | `#2A2A35` | `--slate-5` |
-| Muted surface | `bg-slate-6` | `#3D3D4A` | `--slate-6` |
+| Intent                    | Tailwind Class             | Hex       | CSS Var                    |
+| ------------------------- | -------------------------- | --------- | -------------------------- |
+| Page background (darkest) | `bg-page` or `bg-slate-0`  | `#0A0A0F` | `--page-bg` / `--slate-0`  |
+| Subtle elevation          | `bg-slate-1`               | `#0E0E14` | `--slate-1`                |
+| Card / Panel default      | `bg-panel` or `bg-slate-2` | `#13131A` | `--panel-bg` / `--slate-2` |
+| Panel elevated            | `bg-slate-3`               | `#19191F` | `--slate-3`                |
+| Interactive hover bg      | `bg-slate-4`               | `#1F1F28` | `--slate-4`                |
+| Pressed / active bg       | `bg-slate-5`               | `#2A2A35` | `--slate-5`                |
+| Muted surface             | `bg-slate-6`               | `#3D3D4A` | `--slate-6`                |
 
 ### 2B — Border Hierarchy
 
-| Intent | Tailwind Class | Hex |
-|--------|---------------|-----|
-| Default border | `border-border-subtle` | `#1F1F28` |
-| Subtle border | `border-slate-4` | `#1F1F28` (same) |
-| Hover border | `border-slate-5` | `#2A2A35` |
-| Active border | `border-slate-6` | `#3D3D4A` |
+| Intent         | Tailwind Class         | Hex              |
+| -------------- | ---------------------- | ---------------- |
+| Default border | `border-border-subtle` | `#1F1F28`        |
+| Subtle border  | `border-slate-4`       | `#1F1F28` (same) |
+| Hover border   | `border-slate-5`       | `#2A2A35`        |
+| Active border  | `border-slate-6`       | `#3D3D4A`        |
 
 ### 2C — Text / Content Colors
 
-| Intent | Tailwind Class | Opacity / Hex |
-|--------|---------------|--------------|
-| Primary text | `text-text` or `text-white-0` | `#E8E8ED` |
-| High emphasis | `text-white/90` | 90% white |
-| Body / reading | `text-white/85` | 85% white |
-| Secondary | `text-white/70` | 70% white |
-| Tertiary | `text-white/55` | 55% white |
-| Muted / metadata | `text-white/50` | 50% white |
-| Disabled / hint | `text-white/40` | 40% white |
-| Muted semantic | `text-muted` | `--muted` (`#3D3D4A`) |
+| Intent           | Tailwind Class                | Opacity / Hex         |
+| ---------------- | ----------------------------- | --------------------- |
+| Primary text     | `text-text` or `text-white-0` | `#E8E8ED`             |
+| High emphasis    | `text-white/90`               | 90% white             |
+| Body / reading   | `text-white/85`               | 85% white             |
+| Secondary        | `text-white/70`               | 70% white             |
+| Tertiary         | `text-white/55`               | 55% white             |
+| Muted / metadata | `text-white/50`               | 50% white             |
+| Disabled / hint  | `text-white/40`               | 40% white             |
+| Muted semantic   | `text-muted`                  | `--muted` (`#3D3D4A`) |
 
 ### 2D — Brand Accent Colors (Pillar Identity)
 
-| Pillar | Token | Tailwind | Hex |
-|--------|-------|---------|-----|
-| Content | Iris | `brand-iris` | `#A855F7` |
-| SEO/AEO | Cyan | `brand-cyan` | `#00D9FF` |
-| PR | Magenta | `brand-magenta` | `#D946EF` |
-| — | Teal | `brand-teal` | `#14B8A6` |
-| — | Amber | `brand-amber` | `#F59E0B` |
+| Pillar  | Token   | Tailwind        | Hex       |
+| ------- | ------- | --------------- | --------- |
+| Content | Iris    | `brand-iris`    | `#A855F7` |
+| SEO/AEO | Cyan    | `brand-cyan`    | `#00D9FF` |
+| PR      | Magenta | `brand-magenta` | `#D946EF` |
+| —       | Teal    | `brand-teal`    | `#14B8A6` |
+| —       | Amber   | `brand-amber`   | `#F59E0B` |
 
 ### 2E — Semantic Colors
 
-| State | Tailwind | Hex |
-|-------|---------|-----|
-| Success | `semantic-success` | `#22C55E` |
-| Warning | `semantic-warning` | `#EAB308` |
-| Danger | `semantic-danger` | `#EF4444` |
-| Info | `semantic-info` | `#00D9FF` (same as brand-cyan) |
+| State   | Tailwind           | Hex                            |
+| ------- | ------------------ | ------------------------------ |
+| Success | `semantic-success` | `#22C55E`                      |
+| Warning | `semantic-warning` | `#EAB308`                      |
+| Danger  | `semantic-danger`  | `#EF4444`                      |
+| Info    | `semantic-info`    | `#00D9FF` (same as brand-cyan) |
 
 **Semantic background pattern** (always use 10-20% opacity):
+
 ```
 bg-semantic-success/10  border-semantic-success/20  text-semantic-success
 bg-semantic-warning/10  border-semantic-warning/20  text-semantic-warning
@@ -136,20 +142,22 @@ bg-semantic-danger/10   border-semantic-danger/20   text-semantic-danger
 
 ### 2F — Shadows / Elevation
 
-| Level | Class | Use |
-|-------|-------|-----|
-| None | `shadow-elev-0` | Flat elements |
-| Subtle | `shadow-elev-1` | Cards at rest |
-| Raised | `shadow-elev-2` | Hover states, dropdowns |
-| Floating | `shadow-elev-3` | Modals, drawers |
-| Panel | `shadow-panel` | Side panels, right rails |
+| Level    | Class           | Use                      |
+| -------- | --------------- | ------------------------ |
+| None     | `shadow-elev-0` | Flat elements            |
+| Subtle   | `shadow-elev-1` | Cards at rest            |
+| Raised   | `shadow-elev-2` | Hover states, dropdowns  |
+| Floating | `shadow-elev-3` | Modals, drawers          |
+| Panel    | `shadow-panel`  | Side panels, right rails |
 
 ### 2G — Allowed Opacity Steps for Brand Colors
 
 Only use standard Tailwind opacity steps with brand colors:
+
 ```
 /5  /10  /15  /20  /25  /30  /40  /50  /60  /70  /80  /90
 ```
+
 NOT: `/8`, `/12`, `/18`, `/22`, `/35`, or any other non-standard step.
 
 ---
@@ -158,12 +166,12 @@ NOT: `/8`, `/12`, `/18`, `/22`, `/35`, or any other non-standard step.
 
 ### 3A — Minimum Font Sizes
 
-| Context | Min Size | Class |
-|---------|---------|-------|
-| Body / reading text | 14px | `text-sm` or `text-body` |
-| Metadata / timestamps | 13px | `text-[13px]` |
-| Uppercase labels only | 11px | `text-[11px]` — MUST have `uppercase tracking-wider font-bold` |
-| Smallest possible | 10px | `text-[10px]` — ONLY for uppercase badge labels |
+| Context               | Min Size | Class                                                          |
+| --------------------- | -------- | -------------------------------------------------------------- |
+| Body / reading text   | 14px     | `text-sm` or `text-body`                                       |
+| Metadata / timestamps | 13px     | `text-[13px]`                                                  |
+| Uppercase labels only | 11px     | `text-[11px]` — MUST have `uppercase tracking-wider font-bold` |
+| Smallest possible     | 10px     | `text-[10px]` — ONLY for uppercase badge labels                |
 
 **Rule:** `text-xs` (12px) is ONLY permitted with `uppercase tracking-wider`. Never use for regular readable content.
 
@@ -237,7 +245,7 @@ const pillarAccents = {
     solidBg: 'bg-brand-iris',
   },
   // ...
-}
+};
 ```
 
 ### 4C — Mode Badge Pattern
@@ -292,7 +300,10 @@ const pillarAccents = {
 
 ```tsx
 // Correct backdrop (no bg-black)
-<div className="fixed inset-0 bg-page/70 backdrop-blur-sm z-40" onClick={onClose} />
+<div
+  className="fixed inset-0 bg-page/70 backdrop-blur-sm z-40"
+  onClick={onClose}
+/>
 ```
 
 ### 4G — Scrollbar Style
@@ -301,10 +312,19 @@ Always include this scrollbar pattern in pane containers:
 
 ```tsx
 <style jsx global>{`
-  .prave-scroll::-webkit-scrollbar { width: 4px; }
-  .prave-scroll::-webkit-scrollbar-track { background: transparent; }
-  .prave-scroll::-webkit-scrollbar-thumb { background: #1F1F28; border-radius: 2px; }
-  .prave-scroll::-webkit-scrollbar-thumb:hover { background: #2A2A35; }
+  .prave-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .prave-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .prave-scroll::-webkit-scrollbar-thumb {
+    background: #1f1f28;
+    border-radius: 2px;
+  }
+  .prave-scroll::-webkit-scrollbar-thumb:hover {
+    background: #2a2a35;
+  }
 `}</style>
 ```
 
@@ -321,12 +341,16 @@ Every work surface shell MUST include the Impact Strip — a persistent header b
   <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-white/50">
     <span className="w-1.5 h-1.5 rounded-full bg-brand-iris" />
     SAGE
-    <span className="font-normal normal-case text-white/40">Authority gap: AI citations</span>
+    <span className="font-normal normal-case text-white/40">
+      Authority gap: AI citations
+    </span>
   </div>
 
   {/* EVI Score — always visible */}
   <div className="flex items-center gap-1.5">
-    <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">EVI</span>
+    <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
+      EVI
+    </span>
     <span className="text-sm font-bold text-brand-cyan tabular-nums">72</span>
     <span className="text-[11px] text-semantic-success">↑3</span>
   </div>

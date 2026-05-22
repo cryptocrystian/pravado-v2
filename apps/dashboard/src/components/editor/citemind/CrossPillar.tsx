@@ -1,13 +1,28 @@
 'use client';
 
-import { Newspaper, ChartLineUp, User, ArrowRight } from '@phosphor-icons/react';
+import {
+  Newspaper,
+  ChartLineUp,
+  User,
+  ArrowRight,
+} from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 
 import type { CrossPillarHook } from '../editor-mock-data';
 
 const pillarConfig = {
-  pr: { icon: Newspaper, color: 'text-brand-iris', bg: 'bg-brand-iris/10', label: 'PR Intelligence' },
-  seo: { icon: ChartLineUp, color: 'text-cc-cyan', bg: 'bg-cc-cyan/10', label: 'SEO/AEO' },
+  pr: {
+    icon: Newspaper,
+    color: 'text-brand-iris',
+    bg: 'bg-brand-iris/10',
+    label: 'PR Intelligence',
+  },
+  seo: {
+    icon: ChartLineUp,
+    color: 'text-cc-cyan',
+    bg: 'bg-cc-cyan/10',
+    label: 'SEO/AEO',
+  },
 };
 
 interface CrossPillarProps {
@@ -42,7 +57,10 @@ export function CrossPillar({ hooks }: CrossPillarProps) {
                   Journalist matches
                 </span>
                 {hook.matches.map((match) => (
-                  <div key={match.name} className="flex items-center gap-2 py-1">
+                  <div
+                    key={match.name}
+                    className="flex items-center gap-2 py-1"
+                  >
                     <User size={14} className="text-white/30 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <span className="text-xs text-white/80 block">

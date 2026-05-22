@@ -26,6 +26,7 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 1. Authentication & Authorization
 
 ### 1.1 Login Flow
+
 - [ ] Login page loads at `/login`
 - [ ] Can enter email and password
 - [ ] Successful login redirects to dashboard
@@ -33,11 +34,13 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 - [ ] Session persists on page refresh
 
 ### 1.2 Organization Context
+
 - [ ] User is associated with correct organization
 - [ ] Organization name displays in header/sidebar
 - [ ] Switching orgs (if applicable) updates data context
 
 ### 1.3 Role-Based Access
+
 - [ ] Owner role sees all features
 - [ ] Member role sees appropriate features
 - [ ] Admin-only routes are protected
@@ -47,12 +50,14 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 2. Core Navigation
 
 ### 2.1 Main Navigation
+
 - [ ] Dashboard/Home link works
 - [ ] All sidebar menu items load their pages
 - [ ] Active page is highlighted in navigation
 - [ ] Mobile responsive navigation works
 
 ### 2.2 Page Loading
+
 - [ ] Pages load without JavaScript errors
 - [ ] Loading states display during data fetch
 - [ ] Error states display when API fails
@@ -63,12 +68,14 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 3. PR & Media Intelligence
 
 ### 3.1 Media Monitoring
+
 - [ ] Media sources list displays (3 sources in demo)
 - [ ] Source details show URL and type
 - [ ] Active/inactive toggle works
 - [ ] Add new source form functions
 
 ### 3.2 Earned Mentions
+
 - [ ] Mentions list displays (3 mentions in demo)
 - [ ] Sentiment indicators show (Positive/Neutral/Negative)
 - [ ] Reach scores display
@@ -76,6 +83,7 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 - [ ] Click opens mention details
 
 ### 3.3 Press Releases
+
 - [ ] Releases list displays (2 releases in demo)
 - [ ] Status badges show (Published/Draft)
 - [ ] Can view release content
@@ -87,12 +95,14 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 4. Crisis Management
 
 ### 4.1 Crisis Dashboard
+
 - [ ] Incidents list displays (2 incidents in demo)
 - [ ] Severity indicators show (High=red, Medium=yellow)
 - [ ] Status badges show (Active/Monitoring)
 - [ ] Type classification displays
 
 ### 4.2 Incident Details
+
 - [ ] Click incident opens detail view
 - [ ] Description displays correctly
 - [ ] Detection timestamp shows
@@ -100,6 +110,7 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 - [ ] Timeline/activity log displays
 
 ### 4.3 Crisis Actions
+
 - [ ] Can create new incident
 - [ ] Can assign severity
 - [ ] Can update status
@@ -110,18 +121,21 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 5. Scenario Simulations
 
 ### 5.1 Scenario List
+
 - [ ] Scenarios display (3 scenarios in demo)
 - [ ] Type badges show (Crisis/Competitive/Regulatory)
 - [ ] Status indicators show (Completed/Running)
 - [ ] Description displays
 
 ### 5.2 Scenario Details
+
 - [ ] Click scenario opens detail view
 - [ ] Scenario run history displays
 - [ ] Run timestamps show
 - [ ] Can view run results
 
 ### 5.3 Scenario Creation
+
 - [ ] Create new scenario form works
 - [ ] Can set name and description
 - [ ] Can select scenario type
@@ -132,17 +146,20 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 6. Scenario Orchestration
 
 ### 6.1 Suite List
+
 - [ ] Suites display (2 suites in demo)
 - [ ] Status shows (Completed/Running)
 - [ ] Suite run history displays
 
 ### 6.2 Suite Details
+
 - [ ] Click suite opens detail view
 - [ ] Linked scenarios are listed
 - [ ] Suite run progress shows
 - [ ] Can view aggregated results
 
 ### 6.3 Suite Execution
+
 - [ ] Can create new suite
 - [ ] Can add scenarios to suite
 - [ ] Can trigger suite run
@@ -153,12 +170,14 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 7. Reality Maps
 
 ### 7.1 Map List
+
 - [ ] Maps display (2 maps in demo)
 - [ ] Status shows (Completed/Generated)
 - [ ] Node/edge counts display
 - [ ] Path count displays
 
 ### 7.2 Map Visualization
+
 - [ ] Click map opens visualization
 - [ ] Root node displays at top/center
 - [ ] Child nodes branch correctly
@@ -167,11 +186,13 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 - [ ] Can zoom/pan the visualization
 
 ### 7.3 Map Details
+
 - [ ] Parameters display (maxDepth, branchingFactor)
 - [ ] Can view individual node details
 - [ ] Can explore paths through the tree
 
 ### 7.4 Map Generation
+
 - [ ] Can create new reality map
 - [ ] Can set generation parameters
 - [ ] Map generates with nodes/edges
@@ -182,12 +203,14 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 8. Insight Conflicts
 
 ### 8.1 Conflict List
+
 - [ ] Conflicts display (2 conflicts in demo)
 - [ ] Type badges show (Contradiction/Divergence)
 - [ ] Severity indicators show (High/Medium)
 - [ ] Status badges show (Detected/Analyzing)
 
 ### 8.2 Conflict Details
+
 - [ ] Click conflict opens detail view
 - [ ] Conflict summary displays
 - [ ] Source entities listed with systems
@@ -195,6 +218,7 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 - [ ] Resolution options (if applicable)
 
 ### 8.3 Conflict Resolution
+
 - [ ] Can acknowledge conflict
 - [ ] Can update status
 - [ ] Can add resolution notes
@@ -205,6 +229,7 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 9. Executive Intelligence
 
 ### 9.1 Command Center
+
 - [ ] Dashboard loads with aggregated data
 - [ ] Overall health score displays
 - [ ] Active signals/alerts show
@@ -212,12 +237,14 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 - [ ] Recent activity timeline displays
 
 ### 9.2 Unified Narratives
+
 - [ ] Narratives list displays (2 narratives in demo)
 - [ ] Type badges show (Quarterly Review/Crisis Response)
 - [ ] Status shows (Published/Draft)
 - [ ] Format indicates (Comprehensive/Executive)
 
 ### 9.3 Narrative Details
+
 - [ ] Click narrative opens detail view
 - [ ] Executive summary displays
 - [ ] Source systems attribution shows
@@ -225,18 +252,21 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 - [ ] Can regenerate narrative (if LLM enabled)
 
 ### 9.4 Executive Digests
+
 - [ ] Digest list displays (1 digest in demo)
 - [ ] Period dates show correctly
 - [ ] Key insights list (3 items in demo)
 - [ ] Status shows (Published)
 
 ### 9.5 Board Reports
+
 - [ ] Reports list displays (1 report in demo)
 - [ ] Status shows (Draft)
 - [ ] Can view report structure
 - [ ] Executive summary aligns with narrative
 
 ### 9.6 Strategic Intelligence
+
 - [ ] Reports display (1 report in demo)
 - [ ] Period coverage shows (~90 days)
 - [ ] Market position insights display
@@ -247,12 +277,14 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 10. Brand Reputation
 
 ### 10.1 Reputation Reports
+
 - [ ] Reports display (2 reports in demo)
 - [ ] Overall score shows (78-82 range)
 - [ ] Report type shows (Weekly/Monthly)
 - [ ] Period dates display
 
 ### 10.2 Brand Health
+
 - [ ] Health indicators display
 - [ ] Score trends visible
 - [ ] Time period selector works
@@ -262,24 +294,28 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 11. Playbooks
 
 ### 11.1 Playbook List
+
 - [ ] Playbooks display (3 playbooks in demo)
 - [ ] Status shows (Active)
 - [ ] Pillar assignment shows (PR/Content/SEO)
 - [ ] Description displays
 
 ### 11.2 Playbook Details
+
 - [ ] Click playbook opens detail view
 - [ ] Steps/actions display
 - [ ] Version number shows
 - [ ] Run history displays
 
 ### 11.3 Playbook Runs
+
 - [ ] Run list shows (1 run per playbook in demo)
 - [ ] Status shows (Completed)
 - [ ] Start/end timestamps display
 - [ ] Can view run details
 
 ### 11.4 Playbook Execution
+
 - [ ] Can trigger new playbook run
 - [ ] Execution progress displays
 - [ ] Step completion updates
@@ -290,12 +326,14 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 12. Content Management
 
 ### 12.1 Content List
+
 - [ ] Content items display
 - [ ] Status badges show
 - [ ] Content type shows
 - [ ] Publication date displays
 
 ### 12.2 Content Creation
+
 - [ ] Create new content form works
 - [ ] Can set title and body
 - [ ] Can assign pillar/category
@@ -306,16 +344,19 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 13. Settings & Administration
 
 ### 13.1 Organization Settings
+
 - [ ] Org settings page loads
 - [ ] Can view org details
 - [ ] Can update org name (if owner)
 
 ### 13.2 User Management
+
 - [ ] User list displays
 - [ ] Roles show correctly
 - [ ] Can invite new users (if owner)
 
 ### 13.3 Billing (if enabled)
+
 - [ ] Billing page loads
 - [ ] Current plan shows
 - [ ] Usage metrics display
@@ -325,6 +366,7 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 14. API Validation
 
 ### 14.1 Core Endpoints
+
 - [ ] `GET /api/playbooks` returns playbooks
 - [ ] `GET /api/crisis` returns incidents
 - [ ] `GET /api/scenarios` returns scenarios
@@ -332,6 +374,7 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 - [ ] `GET /api/conflicts` returns conflicts
 
 ### 14.2 Error Handling
+
 - [ ] 401 returned for unauthenticated requests
 - [ ] 403 returned for unauthorized access
 - [ ] 404 returned for missing resources
@@ -342,23 +385,27 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## 15. Cross-Cutting Concerns
 
 ### 15.1 Data Consistency
+
 - [ ] Org isolation is enforced (no cross-org data leak)
 - [ ] Created records appear in lists
 - [ ] Updated records reflect changes
 - [ ] Deleted records are removed
 
 ### 15.2 Performance
+
 - [ ] Pages load within 2 seconds
 - [ ] Lists paginate appropriately
 - [ ] No memory leaks during navigation
 - [ ] API responses are reasonably fast
 
 ### 15.3 Error States
+
 - [ ] Network errors show user-friendly message
 - [ ] API errors show meaningful feedback
 - [ ] Retry options available where appropriate
 
 ### 15.4 Responsive Design
+
 - [ ] Desktop layout works (1920px)
 - [ ] Tablet layout works (768px)
 - [ ] Mobile layout works (375px)
@@ -368,32 +415,37 @@ User Acceptance Testing checklist for validating Pravado platform functionality.
 ## UAT Sign-Off
 
 ### Tester Information
-- **Tester Name**: ___________________________
-- **Date**: ___________________________
+
+- **Tester Name**: ****\*\*\*\*****\_\_\_****\*\*\*\*****
+- **Date**: ****\*\*\*\*****\_\_\_****\*\*\*\*****
 - **Environment**: [ ] Local [ ] Staging [ ] Production
 
 ### Results Summary
-- **Total Checks**: ___
-- **Passed**: ___
-- **Failed**: ___
-- **Blocked**: ___
+
+- **Total Checks**: \_\_\_
+- **Passed**: \_\_\_
+- **Failed**: \_\_\_
+- **Blocked**: \_\_\_
 
 ### Critical Issues Found
-1. ___________________________
-2. ___________________________
-3. ___________________________
+
+1. ***
+2. ***
+3. ***
 
 ### Recommendations
-- ___________________________
-- ___________________________
+
+- ***
+- ***
 
 ### Sign-Off
+
 - [ ] **APPROVED** - Ready for production
 - [ ] **CONDITIONAL** - Ready with noted exceptions
 - [ ] **REJECTED** - Critical issues must be resolved
 
-**Signature**: ___________________________
-**Date**: ___________________________
+**Signature**: ****\*\*\*\*****\_\_\_****\*\*\*\*****
+**Date**: ****\*\*\*\*****\_\_\_****\*\*\*\*****
 
 ---
 

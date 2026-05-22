@@ -7,7 +7,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { PRMediaService } from '../src/services/prMediaService';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createMockSupabaseClient, createMockQueryBuilder, createMockSuccess, createMockError } from './helpers/supabaseMock';
+import {
+  createMockSupabaseClient,
+  createMockQueryBuilder,
+  createMockSuccess,
+  createMockError,
+} from './helpers/supabaseMock';
 
 describe('PRMediaService', () => {
   let service: PRMediaService;
@@ -39,7 +44,9 @@ describe('PRMediaService', () => {
       ];
 
       // First call: journalists query - supports .select().eq().or().range()
-      const mockJournalistsQuery = createMockQueryBuilder(createMockSuccess(mockJournalists, 1));
+      const mockJournalistsQuery = createMockQueryBuilder(
+        createMockSuccess(mockJournalists, 1)
+      );
 
       // Second call: outlets query
       const mockOutlets = [
@@ -51,7 +58,9 @@ describe('PRMediaService', () => {
           country: 'USA',
         },
       ];
-      const mockOutletsQuery = createMockQueryBuilder(createMockSuccess(mockOutlets));
+      const mockOutletsQuery = createMockQueryBuilder(
+        createMockSuccess(mockOutlets)
+      );
 
       // Third call: journalist_beats query
       const mockJournalistBeatsQuery = createMockQueryBuilder(
@@ -296,7 +305,9 @@ describe('PRMediaService', () => {
       const mockOutletsQuery = createMockQueryBuilder(createMockSuccess([]));
 
       // Mock journalist_beats query
-      const mockJournalistBeatsQuery = createMockQueryBuilder(createMockSuccess([]));
+      const mockJournalistBeatsQuery = createMockQueryBuilder(
+        createMockSuccess([])
+      );
 
       (mockSupabase.from as any)
         .mockReturnValueOnce(mockListQuery)
@@ -318,9 +329,7 @@ describe('PRMediaService', () => {
       const orgId = '123e4567-e89b-12d3-a456-426614174000';
       const listId = 'nonexistent';
 
-      const mockQuery = createMockQueryBuilder(
-        createMockError('Not found')
-      );
+      const mockQuery = createMockQueryBuilder(createMockError('Not found'));
 
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
@@ -390,7 +399,12 @@ describe('PRMediaService', () => {
 
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
-      const result = await service.createPRList(orgId, userId, name, description);
+      const result = await service.createPRList(
+        orgId,
+        userId,
+        name,
+        description
+      );
 
       expect(result.name).toBe(name);
       expect(result.description).toBe(description);
@@ -458,9 +472,9 @@ describe('PRMediaService', () => {
 
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
-      await expect(
-        service.createPRList(orgId, userId, name)
-      ).rejects.toThrow('Failed to create PR list: Constraint violation');
+      await expect(service.createPRList(orgId, userId, name)).rejects.toThrow(
+        'Failed to create PR list: Constraint violation'
+      );
     });
   });
 

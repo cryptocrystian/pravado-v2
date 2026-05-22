@@ -45,7 +45,9 @@ export function useEVI(period = '30d') {
     }
   }, [period]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return { data, history, loading, error, refresh };
 }

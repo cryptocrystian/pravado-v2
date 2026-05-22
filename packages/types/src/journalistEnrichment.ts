@@ -50,10 +50,7 @@ export type EnrichmentLinkType =
   | 'suggested'
   | 'rejected';
 
-export type MergeStrategy =
-  | 'overwrite'
-  | 'append'
-  | 'keep_existing';
+export type MergeStrategy = 'overwrite' | 'append' | 'keep_existing';
 
 export type QualityFlag =
   | 'stale_data'
@@ -403,7 +400,12 @@ export interface EnrichmentRecordsQuery {
   qualityFlags?: QualityFlag[];
   hasPotentialDuplicates?: boolean;
   searchQuery?: string; // Full-text search
-  sortBy?: 'created_at' | 'updated_at' | 'overall_confidence_score' | 'data_freshness_score' | 'completeness_score';
+  sortBy?:
+    | 'created_at'
+    | 'updated_at'
+    | 'overall_confidence_score'
+    | 'data_freshness_score'
+    | 'completeness_score';
   sortOrder?: 'asc' | 'desc';
   limit?: number;
   offset?: number;

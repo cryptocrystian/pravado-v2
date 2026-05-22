@@ -12,11 +12,16 @@ interface TrialBannerProps {
   onUpgradeClick: () => void;
 }
 
-export function TrialBanner({ daysRemaining, onUpgradeClick }: TrialBannerProps) {
+export function TrialBanner({
+  daysRemaining,
+  onUpgradeClick,
+}: TrialBannerProps) {
   if (daysRemaining <= 0) return null;
 
   const isUrgent = daysRemaining <= 3;
-  const bgColor = isUrgent ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200';
+  const bgColor = isUrgent
+    ? 'bg-red-50 border-red-200'
+    : 'bg-yellow-50 border-yellow-200';
   const textColor = isUrgent ? 'text-red-800' : 'text-yellow-800';
   const buttonColor = isUrgent
     ? 'bg-red-600 hover:bg-red-700 text-white'

@@ -5,6 +5,7 @@
 Sprint S29 implements **hard quota enforcement** for billing limits, building on the soft-limits-only foundation from Sprint S28. When enabled via feature flag, operations that would exceed billing quotas are rejected with HTTP 402 (Payment Required) errors instead of being allowed to proceed.
 
 **Key Features:**
+
 - Hard quota enforcement via `BillingQuotaError` exception class
 - Feature flag (`ENABLE_BILLING_HARD_LIMITS`) for gradual rollout
 - Pre-flight quota checks before expensive operations
@@ -14,6 +15,7 @@ Sprint S29 implements **hard quota enforcement** for billing limits, building on
 - Integration with Execution Engine V2, Brief Generator, and Content Rewrite
 
 **Philosophy:**
+
 - **Fail early**: Check quotas before starting expensive operations
 - **Informative errors**: Provide detailed context in error payloads
 - **Conservative estimates**: Overestimate token consumption to prevent mid-operation failures
@@ -72,6 +74,7 @@ export interface BillingQuotaErrorDetails {
 ```
 
 **Key Properties:**
+
 - `httpStatus`: Always `402` (Payment Required) for standard HTTP compliance
 - `details.quotaType`: Which quota was exceeded (tokens, playbook_runs, seats)
 - `details.currentUsage`: Current period usage before this operation
@@ -91,6 +94,7 @@ async enforceOrgQuotaOrThrow(orgId: string, opts: CheckQuotaOptions): Promise<vo
 ```
 
 **Parameters:**
+
 - `orgId`: Organization ID to check quotas for
 - `opts.tokensToConsume`: Estimated tokens to consume (optional)
 - `opts.playbookRunsToConsume`: Number of playbook runs to consume (optional)
@@ -182,12 +186,14 @@ export const FLAGS = {
 **Purpose**: Allows gradual rollout and emergency disable of hard enforcement without code deployment.
 
 **When Disabled**:
+
 - `enforceOrgQuotaOrThrow()` returns immediately without checking quotas
 - All operations proceed regardless of usage
 - Soft limit tracking from S28 continues (observability retained)
 - No `BillingQuotaError` exceptions are thrown
 
 **Use Cases**:
+
 - **Gradual rollout**: Enable for internal orgs first, then expand
 - **Emergency disable**: Quickly disable if enforcement causes issues
 - **Testing**: Disable in test environments to avoid quota dependencies
@@ -214,7 +220,10 @@ export interface LlmRouterConfig {
 **Route Setup** (example from `apps/api/src/routes/playbooks/index.ts:63-76`):
 
 ```typescript
-const billingService = new BillingService(supabase, env.BILLING_DEFAULT_PLAN_SLUG);
+const billingService = new BillingService(
+  supabase,
+  env.BILLING_DEFAULT_PLAN_SLUG
+);
 
 const llmRouter = new LlmRouter({
   provider: env.LLM_PROVIDER as any,
@@ -247,25 +256,31 @@ if (this.billingEnforcer && request.orgId) {
     await this.billingEnforcer(request.orgId, estimatedTokens);
   } catch (err) {
     // Re-throw billing errors (don't fall back to stub for quota issues)
-    logger.warn('Billing quota enforcement failed', { error: err, orgId: request.orgId });
+    logger.warn('Billing quota enforcement failed', {
+      error: err,
+      orgId: request.orgId,
+    });
     throw err;
   }
 }
 ```
 
 **Estimation Formula:**
+
 - **System prompt tokens**: `Math.ceil(systemPrompt.length / 4)`
 - **User prompt tokens**: `Math.ceil(userPrompt.length / 4)`
 - **Max completion tokens**: From request or config (default: 2048)
 - **Total estimate**: Sum of all three components
 
 **Rationale**:
+
 - **1 token ≈ 4 characters**: Industry standard approximation for English text
 - **Conservative**: Uses `Math.ceil()` to round up, ensuring we never underestimate
 - **Max completion**: Assumes full completion length to prevent mid-generation quota exceeded
 - **Fail early**: Better to reject before API call than during generation
 
 **Error Propagation:**
+
 - Billing errors are **re-thrown** (not swallowed)
 - LLM calls **do not fall back to stub** if quota exceeded
 - Errors propagate to route handlers for HTTP 402 response
@@ -290,17 +305,19 @@ const { data: run, error: runError } = await this.supabase
     org_id: orgId,
     status: 'PENDING',
     // ... other fields
-  })
-  // ...
+  });
+// ...
 ```
 
 **Key Points:**
+
 - Check happens **before** database insertion
 - Always consumes exactly 1 playbook run
 - No partial execution if quota exceeded
 - Usage counter still incremented after run starts (S28 behavior)
 
 **Error Flow:**
+
 1. User triggers playbook execution via API
 2. `executePlaybook()` calls `enforceOrgQuotaOrThrow()`
 3. If quota exceeded, `BillingQuotaError` thrown
@@ -333,12 +350,14 @@ async generateBrief(
 ```
 
 **Token Estimate Breakdown** (10,000 tokens):
+
 - Context assembly: ~3,000 tokens (personality, memory, SEO data)
 - System prompt: ~1,000 tokens (brief generation instructions)
 - User prompt: ~2,000 tokens (topic, keywords, constraints)
 - Generated brief: ~4,000 tokens (brief + outline + metadata)
 
 **Conservative Approach:**
+
 - Estimate covers typical case with headroom
 - Prevents quota exceeded mid-generation
 - Single check at entry point (not per LLM call within playbook)
@@ -368,6 +387,7 @@ async generateRewrite(
 ```
 
 **Token Estimate Breakdown** (8,000 tokens):
+
 - Original content: ~3,000 tokens (content body + metadata)
 - Personality configuration: ~500 tokens (style, voice, preferences)
 - Quality analysis context: ~500 tokens (S14 quality scores)
@@ -375,6 +395,7 @@ async generateRewrite(
 - Rewritten content: ~3,000 tokens (new version + diff)
 
 **Conservative Approach:**
+
 - Covers typical article rewrites (1,000-2,000 words)
 - Lower than brief generation (less context needed)
 - Prevents quota exceeded during rewrite process
@@ -445,6 +466,7 @@ The `BillingQuotaError.details` object contains granular quota information:
 ```
 
 **Field Descriptions:**
+
 - `type`: Always `'quota_exceeded'` (discriminator for error type)
 - `quotaType`: Which resource exceeded (`'tokens'`, `'playbook_runs'`, `'seats'`)
 - `currentUsage`: Usage before this operation (in quota units)
@@ -617,6 +639,7 @@ describe('BillingService.enforceOrgQuotaOrThrow', () => {
 ### Load Testing Considerations
 
 **Quota Enforcement Performance:**
+
 - Each enforcement check requires 2 database queries (billing state + usage)
 - Cache billing summaries for performance (future optimization)
 - Monitor query latency under load
@@ -688,24 +711,28 @@ Sprint S29 implements hard enforcement but has several known limitations:
 ### Near-Term Improvements (S30-S31)
 
 **1. Enhanced Error Responses**:
+
 - Add `QUOTA_EXCEEDED` error code (distinct from `INTERNAL_ERROR`)
 - Include `error.details` object in API response body
 - Add `X-Quota-Remaining` and `X-Billing-Period-End` headers
 - Add `Retry-After` header with billing period end time
 
 **2. Dynamic Token Estimation**:
+
 - Estimate based on actual input size (content length, context size)
 - Use model-specific tokenizers (tiktoken for OpenAI, etc.)
 - Track estimation accuracy and adjust multipliers
 - Add per-operation token budgets
 
 **3. Quota Warnings**:
+
 - Send notifications at 80%, 90%, 95% thresholds
 - Add quota warnings to dashboard
 - Email notifications to org admins
 - In-app notifications for approaching limits
 
 **4. Seat Enforcement**:
+
 - Enforce seat quotas on team invites
 - Reject invites when seat quota exceeded
 - Allow seat purchases before invites
@@ -714,24 +741,28 @@ Sprint S29 implements hard enforcement but has several known limitations:
 ### Mid-Term Improvements (S32-S33)
 
 **5. Overage Billing**:
+
 - Allow operations beyond quota with overage pricing
 - Track overage usage separately
 - Calculate overage costs in billing summary
 - Integrate with Stripe for overage charges
 
 **6. Operation Queueing**:
+
 - Queue operations that exceed current quota
 - Auto-execute at next billing period
 - Notify users when queue processed
 - Allow manual queue management
 
 **7. Quota Caching**:
+
 - Cache billing summaries for performance
 - Invalidate cache on usage updates
 - Reduce database queries per enforcement check
 - Add cache hit/miss metrics
 
 **8. Granular Quotas**:
+
 - Per-model token quotas (GPT-4 vs GPT-3.5)
 - Per-operation quotas (briefs, rewrites, playbooks)
 - Per-user quotas within org
@@ -740,24 +771,28 @@ Sprint S29 implements hard enforcement but has several known limitations:
 ### Long-Term Vision (S34+)
 
 **9. Quota Marketplace**:
+
 - Buy/sell quota between orgs
 - Quota trading platform
 - Quota gifting/transfers
 - Quota leasing (short-term)
 
 **10. Predictive Quotas**:
+
 - ML-based usage prediction
 - Proactive quota increase suggestions
 - Anomaly detection for usage spikes
 - Auto-scaling quotas based on patterns
 
 **11. Multi-Tier Enforcement**:
+
 - Soft limits (warnings)
 - Hard limits (rejection)
 - Emergency limits (rate limiting)
 - Per-user limits within org
 
 **12. Quota Analytics**:
+
 - Usage trends and forecasting
 - Cost optimization suggestions
 - Quota efficiency scores
@@ -766,27 +801,33 @@ Sprint S29 implements hard enforcement but has several known limitations:
 ## Key Files
 
 ### Types & Validators
+
 - `packages/types/src/billing.ts:123-167` - `BillingQuotaError` class and details
 - `packages/validators/src/billing.ts` - Billing validation schemas
 
 ### Backend (Billing Service)
+
 - `apps/api/src/services/billingService.ts:469-581` - `enforceOrgQuotaOrThrow()` implementation
 
 ### Backend (Integration Points)
+
 - `packages/utils/src/llmRouter.ts:161-179` - LLM Router token estimation and enforcement
 - `apps/api/src/services/playbookExecutionEngineV2.ts:148-151` - Playbook run enforcement
 - `apps/api/src/services/briefGeneratorService.ts:46-50` - Brief generation enforcement (10K tokens)
 - `apps/api/src/services/contentRewriteService.ts:69-73` - Content rewrite enforcement (8K tokens)
 
 ### Backend (Routes)
+
 - `apps/api/src/routes/playbooks/index.ts:63-76` - LLM Router setup with billing enforcer
 - `apps/api/src/routes/contentBriefGenerator/index.ts:44-50` - Brief generator route setup
 - `apps/api/src/server.ts:133-149` - Global error handler (HTTP 402 mapping)
 
 ### Feature Flags
+
 - `packages/feature-flags/src/flags.ts:28` - `ENABLE_BILLING_HARD_LIMITS` flag
 
 ### Database
+
 - `apps/api/supabase/migrations/35_create_billing_schema.sql` - Billing tables (S28)
 
 ## Design Decisions
@@ -801,12 +842,14 @@ Sprint S29 implements hard enforcement but has several known limitations:
 ### Why Token Estimation vs Actual Usage?
 
 **Pros of Estimation:**
+
 - Prevents mid-operation quota exceeded failures
 - Faster (no tokenizer execution required)
 - Conservative approach (safer)
 - Works across all LLM providers
 
 **Cons of Estimation:**
+
 - Imprecise (may reject operations that would fit)
 - Fixed estimates for brief/rewrite (not input-dependent)
 - No feedback loop to improve accuracy
@@ -835,12 +878,14 @@ Sprint S29 implements hard enforcement but has several known limitations:
 ### Why Fixed Estimates for Brief/Rewrite?
 
 **Pros:**
+
 - Simple implementation (no input analysis required)
 - Predictable for users (known cost per operation)
 - Conservative (covers most cases)
 - Fast (no tokenization overhead)
 
 **Cons:**
+
 - Imprecise (short briefs charged same as long)
 - May reject operations that would fit
 - No cost optimization for efficient inputs
@@ -861,12 +906,14 @@ Sprint S29 implements hard enforcement but has several known limitations:
 **Symptom**: Users receive HTTP 402 errors even though dashboard shows available quota.
 
 **Possible Causes:**
+
 1. **Estimate Too Conservative**: Fixed 10K/8K estimates may overestimate actual usage
 2. **Concurrent Operations**: Multiple simultaneous requests consume quota before checks complete
 3. **Billing Period Transition**: Period rolled over between usage display and operation
 4. **Cache Staleness**: Dashboard showing cached data, enforcement using fresh data
 
 **Solutions:**
+
 - Check actual quota remaining vs estimated operation cost
 - Verify billing period dates match between dashboard and error
 - Add logging to track quota at check time vs display time
@@ -877,12 +924,14 @@ Sprint S29 implements hard enforcement but has several known limitations:
 **Symptom**: Operations still rejected even with `ENABLE_BILLING_HARD_LIMITS: false`.
 
 **Possible Causes:**
+
 1. **Flag not exported**: Feature flag changes not built/deployed
 2. **Flag override**: Environment variable overriding code value
 3. **Service restart needed**: Flag cached in running service
 4. **Wrong flag name**: Checking different flag than expected
 
 **Solutions:**
+
 - Verify flag value: `console.log(FLAGS.ENABLE_BILLING_HARD_LIMITS)`
 - Rebuild packages: `pnpm build`
 - Restart API service
@@ -893,12 +942,14 @@ Sprint S29 implements hard enforcement but has several known limitations:
 **Symptom**: LLM calls proceed despite quota exceeded.
 
 **Possible Causes:**
+
 1. **No billingEnforcer**: LLM Router constructed without enforcer callback
 2. **No orgId**: Request missing `orgId` field (enforcement skipped)
 3. **Stub provider**: Using stub provider (no real LLM call, no enforcement)
 4. **Error swallowed**: Enforcement errors caught and suppressed
 
 **Solutions:**
+
 - Verify LLM Router has `billingEnforcer` callback
 - Verify requests include `orgId` field
 - Check if provider is 'stub' (enforcement still occurs for non-stub)
@@ -909,11 +960,13 @@ Sprint S29 implements hard enforcement but has several known limitations:
 **Symptom**: Quota errors return HTTP 500 instead of 402.
 
 **Possible Causes:**
+
 1. **Error handler bug**: Server not extracting `httpStatus` property
 2. **Error not thrown**: Service catching and re-throwing as generic error
 3. **Wrong error type**: Not actually a `BillingQuotaError` instance
 
 **Solutions:**
+
 - Verify error is instance of `BillingQuotaError`
 - Check server error handler for `statusCode`/`httpStatus` extraction
 - Add logging to error handler to inspect error object
@@ -924,12 +977,14 @@ Sprint S29 implements hard enforcement but has several known limitations:
 **Symptom**: Logs show "Cannot enforce quota: no billing summary" warnings.
 
 **Possible Causes:**
+
 1. **Missing billing state**: Org not seeded with billing data
 2. **Database connection**: Supabase client not configured
 3. **RLS policies**: Row-level security blocking billing reads
 4. **Migration not applied**: Billing schema not created
 
 **Solutions:**
+
 - Verify migration 35 applied: `pnpm --filter @pravado/api db:migrate`
 - Check Supabase connection and credentials
 - Verify org exists in `org_billing_state` table
@@ -941,6 +996,7 @@ Sprint S29 implements hard enforcement but has several known limitations:
 Sprint S29 builds on S28 billing schema (no new migrations).
 
 **Prerequisites:**
+
 1. Sprint S28 billing schema (migration 35) must be applied
 2. All orgs must have billing state seeded (auto-seeded on first access)
 3. Feature flag system must be available
@@ -948,18 +1004,21 @@ Sprint S29 builds on S28 billing schema (no new migrations).
 **Deployment Steps:**
 
 1. **Deploy code with flag disabled** (if gradual rollout desired):
+
    ```typescript
    // packages/feature-flags/src/flags.ts
    ENABLE_BILLING_HARD_LIMITS: false,
    ```
 
 2. **Deploy API and rebuild packages**:
+
    ```bash
    pnpm build
    pnpm --filter @pravado/api deploy
    ```
 
 3. **Verify billing data for all orgs**:
+
    ```sql
    -- Check for orgs without billing state
    SELECT o.id, o.name
@@ -969,6 +1028,7 @@ Sprint S29 builds on S28 billing schema (no new migrations).
    ```
 
 4. **Enable flag for internal orgs** (optional gradual rollout):
+
    ```typescript
    // In route setup, override flag per org
    if (orgId === 'internal-org-id') {
@@ -982,6 +1042,7 @@ Sprint S29 builds on S28 billing schema (no new migrations).
    - Confirm HTTP 402 responses sent correctly
 
 6. **Enable flag globally**:
+
    ```typescript
    // packages/feature-flags/src/flags.ts
    ENABLE_BILLING_HARD_LIMITS: true,
@@ -1016,6 +1077,7 @@ For billing enforcement issues:
 7. **Review billing dashboard**: Compare API usage with dashboard display
 
 For development questions, consult:
+
 - `docs/product/billing_quota_kernel_v1.md` - S28 foundation
 - `apps/api/__tests__/billingService.test.ts` - Service tests
 - `apps/api/__tests__/billingRoutes.test.ts` - Route tests

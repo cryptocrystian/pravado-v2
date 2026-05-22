@@ -80,12 +80,18 @@ export function ExecDashboardHeader({
   className,
 }: ExecDashboardHeaderProps) {
   // Handle both ExecDashboard and ExecDashboardWithCounts
-  const resolvedKpisCount = kpisCount ?? (dashboard as ExecDashboardWithCounts).kpisCount ?? 0;
-  const resolvedInsightsCount = insightsCount ?? (dashboard as ExecDashboardWithCounts).insightsCount ?? 0;
-  const resolvedHasNarrative = hasNarrative ?? (dashboard as ExecDashboardWithCounts).hasNarrative ?? false;
+  const resolvedKpisCount =
+    kpisCount ?? (dashboard as ExecDashboardWithCounts).kpisCount ?? 0;
+  const resolvedInsightsCount =
+    insightsCount ?? (dashboard as ExecDashboardWithCounts).insightsCount ?? 0;
+  const resolvedHasNarrative =
+    hasNarrative ??
+    (dashboard as ExecDashboardWithCounts).hasNarrative ??
+    false;
   const summary = (dashboard as ExecDashboardWithCounts).summary;
   const resolvedRisksCount = risksCount ?? summary?.topRisksCount ?? 0;
-  const resolvedOpportunitiesCount = opportunitiesCount ?? summary?.topOpportunitiesCount ?? 0;
+  const resolvedOpportunitiesCount =
+    opportunitiesCount ?? summary?.topOpportunitiesCount ?? 0;
 
   return (
     <div className={cn('bg-white rounded-lg border shadow-sm', className)}>
@@ -102,7 +108,10 @@ export function ExecDashboardHeader({
                   {dashboard.title}
                 </h1>
                 {dashboard.isDefault && (
-                  <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-yellow-50 text-yellow-700 border-yellow-200"
+                  >
                     <Star className="h-3 w-3 mr-1" />
                     Default
                   </Badge>
@@ -139,7 +148,10 @@ export function ExecDashboardHeader({
                   <DropdownMenuSeparator />
                 )}
                 {onArchive && !dashboard.isArchived && (
-                  <DropdownMenuItem onClick={onArchive} className="text-yellow-600">
+                  <DropdownMenuItem
+                    onClick={onArchive}
+                    className="text-yellow-600"
+                  >
                     Archive Dashboard
                   </DropdownMenuItem>
                 )}
@@ -155,7 +167,10 @@ export function ExecDashboardHeader({
 
         {/* Meta Info Row */}
         <div className="flex flex-wrap items-center gap-4 mb-4">
-          <Badge variant="outline" className={cn('text-sm', getFocusColor(dashboard.primaryFocus))}>
+          <Badge
+            variant="outline"
+            className={cn('text-sm', getFocusColor(dashboard.primaryFocus))}
+          >
             <Target className="h-3 w-3 mr-1" />
             {getPrimaryFocusLabel(dashboard.primaryFocus)}
           </Badge>
@@ -176,28 +191,36 @@ export function ExecDashboardHeader({
           <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50">
             <BarChart3 className="h-5 w-5 text-blue-500" />
             <div>
-              <div className="text-2xl font-bold text-gray-900">{resolvedKpisCount}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {resolvedKpisCount}
+              </div>
               <div className="text-xs text-gray-500">KPIs</div>
             </div>
           </div>
           <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50">
             <Lightbulb className="h-5 w-5 text-yellow-500" />
             <div>
-              <div className="text-2xl font-bold text-gray-900">{resolvedInsightsCount}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {resolvedInsightsCount}
+              </div>
               <div className="text-xs text-gray-500">Insights</div>
             </div>
           </div>
           <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50">
             <AlertTriangle className="h-5 w-5 text-red-500" />
             <div>
-              <div className="text-2xl font-bold text-red-600">{resolvedRisksCount}</div>
+              <div className="text-2xl font-bold text-red-600">
+                {resolvedRisksCount}
+              </div>
               <div className="text-xs text-gray-500">Risks</div>
             </div>
           </div>
           <div className="flex items-center gap-2 p-3 rounded-lg bg-green-50">
             <TrendingUp className="h-5 w-5 text-green-500" />
             <div>
-              <div className="text-2xl font-bold text-green-600">{resolvedOpportunitiesCount}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {resolvedOpportunitiesCount}
+              </div>
               <div className="text-xs text-gray-500">Opportunities</div>
             </div>
           </div>

@@ -22,7 +22,9 @@ test.describe('Crisis Response', () => {
       await expect(page).toHaveTitle(/Pravado/);
       await expect(page.locator('h1')).toContainText('Crisis Response Center');
       await expect(
-        page.locator('text=Monitor threats, manage incidents, and coordinate response')
+        page.locator(
+          'text=Monitor threats, manage incidents, and coordinate response'
+        )
       ).toBeVisible();
     });
 
@@ -57,14 +59,18 @@ test.describe('Crisis Response', () => {
       // TODO: Implement with authenticated test user
       await page.goto('/app/crisis');
 
-      await expect(page.locator('button:has-text("Run Detection")')).toBeVisible();
+      await expect(
+        page.locator('button:has-text("Run Detection")')
+      ).toBeVisible();
     });
 
     test.skip('should show New Incident button', async ({ page }) => {
       // TODO: Implement with authenticated test user
       await page.goto('/app/crisis');
 
-      await expect(page.locator('button:has-text("New Incident")')).toBeVisible();
+      await expect(
+        page.locator('button:has-text("New Incident")')
+      ).toBeVisible();
     });
 
     test.skip('should open incident creation modal', async ({ page }) => {
@@ -74,7 +80,9 @@ test.describe('Crisis Response', () => {
       await page.click('button:has-text("New Incident")');
 
       // Should show modal
-      await expect(page.locator('h2:has-text("Create Incident")')).toBeVisible();
+      await expect(
+        page.locator('h2:has-text("Create Incident")')
+      ).toBeVisible();
     });
 
     test.skip('should display filter controls', async ({ page }) => {
@@ -119,7 +127,9 @@ test.describe('Crisis Response', () => {
       await expect(page.locator('text=closed')).toBeVisible();
     });
 
-    test.skip('should display incident cards with severity badges', async ({ page }) => {
+    test.skip('should display incident cards with severity badges', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user with existing incidents
       await page.goto('/app/crisis');
 
@@ -136,7 +146,9 @@ test.describe('Crisis Response', () => {
       await page.locator('[class*="card"]').first().click();
 
       // Should show selected incident summary in right panel
-      await expect(page.locator('h3:has-text("Selected Incident")')).toBeVisible();
+      await expect(
+        page.locator('h3:has-text("Selected Incident")')
+      ).toBeVisible();
     });
 
     test.skip('should open incident detail drawer', async ({ page }) => {
@@ -175,7 +187,9 @@ test.describe('Crisis Response', () => {
       await page.click('button:has-text("Actions")');
 
       // Should show actions list
-      await expect(page.locator('h2:has-text("Response Actions")')).toBeVisible();
+      await expect(
+        page.locator('h2:has-text("Response Actions")')
+      ).toBeVisible();
     });
 
     test.skip('should show brief tab content', async ({ page }) => {
@@ -189,7 +203,9 @@ test.describe('Crisis Response', () => {
       await expect(page.locator('h2:has-text("Crisis Brief")')).toBeVisible();
     });
 
-    test.skip('should show escalation button for active incidents', async ({ page }) => {
+    test.skip('should show escalation button for active incidents', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user with active incidents
       await page.goto('/app/crisis');
 
@@ -208,7 +224,9 @@ test.describe('Crisis Response', () => {
       await expect(page.locator('text=Scanning...')).toBeVisible();
 
       // Should complete (with mock)
-      await expect(page.locator('button:has-text("Run Detection")')).toBeVisible({
+      await expect(
+        page.locator('button:has-text("Run Detection")')
+      ).toBeVisible({
         timeout: 10000,
       });
     });
@@ -289,7 +307,9 @@ test.describe('Crisis Response', () => {
       // Status should update to completed
     });
 
-    test.skip('should display severity distribution chart', async ({ page }) => {
+    test.skip('should display severity distribution chart', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user
       await page.goto('/app/crisis');
 
@@ -394,7 +414,9 @@ test.describe('Crisis Response', () => {
 
       // Should show detection panel
       await expect(page.locator('text=Crisis Detection')).toBeVisible();
-      await expect(page.locator('button:has-text("Run Detection Now")')).toBeVisible();
+      await expect(
+        page.locator('button:has-text("Run Detection Now")')
+      ).toBeVisible();
     });
 
     test.skip('should show advanced detection options', async ({ page }) => {
@@ -424,7 +446,9 @@ test.describe('Crisis Response', () => {
       await page.click('button:has-text("Run Detection Now")');
 
       // Wait for results
-      await expect(page.locator('text=Last Detection Results')).toBeVisible({ timeout: 15000 });
+      await expect(page.locator('text=Last Detection Results')).toBeVisible({
+        timeout: 15000,
+      });
       await expect(page.locator('text=Events Processed')).toBeVisible();
       await expect(page.locator('text=Signals Generated')).toBeVisible();
     });
@@ -461,7 +485,9 @@ test.describe('Crisis Response', () => {
       await page.click('button:has-text("Add Rule")');
 
       // Should show editor panel
-      await expect(page.locator('h2:has-text("Create Escalation Rule")')).toBeVisible();
+      await expect(
+        page.locator('h2:has-text("Create Escalation Rule")')
+      ).toBeVisible();
       await expect(page.locator('label:has-text("Rule Name")')).toBeVisible();
       await expect(page.locator('label:has-text("Rule Type")')).toBeVisible();
     });
@@ -539,7 +565,9 @@ test.describe('Crisis Response', () => {
     });
 
     // CrisisSeverityBadge tests
-    test.skip('should display severity badge with correct color', async ({ page }) => {
+    test.skip('should display severity badge with correct color', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user with incidents
       await page.goto('/app/crisis');
 

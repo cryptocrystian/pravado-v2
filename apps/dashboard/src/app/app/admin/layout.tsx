@@ -15,7 +15,11 @@ export const dynamic = 'force-dynamic';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getCurrentUser();
   if (!session) {
     // Admin layout still gates because non-admin redirect is not to /login
@@ -37,5 +41,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect('/app/command-center');
   }
 
-  return <AdminShell userEmail={session.user.fullName || 'Admin'}>{children}</AdminShell>;
+  return (
+    <AdminShell userEmail={session.user.fullName || 'Admin'}>
+      {children}
+    </AdminShell>
+  );
 }

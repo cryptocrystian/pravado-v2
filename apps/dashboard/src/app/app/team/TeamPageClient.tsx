@@ -54,7 +54,10 @@ export function TeamPageClient({
 
         // Add new invite to the list
         if (data.data?.invite) {
-          setInvites([...invites, { ...data.data.invite, createdByUser: { fullName: null } }]);
+          setInvites([
+            ...invites,
+            { ...data.data.invite, createdByUser: { fullName: null } },
+          ]);
         }
       } else {
         setError(data.error?.message || 'Failed to send invitation');
@@ -71,9 +74,12 @@ export function TeamPageClient({
     setSuccess(null);
 
     try {
-      const response = await fetch(`/api/orgs/${orgId}/invites/${inviteId}/resend`, {
-        method: 'POST',
-      });
+      const response = await fetch(
+        `/api/orgs/${orgId}/invites/${inviteId}/resend`,
+        {
+          method: 'POST',
+        }
+      );
 
       const data = await response.json();
 
@@ -139,7 +145,10 @@ export function TeamPageClient({
             </h3>
             <form onSubmit={handleInvite} className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-6 mb-1">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-slate-6 mb-1"
+                >
                   Email Address
                 </label>
                 <input
@@ -154,13 +163,18 @@ export function TeamPageClient({
               </div>
 
               <div>
-                <label htmlFor="role" className="block text-sm font-medium text-slate-6 mb-1">
+                <label
+                  htmlFor="role"
+                  className="block text-sm font-medium text-slate-6 mb-1"
+                >
                   Role
                 </label>
                 <select
                   id="role"
                   value={role}
-                  onChange={(e) => setRole(e.target.value as 'admin' | 'member')}
+                  onChange={(e) =>
+                    setRole(e.target.value as 'admin' | 'member')
+                  }
                   className="input-field"
                 >
                   <option value="member">Member</option>
@@ -196,7 +210,10 @@ export function TeamPageClient({
               </div>
             ) : (
               members.map((member) => (
-                <div key={member.id} className="px-6 py-4 flex items-center justify-between hover:bg-slate-3/30 transition-colors duration-sm">
+                <div
+                  key={member.id}
+                  className="px-6 py-4 flex items-center justify-between hover:bg-slate-3/30 transition-colors duration-sm"
+                >
                   <div className="flex items-center space-x-3">
                     {member.user.avatarUrl ? (
                       <img
@@ -213,10 +230,14 @@ export function TeamPageClient({
                       <p className="text-sm font-medium text-white-0">
                         {member.user.fullName || 'Unknown'}
                         {member.userId === currentUserId && (
-                          <span className="ml-2 text-xs text-slate-6">(You)</span>
+                          <span className="ml-2 text-xs text-slate-6">
+                            (You)
+                          </span>
                         )}
                       </p>
-                      <p className="text-xs text-slate-6">{member.user.email}</p>
+                      <p className="text-xs text-slate-6">
+                        {member.user.email}
+                      </p>
                     </div>
                   </div>
                   <div>
@@ -225,7 +246,8 @@ export function TeamPageClient({
                         member.role
                       )}`}
                     >
-                      {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                      {member.role.charAt(0).toUpperCase() +
+                        member.role.slice(1)}
                     </span>
                   </div>
                 </div>
@@ -248,12 +270,18 @@ export function TeamPageClient({
               </div>
             ) : (
               invites.map((invite) => (
-                <div key={invite.id} className="px-6 py-4 flex items-center justify-between hover:bg-slate-3/30 transition-colors duration-sm">
+                <div
+                  key={invite.id}
+                  className="px-6 py-4 flex items-center justify-between hover:bg-slate-3/30 transition-colors duration-sm"
+                >
                   <div>
-                    <p className="text-sm font-medium text-white-0">{invite.email}</p>
+                    <p className="text-sm font-medium text-white-0">
+                      {invite.email}
+                    </p>
                     <p className="text-xs text-slate-6">
                       Invited {new Date(invite.createdAt).toLocaleDateString()}
-                      {invite.createdByUser.fullName && ` by ${invite.createdByUser.fullName}`}
+                      {invite.createdByUser.fullName &&
+                        ` by ${invite.createdByUser.fullName}`}
                     </p>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -262,7 +290,8 @@ export function TeamPageClient({
                         invite.role
                       )}`}
                     >
-                      {invite.role.charAt(0).toUpperCase() + invite.role.slice(1)}
+                      {invite.role.charAt(0).toUpperCase() +
+                        invite.role.slice(1)}
                     </span>
                     <button
                       onClick={() => handleResend(invite.id, invite.email)}

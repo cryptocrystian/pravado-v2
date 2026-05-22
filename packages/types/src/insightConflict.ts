@@ -11,63 +11,63 @@
  * Types of conflicts detected across intelligence systems
  */
 export type ConflictType =
-  | 'contradiction'    // Direct opposing statements
-  | 'divergence'       // Different conclusions from same data
-  | 'ambiguity'        // Unclear or multiple interpretations
-  | 'missing_data'     // Incomplete information causing gaps
-  | 'inconsistency';   // Logical or factual inconsistencies
+  | 'contradiction' // Direct opposing statements
+  | 'divergence' // Different conclusions from same data
+  | 'ambiguity' // Unclear or multiple interpretations
+  | 'missing_data' // Incomplete information causing gaps
+  | 'inconsistency'; // Logical or factual inconsistencies
 
 /**
  * Severity levels for conflicts
  */
 export type ConflictSeverity =
-  | 'low'        // Minor discrepancy, low impact
-  | 'medium'     // Moderate conflict, should be addressed
-  | 'high'       // Significant conflict, needs attention
-  | 'critical';  // Urgent conflict, immediate resolution required
+  | 'low' // Minor discrepancy, low impact
+  | 'medium' // Moderate conflict, should be addressed
+  | 'high' // Significant conflict, needs attention
+  | 'critical'; // Urgent conflict, immediate resolution required
 
 /**
  * Status of conflict resolution workflow
  */
 export type ConflictStatus =
-  | 'detected'   // Conflict identified
-  | 'analyzing'  // Analysis in progress
-  | 'resolved'   // Resolution completed
+  | 'detected' // Conflict identified
+  | 'analyzing' // Analysis in progress
+  | 'resolved' // Resolution completed
   | 'dismissed'; // Marked as not requiring resolution
 
 /**
  * Types of resolution strategies
  */
 export type ConflictResolutionType =
-  | 'ai_consensus'     // AI synthesizes consensus from multiple sources
-  | 'weighted_truth'   // Truth weighted by source reliability
-  | 'source_priority'  // Higher priority source takes precedence
-  | 'hybrid';          // Combination of multiple strategies
+  | 'ai_consensus' // AI synthesizes consensus from multiple sources
+  | 'weighted_truth' // Truth weighted by source reliability
+  | 'source_priority' // Higher priority source takes precedence
+  | 'hybrid'; // Combination of multiple strategies
 
 /**
  * Types of edges in conflict graph
  */
 export type ConflictEdgeType =
-  | 'related'      // General relationship
-  | 'caused_by'    // Causal relationship
-  | 'contradicts'  // Direct contradiction
-  | 'supersedes';  // One conflict supersedes another
+  | 'related' // General relationship
+  | 'caused_by' // Causal relationship
+  | 'contradicts' // Direct contradiction
+  | 'supersedes'; // One conflict supersedes another
 
 /**
  * Role of an item within a conflict
  */
 export type ConflictItemRole =
-  | 'primary'    // Main conflicting item
-  | 'secondary'  // Secondary conflicting item
-  | 'context';   // Provides context
+  | 'primary' // Main conflicting item
+  | 'secondary' // Secondary conflicting item
+  | 'context'; // Provides context
 
 /**
  * Actor types for audit log
  */
 export type ConflictActorType =
-  | 'user'    // Human user
-  | 'system'  // Automated system
-  | 'ai';     // AI agent
+  | 'user' // Human user
+  | 'system' // Automated system
+  | 'ai'; // AI agent
 
 // ============================================================================
 // LABEL MAPS
@@ -117,14 +117,20 @@ export const CONFLICT_STATUS_COLORS: Record<ConflictStatus, string> = {
   dismissed: 'gray',
 };
 
-export const CONFLICT_RESOLUTION_TYPE_LABELS: Record<ConflictResolutionType, string> = {
+export const CONFLICT_RESOLUTION_TYPE_LABELS: Record<
+  ConflictResolutionType,
+  string
+> = {
   ai_consensus: 'AI Consensus',
   weighted_truth: 'Weighted Truth',
   source_priority: 'Source Priority',
   hybrid: 'Hybrid',
 };
 
-export const CONFLICT_RESOLUTION_TYPE_COLORS: Record<ConflictResolutionType, string> = {
+export const CONFLICT_RESOLUTION_TYPE_COLORS: Record<
+  ConflictResolutionType,
+  string
+> = {
   ai_consensus: 'indigo',
   weighted_truth: 'blue',
   source_priority: 'purple',
@@ -979,7 +985,11 @@ export interface LLMConflictResolution {
 export interface ConflictNotification {
   id: string;
   conflictId: string;
-  notificationType: 'new_conflict' | 'severity_escalation' | 'resolution_available' | 'action_required';
+  notificationType:
+    | 'new_conflict'
+    | 'severity_escalation'
+    | 'resolution_available'
+    | 'action_required';
   title: string;
   message: string;
   severity: ConflictSeverity;

@@ -174,12 +174,18 @@ export function BoardReportSectionList({
                           variant="outline"
                           className={cn(
                             'text-xs',
-                            statusColor === 'green' && 'border-green-300 text-green-600',
-                            statusColor === 'yellow' && 'border-yellow-300 text-yellow-600',
-                            statusColor === 'blue' && 'border-blue-300 text-blue-600',
-                            statusColor === 'red' && 'border-red-300 text-red-600',
-                            statusColor === 'indigo' && 'border-indigo-300 text-indigo-600',
-                            statusColor === 'gray' && 'border-gray-300 text-gray-600'
+                            statusColor === 'green' &&
+                              'border-green-300 text-green-600',
+                            statusColor === 'yellow' &&
+                              'border-yellow-300 text-yellow-600',
+                            statusColor === 'blue' &&
+                              'border-blue-300 text-blue-600',
+                            statusColor === 'red' &&
+                              'border-red-300 text-red-600',
+                            statusColor === 'indigo' &&
+                              'border-indigo-300 text-indigo-600',
+                            statusColor === 'gray' &&
+                              'border-gray-300 text-gray-600'
                           )}
                         >
                           {getSectionStatusLabel(section.status)}
@@ -207,7 +213,10 @@ export function BoardReportSectionList({
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onToggleVisibility?.(section.id, !section.isVisible);
+                            onToggleVisibility?.(
+                              section.id,
+                              !section.isVisible
+                            );
                           }}
                         >
                           {section.isVisible ? (
@@ -240,10 +249,13 @@ export function BoardReportSectionList({
                         <Clock className="h-3 w-3 inline mr-1" />
                         {formatRelativeTime(section.createdAt)}
                       </span>
-                      {section.modelName && <span>Model: {section.modelName}</span>}
+                      {section.modelName && (
+                        <span>Model: {section.modelName}</span>
+                      )}
                       {section.generationDurationMs && (
                         <span>
-                          Duration: {(section.generationDurationMs / 1000).toFixed(1)}s
+                          Duration:{' '}
+                          {(section.generationDurationMs / 1000).toFixed(1)}s
                         </span>
                       )}
                       {section.editedAt && (

@@ -7,7 +7,11 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { PersonalityStore } from '../src/services/personality/personalityStore';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { PersonalityProfile } from '@pravado/types';
-import { createMockSupabaseClient, createMockQueryBuilder, createMockSuccess } from './helpers/supabaseMock';
+import {
+  createMockSupabaseClient,
+  createMockQueryBuilder,
+  createMockSuccess,
+} from './helpers/supabaseMock';
 
 describe('PersonalityStore', () => {
   let store: PersonalityStore;
@@ -309,7 +313,9 @@ describe('PersonalityStore', () => {
 
       await store.assignPersonalityToAgent(orgId, agentId, personalityId);
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('agent_personality_assignments');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'agent_personality_assignments'
+      );
     });
 
     it('should update existing assignment', async () => {
@@ -318,7 +324,9 @@ describe('PersonalityStore', () => {
       const personalityId = 'personality-789';
 
       // Mock query to check for existing assignment (returns existing)
-      const mockSelectQuery = createMockQueryBuilder(createMockSuccess({ id: 'assignment-1' }));
+      const mockSelectQuery = createMockQueryBuilder(
+        createMockSuccess({ id: 'assignment-1' })
+      );
 
       // Mock query to update existing assignment - supports chaining .eq().eq()
       const mockUpdateQuery = createMockQueryBuilder(createMockSuccess(null));
@@ -329,7 +337,9 @@ describe('PersonalityStore', () => {
 
       await store.assignPersonalityToAgent(orgId, agentId, personalityId);
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('agent_personality_assignments');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'agent_personality_assignments'
+      );
     });
   });
 
@@ -411,7 +421,9 @@ describe('PersonalityStore', () => {
 
       await store.removePersonalityFromAgent(orgId, agentId);
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('agent_personality_assignments');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'agent_personality_assignments'
+      );
     });
   });
 

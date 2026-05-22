@@ -18,14 +18,17 @@ interface Props {
 
 function PriorityBadge({ priority }: { priority: string }) {
   const colors = {
-    critical: 'bg-semantic-danger/15 text-semantic-danger ring-semantic-danger/30',
+    critical:
+      'bg-semantic-danger/15 text-semantic-danger ring-semantic-danger/30',
     high: 'bg-semantic-warning/15 text-semantic-warning ring-semantic-warning/30',
     medium: 'bg-brand-cyan/15 text-brand-cyan ring-brand-cyan/30',
     low: 'bg-white/10 text-white/50 ring-white/20',
   };
 
   return (
-    <span className={`px-2 py-0.5 text-xs font-medium rounded-full ring-1 ${colors[priority as keyof typeof colors] || colors.low}`}>
+    <span
+      className={`px-2 py-0.5 text-xs font-medium rounded-full ring-1 ${colors[priority as keyof typeof colors] || colors.low}`}
+    >
       {priority}
     </span>
   );
@@ -35,10 +38,22 @@ export function AttentionQueue({ items, onActionClick }: Props) {
   if (items.length === 0) {
     return (
       <div className="p-8 text-center rounded-xl border border-dashed border-border-subtle">
-        <svg className="w-12 h-12 mx-auto text-white/40 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg
+          className="w-12 h-12 mx-auto text-white/40 mb-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
-        <p className="text-sm text-white/55">All caught up! No items require attention.</p>
+        <p className="text-sm text-white/55">
+          All caught up! No items require attention.
+        </p>
       </div>
     );
   }
@@ -56,7 +71,11 @@ export function AttentionQueue({ items, onActionClick }: Props) {
                 <PriorityBadge priority={item.priority} />
                 {item.dueBy && (
                   <span className="text-xs text-white/55">
-                    Due {new Date(item.dueBy).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    Due{' '}
+                    {new Date(item.dueBy).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </span>
                 )}
               </div>

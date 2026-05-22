@@ -61,7 +61,12 @@ interface ContentItem {
   orgId: UUID;
   title: string;
   slug: string | null;
-  contentType: 'blog_post' | 'social_post' | 'long_form' | 'video_script' | 'newsletter';
+  contentType:
+    | 'blog_post'
+    | 'social_post'
+    | 'long_form'
+    | 'video_script'
+    | 'newsletter';
   status: 'draft' | 'published' | 'archived';
   body: string | null;
   url: string | null;
@@ -79,6 +84,7 @@ interface ContentItem {
 ```
 
 **Indexes**:
+
 - `idx_content_items_org_status` (org_id, status)
 - `idx_content_items_org_topic` (org_id, primary_topic_id)
 - `idx_content_items_embeddings` HNSW index for vector similarity
@@ -154,20 +160,24 @@ interface ContentTopicCluster {
 #### Content Library Methods
 
 **`listContentItems(orgId, filters)`**
+
 - Lists content items with filtering and pagination
 - Filters: status, q (search), topicId, page, pageSize, contentType
 - Returns: `ContentItemListDTO` with items, total, page, pageSize
 
 **`getContentItemById(orgId, id)`**
+
 - Retrieves single content item
 - Returns: `ContentItem | null`
 
 **`createContentItem(orgId, data)`**
+
 - Creates new content item
 - Auto-generates: word count, slug, embeddings
 - Returns: `ContentItem`
 
 **`updateContentItem(orgId, id, updates)`**
+
 - Updates existing content item
 - Recalculates: word count, embeddings if body changed
 - Returns: `ContentItem | null`
@@ -175,30 +185,36 @@ interface ContentTopicCluster {
 #### Content Brief Methods
 
 **`listContentBriefs(orgId, filters)`**
+
 - Lists content briefs with status filtering
 - Filters: status, limit, offset
 - Returns: `ContentBrief[]`
 
 **`getContentBriefWithContext(orgId, id)`**
+
 - Gets brief with related topics and suggested keywords
 - Integrates with SEO pillar for keyword suggestions
 - Returns: `ContentBriefWithContextDTO`
 
 **`createContentBrief(orgId, data)`**
+
 - Creates new content brief
 - Returns: `ContentBrief`
 
 **`updateContentBrief(orgId, id, updates)`**
+
 - Updates existing content brief
 - Returns: `ContentBrief | null`
 
 #### Clustering Methods
 
 **`listContentClusters(orgId)`**
+
 - Lists all topic clusters with topics and representative content
 - Returns: `ContentClusterDTO[]`
 
 **`rebuildTopicClusters(orgId)`**
+
 - Rebuilds topic clusters (stub: creates single "General Topics" cluster)
 - Future: Will implement embeddings-based clustering (k-means, DBSCAN)
 - Returns: `ContentClusterDTO[]`
@@ -206,6 +222,7 @@ interface ContentTopicCluster {
 #### Gap Analysis Methods
 
 **`listContentGaps(orgId, filters)`**
+
 - Identifies content opportunities from SEO keywords
 - Filters: keyword, minScore, topicId, limit
 - Scoring formula: `(searchVolume/100) * (1-difficulty/100) * (1-existingContent/10) * 100`
@@ -224,11 +241,13 @@ interface ContentTopicCluster {
 
 **Approach**: Embeddings-based clustering
 **Algorithms**:
+
 - K-means clustering on topic embeddings
 - DBSCAN for density-based clustering
 - Hierarchical clustering for nested topic structures
 
 **Process**:
+
 1. Generate embeddings for all topics using OpenAI/Anthropic
 2. Apply clustering algorithm (configurable)
 3. Calculate cluster centroids
@@ -242,12 +261,16 @@ interface ContentTopicCluster {
 ### Scoring Formula
 
 ```typescript
-seoOpportunityScore = Math.min(100, Math.max(0,
-  (searchVolume / 100) *
-  (1 - difficulty / 100) *
-  (1 - existingContentCount / 10) *
-  100
-));
+seoOpportunityScore = Math.min(
+  100,
+  Math.max(
+    0,
+    (searchVolume / 100) *
+      (1 - difficulty / 100) *
+      (1 - existingContentCount / 10) *
+      100
+  )
+);
 ```
 
 ### Factors
@@ -278,20 +301,24 @@ seoOpportunityScore = Math.min(100, Math.max(0,
 ### Content Items
 
 **GET /api/v1/content/items**
+
 - Query params: `status`, `q`, `topicId`, `page`, `pageSize`, `contentType`
 - Response: `ContentItemListDTO`
 - Auth: requireUser, requireOrg
 
 **GET /api/v1/content/items/:id**
+
 - Response: `ContentItem`
 - Auth: requireUser, requireOrg
 
 **POST /api/v1/content/items**
+
 - Body: `CreateContentItemParams` (validated via Zod)
 - Response: `ContentItem`
 - Auth: requireUser, requireOrg
 
 **PUT /api/v1/content/items/:id**
+
 - Body: `UpdateContentItemParams` (validated via Zod)
 - Response: `ContentItem`
 - Auth: requireUser, requireOrg
@@ -299,21 +326,25 @@ seoOpportunityScore = Math.min(100, Math.max(0,
 ### Content Briefs
 
 **GET /api/v1/content/briefs**
+
 - Query params: `status`, `limit`, `offset`
 - Response: `ContentBrief[]`
 - Auth: requireUser, requireOrg
 
 **GET /api/v1/content/briefs/:id**
+
 - Response: `ContentBriefWithContextDTO`
 - Includes: related topics, suggested keywords from SEO
 - Auth: requireUser, requireOrg
 
 **POST /api/v1/content/briefs**
+
 - Body: `CreateContentBriefParams` (validated via Zod)
 - Response: `ContentBrief`
 - Auth: requireUser, requireOrg
 
 **PUT /api/v1/content/briefs/:id**
+
 - Body: `UpdateContentBriefParams` (validated via Zod)
 - Response: `ContentBrief`
 - Auth: requireUser, requireOrg
@@ -321,6 +352,7 @@ seoOpportunityScore = Math.min(100, Math.max(0,
 ### Topic Clusters
 
 **GET /api/v1/content/clusters**
+
 - Response: `ContentClusterDTO[]`
 - Includes: topics and representative content for each cluster
 - Auth: requireUser, requireOrg
@@ -328,6 +360,7 @@ seoOpportunityScore = Math.min(100, Math.max(0,
 ### Content Gaps
 
 **GET /api/v1/content/gaps**
+
 - Query params: `keyword`, `minScore`, `topicId`, `limit`
 - Response: `ContentGapDTO[]`
 - Sorted by SEO opportunity score (descending)
@@ -344,6 +377,7 @@ seoOpportunityScore = Math.min(100, Math.max(0,
 Three-panel horizontal layout:
 
 #### Left Panel: Content Library (1/3 width)
+
 - Search input (debounced, 500ms)
 - Status filter dropdown (all, draft, published, archived)
 - Content type filter dropdown (all types)
@@ -352,6 +386,7 @@ Three-panel horizontal layout:
 - Items show: title, status badge, type, word count, date
 
 #### Center Panel: Content Detail / Briefs (1/3 width)
+
 - Tab navigation: "Content Detail" | "Briefs (count)"
 - **Content Detail tab**: Shows selected item details
   - Title, status, type, slug, URL
@@ -365,6 +400,7 @@ Three-panel horizontal layout:
   - Back button to return to list
 
 #### Right Panel: Insights (1/3 width)
+
 - **Topic Clusters card**: Shows all clusters with topic/content counts
 - **Content Opportunities card**: Top 10 gaps with opportunity scores
   - Color-coded badges (green/yellow/gray)
@@ -454,6 +490,7 @@ All API endpoints use Zod schemas from `@pravado/validators`:
 - `listContentGapsSchema`
 
 Validation errors return:
+
 ```json
 {
   "success": false,
@@ -539,6 +576,7 @@ See `apps/api/tests/contentService.test.ts` for comprehensive tests covering:
 ### No content items showing
 
 **Check**:
+
 1. User has org_id set (requireOrg middleware)
 2. Content items exist in database for that org
 3. API is running on port 4000
@@ -547,6 +585,7 @@ See `apps/api/tests/contentService.test.ts` for comprehensive tests covering:
 ### Briefs not showing suggested keywords
 
 **Check**:
+
 1. SEO keywords exist in database for org
 2. Target keyword in brief matches SEO keywords
 3. SEO keywords have status = 'active'
@@ -554,6 +593,7 @@ See `apps/api/tests/contentService.test.ts` for comprehensive tests covering:
 ### Content gaps not appearing
 
 **Check**:
+
 1. SEO keywords exist and are active
 2. Keywords have search_volume > 0
 3. Gap detection query is not filtered out by minScore
@@ -577,6 +617,7 @@ See `apps/api/tests/contentService.test.ts` for comprehensive tests covering:
 Content Intelligence V1 provides a solid foundation for content management with SEO integration, topic clustering, and gap analysis. The system is ready for production use with stub implementations for ML features (embeddings, clustering) that can be enhanced in future sprints.
 
 **Key Achievements**:
+
 - ✅ Full content library CRUD
 - ✅ Content briefs with SEO context
 - ✅ Topic clustering foundation

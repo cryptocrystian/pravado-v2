@@ -58,7 +58,12 @@ export function ReplayDiffInspector({
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
           >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -101,7 +106,9 @@ export function ReplayDiffInspector({
             <h4 className="text-sm font-medium text-gray-900 mb-3">Changes</h4>
             <div className="space-y-2">
               {snapshot!.diff.map((diff: StateDiff, idx: number) => {
-                const { label, color, icon } = formatDiffOperation(diff.operation);
+                const { label, color, icon } = formatDiffOperation(
+                  diff.operation
+                );
                 return (
                   <div
                     key={idx}
@@ -115,7 +122,9 @@ export function ReplayDiffInspector({
                     <div className="grid grid-cols-2 gap-4 mt-2 text-sm">
                       {diff.operation !== 'added' && (
                         <div>
-                          <div className="text-xs text-gray-500 mb-1">Before</div>
+                          <div className="text-xs text-gray-500 mb-1">
+                            Before
+                          </div>
                           <pre className="bg-white bg-opacity-50 p-2 rounded text-xs overflow-auto max-h-24">
                             {JSON.stringify(diff.before, null, 2)}
                           </pre>
@@ -123,7 +132,9 @@ export function ReplayDiffInspector({
                       )}
                       {diff.operation !== 'removed' && (
                         <div>
-                          <div className="text-xs text-gray-500 mb-1">After</div>
+                          <div className="text-xs text-gray-500 mb-1">
+                            After
+                          </div>
                           <pre className="bg-white bg-opacity-50 p-2 rounded text-xs overflow-auto max-h-24">
                             {JSON.stringify(diff.after, null, 2)}
                           </pre>
@@ -141,7 +152,9 @@ export function ReplayDiffInspector({
         <div className="grid grid-cols-2 gap-4">
           {snapshot!.stateBefore && (
             <div>
-              <h4 className="text-sm font-medium text-gray-900 mb-2">State Before</h4>
+              <h4 className="text-sm font-medium text-gray-900 mb-2">
+                State Before
+              </h4>
               <pre className="bg-gray-50 p-3 rounded text-xs overflow-auto max-h-48">
                 {JSON.stringify(snapshot!.stateBefore, null, 2)}
               </pre>
@@ -149,7 +162,9 @@ export function ReplayDiffInspector({
           )}
           {snapshot!.stateAfter && (
             <div>
-              <h4 className="text-sm font-medium text-gray-900 mb-2">State After</h4>
+              <h4 className="text-sm font-medium text-gray-900 mb-2">
+                State After
+              </h4>
               <pre className="bg-gray-50 p-3 rounded text-xs overflow-auto max-h-48">
                 {JSON.stringify(snapshot!.stateAfter, null, 2)}
               </pre>
@@ -158,11 +173,13 @@ export function ReplayDiffInspector({
         </div>
 
         {/* No changes message */}
-        {snapshot!.diff.length === 0 && !snapshot!.stateBefore && !snapshot!.stateAfter && (
-          <div className="text-center py-4 text-gray-500">
-            No state changes recorded for this event
-          </div>
-        )}
+        {snapshot!.diff.length === 0 &&
+          !snapshot!.stateBefore &&
+          !snapshot!.stateAfter && (
+            <div className="text-center py-4 text-gray-500">
+              No state changes recorded for this event
+            </div>
+          )}
       </div>
     </div>
   );

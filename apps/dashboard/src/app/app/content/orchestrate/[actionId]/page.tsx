@@ -84,10 +84,34 @@ const MOCK_TRIGGER_ACTIONS: Record<string, TriggerAction> = {
 };
 
 const MOCK_ENTITY_CHECKLIST: EntityChecklistItem[] = [
-  { id: 'e1', entity: 'AI content creation', state: 'satisfied', requiredMentions: 3, currentMentions: 4 },
-  { id: 'e2', entity: 'Machine learning', state: 'mentioned', requiredMentions: 2, currentMentions: 1 },
-  { id: 'e3', entity: 'Natural language processing', state: 'missing', requiredMentions: 2, currentMentions: 0 },
-  { id: 'e4', entity: 'Content automation', state: 'satisfied', requiredMentions: 2, currentMentions: 3 },
+  {
+    id: 'e1',
+    entity: 'AI content creation',
+    state: 'satisfied',
+    requiredMentions: 3,
+    currentMentions: 4,
+  },
+  {
+    id: 'e2',
+    entity: 'Machine learning',
+    state: 'mentioned',
+    requiredMentions: 2,
+    currentMentions: 1,
+  },
+  {
+    id: 'e3',
+    entity: 'Natural language processing',
+    state: 'missing',
+    requiredMentions: 2,
+    currentMentions: 0,
+  },
+  {
+    id: 'e4',
+    entity: 'Content automation',
+    state: 'satisfied',
+    requiredMentions: 2,
+    currentMentions: 3,
+  },
 ];
 
 const MOCK_AI_PROFILES: TargetAIProfile[] = [
@@ -116,39 +140,66 @@ interface ContextRequiredEmptyStateProps {
   onNavigateBack: () => void;
 }
 
-function ContextRequiredEmptyState({ onNavigateBack }: ContextRequiredEmptyStateProps) {
+function ContextRequiredEmptyState({
+  onNavigateBack,
+}: ContextRequiredEmptyStateProps) {
   return (
     <div className="min-h-screen bg-slate-0 flex items-center justify-center">
       <div className="max-w-md text-center px-6">
         {/* Icon */}
         <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-brand-iris/10 border border-brand-iris/20 flex items-center justify-center">
-          <svg className="w-8 h-8 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-8 h-8 text-brand-iris"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </div>
 
         {/* Title */}
-        <h1 className="text-xl font-semibold text-white mb-2">Context Required</h1>
+        <h1 className="text-xl font-semibold text-white mb-2">
+          Context Required
+        </h1>
 
         {/* Explanation */}
         <p className="text-sm text-white/60 mb-6 leading-relaxed">
-          The Orchestration Editor requires an action context to begin.
-          Start from the Content Overview and select an action from Today&apos;s Work.
+          The Orchestration Editor requires an action context to begin. Start
+          from the Content Overview and select an action from Today&apos;s Work.
         </p>
 
         {/* Explainability hint */}
         <div className="bg-slate-2 border border-slate-4 rounded-lg p-4 mb-6 text-left">
           <div className="flex items-start gap-3">
             <div className="p-1.5 rounded-lg bg-brand-cyan/10">
-              <svg className="w-4 h-4 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              <svg
+                className="w-4 h-4 text-brand-cyan"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                />
               </svg>
             </div>
             <div>
-              <p className="text-xs font-medium text-white/80 mb-1">Why context is required</p>
+              <p className="text-xs font-medium text-white/80 mb-1">
+                Why context is required
+              </p>
               <p className="text-xs text-white/50 leading-relaxed">
                 Pravado is an orchestration platform, not a content generator.
-                Each editing session is tied to a strategic action that feeds your authority signals.
+                Each editing session is tied to a strategic action that feeds
+                your authority signals.
               </p>
             </div>
           </div>
@@ -164,8 +215,18 @@ function ContextRequiredEmptyState({ onNavigateBack }: ContextRequiredEmptyState
             ${motion.transition.fast}
           `}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
           </svg>
           Go to Content Overview
         </button>
@@ -253,7 +314,9 @@ export default function ContentOrchestratePage() {
       <div className="min-h-screen bg-slate-0 flex items-center justify-center">
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-brand-iris/30 border-t-brand-iris rounded-full animate-spin" />
-          <span className="text-sm text-white/50">Loading action context...</span>
+          <span className="text-sm text-white/50">
+            Loading action context...
+          </span>
         </div>
       </div>
     );

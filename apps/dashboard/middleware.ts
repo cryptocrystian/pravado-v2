@@ -30,8 +30,7 @@ export function middleware(request: NextRequest) {
 
   // Identify domain context
   const isMainDomain =
-    hostname === 'pravado.io' ||
-    hostname === 'www.pravado.io';
+    hostname === 'pravado.io' || hostname === 'www.pravado.io';
 
   const isAppDomain = hostname === 'app.pravado.io';
 

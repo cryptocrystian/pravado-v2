@@ -11,12 +11,22 @@ export type OutreachRunStatus = 'running' | 'completed' | 'failed' | 'stopped';
 /**
  * Outreach event types
  */
-export type OutreachEventType = 'sent' | 'opened' | 'clicked' | 'replied' | 'bounced' | 'failed';
+export type OutreachEventType =
+  | 'sent'
+  | 'opened'
+  | 'clicked'
+  | 'replied'
+  | 'bounced'
+  | 'failed';
 
 /**
  * Stop reasons for outreach runs
  */
-export type OutreachStopReason = 'manual_stop' | 'journalist_replied' | 'error' | 'sequence_deleted';
+export type OutreachStopReason =
+  | 'manual_stop'
+  | 'journalist_replied'
+  | 'error'
+  | 'sequence_deleted';
 
 /**
  * Outreach sequence

@@ -73,14 +73,40 @@ export interface EVIBand {
 }
 
 export const EVI_BANDS: EVIBand[] = [
-  { min: 0, max: 40, label: 'At Risk', colorClass: 'text-semantic-danger', bgClass: 'bg-semantic-danger/10' },
-  { min: 41, max: 60, label: 'Emerging', colorClass: 'text-semantic-warning', bgClass: 'bg-semantic-warning/10' },
-  { min: 61, max: 80, label: 'Competitive', colorClass: 'text-brand-cyan', bgClass: 'bg-brand-cyan/10' },
-  { min: 81, max: 100, label: 'Dominant', colorClass: 'text-semantic-success', bgClass: 'bg-semantic-success/10' },
+  {
+    min: 0,
+    max: 40,
+    label: 'At Risk',
+    colorClass: 'text-semantic-danger',
+    bgClass: 'bg-semantic-danger/10',
+  },
+  {
+    min: 41,
+    max: 60,
+    label: 'Emerging',
+    colorClass: 'text-semantic-warning',
+    bgClass: 'bg-semantic-warning/10',
+  },
+  {
+    min: 61,
+    max: 80,
+    label: 'Competitive',
+    colorClass: 'text-brand-cyan',
+    bgClass: 'bg-brand-cyan/10',
+  },
+  {
+    min: 81,
+    max: 100,
+    label: 'Dominant',
+    colorClass: 'text-semantic-success',
+    bgClass: 'bg-semantic-success/10',
+  },
 ];
 
 export function getEVIBand(score: number): EVIBand {
-  return EVI_BANDS.find((b) => score >= b.min && score <= b.max) ?? EVI_BANDS[0];
+  return (
+    EVI_BANDS.find((b) => score >= b.min && score <= b.max) ?? EVI_BANDS[0]
+  );
 }
 
 // ============================================
@@ -99,19 +125,22 @@ export const DRIVER_CONFIGS: DriverConfig[] = [
     key: 'visibility',
     label: 'Visibility',
     weight: '40%',
-    description: 'Where the brand appears — AI answers, press coverage, SERP coverage',
+    description:
+      'Where the brand appears — AI answers, press coverage, SERP coverage',
   },
   {
     key: 'authority',
     label: 'Authority',
     weight: '35%',
-    description: 'Why the brand is trusted — citation quality, domain authority, E-E-A-T',
+    description:
+      'Why the brand is trusted — citation quality, domain authority, E-E-A-T',
   },
   {
     key: 'momentum',
     label: 'Momentum',
     weight: '25%',
-    description: 'Trajectory and velocity — citation velocity, share of voice, content output',
+    description:
+      'Trajectory and velocity — citation velocity, share of voice, content output',
   },
 ];
 
@@ -119,7 +148,10 @@ export const DRIVER_CONFIGS: DriverConfig[] = [
 // COVERAGE TIER CONFIG
 // ============================================
 
-export const TIER_CONFIG: Record<CoverageTier, { label: string; dotClass: string }> = {
+export const TIER_CONFIG: Record<
+  CoverageTier,
+  { label: string; dotClass: string }
+> = {
   T1: { label: 'Tier 1', dotClass: 'bg-semantic-success' },
   T2: { label: 'Tier 2', dotClass: 'bg-brand-cyan' },
   T3: { label: 'Tier 3', dotClass: 'bg-white/40' },
@@ -129,10 +161,14 @@ export const TIER_CONFIG: Record<CoverageTier, { label: string; dotClass: string
 // PILLAR CONFIG (for Top Movers badges)
 // ============================================
 
-export const ANALYTICS_PILLAR_CONFIG: Record<AnalyticsPillar, { label: string; badgeClass: string }> = {
+export const ANALYTICS_PILLAR_CONFIG: Record<
+  AnalyticsPillar,
+  { label: string; badgeClass: string }
+> = {
   pr: {
     label: 'PR',
-    badgeClass: 'bg-brand-magenta/10 text-brand-magenta border-brand-magenta/20',
+    badgeClass:
+      'bg-brand-magenta/10 text-brand-magenta border-brand-magenta/20',
   },
   content: {
     label: 'Content',

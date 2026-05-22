@@ -46,54 +46,107 @@ interface SEOManualViewProps {
 // HELPERS
 // ============================================
 
-function getLayerStatusColor(status: 'healthy' | 'attention' | 'critical'): string {
+function getLayerStatusColor(
+  status: 'healthy' | 'attention' | 'critical'
+): string {
   if (status === 'healthy') return 'text-semantic-success';
   if (status === 'attention') return 'text-semantic-warning';
   return 'text-semantic-danger';
 }
 
-function getLayerStatusBadge(status: 'healthy' | 'attention' | 'critical'): string {
-  if (status === 'healthy') return 'bg-semantic-success/10 text-semantic-success border-semantic-success/20';
-  if (status === 'attention') return 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20';
+function getLayerStatusBadge(
+  status: 'healthy' | 'attention' | 'critical'
+): string {
+  if (status === 'healthy')
+    return 'bg-semantic-success/10 text-semantic-success border-semantic-success/20';
+  if (status === 'attention')
+    return 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20';
   return 'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20';
 }
 
-function getSchemaStatusBadge(status: 'complete' | 'partial' | 'missing'): { label: string; className: string } {
+function getSchemaStatusBadge(status: 'complete' | 'partial' | 'missing'): {
+  label: string;
+  className: string;
+} {
   if (status === 'complete') {
-    return { label: 'Complete', className: 'bg-semantic-success/10 text-semantic-success border-semantic-success/20' };
+    return {
+      label: 'Complete',
+      className:
+        'bg-semantic-success/10 text-semantic-success border-semantic-success/20',
+    };
   }
   if (status === 'partial') {
-    return { label: 'Partial', className: 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20' };
+    return {
+      label: 'Partial',
+      className:
+        'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
+    };
   }
-  return { label: 'Missing', className: 'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20' };
+  return {
+    label: 'Missing',
+    className:
+      'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
+  };
 }
 
-function getEntityStatusBadge(status: 'strong' | 'moderate' | 'weak'): { label: string; className: string } {
+function getEntityStatusBadge(status: 'strong' | 'moderate' | 'weak'): {
+  label: string;
+  className: string;
+} {
   if (status === 'strong') {
-    return { label: 'Strong', className: 'bg-semantic-success/10 text-semantic-success border-semantic-success/20' };
+    return {
+      label: 'Strong',
+      className:
+        'bg-semantic-success/10 text-semantic-success border-semantic-success/20',
+    };
   }
   if (status === 'moderate') {
-    return { label: 'Moderate', className: 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20' };
+    return {
+      label: 'Moderate',
+      className:
+        'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
+    };
   }
-  return { label: 'Weak', className: 'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20' };
+  return {
+    label: 'Weak',
+    className:
+      'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
+  };
 }
 
-function getSentimentIndicator(sentiment: 'positive' | 'neutral' | 'negative'): { label: string; className: string } {
+function getSentimentIndicator(
+  sentiment: 'positive' | 'neutral' | 'negative'
+): { label: string; className: string } {
   if (sentiment === 'positive') {
-    return { label: 'Positive', className: 'bg-semantic-success/10 text-semantic-success border-semantic-success/20' };
+    return {
+      label: 'Positive',
+      className:
+        'bg-semantic-success/10 text-semantic-success border-semantic-success/20',
+    };
   }
   if (sentiment === 'neutral') {
-    return { label: 'Neutral', className: 'bg-white/5 text-white/50 border-white/10' };
+    return {
+      label: 'Neutral',
+      className: 'bg-white/5 text-white/50 border-white/10',
+    };
   }
-  return { label: 'Negative', className: 'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20' };
+  return {
+    label: 'Negative',
+    className:
+      'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
+  };
 }
 
 function getSurfaceBadgeColor(surface: string): string {
   switch (surface) {
-    case 'ChatGPT': return 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30';
-    case 'Perplexity': return 'bg-brand-iris/10 text-brand-iris border-brand-iris/30';
-    case 'Gemini': return 'bg-brand-teal/10 text-brand-teal border-brand-teal/30';
-    default: return 'bg-white/5 text-white/50 border-white/10';
+    case 'ChatGPT':
+      return 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30';
+    case 'Perplexity':
+      return 'bg-brand-iris/10 text-brand-iris border-brand-iris/30';
+    case 'Gemini':
+      return 'bg-brand-teal/10 text-brand-teal border-brand-teal/30';
+    default:
+      return 'bg-white/5 text-white/50 border-white/10';
   }
 }
 
@@ -113,7 +166,11 @@ function severityOrder(severity: string): number {
 
 function OverviewTab() {
   // GSC Connection Card at top of overview
-  const GscCard = lazy(() => import('./GscConnectionCard').then(m => ({ default: m.GscConnectionCard })));
+  const GscCard = lazy(() =>
+    import('./GscConnectionCard').then((m) => ({
+      default: m.GscConnectionCard,
+    }))
+  );
 
   const sortedActions = useMemo(
     () =>
@@ -147,8 +204,18 @@ function OverviewTab() {
                 {MOCK_SHARE_OF_MODEL.brand}%
               </span>
               <span className="flex items-center gap-1 text-sm font-semibold text-semantic-success">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 10l7-7m0 0l7 7m-7-7v18"
+                  />
                 </svg>
                 +{MOCK_SHARE_OF_MODEL.trend}
               </span>
@@ -158,8 +225,18 @@ function OverviewTab() {
             </span>
           </div>
           <div className="p-3 rounded-xl bg-brand-cyan/10 ring-1 ring-brand-cyan/20 shadow-[0_0_20px_rgba(0,217,255,0.12)]">
-            <svg className="w-6 h-6 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            <svg
+              className="w-6 h-6 text-brand-cyan"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
             </svg>
           </div>
         </div>
@@ -167,26 +244,39 @@ function OverviewTab() {
 
       {/* Competitive Bar Chart */}
       <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-6">
-        <h3 className="text-sm font-semibold text-white/90 mb-4">Competitive Landscape</h3>
+        <h3 className="text-sm font-semibold text-white/90 mb-4">
+          Competitive Landscape
+        </h3>
         <div className="space-y-3">
           {MOCK_COMPETITORS.map((competitor) => (
             <div key={competitor.name} className="flex items-center gap-3">
-              <span className={`text-sm w-32 shrink-0 truncate ${competitor.name === 'Your Brand' ? 'font-semibold text-brand-cyan' : 'text-white/70'}`}>
+              <span
+                className={`text-sm w-32 shrink-0 truncate ${competitor.name === 'Your Brand' ? 'font-semibold text-brand-cyan' : 'text-white/70'}`}
+              >
                 {competitor.name}
               </span>
               <div className="flex-1 h-6 bg-slate-3 rounded overflow-hidden">
                 <div
                   className={`h-full rounded transition-all duration-500 ${
-                    competitor.name === 'Your Brand' ? 'bg-brand-cyan shadow-[0_0_16px_rgba(0,217,255,0.15)]' : 'bg-white/20'
+                    competitor.name === 'Your Brand'
+                      ? 'bg-brand-cyan shadow-[0_0_16px_rgba(0,217,255,0.15)]'
+                      : 'bg-white/20'
                   }`}
-                  style={{ width: `${(competitor.shareOfModel / maxCompetitorSoM) * 100}%` }}
+                  style={{
+                    width: `${(competitor.shareOfModel / maxCompetitorSoM) * 100}%`,
+                  }}
                 />
               </div>
-              <span className={`text-sm font-bold tabular-nums w-14 text-right ${competitor.name === 'Your Brand' ? 'text-brand-cyan' : 'text-white/70'}`}>
+              <span
+                className={`text-sm font-bold tabular-nums w-14 text-right ${competitor.name === 'Your Brand' ? 'text-brand-cyan' : 'text-white/70'}`}
+              >
                 {competitor.shareOfModel}%
               </span>
-              <span className={`text-[13px] tabular-nums w-12 text-right ${competitor.trend > 0 ? 'text-semantic-success' : competitor.trend < 0 ? 'text-semantic-danger' : 'text-white/50'}`}>
-                {competitor.trend > 0 ? '+' : ''}{competitor.trend}
+              <span
+                className={`text-[13px] tabular-nums w-12 text-right ${competitor.trend > 0 ? 'text-semantic-success' : competitor.trend < 0 ? 'text-semantic-danger' : 'text-white/50'}`}
+              >
+                {competitor.trend > 0 ? '+' : ''}
+                {competitor.trend}
               </span>
             </div>
           ))}
@@ -204,18 +294,26 @@ function OverviewTab() {
               <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
                 Layer {layer.layer}
               </span>
-              <span className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border ${getLayerStatusBadge(layer.status)}`}>
+              <span
+                className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border ${getLayerStatusBadge(layer.status)}`}
+              >
                 {layer.status}
               </span>
             </div>
-            <h3 className="text-sm font-semibold text-white/90 mb-1">{layer.label}</h3>
+            <h3 className="text-sm font-semibold text-white/90 mb-1">
+              {layer.label}
+            </h3>
             <div className="flex items-baseline gap-2 mb-3">
-              <span className={`text-3xl font-bold tabular-nums ${getLayerStatusColor(layer.status)}`}>
+              <span
+                className={`text-3xl font-bold tabular-nums ${getLayerStatusColor(layer.status)}`}
+              >
                 {layer.score}
               </span>
               <span className="text-[13px] text-white/50">/100</span>
             </div>
-            <p className="text-sm text-white/70 leading-relaxed">{layer.summary}</p>
+            <p className="text-sm text-white/70 leading-relaxed">
+              {layer.summary}
+            </p>
           </div>
         ))}
       </div>
@@ -224,8 +322,12 @@ function OverviewTab() {
       <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1">
         <div className="px-6 py-4 border-b border-border-subtle">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white/90">Action Queue</h3>
-            <span className="text-[13px] text-white/50">{sortedActions.length} pending</span>
+            <h3 className="text-sm font-semibold text-white/90">
+              Action Queue
+            </h3>
+            <span className="text-[13px] text-white/50">
+              {sortedActions.length} pending
+            </span>
           </div>
         </div>
         <div className="divide-y divide-border-subtle">
@@ -246,14 +348,18 @@ function ActionQueueRow({ action }: { action: ActionQueueItem }) {
       <div className="flex items-start gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${severityConf?.color ?? 'bg-white/5 text-white/50 border-white/10'}`}>
+            <span
+              className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${severityConf?.color ?? 'bg-white/5 text-white/50 border-white/10'}`}
+            >
               {severityConf?.label ?? action.severity}
             </span>
             <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
               Layer {action.layer}
             </span>
           </div>
-          <h4 className="text-sm font-semibold text-white/90 mb-1">{action.title}</h4>
+          <h4 className="text-sm font-semibold text-white/90 mb-1">
+            {action.title}
+          </h4>
           <p className="text-sm text-white/70 mb-2">{action.description}</p>
 
           {/* AEO Bridge Impact */}
@@ -261,7 +367,9 @@ function ActionQueueRow({ action }: { action: ActionQueueItem }) {
             <span className="text-[11px] font-bold uppercase tracking-wider text-brand-cyan">
               AEO Bridge Impact
             </span>
-            <p className="text-sm text-white/70 mt-0.5">{action.aeoBridgeImpact}</p>
+            <p className="text-sm text-white/70 mt-0.5">
+              {action.aeoBridgeImpact}
+            </p>
           </div>
         </div>
 
@@ -296,7 +404,9 @@ function AEOTab() {
   const sortedAssets = useMemo(
     () =>
       [...MOCK_SEO_ASSETS].sort((a, b) =>
-        sortDirection === 'desc' ? b.aeoScore - a.aeoScore : a.aeoScore - b.aeoScore
+        sortDirection === 'desc'
+          ? b.aeoScore - a.aeoScore
+          : a.aeoScore - b.aeoScore
       ),
     [sortDirection]
   );
@@ -307,17 +417,33 @@ function AEOTab() {
       <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-4">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-brand-cyan/10">
-            <svg className="w-4 h-4 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-4 h-4 text-brand-cyan"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">AEO Score Formula</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
+              AEO Score Formula
+            </span>
             <p className="text-sm text-white/70 mt-0.5">
-              Entity Clarity <span className="text-brand-cyan font-semibold">30%</span>
-              {' + '}Schema <span className="text-brand-cyan font-semibold">25%</span>
-              {' + '}Semantic Depth <span className="text-brand-cyan font-semibold">25%</span>
-              {' + '}Authority <span className="text-brand-cyan font-semibold">20%</span>
+              Entity Clarity{' '}
+              <span className="text-brand-cyan font-semibold">30%</span>
+              {' + '}Schema{' '}
+              <span className="text-brand-cyan font-semibold">25%</span>
+              {' + '}Semantic Depth{' '}
+              <span className="text-brand-cyan font-semibold">25%</span>
+              {' + '}Authority{' '}
+              <span className="text-brand-cyan font-semibold">20%</span>
             </p>
           </div>
         </div>
@@ -334,12 +460,24 @@ function AEOTab() {
                 </th>
                 <th
                   className="px-4 py-3 text-right text-[11px] font-bold text-white/50 uppercase tracking-wider cursor-pointer hover:text-white/80 transition-colors"
-                  onClick={() => setSortDirection((d) => (d === 'desc' ? 'asc' : 'desc'))}
+                  onClick={() =>
+                    setSortDirection((d) => (d === 'desc' ? 'asc' : 'desc'))
+                  }
                 >
                   <span className="inline-flex items-center gap-1">
                     AEO Score
-                    <svg className={`w-3 h-3 transition-transform duration-150 ${sortDirection === 'asc' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <svg
+                      className={`w-3 h-3 transition-transform duration-150 ${sortDirection === 'asc' ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </span>
                 </th>
@@ -380,29 +518,41 @@ function AEOAssetRow({ asset }: { asset: SEOAsset }) {
     <tr className="hover:bg-slate-3 transition-all duration-150">
       <td className="px-4 py-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white/90 truncate">{asset.title}</p>
+          <p className="text-sm font-semibold text-white/90 truncate">
+            {asset.title}
+          </p>
           <p className="text-[13px] text-white/50 truncate">{asset.url}</p>
         </div>
       </td>
       <td className="px-4 py-3 text-right">
         <div className="flex flex-col items-end gap-1">
-          <span className={`text-lg font-bold tabular-nums ${scoreColor}`}>{asset.aeoScore}</span>
+          <span className={`text-lg font-bold tabular-nums ${scoreColor}`}>
+            {asset.aeoScore}
+          </span>
           <span className={`w-full h-1 rounded-full ${scoreBgColor}/20`}>
             <span
               className={`block h-full rounded-full ${scoreBgColor}`}
               style={{ width: `${asset.aeoScore}%` }}
             />
           </span>
-          <span className={`text-[11px] font-bold uppercase tracking-wider ${scoreColor}`}>{bandLabel}</span>
+          <span
+            className={`text-[11px] font-bold uppercase tracking-wider ${scoreColor}`}
+          >
+            {bandLabel}
+          </span>
         </div>
       </td>
       <td className="px-4 py-3 text-center">
-        <span className={`inline-block px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${schema.className}`}>
+        <span
+          className={`inline-block px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${schema.className}`}
+        >
           {schema.label}
         </span>
       </td>
       <td className="px-4 py-3 text-center">
-        <span className={`inline-block px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${entity.className}`}>
+        <span
+          className={`inline-block px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${entity.className}`}
+        >
           {entity.label}
         </span>
       </td>
@@ -480,7 +630,8 @@ function TechnicalTab() {
 function TechnicalFindingCard({ finding }: { finding: TechnicalFinding }) {
   const categoryConf = FINDING_CATEGORY_CONFIG[finding.category];
   const severityConf = SEVERITY_CONFIG[finding.severity];
-  const isElevated = finding.severity === 'critical' && finding.category === 'structured-data';
+  const isElevated =
+    finding.severity === 'critical' && finding.category === 'structured-data';
 
   return (
     <div
@@ -492,19 +643,26 @@ function TechnicalFindingCard({ finding }: { finding: TechnicalFinding }) {
         <div className="flex-1 min-w-0">
           {/* Badges Row */}
           <div className="flex items-center gap-2 mb-2">
-            <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${categoryConf.color}`}>
+            <span
+              className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${categoryConf.color}`}
+            >
               {categoryConf.label}
             </span>
-            <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${severityConf.color}`}>
+            <span
+              className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${severityConf.color}`}
+            >
               {severityConf.label}
             </span>
             <span className="text-[13px] text-white/50">
-              {finding.affectedPages} page{finding.affectedPages !== 1 ? 's' : ''} affected
+              {finding.affectedPages} page
+              {finding.affectedPages !== 1 ? 's' : ''} affected
             </span>
           </div>
 
           {/* Title + Description */}
-          <h4 className="text-sm font-semibold text-white/90 mb-1">{finding.title}</h4>
+          <h4 className="text-sm font-semibold text-white/90 mb-1">
+            {finding.title}
+          </h4>
           <p className="text-sm text-white/70 mb-3">{finding.description}</p>
 
           {/* AEO Bridge Impact */}
@@ -512,7 +670,9 @@ function TechnicalFindingCard({ finding }: { finding: TechnicalFinding }) {
             <span className="text-[11px] font-bold uppercase tracking-wider text-brand-cyan">
               AEO Bridge Impact
             </span>
-            <p className="text-sm text-white/70 mt-0.5">{finding.aeoBridgeImpact}</p>
+            <p className="text-sm text-white/70 mt-0.5">
+              {finding.aeoBridgeImpact}
+            </p>
           </div>
         </div>
 
@@ -546,26 +706,39 @@ function IntelligenceTab() {
     <div className="space-y-6">
       {/* Competitor Share of Model */}
       <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-6">
-        <h3 className="text-sm font-semibold text-white/90 mb-4">Competitor Share of Model</h3>
+        <h3 className="text-sm font-semibold text-white/90 mb-4">
+          Competitor Share of Model
+        </h3>
         <div className="space-y-3">
           {MOCK_COMPETITORS.map((competitor) => (
             <div key={competitor.name} className="flex items-center gap-3">
-              <span className={`text-sm w-32 shrink-0 truncate ${competitor.name === 'Your Brand' ? 'font-semibold text-brand-cyan' : 'text-white/70'}`}>
+              <span
+                className={`text-sm w-32 shrink-0 truncate ${competitor.name === 'Your Brand' ? 'font-semibold text-brand-cyan' : 'text-white/70'}`}
+              >
                 {competitor.name}
               </span>
               <div className="flex-1 h-5 bg-slate-3 rounded overflow-hidden">
                 <div
                   className={`h-full rounded transition-all duration-500 ${
-                    competitor.name === 'Your Brand' ? 'bg-brand-cyan shadow-[0_0_16px_rgba(0,217,255,0.15)]' : 'bg-white/20'
+                    competitor.name === 'Your Brand'
+                      ? 'bg-brand-cyan shadow-[0_0_16px_rgba(0,217,255,0.15)]'
+                      : 'bg-white/20'
                   }`}
-                  style={{ width: `${(competitor.shareOfModel / maxCompetitorSoM) * 100}%` }}
+                  style={{
+                    width: `${(competitor.shareOfModel / maxCompetitorSoM) * 100}%`,
+                  }}
                 />
               </div>
-              <span className={`text-sm font-bold tabular-nums w-14 text-right ${competitor.name === 'Your Brand' ? 'text-brand-cyan' : 'text-white/70'}`}>
+              <span
+                className={`text-sm font-bold tabular-nums w-14 text-right ${competitor.name === 'Your Brand' ? 'text-brand-cyan' : 'text-white/70'}`}
+              >
                 {competitor.shareOfModel}%
               </span>
-              <span className={`text-[13px] tabular-nums w-12 text-right ${competitor.trend > 0 ? 'text-semantic-success' : competitor.trend < 0 ? 'text-semantic-danger' : 'text-white/50'}`}>
-                {competitor.trend > 0 ? '+' : ''}{competitor.trend}
+              <span
+                className={`text-[13px] tabular-nums w-12 text-right ${competitor.trend > 0 ? 'text-semantic-success' : competitor.trend < 0 ? 'text-semantic-danger' : 'text-white/50'}`}
+              >
+                {competitor.trend > 0 ? '+' : ''}
+                {competitor.trend}
               </span>
             </div>
           ))}
@@ -575,20 +748,29 @@ function IntelligenceTab() {
       {/* Citation Activity Feed */}
       <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1">
         <div className="px-6 py-4 border-b border-border-subtle">
-          <h3 className="text-sm font-semibold text-white/90">Citation Activity</h3>
+          <h3 className="text-sm font-semibold text-white/90">
+            Citation Activity
+          </h3>
         </div>
         <div className="divide-y divide-border-subtle">
           {MOCK_CITATION_ACTIVITY.map((citation) => {
             const sentimentConf = getSentimentIndicator(citation.sentiment);
             return (
-              <div key={citation.id} className="px-6 py-4 hover:bg-slate-3 transition-all duration-150">
+              <div
+                key={citation.id}
+                className="px-6 py-4 hover:bg-slate-3 transition-all duration-150"
+              >
                 <div className="flex items-start gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${getSurfaceBadgeColor(citation.surface)}`}>
+                      <span
+                        className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${getSurfaceBadgeColor(citation.surface)}`}
+                      >
                         {citation.surface}
                       </span>
-                      <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${sentimentConf.className}`}>
+                      <span
+                        className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${sentimentConf.className}`}
+                      >
                         {sentimentConf.label}
                       </span>
                     </div>
@@ -614,7 +796,9 @@ function IntelligenceTab() {
 
       {/* Topic Cluster Health */}
       <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-6">
-        <h3 className="text-sm font-semibold text-white/90 mb-4">Topic Cluster Health</h3>
+        <h3 className="text-sm font-semibold text-white/90 mb-4">
+          Topic Cluster Health
+        </h3>
         <div className="space-y-4">
           {MOCK_TOPIC_CLUSTERS.map((cluster) => (
             <div key={cluster.name} className="flex items-center gap-4">
@@ -627,9 +811,15 @@ function IntelligenceTab() {
                   style={{ width: `${cluster.health}%` }}
                 />
               </div>
-              <span className={`text-sm font-bold tabular-nums w-10 text-right ${
-                cluster.health >= 70 ? 'text-semantic-success' : cluster.health >= 50 ? 'text-semantic-warning' : 'text-semantic-danger'
-              }`}>
+              <span
+                className={`text-sm font-bold tabular-nums w-10 text-right ${
+                  cluster.health >= 70
+                    ? 'text-semantic-success'
+                    : cluster.health >= 50
+                      ? 'text-semantic-warning'
+                      : 'text-semantic-danger'
+                }`}
+              >
                 {cluster.health}
               </span>
               <div className="flex items-center gap-4 shrink-0 w-40">
@@ -637,7 +827,8 @@ function IntelligenceTab() {
                   {cluster.articles} article{cluster.articles !== 1 ? 's' : ''}
                 </span>
                 <span className="text-[13px] text-brand-cyan">
-                  {cluster.citations} citation{cluster.citations !== 1 ? 's' : ''}
+                  {cluster.citations} citation
+                  {cluster.citations !== 1 ? 's' : ''}
                 </span>
               </div>
             </div>

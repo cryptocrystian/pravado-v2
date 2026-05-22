@@ -37,10 +37,10 @@ export function ConflictGraph({
     const radius = Math.min(width, height) * 0.35;
 
     // Group nodes by type
-    const conflictNodes = data.nodes.filter(n => n.type === 'conflict');
-    const itemNodes = data.nodes.filter(n => n.type === 'item');
-    const sourceNodes = data.nodes.filter(n => n.type === 'source');
-    const resolutionNodes = data.nodes.filter(n => n.type === 'resolution');
+    const conflictNodes = data.nodes.filter((n) => n.type === 'conflict');
+    const itemNodes = data.nodes.filter((n) => n.type === 'item');
+    const sourceNodes = data.nodes.filter((n) => n.type === 'source');
+    const resolutionNodes = data.nodes.filter((n) => n.type === 'resolution');
 
     // Position conflict nodes in center circle
     const conflictPositions = conflictNodes.map((node, index) => {
@@ -65,14 +65,18 @@ export function ConflictGraph({
     // Position source nodes at the top
     const sourcePositions = sourceNodes.map((node, index) => ({
       ...node,
-      x: width * 0.2 + (index * (width * 0.6)) / Math.max(sourceNodes.length - 1, 1),
+      x:
+        width * 0.2 +
+        (index * (width * 0.6)) / Math.max(sourceNodes.length - 1, 1),
       y: 50,
     }));
 
     // Position resolution nodes at the bottom
     const resolutionPositions = resolutionNodes.map((node, index) => ({
       ...node,
-      x: width * 0.2 + (index * (width * 0.6)) / Math.max(resolutionNodes.length - 1, 1),
+      x:
+        width * 0.2 +
+        (index * (width * 0.6)) / Math.max(resolutionNodes.length - 1, 1),
       y: height - 50,
     }));
 
@@ -98,8 +102,19 @@ export function ConflictGraph({
       >
         <div className="flex items-center gap-2 text-gray-500">
           <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
           </svg>
           <span>Loading graph...</span>
         </div>
@@ -134,7 +149,7 @@ export function ConflictGraph({
   }
 
   // Create node lookup for edge drawing
-  const nodeMap = new Map(positionedData.nodes.map(n => [n.id, n]));
+  const nodeMap = new Map(positionedData.nodes.map((n) => [n.id, n]));
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -164,8 +179,10 @@ export function ConflictGraph({
         {/* Nodes */}
         <g>
           {positionedData.nodes.map((node) => {
-            const size = node.size || getGraphNodeSize(node.type, node.data.severity);
-            const color = node.color || getGraphNodeColor(node.type, node.data.severity);
+            const size =
+              node.size || getGraphNodeSize(node.type, node.data.severity);
+            const color =
+              node.color || getGraphNodeColor(node.type, node.data.severity);
 
             return (
               <g
@@ -179,12 +196,7 @@ export function ConflictGraph({
                   fill={color}
                   className="transition-all hover:opacity-80"
                 />
-                <circle
-                  r={size}
-                  fill="none"
-                  stroke="white"
-                  strokeWidth={2}
-                />
+                <circle r={size} fill="none" stroke="white" strokeWidth={2} />
                 {/* Label */}
                 <text
                   y={size + 14}
@@ -192,7 +204,9 @@ export function ConflictGraph({
                   className="text-xs fill-gray-600"
                   style={{ fontSize: '10px' }}
                 >
-                  {node.label.length > 15 ? `${node.label.slice(0, 15)}...` : node.label}
+                  {node.label.length > 15
+                    ? `${node.label.slice(0, 15)}...`
+                    : node.label}
                 </text>
               </g>
             );
@@ -204,13 +218,20 @@ export function ConflictGraph({
       <div className="p-3 border-t border-gray-200 bg-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4 text-xs text-gray-500">
-            <LegendItem color={getGraphNodeColor('conflict')} label="Conflict" />
+            <LegendItem
+              color={getGraphNodeColor('conflict')}
+              label="Conflict"
+            />
             <LegendItem color={getGraphNodeColor('item')} label="Item" />
             <LegendItem color={getGraphNodeColor('source')} label="Source" />
-            <LegendItem color={getGraphNodeColor('resolution')} label="Resolution" />
+            <LegendItem
+              color={getGraphNodeColor('resolution')}
+              label="Resolution"
+            />
           </div>
           <div className="text-xs text-gray-400">
-            {positionedData.metadata.totalNodes} nodes, {positionedData.metadata.totalEdges} edges
+            {positionedData.metadata.totalNodes} nodes,{' '}
+            {positionedData.metadata.totalEdges} edges
           </div>
         </div>
       </div>

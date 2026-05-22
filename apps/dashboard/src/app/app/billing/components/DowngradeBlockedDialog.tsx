@@ -22,30 +22,38 @@ export function DowngradeBlockedDialog({
   onClose,
   targetPlan,
   currentSummary,
-  errorMessage
+  errorMessage,
 }: DowngradeBlockedDialogProps) {
   if (!isOpen) return null;
 
-  const usageExceeds: Array<{ resource: string; current: number; limit: number }> = [];
+  const usageExceeds: Array<{
+    resource: string;
+    current: number;
+    limit: number;
+  }> = [];
 
   if (currentSummary && targetPlan) {
     // Check tokens
-    const currentTokenUsage = currentSummary.tokensUsedThisPeriod + (currentSummary.overages?.tokens || 0);
+    const currentTokenUsage =
+      currentSummary.tokensUsedThisPeriod +
+      (currentSummary.overages?.tokens || 0);
     if (currentTokenUsage > targetPlan.includedTokensMonthly) {
       usageExceeds.push({
         resource: 'Tokens',
         current: currentTokenUsage,
-        limit: targetPlan.includedTokensMonthly
+        limit: targetPlan.includedTokensMonthly,
       });
     }
 
     // Check playbook runs
-    const currentRunUsage = currentSummary.playbookRunsThisPeriod + (currentSummary.overages?.playbookRuns || 0);
+    const currentRunUsage =
+      currentSummary.playbookRunsThisPeriod +
+      (currentSummary.overages?.playbookRuns || 0);
     if (currentRunUsage > targetPlan.includedPlaybookRunsMonthly) {
       usageExceeds.push({
         resource: 'Playbook Runs',
         current: currentRunUsage,
-        limit: targetPlan.includedPlaybookRunsMonthly
+        limit: targetPlan.includedPlaybookRunsMonthly,
       });
     }
 
@@ -54,7 +62,7 @@ export function DowngradeBlockedDialog({
       usageExceeds.push({
         resource: 'Seats',
         current: currentSummary.seatsUsed,
-        limit: targetPlan.includedSeats
+        limit: targetPlan.includedSeats,
       });
     }
   }
@@ -75,8 +83,18 @@ export function DowngradeBlockedDialog({
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                  <svg className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  <svg
+                    className="w-6 h-6 text-red-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">
@@ -87,8 +105,18 @@ export function DowngradeBlockedDialog({
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-500"
               >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -97,7 +125,8 @@ export function DowngradeBlockedDialog({
           {/* Message */}
           <div className="mb-6">
             <p className="text-sm text-gray-700 mb-4">
-              {errorMessage || 'Your current usage exceeds the limits of the selected plan. Please reduce your usage before downgrading.'}
+              {errorMessage ||
+                'Your current usage exceeds the limits of the selected plan. Please reduce your usage before downgrading.'}
             </p>
 
             {usageExceeds.length > 0 && (
@@ -107,12 +136,19 @@ export function DowngradeBlockedDialog({
                 </h4>
                 <div className="space-y-2">
                   {usageExceeds.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-red-800">{item.resource}</span>
+                    <div
+                      key={index}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="font-medium text-red-800">
+                        {item.resource}
+                      </span>
                       <span className="text-red-700">
-                        {item.current.toLocaleString()} / {item.limit.toLocaleString()}
+                        {item.current.toLocaleString()} /{' '}
+                        {item.limit.toLocaleString()}
                         <span className="ml-2 text-xs text-red-600">
-                          ({((item.current / item.limit - 1) * 100).toFixed(0)}% over)
+                          ({((item.current / item.limit - 1) * 100).toFixed(0)}%
+                          over)
                         </span>
                       </span>
                     </div>
@@ -129,13 +165,20 @@ export function DowngradeBlockedDialog({
                 To downgrade to {targetPlan.name}:
               </h4>
               <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-                {usageExceeds.find(item => item.resource === 'Tokens') && (
-                  <li>Reduce token usage or wait for your billing period to reset</li>
+                {usageExceeds.find((item) => item.resource === 'Tokens') && (
+                  <li>
+                    Reduce token usage or wait for your billing period to reset
+                  </li>
                 )}
-                {usageExceeds.find(item => item.resource === 'Playbook Runs') && (
-                  <li>Reduce playbook runs or wait for your billing period to reset</li>
+                {usageExceeds.find(
+                  (item) => item.resource === 'Playbook Runs'
+                ) && (
+                  <li>
+                    Reduce playbook runs or wait for your billing period to
+                    reset
+                  </li>
                 )}
-                {usageExceeds.find(item => item.resource === 'Seats') && (
+                {usageExceeds.find((item) => item.resource === 'Seats') && (
                   <li>Remove team members to reduce active seats</li>
                 )}
               </ul>

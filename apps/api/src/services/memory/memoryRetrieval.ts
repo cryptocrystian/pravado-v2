@@ -3,7 +3,12 @@
  * Handles vector similarity search and importance-based ranking
  */
 
-import type { AgentMemory, EpisodicTrace, MemoryRetrievalResult, MemoryRetrievalOptions } from '@pravado/types';
+import type {
+  AgentMemory,
+  EpisodicTrace,
+  MemoryRetrievalResult,
+  MemoryRetrievalOptions,
+} from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export interface MemoryRetrievalServiceOptions {
@@ -18,7 +23,10 @@ export class MemoryRetrievalService {
   private supabase: SupabaseClient;
   private debugMode: boolean;
 
-  constructor(supabase: SupabaseClient, options: MemoryRetrievalServiceOptions = {}) {
+  constructor(
+    supabase: SupabaseClient,
+    options: MemoryRetrievalServiceOptions = {}
+  ) {
     this.supabase = supabase;
     this.debugMode = options.debugMode || false;
   }
@@ -34,7 +42,12 @@ export class MemoryRetrievalService {
     const { limit = 10, minRelevance = 0.5, memoryType } = options;
 
     if (this.debugMode) {
-      console.log('[MemoryRetrieval] Retrieving semantic memory', { orgId, limit, minRelevance, memoryType });
+      console.log('[MemoryRetrieval] Retrieving semantic memory', {
+        orgId,
+        limit,
+        minRelevance,
+        memoryType,
+      });
     }
 
     // Build query with vector similarity
@@ -53,7 +66,9 @@ export class MemoryRetrievalService {
 
     // Order by similarity (ascending distance = descending similarity)
     // and by importance (descending)
-    const { data, error } = await query.order('similarity', { ascending: true }).limit(limit * 2); // Get extra for filtering
+    const { data, error } = await query
+      .order('similarity', { ascending: true })
+      .limit(limit * 2); // Get extra for filtering
 
     if (error) {
       throw new Error(`Failed to retrieve semantic memory: ${error.message}`);
@@ -86,9 +101,15 @@ export class MemoryRetrievalService {
   /**
    * Retrieve episodic context for a specific run
    */
-  async retrieveEpisodicContext(runId: string, orgId: string): Promise<EpisodicTrace[]> {
+  async retrieveEpisodicContext(
+    runId: string,
+    orgId: string
+  ): Promise<EpisodicTrace[]> {
     if (this.debugMode) {
-      console.log('[MemoryRetrieval] Retrieving episodic context', { runId, orgId });
+      console.log('[MemoryRetrieval] Retrieving episodic context', {
+        runId,
+        orgId,
+      });
     }
 
     const { data, error } = await this.supabase
@@ -131,7 +152,11 @@ export class MemoryRetrievalService {
     const { limit = 10, memoryType } = options;
 
     if (this.debugMode) {
-      console.log('[MemoryRetrieval] Searching memories by text', { orgId, query, limit });
+      console.log('[MemoryRetrieval] Searching memories by text', {
+        orgId,
+        query,
+        limit,
+      });
     }
 
     // Simple text search in content field
@@ -146,7 +171,9 @@ export class MemoryRetrievalService {
       dbQuery = dbQuery.eq('type', memoryType);
     }
 
-    const { data, error } = await dbQuery.order('importance', { ascending: false }).limit(limit);
+    const { data, error } = await dbQuery
+      .order('importance', { ascending: false })
+      .limit(limit);
 
     if (error) {
       throw new Error(`Failed to search memories: ${error.message}`);
@@ -193,7 +220,10 @@ export class MemoryRetrievalService {
       orgId: row.org_id,
       type: row.type,
       content: row.content,
-      embedding: typeof row.embedding === 'string' ? JSON.parse(row.embedding) : row.embedding,
+      embedding:
+        typeof row.embedding === 'string'
+          ? JSON.parse(row.embedding)
+          : row.embedding,
       source: row.source,
       importance: row.importance,
       createdAt: row.created_at,
@@ -211,7 +241,10 @@ export class MemoryRetrievalService {
       orgId: row.org_id,
       stepKey: row.step_key,
       content: row.content,
-      embedding: typeof row.embedding === 'string' ? JSON.parse(row.embedding) : row.embedding,
+      embedding:
+        typeof row.embedding === 'string'
+          ? JSON.parse(row.embedding)
+          : row.embedding,
       createdAt: row.created_at,
     };
   }

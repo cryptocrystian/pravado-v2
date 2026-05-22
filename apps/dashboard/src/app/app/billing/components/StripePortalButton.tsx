@@ -16,7 +16,7 @@ interface StripePortalButtonProps {
 
 export function StripePortalButton({
   variant = 'secondary',
-  children = 'Manage Payment Method'
+  children = 'Manage Payment Method',
 }: StripePortalButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,10 +38,12 @@ export function StripePortalButton({
     }
   };
 
-  const baseStyles = 'px-4 py-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
-  const variantStyles = variant === 'primary'
-    ? 'bg-blue-600 hover:bg-blue-700 text-white'
-    : 'bg-gray-100 hover:bg-gray-200 text-gray-700';
+  const baseStyles =
+    'px-4 py-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
+  const variantStyles =
+    variant === 'primary'
+      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+      : 'bg-gray-100 hover:bg-gray-200 text-gray-700';
 
   return (
     <button

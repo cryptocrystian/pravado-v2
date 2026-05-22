@@ -32,7 +32,6 @@ import {
 } from '@/lib/executiveDigestApi';
 import { cn } from '@/lib/utils';
 
-
 interface ExecDigestCardProps {
   digest: ExecDigestWithCounts;
   isSelected?: boolean;
@@ -64,7 +63,16 @@ export function ExecDigestCard({
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <div className={cn('p-2 rounded-full', healthStatus === 'healthy' ? 'bg-green-100' : healthStatus === 'warning' ? 'bg-yellow-100' : 'bg-red-100')}>
+            <div
+              className={cn(
+                'p-2 rounded-full',
+                healthStatus === 'healthy'
+                  ? 'bg-green-100'
+                  : healthStatus === 'warning'
+                    ? 'bg-yellow-100'
+                    : 'bg-red-100'
+              )}
+            >
               <FileText className={cn('h-4 w-4', healthColor)} />
             </div>
             <div>
@@ -80,13 +88,19 @@ export function ExecDigestCard({
           </div>
           <div className="flex flex-col items-end gap-1">
             {!digest.isActive && (
-              <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">
+              <Badge
+                variant="outline"
+                className="bg-gray-50 text-gray-600 border-gray-200"
+              >
                 <Pause className="h-3 w-3 mr-1" />
                 Paused
               </Badge>
             )}
             {digest.isArchived && (
-              <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">
+              <Badge
+                variant="outline"
+                className="bg-gray-50 text-gray-600 border-gray-200"
+              >
                 <Archive className="h-3 w-3 mr-1" />
                 Archived
               </Badge>
@@ -96,7 +110,10 @@ export function ExecDigestCard({
 
         {/* Period & Time Window */}
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">
+          <Badge
+            variant="outline"
+            className="bg-indigo-50 text-indigo-700 border-indigo-200"
+          >
             <Calendar className="h-3 w-3 mr-1" />
             {getDeliveryPeriodLabel(digest.deliveryPeriod)}
           </Badge>
@@ -115,15 +132,21 @@ export function ExecDigestCard({
         <div className="grid grid-cols-3 gap-2 text-xs">
           <div className="text-center p-2 rounded bg-gray-50">
             <div className="text-gray-500">Sections</div>
-            <div className="font-medium text-gray-900">{digest.sectionsCount}</div>
+            <div className="font-medium text-gray-900">
+              {digest.sectionsCount}
+            </div>
           </div>
           <div className="text-center p-2 rounded bg-gray-50">
             <div className="text-gray-500">Recipients</div>
-            <div className="font-medium text-gray-900">{digest.recipientsCount}</div>
+            <div className="font-medium text-gray-900">
+              {digest.recipientsCount}
+            </div>
           </div>
           <div className="text-center p-2 rounded bg-gray-50">
             <div className="text-gray-500">Deliveries</div>
-            <div className="font-medium text-gray-900">{digest.deliveriesCount}</div>
+            <div className="font-medium text-gray-900">
+              {digest.deliveriesCount}
+            </div>
           </div>
         </div>
 
@@ -146,16 +169,20 @@ export function ExecDigestCard({
 
         {/* Last delivery status indicator */}
         {digest.lastDeliveryStatus && (
-          <div className={cn(
-            'flex items-center gap-1 text-xs',
-            getDeliveryStatusColor(digest.lastDeliveryStatus)
-          )}>
+          <div
+            className={cn(
+              'flex items-center gap-1 text-xs',
+              getDeliveryStatusColor(digest.lastDeliveryStatus)
+            )}
+          >
             {digest.lastDeliveryStatus === 'success' ? (
               <CheckCircle className="h-3 w-3" />
             ) : (
               <XCircle className="h-3 w-3" />
             )}
-            <span>Last delivery: {getDeliveryStatusLabel(digest.lastDeliveryStatus)}</span>
+            <span>
+              Last delivery: {getDeliveryStatusLabel(digest.lastDeliveryStatus)}
+            </span>
           </div>
         )}
       </CardContent>

@@ -1,4 +1,5 @@
 # PRAVADO v2 — ARCHITECT BRIEFING
+
 > This file is the architect's persistent working memory. Read this FIRST at the start of every session.
 > Updated by: Architect (Claude) at end of session. Owner: Christian.
 > Last updated: 2026-02-21
@@ -8,6 +9,7 @@
 ## 1. What Pravado Is (30-Second Version)
 
 Pravado is an **AI-native Visibility Operating System** — a unified PR + Content + SEO platform where:
+
 - **SAGE** (Strategy mesh) decides WHAT to do and WHY across all three pillars
 - **AUTOMATE** (Execution layer) turns SAGE proposals into governed, traceable tasks
 - **CiteMind** (Intelligence engine) qualifies content and tracks AI/citation visibility (AEO)
@@ -18,15 +20,16 @@ The core differentiator: content is treated as **authority infrastructure**, not
 
 ## 2. Tech Stack
 
-| Layer | Tech |
-|-------|------|
-| Frontend | Next.js 14 (App Router), TypeScript, Tailwind CSS |
-| Backend | Hono.js on Render |
-| Database | Supabase (PostgreSQL + Auth + RLS) |
-| Monorepo | pnpm workspaces + Turborepo |
-| Deployment | Vercel (dashboard), Render (API) |
+| Layer      | Tech                                              |
+| ---------- | ------------------------------------------------- |
+| Frontend   | Next.js 14 (App Router), TypeScript, Tailwind CSS |
+| Backend    | Hono.js on Render                                 |
+| Database   | Supabase (PostgreSQL + Auth + RLS)                |
+| Monorepo   | pnpm workspaces + Turborepo                       |
+| Deployment | Vercel (dashboard), Render (API)                  |
 
 **Key paths:**
+
 - Dashboard app: `apps/dashboard/src/`
 - API app: `apps/api/`
 - Canon specs: `docs/canon/`
@@ -36,15 +39,15 @@ The core differentiator: content is treated as **authority infrastructure**, not
 
 ## 3. The 7 Canonical Surfaces
 
-| # | Surface | Route | Status |
-|---|---------|-------|--------|
-| 1 | Command Center (Tri-pane) | `/app/command-center` | ✅ V1 FROZEN |
-| 2 | PR Work Surface | `/app/pr` | ✅ V1 FROZEN + DS v3.1 COMPLIANT |
-| 3 | Content Work Surface | `/app/content` | ✅ V1 FROZEN + DS v3.1 COMPLIANT |
-| 4 | SEO Work Surface | `/app/seo` | ✅ V1 FROZEN + DS v3.1 COMPLIANT |
-| 5 | Orchestration Calendar | `/app/calendar` | ✅ V1 FROZEN + DS v3.1 COMPLIANT |
-| 6 | Analytics & Reporting | `/app/analytics` | ✅ V1 FROZEN + DS v3.1 COMPLIANT |
-| 7 | Omni-Tray | Component | 🟡 Partial |
+| #   | Surface                   | Route                 | Status                           |
+| --- | ------------------------- | --------------------- | -------------------------------- |
+| 1   | Command Center (Tri-pane) | `/app/command-center` | ✅ V1 FROZEN                     |
+| 2   | PR Work Surface           | `/app/pr`             | ✅ V1 FROZEN + DS v3.1 COMPLIANT |
+| 3   | Content Work Surface      | `/app/content`        | ✅ V1 FROZEN + DS v3.1 COMPLIANT |
+| 4   | SEO Work Surface          | `/app/seo`            | ✅ V1 FROZEN + DS v3.1 COMPLIANT |
+| 5   | Orchestration Calendar    | `/app/calendar`       | ✅ V1 FROZEN + DS v3.1 COMPLIANT |
+| 6   | Analytics & Reporting     | `/app/analytics`      | ✅ V1 FROZEN + DS v3.1 COMPLIANT |
+| 7   | Omni-Tray                 | Component             | 🟡 Partial                       |
 
 **NOTE:** `/app` default landing must route to Command Center (`/app/command-center`). Legacy `/app/dashboard` is deprecated.
 
@@ -52,16 +55,16 @@ The core differentiator: content is treated as **authority infrastructure**, not
 
 ## 4. Design System (DS v3.1)
 
-| Token | Value | Pillar |
-|-------|-------|--------|
-| `dark-bg` | `#0A0A0F` | Base |
-| `dark-card` | `#13131A` | Base |
-| `dark-border` | `#1F1F28` | Base |
-| `cyber-blue` (`#00D9FF`) | SEO/Technical | SEO |
-| `electric-purple` / `brand-iris` (`#A855F7`) | Intelligence | Content |
-| `success` | `#22C55E` at 20% | Semantic |
-| `critical` | `#EF4444` at 20% | Semantic |
-| `warning` | `#EAB308` at 20% | Semantic |
+| Token                                        | Value            | Pillar   |
+| -------------------------------------------- | ---------------- | -------- |
+| `dark-bg`                                    | `#0A0A0F`        | Base     |
+| `dark-card`                                  | `#13131A`        | Base     |
+| `dark-border`                                | `#1F1F28`        | Base     |
+| `cyber-blue` (`#00D9FF`)                     | SEO/Technical    | SEO      |
+| `electric-purple` / `brand-iris` (`#A855F7`) | Intelligence     | Content  |
+| `success`                                    | `#22C55E` at 20% | Semantic |
+| `critical`                                   | `#EF4444` at 20% | Semantic |
+| `warning`                                    | `#EAB308` at 20% | Semantic |
 
 **Typography:** Inter 300–700. **Motion:** `cubic-bezier(0.16, 1, 0.3, 1)`.
 **Accent rule:** Content = Iris, SEO = Cyber-blue, PR = TBD from PR contract.
@@ -73,13 +76,14 @@ The core differentiator: content is treated as **authority infrastructure**, not
 
 Every pillar uses the same mode framework:
 
-| Mode | What User Does | What System Does |
-|------|---------------|-----------------|
-| Manual | Creates + approves all | Research/context only |
-| Copilot | Approves/modifies | Drafts, suggests, prepares |
-| Autopilot | Monitors | Executes within guardrails |
+| Mode      | What User Does         | What System Does           |
+| --------- | ---------------------- | -------------------------- |
+| Manual    | Creates + approves all | Research/context only      |
+| Copilot   | Approves/modifies      | Drafts, suggests, prepares |
+| Autopilot | Monitors               | Executes within guardrails |
 
 **Hard ceilings for Content (V1):**
+
 - Publishing = Manual ONLY
 - Draft creation = Copilot max
 - Quality analysis = Autopilot OK
@@ -90,6 +94,7 @@ Every pillar uses the same mode framework:
 ## 6. Content Module — Current State (V1 Frozen)
 
 ### What's Built (V1 Complete)
+
 - `components/content/` — Full component tree:
   - `ContentWorkSurfaceShell.tsx` ✅ (with ImpactStrip, mode-aware tabs)
   - `views/ManualModeView.tsx` ✅ — "I Am Creating" (ManualWorkbench + CiteMind publish gate)
@@ -107,6 +112,7 @@ Every pillar uses the same mode framework:
 - DS v3.1 compliant: zero phantom hex, zero sub-10px text, zero bare text-white ✅
 
 ### Remaining Post-V1 Gaps
+
 - API routes for: `items/[id]`, `calendar`, `derivatives/[assetId]`, `authority-signals`
 - Real data hooks wired to API (currently all mock data)
 - `app/app/calendar/` — Orchestration Calendar (not built at all)
@@ -138,12 +144,15 @@ When two canon files conflict on the same topic, this is the priority:
 ## 8. Immediate Actions Required (Before Any Coding)
 
 ### 8.1 Canon Cleanup — ✅ COMPLETE (2026-02-18)
+
 All 6 superseded files archived to `docs/_archive/canon-superseded/`. `CLAUDE.md` patched with conflict resolution priority chain and superseded file rule. Canon README updated to v1.9.
 
 ### 8.2 Content Module — ✅ COMPLETE (Sprint 3, 2026-02-19)
+
 All V1 tasks complete. See Session 2026-02-19 handoff notes for details.
 
 Remaining post-V1 work:
+
 1. **Build missing API routes** — `items/[id]` CRUD, `calendar`, `derivatives/[assetId]`
 2. **Replace mock data with real hooks** — Wire `useContentItems`, `useContentBriefs`, etc. to real API
 3. **Delete old `ContentWorkQueueView.tsx`** — Superseded by three mode views
@@ -170,9 +179,10 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 
 ## 11. Session Handoff Notes
 
-*(Architect updates this section at end of each session)*
+_(Architect updates this section at end of each session)_
 
 **Session 2026-02-17:**
+
 - Completed full project audit. Identified canon bloat as root cause of Content module regression.
 - Build is passing (Sprint S25 stabilization).
 - Command Center: V1 frozen. PR: rough draft done, V1 frozen. Content: components exist, needs wiring + canon cleanup to unblock.
@@ -180,6 +190,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - Christian's hypothesis confirmed: reactive canon doc additions caused contradictions. Fix = archive superseded files + establish clear conflict priority.
 
 **Session 2026-02-18:**
+
 - Phase 1 Foundation work, all steps complete:
   - ✅ 8.1: Archived 6 superseded canon files. CLAUDE.md patched with conflict chain + DS rule. README to v1.9.
   - ✅ DS Audit: Identified 9 phantom hex values, 2 invalid Tailwind opacity classes, JS surfaceTokens objects. Audit saved to `docs/audit/DS_AUDIT_2026-02.md`.
@@ -196,6 +207,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - ✅ Command Center Audit: 17 gaps identified. Saved to `docs/audit/COMMAND_CENTER_AUDIT_2026-02.md`. 6 critical DS token violations, 1 missing feature (Impact Strip), 2 contract gaps, 2 unverified invariants. Fix order: Sprint 1 (token cleanup) → Sprint 2 (contract gaps) → Sprint 3 (ImpactStrip build) → Sprint 4 (spot-checks on unread components).
 
 **Session 2026-02-19 (overnight):**
+
 - Content Work Surface DS v3.1 audit: ALL 30 FILES SCANNED. Zero fixes applied yet.
   - ~20 phantom hex instances across 8 files
   - ~45 typography floor violations across 10 files
@@ -207,6 +219,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - PRAVADO_V2_STATUS.md and DECISIONS_LOG.md both current
 
 **Session 2026-02-19 (afternoon):**
+
 - SEO_AEO_PILLAR_CANON.md v1.1: Added Section 6.5 — full mode layout contracts for SEO (Manual/Copilot/Autopilot three-product architecture)
 - IMPLEMENTATION_PLAN.md created at repo root — complete sprint-by-sprint build plan for all 7 surfaces
 - SESSION_PRIMER.md updated to include IMPLEMENTATION_PLAN.md in mandatory reading order
@@ -215,6 +228,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - Rip-and-replace approved for non-compliant components
 
 **Session 2026-02-20:**
+
 - **Sprint 1 — Command Center Second Pass: ALL 6 TASKS COMPLETE**
   - ✅ 1.1: Fixed Strategy Panel width `w-[300px] xl:w-[340px]` → `w-[320px]` in TriPaneShell.tsx. Headers already had `text-white/90`.
   - ✅ 1.2: DS Token Cleanup — phantom hex eliminated from ALL command-center files. 8 files cleaned (CalendarPeek ~83 replacements, ActionModal ~21, ActionPeekDrawer ~14, EVIExplainerModal ~18, EVIForecastPanel ~13, CommandCenterTopbar ~22, EntityMap ~2, IntelligenceCanvasPane ~21). One SVG inline `stroke="#0A0A0F"` in EntityMap.tsx flagged with DS-VIOLATION (can't use Tailwind in SVG attributes). External brand colors (#10A37F ChatGPT, #20B2AA Perplexity, #4285F4 Gemini) in IntelligenceCanvasPane annotated with `/* external-brand-color */`. Zero `surfaceTokens` usage. Zero `/8` opacity patterns.
@@ -230,6 +244,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 **Phase 3 — Build Sprints: Sprint 1 COMPLETE, Sprint 2 COMPLETE**
 
 **Session 2026-02-20 (continued):**
+
 - **Sprint 2 — PR Work Surface Second Pass: ALL 5 TASKS COMPLETE**
   - ✅ 2.1: P0 Contract Violation — already fixed per D001. `followUpLimitPerWeek: 2` and slider `max={2}` confirmed in PRSettings.tsx.
   - ✅ 2.2: P1 Forbidden Tokens — `text-red-400` zero instances (already cleaned). `semantic-error` fixed in PRInbox.tsx and PRDatabase.tsx → `semantic-danger`. Only remaining instance is a documentation comment in prWorkSurfaceStyles.ts.
@@ -249,6 +264,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - Zero `text-[9px]` instances remain. Zero non-compliant `text-[10px]`/`text-[11px]` remain.
 
 **Session 2026-02-19 (continued):**
+
 - **Sprint 3 — Content Work Surface Rebuild: ALL 5 TASKS COMPLETE**
   - ✅ 3.1: Three-Mode Architecture — Built ManualModeView, CopilotModeView, AutopilotModeView as separate component trees. Shared utilities extracted to `views/shared.tsx`. Page.tsx dispatches based on `effectiveMode`. ContentWorkSurfaceShell now has mode-aware tabs (Autopilot: "Content"→"Exceptions", hides "Insights"). Swiss Army Knife pattern eliminated.
   - ✅ 3.2: ImpactStrip wired to Content surface — `<ImpactStrip pillar="content">` with SAGE tag + EVI + ModeSwitcher. Removed redundant inline ModeSwitcher from header.
@@ -265,6 +281,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 **Phase 3 — Build Sprints: Sprint 1 COMPLETE, Sprint 2 COMPLETE, Sprint 3 COMPLETE, Sprint 4 COMPLETE, Sprint 5 COMPLETE, Sprint 6 COMPLETE**
 
 **Pre-Sprint-4 code fixes (2026-02-19):**
+
 - Fix 1: ModeSwitcher.tsx — Swapped Copilot/Autopilot colors. Copilot = brand-iris (correct), Autopilot = brand-cyan (correct). Was reversed.
 - Fix 2: PRWorkSurfaceShell.tsx — Replaced 5 phantom hex values (`#13131A`→slate-2, `#1F1F28`→slate-4, `#0A0A0F`→slate-0, `#1A1A24`→border-subtle, `#0D0D12`→slate-1). Zero `[#` remaining.
 - Fix 3: ContentWorkSurfaceShell.tsx — Autopilot now hides Library + Calendar tabs (in addition to Insights). Only Exceptions tab visible.
@@ -272,6 +289,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - All four fixes pass typecheck clean. Ready for visual validation.
 
 **Session 2026-02-20 (continued — Sprint 4):**
+
 - **Sprint 4 — SEO/AEO Work Surface Full Build: ALL 6 TASKS COMPLETE**
   - ✅ Pre-Sprint Fix: PRInbox.tsx phantom hex cleanup — 35 replacements across 7 patterns (bg-[#0D0D12]→bg-slate-1, bg-[#111116]→bg-panel, bg-[#13131A]→bg-panel, bg-[#1A1A24]→bg-slate-4, bg-[#2A2A36]→bg-slate-5, border-[#1A1A24]→border-border-subtle, border-[#2A2A36]→border-slate-5). Zero phantom hex remaining in PRInbox.
   - ✅ 4.1: SEO Shell + Routing — Built `components/seo/` directory from scratch:
@@ -304,6 +322,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 ## 12. SEO Module — Current State (V1 Frozen)
 
 ### What's Built (V1 Complete)
+
 - `components/seo/` — Full component tree:
   - `SEOWorkSurfaceShell.tsx` ✅ (ImpactStrip, mode-aware tabs, Explain drawer)
   - `SEOManualView.tsx` ✅ — 4 tabs (Overview, AEO, Technical, Intelligence)
@@ -316,6 +335,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - DS v3.1 compliant: zero phantom hex, zero bare text-white, zero sub-13px body text ✅
 
 ### Remaining Post-V1 Gaps
+
 - API routes for real SEO data (crawl status, AEO scores, technical audits)
 - Real data hooks (currently all mock data)
 - CiteMind Engine 1 integration (schema + indexing pipeline)
@@ -323,6 +343,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - Search Atlas competitive blindspot analysis (data feed)
 
 **Session 2026-02-20 (continued — Sprint 5):**
+
 - **Sprint 5 — Orchestration Calendar V1: ALL 6 TASKS COMPLETE**
   - ✅ 5.1: Calendar Shell + Infrastructure — Built `components/calendar/` directory:
     - `types.ts`: CalendarViewMode, StatusConfig (6 states), ModeConfig (3 modes), PillarConfig (3 pillars), RISK_CONFIG (3 levels), TIME_GROUPS (5 hourly bands). Re-exports CalendarItem/CalendarStatus from CC types.
@@ -347,6 +368,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 ## 13. Calendar Module — Current State (V1 Frozen)
 
 ### What's Built (V1 Complete)
+
 - `components/calendar/` — Full component tree:
   - `OrchestrationCalendarShell.tsx` ✅ (ImpactStrip, view mode toggle, Today button)
   - `WeekView.tsx` ✅ — Primary view (7-day strip + agenda)
@@ -363,12 +385,14 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - DS v3.1 compliant: zero phantom hex, zero bare text-white, zero sub-13px body text ✅
 
 ### Frozen Interaction Contract
+
 - Item click → Action Modal (centered overlay). Never navigates. Never drawer.
 - Day cell click → select date, update agenda. No drag-and-drop.
 - No inline editing. No create-from-calendar.
 - Calendar is mode-agnostic (shows all items regardless of current mode)
 
 ### Remaining Post-V1 Gaps
+
 - API routes for real calendar data (AUTOMATE execution timeline)
 - Real data hooks (currently all mock data)
 - AUTOMATE integration (live status updates, real scheduled actions)
@@ -376,6 +400,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - Recurring item support
 
 **Session 2026-02-20 (continued — Sprint 6):**
+
 - **Sprint 6 — Analytics V1: ALL 4 TASKS COMPLETE**
   - ✅ 6.0: ANALYTICS_CONTRACT.md — Written in docs/canon/ before any code. Defines: prime directive ("Is our EVI improving, and what's driving it?"), V1 scope (6 sections), single scrollable dashboard (no tabs), mode-agnostic (no ModeSwitcher/ImpactStrip), data bindings (EVI time series, SoM snapshots, coverage events, pillar deltas), explicit V1 exclusions (no drill-down, no export, no custom date ranges).
   - ✅ 6.1: Infrastructure — Built `components/analytics/` directory:
@@ -402,6 +427,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 ## 14. Analytics Module — Current State (V1 Frozen)
 
 ### What's Built (V1 Complete)
+
 - `docs/canon/ANALYTICS_CONTRACT.md` ✅ — Written before code (mandatory)
 - `components/analytics/` — Full component tree:
   - `AnalyticsDashboard.tsx` ✅ — Single scrollable dashboard with 6 sections
@@ -413,6 +439,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - DS v3.1 compliant: zero phantom hex, zero bare text-white, zero sub-min text ✅
 
 ### Design Decisions
+
 - Single scrollable dashboard (no tabs) — narrative reading order
 - Mode-agnostic — no ModeSwitcher, no ImpactStrip (observational only)
 - Neutral color — no pillar accent on chrome (cross-pillar)
@@ -420,6 +447,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - EVI formula matches CC exactly: (Vis×0.40) + (Auth×0.35) + (Mom×0.25)
 
 ### Remaining Post-V1 Gaps
+
 - API routes for real EVI time series data
 - Real data hooks (currently all mock data)
 - Custom date range picker
@@ -429,6 +457,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - Comparative industry benchmarking
 
 **Session 2026-02-20 (continued — Sprint 7):**
+
 - **Sprint 7 — Cross-Surface Polish and Integration: ALL 6 TASKS COMPLETE**
   - ✅ 7.1: Navigation Audit — Verified `/app` → `/app/command-center` redirect. All 6 canonical surfaces in CUSTOM_SHELL_ROUTES. Removed non-canonical nav items (Playbooks, Agents) from CommandCenterTopbar.tsx. Added active state highlighting to AppSidebar.tsx (`usePathname()` + `isActive()` + brand-cyan/10 active class). Added Calendar to sidebar navItems. Fixed bare `text-white` → `text-white/90` in sidebar.
   - ✅ 7.2: Cross-Pillar Mock Events — Added PR→CC citation feed entry (`cit_08_pr_cross_pillar` in intelligence-canvas.json: VentureBeat interview → ChatGPT citation within 48h). Added Content→SEO event (`ar-0-xpillar` in seo/mock-data.ts: content publish → AEO score update +3.4). Verified SEO→CC already wired (act_03, act_06, act_09). Verified SoM→CC already wired (act_09 with SAGE reasoning).
@@ -445,19 +474,20 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 
 ## 15. GA READINESS — FINAL STATUS
 
-| # | Criterion | Status | Notes |
-|---|-----------|--------|-------|
-| 1 | Command Center: desktop tri-pane, ImpactStrip, mode badges, DS clean | ✅ PASS | V1 frozen Sprint 1 |
-| 2 | PR Work Surface: three mode trees, ImpactStrip, contract fix, DS clean | ✅ PASS | V1 frozen Sprint 2 |
-| 3 | Content Work Surface: three mode trees, ImpactStrip, Brief Editor, CiteMind gate, DS clean | ✅ PASS | V1 frozen Sprint 3 |
-| 4 | SEO/AEO Work Surface: three mode trees, 4 tabs, Overview+Exceptions, pre-publish AEO gate | ✅ PASS | V1 frozen Sprint 4 |
-| 5 | Orchestration Calendar: Day/Week/Month, Action Modal, all status states, correct clicks | ✅ PASS | V1 frozen Sprint 5 |
-| 6 | Analytics: EVI dashboard with time series | ✅ PASS | V1 frozen Sprint 6 |
-| 7 | Cross-surface: pillar events, navigation, mode persistence | ✅ PASS | Wired Sprint 7 |
-| 8 | DS compliance: zero phantom hex, zero bare text-white, zero sub-12px body text | ✅ PASS | Across all canonical surfaces |
-| 9 | Build passes: pnpm build exits 0, no TS errors | ✅ PASS | Verified Sprint 7 |
+| #   | Criterion                                                                                  | Status  | Notes                         |
+| --- | ------------------------------------------------------------------------------------------ | ------- | ----------------------------- |
+| 1   | Command Center: desktop tri-pane, ImpactStrip, mode badges, DS clean                       | ✅ PASS | V1 frozen Sprint 1            |
+| 2   | PR Work Surface: three mode trees, ImpactStrip, contract fix, DS clean                     | ✅ PASS | V1 frozen Sprint 2            |
+| 3   | Content Work Surface: three mode trees, ImpactStrip, Brief Editor, CiteMind gate, DS clean | ✅ PASS | V1 frozen Sprint 3            |
+| 4   | SEO/AEO Work Surface: three mode trees, 4 tabs, Overview+Exceptions, pre-publish AEO gate  | ✅ PASS | V1 frozen Sprint 4            |
+| 5   | Orchestration Calendar: Day/Week/Month, Action Modal, all status states, correct clicks    | ✅ PASS | V1 frozen Sprint 5            |
+| 6   | Analytics: EVI dashboard with time series                                                  | ✅ PASS | V1 frozen Sprint 6            |
+| 7   | Cross-surface: pillar events, navigation, mode persistence                                 | ✅ PASS | Wired Sprint 7                |
+| 8   | DS compliance: zero phantom hex, zero bare text-white, zero sub-12px body text             | ✅ PASS | Across all canonical surfaces |
+| 9   | Build passes: pnpm build exits 0, no TS errors                                             | ✅ PASS | Verified Sprint 7             |
 
 ### Known Limitations (Post-GA Backlog)
+
 - All data is mock — no real API routes wired
 - ~200 non-canonical/legacy component files retain `text-gray-*` violations (not in any canonical surface)
 - Omni-Tray is stub only (placeholder modal)
@@ -466,6 +496,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - SVG charts in Analytics — no external charting library
 
 **Session 2026-02-20 (continued — UI Sprint 1):**
+
 - **UI Sprint 1 — Global Polish Pass: ALL 6 STEPS COMPLETE**
   - ✅ Step 1: Phosphor Icons — Already installed (`@phosphor-icons/react@^2.1.10`). No action needed.
   - ✅ Step 2: Global Nav — Both PR and Content work surfaces already render `<CommandCenterTopbar />`. No action needed.
@@ -508,6 +539,7 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 **Objective:** Shift Manual mode from action-queue-centric to document-first editing experience.
 
 **Changes made:**
+
 - Installed 3 TipTap extensions: `@tiptap/extension-character-count`, `@tiptap/extension-typography`, `@tiptap/extension-highlight`
 - **New components created:**
   - `PravadoEditor.tsx` — Focused TipTap v3 editor with BubbleMenu (Bold, Italic, H1, H2, Link, Highlight), editable title, auto-save, word count, status row
@@ -520,5 +552,6 @@ These routes exist in the app but don't map to canonical surfaces. Leave them un
 - Copilot/Autopilot modes: UNCHANGED (verified no ManualWorkbench dependency)
 
 **Verification:**
+
 - TypeScript typecheck: PASS
 - Build: OOM killed (pre-existing system memory limitation, not code issue)

@@ -11,23 +11,27 @@
 ### Initial Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/YOUR_ORG/pravado-v2.git
    cd pravado-v2
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    # Edit .env.local with your values
    ```
 
 4. **Start development servers**
+
    ```bash
    pnpm dev
    ```
@@ -91,6 +95,7 @@ pnpm --filter @pravado/utils test
 ### 1. Creating a New Feature
 
 1. Create a feature branch:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -98,6 +103,7 @@ pnpm --filter @pravado/utils test
 2. Make your changes
 
 3. Run tests and linting:
+
    ```bash
    pnpm test
    pnpm lint
@@ -105,6 +111,7 @@ pnpm --filter @pravado/utils test
    ```
 
 4. Commit your changes:
+
    ```bash
    git add .
    git commit -m "feat: add your feature description"
@@ -118,11 +125,13 @@ pnpm --filter @pravado/utils test
 ### 2. Adding a New Shared Package
 
 1. Create package directory:
+
    ```bash
    mkdir -p packages/new-package/src
    ```
 
 2. Create `package.json`:
+
    ```json
    {
      "name": "@pravado/new-package",
@@ -138,6 +147,7 @@ pnpm --filter @pravado/utils test
    ```
 
 3. Create `tsconfig.json`:
+
    ```json
    {
      "extends": "../../tsconfig.json",
@@ -159,16 +169,19 @@ pnpm --filter @pravado/utils test
 ### 3. Adding Dependencies
 
 **To workspace root:**
+
 ```bash
 pnpm add -D <package> -w
 ```
 
 **To specific package:**
+
 ```bash
 pnpm --filter @pravado/api add <package>
 ```
 
 **Add workspace dependency:**
+
 ```bash
 pnpm --filter @pravado/api add @pravado/types@workspace:*
 ```
@@ -193,12 +206,14 @@ pnpm --filter @pravado/api add @pravado/types@workspace:*
 ### Imports
 
 Follow this order (enforced by ESLint):
+
 1. Node built-ins
 2. External packages
-3. Internal packages (@pravado/*)
+3. Internal packages (@pravado/\*)
 4. Relative imports
 
 Example:
+
 ```typescript
 import { readFile } from 'fs/promises';
 
@@ -235,6 +250,7 @@ describe('add', () => {
 ```
 
 Run tests:
+
 ```bash
 pnpm test
 ```
@@ -264,7 +280,9 @@ describe('Health Check', () => {
 ## Environment Variables
 
 ### API
+
 Create `apps/api/.env`:
+
 ```bash
 NODE_ENV=development
 API_PORT=3001
@@ -272,7 +290,9 @@ DATABASE_URL=postgresql://localhost/pravado
 ```
 
 ### Dashboard
+
 Create `apps/dashboard/.env.local`:
+
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
@@ -352,11 +372,13 @@ logger.error('Error message', { error });
 ### "Module not found" errors
 
 1. Rebuild packages:
+
    ```bash
    pnpm build
    ```
 
 2. Clear Turborepo cache:
+
    ```bash
    rm -rf .turbo
    ```
@@ -370,6 +392,7 @@ logger.error('Error message', { error });
 ### Type errors in workspace packages
 
 1. Ensure packages are built:
+
    ```bash
    pnpm --filter @pravado/types build
    ```
@@ -410,6 +433,7 @@ Follow conventional commits:
 - `chore:` - Maintenance
 
 Examples:
+
 ```bash
 git commit -m "feat: add user authentication"
 git commit -m "fix: resolve CORS issue in API"
@@ -433,6 +457,7 @@ pnpm uses content-addressable storage, making installs very fast.
 ### Faster Builds
 
 Turborepo caches build outputs:
+
 ```bash
 # First build: ~30s
 pnpm build

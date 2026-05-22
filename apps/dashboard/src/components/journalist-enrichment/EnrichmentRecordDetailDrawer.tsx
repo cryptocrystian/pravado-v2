@@ -100,10 +100,10 @@ export function EnrichmentRecordDetailDrawer({
                   record.status === 'completed'
                     ? 'bg-green-100 text-green-800'
                     : record.status === 'processing'
-                    ? 'bg-blue-100 text-blue-800'
-                    : record.status === 'failed'
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-gray-100 text-gray-800'
+                      ? 'bg-blue-100 text-blue-800'
+                      : record.status === 'failed'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-gray-100 text-gray-800'
                 }`}
               >
                 {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
@@ -117,7 +117,10 @@ export function EnrichmentRecordDetailDrawer({
               Quality Metrics
             </h3>
             <div className="space-y-3 bg-gray-50 rounded-lg p-4">
-              <ConfidenceBadge score={record.overallConfidenceScore} size="lg" />
+              <ConfidenceBadge
+                score={record.overallConfidenceScore}
+                size="lg"
+              />
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
                   <p className="text-xs text-gray-600 mb-1">Completeness</p>
@@ -149,7 +152,9 @@ export function EnrichmentRecordDetailDrawer({
                   >
                     <ExclamationTriangleIcon className="h-4 w-4 text-yellow-600 flex-shrink-0" />
                     <span className="text-sm text-yellow-800">
-                      {flag.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                      {flag
+                        .replace(/_/g, ' ')
+                        .replace(/\b\w/g, (l) => l.toUpperCase())}
                     </span>
                   </div>
                 ))}
@@ -184,7 +189,8 @@ export function EnrichmentRecordDetailDrawer({
                       )}
                       {record.emailConfidence !== undefined && (
                         <span className="text-xs text-gray-600">
-                          Confidence: {Math.round(record.emailConfidence * 100)}%
+                          Confidence: {Math.round(record.emailConfidence * 100)}
+                          %
                         </span>
                       )}
                     </div>
@@ -237,7 +243,9 @@ export function EnrichmentRecordDetailDrawer({
                       </p>
                     )}
                     {record.outletDomain && (
-                      <p className="text-xs text-gray-600">{record.outletDomain}</p>
+                      <p className="text-xs text-gray-600">
+                        {record.outletDomain}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -307,7 +315,9 @@ export function EnrichmentRecordDetailDrawer({
           {record.bio && (
             <div>
               <h3 className="text-sm font-medium text-gray-700 mb-3">Bio</h3>
-              <p className="text-sm text-gray-900 leading-relaxed">{record.bio}</p>
+              <p className="text-sm text-gray-900 leading-relaxed">
+                {record.bio}
+              </p>
             </div>
           )}
 
@@ -318,7 +328,9 @@ export function EnrichmentRecordDetailDrawer({
               <div className="flex items-center gap-2">
                 <ClockIcon className="h-4 w-4 text-gray-400" />
                 <span className="text-gray-600">Created:</span>
-                <span className="text-gray-900">{formatDate(record.createdAt)}</span>
+                <span className="text-gray-900">
+                  {formatDate(record.createdAt)}
+                </span>
               </div>
               {record.enrichedAt && (
                 <div className="flex items-center gap-2">
@@ -366,7 +378,9 @@ export function EnrichmentRecordDetailDrawer({
                 <button
                   onClick={() => {
                     if (
-                      confirm('Are you sure you want to delete this enrichment record?')
+                      confirm(
+                        'Are you sure you want to delete this enrichment record?'
+                      )
                     ) {
                       onDelete(record.id);
                     }

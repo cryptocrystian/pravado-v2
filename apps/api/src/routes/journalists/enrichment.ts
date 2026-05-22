@@ -33,7 +33,10 @@ export async function journalistEnrichmentRoutes(server: FastifyInstance) {
       if (!FLAGS.ENABLE_JOURNALIST_ENRICHMENT) {
         return reply.code(404).send({
           success: false,
-          error: { code: 'FEATURE_DISABLED', message: 'Journalist enrichment not enabled' },
+          error: {
+            code: 'FEATURE_DISABLED',
+            message: 'Journalist enrichment not enabled',
+          },
         });
       }
 
@@ -62,7 +65,11 @@ export async function journalistEnrichmentRoutes(server: FastifyInstance) {
       if (!result) {
         return reply.send({
           success: true,
-          data: { enriched: false, reason: 'Skipped — recently enriched, name unparseable, or API unavailable' },
+          data: {
+            enriched: false,
+            reason:
+              'Skipped — recently enriched, name unparseable, or API unavailable',
+          },
         });
       }
 
@@ -85,7 +92,10 @@ export async function journalistEnrichmentRoutes(server: FastifyInstance) {
     if (!FLAGS.ENABLE_JOURNALIST_ENRICHMENT) {
       return reply.code(404).send({
         success: false,
-        error: { code: 'FEATURE_DISABLED', message: 'Journalist enrichment not enabled' },
+        error: {
+          code: 'FEATURE_DISABLED',
+          message: 'Journalist enrichment not enabled',
+        },
       });
     }
 
@@ -106,11 +116,15 @@ export async function journalistEnrichmentRoutes(server: FastifyInstance) {
 
     // Try to enqueue via BullMQ, fallback to direct execution
     try {
-      const { enqueueJournalistEnrichBatch } = await import('../../queue/bullmqQueue');
+      const { enqueueJournalistEnrichBatch } = await import(
+        '../../queue/bullmqQueue'
+      );
       await enqueueJournalistEnrichBatch(orgId);
       return reply.send({ success: true, data: { queued: true } });
     } catch {
-      const { enrichBatch } = await import('../../services/journalists/hunterEnrichmentService');
+      const { enrichBatch } = await import(
+        '../../services/journalists/hunterEnrichmentService'
+      );
       const result = await enrichBatch(supabase, orgId);
       return reply.send({ success: true, data: result });
     }
@@ -125,7 +139,10 @@ export async function journalistEnrichmentRoutes(server: FastifyInstance) {
       if (!FLAGS.ENABLE_JOURNALIST_ENRICHMENT) {
         return reply.code(404).send({
           success: false,
-          error: { code: 'FEATURE_DISABLED', message: 'Journalist enrichment not enabled' },
+          error: {
+            code: 'FEATURE_DISABLED',
+            message: 'Journalist enrichment not enabled',
+          },
         });
       }
 
@@ -148,11 +165,17 @@ export async function journalistEnrichmentRoutes(server: FastifyInstance) {
       if (!topicsParam) {
         return reply.code(400).send({
           success: false,
-          error: { code: 'MISSING_TOPICS', message: 'Query parameter "topics" is required (comma-separated)' },
+          error: {
+            code: 'MISSING_TOPICS',
+            message: 'Query parameter "topics" is required (comma-separated)',
+          },
         });
       }
 
-      const topics = topicsParam.split(',').map((t) => t.trim()).filter(Boolean);
+      const topics = topicsParam
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean);
 
       const { discoverByTopics } = await import(
         '../../services/journalists/journalistDiscoveryService'

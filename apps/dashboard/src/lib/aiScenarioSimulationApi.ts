@@ -72,7 +72,8 @@ export async function listSimulations(
   if (query?.status) params.set('status', query.status);
   if (query?.objectiveType) params.set('objectiveType', query.objectiveType);
   if (query?.simulationMode) params.set('simulationMode', query.simulationMode);
-  if (query?.linkedPlaybookId) params.set('linkedPlaybookId', query.linkedPlaybookId);
+  if (query?.linkedPlaybookId)
+    params.set('linkedPlaybookId', query.linkedPlaybookId);
   if (query?.sortBy) params.set('sortBy', query.sortBy);
   if (query?.sortOrder) params.set('sortOrder', query.sortOrder);
   if (query?.limit) params.set('limit', String(query.limit));
@@ -87,7 +88,9 @@ export async function listSimulations(
 /**
  * Get a simulation by ID
  */
-export async function getSimulation(id: string): Promise<{ simulation: AIScenarioSimulation }> {
+export async function getSimulation(
+  id: string
+): Promise<{ simulation: AIScenarioSimulation }> {
   return fetchWithAuth<{ simulation: AIScenarioSimulation }>(
     `${BASE_PATH}/simulations/${id}`
   );
@@ -193,8 +196,12 @@ export async function listRuns(
 /**
  * Get run details
  */
-export async function getRunDetail(runId: string): Promise<AISimulationRunDetailResponse> {
-  return fetchWithAuth<AISimulationRunDetailResponse>(`${BASE_PATH}/runs/${runId}`);
+export async function getRunDetail(
+  runId: string
+): Promise<AISimulationRunDetailResponse> {
+  return fetchWithAuth<AISimulationRunDetailResponse>(
+    `${BASE_PATH}/runs/${runId}`
+  );
 }
 
 /**
@@ -271,7 +278,8 @@ export async function listTurns(
   const params = new URLSearchParams();
   if (query?.speakerAgentId) params.set('speakerAgentId', query.speakerAgentId);
   if (query?.channel) params.set('channel', query.channel);
-  if (query?.stepIndex !== undefined) params.set('stepIndex', String(query.stepIndex));
+  if (query?.stepIndex !== undefined)
+    params.set('stepIndex', String(query.stepIndex));
   if (query?.sortOrder) params.set('sortOrder', query.sortOrder);
   if (query?.limit) params.set('limit', String(query.limit));
   if (query?.offset) params.set('offset', String(query.offset));
@@ -292,7 +300,8 @@ export async function listMetrics(
   const params = new URLSearchParams();
   if (query?.metricKey) params.set('metricKey', query.metricKey);
   if (query?.metricCategory) params.set('metricCategory', query.metricCategory);
-  if (query?.stepIndex !== undefined) params.set('stepIndex', String(query.stepIndex));
+  if (query?.stepIndex !== undefined)
+    params.set('stepIndex', String(query.stepIndex));
   if (query?.sortOrder) params.set('sortOrder', query.sortOrder);
   if (query?.limit) params.set('limit', String(query.limit));
   if (query?.offset) params.set('offset', String(query.offset));
@@ -346,8 +355,12 @@ export async function summarizeOutcomes(
 /**
  * Get simulation statistics
  */
-export async function getStats(): Promise<{ stats: AIScenarioSimulationStats }> {
-  return fetchWithAuth<{ stats: AIScenarioSimulationStats }>(`${BASE_PATH}/stats`);
+export async function getStats(): Promise<{
+  stats: AIScenarioSimulationStats;
+}> {
+  return fetchWithAuth<{ stats: AIScenarioSimulationStats }>(
+    `${BASE_PATH}/stats`
+  );
 }
 
 // ============================================================================
@@ -374,7 +387,9 @@ export async function listAuditLogs(query?: {
   const queryString = params.toString();
   const url = `${BASE_PATH}/audit${queryString ? `?${queryString}` : ''}`;
 
-  return fetchWithAuth<{ auditLogs: AIScenarioAuditLogEntry[]; total: number }>(url);
+  return fetchWithAuth<{ auditLogs: AIScenarioAuditLogEntry[]; total: number }>(
+    url
+  );
 }
 
 // ============================================================================

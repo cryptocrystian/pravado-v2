@@ -12,7 +12,11 @@ const mockSupabase = {
 };
 
 // Create mock query builder
-function createMockQueryBuilder(data: unknown, error: unknown = null, count: number | null = null) {
+function createMockQueryBuilder(
+  data: unknown,
+  error: unknown = null,
+  count: number | null = null
+) {
   const builder = {
     insert: vi.fn().mockReturnThis(),
     update: vi.fn().mockReturnThis(),
@@ -31,8 +35,13 @@ function createMockQueryBuilder(data: unknown, error: unknown = null, count: num
     limit: vi.fn().mockReturnThis(),
     single: vi.fn().mockResolvedValue({ data, error }),
     maybeSingle: vi.fn().mockResolvedValue({ data, error }),
-    then: (resolve: (value: { data: unknown; error: unknown; count: number | null }) => unknown) =>
-      Promise.resolve({ data, error, count }).then(resolve),
+    then: (
+      resolve: (value: {
+        data: unknown;
+        error: unknown;
+        count: number | null;
+      }) => unknown
+    ) => Promise.resolve({ data, error, count }).then(resolve),
   };
   return builder;
 }
@@ -51,7 +60,10 @@ vi.mock('@pravado/utils', () => ({
 global.fetch = vi.fn();
 
 // Import after mocking
-import { createExecutiveCommandCenterService, type ExecutiveCommandCenterService } from '../src/services/executiveCommandCenterService';
+import {
+  createExecutiveCommandCenterService,
+  type ExecutiveCommandCenterService,
+} from '../src/services/executiveCommandCenterService';
 
 describe('Executive Command Center Service (S61)', () => {
   let execDashboardService: ExecutiveCommandCenterService;
@@ -131,7 +143,10 @@ describe('Executive Command Center Service (S61)', () => {
       });
 
       it('should handle database errors gracefully', async () => {
-        const mockBuilder = createMockQueryBuilder(null, { message: 'Database error', code: 'DB_ERROR' });
+        const mockBuilder = createMockQueryBuilder(null, {
+          message: 'Database error',
+          code: 'DB_ERROR',
+        });
         mockSupabase.from.mockReturnValue(mockBuilder);
 
         await expect(
@@ -162,7 +177,10 @@ describe('Executive Command Center Service (S61)', () => {
           }
         });
 
-        const result = await execDashboardService.getDashboard(testOrgId, 'dashboard-uuid-1');
+        const result = await execDashboardService.getDashboard(
+          testOrgId,
+          'dashboard-uuid-1'
+        );
 
         expect(result).toBeDefined();
         expect(result?.dashboard.id).toBe('dashboard-uuid-1');
@@ -173,7 +191,10 @@ describe('Executive Command Center Service (S61)', () => {
         const mockBuilder = createMockQueryBuilder(null);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await execDashboardService.getDashboard(testOrgId, 'non-existent-id');
+        const result = await execDashboardService.getDashboard(
+          testOrgId,
+          'non-existent-id'
+        );
 
         expect(result).toBeNull();
       });
@@ -182,8 +203,19 @@ describe('Executive Command Center Service (S61)', () => {
     describe('listDashboards()', () => {
       it('should list all dashboards for an organization', async () => {
         const mockDashboards = [
-          { ...mockDashboardRecord, exec_dashboard_insights: [{ count: 5 }], exec_dashboard_kpis: [{ count: 10 }], exec_dashboard_narratives: [{ count: 1 }] },
-          { ...mockDashboardRecord, id: 'dashboard-uuid-2', exec_dashboard_insights: [{ count: 3 }], exec_dashboard_kpis: [{ count: 8 }], exec_dashboard_narratives: [{ count: 0 }] },
+          {
+            ...mockDashboardRecord,
+            exec_dashboard_insights: [{ count: 5 }],
+            exec_dashboard_kpis: [{ count: 10 }],
+            exec_dashboard_narratives: [{ count: 1 }],
+          },
+          {
+            ...mockDashboardRecord,
+            id: 'dashboard-uuid-2',
+            exec_dashboard_insights: [{ count: 3 }],
+            exec_dashboard_kpis: [{ count: 8 }],
+            exec_dashboard_narratives: [{ count: 0 }],
+          },
         ];
         const mockBuilder = createMockQueryBuilder(mockDashboards, null, 2);
         mockSupabase.from.mockReturnValue(mockBuilder);
@@ -199,7 +231,9 @@ describe('Executive Command Center Service (S61)', () => {
         const mockBuilder = createMockQueryBuilder([], null, 0);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await execDashboardService.listDashboards(testOrgId, { primaryFocus: 'risk' });
+        await execDashboardService.listDashboards(testOrgId, {
+          primaryFocus: 'risk',
+        });
 
         expect(mockBuilder.eq).toHaveBeenCalled();
       });
@@ -207,7 +241,10 @@ describe('Executive Command Center Service (S61)', () => {
 
     describe('updateDashboard()', () => {
       it('should update dashboard fields', async () => {
-        const updatedRecord = { ...mockDashboardRecord, title: 'Updated Title' };
+        const updatedRecord = {
+          ...mockDashboardRecord,
+          title: 'Updated Title',
+        };
         const mockBuilder = createMockQueryBuilder(updatedRecord);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
@@ -243,7 +280,11 @@ describe('Executive Command Center Service (S61)', () => {
         const mockBuilder = createMockQueryBuilder(archivedRecord);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await execDashboardService.deleteDashboard(testOrgId, 'dashboard-uuid-1', testUserId);
+        const result = await execDashboardService.deleteDashboard(
+          testOrgId,
+          'dashboard-uuid-1',
+          testUserId
+        );
 
         expect(result).toBeDefined();
         expect(mockBuilder.update).toHaveBeenCalled();
@@ -294,14 +335,22 @@ describe('Executive Command Center Service (S61)', () => {
 
     describe('listInsights()', () => {
       it('should list insights for a dashboard', async () => {
-        const mockBuilder = createMockQueryBuilder([mockInsightRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockInsightRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await execDashboardService.listInsights(testOrgId, { dashboardId: 'dashboard-uuid-1' });
+        const result = await execDashboardService.listInsights(testOrgId, {
+          dashboardId: 'dashboard-uuid-1',
+        });
 
         expect(result.insights).toHaveLength(1);
         expect(result.total).toBe(1);
-        expect(mockSupabase.from).toHaveBeenCalledWith('exec_dashboard_insights');
+        expect(mockSupabase.from).toHaveBeenCalledWith(
+          'exec_dashboard_insights'
+        );
       });
 
       it('should filter by sourceSystem', async () => {
@@ -367,7 +416,11 @@ describe('Executive Command Center Service (S61)', () => {
       metric_label: 'Media Sentiment',
       metric_value: 72.5,
       metric_unit: 'score',
-      metric_trend: { direction: 'up', changePercent: 5.2, periodLabel: 'vs last week' },
+      metric_trend: {
+        direction: 'up',
+        changePercent: 5.2,
+        periodLabel: 'vs last week',
+      },
       display_order: 1,
       category: 'reputation',
       source_system: 'reputation',
@@ -380,7 +433,9 @@ describe('Executive Command Center Service (S61)', () => {
         const mockBuilder = createMockQueryBuilder([mockKpiRecord], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await execDashboardService.listKpis(testOrgId, { dashboardId: 'dashboard-uuid-1' });
+        const result = await execDashboardService.listKpis(testOrgId, {
+          dashboardId: 'dashboard-uuid-1',
+        });
 
         expect(result.kpis).toHaveLength(1);
         expect(result.total).toBe(1);
@@ -447,14 +502,22 @@ describe('Executive Command Center Service (S61)', () => {
 
     describe('listNarratives()', () => {
       it('should list narratives for a dashboard', async () => {
-        const mockBuilder = createMockQueryBuilder([mockNarrativeRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockNarrativeRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await execDashboardService.listNarratives(testOrgId, { dashboardId: 'dashboard-uuid-1' });
+        const result = await execDashboardService.listNarratives(testOrgId, {
+          dashboardId: 'dashboard-uuid-1',
+        });
 
         expect(result.narratives).toHaveLength(1);
         expect(result.total).toBe(1);
-        expect(mockSupabase.from).toHaveBeenCalledWith('exec_dashboard_narratives');
+        expect(mockSupabase.from).toHaveBeenCalledWith(
+          'exec_dashboard_narratives'
+        );
       });
     });
 
@@ -491,7 +554,13 @@ describe('Executive Command Center Service (S61)', () => {
           {
             timeWindow: '7d',
             topRisks: [{ title: 'Risk 1', severity: 80, source: 'risk_radar' }],
-            topOpportunities: [{ title: 'Opportunity 1', impact: 90, source: 'media_performance' }],
+            topOpportunities: [
+              {
+                title: 'Opportunity 1',
+                impact: 90,
+                source: 'media_performance',
+              },
+            ],
             kpiSnapshot: [{ label: 'Sentiment', value: 72, trend: 'up' }],
             systemsContributing: ['risk_radar', 'media_performance'],
           }
@@ -534,7 +603,12 @@ describe('Executive Command Center Service (S61)', () => {
       // The refresh involves multiple database calls
       // For now, we verify the method is callable
       await expect(
-        execDashboardService.refreshDashboard(testOrgId, 'dashboard-uuid-1', testUserId, {})
+        execDashboardService.refreshDashboard(
+          testOrgId,
+          'dashboard-uuid-1',
+          testUserId,
+          {}
+        )
       ).rejects.toBeDefined(); // May throw due to incomplete mocks
     });
   });

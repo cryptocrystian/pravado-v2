@@ -9,23 +9,27 @@ This document provides instructions for tagging the Sprint S0 release.
 Before creating the v0.0.0-s0 tag, verify that all Sprint S0 deliverables are complete:
 
 ### Infrastructure ✅
+
 - [x] Monorepo structure (Turborepo + pnpm workspaces)
 - [x] Root-level configuration files
 - [x] Package manager setup (pnpm)
 - [x] Workspace configuration
 
 ### Applications ✅
+
 - [x] apps/api - Fastify skeleton with TypeScript
 - [x] apps/dashboard - Next.js 14 skeleton (App Router)
 - [x] apps/mobile - Expo stub (React Native)
 
 ### Shared Packages ✅
+
 - [x] packages/types - Shared TypeScript types
 - [x] packages/validators - Zod schemas for validation
 - [x] packages/utils - Shared utility functions
 - [x] packages/feature-flags - Feature flag foundation
 
 ### Development Tooling ✅
+
 - [x] ESLint configuration (monorepo-aware)
 - [x] Prettier configuration
 - [x] TypeScript configuration (base + per-package)
@@ -33,6 +37,7 @@ Before creating the v0.0.0-s0 tag, verify that all Sprint S0 deliverables are co
 - [x] Environment validation via @pravado/validators
 
 ### CI/CD ✅
+
 - [x] GitHub Actions workflow
 - [x] Automated linting on PR
 - [x] Automated type checking
@@ -40,6 +45,7 @@ Before creating the v0.0.0-s0 tag, verify that all Sprint S0 deliverables are co
 - [x] Build verification
 
 ### Documentation ✅
+
 - [x] /docs folder structure
 - [x] docs/ARCHITECTURE.md
 - [x] docs/DEVELOPMENT.md
@@ -48,6 +54,7 @@ Before creating the v0.0.0-s0 tag, verify that all Sprint S0 deliverables are co
 - [x] Updated README.md for v2
 
 ### Sprint Management ✅
+
 - [x] SPRINT_S0_PLAN.md
 - [x] SPRINT_S0_GITHUB_ISSUES.md
 - [x] TAGGING_v0.0.0-s0.md (this file)
@@ -253,6 +260,7 @@ Navigate to: `https://github.com/YOUR_ORG/pravado-v2/tags`
 ### v0.0.0-s0 - Sprint S0: Foundation (2025-11-14)
 
 #### 🏗️ Infrastructure
+
 - ✅ Monorepo structure with Turborepo and pnpm workspaces
 - ✅ TypeScript 5.x strict mode
 - ✅ ESLint + Prettier configuration
@@ -260,6 +268,7 @@ Navigate to: `https://github.com/YOUR_ORG/pravado-v2/tags`
 - ✅ GitHub Actions CI/CD
 
 #### 🚀 Applications
+
 - ✅ **apps/api** - Fastify backend (port 3001)
   - Health check endpoints
   - CORS support
@@ -275,12 +284,14 @@ Navigate to: `https://github.com/YOUR_ORG/pravado-v2/tags`
   - Basic navigation
 
 #### 📦 Shared Packages
+
 - ✅ **@pravado/types** - TypeScript type definitions
 - ✅ **@pravado/validators** - Zod validation schemas
 - ✅ **@pravado/utils** - Utility functions (logger, formatting, errors)
 - ✅ **@pravado/feature-flags** - Type-safe feature flag system
 
 #### 📚 Documentation
+
 - ✅ Architecture overview (docs/ARCHITECTURE.md)
 - ✅ Development guide (docs/DEVELOPMENT.md)
 - ✅ Feature flags guide (docs/FEATURE_FLAGS.md)
@@ -289,12 +300,14 @@ Navigate to: `https://github.com/YOUR_ORG/pravado-v2/tags`
 - ✅ Updated README.md
 
 #### 🔧 Developer Experience
+
 - Fast incremental builds with Turborepo caching
 - Hot reload for all applications
 - Type-safe development with strict TypeScript
 - Automated CI/CD checks
 
 #### 📊 Metrics
+
 - **Build Time (first):** ~30s
 - **Build Time (cached):** ~1s
 - **Install Time:** <60s
@@ -303,7 +316,9 @@ Navigate to: `https://github.com/YOUR_ORG/pravado-v2/tags`
 - **Tests Passing:** 100%
 
 #### 🗺️ Next Sprint
+
 Sprint S1 will focus on:
+
 - Database setup (PostgreSQL/Supabase)
 - Authentication scaffold
 - Basic API routes
@@ -316,16 +331,19 @@ Sprint S1 will focus on:
 If issues are discovered after tagging:
 
 ### Delete Local Tag
+
 ```bash
 git tag -d v0.0.0-s0
 ```
 
 ### Delete Remote Tag
+
 ```bash
 git push origin :refs/tags/v0.0.0-s0
 ```
 
 ### Fix Issues and Re-tag
+
 ```bash
 # Make fixes
 git add .
@@ -343,11 +361,13 @@ git push origin v0.0.0-s0
 After tagging, communicate the release:
 
 ### Internal Team
+
 - **Slack/Discord:** Announce Sprint S0 completion
 - **Email:** Send release notes to team
 - **Demo:** Schedule demo of infrastructure setup
 
 ### Stakeholders
+
 - **Status Update:** Sprint S0 complete, v0.0.0-s0 tagged
 - **Next Steps:** Sprint S1 planning in progress
 - **Timeline:** On track for planned roadmap

@@ -9,11 +9,13 @@ The Playbook Execution Viewer is a live, real-time dashboard for monitoring play
 ### Components
 
 **API Layer:**
+
 - `GET /api/v1/playbook-runs/:id` - Aggregated run + all steps with enrichments
 - `GET /api/v1/playbook-runs/:id/steps/:stepKey` - Detailed single step view
 - `GET /api/v1/playbook-runs/:id/stream` - Stub for future SSE/WebSocket (S21)
 
 **Dashboard UI:**
+
 - `/app/playbooks/runs/[runId]` - Main viewer route
 - `RunHeader` - Run overview and progress
 - `StepTimeline` - Vertical timeline of all steps
@@ -22,6 +24,7 @@ The Playbook Execution Viewer is a live, real-time dashboard for monitoring play
 ### Polling Model
 
 The viewer uses **polling** (no WebSockets yet) with:
+
 - 2-second poll interval
 - Automatic pause when run completes (success/failed/canceled states)
 - Manual refresh and pause/resume controls
@@ -51,15 +54,15 @@ The execution viewer now follows a **SSE-first, polling-fallback** strategy:
 
 SSE events map directly to UI component updates:
 
-| Event Type | Affected Components | Update Behavior |
-|------------|-------------------|-----------------|
-| `run.updated` | RunHeader, StepTimeline | Updates run status, progress, current step key |
-| `run.completed` | RunHeader | Shows final state, stops polling/streaming |
-| `run.failed` | RunHeader | Displays error banner with failure message |
-| `step.updated` | StepTimeline, StepInspector | Updates step state badge, timestamps, status |
-| `step.completed` | StepTimeline, StepInspector | Shows success state, completion time, result |
-| `step.failed` | StepTimeline, StepInspector | Shows error state, error message, retry info |
-| `step.log.appended` | StepInspector (Logs section) | Appends new log line to terminal output |
+| Event Type          | Affected Components          | Update Behavior                                |
+| ------------------- | ---------------------------- | ---------------------------------------------- |
+| `run.updated`       | RunHeader, StepTimeline      | Updates run status, progress, current step key |
+| `run.completed`     | RunHeader                    | Shows final state, stops polling/streaming     |
+| `run.failed`        | RunHeader                    | Displays error banner with failure message     |
+| `step.updated`      | StepTimeline, StepInspector  | Updates step state badge, timestamps, status   |
+| `step.completed`    | StepTimeline, StepInspector  | Shows success state, completion time, result   |
+| `step.failed`       | StepTimeline, StepInspector  | Shows error state, error message, retry info   |
+| `step.log.appended` | StepInspector (Logs section) | Appends new log line to terminal output        |
 
 **Delta Updates:** SSE events contain only changed data (e.g., single step update), not the full run state. The UI applies these deltas efficiently without re-rendering unaffected components.
 
@@ -68,16 +71,19 @@ SSE events map directly to UI component updates:
 The viewer displays the current streaming mode with visual badges:
 
 **1. Header Badge (in RunHeader)**
+
 - **Green "LIVE" badge**: SSE connected and streaming events
 - **Yellow "Polling" badge**: Polling active (SSE unavailable or disabled)
 - **Gray "Paused" badge**: Updates manually paused by user
 
 **2. Floating Indicator (bottom-right corner)**
+
 - Same color coding as header badge
 - Animated pulse dot for LIVE mode
 - Always visible during active monitoring
 
 **3. Manual Controls**
+
 - **Refresh button** (bottom-left): Force immediate full state fetch
 - **Pause/Resume button**: Toggle automatic updates (works for both SSE and polling)
 
@@ -103,6 +109,7 @@ Mode  to Polling
 ```
 
 **SSE Reconnection:**
+
 - Automatic reconnection on connection loss
 - Exponential backoff: 3s, 6s, 12s, 24s, 48s
 - Max 5 retry attempts before permanent fallback
@@ -111,12 +118,14 @@ Mode  to Polling
 ### Performance Improvements
 
 **SSE Mode Benefits:**
+
 - **Latency**: < 100ms event delivery (vs 0-2000ms with polling)
 - **Server Load**: ~95% fewer requests (1 connection vs 30 requests/minute)
 - **Bandwidth**: ~90% reduction (delta events vs full state fetch)
 - **User Experience**: Instant updates, no perceived lag
 
 **Example:** A 10-minute playbook run:
+
 - **Polling**: 300 API requests, ~15MB data transferred
 - **SSE**: 1 connection + heartbeats, ~1.5MB data transferred
 
@@ -127,10 +136,12 @@ Mode  to Polling
 **Default:** `true`
 
 **Behavior:**
+
 - **When `true`**: Frontend attempts SSE, falls back to polling on failure
 - **When `false`**: Frontend uses polling only (SSE endpoint not called)
 
 **Toggle at Runtime:**
+
 ```typescript
 import { FLAGS } from '@pravado/feature-flags';
 
@@ -140,12 +151,14 @@ const streamingEnabled = FLAGS.ENABLE_EXECUTION_STREAMING;
 ### Limitations
 
 **V1 SSE Implementation:**
+
 1. **Single-Instance Only**: Works within one API server process (no multi-instance support yet)
 2. **No Event Replay**: Missed events during disconnection are not replayed (initial fetch provides baseline)
 3. **No WebSocket**: SSE is unidirectional (server → client only), no client commands over stream
 4. **Memory Constraints**: All subscriptions in-memory, scales with concurrent viewers
 
 **Future Enhancements (V2+):**
+
 - Redis Pub/Sub for multi-instance support
 - Event replay with `Last-Event-ID` header
 - WebSocket for bidirectional communication
@@ -154,22 +167,26 @@ const streamingEnabled = FLAGS.ENABLE_EXECUTION_STREAMING;
 ### Troubleshooting SSE
 
 **Connection Not Establishing:**
+
 - Check browser console for EventSource errors
 - Verify feature flag: `FLAGS.ENABLE_EXECUTION_STREAMING === true`
 - Confirm authentication (session cookie present)
 - Check network tab for `/stream` endpoint response
 
 **Frequent Disconnections:**
+
 - Proxy/firewall may not support SSE (check infrastructure)
 - Network instability (monitor connection quality)
 - Server restarts (check API logs)
 
 **Events Not Updating UI:**
+
 - Verify `applyEvent` function is processing events
 - Check for event parsing errors in console
 - Ensure event `runId` matches viewer `runId`
 
 **Fallback to Polling:**
+
 - Normal behavior when SSE unavailable
 - Check yellow "Polling" badge to confirm fallback
 - No action required, polling provides same data
@@ -177,6 +194,7 @@ const streamingEnabled = FLAGS.ENABLE_EXECUTION_STREAMING;
 ### Developer Integration
 
 **Frontend Hook Usage:**
+
 ```typescript
 import { useExecutionStream } from '@/hooks/useExecutionStream';
 
@@ -189,12 +207,13 @@ const { connected, lastEvent, error } = useExecutionStream(runId, {
 
 useEffect(() => {
   if (lastEvent) {
-    applyEvent(lastEvent);  // Apply event delta to state
+    applyEvent(lastEvent); // Apply event delta to state
   }
 }, [lastEvent]);
 ```
 
 **Backend Event Publishing:**
+
 ```typescript
 import { executionEventBus } from '@/events/eventBus';
 
@@ -308,15 +327,15 @@ interface StepRunView {
 
 Visual color coding for execution states:
 
-| State                        | Color    | Badge Color  |
-|------------------------------|----------|--------------|
-| `queued`                     | Gray     | `#A0AEC0`    |
-| `running`                    | Blue     | `#3182CE`    |
-| `success`                    | Green    | `#38A169`    |
-| `failed`                     | Red      | `#E53E3E`    |
-| `waiting_for_dependencies`   | Yellow   | `#D69E2E`    |
-| `blocked`                    | Purple   | `#805AD5`    |
-| `canceled`                   | Gray     | `#718096`    |
+| State                      | Color  | Badge Color |
+| -------------------------- | ------ | ----------- |
+| `queued`                   | Gray   | `#A0AEC0`   |
+| `running`                  | Blue   | `#3182CE`   |
+| `success`                  | Green  | `#38A169`   |
+| `failed`                   | Red    | `#E53E3E`   |
+| `waiting_for_dependencies` | Yellow | `#D69E2E`   |
+| `blocked`                  | Purple | `#805AD5`   |
+| `canceled`                 | Gray   | `#718096`   |
 
 ## Features
 
@@ -330,6 +349,7 @@ Visual color coding for execution states:
 ### 2. Step Timeline
 
 Vertical timeline showing:
+
 - Step icon (🤖 for AGENT, ⚙️ for DATA, ◆ for BRANCH, 🌐 for API)
 - Step name and key
 - State badge with color coding
@@ -364,11 +384,13 @@ Collapsible sections for deep inspection:
 ## Reading Parallel Branches
 
 Parallel steps are identified by:
+
 1. Same dependency parent
 2. No dependency on each other
 3. Execute concurrently (multiple running at once)
 
 **Example:**
+
 ```
 Step 1 (completed)
   ├─ Step 2A (running) ─── Parallel branch
@@ -381,6 +403,7 @@ The timeline groups parallel steps visually and shows their concurrent execution
 ## Personality Application
 
 For AGENT steps, the inspector shows:
+
 - **Personality Name**: Human-readable name (e.g., "Analytical Researcher")
 - **Slug**: Machine identifier (e.g., "analytical-researcher")
 - **Description**: What this personality does
@@ -397,6 +420,7 @@ For AGENT steps, the inspector shows:
 ### Episodic Traces
 
 Memory traces captured during step execution:
+
 - Automatically recorded semantic memories
 - Timestamped with creation date
 - Linked to specific steps
@@ -406,6 +430,7 @@ Memory traces captured during step execution:
 ### Collaboration Context
 
 For multi-agent workflows:
+
 - Inter-agent messages (request/response/escalation/delegation)
 - Shared state across steps
 - Escalation level (none/agent/supervisor/human)
@@ -521,12 +546,14 @@ if (success) {
 **Symptoms:** Blank screen or loading spinner indefinitely
 
 **Causes:**
+
 - Invalid run ID
 - User not authenticated
 - User not member of run's org
 - Network issues
 
 **Solutions:**
+
 1. Check browser console for errors
 2. Verify authentication (try refreshing)
 3. Check run ID format (must be UUID)
@@ -537,11 +564,13 @@ if (success) {
 **Symptoms:** Run state not changing despite activity
 
 **Causes:**
+
 - Polling paused manually
 - Run in final state (auto-pause)
 - API endpoint down
 
 **Solutions:**
+
 1. Check "Live updating" indicator in bottom-right
 2. Click "Resume polling" if paused
 3. Use manual "Refresh" button
@@ -552,11 +581,13 @@ if (success) {
 **Symptoms:** Step shows minimal information
 
 **Causes:**
+
 - Step not yet started (no logs/output yet)
 - Worker info not populated
 - Memory/collaboration not recorded
 
 **Solutions:**
+
 1. Wait for step to start execution
 2. Check step state (queued steps have no logs)
 3. Verify memory system is enabled (S10)
@@ -567,11 +598,13 @@ if (success) {
 **Symptoms:** Parallel steps appear sequential
 
 **Causes:**
+
 - Steps have different start times
 - Dependencies not properly configured
 - Execution serialized due to resource limits
 
 **Solutions:**
+
 1. Check step dependencies in playbook definition
 2. Verify concurrent execution in worker pool stats
 3. Review step start timestamps (should be close)
@@ -588,6 +621,7 @@ if (success) {
 ### Large Runs
 
 For playbooks with many steps (>50):
+
 - Timeline may become long (scrollable)
 - Initial load may be slower
 - Consider pagination in future versions
@@ -595,6 +629,7 @@ For playbooks with many steps (>50):
 ### Memory Traces
 
 Large episodic trace collections:
+
 - Can increase response size significantly
 - Displayed collapsed by default
 - Expand only when needed

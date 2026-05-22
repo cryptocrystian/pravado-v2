@@ -314,7 +314,9 @@ export interface MediaMonitoringStats {
 // TRANSFORM FUNCTIONS
 // ========================================
 
-export function transformSourceRecord(record: MediaMonitoringSourceRecord): MediaMonitoringSource {
+export function transformSourceRecord(
+  record: MediaMonitoringSourceRecord
+): MediaMonitoringSource {
   return {
     id: record.id,
     orgId: record.org_id,
@@ -324,14 +326,18 @@ export function transformSourceRecord(record: MediaMonitoringSourceRecord): Medi
     active: record.active,
     sourceType: record.source_type,
     crawlFrequencyHours: record.crawl_frequency_hours,
-    lastCrawledAt: record.last_crawled_at ? new Date(record.last_crawled_at) : null,
+    lastCrawledAt: record.last_crawled_at
+      ? new Date(record.last_crawled_at)
+      : null,
     metadata: record.metadata,
     createdAt: new Date(record.created_at),
     updatedAt: new Date(record.updated_at),
   };
 }
 
-export function transformArticleRecord(record: MediaMonitoringArticleRecord): MediaMonitoringArticle {
+export function transformArticleRecord(
+  record: MediaMonitoringArticleRecord
+): MediaMonitoringArticle {
   return {
     id: record.id,
     orgId: record.org_id,
@@ -354,7 +360,9 @@ export function transformArticleRecord(record: MediaMonitoringArticleRecord): Me
   };
 }
 
-export function transformMentionRecord(record: EarnedMentionRecord): EarnedMention {
+export function transformMentionRecord(
+  record: EarnedMentionRecord
+): EarnedMention {
   return {
     id: record.id,
     orgId: record.org_id,
@@ -590,7 +598,9 @@ export interface RSSFeedStats {
 // TRANSFORM FUNCTIONS (RSS & CRAWLER)
 // ========================================
 
-export function transformRSSFeedRecord(record: MediaRSSFeedRecord): MediaRSSFeed {
+export function transformRSSFeedRecord(
+  record: MediaRSSFeedRecord
+): MediaRSSFeed {
   return {
     id: record.id,
     orgId: record.org_id,
@@ -600,7 +610,9 @@ export function transformRSSFeedRecord(record: MediaRSSFeedRecord): MediaRSSFeed
     description: record.description,
     active: record.active,
     fetchFrequencyHours: record.fetch_frequency_hours,
-    lastFetchedAt: record.last_fetched_at ? new Date(record.last_fetched_at) : null,
+    lastFetchedAt: record.last_fetched_at
+      ? new Date(record.last_fetched_at)
+      : null,
     lastFetchError: record.last_fetch_error,
     articlesFound: record.articles_found,
     metadata: record.metadata,
@@ -609,7 +621,9 @@ export function transformRSSFeedRecord(record: MediaRSSFeedRecord): MediaRSSFeed
   };
 }
 
-export function transformCrawlJobRecord(record: MediaCrawlJobRecord): MediaCrawlJob {
+export function transformCrawlJobRecord(
+  record: MediaCrawlJobRecord
+): MediaCrawlJob {
   return {
     id: record.id,
     orgId: record.org_id,
@@ -872,7 +886,9 @@ export interface MediaAlertSignalsOverview {
 // TRANSFORM FUNCTIONS (ALERTS)
 // ========================================
 
-export function transformMediaAlertRuleRecord(record: MediaAlertRuleRecord): MediaAlertRule {
+export function transformMediaAlertRuleRecord(
+  record: MediaAlertRuleRecord
+): MediaAlertRule {
   return {
     id: record.id,
     orgId: record.org_id,
@@ -889,13 +905,17 @@ export function transformMediaAlertRuleRecord(record: MediaAlertRuleRecord): Med
     minMentions: record.min_mentions,
     timeWindowMinutes: record.time_window_minutes,
     minRelevance: record.min_relevance,
-    lastTriggeredAt: record.last_triggered_at ? new Date(record.last_triggered_at) : null,
+    lastTriggeredAt: record.last_triggered_at
+      ? new Date(record.last_triggered_at)
+      : null,
     createdAt: new Date(record.created_at),
     updatedAt: new Date(record.updated_at),
   };
 }
 
-export function transformMediaAlertEventRecord(record: MediaAlertEventRecord): MediaAlertEvent {
+export function transformMediaAlertEventRecord(
+  record: MediaAlertEventRecord
+): MediaAlertEvent {
   return {
     id: record.id,
     orgId: record.org_id,

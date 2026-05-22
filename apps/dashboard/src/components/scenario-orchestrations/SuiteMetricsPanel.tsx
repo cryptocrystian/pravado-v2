@@ -7,7 +7,10 @@
 
 import type { ScenarioSuiteRun, ScenarioSuiteRunItem } from '@pravado/types';
 
-import { formatDuration, getRiskBadgeClass } from '../../lib/scenarioOrchestrationApi';
+import {
+  formatDuration,
+  getRiskBadgeClass,
+} from '../../lib/scenarioOrchestrationApi';
 
 interface SuiteMetricsPanelProps {
   run: ScenarioSuiteRun;
@@ -16,25 +19,39 @@ interface SuiteMetricsPanelProps {
 
 export function SuiteMetricsPanel({ run, items = [] }: SuiteMetricsPanelProps) {
   // Calculate aggregated metrics
-  const totalSteps = items.reduce((sum, item) => sum + (item.stepsExecuted || 0), 0);
-  const totalTokens = items.reduce((sum, item) => sum + (item.tokensUsed || 0), 0);
-  const totalDuration = items.reduce((sum, item) => sum + (item.durationMs || 0), 0);
+  const totalSteps = items.reduce(
+    (sum, item) => sum + (item.stepsExecuted || 0),
+    0
+  );
+  const totalTokens = items.reduce(
+    (sum, item) => sum + (item.tokensUsed || 0),
+    0
+  );
+  const totalDuration = items.reduce(
+    (sum, item) => sum + (item.durationMs || 0),
+    0
+  );
 
-  const completedItems = items.filter(i => i.status === 'completed').length;
-  const failedItems = items.filter(i => i.status === 'failed').length;
-  const skippedItems = items.filter(i => i.status === 'skipped').length;
+  const completedItems = items.filter((i) => i.status === 'completed').length;
+  const failedItems = items.filter((i) => i.status === 'failed').length;
+  const skippedItems = items.filter((i) => i.status === 'skipped').length;
 
   // Risk distribution
-  const riskCounts = items.reduce((acc, item) => {
-    if (item.riskLevel) {
-      acc[item.riskLevel] = (acc[item.riskLevel] || 0) + 1;
-    }
-    return acc;
-  }, {} as Record<string, number>);
+  const riskCounts = items.reduce(
+    (acc, item) => {
+      if (item.riskLevel) {
+        acc[item.riskLevel] = (acc[item.riskLevel] || 0) + 1;
+      }
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   // Condition evaluation stats
-  const conditionsEvaluated = items.filter(i => i.conditionEvaluated).length;
-  const conditionsMet = items.filter(i => i.conditionEvaluated && i.conditionResult).length;
+  const conditionsEvaluated = items.filter((i) => i.conditionEvaluated).length;
+  const conditionsMet = items.filter(
+    (i) => i.conditionEvaluated && i.conditionResult
+  ).length;
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -46,8 +63,18 @@ export function SuiteMetricsPanel({ run, items = [] }: SuiteMetricsPanelProps) {
           label="Total Steps"
           value={totalSteps.toLocaleString()}
           icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+              />
             </svg>
           }
         />
@@ -55,8 +82,18 @@ export function SuiteMetricsPanel({ run, items = [] }: SuiteMetricsPanelProps) {
           label="Total Tokens"
           value={totalTokens.toLocaleString()}
           icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+              />
             </svg>
           }
         />
@@ -64,8 +101,18 @@ export function SuiteMetricsPanel({ run, items = [] }: SuiteMetricsPanelProps) {
           label="Duration"
           value={formatDuration(run.totalDurationMs || totalDuration)}
           icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           }
         />
@@ -73,8 +120,18 @@ export function SuiteMetricsPanel({ run, items = [] }: SuiteMetricsPanelProps) {
           label="Items Run"
           value={`${completedItems + failedItems}/${items.length}`}
           icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
           }
         />
@@ -104,7 +161,7 @@ export function SuiteMetricsPanel({ run, items = [] }: SuiteMetricsPanelProps) {
             Risk Distribution
           </h4>
           <div className="flex gap-2">
-            {['low', 'medium', 'high', 'critical'].map(level => {
+            {['low', 'medium', 'high', 'critical'].map((level) => {
               const count = riskCounts[level] || 0;
               if (count === 0) return null;
               return (
@@ -130,9 +187,7 @@ export function SuiteMetricsPanel({ run, items = [] }: SuiteMetricsPanelProps) {
             <span className="text-gray-600">
               {conditionsEvaluated} evaluated
             </span>
-            <span className="text-green-600">
-              {conditionsMet} met
-            </span>
+            <span className="text-green-600">{conditionsMet} met</span>
             <span className="text-yellow-600">
               {conditionsEvaluated - conditionsMet} not met
             </span>
@@ -144,7 +199,9 @@ export function SuiteMetricsPanel({ run, items = [] }: SuiteMetricsPanelProps) {
       <div className="pt-4 border-t border-gray-100 text-xs text-gray-500">
         <div className="flex justify-between">
           <span>Started</span>
-          <span>{run.startedAt ? new Date(run.startedAt).toLocaleString() : '-'}</span>
+          <span>
+            {run.startedAt ? new Date(run.startedAt).toLocaleString() : '-'}
+          </span>
         </div>
         {run.completedAt && (
           <div className="flex justify-between mt-1">
@@ -195,7 +252,9 @@ function StatusBadge({
   };
 
   return (
-    <div className={`px-2 py-1 rounded text-xs font-medium ${colorClasses[color]}`}>
+    <div
+      className={`px-2 py-1 rounded text-xs font-medium ${colorClasses[color]}`}
+    >
       {label}: {count}
     </div>
   );

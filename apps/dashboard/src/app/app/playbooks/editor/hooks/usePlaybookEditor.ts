@@ -6,9 +6,22 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { addEdge, applyNodeChanges, applyEdgeChanges, type NodeChange, type EdgeChange, type Connection } from 'reactflow';
+import {
+  addEdge,
+  applyNodeChanges,
+  applyEdgeChanges,
+  type NodeChange,
+  type EdgeChange,
+  type Connection,
+} from 'reactflow';
 
-import type { EditorGraph, EditorNode, EditorEdge, EditorState, GraphValidation } from '../types/graph';
+import type {
+  EditorGraph,
+  EditorNode,
+  EditorEdge,
+  EditorState,
+  GraphValidation,
+} from '../types/graph';
 
 export interface UsePlaybookEditorProps {
   initialGraph?: EditorGraph;
@@ -33,7 +46,9 @@ export function usePlaybookEditor(props: UsePlaybookEditorProps = {}) {
   const [error, setError] = useState<string | null>(null);
 
   // Track initial state for dirty checking
-  const [initialState, setInitialState] = useState<EditorGraph | null>(initialGraph || null);
+  const [initialState, setInitialState] = useState<EditorGraph | null>(
+    initialGraph || null
+  );
 
   // Initialize from props
   useEffect(() => {
@@ -51,7 +66,8 @@ export function usePlaybookEditor(props: UsePlaybookEditorProps = {}) {
 
     const currentGraph = { nodes, edges };
     const hasChanged =
-      JSON.stringify(currentGraph.nodes) !== JSON.stringify(initialState.nodes) ||
+      JSON.stringify(currentGraph.nodes) !==
+        JSON.stringify(initialState.nodes) ||
       JSON.stringify(currentGraph.edges) !== JSON.stringify(initialState.edges);
 
     setIsDirty(hasChanged);
@@ -60,32 +76,23 @@ export function usePlaybookEditor(props: UsePlaybookEditorProps = {}) {
   /**
    * Handle node changes (drag, delete, etc.)
    */
-  const handleNodesChange = useCallback(
-    (changes: NodeChange[]) => {
-      setNodes((nds) => applyNodeChanges(changes, nds) as EditorNode[]);
-    },
-    []
-  );
+  const handleNodesChange = useCallback((changes: NodeChange[]) => {
+    setNodes((nds) => applyNodeChanges(changes, nds) as EditorNode[]);
+  }, []);
 
   /**
    * Handle edge changes (delete, etc.)
    */
-  const handleEdgesChange = useCallback(
-    (changes: EdgeChange[]) => {
-      setEdges((eds) => applyEdgeChanges(changes, eds) as EditorEdge[]);
-    },
-    []
-  );
+  const handleEdgesChange = useCallback((changes: EdgeChange[]) => {
+    setEdges((eds) => applyEdgeChanges(changes, eds) as EditorEdge[]);
+  }, []);
 
   /**
    * Handle new connection
    */
-  const handleConnect = useCallback(
-    (connection: Connection) => {
-      setEdges((eds) => addEdge(connection, eds) as EditorEdge[]);
-    },
-    []
-  );
+  const handleConnect = useCallback((connection: Connection) => {
+    setEdges((eds) => addEdge(connection, eds) as EditorEdge[]);
+  }, []);
 
   /**
    * Add a new node to the canvas
@@ -119,7 +126,12 @@ export function usePlaybookEditor(props: UsePlaybookEditorProps = {}) {
   const deleteSelected = useCallback(() => {
     if (selectedNodeId) {
       setNodes((nds) => nds.filter((node) => node.id !== selectedNodeId));
-      setEdges((eds) => eds.filter((edge) => edge.source !== selectedNodeId && edge.target !== selectedNodeId));
+      setEdges((eds) =>
+        eds.filter(
+          (edge) =>
+            edge.source !== selectedNodeId && edge.target !== selectedNodeId
+        )
+      );
       setSelectedNodeId(null);
     } else if (selectedEdgeId) {
       setEdges((eds) => eds.filter((edge) => edge.id !== selectedEdgeId));

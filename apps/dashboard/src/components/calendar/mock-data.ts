@@ -20,7 +20,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'published',
     mode: 'copilot',
     details: {
-      summary: 'Copilot drafted personalized follow-up to TechCrunch reporter after product demo. Sent on schedule.',
+      summary:
+        'Copilot drafted personalized follow-up to TechCrunch reporter after product demo. Sent on schedule.',
       owner: 'AI',
       risk: 'med',
       estimated_duration: '5 min',
@@ -37,7 +38,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'awaiting_approval',
     mode: 'copilot',
     details: {
-      summary: 'SAGE-generated press release for Q1 product launch. Requires human review before distribution.',
+      summary:
+        'SAGE-generated press release for Q1 product launch. Requires human review before distribution.',
       owner: 'AI',
       risk: 'high',
       estimated_duration: '15 min review',
@@ -54,7 +56,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'scheduled',
     mode: 'autopilot',
     details: {
-      summary: 'Automated re-scoring of journalist relationship strength based on recent interactions.',
+      summary:
+        'Automated re-scoring of journalist relationship strength based on recent interactions.',
       owner: 'AI',
       risk: 'low',
       estimated_duration: '3 min',
@@ -71,7 +74,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'drafting',
     mode: 'copilot',
     details: {
-      summary: 'SAGE is generating a briefing deck for the upcoming analyst call. Entity coverage data being pulled.',
+      summary:
+        'SAGE is generating a briefing deck for the upcoming analyst call. Entity coverage data being pulled.',
       owner: 'AI',
       risk: 'high',
       estimated_duration: '20 min',
@@ -88,7 +92,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'planned',
     mode: 'autopilot',
     details: {
-      summary: 'Weekly media monitoring digest covering brand mentions and competitor activity.',
+      summary:
+        'Weekly media monitoring digest covering brand mentions and competitor activity.',
       owner: 'AI',
       risk: 'low',
       estimated_duration: '2 min',
@@ -105,7 +110,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'failed',
     mode: 'autopilot',
     details: {
-      summary: 'Automated outreach email failed — recipient bounce detected. Email address may be outdated.',
+      summary:
+        'Automated outreach email failed — recipient bounce detected. Email address may be outdated.',
       owner: 'AI',
       risk: 'med',
       estimated_duration: '1 min',
@@ -124,7 +130,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'published',
     mode: 'manual',
     details: {
-      summary: 'Manual publish of the Ultimate Guide to Marketing Automation. CiteMind AEO score 82.',
+      summary:
+        'Manual publish of the Ultimate Guide to Marketing Automation. CiteMind AEO score 82.',
       owner: 'User',
       risk: 'med',
       estimated_duration: '5 min',
@@ -141,7 +148,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'drafting',
     mode: 'copilot',
     details: {
-      summary: 'Copilot generating first draft based on SAGE content brief. Targeting AEO score 70+.',
+      summary:
+        'Copilot generating first draft based on SAGE content brief. Targeting AEO score 70+.',
       owner: 'AI',
       risk: 'low',
       estimated_duration: '30 min',
@@ -158,7 +166,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'awaiting_approval',
     mode: 'copilot',
     details: {
-      summary: 'AI-drafted case study ready for editorial review. AEO score preview: 71. Schema markup included.',
+      summary:
+        'AI-drafted case study ready for editorial review. AEO score preview: 71. Schema markup included.',
       owner: 'AI',
       risk: 'med',
       estimated_duration: '10 min review',
@@ -175,7 +184,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'planned',
     mode: 'autopilot',
     details: {
-      summary: 'Generate 5 social posts from the Marketing Automation Guide. Auto-publish to LinkedIn.',
+      summary:
+        'Generate 5 social posts from the Marketing Automation Guide. Auto-publish to LinkedIn.',
       owner: 'AI',
       risk: 'low',
       estimated_duration: '10 min',
@@ -192,7 +202,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'scheduled',
     mode: 'manual',
     details: {
-      summary: 'Weekly newsletter featuring top content. Manually scheduled for Thursday 1pm send.',
+      summary:
+        'Weekly newsletter featuring top content. Manually scheduled for Thursday 1pm send.',
       owner: 'User',
       risk: 'med',
       estimated_duration: '2 min',
@@ -209,7 +220,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'failed',
     mode: 'autopilot',
     details: {
-      summary: 'Attempted to deploy NewsArticle schema to 3 blog posts. CMS API returned 429 rate limit.',
+      summary:
+        'Attempted to deploy NewsArticle schema to 3 blog posts. CMS API returned 429 rate limit.',
       owner: 'AI',
       risk: 'low',
       estimated_duration: '1 min',
@@ -228,7 +240,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'published',
     mode: 'autopilot',
     details: {
-      summary: 'Deployed Organization JSON-LD to homepage and 11 landing pages. AEO impact: +8 pts.',
+      summary:
+        'Deployed Organization JSON-LD to homepage and 11 landing pages. AEO impact: +8 pts.',
       owner: 'AI',
       risk: 'low',
       estimated_duration: '5 min',
@@ -245,7 +258,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'scheduled',
     mode: 'autopilot',
     details: {
-      summary: 'Automated daily scan for new AI citations across ChatGPT, Perplexity, and Gemini.',
+      summary:
+        'Automated daily scan for new AI citations across ChatGPT, Perplexity, and Gemini.',
       owner: 'AI',
       risk: 'low',
       estimated_duration: '8 min',
@@ -262,7 +276,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'awaiting_approval',
     mode: 'copilot',
     details: {
-      summary: 'SAGE proposes repairing incomplete FAQ schema on 3 support pages. Estimated AEO impact: +5 pts.',
+      summary:
+        'SAGE proposes repairing incomplete FAQ schema on 3 support pages. Estimated AEO impact: +5 pts.',
       owner: 'AI',
       risk: 'low',
       estimated_duration: '3 min',
@@ -279,7 +294,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'planned',
     mode: 'manual',
     details: {
-      summary: 'Manual performance optimization for 8 landing pages with LCP > 4s. DevOps coordination required.',
+      summary:
+        'Manual performance optimization for 8 landing pages with LCP > 4s. DevOps coordination required.',
       owner: 'User',
       risk: 'med',
       estimated_duration: '2 hours',
@@ -296,7 +312,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'scheduled',
     mode: 'autopilot',
     details: {
-      summary: 'Send IndexNow pings for 5 recently updated blog posts to accelerate re-indexing.',
+      summary:
+        'Send IndexNow pings for 5 recently updated blog posts to accelerate re-indexing.',
       owner: 'AI',
       risk: 'low',
       estimated_duration: '1 min',
@@ -313,7 +330,8 @@ export const MOCK_CALENDAR_ITEMS: CalendarItem[] = [
     status: 'drafting',
     mode: 'copilot',
     details: {
-      summary: 'Generating unique meta descriptions for 7 blog posts with duplicate metadata. Entity-rich copy.',
+      summary:
+        'Generating unique meta descriptions for 7 blog posts with duplicate metadata. Entity-rich copy.',
       owner: 'AI',
       risk: 'low',
       estimated_duration: '15 min',

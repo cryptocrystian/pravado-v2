@@ -34,43 +34,43 @@ I benchmarked against: Notion, Google Docs, Craft, Medium, Linear (for structure
 
 ### 2.1 Table-Stakes Features We're Missing
 
-| Feature | Notion | Docs | Craft | Medium | Us |
-|---------|--------|------|-------|--------|-----|
-| Block-based rich text editor | Yes | Yes | Yes | Yes | **No** (textarea) |
-| Slash commands (/, /h1, /image) | Yes | No | Yes | No | **No** |
-| Inline formatting toolbar (floating) | Yes | Yes | Yes | Yes | **No** (static stub) |
-| Heading hierarchy + outline nav | Yes | Yes | Yes | Yes | **No** |
-| Inline comments / suggestions | Yes | Yes | No | No | **No** |
-| Version history with diff view | Yes | Yes | Yes | No | **No** |
-| Real-time collaboration cursors | Yes | Yes | Yes | No | **No** |
-| Auto-save with "Saving..." indicator | Yes | Yes | Yes | Yes | **No** |
-| Word count / reading time in editor | Yes | Yes | Yes | Yes | **No** |
-| Media embedding (images, video) | Yes | Yes | Yes | Yes | **No** |
-| Keyboard shortcuts for formatting | Yes | Yes | Yes | Yes | **No** |
-| Full-screen / distraction-free mode | No | No | Yes | Yes | **No** |
-| Template system for new content | Yes | Yes | Yes | No | **No** |
-| Drag-and-drop content blocks | Yes | No | Yes | No | **No** |
-| Table of contents / document outline | Yes | Yes | Yes | No | **No** |
-| Search within document | Yes | Yes | Yes | Yes | **No** |
-| Export (Markdown, PDF, HTML) | Yes | Yes | Yes | Yes | **No** |
-| Link preview / unfurling | Yes | Yes | Yes | Yes | **No** |
+| Feature                              | Notion | Docs | Craft | Medium | Us                   |
+| ------------------------------------ | ------ | ---- | ----- | ------ | -------------------- |
+| Block-based rich text editor         | Yes    | Yes  | Yes   | Yes    | **No** (textarea)    |
+| Slash commands (/, /h1, /image)      | Yes    | No   | Yes   | No     | **No**               |
+| Inline formatting toolbar (floating) | Yes    | Yes  | Yes   | Yes    | **No** (static stub) |
+| Heading hierarchy + outline nav      | Yes    | Yes  | Yes   | Yes    | **No**               |
+| Inline comments / suggestions        | Yes    | Yes  | No    | No     | **No**               |
+| Version history with diff view       | Yes    | Yes  | Yes   | No     | **No**               |
+| Real-time collaboration cursors      | Yes    | Yes  | Yes   | No     | **No**               |
+| Auto-save with "Saving..." indicator | Yes    | Yes  | Yes   | Yes    | **No**               |
+| Word count / reading time in editor  | Yes    | Yes  | Yes   | Yes    | **No**               |
+| Media embedding (images, video)      | Yes    | Yes  | Yes   | Yes    | **No**               |
+| Keyboard shortcuts for formatting    | Yes    | Yes  | Yes   | Yes    | **No**               |
+| Full-screen / distraction-free mode  | No     | No   | Yes   | Yes    | **No**               |
+| Template system for new content      | Yes    | Yes  | Yes   | No     | **No**               |
+| Drag-and-drop content blocks         | Yes    | No   | Yes   | No     | **No**               |
+| Table of contents / document outline | Yes    | Yes  | Yes   | No     | **No**               |
+| Search within document               | Yes    | Yes  | Yes   | Yes    | **No**               |
+| Export (Markdown, PDF, HTML)         | Yes    | Yes  | Yes   | Yes    | **No**               |
+| Link preview / unfurling             | Yes    | Yes  | Yes   | Yes    | **No**               |
 
 **Verdict: We have zero of the 18 table-stakes editor features.**
 
 ### 2.2 Table-Stakes Workflow Features We're Missing
 
-| Feature | Best-in-class example | Us |
-|---------|----------------------|-----|
-| Content list with search + sort + bulk actions | Notion database view | Partial (library view, basic) |
-| Status-based kanban view | Linear, Notion | **No** |
-| Content templates / blueprints | Notion, Webflow | **No** |
-| Duplicate content item | Every platform | **No** |
-| Archive / soft delete with undo | Every platform | **No** |
-| Assign content to team members | Notion, Linear, Asana | **No** |
-| Due date with reminder | Every PM tool | **No** |
-| Content preview (how it looks published) | Webflow, WordPress | **No** |
-| Publish / unpublish toggle | Every CMS | **No** |
-| SEO metadata editor (title, description, OG) | WordPress, Webflow | **No** |
+| Feature                                        | Best-in-class example | Us                            |
+| ---------------------------------------------- | --------------------- | ----------------------------- |
+| Content list with search + sort + bulk actions | Notion database view  | Partial (library view, basic) |
+| Status-based kanban view                       | Linear, Notion        | **No**                        |
+| Content templates / blueprints                 | Notion, Webflow       | **No**                        |
+| Duplicate content item                         | Every platform        | **No**                        |
+| Archive / soft delete with undo                | Every platform        | **No**                        |
+| Assign content to team members                 | Notion, Linear, Asana | **No**                        |
+| Due date with reminder                         | Every PM tool         | **No**                        |
+| Content preview (how it looks published)       | Webflow, WordPress    | **No**                        |
+| Publish / unpublish toggle                     | Every CMS             | **No**                        |
+| SEO metadata editor (title, description, OG)   | WordPress, Webflow    | **No**                        |
 
 ---
 
@@ -142,13 +142,13 @@ This mirrors how Notion, Google Docs, and Craft let you navigate long documents.
 
 Not a generic "context rail". A **contextual intelligence panel** that changes based on what's happening:
 
-| User State | Intelligence Margin Shows |
-|------------|--------------------------|
-| Writing a paragraph | Relevant SAGE signals for this section's topic |
-| Selecting text | Inline suggestions: "Strengthen claim", "Add citation" |
-| Viewing a CiteMind flag | The specific issue, suggested fix, one-click resolve |
+| User State               | Intelligence Margin Shows                                 |
+| ------------------------ | --------------------------------------------------------- |
+| Writing a paragraph      | Relevant SAGE signals for this section's topic            |
+| Selecting text           | Inline suggestions: "Strengthen claim", "Add citation"    |
+| Viewing a CiteMind flag  | The specific issue, suggested fix, one-click resolve      |
 | Reviewing before publish | Full CiteMind report, authority score, derivative preview |
-| Idle / overview | Entity associations, cross-pillar hooks, derivatives |
+| Idle / overview          | Entity associations, cross-pillar hooks, derivatives      |
 
 The key principle: **the rail responds to the writer's current focus, not a static dashboard**.
 
@@ -156,17 +156,17 @@ The key principle: **the rail responds to the writer's current focus, not a stat
 
 Canon requires "structured sections, not freeform." This doesn't mean a rigid form -- it means semantically meaningful blocks:
 
-| Block Type | Purpose | CiteMind Behavior |
-|------------|---------|-------------------|
-| Heading | Section structure | Scanned for entity alignment |
-| Paragraph | Body content | Claim verification active |
-| Claim Block | Explicit factual assertion | **Required** citation source |
-| Citation Block | Source reference | Verified against CiteMind DB |
-| Quote | External voice | Source attribution required |
-| Callout | Key insight / highlight | Flagged if unsubstantiated |
-| Data / Stat | Numerical claim | Source verification required |
-| Image | Visual content | Alt text + entity association |
-| Embed | External content | Source tracking |
+| Block Type     | Purpose                    | CiteMind Behavior             |
+| -------------- | -------------------------- | ----------------------------- |
+| Heading        | Section structure          | Scanned for entity alignment  |
+| Paragraph      | Body content               | Claim verification active     |
+| Claim Block    | Explicit factual assertion | **Required** citation source  |
+| Citation Block | Source reference           | Verified against CiteMind DB  |
+| Quote          | External voice             | Source attribution required   |
+| Callout        | Key insight / highlight    | Flagged if unsubstantiated    |
+| Data / Stat    | Numerical claim            | Source verification required  |
+| Image          | Visual content             | Alt text + entity association |
+| Embed          | External content           | Source tracking               |
 
 The critical innovation: **Claim Blocks and Citation Blocks are first-class editor primitives**, not afterthoughts. When a writer makes a factual assertion, they can wrap it in a Claim Block that CiteMind actively governs. This is how we differentiate from every other editor.
 
@@ -195,6 +195,7 @@ SAGE should feel like a **thoughtful editor sitting beside you** -- not a dashbo
 ```
 
 These appear contextually based on what the writer is writing about. They are:
+
 - Dismissible (never blocking)
 - Traceable (always show source signal and confidence)
 - Actionable (link to data or suggest a specific edit)
@@ -251,6 +252,7 @@ AUTOMATE should be **invisible until needed** -- the user should never feel like
 ### 6.1 Manual Mode (Default for Content)
 
 The user doesn't see "Manual Mode" anywhere prominent. They just write. The experience is:
+
 - They open a document. They write.
 - AI assists on demand (slash commands, formatting suggestions)
 - CiteMind runs checks in the background, shows results inline
@@ -274,6 +276,7 @@ The key: **AI text is always visually distinct until the human accepts it.** Thi
 ### 6.3 Autopilot Mode (Content: Limited)
 
 Per canon, content autopilot is restricted to:
+
 - Quality analysis (can run automatically)
 - Optimization suggestions (can appear automatically)
 - Derivative generation (can run automatically after publish)

@@ -9,5 +9,8 @@ export { CreateStrategicReportDialog } from './CreateStrategicReportDialog';
 export { StrategicReportHeader } from './StrategicReportHeader';
 export { StrategicSectionEditor } from './StrategicSectionEditor';
 export { StrategicInsightsPanel } from './StrategicInsightsPanel';
-export { StrategicSourcesList, StrategicSourcesCompact } from './StrategicSourcesList';
+export {
+  StrategicSourcesList,
+  StrategicSourcesCompact,
+} from './StrategicSourcesList';
 export { StrategicAuditLogTimeline } from './StrategicAuditLogTimeline';

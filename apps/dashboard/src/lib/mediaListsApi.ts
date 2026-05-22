@@ -29,7 +29,9 @@ async function apiFetch(endpoint: string, options?: RequestInit) {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Request failed' }));
+    const error = await response
+      .json()
+      .catch(() => ({ message: 'Request failed' }));
     throw new Error(error.message || `HTTP ${response.status}`);
   }
 
@@ -72,9 +74,7 @@ export async function createMediaList(
 /**
  * List all media lists with pagination
  */
-export async function listMediaLists(
-  query?: MediaListQuery
-): Promise<{
+export async function listMediaLists(query?: MediaListQuery): Promise<{
   lists: MediaListSummary[];
   pagination: {
     total: number;
@@ -89,8 +89,10 @@ export async function listMediaLists(
   if (query?.createdBy) params.append('createdBy', query.createdBy);
   if (query?.sortBy) params.append('sortBy', query.sortBy);
   if (query?.sortOrder) params.append('sortOrder', query.sortOrder);
-  if (query?.limit !== undefined) params.append('limit', query.limit.toString());
-  if (query?.offset !== undefined) params.append('offset', query.offset.toString());
+  if (query?.limit !== undefined)
+    params.append('limit', query.limit.toString());
+  if (query?.offset !== undefined)
+    params.append('offset', query.offset.toString());
 
   const queryString = params.toString();
   return apiFetch(`/${queryString ? `?${queryString}` : ''}`);
@@ -119,7 +121,9 @@ export async function updateMediaList(
 /**
  * Delete a media list
  */
-export async function deleteMediaList(id: string): Promise<{ success: boolean }> {
+export async function deleteMediaList(
+  id: string
+): Promise<{ success: boolean }> {
   return apiFetch(`/${id}`, {
     method: 'DELETE',
   });
@@ -142,16 +146,19 @@ export async function getMediaListEntries(
   const params = new URLSearchParams();
   if (query?.tier) {
     if (Array.isArray(query.tier)) {
-      query.tier.forEach(tier => params.append('tier', tier));
+      query.tier.forEach((tier) => params.append('tier', tier));
     } else {
       params.append('tier', query.tier);
     }
   }
-  if (query?.minFitScore !== undefined) params.append('minFitScore', query.minFitScore.toString());
+  if (query?.minFitScore !== undefined)
+    params.append('minFitScore', query.minFitScore.toString());
   if (query?.sortBy) params.append('sortBy', query.sortBy);
   if (query?.sortOrder) params.append('sortOrder', query.sortOrder);
-  if (query?.limit !== undefined) params.append('limit', query.limit.toString());
-  if (query?.offset !== undefined) params.append('offset', query.offset.toString());
+  if (query?.limit !== undefined)
+    params.append('limit', query.limit.toString());
+  if (query?.offset !== undefined)
+    params.append('offset', query.offset.toString());
 
   const queryString = params.toString();
   return apiFetch(`/${listId}/entries${queryString ? `?${queryString}` : ''}`);

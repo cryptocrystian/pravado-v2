@@ -18,17 +18,17 @@ Sprint S82 implemented the Pravado Design System v2 across the dashboard's auth 
 
 All design tokens are declared as CSS custom properties in `:root`:
 
-| Token Category | Variables | Status |
-|----------------|-----------|--------|
-| Slate Neutrals | `--slate-0` through `--slate-6`, `--white-0` | ✅ Implemented |
-| Brand Accents | `--brand-iris`, `--brand-cyan`, `--brand-teal`, `--brand-magenta`, `--brand-amber` | ✅ Implemented |
-| Semantic Colors | `--semantic-info`, `--semantic-success`, `--semantic-warning`, `--semantic-danger` | ✅ Implemented |
-| Page/Panel Aliases | `--page-bg`, `--panel-bg`, `--text`, `--muted`, `--border-subtle` | ✅ Implemented |
-| Radii | `--radius-xs` through `--radius-2xl` | ✅ Implemented |
-| Shadows/Elevation | `--elev-0` through `--elev-3`, `--shadow-panel` | ✅ Implemented |
-| Motion | `--motion-duration-xs/sm/md/lg`, `--motion-ease-standard/emphatic` | ✅ Implemented |
-| Z-Index | `--z-base`, `--z-nav`, `--z-modal`, `--z-popover`, `--z-toast` | ✅ Implemented |
-| Gradients | `--grad-hero`, `--grad-warm` | ✅ Implemented |
+| Token Category     | Variables                                                                          | Status         |
+| ------------------ | ---------------------------------------------------------------------------------- | -------------- |
+| Slate Neutrals     | `--slate-0` through `--slate-6`, `--white-0`                                       | ✅ Implemented |
+| Brand Accents      | `--brand-iris`, `--brand-cyan`, `--brand-teal`, `--brand-magenta`, `--brand-amber` | ✅ Implemented |
+| Semantic Colors    | `--semantic-info`, `--semantic-success`, `--semantic-warning`, `--semantic-danger` | ✅ Implemented |
+| Page/Panel Aliases | `--page-bg`, `--panel-bg`, `--text`, `--muted`, `--border-subtle`                  | ✅ Implemented |
+| Radii              | `--radius-xs` through `--radius-2xl`                                               | ✅ Implemented |
+| Shadows/Elevation  | `--elev-0` through `--elev-3`, `--shadow-panel`                                    | ✅ Implemented |
+| Motion             | `--motion-duration-xs/sm/md/lg`, `--motion-ease-standard/emphatic`                 | ✅ Implemented |
+| Z-Index            | `--z-base`, `--z-nav`, `--z-modal`, `--z-popover`, `--z-toast`                     | ✅ Implemented |
+| Gradients          | `--grad-hero`, `--grad-warm`                                                       | ✅ Implemented |
 
 ### 2. Tailwind Integration
 
@@ -56,20 +56,20 @@ transitionDuration: { xs, sm, md, lg }
 
 Pre-built component classes for consistent styling:
 
-| Class | Purpose |
-|-------|---------|
-| `.btn-primary` | Primary iris button with hover states |
-| `.btn-secondary` | Secondary slate button |
-| `.btn-ghost` | Transparent ghost button |
-| `.btn-oauth` | OAuth provider buttons (Google, Microsoft) |
-| `.input-field` | Form input with cyan focus ring |
-| `.auth-card` | Auth page card with blur backdrop |
-| `.panel-card` | Standard panel card |
-| `.alert-error` | Error message styling |
-| `.alert-success` | Success message styling |
-| `.alert-info` | Info message styling |
-| `.ai-dot` / `.ai-dot-analyzing` / `.ai-dot-generating` | AI presence indicators |
-| `.badge-confidence-*` | Confidence level badges |
+| Class                                                  | Purpose                                    |
+| ------------------------------------------------------ | ------------------------------------------ |
+| `.btn-primary`                                         | Primary iris button with hover states      |
+| `.btn-secondary`                                       | Secondary slate button                     |
+| `.btn-ghost`                                           | Transparent ghost button                   |
+| `.btn-oauth`                                           | OAuth provider buttons (Google, Microsoft) |
+| `.input-field`                                         | Form input with cyan focus ring            |
+| `.auth-card`                                           | Auth page card with blur backdrop          |
+| `.panel-card`                                          | Standard panel card                        |
+| `.alert-error`                                         | Error message styling                      |
+| `.alert-success`                                       | Success message styling                    |
+| `.alert-info`                                          | Info message styling                       |
+| `.ai-dot` / `.ai-dot-analyzing` / `.ai-dot-generating` | AI presence indicators                     |
+| `.badge-confidence-*`                                  | Confidence level badges                    |
 
 ### 4. Theme Configuration
 
@@ -85,17 +85,18 @@ Pre-built component classes for consistent styling:
 
 ### Fully Aligned ✅
 
-| Route | File | Changes |
-|-------|------|---------|
-| `/login` | `apps/dashboard/src/app/login/page.tsx` | Complete redesign with dark theme, brand colors, OAuth buttons, AI presence dots |
-| `/onboarding` | `apps/dashboard/src/app/onboarding/page.tsx` | Dark theme, brand colors, step indicator, AI hints |
-| `/app/*` (shell) | `apps/dashboard/src/app/app/layout.tsx` | Dark sidebar, brand colors, AI status, icon-based navigation |
+| Route            | File                                         | Changes                                                                          |
+| ---------------- | -------------------------------------------- | -------------------------------------------------------------------------------- |
+| `/login`         | `apps/dashboard/src/app/login/page.tsx`      | Complete redesign with dark theme, brand colors, OAuth buttons, AI presence dots |
+| `/onboarding`    | `apps/dashboard/src/app/onboarding/page.tsx` | Dark theme, brand colors, step indicator, AI hints                               |
+| `/app/*` (shell) | `apps/dashboard/src/app/app/layout.tsx`      | Dark sidebar, brand colors, AI status, icon-based navigation                     |
 
 ### Before/After Comparison
 
 #### Login Page
 
 **BEFORE:**
+
 - Light gray background (`bg-gray-50`)
 - White card with gray text
 - Blue primary buttons (`bg-blue-600`)
@@ -104,6 +105,7 @@ Pre-built component classes for consistent styling:
 - Generic styling
 
 **AFTER:**
+
 - Dark slate background (`bg-page` / `--slate-0`)
 - Translucent card with backdrop blur (`auth-card`)
 - Iris primary buttons (`bg-brand-iris`)
@@ -115,12 +117,14 @@ Pre-built component classes for consistent styling:
 #### Onboarding Page
 
 **BEFORE:**
+
 - Light gray background
 - White card
 - Blue buttons
 - Generic form styling
 
 **AFTER:**
+
 - Dark slate background with teal gradient
 - Translucent auth card
 - Iris primary button
@@ -131,12 +135,14 @@ Pre-built component classes for consistent styling:
 #### App Shell
 
 **BEFORE:**
+
 - White sidebar with gray borders
 - Emoji icons (📊, 📰, etc.)
 - Blue active states (`bg-blue-50`)
 - Light theme throughout
 
 **AFTER:**
+
 - Dark slate sidebar (`bg-slate-1`)
 - SVG icons with hover effects
 - Cyan accent on hover
@@ -153,18 +159,18 @@ Pre-built component classes for consistent styling:
 
 These pages still use legacy styling (gray/blue colors, light backgrounds):
 
-| Route | Priority | Notes |
-|-------|----------|-------|
-| `/app/page.tsx` | High | Main dashboard page |
-| `/app/pr/page.tsx` | High | PR pillar page |
-| `/app/content/page.tsx` | High | Content pillar page |
-| `/app/seo/page.tsx` | High | SEO pillar page |
-| `/app/playbooks/page.tsx` | Medium | Playbooks page |
-| `/app/agents/page.tsx` | Medium | Agents page |
-| `/app/team/page.tsx` | Medium | Team settings |
-| `/app/analytics/page.tsx` | Low | Analytics page |
-| `/app/billing/*` | Medium | Billing pages |
-| `/app/admin/*` | Low | Admin pages |
+| Route                     | Priority | Notes               |
+| ------------------------- | -------- | ------------------- |
+| `/app/page.tsx`           | High     | Main dashboard page |
+| `/app/pr/page.tsx`        | High     | PR pillar page      |
+| `/app/content/page.tsx`   | High     | Content pillar page |
+| `/app/seo/page.tsx`       | High     | SEO pillar page     |
+| `/app/playbooks/page.tsx` | Medium   | Playbooks page      |
+| `/app/agents/page.tsx`    | Medium   | Agents page         |
+| `/app/team/page.tsx`      | Medium   | Team settings       |
+| `/app/analytics/page.tsx` | Low      | Analytics page      |
+| `/app/billing/*`          | Medium   | Billing pages       |
+| `/app/admin/*`            | Low      | Admin pages         |
 
 ### Components Needing Updates
 
@@ -189,13 +195,13 @@ Some files may still contain hardcoded Tailwind colors:
 
 ## Accessibility Status
 
-| Requirement | Status |
-|-------------|--------|
+| Requirement            | Status                        |
+| ---------------------- | ----------------------------- |
 | Focus rings (2px cyan) | ✅ Implemented in globals.css |
-| Color contrast ≥4.5:1 | ✅ DS tokens enforce this |
-| prefers-reduced-motion | ✅ Disables AI pulse/shimmer |
-| Keyboard navigation | ⚠️ Needs testing |
-| ARIA labels | ✅ Added to AI presence dots |
+| Color contrast ≥4.5:1  | ✅ DS tokens enforce this     |
+| prefers-reduced-motion | ✅ Disables AI pulse/shimmer  |
+| Keyboard navigation    | ⚠️ Needs testing              |
+| ARIA labels            | ✅ Added to AI presence dots  |
 
 ---
 
@@ -210,14 +216,14 @@ Some files may still contain hardcoded Tailwind colors:
 
 ## File Changes Summary (S82)
 
-| File | Action |
-|------|--------|
-| `apps/dashboard/src/app/globals.css` | **Rewritten** - Full DS token implementation |
-| `apps/dashboard/tailwind.config.ts` | **Rewritten** - DS theme extension |
-| `apps/dashboard/src/app/layout.tsx` | **Updated** - Dark mode, Inter font |
-| `apps/dashboard/src/app/login/page.tsx` | **Rewritten** - DS styling, OAuth |
-| `apps/dashboard/src/app/onboarding/page.tsx` | **Rewritten** - DS styling |
-| `apps/dashboard/src/app/app/layout.tsx` | **Rewritten** - DS app shell |
-| `docs/SUPABASE_AUTH_TODO_S82.md` | **Created** - Auth config instructions |
-| `docs/SUPABASE_EMAIL_TEMPLATES_PRAVADO.md` | **Created** - Brand email templates |
-| `docs/DESIGN_SYSTEM_ALIGNMENT_S82.md` | **Created** - This report |
+| File                                         | Action                                       |
+| -------------------------------------------- | -------------------------------------------- |
+| `apps/dashboard/src/app/globals.css`         | **Rewritten** - Full DS token implementation |
+| `apps/dashboard/tailwind.config.ts`          | **Rewritten** - DS theme extension           |
+| `apps/dashboard/src/app/layout.tsx`          | **Updated** - Dark mode, Inter font          |
+| `apps/dashboard/src/app/login/page.tsx`      | **Rewritten** - DS styling, OAuth            |
+| `apps/dashboard/src/app/onboarding/page.tsx` | **Rewritten** - DS styling                   |
+| `apps/dashboard/src/app/app/layout.tsx`      | **Rewritten** - DS app shell                 |
+| `docs/SUPABASE_AUTH_TODO_S82.md`             | **Created** - Auth config instructions       |
+| `docs/SUPABASE_EMAIL_TEMPLATES_PRAVADO.md`   | **Created** - Brand email templates          |
+| `docs/DESIGN_SYSTEM_ALIGNMENT_S82.md`        | **Created** - This report                    |

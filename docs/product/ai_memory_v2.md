@@ -53,6 +53,7 @@ This system is the foundation for contextual awareness and learning in multi-age
 General knowledge and learned patterns that persist across playbook runs.
 
 **Properties:**
+
 - `type`: `"semantic"`
 - `content`: Flexible JSON structure
 - `embedding`: 1536-dimensional vector for similarity search
@@ -61,11 +62,13 @@ General knowledge and learned patterns that persist across playbook runs.
 - `ttlSeconds`: Optional expiry time (null = permanent)
 
 **Storage Trigger:**
+
 - Step output includes `memoryWorthy: true`
 - Step config includes `captureMemory: true`
 - Importance score above threshold
 
 **Example:**
+
 ```json
 {
   "type": "semantic",
@@ -84,6 +87,7 @@ General knowledge and learned patterns that persist across playbook runs.
 Step-by-step execution traces recording what happened during a playbook run.
 
 **Properties:**
+
 - `runId`: Reference to playbook run
 - `stepKey`: Key of the step that generated this trace
 - `content`: Input, output, step type, timestamp
@@ -91,9 +95,11 @@ Step-by-step execution traces recording what happened during a playbook run.
 - `createdAt`: Timestamp
 
 **Storage Trigger:**
+
 - Automatically saved after every step execution
 
 **Example:**
+
 ```json
 {
   "stepKey": "research_keywords",
@@ -121,6 +127,7 @@ Step-by-step execution traces recording what happened during a playbook run.
 ### Importance Scoring
 
 Importance score (0-1) influences retrieval ranking:
+
 - **0.0-0.3**: Low importance (transient data, logging)
 - **0.4-0.6**: Medium importance (standard step outputs)
 - **0.7-0.9**: High importance (key insights, decisions)
@@ -174,18 +181,21 @@ The `ContextAssembler` builds comprehensive context for each agent step:
 Memories can be linked to entities across Pravado pillars:
 
 **Supported Entity Types:**
+
 - `keyword` → SEO keywords
 - `journalist` → PR journalists
 - `content_item` → SEO content pieces
 - `pr_list` → PR distribution lists
 
 **Link Properties:**
+
 - `memoryId`: UUID of memory
 - `entityType`: Type of entity
 - `entityId`: UUID of entity
 - `weight`: Link strength (0+, default 1.0)
 
 **Use Cases:**
+
 - Link keyword research insights to specific keywords
 - Link journalist outreach patterns to journalist profiles
 - Link content performance data to content items
@@ -201,6 +211,7 @@ Memory pruning prevents database bloat and maintains quality:
 Memories with `ttlSeconds` set are automatically pruned after expiry.
 
 **Recommended TTLs:**
+
 - Transient logging: 3600 (1 hour)
 - Session data: 86400 (1 day)
 - Weekly insights: 604800 (7 days)
@@ -214,7 +225,7 @@ Memories below importance threshold can be pruned during cleanup:
 await memoryStore.pruneMemory(orgId, {
   expiredOnly: false,
   minImportance: 0.3,
-  limit: 100
+  limit: 100,
 });
 ```
 
@@ -229,6 +240,7 @@ GET /api/v1/memory/search?q=keyword+research&limit=10
 ```
 
 **Query Parameters:**
+
 - `q`: Text search query
 - `embedding`: JSON array of 1536 floats
 - `limit`: Max results (default: 10, max: 100)
@@ -236,6 +248,7 @@ GET /api/v1/memory/search?q=keyword+research&limit=10
 - `memoryType`: Filter by `semantic` or `episodic`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -253,6 +266,7 @@ GET /api/v1/playbook-runs/:id/memory
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -322,6 +336,7 @@ The playbook detail page includes a "Memory Debug" tab showing:
   - Memory count by type
 
 **Access:**
+
 1. Navigate to playbook detail page
 2. Click "Debug Memory" button to run with memory tracking
 3. Switch to "Memory Debug" tab
@@ -381,25 +396,29 @@ The playbook detail page includes a "Memory Debug" tab showing:
 ### Memory Not Being Retrieved
 
 **Possible causes:**
+
 - Embedding similarity too low (adjust `minRelevance`)
 - No memories stored yet (check database)
 - Importance score too low (increase importance when saving)
 
 **Solution:**
+
 ```typescript
 // Lower relevance threshold
 const result = await memoryRetrieval.retrieveSemanticMemory(orgId, embedding, {
-  minRelevance: 0.3
+  minRelevance: 0.3,
 });
 ```
 
 ### Token Budget Exceeded
 
 **Possible causes:**
+
 - Too many episodic traces in current run
 - Large shared state objects
 
 **Solution:**
+
 ```typescript
 // Trim context to fit budget
 const trimmedContext = contextAssembler.trimContextToFit(context, 6000);
@@ -408,10 +427,12 @@ const trimmedContext = contextAssembler.trimContextToFit(context, 6000);
 ### Pruning Removes Important Memories
 
 **Possible causes:**
+
 - Importance threshold too high
 - TTL set too short
 
 **Solution:**
+
 ```typescript
 // Increase importance for critical memories
 await memoryStore.saveSemanticMemory(orgId, content, embedding, 0.9, 'system');

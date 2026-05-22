@@ -127,20 +127,29 @@ export class AudiencePersonaService {
     const updateData: any = {};
 
     if (input.name !== undefined) updateData.name = input.name.trim();
-    if (input.description !== undefined) updateData.description = input.description;
-    if (input.personaType !== undefined) updateData.persona_type = input.personaType;
+    if (input.description !== undefined)
+      updateData.description = input.description;
+    if (input.personaType !== undefined)
+      updateData.persona_type = input.personaType;
     if (input.role !== undefined) updateData.role = input.role;
     if (input.industry !== undefined) updateData.industry = input.industry;
-    if (input.companySize !== undefined) updateData.company_size = input.companySize;
-    if (input.seniorityLevel !== undefined) updateData.seniority_level = input.seniorityLevel;
+    if (input.companySize !== undefined)
+      updateData.company_size = input.companySize;
+    if (input.seniorityLevel !== undefined)
+      updateData.seniority_level = input.seniorityLevel;
     if (input.location !== undefined) updateData.location = input.location;
     if (input.tags !== undefined) updateData.tags = input.tags;
-    if (input.customFields !== undefined) updateData.custom_fields = input.customFields;
-    if (input.relevanceScore !== undefined) updateData.relevance_score = input.relevanceScore;
-    if (input.engagementScore !== undefined) updateData.engagement_score = input.engagementScore;
-    if (input.alignmentScore !== undefined) updateData.alignment_score = input.alignmentScore;
+    if (input.customFields !== undefined)
+      updateData.custom_fields = input.customFields;
+    if (input.relevanceScore !== undefined)
+      updateData.relevance_score = input.relevanceScore;
+    if (input.engagementScore !== undefined)
+      updateData.engagement_score = input.engagementScore;
+    if (input.alignmentScore !== undefined)
+      updateData.alignment_score = input.alignmentScore;
     if (input.status !== undefined) updateData.status = input.status;
-    if (input.isValidated !== undefined) updateData.is_validated = input.isValidated;
+    if (input.isValidated !== undefined)
+      updateData.is_validated = input.isValidated;
 
     updateData.updated_at = new Date().toISOString();
 
@@ -167,7 +176,10 @@ export class AudiencePersonaService {
   /**
    * Get a single persona by ID
    */
-  async getPersona(orgId: string, personaId: string): Promise<AudiencePersona | null> {
+  async getPersona(
+    orgId: string,
+    personaId: string
+  ): Promise<AudiencePersona | null> {
     const { data, error } = await this.supabase
       .from('audience_personas')
       .select('*')
@@ -185,7 +197,10 @@ export class AudiencePersonaService {
   /**
    * Get persona detail with traits, insights, and history
    */
-  async getPersonaDetail(orgId: string, personaId: string): Promise<PersonaDetailResponse> {
+  async getPersonaDetail(
+    orgId: string,
+    personaId: string
+  ): Promise<PersonaDetailResponse> {
     const persona = await this.getPersona(orgId, personaId);
     if (!persona) {
       throw new Error('Persona not found');
@@ -204,7 +219,9 @@ export class AudiencePersonaService {
     const insightSummary = await this.getInsightSummary(orgId, personaId);
 
     // Get recent history (last 10 snapshots)
-    const historyResponse = await this.getPersonaHistory(orgId, personaId, { limit: 10 });
+    const historyResponse = await this.getPersonaHistory(orgId, personaId, {
+      limit: 10,
+    });
 
     return {
       persona,
@@ -219,7 +236,10 @@ export class AudiencePersonaService {
   /**
    * List personas with filtering and pagination
    */
-  async listPersonas(orgId: string, query: PersonasQuery): Promise<PersonasListResponse> {
+  async listPersonas(
+    orgId: string,
+    query: PersonasQuery
+  ): Promise<PersonasListResponse> {
     let dbQuery = this.supabase
       .from('audience_personas')
       .select('*', { count: 'exact' })
@@ -333,18 +353,24 @@ export class AudiencePersonaService {
     insights: AudiencePersonaInsight[];
     extraction: ExtractionResult;
   }> {
-    logger.info('Generating persona with LLM', { orgId, sourceType: context.sourceType });
+    logger.info('Generating persona with LLM', {
+      orgId,
+      sourceType: context.sourceType,
+    });
 
     // Extract persona attributes using LLM
     const extraction = await this.extractWithLLM(context);
 
     // Create persona
     const personaInput: CreatePersonaInput = {
-      name: context.suggestedName || this.generateDefaultPersonaName(extraction),
+      name:
+        context.suggestedName || this.generateDefaultPersonaName(extraction),
       description: this.generatePersonaDescription(extraction),
       personaType: context.personaType || 'primary_audience',
-      role: extraction.traits.find((t) => t.traitType === 'demographic')?.traitValue,
-      industry: extraction.traits.find((t) => t.traitName === 'industry')?.traitValue,
+      role: extraction.traits.find((t) => t.traitType === 'demographic')
+        ?.traitValue,
+      industry: extraction.traits.find((t) => t.traitName === 'industry')
+        ?.traitValue,
       generationMethod: 'llm_assisted',
     };
 
@@ -416,7 +442,9 @@ export class AudiencePersonaService {
   /**
    * Extract persona attributes using LLM
    */
-  private async extractWithLLM(context: GenerationContext): Promise<ExtractionResult> {
+  private async extractWithLLM(
+    context: GenerationContext
+  ): Promise<ExtractionResult> {
     logger.info('Extracting persona attributes with LLM');
 
     const systemPrompt = `You are an expert audience analyst. Extract persona attributes from the provided text.
@@ -510,7 +538,15 @@ Return ONLY the JSON object, no other text.`;
     const text = context.sourceText.toLowerCase();
 
     // Extract role keywords
-    const roleKeywords = ['ceo', 'cto', 'manager', 'director', 'engineer', 'analyst', 'designer'];
+    const roleKeywords = [
+      'ceo',
+      'cto',
+      'manager',
+      'director',
+      'engineer',
+      'analyst',
+      'designer',
+    ];
     for (const keyword of roleKeywords) {
       if (text.includes(keyword)) {
         traits.push({
@@ -526,7 +562,13 @@ Return ONLY the JSON object, no other text.`;
     }
 
     // Extract pain point keywords
-    const painPointKeywords = ['challenge', 'problem', 'difficulty', 'struggle', 'issue'];
+    const painPointKeywords = [
+      'challenge',
+      'problem',
+      'difficulty',
+      'struggle',
+      'issue',
+    ];
     for (const keyword of painPointKeywords) {
       if (text.includes(keyword)) {
         insights.push({
@@ -558,7 +600,9 @@ Return ONLY the JSON object, no other text.`;
    */
   private generateDefaultPersonaName(extraction: ExtractionResult): string {
     const roleTrait = extraction.traits.find((t) => t.traitName === 'role');
-    const industryTrait = extraction.traits.find((t) => t.traitName === 'industry');
+    const industryTrait = extraction.traits.find(
+      (t) => t.traitName === 'industry'
+    );
 
     if (roleTrait?.traitValue && industryTrait?.traitValue) {
       return `${roleTrait.traitValue} in ${industryTrait.traitValue}`;
@@ -614,7 +658,11 @@ Return ONLY the JSON object, no other text.`;
     input: AddTraitRequest,
     _userId?: string
   ): Promise<AudiencePersonaTrait> {
-    logger.info('Adding trait to persona', { orgId, personaId, traitName: input.traitName });
+    logger.info('Adding trait to persona', {
+      orgId,
+      personaId,
+      traitName: input.traitName,
+    });
 
     const insertData = {
       org_id: orgId,
@@ -651,7 +699,10 @@ Return ONLY the JSON object, no other text.`;
   /**
    * Get all traits for a persona
    */
-  async getPersonaTraits(orgId: string, personaId: string): Promise<AudiencePersonaTrait[]> {
+  async getPersonaTraits(
+    orgId: string,
+    personaId: string
+  ): Promise<AudiencePersonaTrait[]> {
     const { data, error } = await this.supabase
       .from('audience_persona_traits')
       .select('*')
@@ -670,13 +721,21 @@ Return ONLY the JSON object, no other text.`;
   /**
    * Get trait distribution for a persona
    */
-  async getTraitDistribution(_orgId: string, personaId: string): Promise<TraitDistribution[]> {
-    const { data, error } = await this.supabase.rpc('get_persona_trait_distribution', {
-      p_persona_id: personaId,
-    });
+  async getTraitDistribution(
+    _orgId: string,
+    personaId: string
+  ): Promise<TraitDistribution[]> {
+    const { data, error } = await this.supabase.rpc(
+      'get_persona_trait_distribution',
+      {
+        p_persona_id: personaId,
+      }
+    );
 
     if (error) {
-      logger.error('Failed to get trait distribution', { error: error.message });
+      logger.error('Failed to get trait distribution', {
+        error: error.message,
+      });
       return [];
     }
 
@@ -701,7 +760,11 @@ Return ONLY the JSON object, no other text.`;
     input: AddInsightRequest,
     _userId?: string
   ): Promise<AudiencePersonaInsight> {
-    logger.info('Adding insight to persona', { orgId, personaId, insightTitle: input.insightTitle });
+    logger.info('Adding insight to persona', {
+      orgId,
+      personaId,
+      insightTitle: input.insightTitle,
+    });
 
     const insertData = {
       org_id: orgId,
@@ -810,10 +873,16 @@ Return ONLY the JSON object, no other text.`;
   /**
    * Get insight summary by source system
    */
-  async getInsightSummary(_orgId: string, personaId: string): Promise<InsightSummary[]> {
-    const { data, error } = await this.supabase.rpc('get_persona_insights_summary', {
-      p_persona_id: personaId,
-    });
+  async getInsightSummary(
+    _orgId: string,
+    personaId: string
+  ): Promise<InsightSummary[]> {
+    const { data, error } = await this.supabase.rpc(
+      'get_persona_insights_summary',
+      {
+        p_persona_id: personaId,
+      }
+    );
 
     if (error) {
       logger.error('Failed to get insight summary', { error: error.message });
@@ -853,7 +922,10 @@ Return ONLY the JSON object, no other text.`;
   /**
    * Recalculate all scores for a persona
    */
-  async recalculatePersonaScores(orgId: string, personaId: string): Promise<void> {
+  async recalculatePersonaScores(
+    orgId: string,
+    personaId: string
+  ): Promise<void> {
     logger.info('Recalculating persona scores', { orgId, personaId });
 
     // Get persona
@@ -863,7 +935,11 @@ Return ONLY the JSON object, no other text.`;
     }
 
     // Get all insights
-    const insightsResponse = await this.getPersonaInsights(orgId, personaId, {});
+    const insightsResponse = await this.getPersonaInsights(
+      orgId,
+      personaId,
+      {}
+    );
     const insights = insightsResponse.insights;
 
     // Calculate relevance score (based on actionable insights)
@@ -874,15 +950,18 @@ Return ONLY the JSON object, no other text.`;
     );
 
     // Calculate engagement score (based on confidence)
-    const avgConfidence = insights.length > 0
-      ? insights.reduce((sum, i) => sum + i.confidenceScore, 0) / insights.length
-      : 0;
+    const avgConfidence =
+      insights.length > 0
+        ? insights.reduce((sum, i) => sum + i.confidenceScore, 0) /
+          insights.length
+        : 0;
     const engagementScore = Math.min(100, avgConfidence * 100);
 
     // Calculate alignment score (based on impact)
-    const avgImpact = insights.length > 0
-      ? insights.reduce((sum, i) => sum + i.impactScore, 0) / insights.length
-      : 0;
+    const avgImpact =
+      insights.length > 0
+        ? insights.reduce((sum, i) => sum + i.impactScore, 0) / insights.length
+        : 0;
     const alignmentScore = Math.min(100, avgImpact * 100);
 
     // Update persona scores
@@ -996,7 +1075,14 @@ Return ONLY the JSON object, no other text.`;
 
     return {
       trends,
-      dimensions: ['relevance', 'engagement', 'alignment', 'overall', 'traits', 'insights'],
+      dimensions: [
+        'relevance',
+        'engagement',
+        'alignment',
+        'overall',
+        'traits',
+        'insights',
+      ],
       summary,
     };
   }
@@ -1004,7 +1090,10 @@ Return ONLY the JSON object, no other text.`;
   /**
    * Calculate percent change between first and last trend data point
    */
-  private calculatePercentChange(trends: PersonaTrend[], field: keyof PersonaTrend): number {
+  private calculatePercentChange(
+    trends: PersonaTrend[],
+    field: keyof PersonaTrend
+  ): number {
     if (trends.length < 2) return 0;
 
     const first = trends[trends.length - 1][field] as number;
@@ -1018,7 +1107,10 @@ Return ONLY the JSON object, no other text.`;
   /**
    * Calculate absolute growth
    */
-  private calculateGrowth(trends: PersonaTrend[], field: keyof PersonaTrend): number {
+  private calculateGrowth(
+    trends: PersonaTrend[],
+    field: keyof PersonaTrend
+  ): number {
     if (trends.length < 2) return 0;
 
     const first = trends[trends.length - 1][field] as number;
@@ -1052,17 +1144,19 @@ Return ONLY the JSON object, no other text.`;
     }
 
     // Calculate similarity using SQL function
-    const { data: similarityData, error: similarityError } = await this.supabase.rpc(
-      'calculate_persona_similarity',
-      {
+    const { data: similarityData, error: similarityError } =
+      await this.supabase.rpc('calculate_persona_similarity', {
         p_persona_id_1: personaId1,
         p_persona_id_2: personaId2,
-      }
-    );
+      });
 
     if (similarityError) {
-      logger.error('Failed to calculate similarity', { error: similarityError.message });
-      throw new Error(`Failed to calculate similarity: ${similarityError.message}`);
+      logger.error('Failed to calculate similarity', {
+        error: similarityError.message,
+      });
+      throw new Error(
+        `Failed to calculate similarity: ${similarityError.message}`
+      );
     }
 
     const similarityScore = similarityData || 0;
@@ -1198,8 +1292,16 @@ Return ONLY the JSON object, no other text.`;
 
     // Merge insights
     if (mergeInsights) {
-      const sourceInsightsResponse = await this.getPersonaInsights(orgId, sourcePersonaId, {});
-      const targetInsightsResponse = await this.getPersonaInsights(orgId, targetPersonaId, {});
+      const sourceInsightsResponse = await this.getPersonaInsights(
+        orgId,
+        sourcePersonaId,
+        {}
+      );
+      const targetInsightsResponse = await this.getPersonaInsights(
+        orgId,
+        targetPersonaId,
+        {}
+      );
       const targetInsightTitles = new Set(
         targetInsightsResponse.insights.map((i) => i.insightTitle)
       );
@@ -1264,7 +1366,9 @@ Return ONLY the JSON object, no other text.`;
       generationMethod: row.generation_method,
       llmModel: row.llm_model,
       sourceCount: row.source_count || 0,
-      lastEnrichedAt: row.last_enriched_at ? new Date(row.last_enriched_at) : undefined,
+      lastEnrichedAt: row.last_enriched_at
+        ? new Date(row.last_enriched_at)
+        : undefined,
       status: row.status,
       isValidated: row.is_validated || false,
       mergedIntoId: row.merged_into_id,

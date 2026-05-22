@@ -24,7 +24,17 @@ export const CrisisSeverity = {
 /**
  * Source systems that can trigger crisis signals
  */
-export type CrisisSourceSystem = 'media_monitoring' | 'media_crawling' | 'media_alerts' | 'journalist_timeline' | 'media_performance' | 'competitive_intel' | 'media_briefing' | 'manual_entry' | 'external_api' | 'social_listening';
+export type CrisisSourceSystem =
+  | 'media_monitoring'
+  | 'media_crawling'
+  | 'media_alerts'
+  | 'journalist_timeline'
+  | 'media_performance'
+  | 'competitive_intel'
+  | 'media_briefing'
+  | 'manual_entry'
+  | 'external_api'
+  | 'social_listening';
 export const CrisisSourceSystem = {
   MEDIA_MONITORING: 'media_monitoring' as const,
   MEDIA_CRAWLING: 'media_crawling' as const,
@@ -41,7 +51,13 @@ export const CrisisSourceSystem = {
 /**
  * Crisis trajectory direction
  */
-export type CrisisTrajectory = 'improving' | 'stable' | 'worsening' | 'critical' | 'resolved' | 'unknown';
+export type CrisisTrajectory =
+  | 'improving'
+  | 'stable'
+  | 'worsening'
+  | 'critical'
+  | 'resolved'
+  | 'unknown';
 export const CrisisTrajectory = {
   IMPROVING: 'improving' as const,
   STABLE: 'stable' as const,
@@ -54,7 +70,12 @@ export const CrisisTrajectory = {
 /**
  * Crisis propagation level
  */
-export type CrisisPropagationLevel = 'contained' | 'spreading' | 'viral' | 'mainstream' | 'saturated';
+export type CrisisPropagationLevel =
+  | 'contained'
+  | 'spreading'
+  | 'viral'
+  | 'mainstream'
+  | 'saturated';
 export const CrisisPropagationLevel = {
   CONTAINED: 'contained' as const,
   SPREADING: 'spreading' as const,
@@ -117,7 +138,14 @@ export enum CrisisActionType {
 /**
  * Crisis action status
  */
-export type CrisisActionStatus = 'recommended' | 'approved' | 'in_progress' | 'completed' | 'deferred' | 'rejected' | 'failed';
+export type CrisisActionStatus =
+  | 'recommended'
+  | 'approved'
+  | 'in_progress'
+  | 'completed'
+  | 'deferred'
+  | 'rejected'
+  | 'failed';
 export const CrisisActionStatus = {
   RECOMMENDED: 'recommended' as const,
   APPROVED: 'approved' as const,
@@ -470,7 +498,12 @@ export interface EscalationConditions {
  * Escalation action to take when rule triggers
  */
 export interface EscalationAction {
-  type: 'notify' | 'create_incident' | 'generate_brief' | 'webhook' | 'update_severity';
+  type:
+    | 'notify'
+    | 'create_incident'
+    | 'generate_brief'
+    | 'webhook'
+    | 'update_severity';
   channel?: string;
   recipients?: string[];
   severity?: CrisisSeverity;
@@ -827,7 +860,12 @@ export interface IncidentFilters {
   escalationLevelGte?: number;
   dateFrom?: Date;
   dateTo?: Date;
-  sortBy?: 'createdAt' | 'updatedAt' | 'severity' | 'riskScore' | 'mentionCount';
+  sortBy?:
+    | 'createdAt'
+    | 'updatedAt'
+    | 'severity'
+    | 'riskScore'
+    | 'mentionCount';
   sortOrder?: 'asc' | 'desc';
 }
 

@@ -10,9 +10,20 @@ import { z } from 'zod';
  */
 export const rewriteRequestSchema = z.object({
   contentItemId: z.string().uuid('Content item ID must be a valid UUID'),
-  personalityId: z.string().uuid('Personality ID must be a valid UUID').nullable().optional(),
-  targetKeyword: z.string().min(1, 'Target keyword cannot be empty').nullable().optional(),
-  targetIntent: z.enum(['informational', 'navigational', 'commercial', 'transactional']).nullable().optional(),
+  personalityId: z
+    .string()
+    .uuid('Personality ID must be a valid UUID')
+    .nullable()
+    .optional(),
+  targetKeyword: z
+    .string()
+    .min(1, 'Target keyword cannot be empty')
+    .nullable()
+    .optional(),
+  targetIntent: z
+    .enum(['informational', 'navigational', 'commercial', 'transactional'])
+    .nullable()
+    .optional(),
 });
 
 /**

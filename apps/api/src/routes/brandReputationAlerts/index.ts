@@ -19,7 +19,9 @@ import type {
   ListReputationReportsQuery,
   GetReputationInsightsQuery,
 } from '@pravado/types';
-import { validateEnv, apiEnvSchema ,
+import {
+  validateEnv,
+  apiEnvSchema,
   createReputationAlertRuleSchema,
   updateReputationAlertRuleSchema,
   listReputationAlertRulesQuerySchema,
@@ -41,7 +43,6 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
 import { BrandReputationAlertsService } from '../../services/brandReputationAlertsService';
 
-
 // Helper to extract orgId from headers
 function getOrgId(request: FastifyRequest): string {
   const orgId = request.headers['x-org-id'] as string;
@@ -57,9 +58,14 @@ function getUserId(request: FastifyRequest): string | undefined {
   return user?.id;
 }
 
-export default async function brandReputationAlertsRoutes(server: FastifyInstance) {
+export default async function brandReputationAlertsRoutes(
+  server: FastifyInstance
+) {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const service = new BrandReputationAlertsService(supabase);
 
   // =========================================================================
@@ -70,142 +76,166 @@ export default async function brandReputationAlertsRoutes(server: FastifyInstanc
    * POST /alert-rules
    * Create a new alert rule
    */
-  server.post('/alert-rules', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const validated = createReputationAlertRuleSchema.parse(request.body);
-      const rule = await service.createAlertRule(
-        orgId,
-        validated as CreateReputationAlertRuleInput,
-        userId
-      );
+  server.post(
+    '/alert-rules',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const validated = createReputationAlertRuleSchema.parse(request.body);
+        const rule = await service.createAlertRule(
+          orgId,
+          validated as CreateReputationAlertRuleInput,
+          userId
+        );
 
-      return reply.status(201).send({
-        success: true,
-        data: rule,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error creating alert rule');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.status(201).send({
+          success: true,
+          data: rule,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error creating alert rule');
+        return reply
+          .status(errorMessage.includes('validation') ? 400 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   /**
    * GET /alert-rules
    * List alert rules with filters and pagination
    */
-  server.get('/alert-rules', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const query = request.query as Record<string, unknown>;
-      const validated = listReputationAlertRulesQuerySchema.parse(query);
-      const response = await service.listAlertRules(
-        orgId,
-        validated as ListReputationAlertRulesQuery
-      );
+  server.get(
+    '/alert-rules',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const query = request.query as Record<string, unknown>;
+        const validated = listReputationAlertRulesQuerySchema.parse(query);
+        const response = await service.listAlertRules(
+          orgId,
+          validated as ListReputationAlertRulesQuery
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error listing alert rules');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error listing alert rules');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   /**
    * GET /alert-rules/:id
    * Get a single alert rule by ID
    */
-  server.get('/alert-rules/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = alertRuleIdParamSchema.parse(request.params);
-      const rule = await service.getAlertRule(orgId, id);
+  server.get(
+    '/alert-rules/:id',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = alertRuleIdParamSchema.parse(request.params);
+        const rule = await service.getAlertRule(orgId, id);
 
-      if (!rule) {
-        return reply.status(404).send({
+        if (!rule) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Alert rule not found',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: rule,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error fetching alert rule');
+        return reply.status(500).send({
           success: false,
-          error: 'Alert rule not found',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: rule,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error fetching alert rule');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * PATCH /alert-rules/:id
    * Update an alert rule
    */
-  server.patch('/alert-rules/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = alertRuleIdParamSchema.parse(request.params);
-      const validated = updateReputationAlertRuleSchema.parse(request.body);
-      const rule = await service.updateAlertRule(
-        orgId,
-        id,
-        validated as UpdateReputationAlertRuleInput
-      );
+  server.patch(
+    '/alert-rules/:id',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = alertRuleIdParamSchema.parse(request.params);
+        const validated = updateReputationAlertRuleSchema.parse(request.body);
+        const rule = await service.updateAlertRule(
+          orgId,
+          id,
+          validated as UpdateReputationAlertRuleInput
+        );
 
-      return reply.send({
-        success: true,
-        data: rule,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error updating alert rule');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: rule,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error updating alert rule');
+        return reply
+          .status(errorMessage.includes('validation') ? 400 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   /**
    * DELETE /alert-rules/:id
    * Delete an alert rule
    */
-  server.delete('/alert-rules/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = alertRuleIdParamSchema.parse(request.params);
-      await service.deleteAlertRule(orgId, id);
+  server.delete(
+    '/alert-rules/:id',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = alertRuleIdParamSchema.parse(request.params);
+        await service.deleteAlertRule(orgId, id);
 
-      return reply.send({
-        success: true,
-        message: 'Alert rule deleted successfully',
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error deleting alert rule');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          message: 'Alert rule deleted successfully',
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error deleting alert rule');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   // =========================================================================
   // ALERT EVENT ENDPOINTS
@@ -215,166 +245,195 @@ export default async function brandReputationAlertsRoutes(server: FastifyInstanc
    * GET /alert-events
    * List alert events with filters and pagination
    */
-  server.get('/alert-events', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const query = request.query as Record<string, unknown>;
-      const validated = listReputationAlertEventsQuerySchema.parse(query);
-      const response = await service.listAlertEvents(
-        orgId,
-        validated as ListReputationAlertEventsQuery
-      );
+  server.get(
+    '/alert-events',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const query = request.query as Record<string, unknown>;
+        const validated = listReputationAlertEventsQuerySchema.parse(query);
+        const response = await service.listAlertEvents(
+          orgId,
+          validated as ListReputationAlertEventsQuery
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error listing alert events');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error listing alert events');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   /**
    * GET /alert-events/:id
    * Get a single alert event by ID
    */
-  server.get('/alert-events/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = alertEventIdParamSchema.parse(request.params);
-      const event = await service.getAlertEvent(orgId, id);
+  server.get(
+    '/alert-events/:id',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = alertEventIdParamSchema.parse(request.params);
+        const event = await service.getAlertEvent(orgId, id);
 
-      if (!event) {
-        return reply.status(404).send({
+        if (!event) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Alert event not found',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: event,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error fetching alert event');
+        return reply.status(500).send({
           success: false,
-          error: 'Alert event not found',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: event,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error fetching alert event');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * POST /alert-events/:id/acknowledge
    * Acknowledge an alert event
    */
-  server.post('/alert-events/:id/acknowledge', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = alertEventIdParamSchema.parse(request.params);
-      const validated = acknowledgeReputationAlertEventSchema.parse(request.body || {});
+  server.post(
+    '/alert-events/:id/acknowledge',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = alertEventIdParamSchema.parse(request.params);
+        const validated = acknowledgeReputationAlertEventSchema.parse(
+          request.body || {}
+        );
 
-      if (!userId) {
-        return reply.status(401).send({
+        if (!userId) {
+          return reply.status(401).send({
+            success: false,
+            error: 'User authentication required',
+          });
+        }
+
+        const event = await service.acknowledgeAlertEvent(
+          orgId,
+          id,
+          userId,
+          validated.notes
+        );
+
+        return reply.send({
+          success: true,
+          data: event,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error acknowledging alert event');
+        return reply.status(500).send({
           success: false,
-          error: 'User authentication required',
+          error: errorMessage,
         });
       }
-
-      const event = await service.acknowledgeAlertEvent(orgId, id, userId, validated.notes);
-
-      return reply.send({
-        success: true,
-        data: event,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error acknowledging alert event');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * POST /alert-events/:id/resolve
    * Resolve an alert event
    */
-  server.post('/alert-events/:id/resolve', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = alertEventIdParamSchema.parse(request.params);
-      const validated = resolveReputationAlertEventSchema.parse(request.body);
+  server.post(
+    '/alert-events/:id/resolve',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = alertEventIdParamSchema.parse(request.params);
+        const validated = resolveReputationAlertEventSchema.parse(request.body);
 
-      if (!userId) {
-        return reply.status(401).send({
-          success: false,
-          error: 'User authentication required',
+        if (!userId) {
+          return reply.status(401).send({
+            success: false,
+            error: 'User authentication required',
+          });
+        }
+
+        const event = await service.resolveAlertEvent(
+          orgId,
+          id,
+          userId,
+          validated.resolutionNotes
+        );
+
+        return reply.send({
+          success: true,
+          data: event,
         });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error resolving alert event');
+        return reply
+          .status(errorMessage.includes('validation') ? 400 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
       }
-
-      const event = await service.resolveAlertEvent(
-        orgId,
-        id,
-        userId,
-        validated.resolutionNotes
-      );
-
-      return reply.send({
-        success: true,
-        data: event,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error resolving alert event');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * POST /alert-events/:id/mute
    * Mute an alert event
    */
-  server.post('/alert-events/:id/mute', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = alertEventIdParamSchema.parse(request.params);
+  server.post(
+    '/alert-events/:id/mute',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = alertEventIdParamSchema.parse(request.params);
 
-      if (!userId) {
-        return reply.status(401).send({
+        if (!userId) {
+          return reply.status(401).send({
+            success: false,
+            error: 'User authentication required',
+          });
+        }
+
+        const event = await service.muteAlertEvent(orgId, id, userId);
+
+        return reply.send({
+          success: true,
+          data: event,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error muting alert event');
+        return reply.status(500).send({
           success: false,
-          error: 'User authentication required',
+          error: errorMessage,
         });
       }
-
-      const event = await service.muteAlertEvent(orgId, id, userId);
-
-      return reply.send({
-        success: true,
-        data: event,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error muting alert event');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   // =========================================================================
   // REPORT ENDPOINTS
@@ -384,148 +443,178 @@ export default async function brandReputationAlertsRoutes(server: FastifyInstanc
    * POST /reports
    * Create a new report (draft)
    */
-  server.post('/reports', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const validated = createReputationReportSchema.parse(request.body);
-      const response = await service.createReputationReport(
-        orgId,
-        validated as CreateReputationReportInput,
-        userId
-      );
+  server.post(
+    '/reports',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const validated = createReputationReportSchema.parse(request.body);
+        const response = await service.createReputationReport(
+          orgId,
+          validated as CreateReputationReportInput,
+          userId
+        );
 
-      return reply.status(201).send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error creating report');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.status(201).send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error creating report');
+        return reply
+          .status(errorMessage.includes('validation') ? 400 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   /**
    * GET /reports
    * List reports with filters and pagination
    */
-  server.get('/reports', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const query = request.query as Record<string, unknown>;
-      const validated = listReputationReportsQuerySchema.parse(query);
-      const response = await service.listReputationReports(
-        orgId,
-        validated as ListReputationReportsQuery
-      );
+  server.get(
+    '/reports',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const query = request.query as Record<string, unknown>;
+        const validated = listReputationReportsQuerySchema.parse(query);
+        const response = await service.listReputationReports(
+          orgId,
+          validated as ListReputationReportsQuery
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error listing reports');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error listing reports');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   /**
    * GET /reports/:id
    * Get a single report with sections and recipients
    */
-  server.get('/reports/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = reputationReportIdParamSchema.parse(request.params);
-      const response = await service.getReputationReport(orgId, id);
+  server.get(
+    '/reports/:id',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = reputationReportIdParamSchema.parse(request.params);
+        const response = await service.getReputationReport(orgId, id);
 
-      if (!response) {
-        return reply.status(404).send({
+        if (!response) {
+          return reply.status(404).send({
+            success: false,
+            error: 'Report not found',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error fetching report');
+        return reply.status(500).send({
           success: false,
-          error: 'Report not found',
+          error: errorMessage,
         });
       }
-
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error fetching report');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
     }
-  });
+  );
 
   /**
    * POST /reports/generate
    * Generate a full report with sections (ad hoc or scheduled)
    */
-  server.post('/reports/generate', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const validated = generateReputationReportSchema.parse(request.body);
-      const response = await service.generateReputationReport(
-        orgId,
-        validated as GenerateReputationReportInput,
-        userId
-      );
+  server.post(
+    '/reports/generate',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const validated = generateReputationReportSchema.parse(request.body);
+        const response = await service.generateReputationReport(
+          orgId,
+          validated as GenerateReputationReportInput,
+          userId
+        );
 
-      return reply.status(201).send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error generating report');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.status(201).send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error generating report');
+        return reply
+          .status(errorMessage.includes('validation') ? 400 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   /**
    * POST /reports/:id/sections/:sectionId/regenerate
    * Regenerate a specific report section
    */
-  server.post('/reports/:id/sections/:sectionId/regenerate', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id, sectionId } = reputationSectionIdParamSchema.parse(request.params);
-      const validated = regenerateReputationReportSectionSchema.parse(request.body || {});
-      const response = await service.regenerateReputationReportSection(
-        orgId,
-        id,
-        sectionId,
-        validated as RegenerateReputationReportSectionInput
-      );
+  server.post(
+    '/reports/:id/sections/:sectionId/regenerate',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id, sectionId } = reputationSectionIdParamSchema.parse(
+          request.params
+        );
+        const validated = regenerateReputationReportSectionSchema.parse(
+          request.body || {}
+        );
+        const response = await service.regenerateReputationReportSection(
+          orgId,
+          id,
+          sectionId,
+          validated as RegenerateReputationReportSectionInput
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error regenerating report section');
-      return reply.status(errorMessage.includes('not found') ? 404 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error regenerating report section');
+        return reply
+          .status(errorMessage.includes('not found') ? 404 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   // =========================================================================
   // INSIGHTS ENDPOINT
@@ -535,27 +624,31 @@ export default async function brandReputationAlertsRoutes(server: FastifyInstanc
    * GET /insights
    * Get reputation insights for dashboards
    */
-  server.get('/insights', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const query = request.query as Record<string, unknown>;
-      const validated = getReputationInsightsQuerySchema.parse(query);
-      const response = await service.getReputationInsights(
-        orgId,
-        validated as GetReputationInsightsQuery
-      );
+  server.get(
+    '/insights',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const query = request.query as Record<string, unknown>;
+        const validated = getReputationInsightsQuerySchema.parse(query);
+        const response = await service.getReputationInsights(
+          orgId,
+          validated as GetReputationInsightsQuery
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error fetching reputation insights');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error fetching reputation insights');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 }

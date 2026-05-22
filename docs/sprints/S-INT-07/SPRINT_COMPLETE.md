@@ -11,6 +11,7 @@
 Rebuilt the onboarding flow so new users reach their first real EVI score and first real SAGE proposals within 10 minutes. The old onboarding created a mock competitive snapshot and mock plan — this new flow seeds real data into every pillar and triggers the real SAGE pipeline.
 
 **7-step activation wizard:**
+
 1. **Brand Setup** — Company name, domain, industry, company_size → creates/updates org
 2. **Connect GSC** — Google Search Console OAuth (optional, skip allowed)
 3. **Add Competitors** — 1–5 competitor domains → `org_competitors` table
@@ -24,6 +25,7 @@ Rebuilt the onboarding flow so new users reach their first real EVI score and fi
 ## Database
 
 ### Migration: `apps/api/supabase/migrations/85_onboarding_activation.sql`
+
 - `org_competitors` table (id, org_id, domain, name, added_at) with RLS
 - UNIQUE(org_id, domain) — prevents duplicate competitors
 - ALTER TABLE orgs adding: domain, industry, company_size, completed_onboarding_at, onboarding_step, onboarding_skips, metadata
@@ -33,6 +35,7 @@ Rebuilt the onboarding flow so new users reach their first real EVI score and fi
 ## Backend Routes (`/api/v1/onboarding/`)
 
 ### `apps/api/src/routes/onboarding/index.ts`
+
 - `POST /brand` — Create or update org with brand profile (step 1)
   - Creates org + membership for new users
   - Updates existing org for returning users
@@ -52,6 +55,7 @@ Rebuilt the onboarding flow so new users reach their first real EVI score and fi
 ## Middleware
 
 ### `apps/dashboard/src/middleware.ts`
+
 - Added onboarding redirect logic for `/app` paths
 - Checks `org_members.orgs.completed_onboarding_at` via Supabase join
 - If no org or incomplete onboarding → redirects to `/onboarding/ai-intro`
@@ -62,6 +66,7 @@ Rebuilt the onboarding flow so new users reach their first real EVI score and fi
 ## Dashboard Proxy Routes
 
 Created 8 proxy route files:
+
 - `/api/onboarding/brand` → POST
 - `/api/onboarding/status` → GET
 - `/api/onboarding/step` → POST
@@ -76,7 +81,9 @@ Created 8 proxy route files:
 ## Onboarding Page
 
 ### `apps/dashboard/src/app/onboarding/ai-intro/page.tsx`
+
 Complete rewrite (v3) with:
+
 - **Progress persistence** — Fetches `/api/onboarding/status` on mount, resumes at saved step
 - **Step tracking** — Every step advances `onboarding_step` via POST `/step`
 - **Skip tracking** — Skippable steps (GSC, competitors, journalists, content) record skips in `onboarding_skips` JSONB
@@ -91,25 +98,26 @@ Complete rewrite (v3) with:
 ## Feature Flags
 
 ### `packages/feature-flags/src/flags.ts`
+
 - `ENABLE_ONBOARDING_V3: true` — S-INT-07
 
 ---
 
 ## Exit Criteria Verification
 
-| Criterion | Status |
-|-----------|--------|
-| Fresh org completes all 7 steps | ✅ Sequential wizard with progress persistence |
+| Criterion                                      | Status                                                                                     |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Fresh org completes all 7 steps                | ✅ Sequential wizard with progress persistence                                             |
 | Each step saves real data to production tables | ✅ brand→orgs, competitors→org_competitors, journalists→journalists, content→content_items |
-| GSC connect works (reuses S-INT-06 OAuth) | ✅ Links to /api/integrations/gsc/auth-url |
-| SAGE activation triggers EVI + signal scan | ✅ enqueueEVIRecalculate + enqueueSageSignalScan |
-| First real EVI score displayed | ✅ Polls /api/evi/current, shows baseline score |
-| First real SAGE proposals displayed | ✅ Fetches /api/command-center/action-stream |
-| Progress persists on page refresh | ✅ GET /status resumes at saved step |
-| Skip tracking works | ✅ onboarding_skips JSONB records skipped steps |
-| Middleware redirects incomplete onboarding | ✅ Checks completed_onboarding_at via org_members join |
-| Zero TypeScript errors (S-INT-07 code) | ✅ API clean, dashboard clean (pre-existing errors in other files) |
-| SPRINT_COMPLETE.md | ✅ This document |
+| GSC connect works (reuses S-INT-06 OAuth)      | ✅ Links to /api/integrations/gsc/auth-url                                                 |
+| SAGE activation triggers EVI + signal scan     | ✅ enqueueEVIRecalculate + enqueueSageSignalScan                                           |
+| First real EVI score displayed                 | ✅ Polls /api/evi/current, shows baseline score                                            |
+| First real SAGE proposals displayed            | ✅ Fetches /api/command-center/action-stream                                               |
+| Progress persists on page refresh              | ✅ GET /status resumes at saved step                                                       |
+| Skip tracking works                            | ✅ onboarding_skips JSONB records skipped steps                                            |
+| Middleware redirects incomplete onboarding     | ✅ Checks completed_onboarding_at via org_members join                                     |
+| Zero TypeScript errors (S-INT-07 code)         | ✅ API clean, dashboard clean (pre-existing errors in other files)                         |
+| SPRINT_COMPLETE.md                             | ✅ This document                                                                           |
 
 ---
 

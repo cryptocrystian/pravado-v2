@@ -19,7 +19,15 @@ import {
 
 import { useEVICurrent, useEVIHistory } from '@/lib/useEVI';
 
-function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string }>; label?: string }) {
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: Array<{ value: number; dataKey: string }>;
+  label?: string;
+}) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-cc-surface border border-white/8 rounded-lg p-2 text-xs">
@@ -61,12 +69,30 @@ export function EviHero() {
   const delta = current?.delta ?? 0;
   const direction = current?.direction ?? 'flat';
 
-  const statusColor = score >= 70 ? 'text-semantic-success' : score >= 40 ? 'text-amber-400' : 'text-semantic-danger';
-  const statusLabel = score >= 70 ? 'Good Standing' : score >= 40 ? 'Needs Attention' : 'Critical';
-  const deltaColor = direction === 'up' ? 'text-semantic-success' : direction === 'down' ? 'text-semantic-danger' : 'text-white/45';
+  const statusColor =
+    score >= 70
+      ? 'text-semantic-success'
+      : score >= 40
+        ? 'text-amber-400'
+        : 'text-semantic-danger';
+  const statusLabel =
+    score >= 70
+      ? 'Good Standing'
+      : score >= 40
+        ? 'Needs Attention'
+        : 'Critical';
+  const deltaColor =
+    direction === 'up'
+      ? 'text-semantic-success'
+      : direction === 'down'
+        ? 'text-semantic-danger'
+        : 'text-white/45';
 
   const chartData = history.map((point) => ({
-    date: new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    date: new Date(point.date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    }),
     evi: Number(point.evi_score),
   }));
 
@@ -79,10 +105,14 @@ export function EviHero() {
             EVI
           </span>
           {isStale && (
-            <span className="text-[10px] text-amber-400/70 uppercase tracking-wider">Stale</span>
+            <span className="text-[10px] text-amber-400/70 uppercase tracking-wider">
+              Stale
+            </span>
           )}
         </div>
-        <p className={`text-6xl font-bold ${statusColor} mt-1`}>{score.toFixed(1)}</p>
+        <p className={`text-6xl font-bold ${statusColor} mt-1`}>
+          {score.toFixed(1)}
+        </p>
 
         {/* Score bar */}
         <div className="w-full h-3 bg-white/8 rounded-full mt-4 overflow-hidden">
@@ -94,12 +124,15 @@ export function EviHero() {
 
         <p className={`text-sm ${statusColor} mt-3`}>{statusLabel}</p>
         <p className={`text-sm ${deltaColor} mt-1`}>
-          {delta > 0 ? '+' : ''}{delta.toFixed(1)} pts this month {direction === 'up' ? '\u2191' : direction === 'down' ? '\u2193' : ''}
+          {delta > 0 ? '+' : ''}
+          {delta.toFixed(1)} pts this month{' '}
+          {direction === 'up' ? '\u2191' : direction === 'down' ? '\u2193' : ''}
         </p>
 
         <p className="text-xs text-white/45 leading-relaxed mt-4">
-          Earned Visibility Index &mdash; weighted measure of your brand&apos;s citation
-          presence across AI engines, topic clusters, and competitor context.
+          Earned Visibility Index &mdash; weighted measure of your brand&apos;s
+          citation presence across AI engines, topic clusters, and competitor
+          context.
         </p>
       </div>
 
@@ -162,7 +195,8 @@ export function EviHero() {
           </ResponsiveContainer>
         ) : (
           <div className="flex items-center justify-center h-[180px] text-white/30 text-sm">
-            No trend data yet. EVI history will appear after the first calculation.
+            No trend data yet. EVI history will appear after the first
+            calculation.
           </div>
         )}
       </div>

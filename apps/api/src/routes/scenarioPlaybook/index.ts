@@ -57,7 +57,11 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // Helper to get service context
-  const getContext = (request: { supabase: unknown; orgId: string; userId: string }) => ({
+  const getContext = (request: {
+    supabase: unknown;
+    orgId: string;
+    userId: string;
+  }) => ({
     supabase: request.supabase as service.ServiceContext['supabase'],
     orgId: request.orgId,
     userId: request.userId,
@@ -70,7 +74,9 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   // Create playbook
   fastify.post('/playbooks', async (request, reply) => {
     try {
-      const input = createScenarioPlaybookSchema.parse(request.body) as unknown as CreateScenarioPlaybookInput;
+      const input = createScenarioPlaybookSchema.parse(
+        request.body
+      ) as unknown as CreateScenarioPlaybookInput;
       const ctx = getContext(request as never);
       const playbook = await service.createPlaybook(ctx, input);
       return reply.status(201).send(playbook);
@@ -83,7 +89,9 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   // List playbooks
   fastify.get('/playbooks', async (request, reply) => {
     try {
-      const input = listPlaybooksSchema.parse(request.query) as unknown as ScenarioListPlaybooksQuery;
+      const input = listPlaybooksSchema.parse(
+        request.query
+      ) as unknown as ScenarioListPlaybooksQuery;
       const ctx = getContext(request as never);
       const result = await service.listPlaybooks(ctx, input);
       return reply.send(result);
@@ -129,7 +137,9 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.patch('/playbooks/:playbookId', async (request, reply) => {
     try {
       const { playbookId } = playbookIdParamSchema.parse(request.params);
-      const input = updateScenarioPlaybookSchema.parse(request.body) as unknown as UpdateScenarioPlaybookInput;
+      const input = updateScenarioPlaybookSchema.parse(
+        request.body
+      ) as unknown as UpdateScenarioPlaybookInput;
       const ctx = getContext(request as never);
       const playbook = await service.updatePlaybook(ctx, playbookId, input);
       return reply.send(playbook);
@@ -209,7 +219,9 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.patch('/steps/:stepId', async (request, reply) => {
     try {
       const { stepId } = stepIdParamSchema.parse(request.params);
-      const input = updatePlaybookStepSchema.parse(request.body) as unknown as UpdatePlaybookStepInput;
+      const input = updatePlaybookStepSchema.parse(
+        request.body
+      ) as unknown as UpdatePlaybookStepInput;
       const ctx = getContext(request as never);
       const step = await service.updatePlaybookStep(ctx, stepId, input);
       return reply.send(step);
@@ -233,21 +245,28 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // Reorder steps
-  fastify.post('/playbooks/:playbookId/steps/reorder', async (request, reply) => {
-    try {
-      const { playbookId } = playbookIdParamSchema.parse(request.params);
-      const body = reorderPlaybookStepsSchema.parse({
-        playbookId,
-        stepOrder: (request.body as Record<string, unknown>).stepOrder,
-      });
-      const ctx = getContext(request as never);
-      const steps = await service.reorderPlaybookSteps(ctx, playbookId, body.stepOrder);
-      return reply.send({ steps });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(400).send({ error: String(error) });
+  fastify.post(
+    '/playbooks/:playbookId/steps/reorder',
+    async (request, reply) => {
+      try {
+        const { playbookId } = playbookIdParamSchema.parse(request.params);
+        const body = reorderPlaybookStepsSchema.parse({
+          playbookId,
+          stepOrder: (request.body as Record<string, unknown>).stepOrder,
+        });
+        const ctx = getContext(request as never);
+        const steps = await service.reorderPlaybookSteps(
+          ctx,
+          playbookId,
+          body.stepOrder
+        );
+        return reply.send({ steps });
+      } catch (error) {
+        request.log.error(error);
+        return reply.status(400).send({ error: String(error) });
+      }
     }
-  });
+  );
 
   // ==========================================================================
   // SCENARIO ENDPOINTS
@@ -256,7 +275,9 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   // Create scenario
   fastify.post('/scenarios', async (request, reply) => {
     try {
-      const input = createScenarioSchema.parse(request.body) as unknown as CreateScenarioInput;
+      const input = createScenarioSchema.parse(
+        request.body
+      ) as unknown as CreateScenarioInput;
       const ctx = getContext(request as never);
       const scenario = await service.createScenario(ctx, input);
       return reply.status(201).send(scenario);
@@ -269,7 +290,9 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   // List scenarios
   fastify.get('/scenarios', async (request, reply) => {
     try {
-      const input = listScenariosSchema.parse(request.query) as unknown as ListScenariosQuery;
+      const input = listScenariosSchema.parse(
+        request.query
+      ) as unknown as ListScenariosQuery;
       const ctx = getContext(request as never);
       const result = await service.listScenarios(ctx, input);
       return reply.send(result);
@@ -315,7 +338,9 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.patch('/scenarios/:scenarioId', async (request, reply) => {
     try {
       const { scenarioId } = scenarioIdParamSchema.parse(request.params);
-      const input = updateScenarioSchema.parse(request.body) as unknown as UpdateScenarioInput;
+      const input = updateScenarioSchema.parse(
+        request.body
+      ) as unknown as UpdateScenarioInput;
       const ctx = getContext(request as never);
       const scenario = await service.updateScenario(ctx, scenarioId, input);
       return reply.send(scenario);
@@ -367,7 +392,9 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   // Start scenario run
   fastify.post('/runs', async (request, reply) => {
     try {
-      const input = startScenarioRunSchema.parse(request.body) as unknown as StartScenarioRunInput;
+      const input = startScenarioRunSchema.parse(
+        request.body
+      ) as unknown as StartScenarioRunInput;
       const ctx = getContext(request as never);
       const run = await service.startScenarioRun(ctx, input);
       return reply.status(201).send(run);
@@ -380,7 +407,9 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   // List runs
   fastify.get('/runs', async (request, reply) => {
     try {
-      const input = listScenarioRunsSchema.parse(request.query) as unknown as ListScenarioRunsQuery;
+      const input = listScenarioRunsSchema.parse(
+        request.query
+      ) as unknown as ListScenarioRunsQuery;
       const ctx = getContext(request as never);
       const result = await service.listScenarioRuns(ctx, input);
       return reply.send(result);
@@ -496,7 +525,9 @@ const scenarioPlaybookRoutes: FastifyPluginAsync = async (fastify) => {
   // List audit logs
   fastify.get('/audit', async (request, reply) => {
     try {
-      const input = listScenarioAuditLogsSchema.parse(request.query) as unknown as ListScenarioAuditLogsQuery;
+      const input = listScenarioAuditLogsSchema.parse(
+        request.query
+      ) as unknown as ListScenarioAuditLogsQuery;
       const ctx = getContext(request as never);
       const result = await service.listScenarioAuditLogs(ctx, input);
       return reply.send(result);

@@ -56,14 +56,18 @@ test.describe('Protected routes redirect to login', () => {
 
 test.describe('API health', () => {
   test('API server is healthy', async ({ request }) => {
-    const response = await request.get('https://pravado-api.onrender.com/health/');
+    const response = await request.get(
+      'https://pravado-api.onrender.com/health/'
+    );
     expect(response.status()).toBe(200);
     const body = await response.json();
     expect(body.status).toBe('healthy');
   });
 
   test('API readiness probe passes', async ({ request }) => {
-    const response = await request.get('https://pravado-api.onrender.com/health/ready');
+    const response = await request.get(
+      'https://pravado-api.onrender.com/health/ready'
+    );
     expect(response.status()).toBe(200);
   });
 });

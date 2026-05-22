@@ -13,7 +13,7 @@
         "type": "visibility",
         "label": "Visibility",
         "score": 72.5,
-        "weight": 0.40,
+        "weight": 0.4,
         "delta_7d": 5.2,
         "trend": "up",
         "metrics": [

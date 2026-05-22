@@ -25,9 +25,15 @@ const categoryStyles: Record<string, { bg: string; text: string }> = {
   admin: { bg: 'bg-rose-100', text: 'text-rose-800' },
 };
 
-export function AuditEventTypeBadge({ eventType, className = '' }: AuditEventTypeBadgeProps) {
+export function AuditEventTypeBadge({
+  eventType,
+  className = '',
+}: AuditEventTypeBadgeProps) {
   const category = eventType.split('.')[0];
-  const style = categoryStyles[category] || { bg: 'bg-gray-100', text: 'text-gray-800' };
+  const style = categoryStyles[category] || {
+    bg: 'bg-gray-100',
+    text: 'text-gray-800',
+  };
 
   return (
     <span

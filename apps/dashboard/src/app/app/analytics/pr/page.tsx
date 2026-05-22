@@ -8,7 +8,10 @@
 import { useCallback } from 'react';
 
 import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
-import { mockPlacements, mockNarratives } from '@/components/analytics/analytics-mock-data';
+import {
+  mockPlacements,
+  mockNarratives,
+} from '@/components/analytics/analytics-mock-data';
 import { CoverageTimeline } from '@/components/analytics/CoverageTimeline';
 import { EviContributionCard } from '@/components/analytics/EviContributionCard';
 import { EviWaterfall } from '@/components/analytics/EviWaterfall';
@@ -20,7 +23,13 @@ export default function PRAnalyticsPage() {
   const handleExport = useCallback(() => {
     const csv = arrayToCsv(
       ['Publication', 'Headline', 'Date', 'Reach', 'EVI Lift'],
-      mockPlacements.map(p => [p.publication, p.headline, p.date, p.reach, p.eviLift])
+      mockPlacements.map((p) => [
+        p.publication,
+        p.headline,
+        p.date,
+        p.reach,
+        p.eviLift,
+      ])
     );
     downloadCsv('pravado-analytics-pr.csv', csv);
   }, []);

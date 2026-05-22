@@ -17,12 +17,12 @@ The strategic bet: legacy competitors (Cision, Muck Rack, Meltwater) are zeroed 
 
 ### 1.2 The Four Contact Types
 
-| Type | Definition | Outreach Mechanic | Scope Boundary |
-|------|------------|-------------------|----------------|
-| **journalist** | Staff or freelance reporters at traditional or digital outlets | Email pitch | Full outreach workflow |
-| **digital_creator** | Newsletter authors, Substack writers, independent digital publishers | Email pitch | Full outreach workflow |
-| **kol** | Key Opinion Leaders — platform influencers with topic authority and engaged audiences | Contact reference only | Discovery and contact data only — no campaign facilitation, no rate cards, no payment mechanics |
-| **podcaster** | Podcast hosts across any platform | Email pitch framed as appearance proposal | Full outreach workflow (pitch surface only — no booking integration) |
+| Type                | Definition                                                                            | Outreach Mechanic                         | Scope Boundary                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **journalist**      | Staff or freelance reporters at traditional or digital outlets                        | Email pitch                               | Full outreach workflow                                                                          |
+| **digital_creator** | Newsletter authors, Substack writers, independent digital publishers                  | Email pitch                               | Full outreach workflow                                                                          |
+| **kol**             | Key Opinion Leaders — platform influencers with topic authority and engaged audiences | Contact reference only                    | Discovery and contact data only — no campaign facilitation, no rate cards, no payment mechanics |
+| **podcaster**       | Podcast hosts across any platform                                                     | Email pitch framed as appearance proposal | Full outreach workflow (pitch surface only — no booking integration)                            |
 
 **KOL Hard Boundary:** Pravado provides KOL profile data, platform metrics, and contact method. Nothing more. Rate cards, campaign briefs, gifting coordination, and payment facilitation are explicitly out of scope and must never appear in the product. This boundary is permanent.
 
@@ -41,6 +41,7 @@ SAGE proactive recommendations are the **primary intended discovery path**. The 
 ### 2.1 Seed Corpus (V1)
 
 **Source:** ~150K raw contacts scraped via Apify scripts from two primary sources:
+
 - Apollo (targeted search by geo and specific publications)
 - X/Twitter (KOL lookalike audiences based on specific profile targets)
 
@@ -66,20 +67,20 @@ Raw Apify corpus (~150K)
 
 After seed import, ongoing ingestion follows a three-tier signal hierarchy:
 
-| Tier | Source | Cadence | Purpose |
-|------|--------|---------|---------|
-| **Tier 1 — News Signals** | RSS/NewsAPI for 5K+ domains | Daily | Detect new journalists, track topic shifts, update activity signals |
-| **Tier 2 — Social Signals** | Podcast directories (ListenNotes), KOL platforms (HypeAuditor) | Weekly refresh of active contacts | Update platform metrics, detect new creators |
-| **Tier 3 — Seed Data** | Legacy Apollo/list data | On-demand lookup only | Used as lookup key to find identity-layer data for fresh verification — never as authoritative email source |
+| Tier                        | Source                                                         | Cadence                           | Purpose                                                                                                     |
+| --------------------------- | -------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Tier 1 — News Signals**   | RSS/NewsAPI for 5K+ domains                                    | Daily                             | Detect new journalists, track topic shifts, update activity signals                                         |
+| **Tier 2 — Social Signals** | Podcast directories (ListenNotes), KOL platforms (HypeAuditor) | Weekly refresh of active contacts | Update platform metrics, detect new creators                                                                |
+| **Tier 3 — Seed Data**      | Legacy Apollo/list data                                        | On-demand lookup only             | Used as lookup key to find identity-layer data for fresh verification — never as authoritative email source |
 
 ### 2.3 Identity vs. Contact Firewall
 
 This is the most important architectural decision in the database. It is non-negotiable.
 
-| Layer | What It Contains | Storage Rule |
-|-------|------------------|--------------|
-| **Identity Layer (Permanent)** | Name, outlet affiliations, LinkedIn URL, social handles, bio, location, topic tags, vector embedding | Stored permanently — this is the searchable asset |
-| **Contact Layer (Ephemeral)** | Professional email address | Never stored from scrapes. Always fetched fresh at unlock via enrichment waterfall. Cached with verified_at timestamp and staleness timer. Stale after 60 days for active journalists, 14 days for contacts with recent outlet changes. |
+| Layer                          | What It Contains                                                                                     | Storage Rule                                                                                                                                                                                                                            |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Identity Layer (Permanent)** | Name, outlet affiliations, LinkedIn URL, social handles, bio, location, topic tags, vector embedding | Stored permanently — this is the searchable asset                                                                                                                                                                                       |
+| **Contact Layer (Ephemeral)**  | Professional email address                                                                           | Never stored from scrapes. Always fetched fresh at unlock via enrichment waterfall. Cached with verified_at timestamp and staleness timer. Stale after 60 days for active journalists, 14 days for contacts with recent outlet changes. |
 
 Rationale: Email addresses decay at 25–30% annually. Journalists change outlets constantly. Static email storage produces a rotting database with deliverability collapse. JIT enrichment always returns the freshest verifiable email.
 
@@ -223,6 +224,7 @@ media_outlets (
 ```
 
 **Tier definitions:**
+
 - T1: DA 80+, 10M+ monthly reach
 - T2: DA 50–79, 1M–10M monthly reach
 - T3: DA 30–49, 100K–1M monthly reach
@@ -234,16 +236,16 @@ media_outlets (
 
 ### 4.1 State Definitions
 
-| State | Description | Pitch Eligible |
-|-------|-------------|----------------|
-| `identity_only` | Imported identity data only — no email, not enriched | No |
-| `enrichment_queued` | User triggered unlock, JIT enrichment in progress | No |
-| `enriched` | Valid email returned by waterfall, quality gates pending | No |
-| `pitch_eligible` | Meets all quality gates — full outreach access | **Yes** |
-| `stale` | Cached email exceeds staleness threshold — re-verification required | No |
-| `suppressed` | Contact opted out — permanent, global, irreversible | Never |
-| `bounced` | Hard bounce received — auto-suppressed | Never |
-| `do_not_contact` | Org-level flag — org-scoped, reversible by that org only | No (for that org) |
+| State               | Description                                                         | Pitch Eligible    |
+| ------------------- | ------------------------------------------------------------------- | ----------------- |
+| `identity_only`     | Imported identity data only — no email, not enriched                | No                |
+| `enrichment_queued` | User triggered unlock, JIT enrichment in progress                   | No                |
+| `enriched`          | Valid email returned by waterfall, quality gates pending            | No                |
+| `pitch_eligible`    | Meets all quality gates — full outreach access                      | **Yes**           |
+| `stale`             | Cached email exceeds staleness threshold — re-verification required | No                |
+| `suppressed`        | Contact opted out — permanent, global, irreversible                 | Never             |
+| `bounced`           | Hard bounce received — auto-suppressed                              | Never             |
+| `do_not_contact`    | Org-level flag — org-scoped, reversible by that org only            | No (for that org) |
 
 ### 4.2 State Transition Rules
 
@@ -288,6 +290,7 @@ This table is the GDPR compliance record. When a journalist asks "what data do y
 ### 5.1 Trigger Events
 
 JIT enrichment fires on two user actions:
+
 1. **"Create Pitch"** — Email verified in background while composer opens; ready before user finishes writing
 2. **"Unlock Contact"** — Email verified immediately, contact added to org list
 
@@ -314,12 +317,12 @@ Step 4: Quality gate evaluation
 
 ### 5.3 Staleness Rules
 
-| Contact Activity Level | Email Cache Duration |
-|------------------------|----------------------|
-| Active (article in last 30d) | 60 days |
-| Moderate (article in last 90d) | 60 days |
+| Contact Activity Level              | Email Cache Duration                          |
+| ----------------------------------- | --------------------------------------------- |
+| Active (article in last 30d)        | 60 days                                       |
+| Moderate (article in last 90d)      | 60 days                                       |
 | Outlet change detected (RSS signal) | 14 days — immediate re-verification triggered |
-| Inactive (no article in 90d+) | 90 days |
+| Inactive (no article in 90d+)       | 90 days                                       |
 
 On staleness: contact transitions to `stale` state. Next pitch attempt triggers re-verification automatically. Stale contacts are visible in search results with a "Needs re-verification" indicator.
 
@@ -457,29 +460,29 @@ Contacts with saturation score > 80 can still be pitched, but the user must expl
 
 Every contact in a search result is re-ranked based on the user's org-level interaction history. This makes results a live status dashboard, not a static directory query.
 
-| Interaction State | Rank Modifier | UI Display |
-|-------------------|---------------|------------|
-| Never seen | No modifier | Standard |
-| Profile viewed | −5 | No badge (minor deprioritization) |
-| Added to list | −10 | "In your list" badge |
-| Unlocked | −15 | "Unlocked [date]" badge |
-| Pitched | −25 | Pitch status shown inline |
-| Pitched, no response | −25 | "No response [X days]" warning |
-| Replied | +0 to +10 | "Replied" badge with positive indicator |
-| Coverage obtained | +20 | "Coverage" badge — surface for re-engagement |
-| Dismissed | Filter out from this query context | Hidden (unless name-searched directly) |
-| Do not contact | Filter out entirely | Never shown |
+| Interaction State    | Rank Modifier                      | UI Display                                   |
+| -------------------- | ---------------------------------- | -------------------------------------------- |
+| Never seen           | No modifier                        | Standard                                     |
+| Profile viewed       | −5                                 | No badge (minor deprioritization)            |
+| Added to list        | −10                                | "In your list" badge                         |
+| Unlocked             | −15                                | "Unlocked [date]" badge                      |
+| Pitched              | −25                                | Pitch status shown inline                    |
+| Pitched, no response | −25                                | "No response [X days]" warning               |
+| Replied              | +0 to +10                          | "Replied" badge with positive indicator      |
+| Coverage obtained    | +20                                | "Coverage" badge — surface for re-engagement |
+| Dismissed            | Filter out from this query context | Hidden (unless name-searched directly)       |
+| Do not contact       | Filter out entirely                | Never shown                                  |
 
 ### 7.5 Result Diversity Injection
 
 Before results are returned, a diversity post-processor enforces minimum variety:
 
-| Dimension | Rule |
-|-----------|------|
-| Outlet concentration | Max 2 contacts from the same outlet per page of 20 — exception: user is explicitly searching a specific outlet |
-| Contact type diversity | At least 20% non-journalist types per page when not type-filtered |
-| Outlet tier diversity | Results span at least 3 tiers — prevents T1-only result sets |
-| Geographic diversity | No more than 60% from the same metro/region when not geo-filtered |
+| Dimension              | Rule                                                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Outlet concentration   | Max 2 contacts from the same outlet per page of 20 — exception: user is explicitly searching a specific outlet |
+| Contact type diversity | At least 20% non-journalist types per page when not type-filtered                                              |
+| Outlet tier diversity  | Results span at least 3 tiers — prevents T1-only result sets                                                   |
+| Geographic diversity   | No more than 60% from the same metro/region when not geo-filtered                                              |
 
 ### 7.6 Daily Exploration Rotation
 
@@ -490,6 +493,7 @@ exploration_bonus = normalize(hash(contact_id + current_date))
 ```
 
 This produces a score that is:
+
 - **Consistent within a day**: Same user sees same order on repeated same-day searches
 - **Different across days**: Rankings shift daily, ensuring different users searching on different days see meaningfully different result sets
 - **Not random**: Deterministic — no unpredictable behavior, no ML required
@@ -550,16 +554,16 @@ Pravado monitors journalist source request feeds (HARO, Qwoted, ProfNet). SAGE m
 
 ### 9.1 Data Isolation Model
 
-| Data Layer | Scope | Visibility |
-|------------|-------|------------|
-| `media_contacts` identity | Platform-wide | All orgs (read-only) |
-| `contact_emails` | Platform-wide (ephemeral) | All orgs (on unlock) |
-| `media_outlets` | Platform-wide | All orgs |
-| Relationship ledger data | Org-scoped | Own org only |
-| Pitch history | Org-scoped | Own org only |
-| Relationship score | Org-scoped | Own org only (separate from platform saturation) |
-| `org_contact_tags` | Org-scoped | Own org only |
-| `do_not_contact` flag | Org-scoped | Own org only |
+| Data Layer                | Scope                     | Visibility                                       |
+| ------------------------- | ------------------------- | ------------------------------------------------ |
+| `media_contacts` identity | Platform-wide             | All orgs (read-only)                             |
+| `contact_emails`          | Platform-wide (ephemeral) | All orgs (on unlock)                             |
+| `media_outlets`           | Platform-wide             | All orgs                                         |
+| Relationship ledger data  | Org-scoped                | Own org only                                     |
+| Pitch history             | Org-scoped                | Own org only                                     |
+| Relationship score        | Org-scoped                | Own org only (separate from platform saturation) |
+| `org_contact_tags`        | Org-scoped                | Own org only                                     |
+| `do_not_contact` flag     | Org-scoped                | Own org only                                     |
 
 Row-level security (RLS) in Supabase enforces org isolation on all org-scoped tables. The shared identity layer is read-only for all orgs — no org can modify the platform contact record.
 
@@ -587,12 +591,14 @@ All org-scoped tables include `workspace_id` (nullable) for agency workspace sco
 BYOE is the primary sending model. Users connect their own Gmail or Outlook account via OAuth. Pravado composes in the browser and sends via the connected account's SMTP.
 
 **Why BYOE is correct for Pravado's positioning:**
+
 - Pitches from `christian@acmebrand.com` land differently than from shared sending infrastructure
 - Aligns with quality-over-quantity philosophy — personal accounts enforce authenticity
 - No shared domain reputation risk — one bad actor cannot impact other users
 - Journalists receive correspondence from a real person's real email address
 
 **OAuth providers supported:**
+
 - Gmail (Google OAuth 2.0)
 - Outlook / Microsoft 365 (Microsoft Graph API)
 
@@ -602,16 +608,17 @@ BYOE is the primary sending model. Users connect their own Gmail or Outlook acco
 
 Available as a paid add-on at Pro+ tiers for legitimate use cases:
 
-| Legitimate Use Case | Explanation |
-|--------------------|-------------|
-| Corporate IT restrictions | Enterprise users whose IT policy blocks third-party OAuth integration |
-| Non-Gmail/Outlook email | Users on Zoho, Fastmail, or custom SMTP setups |
+| Legitimate Use Case            | Explanation                                                                                  |
+| ------------------------------ | -------------------------------------------------------------------------------------------- |
+| Corporate IT restrictions      | Enterprise users whose IT policy blocks third-party OAuth integration                        |
+| Non-Gmail/Outlook email        | Users on Zoho, Fastmail, or custom SMTP setups                                               |
 | Agency multi-client management | Agencies managing multiple client brands cannot practically connect multiple client accounts |
-| Automated follow-up sequences | BYOE OAuth token refresh failures can cause silent sequence failures |
+| Automated follow-up sequences  | BYOE OAuth token refresh failures can cause silent sequence failures                         |
 
 Pricing: Flat monthly add-on fee with volume cap. Cost is structured to prevent spray-and-pray economics.
 
 Managed sending uses dedicated sending subdomains (`brand.pitch.pravado.com`) with:
+
 - Full DKIM/SPF/DMARC authentication
 - Isolated IP pool per customer (no shared reputation)
 - Domain warm-up protocol before first send
@@ -621,13 +628,14 @@ Managed sending uses dedicated sending subdomains (`brand.pitch.pravado.com`) wi
 
 Daily send limits enforced at the platform layer regardless of sending method:
 
-| Tier | Daily Pitches | Daily Unlocks | Sequences Active | Contact Views/Hour |
-|------|--------------|---------------|------------------|--------------------|
-| Starter | 5 | 10 | 2 | 30 |
-| Pro | 25 | 50 | 10 | 100 |
-| Enterprise | 100 (custom) | 500 (custom) | Unlimited | 300 |
+| Tier       | Daily Pitches | Daily Unlocks | Sequences Active | Contact Views/Hour |
+| ---------- | ------------- | ------------- | ---------------- | ------------------ |
+| Starter    | 5             | 10            | 2                | 30                 |
+| Pro        | 25            | 50            | 10               | 100                |
+| Enterprise | 100 (custom)  | 500 (custom)  | Unlimited        | 300                |
 
 Additional guardrails:
+
 - Bounce rate > 10%: Send limit halved automatically, alert generated
 - Bounce rate > 25%: Account flagged for review, sending suspended
 - Spam complaint received: Decrement User Health Score, immediate alert
@@ -671,14 +679,14 @@ The Journalist Transparency Portal (branded as **"Pravado for Journalists"** —
 
 ### 12.2 Contact-Facing Features
 
-| Feature | Description | Value to Journalist |
-|---------|-------------|---------------------|
-| **Visibility into research** (opt-in) | See how many brands in which categories have added them to media lists this month | Intelligence about which industries are targeting their coverage |
-| **Topic preference signals** | Self-update current beat focus — "I'm covering enterprise AI, not consumer tech right now" | Immediately routes pitches more accurately; fewer irrelevant pitches |
-| **Pitch preferences** | Set: Email only / No AI-generated pitches / Preferred days/times / Exclusive only | Pitches that reach them are more likely to be relevant |
-| **One-click opt-out** | Global opt-out from all Pravado-facilitated outreach | Permanently suppressed — hashed to prevent re-ingestion |
-| **Opt-out with reason** (optional) | Specify why: too many pitches / wrong topics / changing focus / on leave | System learns; future pitchers get better matching |
-| **Pitch quality feedback** (opt-in) | Thumbs up/down on pitches received via Pravado | Positive increments sender health score; negative decrements it |
+| Feature                               | Description                                                                                | Value to Journalist                                                  |
+| ------------------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| **Visibility into research** (opt-in) | See how many brands in which categories have added them to media lists this month          | Intelligence about which industries are targeting their coverage     |
+| **Topic preference signals**          | Self-update current beat focus — "I'm covering enterprise AI, not consumer tech right now" | Immediately routes pitches more accurately; fewer irrelevant pitches |
+| **Pitch preferences**                 | Set: Email only / No AI-generated pitches / Preferred days/times / Exclusive only          | Pitches that reach them are more likely to be relevant               |
+| **One-click opt-out**                 | Global opt-out from all Pravado-facilitated outreach                                       | Permanently suppressed — hashed to prevent re-ingestion              |
+| **Opt-out with reason** (optional)    | Specify why: too many pitches / wrong topics / changing focus / on leave                   | System learns; future pitchers get better matching                   |
+| **Pitch quality feedback** (opt-in)   | Thumbs up/down on pitches received via Pravado                                             | Positive increments sender health score; negative decrements it      |
 
 ### 12.3 Opt-Out Protocol
 
@@ -695,14 +703,15 @@ The Journalist Transparency Portal (branded as **"Pravado for Journalists"** —
 
 Embeddings are generated from journalist bio + last 5 articles/pieces of content using `text-embedding-3-small` via Supabase pgvector.
 
-| Activity Level | Definition | Refresh Cadence |
-|----------------|------------|-----------------|
-| Active | Article/post in last 30 days | Weekly |
-| Moderate | Article/post in last 90 days | Monthly |
-| Inactive | No content in 90+ days | Quarterly |
-| Dead | No content in 12+ months | No refresh — flagged for review |
+| Activity Level | Definition                   | Refresh Cadence                 |
+| -------------- | ---------------------------- | ------------------------------- |
+| Active         | Article/post in last 30 days | Weekly                          |
+| Moderate       | Article/post in last 90 days | Monthly                         |
+| Inactive       | No content in 90+ days       | Quarterly                       |
+| Dead           | No content in 12+ months     | No refresh — flagged for review |
 
 Refresh triggers:
+
 - **Time-based**: Scheduled job per cadence above
 - **Event-based**: RSS signal detects new article → immediate re-embed for that contact
 
@@ -725,6 +734,7 @@ Competitors are configured by the user org. SAGE monitors:
 ### 14.2 Counter-Pitch Signal
 
 When competitor share of voice spikes on a topic:
+
 1. SAGE identifies the journalists who covered the competitor
 2. Checks if the user org has a differentiated counter-narrative
 3. Surfaces a counter-pitch proposal with a specific angle and a time window
@@ -733,6 +743,7 @@ When competitor share of voice spikes on a topic:
 ### 14.3 Data Sources
 
 Competitive intelligence is derived entirely from existing infrastructure:
+
 - RSS/NewsAPI monitoring (Tier 1 ingestion — already running)
 - CiteMind Engine 3 citation tracking
 - No third-party competitive intelligence purchase required
@@ -741,27 +752,27 @@ Competitive intelligence is derived entirely from existing infrastructure:
 
 ## 15. Data Security
 
-| Control | Specification |
-|---------|---------------|
-| PII encryption at rest | AES-256 for all email addresses and personal identifiers |
-| In transit | TLS 1.3 |
-| Bulk CSV export | Disabled at Starter and Pro. Enterprise only — watermarked exports with audit log |
-| Velocity ceiling | > 20 profile views in 60 seconds → mandatory CAPTCHA |
-| Sequential access detection | Linear ID pattern access → rate limit + flag for review |
-| Opt-out hash check | Suppressed email hashes checked at every enrichment result before storage |
-| Data minimization | No home addresses, personal phone numbers, or non-professional identifiers in database |
+| Control                     | Specification                                                                          |
+| --------------------------- | -------------------------------------------------------------------------------------- |
+| PII encryption at rest      | AES-256 for all email addresses and personal identifiers                               |
+| In transit                  | TLS 1.3                                                                                |
+| Bulk CSV export             | Disabled at Starter and Pro. Enterprise only — watermarked exports with audit log      |
+| Velocity ceiling            | > 20 profile views in 60 seconds → mandatory CAPTCHA                                   |
+| Sequential access detection | Linear ID pattern access → rate limit + flag for review                                |
+| Opt-out hash check          | Suppressed email hashes checked at every enrichment result before storage              |
+| Data minimization           | No home addresses, personal phone numbers, or non-professional identifiers in database |
 
 ---
 
 ## 16. Compliance Summary
 
-| Requirement | Approach |
-|-------------|---------|
+| Requirement                | Approach                                                                                                                                                             |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GDPR (future EU expansion) | US-first architecture with GDPR-ready data residency flag (`data_region` on orgs table). No EU customers at V1 — flag flipped when compliance infrastructure is live |
-| CCPA | California users covered by opt-out portal, data minimization, and no-sale policy |
-| FTC (KOL) | Hard product boundary — no compensation facilitation; contacts-only for KOL type |
-| CAN-SPAM | Unsubscribe/opt-out honored within 60 seconds globally |
-| CASL (Canada) | LATAM scope — Canada excluded from V1 corpus (CASL requires opt-in, not opt-out) |
+| CCPA                       | California users covered by opt-out portal, data minimization, and no-sale policy                                                                                    |
+| FTC (KOL)                  | Hard product boundary — no compensation facilitation; contacts-only for KOL type                                                                                     |
+| CAN-SPAM                   | Unsubscribe/opt-out honored within 60 seconds globally                                                                                                               |
+| CASL (Canada)              | LATAM scope — Canada excluded from V1 corpus (CASL requires opt-in, not opt-out)                                                                                     |
 
 ---
 
@@ -797,15 +808,16 @@ This document is the authoritative specification for the Pravado Media Contact D
 
 ### 18.2 Dependent Specifications
 
-| Document | Relationship |
-|----------|-------------|
-| `PR_PILLAR_MODEL.md` | Parent — pillar-level model, references this doc |
-| `PR_WORK_SURFACE_CONTRACT.md` | Data model entities defined here |
+| Document                        | Relationship                                               |
+| ------------------------------- | ---------------------------------------------------------- |
+| `PR_PILLAR_MODEL.md`            | Parent — pillar-level model, references this doc           |
+| `PR_WORK_SURFACE_CONTRACT.md`   | Data model entities defined here                           |
 | `PR_CONTACT_LEDGER_CONTRACT.md` | Interaction events feed contact_state and org health score |
 
 ### 18.3 Change Control
 
 Modifications require:
+
 1. Product review sign-off
 2. Legal review for any compliance implications
 3. Update to dependent specifications
@@ -815,6 +827,6 @@ Modifications require:
 
 ## 19. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-02-26 | 1.0 | Initial specification — four contact types, Identity/Contact Firewall, JIT enrichment, state machine, three-layer tagging, result diversity and saturation scoring, BYOE sending model, journalist transparency portal, SAGE proactive signals, org multi-tenancy, competitive intelligence |
+| Date       | Version | Change                                                                                                                                                                                                                                                                                      |
+| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-02-26 | 1.0     | Initial specification — four contact types, Identity/Contact Firewall, JIT enrichment, state machine, three-layer tagging, result diversity and saturation scoring, BYOE sending model, journalist transparency portal, SAGE proactive signals, org multi-tenancy, competitive intelligence |

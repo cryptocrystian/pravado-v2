@@ -16,9 +16,10 @@ import { useRouter } from 'next/navigation';
 
 import type { TopicCluster } from './seo-mock-data';
 
-
 const resultIcon: Record<string, React.ReactNode> = {
-  cited: <CheckCircle size={14} className="text-semantic-success" weight="fill" />,
+  cited: (
+    <CheckCircle size={14} className="text-semantic-success" weight="fill" />
+  ),
   partial: <Warning size={14} className="text-amber-500" weight="fill" />,
   not_cited: <XCircle size={14} className="text-red-500" weight="fill" />,
 };
@@ -29,7 +30,9 @@ export function ClusterDetail({ cluster }: { cluster: TopicCluster | null }) {
   if (!cluster) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-white/45 text-sm">Select a cluster to view details</p>
+        <p className="text-white/45 text-sm">
+          Select a cluster to view details
+        </p>
       </div>
     );
   }
@@ -96,11 +99,14 @@ export function ClusterDetail({ cluster }: { cluster: TopicCluster | null }) {
             const rank = i + 1;
             const delta = comp.isYou
               ? null
-              : comp.score - (cluster.competitors.find((c) => c.isYou)?.score ?? 0);
+              : comp.score -
+                (cluster.competitors.find((c) => c.isYou)?.score ?? 0);
 
             return (
               <div key={comp.name} className="flex items-center gap-3">
-                <span className="w-6 text-xs text-white/30 font-bold">#{rank}</span>
+                <span className="w-6 text-xs text-white/30 font-bold">
+                  #{rank}
+                </span>
                 <span className="w-28 text-sm text-white/70">{comp.name}</span>
                 <div className="flex-1 h-2 bg-white/8 rounded-full overflow-hidden">
                   <div
@@ -117,7 +123,8 @@ export function ClusterDetail({ cluster }: { cluster: TopicCluster | null }) {
                   </span>
                 ) : delta !== null ? (
                   <span className="text-xs text-white/30 w-12 text-right">
-                    ({delta > 0 ? '+' : ''}{delta})
+                    ({delta > 0 ? '+' : ''}
+                    {delta})
                   </span>
                 ) : (
                   <span className="w-12" />
@@ -150,7 +157,9 @@ export function ClusterDetail({ cluster }: { cluster: TopicCluster | null }) {
                       className="flex items-center gap-1"
                       title={`${engine}: ${status}`}
                     >
-                      <span className="text-xs text-white/30">{engine.slice(0, 3)}</span>
+                      <span className="text-xs text-white/30">
+                        {engine.slice(0, 3)}
+                      </span>
                       {resultIcon[status]}
                     </div>
                   ))}
@@ -174,7 +183,9 @@ export function ClusterDetail({ cluster }: { cluster: TopicCluster | null }) {
 
         {cluster.ownedCitations.length > 0 && (
           <div className="mb-3">
-            <p className="text-xs text-white/45 mb-1">Your owned pages being cited:</p>
+            <p className="text-xs text-white/45 mb-1">
+              Your owned pages being cited:
+            </p>
             {cluster.ownedCitations.map((c) => (
               <div
                 key={c.url}
@@ -193,7 +204,9 @@ export function ClusterDetail({ cluster }: { cluster: TopicCluster | null }) {
 
         {cluster.earnedCitations.length > 0 && (
           <div className="mb-3">
-            <p className="text-xs text-white/45 mb-1">Earned media being cited:</p>
+            <p className="text-xs text-white/45 mb-1">
+              Earned media being cited:
+            </p>
             {cluster.earnedCitations.map((c) => (
               <div
                 key={c.source}
@@ -250,7 +263,9 @@ export function ClusterDetail({ cluster }: { cluster: TopicCluster | null }) {
                 <div className="flex-1">
                   <p
                     className={`text-sm ${
-                      rec.type === 'success' ? 'text-semantic-success' : 'text-white/70'
+                      rec.type === 'success'
+                        ? 'text-semantic-success'
+                        : 'text-white/70'
                     }`}
                   >
                     {rec.text}

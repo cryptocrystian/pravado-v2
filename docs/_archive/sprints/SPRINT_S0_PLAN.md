@@ -25,23 +25,27 @@ Sprint S0 is the foundational sprint that sets up the entire development infrast
 ## Deliverables Checklist
 
 ### Core Infrastructure
+
 - [x] Monorepo structure (Turborepo + pnpm workspaces)
 - [x] Root-level configuration files
 - [x] Package manager setup (pnpm)
 - [x] Workspace configuration
 
 ### Applications
+
 - [x] apps/api - Fastify skeleton with TypeScript
 - [x] apps/dashboard - Next.js 14 skeleton (App Router)
 - [x] apps/mobile - Expo stub (React Native)
 
 ### Shared Packages
+
 - [x] packages/types - Shared TypeScript types
 - [x] packages/validators - Zod schemas for validation
 - [x] packages/utils - Shared utility functions
 - [x] packages/feature-flags - Feature flag foundation
 
 ### Development Tooling
+
 - [x] ESLint configuration (monorepo-aware)
 - [x] Prettier configuration
 - [x] TypeScript configuration (base + per-package)
@@ -49,6 +53,7 @@ Sprint S0 is the foundational sprint that sets up the entire development infrast
 - [x] Environment validation via @pravado/validators
 
 ### CI/CD
+
 - [x] GitHub Actions workflow
 - [x] Automated linting on PR
 - [x] Automated type checking
@@ -56,6 +61,7 @@ Sprint S0 is the foundational sprint that sets up the entire development infrast
 - [x] Build verification
 
 ### Documentation
+
 - [x] /docs folder structure
 - [x] docs/ARCHITECTURE.md
 - [x] docs/DEVELOPMENT.md
@@ -64,6 +70,7 @@ Sprint S0 is the foundational sprint that sets up the entire development infrast
 - [x] Updated README.md for v2
 
 ### Sprint Management
+
 - [x] SPRINT_S0_PLAN.md (this file)
 - [x] GitHub Issues for all tasks
 - [x] Tagging instructions for v0.0.0-s0
@@ -99,28 +106,33 @@ pravado-v2/
 ### Tech Stack
 
 **Build System:**
+
 - Turborepo 2.x for incremental builds and caching
 - pnpm 9.x for efficient package management
 - TypeScript 5.x for type safety
 
 **Backend (apps/api):**
+
 - Fastify 4.x - Fast, low-overhead framework
 - TypeScript - Type safety
 - Vitest - Testing framework
 - Zod - Runtime validation
 
 **Frontend (apps/dashboard):**
+
 - Next.js 14 - React framework with App Router
 - TypeScript - Type safety
 - Tailwind CSS - Styling
 - React Query - Server state management
 
 **Mobile (apps/mobile):**
+
 - Expo SDK 50+ - React Native framework
 - TypeScript - Type safety
 - Expo Router - File-based routing
 
 **Shared Packages:**
+
 - Zod - Schema validation
 - TypeScript - Shared types
 - Vitest - Unit testing
@@ -130,7 +142,9 @@ pravado-v2/
 ## Phase Breakdown
 
 ### Phase 1: Foundation (Day 1)
+
 **Tasks:**
+
 - Initialize git repository
 - Set up pnpm workspaces
 - Configure Turborepo
@@ -138,12 +152,15 @@ pravado-v2/
 - Set up base TypeScript config
 
 **Deliverables:**
+
 - Working monorepo structure
 - Dependency installation works
 - `pnpm install` succeeds
 
 ### Phase 2: Shared Packages (Day 2)
+
 **Tasks:**
+
 - Create @pravado/types package
 - Create @pravado/validators package
 - Create @pravado/utils package
@@ -151,12 +168,15 @@ pravado-v2/
 - Set up inter-package dependencies
 
 **Deliverables:**
+
 - All packages buildable
 - Type definitions exported
 - Basic utilities available
 
 ### Phase 3: API Application (Day 2-3)
+
 **Tasks:**
+
 - Initialize Fastify app
 - Set up route structure
 - Configure environment validation
@@ -165,13 +185,16 @@ pravado-v2/
 - Configure CORS
 
 **Deliverables:**
+
 - API starts on port 3001
 - Health check returns 200
 - TypeScript compilation works
 - Hot reload functional
 
 ### Phase 4: Dashboard Application (Day 3-4)
+
 **Tasks:**
+
 - Initialize Next.js 14 with App Router
 - Set up basic layout
 - Configure Tailwind CSS
@@ -180,13 +203,16 @@ pravado-v2/
 - Configure API client
 
 **Deliverables:**
+
 - Dashboard starts on port 3000
 - Homepage renders
 - TypeScript compilation works
 - Hot reload functional
 
 ### Phase 5: Mobile Stub (Day 4)
+
 **Tasks:**
+
 - Initialize Expo project
 - Set up basic navigation
 - Add splash screen
@@ -194,12 +220,15 @@ pravado-v2/
 - Add basic components
 
 **Deliverables:**
+
 - Expo app runs on simulator
 - Basic navigation works
 - TypeScript compilation works
 
 ### Phase 6: Development Tooling (Day 5)
+
 **Tasks:**
+
 - Configure ESLint for monorepo
 - Configure Prettier
 - Set up Vitest for unit tests
@@ -207,13 +236,16 @@ pravado-v2/
 - Configure VS Code settings
 
 **Deliverables:**
+
 - `pnpm lint` works across all packages
 - `pnpm format` works
 - `pnpm test` runs unit tests
 - Consistent code style
 
 ### Phase 7: CI/CD (Day 5-6)
+
 **Tasks:**
+
 - Create GitHub Actions workflow
 - Add lint job
 - Add type check job
@@ -222,12 +254,15 @@ pravado-v2/
 - Configure caching
 
 **Deliverables:**
+
 - CI passes on main branch
 - PR checks run automatically
 - Build artifacts validated
 
 ### Phase 8: Documentation (Day 6)
+
 **Tasks:**
+
 - Create docs folder structure
 - Write ARCHITECTURE.md
 - Write DEVELOPMENT.md
@@ -236,6 +271,7 @@ pravado-v2/
 - Update README.md
 
 **Deliverables:**
+
 - Complete documentation
 - Clear onboarding guide
 - Architecture diagrams (text-based)
@@ -249,12 +285,14 @@ pravado-v2/
 **Package:** `@pravado/feature-flags`
 
 **Core Principles:**
+
 1. Type-safe flag definitions
 2. Environment-based overrides
 3. Runtime toggleable (future)
 4. A/B testing ready (future)
 
 **Initial Flags:**
+
 ```typescript
 export const FLAGS = {
   // API flags
@@ -272,6 +310,7 @@ export const FLAGS = {
 ```
 
 **Usage:**
+
 ```typescript
 import { isEnabled } from '@pravado/feature-flags';
 
@@ -287,11 +326,13 @@ if (isEnabled('ENABLE_DARK_MODE')) {
 ### Package: @pravado/validators
 
 **Scope:**
+
 - Validate all environment variables at startup
 - Type-safe env access
 - Clear error messages for missing/invalid vars
 
 **Example Schema:**
+
 ```typescript
 import { z } from 'zod';
 
@@ -311,16 +352,19 @@ export type ApiEnv = z.infer<typeof apiEnvSchema>;
 ## Testing Strategy
 
 ### Unit Tests
+
 - **Framework:** Vitest
 - **Coverage Target:** 70%+ (future sprints)
 - **Location:** `__tests__` folders in each package
 
 ### Integration Tests
+
 - **Scope:** API endpoint testing
 - **Framework:** Vitest + Fastify test utilities
 - **Coverage:** Health checks, basic routes
 
 ### E2E Tests
+
 - **Scope:** Dashboard user flows
 - **Framework:** Playwright (future sprint)
 - **Coverage:** Critical paths only
@@ -358,6 +402,7 @@ export type ApiEnv = z.infer<typeof apiEnvSchema>;
 ```
 
 ### Build Order
+
 1. packages/types
 2. packages/validators
 3. packages/utils
@@ -371,12 +416,14 @@ export type ApiEnv = z.infer<typeof apiEnvSchema>;
 ## GitHub Issues
 
 All Sprint S0 tasks are tracked in GitHub Issues with the following labels:
+
 - `sprint:s0` - Sprint S0 task
 - `type:infrastructure` - Infrastructure setup
 - `type:tooling` - Development tooling
 - `priority:high` - Critical path items
 
 **Issue Milestones:**
+
 - Foundation Setup
 - Shared Packages
 - Applications
@@ -387,6 +434,7 @@ All Sprint S0 tasks are tracked in GitHub Issues with the following labels:
 ## Success Metrics
 
 ### Technical Metrics
+
 - [ ] All packages build successfully
 - [ ] All apps start without errors
 - [ ] CI pipeline passes 100%
@@ -394,12 +442,14 @@ All Sprint S0 tasks are tracked in GitHub Issues with the following labels:
 - [ ] Zero ESLint errors
 
 ### Developer Experience Metrics
+
 - [ ] `pnpm install` completes in < 60s
 - [ ] `pnpm dev` starts all apps in < 30s
 - [ ] Hot reload works in all apps
 - [ ] Type checking is fast (< 10s)
 
 ### Documentation Metrics
+
 - [ ] All core docs complete
 - [ ] README has clear setup instructions
 - [ ] Architecture is documented
@@ -409,23 +459,25 @@ All Sprint S0 tasks are tracked in GitHub Issues with the following labels:
 
 ## Risk & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Turborepo learning curve | Medium | Reference official docs, keep config simple |
-| Package dependency cycles | High | Enforce one-way dependencies, lint rules |
-| Build time increases | Medium | Turborepo caching, remote cache (future) |
-| Mobile setup complexity | Low | Use Expo for simplicity, minimal config |
+| Risk                      | Impact | Mitigation                                  |
+| ------------------------- | ------ | ------------------------------------------- |
+| Turborepo learning curve  | Medium | Reference official docs, keep config simple |
+| Package dependency cycles | High   | Enforce one-way dependencies, lint rules    |
+| Build time increases      | Medium | Turborepo caching, remote cache (future)    |
+| Mobile setup complexity   | Low    | Use Expo for simplicity, minimal config     |
 
 ---
 
 ## Post-Sprint S0
 
 ### Immediate Next Steps
+
 1. Tag v0.0.0-s0
 2. Create Sprint S1 plan
 3. Begin feature development
 
 ### Sprint S1 Preview
+
 - Database setup (Supabase/PostgreSQL)
 - Authentication scaffold
 - Basic API routes

@@ -46,12 +46,18 @@ interface LivingCanvasEditorProps {
 // ============================================
 
 const MOCK_SUGGESTIONS: Record<string, string> = {
-  'AI content creation': ' enables marketers to produce high-quality content at scale while maintaining brand consistency.',
-  'Machine learning': ' algorithms analyze patterns in successful content to provide actionable recommendations.',
-  'automation': ' reduces manual effort by 60% while improving content quality scores.',
-  'marketing': ' teams can leverage these insights to drive more effective campaigns.',
-  'content strategy': ' should align with both SEO objectives and audience engagement metrics.',
-  'authority': ' is built through consistent, high-quality content that demonstrates expertise.',
+  'AI content creation':
+    ' enables marketers to produce high-quality content at scale while maintaining brand consistency.',
+  'Machine learning':
+    ' algorithms analyze patterns in successful content to provide actionable recommendations.',
+  automation:
+    ' reduces manual effort by 60% while improving content quality scores.',
+  marketing:
+    ' teams can leverage these insights to drive more effective campaigns.',
+  'content strategy':
+    ' should align with both SEO objectives and audience engagement metrics.',
+  authority:
+    ' is built through consistent, high-quality content that demonstrates expertise.',
 };
 
 function getPhantomSuggestion(text: string): string | null {
@@ -74,7 +80,11 @@ function getPhantomSuggestion(text: string): string | null {
       // Only suggest if we're at the end of typing the phrase
       const keyParts = key.toLowerCase().split(' ');
       const lastWordLower = lastWord.toLowerCase();
-      if (keyParts.some(part => part.startsWith(lastWordLower) && part !== lastWordLower)) {
+      if (
+        keyParts.some(
+          (part) => part.startsWith(lastWordLower) && part !== lastWordLower
+        )
+      ) {
         continue;
       }
       if (lastPhrase.endsWith(key.toLowerCase().slice(0, lastWord.length))) {
@@ -90,11 +100,17 @@ function getPhantomSuggestion(text: string): string | null {
 // ENTITY HIGHLIGHTER
 // ============================================
 
-function findEntityMentions(text: string, entities: string[]): Map<string, number> {
+function findEntityMentions(
+  text: string,
+  entities: string[]
+): Map<string, number> {
   const counts = new Map<string, number>();
 
   for (const entity of entities) {
-    const regex = new RegExp(entity.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    const regex = new RegExp(
+      entity.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+      'gi'
+    );
     const matches = text.match(regex);
     counts.set(entity, matches?.length ?? 0);
   }
@@ -147,36 +163,42 @@ export function LivingCanvasEditor({
   }, [content, mode, isFocused]);
 
   // Handle content change
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newContent = e.target.value;
-    setContent(newContent);
-    onContentChange?.(newContent);
-  }, [onContentChange]);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newContent = e.target.value;
+      setContent(newContent);
+      onContentChange?.(newContent);
+    },
+    [onContentChange]
+  );
 
   // Handle key events (Tab to accept phantom)
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Tab to accept phantom suggestion
-    if (e.key === 'Tab' && phantomText && mode === 'copilot') {
-      e.preventDefault();
-      const newContent = content + phantomText;
-      setContent(newContent);
-      setPhantomText(null);
-      onContentChange?.(newContent);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      // Tab to accept phantom suggestion
+      if (e.key === 'Tab' && phantomText && mode === 'copilot') {
+        e.preventDefault();
+        const newContent = content + phantomText;
+        setContent(newContent);
+        setPhantomText(null);
+        onContentChange?.(newContent);
 
-      // Move cursor to end
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.selectionStart = newContent.length;
-          textareaRef.current.selectionEnd = newContent.length;
-        }
-      }, 0);
-    }
+        // Move cursor to end
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.selectionStart = newContent.length;
+            textareaRef.current.selectionEnd = newContent.length;
+          }
+        }, 0);
+      }
 
-    // Escape to dismiss phantom
-    if (e.key === 'Escape' && phantomText) {
-      setPhantomText(null);
-    }
-  }, [content, phantomText, mode, onContentChange]);
+      // Escape to dismiss phantom
+      if (e.key === 'Escape' && phantomText) {
+        setPhantomText(null);
+      }
+    },
+    [content, phantomText, mode, onContentChange]
+  );
 
   // Word count
   const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
@@ -187,11 +209,13 @@ export function LivingCanvasEditor({
   return (
     <div className="flex flex-col h-full">
       {/* Editor Container */}
-      <div className={`
+      <div
+        className={`
         relative flex-1 rounded-lg border bg-slate-1
         ${isFocused ? 'border-brand-iris/40 ring-1 ring-brand-iris/20' : 'border-slate-4'}
         ${motion.transition.fast}
-      `}>
+      `}
+      >
         {/* Main Textarea */}
         <textarea
           ref={textareaRef}
@@ -225,10 +249,14 @@ export function LivingCanvasEditor({
         {/* Phantom Accept Hint */}
         {mode === 'copilot' && phantomText && isFocused && (
           <div className="absolute bottom-2 right-2 flex items-center gap-1.5 px-2 py-1 bg-slate-2/90 border border-slate-4 rounded text-xs text-white/50">
-            <kbd className="px-1 py-0.5 bg-slate-4 rounded text-xs font-mono">Tab</kbd>
+            <kbd className="px-1 py-0.5 bg-slate-4 rounded text-xs font-mono">
+              Tab
+            </kbd>
             <span>to accept</span>
             <span className="text-white/30">|</span>
-            <kbd className="px-1 py-0.5 bg-slate-4 rounded text-xs font-mono">Esc</kbd>
+            <kbd className="px-1 py-0.5 bg-slate-4 rounded text-xs font-mono">
+              Esc
+            </kbd>
             <span>to dismiss</span>
           </div>
         )}
@@ -242,14 +270,10 @@ export function LivingCanvasEditor({
         </div>
         <div className="flex items-center gap-2">
           {mode === 'copilot' && (
-            <span className="text-brand-cyan">
-              Copilot active
-            </span>
+            <span className="text-brand-cyan">Copilot active</span>
           )}
           {mode === 'autopilot' && (
-            <span className="text-brand-iris">
-              Autopilot drafting
-            </span>
+            <span className="text-brand-iris">Autopilot drafting</span>
           )}
         </div>
       </div>
@@ -268,22 +292,33 @@ interface ReadonlyPreviewProps {
   onEdit?: () => void;
 }
 
-export function AutopilotDraftPreview({ content, onAccept, onReject, onEdit }: ReadonlyPreviewProps) {
+export function AutopilotDraftPreview({
+  content,
+  onAccept,
+  onReject,
+  onEdit,
+}: ReadonlyPreviewProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Preview Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-brand-iris/10 border-b border-brand-iris/20 rounded-t-lg">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-brand-iris animate-pulse" />
-          <span className="text-xs font-medium text-brand-iris">Autopilot Draft</span>
+          <span className="text-xs font-medium text-brand-iris">
+            Autopilot Draft
+          </span>
         </div>
-        <span className="text-xs text-white/50">Review required before publishing</span>
+        <span className="text-xs text-white/50">
+          Review required before publishing
+        </span>
       </div>
 
       {/* Content Preview */}
       <div className="flex-1 p-4 bg-slate-1 border-x border-slate-4 overflow-y-auto">
         <div className="prose prose-invert prose-sm max-w-none">
-          <p className="text-white/80 leading-relaxed whitespace-pre-wrap">{content}</p>
+          <p className="text-white/80 leading-relaxed whitespace-pre-wrap">
+            {content}
+          </p>
         </div>
       </div>
 

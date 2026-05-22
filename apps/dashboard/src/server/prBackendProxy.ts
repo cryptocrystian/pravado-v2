@@ -19,14 +19,19 @@ import { getServerAccessToken, ServerAuthError } from './supabaseServerAuth';
 
 function getApiBaseUrl(): string {
   // Check multiple env var names for compatibility
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
-    || process.env.PRAVADO_API_BASE_URL
-    || process.env.API_BASE_URL;
+  const apiUrl =
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.PRAVADO_API_BASE_URL ||
+    process.env.API_BASE_URL;
 
   if (!apiUrl) {
     console.error('[prBackendProxy] CRITICAL: No API base URL configured');
-    console.error('[prBackendProxy] Set NEXT_PUBLIC_API_URL, PRAVADO_API_BASE_URL, or API_BASE_URL');
-    throw new Error('API_URL_MISSING: No API base URL environment variable configured');
+    console.error(
+      '[prBackendProxy] Set NEXT_PUBLIC_API_URL, PRAVADO_API_BASE_URL, or API_BASE_URL'
+    );
+    throw new Error(
+      'API_URL_MISSING: No API base URL environment variable configured'
+    );
   }
 
   return apiUrl;
@@ -100,7 +105,7 @@ export async function prBackendFetch<T = unknown>(
   });
 
   const headers: Record<string, string> = {
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     ...(init.headers as Record<string, string>),
   };
 
@@ -176,7 +181,11 @@ export async function prBackendFetch<T = unknown>(
 /**
  * Helper to convert ServerAuthError or BackendProxyError to HTTP response info
  */
-export function getErrorResponse(error: unknown): { status: number; message: string; code?: string } {
+export function getErrorResponse(error: unknown): {
+  status: number;
+  message: string;
+  code?: string;
+} {
   if (error instanceof ServerAuthError) {
     return {
       status: 401,

@@ -355,10 +355,7 @@
         "n_brand_acme",
         "n_competitor_clearbit"
       ],
-      "impacted_edges": [
-        "e_clearbit_ai_marketing",
-        "e_clearbit_brand"
-      ]
+      "impacted_edges": ["e_clearbit_ai_marketing", "e_clearbit_brand"]
     },
     "act_03U0V1W2X3Y4Z5A6B7C8D9E0": {
       "driver_node": "n_topic_evi",
@@ -394,9 +391,7 @@
         "n_outlet_venturebeat",
         "n_brand_acme"
       ],
-      "impacted_edges": [
-        "e_mike_venturebeat"
-      ]
+      "impacted_edges": ["e_mike_venturebeat"]
     }
   }
 }

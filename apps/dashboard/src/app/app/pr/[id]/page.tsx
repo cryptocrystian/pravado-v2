@@ -5,11 +5,15 @@
  * Detail view for a single press release
  */
 
-import type { PRAngleOption, PRGeneratedRelease, PRHeadlineVariant, PRSimilarRelease } from '@pravado/types';
+import type {
+  PRAngleOption,
+  PRGeneratedRelease,
+  PRHeadlineVariant,
+  PRSimilarRelease,
+} from '@pravado/types';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
 
 import { PRGenerationResult } from '@/components/pr-generator';
 import {
@@ -25,12 +29,18 @@ export default function PRDetailPage() {
   const id = params?.id as string;
 
   const [release, setRelease] = useState<PRGeneratedRelease | null>(null);
-  const [headlineVariants, setHeadlineVariants] = useState<PRHeadlineVariant[]>([]);
+  const [headlineVariants, setHeadlineVariants] = useState<PRHeadlineVariant[]>(
+    []
+  );
   const [angleOptions, setAngleOptions] = useState<PRAngleOption[]>([]);
-  const [similarReleases, setSimilarReleases] = useState<PRSimilarRelease[]>([]);
+  const [similarReleases, setSimilarReleases] = useState<PRSimilarRelease[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [isOptimizing, setIsOptimizing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'content' | 'headlines' | 'angles' | 'similar'>('content');
+  const [activeTab, setActiveTab] = useState<
+    'content' | 'headlines' | 'angles' | 'similar'
+  >('content');
 
   useEffect(() => {
     if (id) {
@@ -87,13 +97,26 @@ export default function PRDetailPage() {
       <div className="h-full flex items-center justify-center">
         <div className="text-center max-w-sm">
           <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-slate-3 flex items-center justify-center">
-            <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2" />
+            <svg
+              className="w-6 h-6 text-white/40"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2"
+              />
             </svg>
           </div>
-          <h2 className="text-lg font-semibold text-white/80 mb-1">No coverage yet</h2>
+          <h2 className="text-lg font-semibold text-white/80 mb-1">
+            No coverage yet
+          </h2>
           <p className="text-sm text-white/45 mb-4">
-            Coverage from your pitches will appear here as journalists publish stories about your brand.
+            Coverage from your pitches will appear here as journalists publish
+            stories about your brand.
           </p>
           <Link
             href="/app/pr/pitches/new"
@@ -111,7 +134,10 @@ export default function PRDetailPage() {
       <div className="max-w-6xl mx-auto p-6">
         {/* Breadcrumb */}
         <div className="mb-6">
-          <Link href="/app/pr/generator" className="text-sm text-blue-600 hover:underline">
+          <Link
+            href="/app/pr/generator"
+            className="text-sm text-blue-600 hover:underline"
+          >
             &larr; Back to Generator
           </Link>
         </div>
@@ -135,8 +161,8 @@ export default function PRDetailPage() {
                     release.status === 'complete'
                       ? 'bg-green-100 text-green-800'
                       : release.status === 'failed'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-gray-100 text-gray-800'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-gray-100 text-gray-800'
                   }`}
                 >
                   {release.status}
@@ -149,22 +175,25 @@ export default function PRDetailPage() {
         {/* Tabs */}
         <div className="border-b border-gray-200 mb-6">
           <nav className="flex space-x-8">
-            {(['content', 'headlines', 'angles', 'similar'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                {tab === 'content' && 'Content'}
-                {tab === 'headlines' && `Headlines (${headlineVariants.length})`}
-                {tab === 'angles' && `Angles (${angleOptions.length})`}
-                {tab === 'similar' && `Similar (${similarReleases.length})`}
-              </button>
-            ))}
+            {(['content', 'headlines', 'angles', 'similar'] as const).map(
+              (tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === tab
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {tab === 'content' && 'Content'}
+                  {tab === 'headlines' &&
+                    `Headlines (${headlineVariants.length})`}
+                  {tab === 'angles' && `Angles (${angleOptions.length})`}
+                  {tab === 'similar' && `Similar (${similarReleases.length})`}
+                </button>
+              )
+            )}
           </nav>
         </div>
 
@@ -181,9 +210,7 @@ export default function PRDetailPage() {
           <HeadlineVariantsPanel variants={headlineVariants} />
         )}
 
-        {activeTab === 'angles' && (
-          <AngleOptionsPanel options={angleOptions} />
-        )}
+        {activeTab === 'angles' && <AngleOptionsPanel options={angleOptions} />}
 
         {activeTab === 'similar' && (
           <SimilarReleasesPanel releases={similarReleases} />
@@ -193,7 +220,11 @@ export default function PRDetailPage() {
   );
 }
 
-function HeadlineVariantsPanel({ variants }: { variants: PRHeadlineVariant[] }) {
+function HeadlineVariantsPanel({
+  variants,
+}: {
+  variants: PRHeadlineVariant[];
+}) {
   if (variants.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
@@ -279,7 +310,9 @@ function AngleOptionsPanel({ options }: { options: PRAngleOption[] }) {
             <div className="flex-1">
               <p className="font-medium text-gray-900">{option.angleTitle}</p>
               {option.angleDescription && (
-                <p className="text-sm text-gray-600 mt-1">{option.angleDescription}</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {option.angleDescription}
+                </p>
               )}
               {option.isSelected && (
                 <span className="text-xs text-blue-600 mt-2 inline-block">

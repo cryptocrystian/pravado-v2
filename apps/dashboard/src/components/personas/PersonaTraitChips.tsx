@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import { getTraitCategoryLabel } from '@/lib/personaApi';
 import { cn } from '@/lib/utils';
 
-
 interface PersonaTraitChipsProps {
   traits: AudiencePersonaTrait[];
   maxVisible?: number;
@@ -39,7 +38,9 @@ export function PersonaTraitChips({
     return b.traitStrength - a.traitStrength;
   });
 
-  const visibleTraits = isExpanded ? sortedTraits : sortedTraits.slice(0, maxVisible);
+  const visibleTraits = isExpanded
+    ? sortedTraits
+    : sortedTraits.slice(0, maxVisible);
   const hasMore = traits.length > maxVisible;
 
   // Category color mapping
@@ -77,7 +78,9 @@ export function PersonaTraitChips({
       {/* Traits Grid */}
       <div className="flex flex-wrap gap-2">
         {visibleTraits.map((trait) => {
-          const categoryColor = categoryColors[trait.traitCategory] || 'bg-gray-100 text-gray-800 border-gray-200';
+          const categoryColor =
+            categoryColors[trait.traitCategory] ||
+            'bg-gray-100 text-gray-800 border-gray-200';
 
           return (
             <div
@@ -92,22 +95,22 @@ export function PersonaTraitChips({
             >
               {/* Verified/Primary badges */}
               {trait.isVerified && (
-                <span title="Verified trait"><Shield className="h-3 w-3 flex-shrink-0" /></span>
+                <span title="Verified trait">
+                  <Shield className="h-3 w-3 flex-shrink-0" />
+                </span>
               )}
               {trait.isPrimary && (
-                <span title="Primary trait"><Check className="h-3 w-3 flex-shrink-0" /></span>
+                <span title="Primary trait">
+                  <Check className="h-3 w-3 flex-shrink-0" />
+                </span>
               )}
 
               {/* Trait name */}
-              <span className="font-medium text-sm">
-                {trait.traitName}
-              </span>
+              <span className="font-medium text-sm">{trait.traitName}</span>
 
               {/* Trait value (if present) */}
               {trait.traitValue && (
-                <span className="text-xs opacity-75">
-                  ({trait.traitValue})
-                </span>
+                <span className="text-xs opacity-75">({trait.traitValue})</span>
               )}
 
               {/* Strength indicator */}
@@ -162,7 +165,8 @@ export function PersonaTraitChips({
       {/* Summary Stats */}
       <div className="flex items-center gap-4 pt-2 border-t text-xs text-gray-500">
         <span>
-          <span className="font-medium text-gray-700">{traits.length}</span> total
+          <span className="font-medium text-gray-700">{traits.length}</span>{' '}
+          total
         </span>
         <span>
           <span className="font-medium text-gray-700">
@@ -188,7 +192,9 @@ export function PersonaTraitChips({
       {showCategory && (
         <div className="flex flex-wrap gap-2 pt-2 border-t">
           {Object.entries(categoryColors).map(([category, colorClass]) => {
-            const count = traits.filter((t) => t.traitCategory === category).length;
+            const count = traits.filter(
+              (t) => t.traitCategory === category
+            ).length;
             if (count === 0) return null;
 
             return (

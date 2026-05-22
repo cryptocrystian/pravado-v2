@@ -12,7 +12,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-
 interface TierDistributionPieProps {
   distribution: TierDistribution;
   title?: string;
@@ -143,10 +142,10 @@ export function TierDistributionPie({
     qualityScore >= 80
       ? 'green'
       : qualityScore >= 60
-      ? 'blue'
-      : qualityScore >= 40
-      ? 'yellow'
-      : 'red';
+        ? 'blue'
+        : qualityScore >= 40
+          ? 'yellow'
+          : 'red';
 
   return (
     <Card className={cn('', className)}>
@@ -157,9 +156,12 @@ export function TierDistributionPie({
             variant="outline"
             className={cn(
               'text-xs',
-              qualityColor === 'green' && 'bg-green-100 text-green-800 border-green-200',
-              qualityColor === 'blue' && 'bg-blue-100 text-blue-800 border-blue-200',
-              qualityColor === 'yellow' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
+              qualityColor === 'green' &&
+                'bg-green-100 text-green-800 border-green-200',
+              qualityColor === 'blue' &&
+                'bg-blue-100 text-blue-800 border-blue-200',
+              qualityColor === 'yellow' &&
+                'bg-yellow-100 text-yellow-800 border-yellow-200',
               qualityColor === 'red' && 'bg-red-100 text-red-800 border-red-200'
             )}
           >
@@ -188,7 +190,8 @@ export function TierDistributionPie({
                       strokeWidth="2"
                     >
                       <title>
-                        {segment.name}: {segment.value} ({segment.percentage.toFixed(1)}%)
+                        {segment.name}: {segment.value} (
+                        {segment.percentage.toFixed(1)}%)
                       </title>
                     </path>
                   </g>
@@ -230,19 +233,26 @@ export function TierDistributionPie({
             {/* Legend */}
             <div className="flex-1 space-y-2">
               {tierPercentages.map((tier, idx) => (
-                <div key={idx} className="flex items-center justify-between text-sm">
+                <div
+                  key={idx}
+                  className="flex items-center justify-between text-sm"
+                >
                   <div className="flex items-center gap-2">
                     <div
                       className="w-3 h-3 rounded-full flex-shrink-0"
                       style={{ backgroundColor: tier.color }}
                     />
-                    <span className="text-gray-700 font-medium">{tier.name}</span>
+                    <span className="text-gray-700 font-medium">
+                      {tier.name}
+                    </span>
                     <Badge variant="outline" className="text-xs">
                       {tier.quality}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-600 font-medium">{tier.value}</span>
+                    <span className="text-gray-600 font-medium">
+                      {tier.value}
+                    </span>
                     <span className="text-gray-500 text-xs w-12 text-right">
                       {tier.percentage.toFixed(1)}%
                     </span>
@@ -258,7 +268,9 @@ export function TierDistributionPie({
           <div className="mt-4 pt-4 border-t text-sm text-gray-600">
             <div className="flex items-center justify-between">
               <span>Total Mentions:</span>
-              <span className="font-semibold text-gray-900">{totalMentions.toLocaleString()}</span>
+              <span className="font-semibold text-gray-900">
+                {totalMentions.toLocaleString()}
+              </span>
             </div>
             <div className="flex items-center justify-between mt-1">
               <span>Outlets Covered:</span>

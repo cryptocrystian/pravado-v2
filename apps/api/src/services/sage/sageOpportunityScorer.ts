@@ -48,14 +48,18 @@ export async function scoreOpportunities(
 
   const { data: signals, error } = await supabase
     .from('sage_signals')
-    .select('id, signal_type, pillar, priority, evi_impact_estimate, confidence, signal_data, scored_at, expires_at')
+    .select(
+      'id, signal_type, pillar, priority, evi_impact_estimate, confidence, signal_data, scored_at, expires_at'
+    )
     .eq('org_id', orgId)
     .or(`expires_at.is.null,expires_at.gt.${now}`)
     .order('scored_at', { ascending: false })
     .limit(200);
 
   if (error) {
-    logger.error(`Failed to fetch signals for scoring (org ${orgId}): ${error.message}`);
+    logger.error(
+      `Failed to fetch signals for scoring (org ${orgId}): ${error.message}`
+    );
     return [];
   }
 
@@ -68,9 +72,9 @@ export async function scoreOpportunities(
   const scored: ScoredOpportunity[] = signals.map((s) => {
     const priorityWeight = PRIORITY_WEIGHTS[s.priority] ?? 50;
     const opportunityScore =
-      (s.evi_impact_estimate ?? 0) * 0.50 +
-      (s.confidence ?? 0) * 0.30 * 100 +
-      priorityWeight * 0.20;
+      (s.evi_impact_estimate ?? 0) * 0.5 +
+      (s.confidence ?? 0) * 0.3 * 100 +
+      priorityWeight * 0.2;
 
     return {
       signal_id: s.id,

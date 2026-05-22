@@ -39,7 +39,8 @@ export default function NarrativeSectionTypeBadge({
   className = '',
   size = 'md',
 }: NarrativeSectionTypeBadgeProps) {
-  const colorClass = SECTION_TYPE_COLORS[sectionType] || 'bg-gray-100 text-gray-800';
+  const colorClass =
+    SECTION_TYPE_COLORS[sectionType] || 'bg-gray-100 text-gray-800';
   const label = getSectionTypeLabel(sectionType);
 
   return (

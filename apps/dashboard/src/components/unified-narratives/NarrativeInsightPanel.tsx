@@ -100,7 +100,10 @@ function InsightCard({ insight }: { insight: NarrativeInsight }) {
     <div className="p-3 bg-gray-50 rounded-lg border">
       <div className="flex items-start justify-between gap-2 mb-2">
         <h5 className="font-medium text-sm">{insight.title}</h5>
-        <Badge variant="outline" className={cn('text-xs shrink-0', strengthColor)}>
+        <Badge
+          variant="outline"
+          className={cn('text-xs shrink-0', strengthColor)}
+        >
           {NARRATIVE_INSIGHT_STRENGTH_LABELS[insight.strength]}
         </Badge>
       </div>
@@ -120,18 +123,21 @@ function InsightCard({ insight }: { insight: NarrativeInsight }) {
       </div>
 
       {/* Supporting Data */}
-      {insight.supportingData && Object.keys(insight.supportingData).length > 0 && (
-        <div className="mt-2 pt-2 border-t">
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            {Object.entries(insight.supportingData).slice(0, 4).map(([key, value]) => (
-              <div key={key}>
-                <span className="text-white/50">{key}:</span>{' '}
-                <span className="font-medium">{String(value)}</span>
-              </div>
-            ))}
+      {insight.supportingData &&
+        Object.keys(insight.supportingData).length > 0 && (
+          <div className="mt-2 pt-2 border-t">
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              {Object.entries(insight.supportingData)
+                .slice(0, 4)
+                .map(([key, value]) => (
+                  <div key={key}>
+                    <span className="text-white/50">{key}:</span>{' '}
+                    <span className="font-medium">{String(value)}</span>
+                  </div>
+                ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Tags */}
       {insight.tags && insight.tags.length > 0 && (

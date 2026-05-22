@@ -43,7 +43,10 @@ export async function registerForPushNotifications(): Promise<string | null> {
       }),
     });
   } catch (err) {
-    console.warn('[Notifications] Failed to register token with API (endpoint may not exist yet):', err);
+    console.warn(
+      '[Notifications] Failed to register token with API (endpoint may not exist yet):',
+      err
+    );
   }
 
   if (Platform.OS === 'android') {

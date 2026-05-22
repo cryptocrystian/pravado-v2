@@ -17,11 +17,17 @@ interface RouteParams {
 export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const data = await prBackendFetch(`/api/v1/journalist-graph/profiles/${id}/tier`);
+    const data = await prBackendFetch(
+      `/api/v1/journalist-graph/profiles/${id}/tier`
+    );
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/journalists/[id]/tier] GET Error:', { status, message, code });
+    console.error('[API /api/pr/journalists/[id]/tier] GET Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

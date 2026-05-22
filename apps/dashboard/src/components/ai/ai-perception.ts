@@ -34,11 +34,11 @@
  * These are perceptual categories that users must be able to identify without reading text.
  */
 export type AIPerceptualState =
-  | 'idle'        // No AI activity in progress; system waiting for input
-  | 'evaluating'  // AI is analyzing, but no output yet; outcome unknown
-  | 'ready'       // AI has reached a conclusion with confidence; has recommendation
-  | 'executing'   // AI is performing an approved action; irreversible change in progress
-  | 'blocked'     // AI cannot proceed without intervention; user action required
+  | 'idle' // No AI activity in progress; system waiting for input
+  | 'evaluating' // AI is analyzing, but no output yet; outcome unknown
+  | 'ready' // AI has reached a conclusion with confidence; has recommendation
+  | 'executing' // AI is performing an approved action; irreversible change in progress
+  | 'blocked' // AI cannot proceed without intervention; user action required
   | 'escalating'; // Urgency has increased; window is closing; immediate attention warranted
 
 /**
@@ -96,7 +96,10 @@ export interface AIPerceptualSignal {
  * - Blocked: Semantic danger, NO motion (static constraint)
  * - Escalating: Warning with bounded pulse (real urgency only)
  */
-export const AI_PERCEPTUAL_SIGNALS: Record<AIPerceptualState, AIPerceptualSignal> = {
+export const AI_PERCEPTUAL_SIGNALS: Record<
+  AIPerceptualState,
+  AIPerceptualSignal
+> = {
   idle: {
     label: 'Idle',
     indicator: 'bg-white/20',
@@ -164,7 +167,12 @@ export const AI_PERCEPTUAL_SIGNALS: Record<AIPerceptualState, AIPerceptualSignal
 // ============================================
 
 /** Generic status type that works across pillars */
-export type GenericGateStatus = 'pending' | 'analyzing' | 'passed' | 'warning' | 'blocked';
+export type GenericGateStatus =
+  | 'pending'
+  | 'analyzing'
+  | 'passed'
+  | 'warning'
+  | 'blocked';
 
 /** Generic automation mode */
 export type GenericAutomationMode = 'manual' | 'copilot' | 'autopilot';
@@ -243,7 +251,9 @@ export function deriveAIPerceptualState(params: {
  * Derive urgency from deadline proximity.
  * Returns true if deadline is within 24 hours.
  */
-export function deriveUrgencyFromDeadline(dueAt: string | Date | undefined): boolean {
+export function deriveUrgencyFromDeadline(
+  dueAt: string | Date | undefined
+): boolean {
   if (!dueAt) return false;
   const deadline = typeof dueAt === 'string' ? new Date(dueAt) : dueAt;
   const now = new Date();
@@ -257,11 +267,15 @@ export function deriveUrgencyFromDeadline(dueAt: string | Date | undefined): boo
  * Per §2.3: When multiple AI operations occur simultaneously,
  * the most urgent state takes visual precedence.
  */
-export function getHighestPriorityState(states: AIPerceptualState[]): AIPerceptualState {
+export function getHighestPriorityState(
+  states: AIPerceptualState[]
+): AIPerceptualState {
   if (states.length === 0) return 'idle';
 
   return states.reduce((highest, current) => {
-    return AI_STATE_PRIORITY[current] > AI_STATE_PRIORITY[highest] ? current : highest;
+    return AI_STATE_PRIORITY[current] > AI_STATE_PRIORITY[highest]
+      ? current
+      : highest;
   }, 'idle' as AIPerceptualState);
 }
 
@@ -278,7 +292,9 @@ export type ConfidenceLevel = 'high' | 'moderate' | 'low';
  * Map numeric confidence (0-100) to confidence level.
  * Per AUTOMATE_EXECUTION_MODEL §3.3 thresholds.
  */
-export function getConfidenceLevel(confidence: number | undefined): ConfidenceLevel {
+export function getConfidenceLevel(
+  confidence: number | undefined
+): ConfidenceLevel {
   if (confidence === undefined) return 'moderate';
   if (confidence >= 85) return 'high';
   if (confidence >= 70) return 'moderate';
@@ -288,7 +304,10 @@ export function getConfidenceLevel(confidence: number | undefined): ConfidenceLe
 /**
  * Visual tokens for confidence levels.
  */
-export const CONFIDENCE_SIGNALS: Record<ConfidenceLevel, { bg: string; text: string; label: string }> = {
+export const CONFIDENCE_SIGNALS: Record<
+  ConfidenceLevel,
+  { bg: string; text: string; label: string }
+> = {
   high: {
     bg: 'bg-semantic-success/10',
     text: 'text-semantic-success',

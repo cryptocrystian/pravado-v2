@@ -56,18 +56,28 @@ export function ConfidenceBadge({
         <span className="relative flex h-2 w-2">
           <span
             className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${
-              score >= 80 ? 'bg-green-600' :
-              score >= 60 ? 'bg-blue-600' :
-              score >= 40 ? 'bg-yellow-600' :
-              score >= 20 ? 'bg-orange-600' : 'bg-red-600'
+              score >= 80
+                ? 'bg-green-600'
+                : score >= 60
+                  ? 'bg-blue-600'
+                  : score >= 40
+                    ? 'bg-yellow-600'
+                    : score >= 20
+                      ? 'bg-orange-600'
+                      : 'bg-red-600'
             }`}
           ></span>
           <span
             className={`relative inline-flex rounded-full h-2 w-2 ${
-              score >= 80 ? 'bg-green-500' :
-              score >= 60 ? 'bg-blue-500' :
-              score >= 40 ? 'bg-yellow-500' :
-              score >= 20 ? 'bg-orange-500' : 'bg-red-500'
+              score >= 80
+                ? 'bg-green-500'
+                : score >= 60
+                  ? 'bg-blue-500'
+                  : score >= 40
+                    ? 'bg-yellow-500'
+                    : score >= 20
+                      ? 'bg-orange-500'
+                      : 'bg-red-500'
             }`}
           ></span>
         </span>
@@ -111,7 +121,9 @@ export function ConfidenceBar({
           </span>
         </div>
       )}
-      <div className={`w-full bg-gray-200 rounded-full ${height} overflow-hidden`}>
+      <div
+        className={`w-full bg-gray-200 rounded-full ${height} overflow-hidden`}
+      >
         <div
           className={`${height} ${colorClass} rounded-full transition-all duration-300`}
           style={{ width: `${score}%` }}

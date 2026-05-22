@@ -9,11 +9,20 @@ import { z } from 'zod';
 // ENUM SCHEMAS
 // ========================================
 
-export const mentionSentimentSchema = z.enum(['positive', 'neutral', 'negative']);
+export const mentionSentimentSchema = z.enum([
+  'positive',
+  'neutral',
+  'negative',
+]);
 
 export const sourceTypeSchema = z.enum(['website', 'rss', 'api']);
 
-export const entityTypeSchema = z.enum(['brand', 'product', 'executive', 'competitor']);
+export const entityTypeSchema = z.enum([
+  'brand',
+  'product',
+  'executive',
+  'competitor',
+]);
 
 // ========================================
 // SOURCE SCHEMAS
@@ -42,7 +51,9 @@ export const listSourcesSchema = z.object({
   active: z
     .string()
     .optional()
-    .transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
+    .transform((val) =>
+      val === 'true' ? true : val === 'false' ? false : undefined
+    ),
   limit: z
     .string()
     .optional()
@@ -89,7 +100,10 @@ export const listArticlesSchema = z.object({
     .optional()
     .transform((val) => (val ? parseInt(val, 10) : 0))
     .pipe(z.number().int().min(0)),
-  sortBy: z.enum(['published_at', 'relevance_score', 'created_at']).optional().default('created_at'),
+  sortBy: z
+    .enum(['published_at', 'relevance_score', 'created_at'])
+    .optional()
+    .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -299,7 +313,11 @@ export const updateMediaAlertRuleSchema = z.object({
 
   // Filter fields
   brandTerms: z.array(z.string().min(1).max(255)).max(50).nullable().optional(),
-  competitorTerms: z.array(z.string().min(1).max(255)).max(50).nullable().optional(),
+  competitorTerms: z
+    .array(z.string().min(1).max(255))
+    .max(50)
+    .nullable()
+    .optional(),
   journalistIds: z.array(z.string().uuid()).max(100).nullable().optional(),
   outletIds: z.array(z.string().uuid()).max(100).nullable().optional(),
   minSentiment: z.number().min(-1).max(1).nullable().optional(),
@@ -317,7 +335,9 @@ export const listMediaAlertRulesQuerySchema = z.object({
   isActive: z
     .string()
     .optional()
-    .transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
+    .transform((val) =>
+      val === 'true' ? true : val === 'false' ? false : undefined
+    ),
   limit: z
     .string()
     .optional()
@@ -328,7 +348,10 @@ export const listMediaAlertRulesQuerySchema = z.object({
     .optional()
     .transform((val) => (val ? parseInt(val, 10) : 0))
     .pipe(z.number().int().min(0)),
-  sortBy: z.enum(['created_at', 'name', 'last_triggered_at']).optional().default('created_at'),
+  sortBy: z
+    .enum(['created_at', 'name', 'last_triggered_at'])
+    .optional()
+    .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -342,7 +365,9 @@ export const listMediaAlertEventsQuerySchema = z.object({
   isRead: z
     .string()
     .optional()
-    .transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
+    .transform((val) =>
+      val === 'true' ? true : val === 'false' ? false : undefined
+    ),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   limit: z
@@ -355,7 +380,10 @@ export const listMediaAlertEventsQuerySchema = z.object({
     .optional()
     .transform((val) => (val ? parseInt(val, 10) : 0))
     .pipe(z.number().int().min(0)),
-  sortBy: z.enum(['triggered_at', 'severity']).optional().default('triggered_at'),
+  sortBy: z
+    .enum(['triggered_at', 'severity'])
+    .optional()
+    .default('triggered_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -371,8 +399,18 @@ export const markAlertEventsReadSchema = z.object({
 // TYPE EXPORTS (MEDIA ALERTS)
 // ========================================
 
-export type CreateMediaAlertRuleInput = z.infer<typeof createMediaAlertRuleSchema>;
-export type UpdateMediaAlertRuleInput = z.infer<typeof updateMediaAlertRuleSchema>;
-export type ListMediaAlertRulesQuery = z.infer<typeof listMediaAlertRulesQuerySchema>;
-export type ListMediaAlertEventsQuery = z.infer<typeof listMediaAlertEventsQuerySchema>;
-export type MarkAlertEventsReadInput = z.infer<typeof markAlertEventsReadSchema>;
+export type CreateMediaAlertRuleInput = z.infer<
+  typeof createMediaAlertRuleSchema
+>;
+export type UpdateMediaAlertRuleInput = z.infer<
+  typeof updateMediaAlertRuleSchema
+>;
+export type ListMediaAlertRulesQuery = z.infer<
+  typeof listMediaAlertRulesQuerySchema
+>;
+export type ListMediaAlertEventsQuery = z.infer<
+  typeof listMediaAlertEventsQuerySchema
+>;
+export type MarkAlertEventsReadInput = z.infer<
+  typeof markAlertEventsReadSchema
+>;

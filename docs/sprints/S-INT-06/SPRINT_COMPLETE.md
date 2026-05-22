@@ -20,12 +20,14 @@ Without these pipelines, SAGE signal ingestors (from S-INT-02) were operating on
 ## Part A — Google Search Console Integration
 
 ### Database
+
 - **Migration:** `apps/api/supabase/migrations/84_gsc_integration.sql`
   - `gsc_connections` table: org-scoped OAuth tokens, site URL, sync status
   - RLS: org_members can manage
   - Unique constraint: one GSC connection per org (beta)
 
 ### Services
+
 - **`apps/api/src/services/gsc/gscSyncService.ts`**
   - `syncOrg(supabase, orgId)` — main sync function
   - Token refresh if expiry within 5 minutes
@@ -40,6 +42,7 @@ Without these pipelines, SAGE signal ingestors (from S-INT-02) were operating on
   - Error handling: 401 → "Token expired — reconnect GSC", never crashes
 
 ### API Routes (`/api/v1/integrations/gsc/`)
+
 - **`apps/api/src/routes/integrations/gsc.ts`**
   - `GET /auth-url` — generates Google OAuth2 URL with state param
   - `GET /callback` — exchanges code for tokens, saves connection, enqueues sync
@@ -48,12 +51,14 @@ Without these pipelines, SAGE signal ingestors (from S-INT-02) were operating on
   - `POST /sync` — triggers manual sync (enqueue or direct fallback)
 
 ### Background Worker
+
 - **`apps/api/src/queue/workers/gscSyncWorker.ts`**
   - Job: `gsc:sync`
   - Scheduled: daily at 6am UTC
   - Syncs all connected orgs, then enqueues SAGE signal scan per org
 
 ### Dashboard
+
 - **Proxy routes:**
   - `/api/integrations/gsc/auth-url` → GET backend
   - `/api/integrations/gsc/callback` → Forwards OAuth callback to backend
@@ -76,6 +81,7 @@ Without these pipelines, SAGE signal ingestors (from S-INT-02) were operating on
 ## Part B — Journalist Enrichment Service
 
 ### Services
+
 - **`apps/api/src/services/journalists/hunterEnrichmentService.ts`**
   - `enrichJournalist(supabase, journalistId, orgId)` — single journalist enrichment
     - Resolves publication domain via publicationResolver
@@ -104,18 +110,21 @@ Without these pipelines, SAGE signal ingestors (from S-INT-02) were operating on
   - Returns up to 20 results
 
 ### API Routes (`/api/v1/journalists/`)
+
 - **`apps/api/src/routes/journalists/enrichment.ts`**
   - `POST /enrich/:journalistId` — enrich single journalist
   - `POST /enrich-batch` — enrich all unenriched (enqueue or direct)
   - `GET /discover?topics=AI,SaaS` — discover journalists by topic
 
 ### Background Worker
+
 - **`apps/api/src/queue/workers/journalistEnrichmentWorker.ts`**
   - Job: `journalists:enrich-batch`
   - Scheduled: weekly Sunday 11pm UTC
   - Processes all orgs
 
 ### Dashboard
+
 - **Proxy routes:**
   - `/api/journalists/enrich` → POST batch enrich
   - `/api/journalists/enrich/[id]` → POST single enrich
@@ -127,10 +136,12 @@ Without these pipelines, SAGE signal ingestors (from S-INT-02) were operating on
 ## Infrastructure Changes
 
 ### Feature Flags (`packages/feature-flags/src/flags.ts`)
+
 - `ENABLE_GSC_INTEGRATION: true` — S-INT-06
 - `ENABLE_JOURNALIST_ENRICHMENT: true` — S-INT-06
 
 ### BullMQ Queues (`apps/api/src/queue/bullmqQueue.ts`)
+
 - `gsc:sync` — queue + worker (concurrency: 1, daily 6am UTC)
 - `journalists:enrich-batch` — queue + worker (concurrency: 1, weekly Sunday 11pm)
 - `enqueueGscSync(orgId)` — enqueue function
@@ -138,10 +149,12 @@ Without these pipelines, SAGE signal ingestors (from S-INT-02) were operating on
 - Shutdown handlers for both new queues
 
 ### Server Routes (`apps/api/src/server.ts`)
+
 - Registered `gscRoutes` at `/api/v1/integrations/gsc`
 - Registered `journalistEnrichmentRoutes` at `/api/v1/journalists`
 
 ### Environment Variables
+
 - `GOOGLE_CLIENT_ID` — Google OAuth client ID
 - `GOOGLE_CLIENT_SECRET` — Google OAuth client secret
 - `HUNTER_API_KEY` — Hunter.io API key
@@ -151,16 +164,16 @@ Without these pipelines, SAGE signal ingestors (from S-INT-02) were operating on
 
 ## Exit Criteria Verification
 
-| Criterion | Status |
-|-----------|--------|
-| GSC OAuth flow completes — tokens saved, site connected | ✅ Full OAuth2 flow with state validation |
-| gsc:sync job runs and seo_keyword_metrics has real rows | ✅ Upserts from GSC Search Analytics API |
-| SAGE SEO signal ingestor returns real signals | ✅ Enqueues sage:signal-scan after every GSC sync |
-| Hunter.io enrichment runs on journalists — confidence scores visible | ✅ enrichJournalist + enrichBatch with confidence tracking |
-| Journalist discover endpoint returns suggested journalists | ✅ discoverByTopics with industry→publication mapping |
-| GSC status card visible in SEO surface | ✅ GscConnectionCard in SEOManualView Overview |
-| Zero TypeScript errors (S-INT-06 code) | ✅ API clean, dashboard clean (pre-existing errors in other files) |
-| SPRINT_COMPLETE.md | ✅ This document |
+| Criterion                                                            | Status                                                             |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| GSC OAuth flow completes — tokens saved, site connected              | ✅ Full OAuth2 flow with state validation                          |
+| gsc:sync job runs and seo_keyword_metrics has real rows              | ✅ Upserts from GSC Search Analytics API                           |
+| SAGE SEO signal ingestor returns real signals                        | ✅ Enqueues sage:signal-scan after every GSC sync                  |
+| Hunter.io enrichment runs on journalists — confidence scores visible | ✅ enrichJournalist + enrichBatch with confidence tracking         |
+| Journalist discover endpoint returns suggested journalists           | ✅ discoverByTopics with industry→publication mapping              |
+| GSC status card visible in SEO surface                               | ✅ GscConnectionCard in SEOManualView Overview                     |
+| Zero TypeScript errors (S-INT-06 code)                               | ✅ API clean, dashboard clean (pre-existing errors in other files) |
+| SPRINT_COMPLETE.md                                                   | ✅ This document                                                   |
 
 ---
 

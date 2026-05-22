@@ -24,7 +24,11 @@ const statusConfig: Record<
   { icon: typeof CheckCircle; color: string; label: string }
 > = {
   ready: { icon: CheckCircle, color: 'text-semantic-success', label: 'Ready' },
-  generating: { icon: CircleNotch, color: 'text-cc-cyan', label: 'Generating...' },
+  generating: {
+    icon: CircleNotch,
+    color: 'text-cc-cyan',
+    label: 'Generating...',
+  },
   pending: { icon: Clock, color: 'text-white/30', label: 'Pending' },
 };
 
@@ -60,7 +64,9 @@ export function Derivatives({ derivatives }: DerivativesProps) {
                   className={`${status.color} ${item.status === 'generating' ? 'animate-spin' : ''}`}
                   weight={item.status === 'ready' ? 'fill' : 'regular'}
                 />
-                <span className={`text-xs ${status.color}`}>{status.label}</span>
+                <span className={`text-xs ${status.color}`}>
+                  {status.label}
+                </span>
               </div>
             </div>
           );

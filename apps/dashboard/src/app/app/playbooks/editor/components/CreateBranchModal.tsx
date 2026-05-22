@@ -33,7 +33,9 @@ export function CreateBranchModal({
 
     // Validate branch name format
     if (!/^[a-zA-Z0-9_-]+$/.test(branchName)) {
-      setError('Branch name must be alphanumeric with hyphens and underscores only');
+      setError(
+        'Branch name must be alphanumeric with hyphens and underscores only'
+      );
       return;
     }
 
@@ -71,7 +73,10 @@ export function CreateBranchModal({
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="branchName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="branchName"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Branch Name
             </label>
             <input

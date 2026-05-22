@@ -4,7 +4,15 @@
  * CiteMindDistribution — Histogram showing content pieces per CiteMind score band.
  */
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 
 import { mockContentRows } from './analytics-mock-data';
 
@@ -17,7 +25,9 @@ const BANDS = [
 
 const distributionData = BANDS.map((band) => ({
   name: band.label,
-  count: mockContentRows.filter((r) => r.citeMind >= band.min && r.citeMind <= band.max).length,
+  count: mockContentRows.filter(
+    (r) => r.citeMind >= band.min && r.citeMind <= band.max
+  ).length,
   color: band.color,
 }));
 
@@ -46,7 +56,12 @@ export function CiteMindDistribution() {
           />
           <Tooltip
             cursor={{ fill: 'rgba(255,255,255,0.03)' }}
-            contentStyle={{ background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }}
+            contentStyle={{
+              background: '#1a1a2e',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 8,
+              fontSize: 12,
+            }}
             labelStyle={{ color: 'rgba(255,255,255,0.5)' }}
           />
           <Bar dataKey="count" radius={[6, 6, 0, 0]}>

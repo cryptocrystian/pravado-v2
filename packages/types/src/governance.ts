@@ -198,7 +198,10 @@ export const GovernanceScoreTrend = {
 /**
  * Insight generation method
  */
-export type GovernanceInsightGenerationMethod = 'rule_based' | 'llm_assisted' | 'hybrid';
+export type GovernanceInsightGenerationMethod =
+  | 'rule_based'
+  | 'llm_assisted'
+  | 'hybrid';
 
 export const GovernanceInsightGenerationMethod = {
   RULE_BASED: 'rule_based' as const,
@@ -255,7 +258,17 @@ export interface GovernancePolicy {
  */
 export interface GovernanceRuleCondition {
   field?: string;
-  operator?: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'contains' | 'matches' | 'in' | 'not_in';
+  operator?:
+    | 'eq'
+    | 'ne'
+    | 'gt'
+    | 'gte'
+    | 'lt'
+    | 'lte'
+    | 'contains'
+    | 'matches'
+    | 'in'
+    | 'not_in';
   value?: unknown;
   threshold?: number;
   pattern?: string;

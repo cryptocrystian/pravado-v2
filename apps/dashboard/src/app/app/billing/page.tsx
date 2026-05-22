@@ -23,7 +23,7 @@ import {
   formatCurrency,
   type BillingPlan,
   type OrgBillingSummaryEnriched,
-  type BillingAlertRecord
+  type BillingAlertRecord,
 } from '@/lib/billingApi';
 
 import { BillingPlanCard } from './components/BillingPlanCard';
@@ -37,7 +37,9 @@ import { UsageBar } from './components/UsageBar';
 
 export default function BillingPage() {
   // State
-  const [summary, setSummary] = useState<OrgBillingSummaryEnriched | null>(null);
+  const [summary, setSummary] = useState<OrgBillingSummaryEnriched | null>(
+    null
+  );
   const [plans, setPlans] = useState<BillingPlan[]>([]);
   const [alerts, setAlerts] = useState<BillingAlertRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +48,8 @@ export default function BillingPage() {
   // Modal states
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showDowngradeDialog, setShowDowngradeDialog] = useState(false);
-  const [blockedDowngradePlan, setBlockedDowngradePlan] = useState<BillingPlan | null>(null);
+  const [blockedDowngradePlan, setBlockedDowngradePlan] =
+    useState<BillingPlan | null>(null);
   const [downgradeError, setDowngradeError] = useState<string>('');
 
   // Load data on mount
@@ -63,7 +66,7 @@ export default function BillingPage() {
       const [summaryData, plansData, alertsData] = await Promise.all([
         getBillingSummaryEnriched(),
         getAvailablePlans(),
-        getUsageAlerts()
+        getUsageAlerts(),
       ]);
 
       setSummary(summaryData);
@@ -104,9 +107,11 @@ export default function BillingPage() {
         return { success: true };
       } else if (result.error?.code === '422_UPGRADE_REQUIRED') {
         // Show downgrade blocked dialog
-        const targetPlan = plans.find(p => p.slug === planSlug);
+        const targetPlan = plans.find((p) => p.slug === planSlug);
         setBlockedDowngradePlan(targetPlan || null);
-        setDowngradeError(result.error.message || 'Your usage exceeds the limits of this plan');
+        setDowngradeError(
+          result.error.message || 'Your usage exceeds the limits of this plan'
+        );
         setShowDowngradeDialog(true);
         return { success: false, error: result.error.message };
       } else {
@@ -125,9 +130,10 @@ export default function BillingPage() {
       const result = await cancelSubscription(immediate);
       if (result.success) {
         await loadBillingData();
-        alert(immediate
-          ? 'Subscription cancelled immediately'
-          : 'Subscription will be cancelled at the end of the billing period'
+        alert(
+          immediate
+            ? 'Subscription cancelled immediately'
+            : 'Subscription will be cancelled at the end of the billing period'
         );
       } else {
         alert(result.error?.message || 'Failed to cancel subscription');
@@ -160,7 +166,7 @@ export default function BillingPage() {
       const success = await acknowledgeAlert(alertId);
       if (success) {
         // Remove alert from list
-        setAlerts(alerts.filter(a => a.id !== alertId));
+        setAlerts(alerts.filter((a) => a.id !== alertId));
       }
     } catch (error) {
       console.error('Failed to acknowledge alert:', error);
@@ -184,35 +190,77 @@ export default function BillingPage() {
     return (
       <div className="p-8 max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white-0 mb-2">Billing & Subscription</h1>
-          <p className="text-muted">Manage your plan, track usage, and control your subscription</p>
+          <h1 className="text-3xl font-bold text-white-0 mb-2">
+            Billing & Subscription
+          </h1>
+          <p className="text-muted">
+            Manage your plan, track usage, and control your subscription
+          </p>
         </div>
 
         {/* Info banner instead of error */}
         <div className="mb-8 p-4 rounded-lg border border-brand-cyan/20 bg-brand-cyan/5">
-          <p className="text-sm text-brand-cyan font-medium">Billing is not yet configured for your account.</p>
-          <p className="text-xs text-muted mt-1">During beta, all features are available at no cost. Stripe billing will be enabled before launch.</p>
+          <p className="text-sm text-brand-cyan font-medium">
+            Billing is not yet configured for your account.
+          </p>
+          <p className="text-xs text-muted mt-1">
+            During beta, all features are available at no cost. Stripe billing
+            will be enabled before launch.
+          </p>
         </div>
 
         {/* Static plan cards so the page is usable */}
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white-0 mb-2">Available Plans</h2>
+          <h2 className="text-2xl font-bold text-white-0 mb-2">
+            Available Plans
+          </h2>
           <p className="text-muted">Plans available when billing goes live</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { name: 'Starter', price: 'Free', desc: 'For individuals getting started', features: ['1 seat', '10K tokens/mo', '5 playbook runs/mo'] },
-            { name: 'Growth', price: '$49/mo', desc: 'For growing teams', features: ['5 seats', '100K tokens/mo', '50 playbook runs/mo'] },
-            { name: 'Pro', price: '$149/mo', desc: 'For professional teams', features: ['15 seats', '500K tokens/mo', '200 playbook runs/mo'] },
-            { name: 'Enterprise', price: 'Custom', desc: 'For large organizations', features: ['Unlimited seats', 'Custom token limits', 'Dedicated support'] },
+            {
+              name: 'Starter',
+              price: 'Free',
+              desc: 'For individuals getting started',
+              features: ['1 seat', '10K tokens/mo', '5 playbook runs/mo'],
+            },
+            {
+              name: 'Growth',
+              price: '$49/mo',
+              desc: 'For growing teams',
+              features: ['5 seats', '100K tokens/mo', '50 playbook runs/mo'],
+            },
+            {
+              name: 'Pro',
+              price: '$149/mo',
+              desc: 'For professional teams',
+              features: ['15 seats', '500K tokens/mo', '200 playbook runs/mo'],
+            },
+            {
+              name: 'Enterprise',
+              price: 'Custom',
+              desc: 'For large organizations',
+              features: [
+                'Unlimited seats',
+                'Custom token limits',
+                'Dedicated support',
+              ],
+            },
           ].map((plan) => (
             <div key={plan.name} className="panel-card p-6 flex flex-col">
-              <h3 className="text-lg font-semibold text-white-0">{plan.name}</h3>
-              <div className="text-2xl font-bold text-white-0 mt-2">{plan.price}</div>
+              <h3 className="text-lg font-semibold text-white-0">
+                {plan.name}
+              </h3>
+              <div className="text-2xl font-bold text-white-0 mt-2">
+                {plan.price}
+              </div>
               <p className="text-sm text-muted mt-1 mb-4">{plan.desc}</p>
               <ul className="space-y-2 flex-1">
                 {plan.features.map((f) => (
-                  <li key={f} className="text-sm text-muted flex items-center gap-2">
+                  <li
+                    key={f}
+                    className="text-sm text-muted flex items-center gap-2"
+                  >
                     <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
                     {f}
                   </li>
@@ -237,8 +285,12 @@ export default function BillingPage() {
     <div className="p-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white-0 mb-2">Billing & Subscription</h1>
-        <p className="text-muted">Manage your plan, track usage, and control your subscription</p>
+        <h1 className="text-3xl font-bold text-white-0 mb-2">
+          Billing & Subscription
+        </h1>
+        <p className="text-muted">
+          Manage your plan, track usage, and control your subscription
+        </p>
       </div>
 
       {/* Trial Banner */}
@@ -248,7 +300,9 @@ export default function BillingPage() {
             daysRemaining={summary.trialDaysRemaining}
             onUpgradeClick={() => {
               // Scroll to plan selection
-              document.getElementById('plan-selection')?.scrollIntoView({ behavior: 'smooth' });
+              document
+                .getElementById('plan-selection')
+                ?.scrollIntoView({ behavior: 'smooth' });
             }}
           />
         </div>
@@ -258,21 +312,25 @@ export default function BillingPage() {
       {alerts.length > 0 && (
         <div className="mb-6">
           <div className="panel-card p-6">
-            <h2 className="text-lg font-semibold text-white-0 mb-4">Usage Alerts</h2>
+            <h2 className="text-lg font-semibold text-white-0 mb-4">
+              Usage Alerts
+            </h2>
             <div className="space-y-3">
-              {alerts.map(alert => (
+              {alerts.map((alert) => (
                 <div
                   key={alert.id}
                   className={`flex items-start justify-between p-3 rounded-lg border ${
                     alert.severity === 'critical'
                       ? 'bg-semantic-danger/10 border-semantic-danger/20'
                       : alert.severity === 'warning'
-                      ? 'bg-semantic-warning/10 border-semantic-warning/20'
-                      : 'bg-brand-cyan/10 border-brand-cyan/20'
+                        ? 'bg-semantic-warning/10 border-semantic-warning/20'
+                        : 'bg-brand-cyan/10 border-brand-cyan/20'
                   }`}
                 >
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-white-0">{alert.message}</p>
+                    <p className="text-sm font-medium text-white-0">
+                      {alert.message}
+                    </p>
                     <p className="text-xs text-muted mt-1">
                       {new Date(alert.createdAt).toLocaleDateString()}
                     </p>
@@ -297,10 +355,14 @@ export default function BillingPage() {
         <div className="panel-card p-6">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-xl font-semibold text-white-0 mb-1">Current Plan</h2>
+              <h2 className="text-xl font-semibold text-white-0 mb-1">
+                Current Plan
+              </h2>
               {summary.plan && (
                 <div className="mt-2">
-                  <div className="text-3xl font-bold text-white-0">{summary.plan.name}</div>
+                  <div className="text-3xl font-bold text-white-0">
+                    {summary.plan.name}
+                  </div>
                   <div className="text-lg text-muted mt-1">
                     {formatCurrency(summary.plan.monthlyPriceCents)} / month
                   </div>
@@ -308,15 +370,17 @@ export default function BillingPage() {
               )}
             </div>
             <div className="text-right">
-              <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                summary.billingStatus === 'active'
-                  ? 'bg-semantic-success/10 text-semantic-success'
-                  : summary.billingStatus === 'trial'
-                  ? 'bg-brand-cyan/10 text-brand-cyan'
-                  : summary.billingStatus === 'past_due'
-                  ? 'bg-semantic-danger/10 text-semantic-danger'
-                  : 'bg-slate-5 text-slate-6'
-              }`}>
+              <span
+                className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                  summary.billingStatus === 'active'
+                    ? 'bg-semantic-success/10 text-semantic-success'
+                    : summary.billingStatus === 'trial'
+                      ? 'bg-brand-cyan/10 text-brand-cyan'
+                      : summary.billingStatus === 'past_due'
+                        ? 'bg-semantic-danger/10 text-semantic-danger'
+                        : 'bg-slate-5 text-slate-6'
+                }`}
+              >
                 {summary.billingStatus.toUpperCase()}
               </span>
             </div>
@@ -327,8 +391,7 @@ export default function BillingPage() {
             <div className="mb-4 text-sm text-muted">
               {summary.trialDaysRemaining && summary.trialDaysRemaining > 0
                 ? `Trial ends on ${new Date(summary.nextBillingDate).toLocaleDateString()}`
-                : `Next billing date: ${new Date(summary.nextBillingDate).toLocaleDateString()}`
-              }
+                : `Next billing date: ${new Date(summary.nextBillingDate).toLocaleDateString()}`}
             </div>
           )}
 
@@ -357,7 +420,9 @@ export default function BillingPage() {
       {/* Usage Tracking */}
       <div className="mb-8">
         <div className="panel-card p-6">
-          <h2 className="text-xl font-semibold text-white-0 mb-6">Usage This Period</h2>
+          <h2 className="text-xl font-semibold text-white-0 mb-6">
+            Usage This Period
+          </h2>
 
           <div className="space-y-6 mb-6">
             {/* Token Usage */}
@@ -395,49 +460,61 @@ export default function BillingPage() {
           </div>
 
           {/* Recommended Plan Badge */}
-          {summary.recommendedPlanSlug && summary.recommendedPlanSlug !== summary.plan?.slug && (
-            <div className="mb-4">
-              <PlanRecommendationBadge recommendedPlanSlug={summary.recommendedPlanSlug} />
-            </div>
-          )}
+          {summary.recommendedPlanSlug &&
+            summary.recommendedPlanSlug !== summary.plan?.slug && (
+              <div className="mb-4">
+                <PlanRecommendationBadge
+                  recommendedPlanSlug={summary.recommendedPlanSlug}
+                />
+              </div>
+            )}
 
           {/* Projected Cost */}
-          {summary.projectedMonthlyCost !== null && summary.projectedMonthlyCost !== undefined && (
-            <div className="pt-4 border-t border-border-subtle">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-muted">Projected Monthly Cost</span>
-                <span className="text-lg font-bold text-white-0">
-                  {formatCurrency(summary.projectedMonthlyCost)}
-                </span>
+          {summary.projectedMonthlyCost !== null &&
+            summary.projectedMonthlyCost !== undefined && (
+              <div className="pt-4 border-t border-border-subtle">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-muted">
+                    Projected Monthly Cost
+                  </span>
+                  <span className="text-lg font-bold text-white-0">
+                    {formatCurrency(summary.projectedMonthlyCost)}
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
 
       {/* Overage Breakdown */}
-      {summary.overages && summary.overages.estimatedCost > 0 && summary.plan && (
-        <div className="mb-8">
-          <OverageBreakdown
-            overages={summary.overages}
-            overageRates={{
-              tokens: summary.plan.overageTokenPriceMilliCents,
-              playbookRuns: summary.plan.overagePlaybookRunPriceCents,
-              seats: 0 // TODO: Add seat overage rate to plan if needed
-            }}
-          />
-        </div>
-      )}
+      {summary.overages &&
+        summary.overages.estimatedCost > 0 &&
+        summary.plan && (
+          <div className="mb-8">
+            <OverageBreakdown
+              overages={summary.overages}
+              overageRates={{
+                tokens: summary.plan.overageTokenPriceMilliCents,
+                playbookRuns: summary.plan.overagePlaybookRunPriceCents,
+                seats: 0, // TODO: Add seat overage rate to plan if needed
+              }}
+            />
+          </div>
+        )}
 
       {/* Plan Selection Grid */}
       <div id="plan-selection" className="mb-8">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white-0 mb-2">Available Plans</h2>
-          <p className="text-muted">Choose the plan that best fits your needs</p>
+          <h2 className="text-2xl font-bold text-white-0 mb-2">
+            Available Plans
+          </h2>
+          <p className="text-muted">
+            Choose the plan that best fits your needs
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {plans.map(plan => (
+          {plans.map((plan) => (
             <BillingPlanCard
               key={plan.id}
               plan={plan}
@@ -447,7 +524,9 @@ export default function BillingPage() {
               onUpgrade={handleUpgrade}
               onDowngrade={handleDowngrade}
               onContactSales={() => {
-                alert('Contact sales at sales@pravado.com for Enterprise pricing');
+                alert(
+                  'Contact sales at sales@pravado.com for Enterprise pricing'
+                );
               }}
             />
           ))}
@@ -457,8 +536,12 @@ export default function BillingPage() {
       {/* Billing History CTA */}
       <div className="mb-8">
         <div className="panel-card p-6 text-center">
-          <h3 className="text-lg font-semibold text-white-0 mb-2">Billing History</h3>
-          <p className="text-muted mb-4">View past invoices and payment history</p>
+          <h3 className="text-lg font-semibold text-white-0 mb-2">
+            Billing History
+          </h3>
+          <p className="text-muted mb-4">
+            View past invoices and payment history
+          </p>
           <Link
             href="/app/billing/history"
             className="btn-primary inline-block"

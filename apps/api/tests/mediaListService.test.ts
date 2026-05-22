@@ -6,8 +6,16 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createMediaListService } from '../src/services/mediaListService';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createMockSupabaseClient, createMockQueryBuilder, createMockSuccess, createMockError } from './helpers/supabaseMock';
-import type { MediaListGenerationInput, MediaListCreateInput } from '@pravado/types';
+import {
+  createMockSupabaseClient,
+  createMockQueryBuilder,
+  createMockSuccess,
+  createMockError,
+} from './helpers/supabaseMock';
+import type {
+  MediaListGenerationInput,
+  MediaListCreateInput,
+} from '@pravado/types';
 
 describe('MediaListService', () => {
   let mockSupabase: SupabaseClient;
@@ -69,14 +77,19 @@ describe('MediaListService', () => {
           activity_type: 'coverage_published',
           activity_data: {
             title: 'AI revolutionizes healthcare diagnosis',
-            content: 'Machine learning algorithms improve medical diagnosis accuracy',
+            content:
+              'Machine learning algorithms improve medical diagnosis accuracy',
           },
           occurred_at: new Date().toISOString(),
         },
       ];
 
-      const mockProfilesQuery = createMockQueryBuilder(createMockSuccess(mockJournalists));
-      const mockActivitiesQuery = createMockQueryBuilder(createMockSuccess(mockActivities));
+      const mockProfilesQuery = createMockQueryBuilder(
+        createMockSuccess(mockJournalists)
+      );
+      const mockActivitiesQuery = createMockQueryBuilder(
+        createMockSuccess(mockActivities)
+      );
 
       (mockSupabase.from as any)
         .mockReturnValueOnce(mockProfilesQuery) // Journalist profiles query
@@ -121,7 +134,9 @@ describe('MediaListService', () => {
         },
       ];
 
-      const mockProfilesQuery = createMockQueryBuilder(createMockSuccess(mockJournalists));
+      const mockProfilesQuery = createMockQueryBuilder(
+        createMockSuccess(mockJournalists)
+      );
       const mockActivitiesQuery = createMockQueryBuilder(createMockSuccess([]));
 
       (mockSupabase.from as any)
@@ -160,7 +175,9 @@ describe('MediaListService', () => {
         },
       ];
 
-      const mockProfilesQuery = createMockQueryBuilder(createMockSuccess(mockJournalists));
+      const mockProfilesQuery = createMockQueryBuilder(
+        createMockSuccess(mockJournalists)
+      );
       const mockActivitiesQuery = createMockQueryBuilder(createMockSuccess([]));
 
       (mockSupabase.from as any)
@@ -215,40 +232,46 @@ describe('MediaListService', () => {
 
       // Mock entries insert
       const mockEntriesInsert = createMockQueryBuilder(
-        createMockSuccess([{ id: 'entry1', list_id: mockListId, journalist_id: 'j1' }])
+        createMockSuccess([
+          { id: 'entry1', list_id: mockListId, journalist_id: 'j1' },
+        ])
       );
 
       // Mock getMediaList call
       const mockGetQuery = createMockQueryBuilder(
-        createMockSuccess([{
-          ...input,
-          id: mockListId,
-          org_id: orgId,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          entries: [{
-            id: 'entry1',
-            list_id: mockListId,
-            journalist_id: 'j1',
-            fit_score: 0.85,
-            tier: 'A',
-            reason: 'Strong topic relevance',
-            fit_breakdown: entries[0].fitBreakdown,
-            position: 0,
+        createMockSuccess([
+          {
+            ...input,
+            id: mockListId,
+            org_id: orgId,
             created_at: new Date().toISOString(),
-            journalist: {
-              id: 'j1',
-              full_name: 'Jane Smith',
-              primary_email: 'jane@example.com',
-              primary_outlet: 'TechCrunch',
-              beat: 'Healthcare Tech',
-              engagement_score: 0.8,
-              responsiveness_score: 0.7,
-              relevance_score: 0.9,
-              tier: 'tier1',
-            },
-          }],
-        }])
+            updated_at: new Date().toISOString(),
+            entries: [
+              {
+                id: 'entry1',
+                list_id: mockListId,
+                journalist_id: 'j1',
+                fit_score: 0.85,
+                tier: 'A',
+                reason: 'Strong topic relevance',
+                fit_breakdown: entries[0].fitBreakdown,
+                position: 0,
+                created_at: new Date().toISOString(),
+                journalist: {
+                  id: 'j1',
+                  full_name: 'Jane Smith',
+                  primary_email: 'jane@example.com',
+                  primary_outlet: 'TechCrunch',
+                  beat: 'Healthcare Tech',
+                  engagement_score: 0.8,
+                  responsiveness_score: 0.7,
+                  relevance_score: 0.9,
+                  tier: 'tier1',
+                },
+              },
+            ],
+          },
+        ])
       );
 
       (mockSupabase.from as any)
@@ -287,7 +310,14 @@ describe('MediaListService', () => {
             fit_score: 0.85,
             tier: 'A',
             reason: 'Strong fit',
-            fit_breakdown: { topicRelevance: 0.9, pastCoverage: 0.8, engagement: 0.85, responsiveness: 0.8, outletTier: 1.0, totalScore: 0.85 },
+            fit_breakdown: {
+              topicRelevance: 0.9,
+              pastCoverage: 0.8,
+              engagement: 0.85,
+              responsiveness: 0.8,
+              outletTier: 1.0,
+              totalScore: 0.85,
+            },
             position: 0,
             created_at: new Date().toISOString(),
             journalist: {
@@ -304,7 +334,9 @@ describe('MediaListService', () => {
         ],
       };
 
-      const mockQuery = createMockQueryBuilder(createMockSuccess([mockListData]));
+      const mockQuery = createMockQueryBuilder(
+        createMockSuccess([mockListData])
+      );
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
       const result = await service.getMediaList(listId, orgId);
@@ -393,7 +425,9 @@ describe('MediaListService', () => {
         updated_at: new Date().toISOString(),
       };
 
-      const mockQuery = createMockQueryBuilder(createMockSuccess([mockUpdatedList]));
+      const mockQuery = createMockQueryBuilder(
+        createMockSuccess([mockUpdatedList])
+      );
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
       const result = await service.updateMediaList(listId, orgId, {
@@ -424,7 +458,9 @@ describe('MediaListService', () => {
       const listId = 'list123';
       const orgId = '123e4567-e89b-12d3-a456-426614174000';
 
-      const mockQuery = createMockQueryBuilder(createMockError('Delete failed'));
+      const mockQuery = createMockQueryBuilder(
+        createMockError('Delete failed')
+      );
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
       const result = await service.deleteMediaList(listId, orgId);
@@ -459,7 +495,9 @@ describe('MediaListService', () => {
         },
       ];
 
-      const mockQuery = createMockQueryBuilder(createMockSuccess(mockEntries, 1));
+      const mockQuery = createMockQueryBuilder(
+        createMockSuccess(mockEntries, 1)
+      );
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
       const result = await service.getMediaListEntries({

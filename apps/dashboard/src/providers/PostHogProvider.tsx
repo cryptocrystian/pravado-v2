@@ -30,7 +30,8 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     if (!key) return;
 
     posthog.init(key, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+      api_host:
+        process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
       capture_pageview: false, // manual pageview tracking via PostHogPageviewTracker
       persistence: 'localStorage+cookie',
       loaded: (ph) => {

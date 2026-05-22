@@ -5,7 +5,11 @@
 
 'use client';
 
-import type { ReputationTrendPoint, ReputationTimeWindow, ReputationTrendDirection } from '@pravado/types';
+import type {
+  ReputationTrendPoint,
+  ReputationTimeWindow,
+  ReputationTrendDirection,
+} from '@pravado/types';
 import { ArrowUp, ArrowDown, Minus, Activity } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +21,6 @@ import {
   prepareTrendChartData,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-
 
 interface ReputationTrendChartProps {
   trendPoints: ReputationTrendPoint[];
@@ -65,7 +68,8 @@ export function ReputationTrendChart({
   // Generate path for line chart
   const generatePath = (scores: number[]) => {
     if (scores.length === 0) return '';
-    const xStep = (100 - padding.left / 4 - padding.right / 4) / (scores.length - 1 || 1);
+    const xStep =
+      (100 - padding.left / 4 - padding.right / 4) / (scores.length - 1 || 1);
     return scores
       .map((score, idx) => {
         const x = padding.left / 4 + idx * xStep;
@@ -94,7 +98,8 @@ export function ReputationTrendChart({
               {overallTrend === 'down' && <ArrowDown className="h-4 w-4" />}
               {overallTrend === 'flat' && <Minus className="h-4 w-4" />}
               <span className="text-sm font-medium">
-                {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}
+                {scoreDelta > 0 ? '+' : ''}
+                {scoreDelta.toFixed(1)}
               </span>
             </div>
           </div>
@@ -105,7 +110,9 @@ export function ReputationTrendChart({
         {/* Stats Summary */}
         <div className="grid grid-cols-4 gap-2 text-center">
           <div className="p-2 bg-gray-50 rounded">
-            <div className="text-lg font-bold text-gray-700">{startScore.toFixed(0)}</div>
+            <div className="text-lg font-bold text-gray-700">
+              {startScore.toFixed(0)}
+            </div>
             <div className="text-xs text-gray-500">Start</div>
           </div>
           <div className="p-2 bg-gray-50 rounded">
@@ -115,11 +122,15 @@ export function ReputationTrendChart({
             <div className="text-xs text-gray-500">Current</div>
           </div>
           <div className="p-2 bg-green-50 rounded">
-            <div className="text-lg font-bold text-green-700">{highScore.toFixed(0)}</div>
+            <div className="text-lg font-bold text-green-700">
+              {highScore.toFixed(0)}
+            </div>
             <div className="text-xs text-green-600">High</div>
           </div>
           <div className="p-2 bg-red-50 rounded">
-            <div className="text-lg font-bold text-red-700">{lowScore.toFixed(0)}</div>
+            <div className="text-lg font-bold text-red-700">
+              {lowScore.toFixed(0)}
+            </div>
             <div className="text-xs text-red-600">Low</div>
           </div>
         </div>
@@ -136,8 +147,18 @@ export function ReputationTrendChart({
             >
               {/* Grid lines */}
               <defs>
-                <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                  <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#e5e7eb" strokeWidth="0.2" />
+                <pattern
+                  id="grid"
+                  width="10"
+                  height="10"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M 10 0 L 0 0 0 10"
+                    fill="none"
+                    stroke="#e5e7eb"
+                    strokeWidth="0.2"
+                  />
                 </pattern>
               </defs>
               <rect width="100" height="100" fill="url(#grid)" />
@@ -155,7 +176,9 @@ export function ReputationTrendChart({
 
               {/* Data points */}
               {overallScores.map((score, idx) => {
-                const xStep = (100 - padding.left / 4 - padding.right / 4) / (overallScores.length - 1 || 1);
+                const xStep =
+                  (100 - padding.left / 4 - padding.right / 4) /
+                  (overallScores.length - 1 || 1);
                 const x = padding.left / 4 + idx * xStep;
                 const y = ((yMax - score) / yRange) * 100;
                 return (
@@ -210,22 +233,40 @@ export function ReputationTrendChart({
         {showComponents && (
           <div className="flex flex-wrap gap-2 pt-2 border-t">
             <span className="text-xs text-gray-500">Components:</span>
-            <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
+            <Badge
+              variant="outline"
+              className="text-xs bg-blue-50 text-blue-700"
+            >
               Overall
             </Badge>
-            <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
+            <Badge
+              variant="outline"
+              className="text-xs bg-green-50 text-green-700"
+            >
               Sentiment
             </Badge>
-            <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700">
+            <Badge
+              variant="outline"
+              className="text-xs bg-purple-50 text-purple-700"
+            >
               Coverage
             </Badge>
-            <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700">
+            <Badge
+              variant="outline"
+              className="text-xs bg-orange-50 text-orange-700"
+            >
               Crisis
             </Badge>
-            <Badge variant="outline" className="text-xs bg-pink-50 text-pink-700">
+            <Badge
+              variant="outline"
+              className="text-xs bg-pink-50 text-pink-700"
+            >
               Competitive
             </Badge>
-            <Badge variant="outline" className="text-xs bg-cyan-50 text-cyan-700">
+            <Badge
+              variant="outline"
+              className="text-xs bg-cyan-50 text-cyan-700"
+            >
               Engagement
             </Badge>
           </div>

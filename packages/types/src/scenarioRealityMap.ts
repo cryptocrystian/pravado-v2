@@ -21,11 +21,7 @@ export type RealityMapStatus =
 /**
  * Reality map node type
  */
-export type RealityMapNodeType =
-  | 'root'
-  | 'branch'
-  | 'leaf'
-  | 'terminal';
+export type RealityMapNodeType = 'root' | 'branch' | 'leaf' | 'terminal';
 
 /**
  * Reality map analysis status
@@ -80,10 +76,7 @@ export type EdgeTriggerType =
 /**
  * Comparison types
  */
-export type ComparisonType =
-  | 'maps'
-  | 'paths'
-  | 'nodes';
+export type ComparisonType = 'maps' | 'paths' | 'nodes';
 
 /**
  * Audit event types for reality maps
@@ -132,27 +125,32 @@ export const REALITY_MAP_STATUS_COLORS: Record<RealityMapStatus, string> = {
 /**
  * Node type labels
  */
-export const REALITY_MAP_NODE_TYPE_LABELS: Record<RealityMapNodeType, string> = {
-  root: 'Starting Point',
-  branch: 'Branch Point',
-  leaf: 'Outcome',
-  terminal: 'Terminal',
-};
+export const REALITY_MAP_NODE_TYPE_LABELS: Record<RealityMapNodeType, string> =
+  {
+    root: 'Starting Point',
+    branch: 'Branch Point',
+    leaf: 'Outcome',
+    terminal: 'Terminal',
+  };
 
 /**
  * Node type colors
  */
-export const REALITY_MAP_NODE_TYPE_COLORS: Record<RealityMapNodeType, string> = {
-  root: 'indigo',
-  branch: 'blue',
-  leaf: 'green',
-  terminal: 'gray',
-};
+export const REALITY_MAP_NODE_TYPE_COLORS: Record<RealityMapNodeType, string> =
+  {
+    root: 'indigo',
+    branch: 'blue',
+    leaf: 'green',
+    terminal: 'gray',
+  };
 
 /**
  * Analysis status labels
  */
-export const REALITY_MAP_ANALYSIS_STATUS_LABELS: Record<RealityMapAnalysisStatus, string> = {
+export const REALITY_MAP_ANALYSIS_STATUS_LABELS: Record<
+  RealityMapAnalysisStatus,
+  string
+> = {
   pending: 'Pending',
   running: 'Running',
   completed: 'Completed',
@@ -526,7 +524,12 @@ export interface RealityMapPath {
   outcomeType: PathOutcomeType | null;
 
   // Dashboard-expected properties (widened)
-  keyDrivers?: Array<{ name: string; impact: string; description?: string; direction?: string }>;
+  keyDrivers?: Array<{
+    name: string;
+    impact: string;
+    description?: string;
+    direction?: string;
+  }>;
   aiSummary?: string | null;
 
   // Comparison data
@@ -662,7 +665,12 @@ export interface RealityGraphPath {
   riskScore: number;
   opportunityScore: number;
   pathNodes: string[];
-  keyDrivers?: Array<{ name: string; impact: string; description?: string; direction?: string }>;
+  keyDrivers?: Array<{
+    name: string;
+    impact: string;
+    description?: string;
+    direction?: string;
+  }>;
   aiSummary?: string | null;
   // Legacy path properties for compatibility
   startNodeId?: string;
@@ -778,9 +786,26 @@ export interface OutcomeUniverse {
   positiveOutcomes?: number;
   negativeOutcomes?: number;
   outcomeDistribution?: Record<string, number>;
-  riskSummary?: { level: string; score: number; averageScore?: number; maxScore?: number; factors: string[] };
-  opportunitySummary?: { level: string; score: number; averageScore?: number; maxScore?: number; factors: string[] };
-  topDrivers?: Array<{ name: string; impact: string; description: string; direction?: string }>;
+  riskSummary?: {
+    level: string;
+    score: number;
+    averageScore?: number;
+    maxScore?: number;
+    factors: string[];
+  };
+  opportunitySummary?: {
+    level: string;
+    score: number;
+    averageScore?: number;
+    maxScore?: number;
+    factors: string[];
+  };
+  topDrivers?: Array<{
+    name: string;
+    impact: string;
+    description: string;
+    direction?: string;
+  }>;
 }
 
 /**

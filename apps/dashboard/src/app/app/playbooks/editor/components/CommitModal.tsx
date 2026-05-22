@@ -53,7 +53,10 @@ export function CommitModal({
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="commit-message" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="commit-message"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Commit Message *
             </label>
             <textarea
@@ -87,7 +90,11 @@ export function CommitModal({
             >
               {isCommitting ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -106,7 +113,12 @@ export function CommitModal({
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

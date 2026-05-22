@@ -86,7 +86,8 @@ export async function betaRoutes(server: FastifyInstance) {
   const supabaseUrl = process.env.SUPABASE_URL!;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
-  const adminNotifyEmail = process.env.ADMIN_NOTIFY_EMAIL || 'cdibrell@saipienlabs.com';
+  const adminNotifyEmail =
+    process.env.ADMIN_NOTIFY_EMAIL || 'cdibrell@saipienlabs.com';
 
   // ========================================
   // POST /request — Public beta access request
@@ -105,7 +106,17 @@ export async function betaRoutes(server: FastifyInstance) {
       feedbackCall?: string;
     };
   }>('/request', async (request, reply) => {
-    const { email, companyName, companySize, useCase, referralSource, jobTitle, companyWebsite, currentTools, feedbackCall } = request.body;
+    const {
+      email,
+      companyName,
+      companySize,
+      useCase,
+      referralSource,
+      jobTitle,
+      companyWebsite,
+      currentTools,
+      feedbackCall,
+    } = request.body;
 
     if (!email || !email.includes('@')) {
       return reply.code(400).send({
@@ -169,7 +180,10 @@ export async function betaRoutes(server: FastifyInstance) {
       console.log(`[Beta] Waitlist confirmation sent to ${normalizedEmail}`);
     } catch (emailErr) {
       // Non-blocking — log but don't fail the request
-      console.error(`[Beta] Failed to send confirmation to ${normalizedEmail}:`, emailErr instanceof Error ? emailErr.message : emailErr);
+      console.error(
+        `[Beta] Failed to send confirmation to ${normalizedEmail}:`,
+        emailErr instanceof Error ? emailErr.message : emailErr
+      );
     }
 
     // Notify admin of new application
@@ -194,7 +208,9 @@ export async function betaRoutes(server: FastifyInstance) {
       // Non-critical
     }
 
-    console.log(`[Beta] New request: ${normalizedEmail} (${companyName || 'no company'})`);
+    console.log(
+      `[Beta] New request: ${normalizedEmail} (${companyName || 'no company'})`
+    );
 
     return reply.code(201).send({
       success: true,
@@ -225,8 +241,12 @@ export async function betaRoutes(server: FastifyInstance) {
         query = query.eq('status', request.query.status);
       }
 
-      const limit = request.query.limit ? parseInt(request.query.limit, 10) : 50;
-      const offset = request.query.offset ? parseInt(request.query.offset, 10) : 0;
+      const limit = request.query.limit
+        ? parseInt(request.query.limit, 10)
+        : 50;
+      const offset = request.query.offset
+        ? parseInt(request.query.offset, 10)
+        : 0;
       query = query.range(offset, offset + limit - 1);
 
       const { data, error } = await query;
@@ -313,9 +333,14 @@ export async function betaRoutes(server: FastifyInstance) {
           html: buildInviteCodeEmailHtml(betaReq.email, inviteCode),
           text: `You're approved for Pravado beta! Your invite code: ${inviteCode}. Create your account at https://app.pravado.io/login`,
         });
-        console.log(`[Beta] Invite code sent to ${betaReq.email}: ${inviteCode}`);
+        console.log(
+          `[Beta] Invite code sent to ${betaReq.email}: ${inviteCode}`
+        );
       } catch (emailErr) {
-        console.error(`[Beta] Failed to send invite to ${betaReq.email}:`, emailErr instanceof Error ? emailErr.message : emailErr);
+        console.error(
+          `[Beta] Failed to send invite to ${betaReq.email}:`,
+          emailErr instanceof Error ? emailErr.message : emailErr
+        );
         // Don't fail the approve — the code is generated even if email fails
       }
 
@@ -363,7 +388,10 @@ export async function betaRoutes(server: FastifyInstance) {
     if (data.signed_up_at) {
       return reply.code(409).send({
         success: false,
-        error: { code: 'ALREADY_USED', message: 'This invite code has already been used' },
+        error: {
+          code: 'ALREADY_USED',
+          message: 'This invite code has already been used',
+        },
       });
     }
 

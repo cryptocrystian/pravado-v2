@@ -11,7 +11,10 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:3001';
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      process.env.API_URL ||
+      'http://localhost:3001';
 
     const res = await fetch(`${apiUrl}/api/v1/beta/request`, {
       method: 'POST',
@@ -23,7 +26,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data, { status: res.status });
   } catch {
     return NextResponse.json(
-      { success: false, error: { code: 'PROXY_ERROR', message: 'Failed to reach API' } },
+      {
+        success: false,
+        error: { code: 'PROXY_ERROR', message: 'Failed to reach API' },
+      },
       { status: 502 }
     );
   }

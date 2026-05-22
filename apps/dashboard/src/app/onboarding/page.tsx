@@ -14,7 +14,11 @@ import { PravadoLogo } from '@/components/brand/PravadoLogo';
 export const dynamic = 'force-dynamic';
 
 // AI Presence Dot component
-function AIDot({ status = 'idle' }: { status?: 'idle' | 'analyzing' | 'generating' }) {
+function AIDot({
+  status = 'idle',
+}: {
+  status?: 'idle' | 'analyzing' | 'generating';
+}) {
   const baseClasses = 'w-2.5 h-2.5 rounded-full';
   if (status === 'analyzing') {
     return <span className={`${baseClasses} ai-dot-analyzing`} />;
@@ -30,7 +34,9 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     // Check if user has completed the AI intro
-    const onboardingContext = localStorage.getItem('pravado_onboarding_context');
+    const onboardingContext = localStorage.getItem(
+      'pravado_onboarding_context'
+    );
 
     if (!onboardingContext) {
       // Redirect to AI-led introduction for first-time users
@@ -50,7 +56,8 @@ export default function OnboardingPage() {
       <div
         className="fixed inset-0 pointer-events-none opacity-20"
         style={{
-          background: 'radial-gradient(ellipse at 50% 0%, var(--brand-teal) 0%, transparent 50%)',
+          background:
+            'radial-gradient(ellipse at 50% 0%, var(--brand-teal) 0%, transparent 50%)',
         }}
       />
 

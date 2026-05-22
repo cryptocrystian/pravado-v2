@@ -27,7 +27,7 @@ export async function GET() {
   if (!session) {
     return NextResponse.json(
       { hasOrg: false, redirectTo: '/login?error=session-fetch-failed' },
-      { status: 401 },
+      { status: 401 }
     );
   }
 

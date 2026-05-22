@@ -22,7 +22,13 @@ interface CalendarShellProps {
   children: ReactNode;
 }
 
-export function CalendarShell({ orgName, userName, userEmail, userAvatarUrl, children }: CalendarShellProps) {
+export function CalendarShell({
+  orgName,
+  userName,
+  userEmail,
+  userAvatarUrl,
+  children,
+}: CalendarShellProps) {
   return (
     <CalendarModeProvider>
       <div className="min-h-screen bg-slate-0 flex flex-col">
@@ -33,9 +39,7 @@ export function CalendarShell({ orgName, userName, userEmail, userAvatarUrl, chi
           userAvatarUrl={userAvatarUrl}
         />
         <CalendarChromeBar />
-        <main className="flex-1 overflow-hidden">
-          {children}
-        </main>
+        <main className="flex-1 overflow-hidden">{children}</main>
       </div>
     </CalendarModeProvider>
   );

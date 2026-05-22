@@ -43,7 +43,9 @@ export default function PitchPipelinePage() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'Failed to load pitches');
+          setError(
+            err instanceof Error ? err.message : 'Failed to load pitches'
+          );
         }
       } finally {
         if (!cancelled) {
@@ -53,7 +55,9 @@ export default function PitchPipelinePage() {
     }
 
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   function handleRetry() {
@@ -77,7 +81,9 @@ export default function PitchPipelinePage() {
             <h1 className="text-2xl font-bold text-white">Pitch Pipeline</h1>
           </div>
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-sm text-red-400 mb-3">Could not load pitches. Please try again.</p>
+            <p className="text-sm text-red-400 mb-3">
+              Could not load pitches. Please try again.
+            </p>
             <button
               type="button"
               onClick={handleRetry}
@@ -115,7 +121,9 @@ export default function PitchPipelinePage() {
           </div>
         ) : (
           /* Pipeline board */
-          <div className={`grid grid-cols-4 gap-4${isLoading ? ' opacity-50' : ''}`}>
+          <div
+            className={`grid grid-cols-4 gap-4${isLoading ? ' opacity-50' : ''}`}
+          >
             {columns.map((col) => {
               const colPitches = pitches.filter((p) => p.stage === col.id);
               const count = colPitches.length;

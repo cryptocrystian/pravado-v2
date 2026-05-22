@@ -62,27 +62,24 @@ export function OmniTray() {
     }
   }, [messages]);
 
-  const sendMessage = useCallback(
-    (content: string) => {
-      if (!content.trim()) return;
+  const sendMessage = useCallback((content: string) => {
+    if (!content.trim()) return;
 
-      const userMsg: Message = {
-        id: `user-${Date.now()}`,
-        role: 'user',
-        content: content.trim(),
-      };
+    const userMsg: Message = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: content.trim(),
+    };
 
-      const aiMsg: Message = {
-        id: `ai-${Date.now()}`,
-        role: 'ai',
-        content: 'AI response coming in Phase 2 \u2014 SAGE integration pending.',
-      };
+    const aiMsg: Message = {
+      id: `ai-${Date.now()}`,
+      role: 'ai',
+      content: 'AI response coming in Phase 2 \u2014 SAGE integration pending.',
+    };
 
-      setMessages((prev) => [...prev, userMsg, aiMsg]);
-      setInput('');
-    },
-    []
-  );
+    setMessages((prev) => [...prev, userMsg, aiMsg]);
+    setInput('');
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -115,9 +112,14 @@ export function OmniTray() {
         <div className="flex flex-col">
           {/* Header */}
           <div className="flex-shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border-subtle">
-            <Sparkle weight="regular" className="w-5 h-5 text-brand-cyan shrink-0" />
+            <Sparkle
+              weight="regular"
+              className="w-5 h-5 text-brand-cyan shrink-0"
+            />
             <div className="flex-1 min-w-0">
-              <h2 className="text-base font-semibold text-white/90">Ask Pravado</h2>
+              <h2 className="text-base font-semibold text-white/90">
+                Ask Pravado
+              </h2>
               <p className="text-xs text-white/50 truncate">{surfaceLabel}</p>
             </div>
             <button
@@ -131,7 +133,10 @@ export function OmniTray() {
 
           {/* Chat messages — only renders when messages exist, capped at 400px before scroll */}
           {messages.length > 0 && (
-            <div ref={chatAreaRef} className="overflow-y-auto max-h-[400px] flex flex-col gap-3 px-4 py-3">
+            <div
+              ref={chatAreaRef}
+              className="overflow-y-auto max-h-[400px] flex flex-col gap-3 px-4 py-3"
+            >
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -140,9 +145,10 @@ export function OmniTray() {
                   <div
                     className={`
                       max-w-[85%] px-3 py-2 rounded-lg text-sm
-                      ${msg.role === 'user'
-                        ? 'bg-brand-iris/10 border border-brand-iris/20 text-white/90'
-                        : 'bg-slate-4 text-white/85'
+                      ${
+                        msg.role === 'user'
+                          ? 'bg-brand-iris/10 border border-brand-iris/20 text-white/90'
+                          : 'bg-slate-4 text-white/85'
                       }
                     `}
                   >
@@ -156,7 +162,9 @@ export function OmniTray() {
           {/* Empty state — only when no messages */}
           {messages.length === 0 && (
             <div className="px-4 pt-3 pb-1 text-center">
-              <p className="text-xs text-white/30">Ask me anything about your visibility strategy.</p>
+              <p className="text-xs text-white/30">
+                Ask me anything about your visibility strategy.
+              </p>
             </div>
           )}
 
@@ -192,9 +200,10 @@ export function OmniTray() {
                 disabled={!input.trim()}
                 className={`
                   p-2 rounded-lg transition-colors shrink-0
-                  ${input.trim()
-                    ? 'bg-brand-cyan text-slate-0 hover:bg-brand-cyan/90'
-                    : 'bg-slate-4 text-white/30 cursor-not-allowed'
+                  ${
+                    input.trim()
+                      ? 'bg-brand-cyan text-slate-0 hover:bg-brand-cyan/90'
+                      : 'bg-slate-4 text-white/30 cursor-not-allowed'
                   }
                 `}
                 aria-label="Send message"

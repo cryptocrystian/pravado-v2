@@ -61,8 +61,13 @@ export interface MockQueryBuilder {
 /**
  * Creates a chainable mock query builder
  */
-export function createMockQueryBuilder(defaultResponse?: MockQueryResponse): MockQueryBuilder {
-  const response: MockQueryResponse = defaultResponse || { data: null, error: null };
+export function createMockQueryBuilder(
+  defaultResponse?: MockQueryResponse
+): MockQueryBuilder {
+  const response: MockQueryResponse = defaultResponse || {
+    data: null,
+    error: null,
+  };
 
   const queryBuilder: MockQueryBuilder = {
     // Query methods - all return this for chaining
@@ -122,7 +127,10 @@ export function createMockSupabaseClient(
   tableResponses: Record<string, MockQueryResponse> = {}
 ): SupabaseClient {
   const mockFrom = vi.fn((table: string) => {
-    const defaultResponse = tableResponses[table] || { data: null, error: null };
+    const defaultResponse = tableResponses[table] || {
+      data: null,
+      error: null,
+    };
     return createMockQueryBuilder(defaultResponse);
   });
 
@@ -130,7 +138,10 @@ export function createMockSupabaseClient(
     from: mockFrom,
     auth: {
       getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
-      signInWithPassword: vi.fn().mockResolvedValue({ data: { user: null, session: null }, error: null }),
+      signInWithPassword: vi.fn().mockResolvedValue({
+        data: { user: null, session: null },
+        error: null,
+      }),
       signOut: vi.fn().mockResolvedValue({ error: null }),
       onAuthStateChange: vi.fn(() => ({
         data: { subscription: { unsubscribe: vi.fn() } },
@@ -186,7 +197,10 @@ export function createMockError(message: string, code?: string) {
 /**
  * Helper to create a mock success response
  */
-export function createMockSuccess<T>(data: T, count?: number): MockQueryResponse<T> {
+export function createMockSuccess<T>(
+  data: T,
+  count?: number
+): MockQueryResponse<T> {
   return {
     data,
     error: null,

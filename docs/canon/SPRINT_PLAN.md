@@ -1,4 +1,5 @@
 # Pravado v2 — Sprint Plan
+
 **Prepared:** 2026-02-24
 **Authority:** All decisions in this file are final. Claude Code executes; it does not re-interpret.
 
@@ -11,10 +12,12 @@
 **Rationale:** `brand-iris` (#A855F7) is assigned to the Content pillar. The same hex appears in DS docs as "electric-purple / AEO/Intelligence." The Entity Map requires three visually unambiguous ring colors. Adding `brand-violet` resolves the collision before any Entity Map or Analytics sprint begins.
 
 **Files:**
+
 - `apps/dashboard/src/app/globals.css` — add `--brand-violet: #7C3AED;`
 - `apps/dashboard/tailwind.config.ts` — add `violet: 'var(--brand-violet)'` under `brand`
 
 **Ring color mapping (canonical after this change):**
+
 - Ring 1 (Owned / SEO-Content) → `brand-cyan` (#00D9FF)
 - Ring 2 (Earned / PR) → `brand-magenta` (#D946EF)
 - Ring 3 (Perceived / AEO) → `brand-violet` (#7C3AED)
@@ -23,6 +26,7 @@
 ---
 
 ## Sprint 1: Token Compliance
+
 **Goal:** Every component in scope uses only DS v3.1 tokens. Zero phantom hex values. Zero invalid opacity chains. Zero JS hex objects.
 **Risk:** Zero behavioral change. Pure find-and-replace. Ship as a single commit per file.
 **Pre-requisite:** Pre-sprint above complete.
@@ -32,6 +36,7 @@
 ### 1A — `pillar-accents.ts`
 
 **Changes:**
+
 1. Delete entire `surfaceTokens` export object. Search for `surfaceTokens.` usage in codebase before deleting — replace all consumers with Tailwind classes.
 2. Fix `modeStyles.manual.bg`: `'bg-white/20/50'` → `'bg-white/5'`
 3. Fix `priorityStyles.low.bg`: `'bg-white/30/10'` → `'bg-white/5'`
@@ -45,6 +50,7 @@
 ### 1B — `prWorkSurfaceStyles.ts`
 
 **Changes:**
+
 1. Delete `surfaceTokens` export object (same pattern as pillar-accents.ts)
 2. Replace all phantom hex values:
    - `#0D0D12` → `bg-slate-1`
@@ -58,6 +64,7 @@
 ### 1C — `ActionStreamPane.tsx`
 
 **Changes (global replace in file):**
+
 - `bg-[#0D0D12]` → `bg-slate-1`
 - `bg-[#0A0A0F]` → `bg-page`
 - `bg-[#1A1A24]` → `bg-slate-3`
@@ -71,6 +78,7 @@
 ### 1D — `StrategyPanelPane.tsx`
 
 **Changes (global replace in file):**
+
 - Same phantom hex replacements as 1C
 - `bg-semantic-danger/8` → `bg-semantic-danger/10`
 - `bg-semantic-warning/8` → `bg-semantic-warning/10`
@@ -81,6 +89,7 @@
 ### 1E — `ActionCard.tsx`
 
 **Changes:**
+
 - `border-[#2A2A36]` → `border-slate-5`
 - `hover:bg-brand-iris/8` → `hover:bg-brand-iris/10`
 - `hover:bg-brand-magenta/8` → `hover:bg-brand-magenta/10`
@@ -92,6 +101,7 @@
 ### 1F — `TriPaneShell.tsx`
 
 **Changes:**
+
 - `text-white` on all three pane header h2 elements → `text-white/90`
 - Any `bg-[#050508]` or `bg-[#0D0D12]` phantom values → `bg-page` or `bg-slate-1`
 
@@ -102,6 +112,7 @@
 **Files:** `HeadlineMetrics.tsx`, `ContentTable.tsx`, `PlacementsTable.tsx`, `AnalyticsDashboard.tsx`
 
 **Changes (global replace across all four files):**
+
 - `bg-cc-surface` → `bg-panel` (standard card background)
 - `border-white/8` → `border-border-subtle` (non-standard opacity step)
 - `rounded-2xl` on cards → `rounded-xl` (16px → 12px per updated DS)
@@ -117,6 +128,7 @@
 ### 1H — `ContentWorkSurfaceShell.tsx`
 
 **Changes:**
+
 - `bg-black/50` (drawer backdrop) → `bg-page/70 backdrop-blur-sm`
 - `text-white` (plain) → `text-white/90`
 - Any phantom hex values → nearest DS token per banned list
@@ -128,12 +140,20 @@
 **Change:** Add Manual and Copilot mode badges (currently only Autopilot has one).
 
 ```tsx
-<span className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border ${
-  action.mode === 'autopilot' ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30' :
-  action.mode === 'copilot'   ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30' :
-                                'bg-white/5 text-white/70 border-white/20'
-}`}>
-  {action.mode === 'autopilot' ? 'Auto' : action.mode === 'copilot' ? 'Copilot' : 'Manual'}
+<span
+  className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border ${
+    action.mode === 'autopilot'
+      ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30'
+      : action.mode === 'copilot'
+        ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30'
+        : 'bg-white/5 text-white/70 border-white/20'
+  }`}
+>
+  {action.mode === 'autopilot'
+    ? 'Auto'
+    : action.mode === 'copilot'
+      ? 'Copilot'
+      : 'Manual'}
 </span>
 ```
 
@@ -146,6 +166,7 @@
 ---
 
 ## Sprint 2: Typography Hierarchy
+
 **Goal:** Every surface title is `text-2xl font-bold`. Every section heading is `text-xl` or `text-lg`. Card titles are visually distinct from body text. Topbar updated.
 **Pre-requisite:** Sprint 1 complete.
 
@@ -154,6 +175,7 @@
 ### 2A — Topbar (`CommandCenterTopbar.tsx`)
 
 **Changes:**
+
 1. `h-14` → `h-16` (56px → 64px for enterprise authority)
 2. `bg-page/95` → `bg-slate-1/95` (subtle elevation from page)
 3. Wordmark: `text-lg font-bold` → `text-xl font-bold` (20px minimum)
@@ -168,11 +190,13 @@ Apply to: `PRWorkSurfaceShell.tsx`, `ContentWorkSurfaceShell.tsx`, `SEOWorkSurfa
 **Rule:** Every surface h1 must be `text-2xl font-bold text-white/95 tracking-tight`. No exceptions.
 
 **Current violations found:**
+
 - `AnalyticsDashboard`: `text-lg font-semibold text-white/90` → `text-2xl font-bold text-white/95 tracking-tight`
 - `PRWorkSurfaceShell`: `text-xl font-semibold text-white/95` → `text-2xl font-bold text-white/95 tracking-tight`
 - Any other surface using `text-xl` or smaller for h1 → `text-2xl font-bold`
 
 **Surface subtitle (the descriptor line below h1):**
+
 - Currently: `text-[11px] font-bold uppercase` in some shells → wrong (badge size for a subtitle)
 - Fix: `text-[13px] text-white/55` — no uppercase, readable size
 
@@ -200,6 +224,7 @@ This is the biggest single visual change: tri-pane headers going from 14px to 18
 **Files:** All components that import from `typography.ts` or `text-intents.ts`
 
 **Find and replace deprecated tokens:**
+
 - `headingLg` → `headingPage` (or apply `text-2xl font-bold text-white/95 tracking-tight` directly)
 - `headingMd` → `headingPane`
 - `headingSm` → `headingSubsection`
@@ -212,6 +237,7 @@ Do NOT bulk-replace blindly. Verify context before each replacement to ensure th
 ---
 
 ## Sprint 3: Layout Restructuring
+
 **Goal:** Every layout decision is justified by data shape. Cards for decisions. Tables for tabular data. KPI rows for metrics. Width justified by content.
 **Pre-requisite:** Sprint 2 complete (typography must be fixed first — layout decisions depend on visual hierarchy being readable).
 
@@ -221,24 +247,24 @@ Do NOT bulk-replace blindly. Verify context before each replacement to ensure th
 
 These decisions are final. Claude Code does not interpret — it implements these exactly.
 
-| Surface | Component | Current Shape | Correct Shape | Decision |
-|---------|-----------|---------------|---------------|----------|
-| Analytics | HeadlineMetrics | 4-col card grid | **Keep** — correct KPI shape | Layout is RIGHT. Sprint 1 fixes tokens. |
-| Analytics | ContentTable summary | 3-col card grid | **Keep** — correct KPI shape | Layout is RIGHT. Sprint 1 fixes tokens. |
-| Analytics | PlacementsTable summary | 3-col card grid | **Keep** — correct KPI shape | Layout is RIGHT. Sprint 1 fixes tokens. |
-| Analytics | ContentTable rows | Already `<table>` | **Keep** | Correct. |
-| Analytics | PlacementsTable rows | Already `<table>` | **Keep** | Correct. |
-| Analytics | TopMovers | Stacked event cards | Convert to **table rows** | Each mover is a row with 3 attributes (description, pillar, delta). No decision to make per row. Table. |
-| Analytics | CoverageTimeline events | Flex-wrap event chips | Convert to **compact table** | Date, publication, headline, EVI impact — tabular. |
-| PR | Journalist database | Cards (assumed) | **Sortable table** | Journalists have 5+ comparable attributes. Table with inline quick-action. |
-| PR | Pitches list | Cards (assumed) | **Cards** — keep | A pitch row is a decision (send/approve/skip). Card is correct. |
-| PR | Coverage list | Table (assumed) | **Table** — keep | Coverage items are comparable rows. |
-| Content | Library view | Cards (assumed) | **Cards** — keep | Each document is a decision (edit/publish/archive). |
-| Content | Work queue | Cards (assumed) | **Cards** — keep | Each item requires an approve/reject decision. |
-| SEO | Topic clusters | Cards (assumed) | **Table** | Topic clusters have schema score, coverage, gap — comparable attributes. |
-| SEO | Citations table | Already table (assumed) | **Keep** | Correct. |
-| Command Center | Action Stream | Cards | **Keep** | Each action is a decision. Cards are correct and contract-locked. |
-| Command Center | Strategy Panel | Vertical stack | **Keep** | Contract-locked layout. |
+| Surface        | Component               | Current Shape           | Correct Shape                | Decision                                                                                                |
+| -------------- | ----------------------- | ----------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Analytics      | HeadlineMetrics         | 4-col card grid         | **Keep** — correct KPI shape | Layout is RIGHT. Sprint 1 fixes tokens.                                                                 |
+| Analytics      | ContentTable summary    | 3-col card grid         | **Keep** — correct KPI shape | Layout is RIGHT. Sprint 1 fixes tokens.                                                                 |
+| Analytics      | PlacementsTable summary | 3-col card grid         | **Keep** — correct KPI shape | Layout is RIGHT. Sprint 1 fixes tokens.                                                                 |
+| Analytics      | ContentTable rows       | Already `<table>`       | **Keep**                     | Correct.                                                                                                |
+| Analytics      | PlacementsTable rows    | Already `<table>`       | **Keep**                     | Correct.                                                                                                |
+| Analytics      | TopMovers               | Stacked event cards     | Convert to **table rows**    | Each mover is a row with 3 attributes (description, pillar, delta). No decision to make per row. Table. |
+| Analytics      | CoverageTimeline events | Flex-wrap event chips   | Convert to **compact table** | Date, publication, headline, EVI impact — tabular.                                                      |
+| PR             | Journalist database     | Cards (assumed)         | **Sortable table**           | Journalists have 5+ comparable attributes. Table with inline quick-action.                              |
+| PR             | Pitches list            | Cards (assumed)         | **Cards** — keep             | A pitch row is a decision (send/approve/skip). Card is correct.                                         |
+| PR             | Coverage list           | Table (assumed)         | **Table** — keep             | Coverage items are comparable rows.                                                                     |
+| Content        | Library view            | Cards (assumed)         | **Cards** — keep             | Each document is a decision (edit/publish/archive).                                                     |
+| Content        | Work queue              | Cards (assumed)         | **Cards** — keep             | Each item requires an approve/reject decision.                                                          |
+| SEO            | Topic clusters          | Cards (assumed)         | **Table**                    | Topic clusters have schema score, coverage, gap — comparable attributes.                                |
+| SEO            | Citations table         | Already table (assumed) | **Keep**                     | Correct.                                                                                                |
+| Command Center | Action Stream           | Cards                   | **Keep**                     | Each action is a decision. Cards are correct and contract-locked.                                       |
+| Command Center | Strategy Panel          | Vertical stack          | **Keep**                     | Contract-locked layout.                                                                                 |
 
 ---
 
@@ -250,20 +276,36 @@ These decisions are final. Claude Code does not interpret — it implements thes
 <table className="w-full">
   <thead>
     <tr className="border-b border-border-subtle">
-      <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">Factor</th>
-      <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">Pillar</th>
-      <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">Period</th>
-      <th className="text-right pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">Impact</th>
+      <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">
+        Factor
+      </th>
+      <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">
+        Pillar
+      </th>
+      <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">
+        Period
+      </th>
+      <th className="text-right pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">
+        Impact
+      </th>
     </tr>
   </thead>
   <tbody>
     {sorted.map((mover) => (
-      <tr key={mover.id} className="border-b border-border-subtle/50 last:border-0">
+      <tr
+        key={mover.id}
+        className="border-b border-border-subtle/50 last:border-0"
+      >
         <td className="py-3 text-sm text-white/85">{mover.description}</td>
-        <td className="py-3"><PillarBadge pillar={mover.pillar} /></td>
+        <td className="py-3">
+          <PillarBadge pillar={mover.pillar} />
+        </td>
         <td className="py-3 text-[13px] text-white/55">{mover.period}</td>
-        <td className={`py-3 text-right text-base font-bold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-          {isPositive ? '+' : ''}{mover.delta.toFixed(1)}
+        <td
+          className={`py-3 text-right text-base font-bold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}
+        >
+          {isPositive ? '+' : ''}
+          {mover.delta.toFixed(1)}
         </td>
       </tr>
     ))}
@@ -281,14 +323,24 @@ These decisions are final. Claude Code does not interpret — it implements thes
 <table className="w-full mb-4">
   <thead>
     <tr className="border-b border-border-subtle">
-      <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">Date</th>
-      <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">Placement</th>
-      <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">Tier</th>
-      <th className="text-right pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">EVI Impact</th>
+      <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">
+        Date
+      </th>
+      <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">
+        Placement
+      </th>
+      <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">
+        Tier
+      </th>
+      <th className="text-right pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">
+        EVI Impact
+      </th>
     </tr>
   </thead>
   <tbody>
-    {events.map((event) => { /* rows */ })}
+    {events.map((event) => {
+      /* rows */
+    })}
   </tbody>
 </table>
 ```
@@ -328,6 +380,7 @@ After 3A–3D, do a final width audit across all surfaces:
 **Rule:** Any card, panel, or container with `w-full` that contains 3 or fewer data points must be given an explicit max-width or placed in an appropriately-sized grid.
 
 Specific targets:
+
 - Any standalone "stat" card outside a grid → wrap in a `grid grid-cols-3` or `grid grid-cols-4` with siblings
 - Any form input wider than `max-w-lg` (512px) for short-value inputs (email, name, URL) → cap at `max-w-sm` (384px) or `max-w-md` (448px)
 - Buttons that fill full width unnecessarily → `w-auto` or `w-fit`
@@ -335,10 +388,12 @@ Specific targets:
 ---
 
 ## Sprint 4: Impact Strip + Missing Features
+
 **Goal:** Impact Strip present on all work surfaces. Mode badges complete. CI checks verified.
 **Pre-requisite:** Sprint 3 complete.
 
 **Scope:**
+
 1. Add `ImpactStrip` to any surface shell missing it (verify `ContentWorkSurfaceShell.tsx`, `SEOWorkSurfaceShell.tsx`, `AnalyticsDashboard.tsx`)
 2. Verify `CalendarPeek.tsx` height contract `h-[280px]`
 3. Verify `EntityMap.tsx` zone/ring layout (now ring-based per D012)

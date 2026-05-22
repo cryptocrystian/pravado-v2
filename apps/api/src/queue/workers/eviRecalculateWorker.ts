@@ -21,7 +21,9 @@ export interface EVIRecalculatePayload {
  * Process an EVI recalculation job.
  * Called by BullMQ worker when a job arrives on the 'evi:recalculate' queue.
  */
-export async function processEVIRecalculate(payload: EVIRecalculatePayload): Promise<void> {
+export async function processEVIRecalculate(
+  payload: EVIRecalculatePayload
+): Promise<void> {
   const { orgId } = payload;
   logger.info(`Recalculating EVI for org ${orgId}`);
 

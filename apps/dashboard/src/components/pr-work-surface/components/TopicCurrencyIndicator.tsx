@@ -15,11 +15,30 @@ interface Props {
   size?: 'sm' | 'md';
 }
 
-export function TopicCurrencyIndicator({ currency, showLabel = false, size = 'sm' }: Props) {
+export function TopicCurrencyIndicator({
+  currency,
+  showLabel = false,
+  size = 'sm',
+}: Props) {
   const getColor = (value: number) => {
-    if (value >= 80) return { bar: 'bg-semantic-success', text: 'text-semantic-success', label: 'Hot' };
-    if (value >= 60) return { bar: 'bg-semantic-warning', text: 'text-semantic-warning', label: 'Warm' };
-    if (value >= 40) return { bar: 'bg-brand-magenta', text: 'text-brand-magenta', label: 'Cooling' };
+    if (value >= 80)
+      return {
+        bar: 'bg-semantic-success',
+        text: 'text-semantic-success',
+        label: 'Hot',
+      };
+    if (value >= 60)
+      return {
+        bar: 'bg-semantic-warning',
+        text: 'text-semantic-warning',
+        label: 'Warm',
+      };
+    if (value >= 40)
+      return {
+        bar: 'bg-brand-magenta',
+        text: 'text-brand-magenta',
+        label: 'Cooling',
+      };
     return { bar: 'bg-white/30', text: 'text-white/50', label: 'Cold' };
   };
 
@@ -29,7 +48,9 @@ export function TopicCurrencyIndicator({ currency, showLabel = false, size = 'sm
 
   return (
     <div className="flex items-center gap-2">
-      <div className={`${widthClasses} ${heightClasses} rounded-full bg-slate-4 overflow-hidden`}>
+      <div
+        className={`${widthClasses} ${heightClasses} rounded-full bg-slate-4 overflow-hidden`}
+      >
         <div
           className={`h-full rounded-full transition-all ${bar}`}
           style={{ width: `${currency}%` }}

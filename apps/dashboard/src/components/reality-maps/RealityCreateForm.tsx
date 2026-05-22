@@ -20,7 +20,9 @@ import { listSuites } from '../../lib/scenarioOrchestrationApi';
 
 interface RealityCreateFormProps {
   map?: RealityMap;
-  onSubmit: (input: CreateRealityMapInput | UpdateRealityMapInput) => Promise<void>;
+  onSubmit: (
+    input: CreateRealityMapInput | UpdateRealityMapInput
+  ) => Promise<void>;
   onCancel: () => void;
   loading?: boolean;
 }
@@ -35,12 +37,25 @@ export function RealityCreateForm({
   const [description, setDescription] = useState(map?.description || '');
   const [suiteId, setSuiteId] = useState(map?.suiteId || '');
   const [maxDepth, setMaxDepth] = useState(map?.parameters.maxDepth || 5);
-  const [branchingFactor, setBranchingFactor] = useState(map?.parameters.branchingFactor || 3);
-  const [minProbability, setMinProbability] = useState(map?.parameters.minProbability || 0.05);
-  const [includeRiskAnalysis, setIncludeRiskAnalysis] = useState(map?.parameters.includeRiskAnalysis ?? true);
-  const [includeOpportunityAnalysis, setIncludeOpportunityAnalysis] = useState(map?.parameters.includeOpportunityAnalysis ?? true);
-  const [narrativeStyle, setNarrativeStyle] = useState<NarrativeStyle>(map?.parameters.narrativeStyle || 'executive');
-  const [probabilityModel, setProbabilityModel] = useState<ProbabilityModelType>(map?.parameters.probabilityModel || 'weighted_average');
+  const [branchingFactor, setBranchingFactor] = useState(
+    map?.parameters.branchingFactor || 3
+  );
+  const [minProbability, setMinProbability] = useState(
+    map?.parameters.minProbability || 0.05
+  );
+  const [includeRiskAnalysis, setIncludeRiskAnalysis] = useState(
+    map?.parameters.includeRiskAnalysis ?? true
+  );
+  const [includeOpportunityAnalysis, setIncludeOpportunityAnalysis] = useState(
+    map?.parameters.includeOpportunityAnalysis ?? true
+  );
+  const [narrativeStyle, setNarrativeStyle] = useState<NarrativeStyle>(
+    map?.parameters.narrativeStyle || 'executive'
+  );
+  const [probabilityModel, setProbabilityModel] =
+    useState<ProbabilityModelType>(
+      map?.parameters.probabilityModel || 'weighted_average'
+    );
   const [suites, setSuites] = useState<Array<{ id: string; name: string }>>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,7 +66,7 @@ export function RealityCreateForm({
   const loadSuites = async () => {
     try {
       const result = await listSuites({ limit: 100, status: 'configured' });
-      setSuites(result.suites.map(s => ({ id: s.id, name: s.name })));
+      setSuites(result.suites.map((s) => ({ id: s.id, name: s.name })));
     } catch (err) {
       console.error('Failed to load suites', err);
     }
@@ -81,7 +96,9 @@ export function RealityCreateForm({
 
       await onSubmit(input);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save reality map');
+      setError(
+        err instanceof Error ? err.message : 'Failed to save reality map'
+      );
     }
   };
 
@@ -147,11 +164,15 @@ export function RealityCreateForm({
 
       {/* Generation Parameters */}
       <div className="border-t pt-4">
-        <h4 className="text-sm font-medium text-gray-900 mb-3">Generation Parameters</h4>
+        <h4 className="text-sm font-medium text-gray-900 mb-3">
+          Generation Parameters
+        </h4>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-700 mb-1">Max Depth</label>
+            <label className="block text-sm text-gray-700 mb-1">
+              Max Depth
+            </label>
             <input
               type="number"
               value={maxDepth}
@@ -163,7 +184,9 @@ export function RealityCreateForm({
             <p className="mt-1 text-xs text-gray-500">1-10 levels deep</p>
           </div>
           <div>
-            <label className="block text-sm text-gray-700 mb-1">Branching Factor</label>
+            <label className="block text-sm text-gray-700 mb-1">
+              Branching Factor
+            </label>
             <input
               type="number"
               value={branchingFactor}
@@ -197,7 +220,9 @@ export function RealityCreateForm({
 
       {/* Analysis Options */}
       <div className="border-t pt-4">
-        <h4 className="text-sm font-medium text-gray-900 mb-3">Analysis Options</h4>
+        <h4 className="text-sm font-medium text-gray-900 mb-3">
+          Analysis Options
+        </h4>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <label className="flex items-center gap-2">
@@ -216,32 +241,46 @@ export function RealityCreateForm({
               onChange={(e) => setIncludeOpportunityAnalysis(e.target.checked)}
               className="rounded text-indigo-600"
             />
-            <span className="text-sm text-gray-700">Include Opportunity Analysis</span>
+            <span className="text-sm text-gray-700">
+              Include Opportunity Analysis
+            </span>
           </label>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-700 mb-1">Narrative Style</label>
+            <label className="block text-sm text-gray-700 mb-1">
+              Narrative Style
+            </label>
             <select
               value={narrativeStyle}
-              onChange={(e) => setNarrativeStyle(e.target.value as NarrativeStyle)}
+              onChange={(e) =>
+                setNarrativeStyle(e.target.value as NarrativeStyle)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             >
               {Object.entries(NARRATIVE_STYLES).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
+                <option key={value} value={value}>
+                  {label}
+                </option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-sm text-gray-700 mb-1">Probability Model</label>
+            <label className="block text-sm text-gray-700 mb-1">
+              Probability Model
+            </label>
             <select
               value={probabilityModel}
-              onChange={(e) => setProbabilityModel(e.target.value as ProbabilityModelType)}
+              onChange={(e) =>
+                setProbabilityModel(e.target.value as ProbabilityModelType)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             >
               {Object.entries(PROBABILITY_MODELS).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
+                <option key={value} value={value}>
+                  {label}
+                </option>
               ))}
             </select>
           </div>

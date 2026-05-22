@@ -20,7 +20,13 @@ interface SEOShellProps {
   userAvatarUrl?: string;
 }
 
-export function SEOShell({ children, orgName, userName, userEmail, userAvatarUrl }: SEOShellProps) {
+export function SEOShell({
+  children,
+  orgName,
+  userName,
+  userEmail,
+  userAvatarUrl,
+}: SEOShellProps) {
   return (
     <SEOModeProvider>
       <div className="min-h-screen bg-slate-0 flex flex-col">
@@ -31,9 +37,7 @@ export function SEOShell({ children, orgName, userName, userEmail, userAvatarUrl
           userAvatarUrl={userAvatarUrl}
         />
         <SEOChromeBar />
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </SEOModeProvider>
   );

@@ -25,7 +25,12 @@ interface SectionProps {
   children: React.ReactNode;
 }
 
-function Section({ title, defaultOpen = false, alwaysOpen = false, children }: SectionProps) {
+function Section({
+  title,
+  defaultOpen = false,
+  alwaysOpen = false,
+  children,
+}: SectionProps) {
   const [open, setOpen] = useState(defaultOpen || alwaysOpen);
 
   return (

@@ -27,6 +27,7 @@ The Audience Persona Builder enables marketing teams to create, manage, and evol
 ### Problem Statement
 
 Traditional persona building is:
+
 - **Manual and time-consuming**: Personas require hours of research and documentation
 - **Quickly outdated**: Market dynamics change faster than manual updates
 - **Siloed**: Insights scattered across press releases, media monitoring, journalist interactions
@@ -35,6 +36,7 @@ Traditional persona building is:
 ### Solution
 
 An intelligent persona management system that:
+
 - **Automates extraction** of persona attributes from source content
 - **Aggregates insights** from S38-S50 systems (press releases, media, journalists)
 - **Tracks evolution** over time with historical snapshots
@@ -48,6 +50,7 @@ An intelligent persona management system that:
 ### 1. AI-Powered Persona Generation
 
 Generate personas from source content using GPT-4/Claude:
+
 - **Source Types**: Press releases, pitches, articles, journalist profiles, manual input
 - **Extraction**: Traits (skills, demographics, psychographics, behaviors)
 - **Insights**: Content preferences, pain points, opportunities, engagement patterns
@@ -56,6 +59,7 @@ Generate personas from source content using GPT-4/Claude:
 ### 2. Multi-Source Insight Aggregation
 
 Combine intelligence from:
+
 - **S38 Press Releases**: Target audience signals from announcements
 - **S39 PR Pitches**: Journalist persona insights from pitching data
 - **S40-43 Media Monitoring**: Audience preferences from coverage
@@ -64,6 +68,7 @@ Combine intelligence from:
 ### 3. Persona Scoring System
 
 Four-dimensional scoring:
+
 - **Relevance Score** (0-100): How well persona matches business goals
 - **Engagement Score** (0-100): Likelihood of engagement based on traits
 - **Alignment Score** (0-100): Strategic fit with messaging/positioning
@@ -86,6 +91,7 @@ Four-dimensional scoring:
 ### 6. Trait & Insight Management
 
 **Traits** (5 categories):
+
 - Skill: Hard skills, soft skills
 - Demographic: Age, location, company size
 - Psychographic: Values, motivations, goals
@@ -93,6 +99,7 @@ Four-dimensional scoring:
 - Interest: Topics, industries, technologies
 
 **Insights** (5 types):
+
 - Content Preference: What content resonates
 - Media Consumption: Preferred channels and formats
 - Engagement Pattern: How and when they engage
@@ -166,6 +173,7 @@ Four-dimensional scoring:
 ### Migration 56: Audience Persona Schema
 
 **Table: `audience_personas`**
+
 ```sql
 id                  UUID PRIMARY KEY
 org_id              UUID NOT NULL
@@ -196,6 +204,7 @@ updated_at          TIMESTAMPTZ
 ```
 
 **Indexes**:
+
 - Primary key on `id`
 - Composite on `org_id, status`
 - Individual on `overall_score`, `relevance_score`, etc.
@@ -203,6 +212,7 @@ updated_at          TIMESTAMPTZ
 - B-tree on timestamps
 
 **Table: `audience_persona_traits`**
+
 ```sql
 id                      UUID PRIMARY KEY
 org_id                  UUID NOT NULL
@@ -225,11 +235,13 @@ updated_at              TIMESTAMPTZ
 ```
 
 **Indexes**:
+
 - Primary key on `id`
 - Composite on `persona_id, trait_category`
 - Individual on `trait_strength`, `is_verified`
 
 **Table: `audience_persona_insights`**
+
 ```sql
 id                      UUID PRIMARY KEY
 org_id                  UUID NOT NULL
@@ -251,11 +263,13 @@ updated_at              TIMESTAMPTZ
 ```
 
 **Indexes**:
+
 - Primary key on `id`
 - Composite on `persona_id, insight_type`
 - Individual on `is_actionable`, `confidence_score`
 
 **Table: `audience_persona_history`**
+
 ```sql
 id                  UUID PRIMARY KEY
 org_id              UUID NOT NULL
@@ -271,6 +285,7 @@ created_at          TIMESTAMPTZ
 ```
 
 **Indexes**:
+
 - Primary key on `id`
 - Composite on `persona_id, snapshot_at DESC`
 - Individual on `snapshot_type`, `change_magnitude`
@@ -278,6 +293,7 @@ created_at          TIMESTAMPTZ
 ### SQL Functions
 
 **1. calculate_persona_overall_score()**
+
 ```sql
 RETURNS FLOAT
 -- Calculates weighted overall score:
@@ -285,6 +301,7 @@ RETURNS FLOAT
 ```
 
 **2. calculate_persona_similarity()**
+
 ```sql
 RETURNS FLOAT
 -- Compares two personas based on:
@@ -294,24 +311,28 @@ RETURNS FLOAT
 ```
 
 **3. get_persona_trait_count()**
+
 ```sql
 RETURNS INTEGER
 -- Counts traits for a persona
 ```
 
 **4. get_persona_insight_count()**
+
 ```sql
 RETURNS INTEGER
 -- Counts insights for a persona
 ```
 
 **5. get_persona_verified_trait_count()**
+
 ```sql
 RETURNS INTEGER
 -- Counts verified traits
 ```
 
 **6. get_persona_actionable_insight_count()**
+
 ```sql
 RETURNS INTEGER
 -- Counts actionable insights
@@ -322,21 +343,26 @@ RETURNS INTEGER
 ## API Reference
 
 ### Base URL
+
 ```
 /api/v1/personas
 ```
 
 ### Authentication
+
 All endpoints require:
+
 - Header: `x-org-id` (Organization ID)
 - Optional: `x-user-id` (User ID for audit trails)
 
 ### Endpoints
 
 #### 1. POST /generate
+
 Generate persona using LLM from source text
 
 **Request Body**:
+
 ```json
 {
   "generationContext": {
@@ -354,6 +380,7 @@ Generate persona using LLM from source text
 ```
 
 **Response (201)**:
+
 ```json
 {
   "persona": { "id": "...", "name": "Healthcare CTO", ... },
@@ -365,9 +392,11 @@ Generate persona using LLM from source text
 ```
 
 #### 2. POST /
+
 Create persona manually
 
 **Request Body**:
+
 ```json
 {
   "name": "Enterprise CTO",
@@ -382,6 +411,7 @@ Create persona manually
 ```
 
 **Response (201)**:
+
 ```json
 {
   "id": "...",
@@ -391,9 +421,11 @@ Create persona manually
 ```
 
 #### 3. GET /
+
 List personas with filtering
 
 **Query Parameters**:
+
 ```
 ?personaType=primary_audience,secondary_audience
 &role=CTO
@@ -413,6 +445,7 @@ List personas with filtering
 ```
 
 **Response (200)**:
+
 ```json
 {
   "personas": [...],
@@ -423,9 +456,11 @@ List personas with filtering
 ```
 
 #### 4. GET /:id
+
 Get persona detail with traits, insights, and history
 
 **Response (200)**:
+
 ```json
 {
   "persona": { "id": "...", ... },
@@ -436,9 +471,11 @@ Get persona detail with traits, insights, and history
 ```
 
 #### 5. PATCH /:id
+
 Update persona fields
 
 **Request Body**:
+
 ```json
 {
   "name": "Updated Name",
@@ -450,6 +487,7 @@ Update persona fields
 ```
 
 **Response (200)**:
+
 ```json
 {
   "id": "...",
@@ -459,14 +497,17 @@ Update persona fields
 ```
 
 #### 6. DELETE /:id
+
 Delete persona
 
 **Response (204)**: No content
 
 #### 7. GET /:id/insights
+
 Get insights with filtering
 
 **Query Parameters**:
+
 ```
 ?insightType=pain_point,opportunity
 &insightCategory=behavioral
@@ -481,6 +522,7 @@ Get insights with filtering
 ```
 
 **Response (200)**:
+
 ```json
 {
   "insights": [...],
@@ -489,9 +531,11 @@ Get insights with filtering
 ```
 
 #### 8. GET /:id/history
+
 Get historical snapshots
 
 **Query Parameters**:
+
 ```
 ?snapshotType=manual_update,score_update
 &minChangeMagnitude=0.5
@@ -503,6 +547,7 @@ Get historical snapshots
 ```
 
 **Response (200)**:
+
 ```json
 {
   "snapshots": [...],
@@ -511,9 +556,11 @@ Get historical snapshots
 ```
 
 #### 9. GET /:id/trends
+
 Get trend analytics
 
 **Query Parameters**:
+
 ```
 ?daysBack=90
 &includeTraits=true
@@ -521,6 +568,7 @@ Get trend analytics
 ```
 
 **Response (200)**:
+
 ```json
 {
   "trends": [
@@ -536,9 +584,11 @@ Get trend analytics
 ```
 
 #### 10. POST /:id/compare
+
 Compare with another persona
 
 **Request Body**:
+
 ```json
 {
   "personaId2": "other-persona-id"
@@ -546,6 +596,7 @@ Compare with another persona
 ```
 
 **Response (200)**:
+
 ```json
 {
   "comparison": {
@@ -563,9 +614,11 @@ Compare with another persona
 ```
 
 #### 11. POST /merge
+
 Merge two personas
 
 **Request Body**:
+
 ```json
 {
   "sourcePersonaId": "source-id",
@@ -577,6 +630,7 @@ Merge two personas
 ```
 
 **Response (200)**:
+
 ```json
 {
   "mergedPersona": { ... },
@@ -587,9 +641,11 @@ Merge two personas
 ```
 
 #### 12. POST /:id/traits
+
 Add trait to persona
 
 **Request Body**:
+
 ```json
 {
   "traitCategory": "skill",
@@ -604,6 +660,7 @@ Add trait to persona
 ```
 
 **Response (201)**:
+
 ```json
 {
   "id": "...",
@@ -613,9 +670,11 @@ Add trait to persona
 ```
 
 #### 13. POST /:id/insights
+
 Add insight to persona
 
 **Request Body**:
+
 ```json
 {
   "insightType": "pain_point",
@@ -630,6 +689,7 @@ Add insight to persona
 ```
 
 **Response (201)**:
+
 ```json
 {
   "id": "...",
@@ -643,6 +703,7 @@ Add insight to persona
 ## LLM Integration
 
 ### Supported Models
+
 - **GPT-4** (default): Best quality, slower, higher cost
 - **GPT-3.5 Turbo**: Good quality, faster, lower cost
 - **Claude 3 Opus**: High quality, good for nuanced extraction
@@ -651,6 +712,7 @@ Add insight to persona
 ### LLM Extraction Prompt
 
 **System Prompt**:
+
 ```
 You are an expert audience analyst. Extract persona attributes from the provided text.
 
@@ -662,6 +724,7 @@ Return a JSON object with this exact structure: {...}
 ```
 
 **User Prompt**:
+
 ```
 Extract persona attributes from this {sourceType} content:
 
@@ -675,6 +738,7 @@ Return ONLY the JSON object, no other text.
 ### Fallback Strategy
 
 If LLM extraction fails:
+
 1. **Deterministic Extraction**: Keyword-based trait detection
 2. **Basic Scoring**: Default scores based on source type
 3. **Minimal Insights**: Generic insights from content analysis
@@ -693,6 +757,7 @@ If LLM extraction fails:
 ### Component Scores
 
 **Relevance Score (0-100)**:
+
 ```
 Base = 50
 + (Verified traits × 5)
@@ -703,6 +768,7 @@ Capped at 100
 ```
 
 **Engagement Score (0-100)**:
+
 ```
 Base = 50
 + (Behavioral traits × 4)
@@ -712,6 +778,7 @@ Capped at 100
 ```
 
 **Alignment Score (0-100)**:
+
 ```
 Base = 50
 + (Psychographic traits × 4)
@@ -727,6 +794,7 @@ Overall = (Relevance × 0.40) + (Engagement × 0.35) + (Alignment × 0.25)
 ```
 
 **Rationale**:
+
 - **40% Relevance**: Most important - does this persona matter to our business?
 - **35% Engagement**: Second priority - will they actually engage?
 - **25% Alignment**: Supporting factor - strategic fit with positioning
@@ -812,12 +880,14 @@ Overall = (Relevance × 0.40) + (Engagement × 0.35) + (Alignment × 0.25)
 ### Persona Creation
 
 **Do**:
+
 - Generate from real content (press releases, pitches, coverage)
 - Use descriptive names that indicate role + industry
 - Add tags for easy filtering
 - Validate AI-generated personas before activation
 
 **Don't**:
+
 - Create generic personas without data
 - Duplicate personas unnecessarily
 - Skip the generation context fields
@@ -826,12 +896,14 @@ Overall = (Relevance × 0.40) + (Engagement × 0.35) + (Alignment × 0.25)
 ### Trait Management
 
 **Do**:
+
 - Verify important traits manually
 - Mark primary traits for the persona
 - Include context snippets for traceability
 - Set realistic strength values (0.1-1.0)
 
 **Don't**:
+
 - Add traits without evidence
 - Set all traits to maximum strength
 - Ignore trait category classification
@@ -840,12 +912,14 @@ Overall = (Relevance × 0.40) + (Engagement × 0.35) + (Alignment × 0.25)
 ### Insight Quality
 
 **Do**:
+
 - Link insights to source content
 - Provide supporting evidence
 - Score confidence and impact honestly
 - Mark truly actionable insights
 
 **Don't**:
+
 - Add generic insights without specifics
 - Inflate confidence/impact scores
 - Skip the insight description
@@ -854,12 +928,14 @@ Overall = (Relevance × 0.40) + (Engagement × 0.35) + (Alignment × 0.25)
 ### Scoring & Comparison
 
 **Do**:
+
 - Review scores periodically
 - Investigate sudden score drops
 - Compare similar personas to find duplicates
 - Use merge feature to consolidate
 
 **Don't**:
+
 - Manually override calculated scores frequently
 - Ignore low-scoring personas
 - Keep duplicate personas active
@@ -883,7 +959,7 @@ for (const extracted of releasePersonas) {
     sourceType: 'press_release',
     sourceId: releaseId,
     sourceText: releaseText,
-    ...extracted
+    ...extracted,
   });
 }
 ```
@@ -898,7 +974,7 @@ const journalistPersona = await personaService.generatePersona(orgId, {
   sourceType: 'journalist_profile',
   sourceId: journalistId,
   sourceText: journalistBio,
-  personaType: 'influencer'
+  personaType: 'influencer',
 });
 
 // Add engagement insights
@@ -906,7 +982,7 @@ await personaService.addInsight(orgId, journalistPersona.id, {
   insightType: 'engagement_pattern',
   insightTitle: 'Responds to morning pitches',
   confidenceScore: 0.9,
-  sourceSystem: 'pr_pitch'
+  sourceSystem: 'pr_pitch',
 });
 ```
 
@@ -924,7 +1000,7 @@ for (const persona of relevantPersonas) {
     insightType: 'content_preference',
     insightTitle: audienceInsights.preference,
     sourceSystem: 'media_monitoring',
-    sourceId: coverageId
+    sourceId: coverageId,
   });
 }
 ```
@@ -939,7 +1015,7 @@ const decisionMakerPersona = await personaService.generatePersona(orgId, {
   sourceType: 'journalist_profile',
   sourceText: journalist.enrichedProfile,
   personaType: 'influencer',
-  extractTraits: true
+  extractTraits: true,
 });
 
 // Link to journalist record
@@ -1000,22 +1076,26 @@ await linkPersonaToJournalist(decisionMakerPersona.id, journalist.id);
 ## Support & Resources
 
 ### Documentation
+
 - API Reference: `/api/v1/personas` (Swagger/OpenAPI)
 - Type Definitions: `@pravado/types/audiencePersona`
 - Validators: `@pravado/validators/audiencePersona`
 
 ### Testing
+
 - Backend Tests: `apps/api/tests/audiencePersonaService.test.ts`
 - E2E Tests: `apps/dashboard/tests/personas/personas.spec.ts`
 - Test Coverage: 85%+ (target)
 
 ### Code Locations
+
 - Service: `apps/api/src/services/audiencePersonaService.ts`
 - Routes: `apps/api/src/routes/audiencePersonas/index.ts`
 - Components: `apps/dashboard/src/components/personas/`
 - Page: `apps/dashboard/src/app/app/personas/page.tsx`
 
 ### Migration
+
 - Schema: `apps/api/supabase/migrations/56_create_audience_persona_schema.sql`
 - **Warning**: DO NOT modify Migration 56 after deployment
 

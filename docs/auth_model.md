@@ -75,7 +75,10 @@ server.addHook('onRequest', async (request) => {
 
   if (!token) return;
 
-  const { data: { user }, error } = await supabase.auth.getUser(token);
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser(token);
 
   if (!error && user) {
     request.user = { id: user.id, email: user.email };
@@ -92,8 +95,10 @@ server.addHook('onRequest', async (request) => {
 **Purpose**: Ensures request has an authenticated user
 
 **Usage**:
+
 ```typescript
-server.get('/protected',
+server.get(
+  '/protected',
   { preHandler: requireUser },
   async (request, reply) => {
     // request.user is guaranteed to exist
@@ -108,8 +113,10 @@ server.get('/protected',
 **Purpose**: Verifies user is a member of the organization in the URL
 
 **Usage**:
+
 ```typescript
-server.post('/orgs/:id/resource',
+server.post(
+  '/orgs/:id/resource',
   { preHandler: [requireUser, requireOrg] },
   async (request, reply) => {
     // request.orgId and request.orgRole are set
@@ -118,6 +125,7 @@ server.post('/orgs/:id/resource',
 ```
 
 **Behavior**:
+
 - Extracts `orgId` from route params
 - Queries `org_members` table
 - Sets `request.orgId` and `request.orgRole`
@@ -130,13 +138,16 @@ server.post('/orgs/:id/resource',
 **Purpose**: Enforces minimum role requirement using hierarchy
 
 **Role Hierarchy**:
+
 ```
 owner (3) > admin (2) > member (1)
 ```
 
 **Usage**:
+
 ```typescript
-server.post('/orgs/:id/invite',
+server.post(
+  '/orgs/:id/invite',
   { preHandler: [requireUser, requireOrg, requireRole('admin')] },
   async (request, reply) => {
     // User is guaranteed to be admin or owner
@@ -151,6 +162,7 @@ server.post('/orgs/:id/invite',
 Create session from Supabase access token
 
 **Request**:
+
 ```json
 {
   "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
@@ -158,6 +170,7 @@ Create session from Supabase access token
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -171,6 +184,7 @@ Create session from Supabase access token
 ```
 
 **Side Effects**:
+
 - Sets `sb-access-token` HttpOnly cookie
 
 ### GET /api/v1/auth/me
@@ -178,12 +192,14 @@ Create session from Supabase access token
 Get current user profile and organizations
 
 **Headers**:
+
 ```
 Authorization: Bearer <token>
 Cookie: sb-access-token=<token>
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -220,10 +236,12 @@ Cookie: sb-access-token=<token>
 **Location**: `apps/dashboard/src/middleware.ts`
 
 **Routes**:
+
 - **Public**: `/login`, `/callback`
 - **Protected**: `/app/*`, `/onboarding`
 
 **Behavior**:
+
 - Unauthenticated users → redirect to `/login`
 - Authenticated users on `/login` → redirect to `/callback`
 - `/callback` determines next route based on org membership
@@ -287,6 +305,7 @@ Cookie: sb-access-token=<token>
 ## Environment Variables
 
 ### API
+
 ```env
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -295,6 +314,7 @@ COOKIE_SECRET=your-secret-key
 ```
 
 ### Dashboard
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
