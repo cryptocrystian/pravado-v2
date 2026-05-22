@@ -12,9 +12,9 @@
  * If ENABLE_CITEMIND flag is false: always allows publishing.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { createLogger } from '@pravado/utils';
 import { FLAGS } from '@pravado/feature-flags';
+import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('citemind:gate');
 

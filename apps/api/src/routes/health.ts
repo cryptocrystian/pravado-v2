@@ -7,10 +7,10 @@
  * - /info - Application info for monitoring dashboards
  */
 
-import type { HealthCheckResponse } from '@pravado/types';
 import { FLAGS } from '@pravado/feature-flags';
-import type { FastifyInstance } from 'fastify';
+import type { HealthCheckResponse } from '@pravado/types';
 import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance } from 'fastify';
 
 import { config, APP_VERSION, BUILD_INFO } from '../config';
 

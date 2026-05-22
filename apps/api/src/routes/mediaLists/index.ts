@@ -3,11 +3,14 @@
  * Routes for generating and managing intelligent media lists
  */
 
-import { createClient } from '@supabase/supabase-js';
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { FLAGS } from '@pravado/feature-flags';
-import { createMediaListService } from '../../services/mediaListService';
-import { requireUser } from '../../middleware/requireUser';
+import {
+  type MediaListGenerationResult,
+  type MediaList,
+  type MediaListWithEntries,
+  type MediaListSummary,
+  type MediaListEntryWithJournalist,
+} from '@pravado/types';
 import {
   apiEnvSchema,
   mediaListGenerationInputSchema,
@@ -22,13 +25,12 @@ import {
   type MediaListQuery,
   type MediaListEntryQuery,
 } from '@pravado/validators';
-import {
-  type MediaListGenerationResult,
-  type MediaList,
-  type MediaListWithEntries,
-  type MediaListSummary,
-  type MediaListEntryWithJournalist,
-} from '@pravado/types';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
+import { requireUser } from '../../middleware/requireUser';
+import { createMediaListService } from '../../services/mediaListService';
+
 
 export async function mediaListRoutes(fastify: FastifyInstance) {
   // Check feature flag

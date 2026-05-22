@@ -3,7 +3,6 @@
  * CEO-level unified strategic intelligence reports synthesizing all Pravado systems
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
 import type {
   StrategicIntelligenceReport,
   StrategicSection,
@@ -30,6 +29,7 @@ import type {
   ListStrategicAuditLogsResponse,
   PeriodComparison,
 } from '@pravado/types';
+import { routeLLM } from '@pravado/utils';
 import type {
   CreateStrategicReport,
   UpdateStrategicReport,
@@ -49,7 +49,7 @@ import type {
   ExportStrategicReport,
   ComparePeriods,
 } from '@pravado/validators';
-import { routeLLM } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 // ============================================================================
 // TYPES

@@ -5,10 +5,21 @@
  * escalation rules, action recommendations, and crisis briefings.
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
-import { CrisisService } from '../../services/crisisService';
+import { isFeatureEnabled } from '@pravado/feature-flags';
+import type {
+  CreateIncidentRequest,
+  UpdateIncidentRequest,
+  IncidentFilters,
+  SignalFilters,
+  CreateActionRequest,
+  UpdateActionRequest,
+  ActionFilters,
+  CreateEscalationRuleRequest,
+  UpdateEscalationRuleRequest,
+  GenerateCrisisBriefRequest,
+  BriefFilters,
+ CrisisSourceSystem } from '@pravado/types';
+import { LlmRouter } from '@pravado/utils';
 import {
   createIncidentSchema,
   updateIncidentSchema,
@@ -26,24 +37,12 @@ import {
   updateSectionSchema,
   listBriefsSchema,
   triggerDetectionSchema,
-} from '@pravado/validators';
-import { LlmRouter } from '@pravado/utils';
-import { isFeatureEnabled } from '@pravado/feature-flags';
+ validateEnv, apiEnvSchema } from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import type {
-  CreateIncidentRequest,
-  UpdateIncidentRequest,
-  IncidentFilters,
-  SignalFilters,
-  CreateActionRequest,
-  UpdateActionRequest,
-  ActionFilters,
-  CreateEscalationRuleRequest,
-  UpdateEscalationRuleRequest,
-  GenerateCrisisBriefRequest,
-  BriefFilters,
-} from '@pravado/types';
-import type { CrisisSourceSystem } from '@pravado/types';
+
+import { CrisisService } from '../../services/crisisService';
 
 // Helper to extract orgId from headers
 function getOrgId(request: FastifyRequest): string {

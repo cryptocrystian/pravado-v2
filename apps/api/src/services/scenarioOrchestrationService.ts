@@ -6,8 +6,6 @@
  * orchestration, conditional triggers, and branching outcomes.
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
-import { createLogger, routeLLM } from '@pravado/utils';
 import type {
   ScenarioSuite,
   ScenarioSuiteItem,
@@ -53,6 +51,8 @@ import type {
   RiskMapNode,
   RiskMapEdge,
 } from '@pravado/types';
+import { createLogger, routeLLM } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 import * as aiSimulationService from './aiScenarioSimulationService';
 
@@ -629,7 +629,7 @@ export async function advanceSuiteRun(
     throw new Error('Run not found');
   }
 
-  let run = mapRowToSuiteRun(runData);
+  const run = mapRowToSuiteRun(runData);
 
   if (run.status === 'completed' || run.status === 'failed' || run.status === 'aborted') {
     throw new Error('Run is already finished');

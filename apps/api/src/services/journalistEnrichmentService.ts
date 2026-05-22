@@ -13,7 +13,6 @@
  * - Batch enrichment processing
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   CreateEnrichmentJobInput,
   CreateEnrichmentLinkInput,
@@ -36,6 +35,7 @@ import type {
   MergeSuggestionsResponse,
 } from '@pravado/types';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('journalist-enrichment-service');
 

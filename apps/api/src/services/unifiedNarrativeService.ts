@@ -4,7 +4,6 @@
  * Integrates ALL intelligence systems (S38-S69) into cohesive narratives
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
 import type {
   UnifiedNarrative,
   UnifiedNarrativeSection,
@@ -36,6 +35,7 @@ import type {
   AudienceContext,
   NarrativeDeltaData,
 } from '@pravado/types';
+import { routeLLM } from '@pravado/utils';
 import type {
   CreateNarrative,
   UpdateNarrative,
@@ -49,7 +49,7 @@ import type {
   PublishNarrative,
   ExportNarrative,
 } from '@pravado/validators';
-import { routeLLM } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 // ============================================================================
 // TYPES

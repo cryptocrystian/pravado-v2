@@ -13,10 +13,11 @@
  * - GET  /orgs            — Paginated org list with metrics
  */
 
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
 import { randomBytes } from 'crypto';
+
 import { createLogger } from '@pravado/utils';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
 const logger = createLogger('api:admin');
 

@@ -4,7 +4,7 @@
  * API endpoints for autonomous multi-agent scenario simulations.
  */
 
-import { FastifyPluginAsync } from 'fastify';
+import { isEnabled } from '@pravado/feature-flags';
 import {
   createAISimulationSchema,
   updateAISimulationSchema,
@@ -22,7 +22,8 @@ import {
   simulationIdParamSchema,
   aiSimRunIdParamSchema,
 } from '@pravado/validators';
-import { isEnabled } from '@pravado/feature-flags';
+import { FastifyPluginAsync } from 'fastify';
+
 import * as service from '../../services/aiScenarioSimulationService';
 
 // Helper to get service context from request

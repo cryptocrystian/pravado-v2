@@ -40,6 +40,7 @@
 
 import { FastifyInstance, FastifyPluginOptions, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
+
 import { platformFreeze } from '../config';
 
 /**

@@ -15,15 +15,15 @@
 import { FLAGS } from '@pravado/feature-flags';
 import { FastifyInstance } from 'fastify';
 
-import { requireUser } from '../../middleware/requireUser';
 import { getSupabaseClient } from '../../lib/supabase';
-import { runSignalScan } from '../../services/sage/sageSignalIngestor';
-import { scoreOpportunities } from '../../services/sage/sageOpportunityScorer';
-import { generateProposals } from '../../services/sage/sageProposalGenerator';
-import { getActionStreamForOrg } from '../../services/sage/sageActionStreamService';
+import { requireUser } from '../../middleware/requireUser';
+import { enforcePlanLimit, PlanLimitExceededError } from '../../services/billing/planLimitsService';
 import { calculateEVI } from '../../services/evi/eviCalculationService';
 import { getEVIDelta } from '../../services/evi/eviDeltaService';
-import { enforcePlanLimit, PlanLimitExceededError } from '../../services/billing/planLimitsService';
+import { getActionStreamForOrg } from '../../services/sage/sageActionStreamService';
+import { scoreOpportunities } from '../../services/sage/sageOpportunityScorer';
+import { generateProposals } from '../../services/sage/sageProposalGenerator';
+import { runSignalScan } from '../../services/sage/sageSignalIngestor';
 
 async function getUserOrgId(userId: string): Promise<string | null> {
   const supabase = getSupabaseClient();

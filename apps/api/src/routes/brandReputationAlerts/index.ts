@@ -8,11 +8,18 @@
  * - Reputation insights for dashboards
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
-import { BrandReputationAlertsService } from '../../services/brandReputationAlertsService';
-import {
+import type {
+  CreateReputationAlertRuleInput,
+  UpdateReputationAlertRuleInput,
+  ListReputationAlertRulesQuery,
+  ListReputationAlertEventsQuery,
+  CreateReputationReportInput,
+  GenerateReputationReportInput,
+  RegenerateReputationReportSectionInput,
+  ListReputationReportsQuery,
+  GetReputationInsightsQuery,
+} from '@pravado/types';
+import { validateEnv, apiEnvSchema ,
   createReputationAlertRuleSchema,
   updateReputationAlertRuleSchema,
   listReputationAlertRulesQuerySchema,
@@ -29,17 +36,11 @@ import {
   reputationReportIdParamSchema,
   reputationSectionIdParamSchema,
 } from '@pravado/validators';
-import type {
-  CreateReputationAlertRuleInput,
-  UpdateReputationAlertRuleInput,
-  ListReputationAlertRulesQuery,
-  ListReputationAlertEventsQuery,
-  CreateReputationReportInput,
-  GenerateReputationReportInput,
-  RegenerateReputationReportSectionInput,
-  ListReputationReportsQuery,
-  GetReputationInsightsQuery,
-} from '@pravado/types';
+import { createClient } from '@supabase/supabase-js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
+import { BrandReputationAlertsService } from '../../services/brandReputationAlertsService';
+
 
 // Helper to extract orgId from headers
 function getOrgId(request: FastifyRequest): string {

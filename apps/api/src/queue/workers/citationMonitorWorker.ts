@@ -8,6 +8,7 @@
  */
 
 import { createLogger } from '@pravado/utils';
+
 import { getSupabaseClient } from '../../lib/supabase';
 import { monitorCitations } from '../../services/citeMind/citationMonitor';
 

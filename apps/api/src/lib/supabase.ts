@@ -3,8 +3,8 @@
  * Provides shared Supabase client for services
  */
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { validateEnv, apiEnvSchema } from '@pravado/validators';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 let supabaseClient: SupabaseClient | null = null;
 let cachedEnv: ReturnType<typeof validateEnv<typeof apiEnvSchema>> | null = null;

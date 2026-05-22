@@ -14,7 +14,6 @@
  * - S54: Media Briefings (briefing generation patterns)
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
 import {
   CrisisSignal,
   CrisisIncident,
@@ -63,6 +62,7 @@ import {
   MitigationLevel,
 } from '@pravado/types';
 import { LlmRouter, createLogger } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('crisis-service');
 

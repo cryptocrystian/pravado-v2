@@ -10,7 +10,6 @@
  * - Actionable recommendations
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   GenerateNarrativeInput,
   JournalistNarrative,
@@ -20,6 +19,8 @@ import type {
   TimelineStats,
 } from '@pravado/types';
 import { LlmRouter, createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
 import { BillingService } from './billingService';
 import { JournalistTimelineService } from './journalistTimelineService';
 
@@ -431,9 +432,9 @@ export class NarrativeGeneratorService {
       const lines = response.completion.split('\n').filter((line: string) => line.trim());
 
       for (const line of lines) {
-        if (line.match(/^[\d\-\*]/)) {
+        if (line.match(/^[\d*-]/)) {
           // Likely a recommendation line
-          const cleanLine = line.replace(/^[\d\-\*\.\)]+\s*/, '').trim();
+          const cleanLine = line.replace(/^[\d*.)-]+\s*/, '').trim();
           if (cleanLine.length > 10) {
             recommendations.push({
               type: 'action',

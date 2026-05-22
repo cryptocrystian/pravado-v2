@@ -11,9 +11,8 @@
  * - Max 10 proposals per org per scan cycle
  */
 
+import { createLogger , LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createLogger } from '@pravado/utils';
-import { LlmRouter } from '@pravado/utils';
 
 import {
   buildProposalSystemPrompt,

@@ -279,6 +279,7 @@ export class MediaCrawlerService {
    */
   private parseRSSXML(xmlContent: string, feedUrl: string): RSSArticleItem[] {
     // Dynamic import to avoid issues with ESM
+    // eslint-disable-next-line @typescript-eslint/no-var-requires -- intentional CommonJS require for fast-xml-parser (avoids ESM dual-package issues)
     const { XMLParser } = require('fast-xml-parser');
 
     const parser = new XMLParser({

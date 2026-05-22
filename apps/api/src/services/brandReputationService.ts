@@ -5,7 +5,6 @@
  * from multiple source systems, and providing executive radar data.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   BrandReputationSnapshot,
   BrandReputationEvent,
@@ -32,6 +31,7 @@ import type {
   ScoreCalculationOutput,
   TimeWindowBoundaries,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // ============================================================================
 // CONSTANTS

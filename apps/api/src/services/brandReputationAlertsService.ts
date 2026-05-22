@@ -5,7 +5,6 @@
  * and providing reputation insights that build on S56 Brand Reputation Intelligence.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   DEFAULT_REPORT_SECTION_ORDER,
   DEFAULT_SECTION_TITLES,
@@ -50,6 +49,7 @@ import type {
   GenerateReportResponse,
   RegenerateSectionResponse,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // ============================================================================
 // CONSTANTS

@@ -4,11 +4,7 @@
  */
 
 import { FLAGS } from '@pravado/feature-flags';
-import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
-import type { OutreachEventType } from '@pravado/types';
-
-import type { ProviderConfig } from '@pravado/types';
+import type { OutreachEventType , ProviderConfig } from '@pravado/types';
 import {
   advanceRunInputSchema,
   apiEnvSchema,
@@ -26,10 +22,13 @@ import {
   updateOutreachStepInputSchema,
   validateEnv,
 } from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+
 import { requireUser } from '../../middleware/requireUser';
-import { createOutreachService } from '../../services/outreachService';
-import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
 import { createAIDraftService } from '../../services/aiDraftService';
+import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
+import { createOutreachService } from '../../services/outreachService';
 
 /**
  * Get provider configuration from environment (S98)

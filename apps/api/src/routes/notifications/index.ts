@@ -1,6 +1,7 @@
-import type { FastifyInstance } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance } from 'fastify';
+
 import { requireUser } from '../../middleware/requireUser';
 
 const logger = createLogger('api:notifications');

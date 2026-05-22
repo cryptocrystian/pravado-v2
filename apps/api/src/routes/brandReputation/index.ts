@@ -5,11 +5,8 @@
  * score recalculation, config management, events, and alerts.
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
-import { BrandReputationService } from '../../services/brandReputationService';
-import {
+import { isFeatureEnabled } from '@pravado/feature-flags';
+import { validateEnv, apiEnvSchema ,
   getReputationDashboardQuerySchema,
   getReputationTrendQuerySchema,
   getReputationEventsQuerySchema,
@@ -23,8 +20,12 @@ import {
   eventIdParamSchema,
   alertIdParamSchema,
 } from '@pravado/validators';
-import { isFeatureEnabled } from '@pravado/feature-flags';
+import { createClient } from '@supabase/supabase-js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
+
+import { BrandReputationService } from '../../services/brandReputationService';
+
 
 // Helper to extract orgId from headers
 function getOrgId(request: FastifyRequest): string {

@@ -3,8 +3,6 @@
  * Autonomous Insight Conflict Resolution Engine V1
  */
 
-import { getSupabaseClient } from '../lib/supabase';
-import { routeLLM } from '@pravado/utils';
 import type {
   InsightConflict,
   InsightConflictItem,
@@ -63,6 +61,9 @@ import type {
   BatchDismissInput,
   BatchDismissResponse,
 } from '@pravado/types';
+import { routeLLM } from '@pravado/utils';
+
+import { getSupabaseClient } from '../lib/supabase';
 
 // ============================================================================
 // INTERNAL TYPES
@@ -929,7 +930,7 @@ export async function analyzeConflict(
   }
 
   // Vector analysis
-  let vectorSimilarities: VectorSimilarity[] = [];
+  const vectorSimilarities: VectorSimilarity[] = [];
   if (input?.includeVectorAnalysis) {
     // Compute pairwise similarities
     for (let i = 0; i < items.length; i++) {

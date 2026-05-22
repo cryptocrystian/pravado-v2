@@ -10,27 +10,6 @@
  * - Strategic insights
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
-import { CompetitorIntelligenceService } from '../../services/competitorIntelligenceService';
-import {
-  createCompetitorRequestSchema,
-  updateCompetitorRequestSchema,
-  createCompetitorMentionRequestSchema,
-  createCompetitorInsightRequestSchema,
-  updateCompetitorInsightRequestSchema,
-  generateInsightRequestSchema,
-  competitorFiltersSchema,
-  competitorMentionFiltersSchema,
-  snapshotFiltersSchema,
-  ciInsightFiltersSchema,
-  overlapFiltersSchema,
-  competitorIdParamSchema,
-  evaluateCompetitorRequestSchema,
-  comparativeAnalyticsRequestSchema,
-  overlapAnalysisRequestSchema,
-} from '@pravado/validators';
 import {
   CIInsightCategory,
   type CreateCompetitorRequest,
@@ -47,6 +26,28 @@ import {
   type OverlapType,
   type SnapshotPeriod,
 } from '@pravado/types';
+import { validateEnv, apiEnvSchema ,
+  createCompetitorRequestSchema,
+  updateCompetitorRequestSchema,
+  createCompetitorMentionRequestSchema,
+  createCompetitorInsightRequestSchema,
+  updateCompetitorInsightRequestSchema,
+  generateInsightRequestSchema,
+  competitorFiltersSchema,
+  competitorMentionFiltersSchema,
+  snapshotFiltersSchema,
+  ciInsightFiltersSchema,
+  overlapFiltersSchema,
+  competitorIdParamSchema,
+  evaluateCompetitorRequestSchema,
+  comparativeAnalyticsRequestSchema,
+  overlapAnalysisRequestSchema,
+} from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
+import { CompetitorIntelligenceService } from '../../services/competitorIntelligenceService';
+
 
 // Helper to extract orgId from headers
 function getOrgId(request: FastifyRequest): string {

@@ -9,12 +9,13 @@
  * - POST /mark-used        — Internal: mark invite as used after signup
  */
 
-import type { FastifyInstance } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
 import { randomBytes } from 'crypto';
 
-import { requireUser } from '../../middleware/requireUser';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance } from 'fastify';
+
 import { requireAdmin } from '../../middleware/requireAdmin';
+import { requireUser } from '../../middleware/requireUser';
 
 function generateInviteCode(): string {
   return `PRAVADO-${randomBytes(4).toString('hex').toUpperCase()}`;

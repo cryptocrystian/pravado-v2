@@ -13,8 +13,8 @@
  * Results saved to citation_monitor_results, summaries to citation_summaries.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger, LlmRouter } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { generateQueriesForOrg } from './citationQueryGenerator';
 

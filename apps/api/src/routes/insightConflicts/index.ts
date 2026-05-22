@@ -3,7 +3,6 @@
  * Autonomous Insight Conflict Resolution Engine V1
  */
 
-import { FastifyPluginAsync } from 'fastify';
 import { FLAGS } from '@pravado/feature-flags';
 import {
   createConflictSchema,
@@ -23,6 +22,8 @@ import {
   batchResolveSchema,
   batchDismissSchema,
 } from '@pravado/validators';
+import { FastifyPluginAsync } from 'fastify';
+
 import * as insightConflictService from '../../services/insightConflictService';
 
 const insightConflictRoutes: FastifyPluginAsync = async (fastify) => {

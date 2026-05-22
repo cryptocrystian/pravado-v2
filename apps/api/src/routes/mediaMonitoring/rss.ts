@@ -23,8 +23,8 @@ import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
-import { createMediaMonitoringService } from '../../services/mediaMonitoringService';
 import { createMediaCrawlerService } from '../../services/mediaCrawlerService';
+import { createMediaMonitoringService } from '../../services/mediaMonitoringService';
 
 /**
  * Register RSS and crawler routes

@@ -3,8 +3,6 @@
  * Backend service for scenario-based playbook simulation, orchestration, and execution
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
-import OpenAI from 'openai';
 import {
   ScenarioType,
   ScenarioPlaybookStatus,
@@ -52,6 +50,8 @@ import {
   ListScenarioAuditLogsResponse,
   RunWithDetails,
 } from '@pravado/types';
+import { SupabaseClient } from '@supabase/supabase-js';
+import OpenAI from 'openai';
 
 // ============================================================================
 // TYPES

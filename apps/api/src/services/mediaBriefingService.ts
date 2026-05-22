@@ -11,7 +11,6 @@
  * - Audit logging for all generation events
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
 import {
   MediaBriefing,
   BriefingSection,
@@ -45,6 +44,7 @@ import {
   SECTION_TYPE_CONFIGS,
 } from '@pravado/types';
 import { LlmRouter, createLogger } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('media-briefing-service');
 

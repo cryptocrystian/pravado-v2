@@ -12,8 +12,8 @@
  * Max 20 queries per org per cycle.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('citemind:query-gen');
 

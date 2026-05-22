@@ -11,12 +11,8 @@
  * - Audit logs and statistics
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
 import { FLAGS } from '@pravado/feature-flags';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
-import { createExecutiveBoardReportService } from '../../services/executiveBoardReportService';
-import {
+import { validateEnv, apiEnvSchema ,
   createExecBoardReportSchema,
   updateExecBoardReportSchema,
   generateExecBoardReportSchema,
@@ -48,6 +44,10 @@ import type {
   ListExecBoardReportAudienceQuery,
   ListExecBoardReportAuditLogsQuery,
 } from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
+import { createExecutiveBoardReportService } from '../../services/executiveBoardReportService';
 
 // Helper to extract orgId from headers
 function getOrgId(request: FastifyRequest): string {

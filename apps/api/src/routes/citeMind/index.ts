@@ -9,22 +9,22 @@
  * - POST /schema/:contentItemId/generate  — generate/regenerate JSON-LD schema
  */
 
-import type { FastifyInstance } from 'fastify';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { FLAGS } from '@pravado/feature-flags';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { FastifyInstance } from 'fastify';
 
-import { requireUser } from '../../middleware/requireUser';
 import { getSupabaseClient } from '../../lib/supabase';
-import { scoreAndPersist } from '../../services/citeMind/citeMindQualityScorer';
+import { requireUser } from '../../middleware/requireUser';
+import { enforcePlanLimit, PlanLimitExceededError } from '../../services/billing/planLimitsService';
+import { monitorCitations } from '../../services/citeMind/citationMonitor';
 import {
   checkGate,
   acknowledgeGate,
   getLatestScore,
   listScoresForOrg,
 } from '../../services/citeMind/citeMindPublishGateService';
+import { scoreAndPersist } from '../../services/citeMind/citeMindQualityScorer';
 import { generateSchema } from '../../services/citeMind/citeMindSchemaGenerator';
-import { monitorCitations } from '../../services/citeMind/citationMonitor';
-import { enforcePlanLimit, PlanLimitExceededError } from '../../services/billing/planLimitsService';
 
 /**
  * Helper to get user's org ID

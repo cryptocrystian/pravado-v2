@@ -4,8 +4,6 @@
  * Generates branching trees of possible futures from multi-scenario suites
  */
 
-import { getSupabaseClient } from '../lib/supabase';
-import { routeLLM } from '@pravado/utils';
 import { DEFAULT_REALITY_MAP_PARAMETERS } from '@pravado/types';
 import type {
   RealityMap,
@@ -58,6 +56,9 @@ import type {
   PathOutcomeType,
   EdgeTriggerType,
 } from '@pravado/types';
+import { routeLLM } from '@pravado/utils';
+
+import { getSupabaseClient } from '../lib/supabase';
 
 // ============================================================================
 // DATABASE HELPERS

@@ -10,11 +10,20 @@
  * - Workflow (review, approve, archive)
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
-import { MediaBriefingService } from '../../services/mediaBriefingService';
-import {
+import type {
+  CreateBriefingRequest,
+  UpdateBriefingRequest,
+  GenerateBriefingRequest,
+  RegenerateSectionRequest,
+  CreateTalkingPointRequest,
+  UpdateTalkingPointRequest,
+  GenerateTalkingPointsRequest,
+  UpdateSectionRequest,
+  BriefingFilters,
+  TalkingPointFilters,
+} from '@pravado/types';
+import { LlmRouter } from '@pravado/utils';
+import { validateEnv, apiEnvSchema ,
   createBriefingRequestSchema,
   updateBriefingRequestSchema,
   generateBriefingRequestSchema,
@@ -29,19 +38,11 @@ import {
   sectionIdParamSchema,
   talkingPointIdParamSchema,
 } from '@pravado/validators';
-import type {
-  CreateBriefingRequest,
-  UpdateBriefingRequest,
-  GenerateBriefingRequest,
-  RegenerateSectionRequest,
-  CreateTalkingPointRequest,
-  UpdateTalkingPointRequest,
-  GenerateTalkingPointsRequest,
-  UpdateSectionRequest,
-  BriefingFilters,
-  TalkingPointFilters,
-} from '@pravado/types';
-import { LlmRouter } from '@pravado/utils';
+import { createClient } from '@supabase/supabase-js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
+import { MediaBriefingService } from '../../services/mediaBriefingService';
+
 
 // Helper to extract orgId from headers
 function getOrgId(request: FastifyRequest): string {

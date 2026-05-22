@@ -3,8 +3,6 @@
  * Automated journalist outreach engine
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 import type {
   CreateOutreachEventInput,
   CreateOutreachRunInput,
@@ -33,6 +31,8 @@ import type {
   UpdateOutreachSequenceInput,
   UpdateOutreachStepInput,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
 import type { OutreachDeliverabilityService } from './outreachDeliverabilityService';
 
 /**

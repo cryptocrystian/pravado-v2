@@ -3,10 +3,7 @@
  * RESTful endpoints for Persona Builder Engine
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
-import {
+import { validateEnv, apiEnvSchema ,
   CreatePersonaInputSchema,
   UpdatePersonaInputSchema,
   GeneratePersonaRequestSchema,
@@ -19,6 +16,9 @@ import {
   PersonaHistoryQuerySchema,
   PersonaTrendsQuerySchema,
 } from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
 import { AudiencePersonaService } from '../../services/audiencePersonaService';
 
 // Helper to get org ID from request

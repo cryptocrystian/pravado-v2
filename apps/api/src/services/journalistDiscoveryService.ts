@@ -3,7 +3,6 @@
  * Automated discovery and enrichment of journalists from multiple sources
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   AuthorExtractionInput,
   AuthorExtractionResult,
@@ -21,6 +20,8 @@ import type {
   SocialProfileInput,
   SuggestedMatch,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
 import { JournalistGraphService } from './journalistGraphService';
 
 // =============================================

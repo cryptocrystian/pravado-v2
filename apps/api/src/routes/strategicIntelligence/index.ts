@@ -3,7 +3,7 @@
  * CEO-level unified strategic intelligence reports API endpoints
  */
 
-import { FastifyPluginAsync } from 'fastify';
+import { isEnabled } from '@pravado/feature-flags';
 import {
   createStrategicReportSchema,
   updateStrategicReportSchema,
@@ -26,8 +26,10 @@ import {
   strategicSectionIdParamSchema,
   strategicSourceIdParamSchema,
 } from '@pravado/validators';
+import { FastifyPluginAsync } from 'fastify';
+
 import * as strategicIntelligenceService from '../../services/strategicIntelligenceService';
-import { isEnabled } from '@pravado/feature-flags';
+
 
 const strategicIntelligenceRoutes: FastifyPluginAsync = async (fastify) => {
   // Feature flag check middleware

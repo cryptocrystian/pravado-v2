@@ -3,22 +3,6 @@
  * API endpoints for unified performance intelligence
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
-import { MediaPerformanceService } from '../../services/mediaPerformanceService';
-import {
-  createSnapshotRequestSchema,
-  createDimensionRequestSchema,
-  createScoreRequestSchema,
-  createInsightRequestSchema,
-  updateInsightRequestSchema,
-  mediaPerformanceFiltersSchema,
-  dimensionFiltersSchema,
-  scoreFiltersSchema,
-  insightFiltersSchema,
-  getOverviewRequestSchema,
-} from '@pravado/validators';
 import type {
   CreateSnapshotRequest,
   CreateDimensionRequest,
@@ -32,6 +16,23 @@ import type {
   MetricType,
   InsightCategory,
 } from '@pravado/types';
+import { validateEnv, apiEnvSchema ,
+  createSnapshotRequestSchema,
+  createDimensionRequestSchema,
+  createScoreRequestSchema,
+  createInsightRequestSchema,
+  updateInsightRequestSchema,
+  mediaPerformanceFiltersSchema,
+  dimensionFiltersSchema,
+  scoreFiltersSchema,
+  insightFiltersSchema,
+  getOverviewRequestSchema,
+} from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
+import { MediaPerformanceService } from '../../services/mediaPerformanceService';
+
 
 // Helper to get org ID from request
 function getOrgId(request: FastifyRequest): string {

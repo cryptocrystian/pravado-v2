@@ -11,7 +11,6 @@
  * - Anomaly and spike detection
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
 import {
   Competitor,
   CompetitorMention,
@@ -45,6 +44,7 @@ import {
   CISentimentTrend,
 } from '@pravado/types';
 import { LlmRouter, createLogger } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('competitor-intelligence-service');
 
@@ -650,7 +650,7 @@ export class CompetitorIntelligenceService {
 
     // For journalist overlap, get shared vs exclusive journalists
     let shared: any[] = [];
-    let brandExclusive: any[] = [];
+    const brandExclusive: any[] = [];
     let competitorExclusive: any[] = [];
 
     if (overlapType === 'journalist_overlap') {

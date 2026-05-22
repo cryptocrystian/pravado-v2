@@ -7,8 +7,8 @@
  * 3. Content topics with no associated published content (coverage gaps)
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('sage:content-ingestor');
 

@@ -3,7 +3,6 @@
  * Manages scheduled background tasks and cron job execution
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   HourlyRssFetchMetadata,
   ListSchedulerTasksQuery,
@@ -20,11 +19,11 @@ import type {
   TaskExecutionResult,
   UpdateSchedulerTaskInput,
 } from '@pravado/types';
-
 import {
   transformSchedulerTaskRecord,
   transformSchedulerTaskRunRecord,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { MediaCrawlerService } from './mediaCrawlerService';
 

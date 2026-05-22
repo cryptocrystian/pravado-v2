@@ -3,7 +3,6 @@
  * AI-Driven Multi-Outcome "Reality Maps" Engine
  */
 
-import { FastifyPluginAsync } from 'fastify';
 import { FLAGS } from '@pravado/feature-flags';
 import {
   createRealityMapSchema,
@@ -14,6 +13,8 @@ import {
   getRealityMapAnalysisQuerySchema,
   listRealityMapAuditQuerySchema,
 } from '@pravado/validators';
+import { FastifyPluginAsync } from 'fastify';
+
 import * as realityMapService from '../../services/realityMapService';
 
 const realityMapsRoutes: FastifyPluginAsync = async (fastify) => {

@@ -7,6 +7,7 @@
  */
 
 import { createLogger } from '@pravado/utils';
+
 import { getSupabaseClient } from '../../lib/supabase';
 import { scoreAndPersist } from '../../services/citeMind/citeMindQualityScorer';
 

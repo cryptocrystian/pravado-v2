@@ -3,13 +3,18 @@
  * API routes for journalist relationship timeline and narrative generation
  */
 
-import { createClient } from '@supabase/supabase-js';
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { FLAGS } from '@pravado/feature-flags';
-import { JournalistTimelineService } from '../../services/journalistTimelineService';
-import { NarrativeGeneratorService } from '../../services/narrativeGeneratorService';
-import { BillingService } from '../../services/billingService';
-import { requireUser } from '../../middleware/requireUser';
+import type {
+  JournalistTimelineEvent,
+  TimelineListResponse,
+  TimelineStats,
+  RelationshipHealthScore,
+  TimelineAggregation,
+  TimelineCluster,
+  BatchCreateTimelineEventsResult,
+  JournalistNarrative,
+} from '@pravado/types';
+import { LlmRouter } from '@pravado/utils';
 import {
   apiEnvSchema,
   CreateTimelineEventInputSchema,
@@ -28,17 +33,14 @@ import {
   type BatchCreateTimelineEventsInput,
   type SystemEventPush,
 } from '@pravado/validators';
-import type {
-  JournalistTimelineEvent,
-  TimelineListResponse,
-  TimelineStats,
-  RelationshipHealthScore,
-  TimelineAggregation,
-  TimelineCluster,
-  BatchCreateTimelineEventsResult,
-  JournalistNarrative,
-} from '@pravado/types';
-import { LlmRouter } from '@pravado/utils';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
+import { requireUser } from '../../middleware/requireUser';
+import { BillingService } from '../../services/billingService';
+import { JournalistTimelineService } from '../../services/journalistTimelineService';
+import { NarrativeGeneratorService } from '../../services/narrativeGeneratorService';
+
 
 export async function journalistTimelineRoutes(fastify: FastifyInstance) {
   // Check feature flag

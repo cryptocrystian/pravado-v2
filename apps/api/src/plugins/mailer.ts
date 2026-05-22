@@ -12,9 +12,9 @@
  * Priority: Resend > Mailgun > Console (log only)
  */
 
-import fp from 'fastify-plugin';
 import { createMailer, type Mailer } from '@pravado/utils';
 import { FastifyInstance } from 'fastify';
+import fp from 'fastify-plugin';
 
 declare module 'fastify' {
   interface FastifyInstance {

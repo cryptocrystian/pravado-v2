@@ -13,7 +13,6 @@
  * - Trend analytics (6 dimensions)
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   AudiencePersona,
   AudiencePersonaTrait,
@@ -37,6 +36,7 @@ import type {
   PersonaTrend,
 } from '@pravado/types';
 import { createLogger, callLLM } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('audience-persona-service');
 

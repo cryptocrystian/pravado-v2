@@ -7,8 +7,8 @@
  * 3. Keywords with no associated content (content gap)
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('sage:seo-ingestor');
 

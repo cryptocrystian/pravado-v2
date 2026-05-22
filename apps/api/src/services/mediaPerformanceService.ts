@@ -3,8 +3,6 @@
  * Unified performance intelligence engine across S38-S50 PR systems
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { routeLLM } from '@pravado/utils';
 import {
   TrendDirection,
   AnomalyType,
@@ -38,6 +36,8 @@ import type {
   InsightCategory,
   TopPerformer,
 } from '@pravado/types';
+import { routeLLM } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export class MediaPerformanceService {
   private supabase: SupabaseClient;

@@ -11,7 +11,6 @@
  * - Timeline query and aggregation
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   BatchCreateTimelineEventsInput,
   BatchCreateTimelineEventsResult,
@@ -34,6 +33,7 @@ import type {
   TimelineStats,
   UpdateTimelineEventInput,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // =============================================
 // Utility Functions

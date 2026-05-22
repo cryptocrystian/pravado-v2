@@ -8,8 +8,8 @@
 import { FLAGS } from '@pravado/feature-flags';
 import { FastifyInstance } from 'fastify';
 
-import { requireUser } from '../../middleware/requireUser';
 import { getSupabaseClient } from '../../lib/supabase';
+import { requireUser } from '../../middleware/requireUser';
 import { calculateEVI } from '../../services/evi/eviCalculationService';
 import { getEVIDelta } from '../../services/evi/eviDeltaService';
 import { getEVIHistory } from '../../services/evi/eviHistoryService';

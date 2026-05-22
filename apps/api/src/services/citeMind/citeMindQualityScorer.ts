@@ -16,9 +16,8 @@
  * - overall <  55: blocked (red)
  */
 
+import { createLogger , LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createLogger } from '@pravado/utils';
-import { LlmRouter } from '@pravado/utils';
 
 const logger = createLogger('citemind:scorer');
 

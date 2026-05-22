@@ -4,7 +4,7 @@
  * API endpoints for multi-scenario orchestration suites.
  */
 
-import { FastifyPluginAsync } from 'fastify';
+import { isEnabled } from '@pravado/feature-flags';
 import {
   createScenarioSuiteSchema,
   updateScenarioSuiteSchema,
@@ -23,7 +23,8 @@ import {
   generateSuiteNarrativeSchema,
   generateSuiteRiskMapSchema,
 } from '@pravado/validators';
-import { isEnabled } from '@pravado/feature-flags';
+import { FastifyPluginAsync } from 'fastify';
+
 import * as service from '../../services/scenarioOrchestrationService';
 
 // Helper to get service context from request

@@ -3,10 +3,7 @@
  * RESTful endpoints for Smart Media Contact Enrichment Engine
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
-import {
+import { validateEnv, apiEnvSchema ,
   BatchEnrichmentRequestSchema,
   CreateEnrichmentJobInputSchema,
   CreateEnrichmentRecordInputSchema,
@@ -16,6 +13,9 @@ import {
   MergeEnrichmentInputSchema,
   UpdateEnrichmentRecordInputSchema,
 } from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
 import { JournalistEnrichmentService } from '../../services/journalistEnrichmentService';
 
 // Helper to get org ID from request

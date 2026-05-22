@@ -29,9 +29,9 @@
  * Separate from /api/v1/audit (internal audit logging, S35).
  */
 
-import type { FastifyInstance } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance } from 'fastify';
 
 const logger = createLogger('audit-scorecard');
 

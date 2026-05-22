@@ -6,8 +6,6 @@
  * computes metrics, and generates outcomes.
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
-import { routeLLM } from '@pravado/utils';
 import type {
   AIScenarioSimulation,
   AIScenarioRun,
@@ -59,6 +57,8 @@ import type {
   AIAgentDefinitionInput,
 } from '@pravado/types';
 import { AI_AGENT_PRESETS } from '@pravado/types';
+import { routeLLM } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 // ============================================================================
 // SERVICE CONTEXT

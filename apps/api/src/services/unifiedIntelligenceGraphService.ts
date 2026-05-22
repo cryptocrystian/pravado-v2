@@ -4,9 +4,8 @@
  * Cross-system knowledge graph integrating S38-S65
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
-import OpenAI from 'openai';
 import crypto from 'crypto';
+
 import {
   IntelligenceNode,
   IntelligenceEdge,
@@ -48,6 +47,8 @@ import {
   GenerateEmbeddingsResponse,
   ComputeMetricsResponse,
 } from '@pravado/types';
+import { SupabaseClient } from '@supabase/supabase-js';
+import OpenAI from 'openai';
 
 // ============================================================================
 // TYPES
@@ -1603,17 +1604,15 @@ export async function computeMetrics(
   }
 
   let clustersIdentified = 0;
-  let communitiesDetected = 0;
+  const communitiesDetected = 0;
 
   if (input.computeClusters) {
     // Simple clustering based on connectivity
     const visited = new Set<string>();
-    let clusterNum = 0;
 
     for (const node of nodeList) {
       if (visited.has(node.id)) continue;
 
-      clusterNum++;
       const clusterId = crypto.randomUUID();
       const clusterNodes: string[] = [];
 

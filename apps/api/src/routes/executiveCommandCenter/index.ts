@@ -16,8 +16,8 @@ import {
 } from '@pravado/validators';
 import type { FastifyInstance } from 'fastify';
 
-import { createExecutiveCommandCenterService } from '../../services/executiveCommandCenterService';
 import { requireUser } from '../../middleware/requireUser';
+import { createExecutiveCommandCenterService } from '../../services/executiveCommandCenterService';
 
 // ============================================================================
 // Route Registration

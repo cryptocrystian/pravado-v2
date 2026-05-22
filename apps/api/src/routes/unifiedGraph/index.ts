@@ -3,8 +3,21 @@
  * Global Insight Fabric & Unified Intelligence Graph V1
  */
 
-import { FastifyPluginAsync } from 'fastify';
 import { isEnabled } from '@pravado/feature-flags';
+import {
+  CreateNodeInput,
+  UpdateNodeInput,
+  ListNodesInput,
+  CreateEdgeInput,
+  UpdateEdgeInput,
+  ListEdgesInput,
+  MergeNodesInput,
+  GraphQueryInput,
+  GenerateSnapshotInput,
+  ExplainPathInput,
+  GenerateEmbeddingsInput,
+  ComputeMetricsInput,
+} from '@pravado/types';
 import {
   createNodeSchema,
   updateNodeSchema,
@@ -24,20 +37,8 @@ import {
   computeMetricsSchema,
   listAuditLogsSchema,
 } from '@pravado/validators';
-import {
-  CreateNodeInput,
-  UpdateNodeInput,
-  ListNodesInput,
-  CreateEdgeInput,
-  UpdateEdgeInput,
-  ListEdgesInput,
-  MergeNodesInput,
-  GraphQueryInput,
-  GenerateSnapshotInput,
-  ExplainPathInput,
-  GenerateEmbeddingsInput,
-  ComputeMetricsInput,
-} from '@pravado/types';
+import { FastifyPluginAsync } from 'fastify';
+
 import * as graphService from '../../services/unifiedIntelligenceGraphService';
 
 const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {

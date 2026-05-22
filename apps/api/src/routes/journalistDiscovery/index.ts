@@ -3,11 +3,17 @@
  * API routes for automated journalist discovery and enrichment
  */
 
-import { createClient } from '@supabase/supabase-js';
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { FLAGS } from '@pravado/feature-flags';
-import { createJournalistDiscoveryService } from '../../services/journalistDiscoveryService';
-import { requireUser } from '../../middleware/requireUser';
+import type {
+  DiscoveredJournalist,
+  DiscoveryListResponse,
+  AuthorExtractionResult,
+  MergePreview,
+  DiscoveryStats,
+  DeduplicationResult,
+  BatchDiscoveryResult,
+  DiscoveredJournalistInput as DiscoveredJournalistInputType,
+} from '@pravado/types';
 import {
   apiEnvSchema,
   discoveredJournalistInputSchema,
@@ -24,16 +30,12 @@ import {
   type DiscoveryQuery,
   type BatchDiscoveryInput,
 } from '@pravado/validators';
-import type {
-  DiscoveredJournalist,
-  DiscoveryListResponse,
-  AuthorExtractionResult,
-  MergePreview,
-  DiscoveryStats,
-  DeduplicationResult,
-  BatchDiscoveryResult,
-  DiscoveredJournalistInput as DiscoveredJournalistInputType,
-} from '@pravado/types';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
+import { requireUser } from '../../middleware/requireUser';
+import { createJournalistDiscoveryService } from '../../services/journalistDiscoveryService';
+
 
 export async function journalistDiscoveryRoutes(fastify: FastifyInstance) {
   // Check feature flag

@@ -32,8 +32,8 @@ import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
-import { ContentService } from '../../services/contentService';
 import { enqueueCiteMindScore } from '../../queue/bullmqQueue';
+import { ContentService } from '../../services/contentService';
 
 /**
  * Helper to get user's org ID

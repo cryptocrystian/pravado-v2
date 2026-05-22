@@ -5,11 +5,11 @@
  * scored signals to the sage_signals table.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { ingestPRSignals } from './sagePRSignalIngestor';
 import { ingestContentSignals } from './sageContentSignalIngestor';
+import { ingestPRSignals } from './sagePRSignalIngestor';
 import { ingestSEOSignals } from './sageSEOSignalIngestor';
 
 const logger = createLogger('sage:ingestor');

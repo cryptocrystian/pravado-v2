@@ -3,7 +3,7 @@
  * Cross-domain synthesis engine API endpoints
  */
 
-import { FastifyPluginAsync } from 'fastify';
+import { isEnabled } from '@pravado/feature-flags';
 import {
   createNarrativeSchema,
   updateNarrativeSchema,
@@ -20,8 +20,10 @@ import {
   narrativeIdParamSchema,
   narrativeSectionIdParamSchema,
 } from '@pravado/validators';
+import { FastifyPluginAsync } from 'fastify';
+
 import * as unifiedNarrativeService from '../../services/unifiedNarrativeService';
-import { isEnabled } from '@pravado/feature-flags';
+
 
 const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
   // Feature flag check middleware
